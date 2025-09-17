@@ -1,25 +1,14 @@
-import { neon } from "@neondatabase/serverless"
-import { drizzle } from "drizzle-orm/neon-http"
-import { env } from "hono/adapter"
 import { jstack } from "jstack"
+import { db } from "@feedgot/db"
 
-interface Env {
-  Bindings: { DATABASE_URL: string }
-}
-
-export const j = jstack.init<Env>()
+export const j = jstack.init()
 
 /**
- * Type-safely injects database into all procedures
+ * Database middleware that provides the external db instance
  * 
  * @see https://jstack.app/docs/backend/middleware
  */
-const databaseMiddleware = j.middleware(async ({ c, next }) => {
-  const { DATABASE_URL } = env(c)
-
-  const sql = neon(DATABASE_URL)
-  const db = drizzle(sql)
-
+const databaseMiddleware = j.middleware(async ({ next }) => {
   return await next({ db })
 })
 
@@ -28,4 +17,4 @@ const databaseMiddleware = j.middleware(async ({ c, next }) => {
  *
  * This is the base piece you use to build new queries and mutations on your API.
  */
-export const publicProcedure = j.procedure.use(databaseMiddleware)
+export const publicProcedure = j.procedure.use(databaseMiddleware) as ReturnType<typeof j.procedure.use>

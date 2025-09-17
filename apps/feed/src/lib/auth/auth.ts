@@ -1,10 +1,17 @@
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import { db } from "@/db"
+import { organization, lastLoginMethod } from "better-auth/plugins"
+import { db, user, session, account, verification } from "@feedgot/db"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
+    schema: {
+      user,
+      session,
+      account,
+      verification,
+    },
   }),
 
   socialProviders: {
@@ -17,5 +24,10 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     },
   },
+
+  plugins: [
+    organization(),
+    lastLoginMethod()
+  ],
  
 })

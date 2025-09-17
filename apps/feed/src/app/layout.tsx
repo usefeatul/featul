@@ -1,11 +1,10 @@
 import type { Metadata } from "next"
-import { Providers } from "./components/providers"
-
-import "./globals.css"
+import { Providers } from "./components/providers/providers"
+import "./styles/globals.css"
 
 export const metadata: Metadata = {
-  title: "JStack App",
-  description: "Created using JStack",
+  title: "Feedgot",
+  description: "Created using Feedgot",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 }
 

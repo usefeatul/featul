@@ -1,4 +1,8 @@
 {
+  "extends": "@feedgot/tsconfig/nextjs.json",
+  "references": [
+    { "path": "../../packages/db" }
+  ],
   "compilerOptions": {
     "lib": [
       "dom",

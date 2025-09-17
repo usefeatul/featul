@@ -2,7 +2,7 @@
   "name": "@feedgot/db",
   "version": "0.0.0",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./index.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -12,7 +12,7 @@
     "db:seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.1",
+    "@neondatabase/serverless": "^0.10.4",
     "drizzle-orm": "^0.39.0",
     "ws": "^8.18.0"
   },
