@@ -1,8 +1,11 @@
 "use client"
 
 import {
+  IconDatabase,
   IconDots,
+  IconFileWord,
   IconFolder,
+  IconReport,
   IconShare3,
   IconTrash,
   type Icon,
@@ -25,22 +28,32 @@ import {
   useSidebar,
 } from "@feedgot/ui/components/sidebar"
 
-export function NavDocuments({
-  items,
-}: {
-  items: {
-    name: string
-    url: string
-    icon: Icon
-  }[]
-}) {
+const workspaceItems = [
+  {
+    name: "Data Library",
+    url: "#",
+    icon: IconDatabase,
+  },
+  {
+    name: "Reports",
+    url: "#",
+    icon: IconReport,
+  },
+  {
+    name: "Word Assistant",
+    url: "#",
+    icon: IconFileWord,
+  },
+]
+
+export function NavWorkspace() {
   const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Documents</SidebarGroupLabel>
+      <SidebarGroupLabel>WORKSPACE</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {workspaceItems.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
@@ -80,12 +93,6 @@ export function NavDocuments({
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <IconDots className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   )

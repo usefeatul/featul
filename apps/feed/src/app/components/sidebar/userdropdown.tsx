@@ -2,7 +2,6 @@
 
 import {
   IconCreditCard,
-  IconDotsVertical,
   IconLogout,
   IconNotification,
   IconUserCircle,
@@ -28,17 +27,45 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@feedgot/ui/components/sidebar"
+import { useSession } from "@/lib/auth/client"
+import { getDisplayUser, getInitials } from "@/lib/utils/user-utils"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
+export function UserDropdown() {
   const { isMobile } = useSidebar()
+  const { data: session, isPending } = useSession()
+
+  console.log("UserDropdown: Session data:", { session, isPending, user: session?.user })
+
+  if (isPending) {
+    console.log("UserDropdown: Session is pending, showing loading state")
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg">
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarFallback className="rounded-lg"></AvatarFallback>
+            </Avatar>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    )
+  }
+
+  if (!session?.user) {
+    console.log("UserDropdown: No user session, returning null")
+    return null
+  }
+
+  console.log("UserDropdown: Rendering full dropdown with user:", session.user.name)
+
+  const displayUser = getDisplayUser(session.user)
+
+  const handleSignOut = async () => {
+    const { signOut } = await import("@/lib/auth/client")
+    await signOut()
+  }
+
+  console.log("UserDropdown: About to render JSX")
 
   return (
     <SidebarMenu>
@@ -49,17 +76,18 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage src={displayUser.image || ""} alt={displayUser.name} />
+                <AvatarFallback className="rounded-lg">
+                  {getInitials(displayUser.name)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{displayUser.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {displayUser.email}
                 </span>
               </div>
-              <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -71,13 +99,15 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarImage src={displayUser.image || ""} alt={displayUser.name} />
+                  <AvatarFallback className="rounded-lg">
+                    {getInitials(displayUser.name)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{displayUser.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
+                    {displayUser.email}
                   </span>
                 </div>
               </div>
@@ -98,7 +128,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

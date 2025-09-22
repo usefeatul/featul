@@ -5,7 +5,6 @@ export const workspace = pgTable('workspace', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(), // for subdomain like mantlz.feedgot.com
-  description: text('description'),
   ownerId: text('owner_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
