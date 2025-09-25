@@ -6,7 +6,7 @@ import { auth as betterAuthServer } from "../lib/auth/auth";
 export const j = jstack.init();
 
 // Database middleware that adds db to context
-const databaseMiddleware = j.middleware(async ({ next }) => {
+const databaseMiddleware = j.middleware(async ({next }) => {
   return await next({ db });
 });
 
