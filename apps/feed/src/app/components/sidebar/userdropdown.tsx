@@ -31,7 +31,11 @@ import { useSession } from "@/lib/auth/client"
 import { getDisplayUser, getInitials } from "@/lib/utils/user-utils"
 
 export function UserDropdown() {
-  const { isMobile } = useSidebar()
+  const { isMobile, state } = useSidebar()
+  // Hide the user dropdown when the sidebar is collapsed
+  if (state === "collapsed") {
+    return null
+  }
   const { data: session, isPending } = useSession()
 
   console.log("UserDropdown: Session data:", { session, isPending, user: session?.user })
