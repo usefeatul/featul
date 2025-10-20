@@ -31,11 +31,7 @@ import { useSession } from "@/lib/auth/client"
 import { getDisplayUser, getInitials } from "@/lib/utils/user-utils"
 
 export function UserDropdown() {
-  const { isMobile, state } = useSidebar()
-  // Hide the user dropdown when the sidebar is collapsed
-  if (state === "collapsed") {
-    return null
-  }
+  const { isMobile } = useSidebar()
   const { data: session, isPending } = useSession()
 
   console.log("UserDropdown: Session data:", { session, isPending, user: session?.user })
@@ -45,7 +41,7 @@ export function UserDropdown() {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size="sm">
+          <SidebarMenuButton size="lg">
             <Avatar className="h-8 w-8">
                 <AvatarFallback></AvatarFallback>
               </Avatar>
@@ -77,8 +73,8 @@ export function UserDropdown() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              size="sm"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-8 w-auto px-2"
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8">
                 <AvatarImage src={displayUser.image || ""} alt={displayUser.name} />
@@ -86,10 +82,16 @@ export function UserDropdown() {
                   {getInitials(displayUser.name)}
                 </AvatarFallback>
               </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">{displayUser.name}</span>
+                <span className="text-muted-foreground truncate text-xs">
+                  {displayUser.email}
+                </span>
+              </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-40"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}

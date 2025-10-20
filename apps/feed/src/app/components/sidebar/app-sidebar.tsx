@@ -8,23 +8,27 @@ import { WorkspaceSwitcher } from "@/app/components/sidebar/workspace-switcher"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarTrigger,
 } from "@feedgot/ui/components/sidebar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="flex items-center justify-between gap-2 w-full">
-          <WorkspaceSwitcher />
-          <UserDropdown />
-        </div>
+        <WorkspaceSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavRequest />
         <NavServices />
         <NavWorkspace />
       </SidebarContent>
+      <SidebarFooter>
+        <UserDropdown />
+      </SidebarFooter>
     </Sidebar>
   )
 }

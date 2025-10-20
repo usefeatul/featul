@@ -16,16 +16,15 @@ import {
   useSidebar,
 } from "@feedgot/ui/components/sidebar"
 import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avatar"
-import { getInitials } from "@/lib/utils/user-utils"
 
 // Minimal workspace shape
-type Workspace = { id: string; name: string }
+type Workspace = { id: string; name: string; logo?: string }
 
 const workspaces: Workspace[] = [
-  { id: "1", name: "Acme Corp" },
-  { id: "2", name: "Startup Inc" },
-  { id: "3", name: "Personal" },
-  { id: "4", name: "Creative Studio" },
+  { id: "1", name: "Acme Corp", logo: "https://api.dicebear.com/7.x/identicon/svg?seed=Acme%20Corp" },
+  { id: "2", name: "Startup Inc", logo: "https://api.dicebear.com/7.x/identicon/svg?seed=Startup%20Inc" },
+  { id: "3", name: "Personal", logo: "https://api.dicebear.com/7.x/identicon/svg?seed=Personal" },
+  { id: "4", name: "Creative Studio", logo: "https://api.dicebear.com/7.x/identicon/svg?seed=Creative%20Studio" },
 ]
 
 export function WorkspaceSwitcher() {
@@ -39,16 +38,17 @@ export function WorkspaceSwitcher() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="sm" className="rounded-sm h-8 px-2 w-auto">
-              <Avatar className="h-6 w-6 mr-2">
-                <AvatarImage src="" alt={activeWorkspace.name} />
-                <AvatarFallback>{getInitials(activeWorkspace.name)}</AvatarFallback>
+            <SidebarMenuButton size="lg" className="rounded-sm group-data-[collapsible=icon]:gap-0">
+              {/* Icon/avatar for active workspace */}
+              <Avatar className="size-4">
+                <AvatarImage src={activeWorkspace.logo} alt={activeWorkspace.name} />
+                <AvatarFallback>{activeWorkspace.name?.[0]?.toUpperCase()}</AvatarFallback>
               </Avatar>
-               <span className="truncate text-xs font-medium">
-                 {activeWorkspace.name}
-               </span>
-               <IconChevronDown className="ml-auto size-4 opacity-60" />
-             </SidebarMenuButton>
+              <span className="truncate text-sm font-medium group-data-[collapsible=icon]:hidden">
+                {activeWorkspace.name}
+              </span>
+              <IconChevronDown className="ml-auto size-4 opacity-60 group-data-[collapsible=icon]:hidden" />
+            </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-56 p-1"
@@ -62,6 +62,11 @@ export function WorkspaceSwitcher() {
                 onClick={() => setActiveWorkspace(workspace)}
                 className="gap-2"
               >
+                {/* Icon/avatar per workspace */}
+                <Avatar className="size-4">
+                  <AvatarImage src={workspace.logo} alt={workspace.name} />
+                  <AvatarFallback>{workspace.name?.[0]?.toUpperCase()}</AvatarFallback>
+                </Avatar>
                 <span className="text-sm">{workspace.name}</span>
                 {workspace.id === activeWorkspace.id ? (
                   <IconCheck className="ml-auto size-4 text-primary" />
