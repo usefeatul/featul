@@ -20,7 +20,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden">
 
-      <Container maxWidth="6xl">
+      <Container maxWidth="5xl">
         <div className="pt-10 pb-24 sm:pt-16 sm:pb-32">
           <div className="max-w-4xl text-left">
             {/* Main heading */}

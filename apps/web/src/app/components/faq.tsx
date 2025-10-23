@@ -34,7 +34,7 @@ export default function FAQsFour() {
     ]
 
     return (
-        <Container  maxWidth="6xl">
+        <Container  maxWidth="5xl">
             <section className="py-16 md:py-24">
                 <div className="mx-auto max-w-5xl px-4 md:px-6">
                     <div className="mx-auto max-w-xl text-center">

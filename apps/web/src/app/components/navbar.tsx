@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { navigationConfig } from "@/config/navigation"
+import { navigationConfig } from "@/config/homeNav"
 import { Container } from "./container"
 import { LinkIcon } from "@feedgot/ui/icons/link"
 import { cn } from "@feedgot/ui/lib/utils"
@@ -18,7 +18,7 @@ export default function Navbar() {
         "fixed top-0 left-0 right-0 z-50 bg-background"
       )}
     >
-      <Container maxWidth="6xl">
+      <Container maxWidth="5xl">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <div className="flex items-center">

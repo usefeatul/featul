@@ -11,8 +11,8 @@ const THEO_AVATAR = 'https://avatars.githubusercontent.com/u/68236786?v=4'
 const GLODIE_AVATAR = 'https://avatars.githubusercontent.com/u/99137927?v=4'
 
 export default function BentoFeature() {
-        return (
-        <Container maxWidth="6xl">
+    return (
+        <Container maxWidth="5xl">
         <section>
             <div className="py-24">
                 <div className="mx-auto w-full max-w-5xl px-6">
