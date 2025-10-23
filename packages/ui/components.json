@@ -13,9 +13,11 @@
   "aliases": {
     "components": "@feedgot/ui/components",
     "utils": "@feedgot/ui/lib/utils",
-    "hooks": "@feedgot/ui/hooks",
-    "icons": "@feedgot/ui/icons",
+    "ui": "@feedgot/ui/components",
     "lib": "@feedgot/ui/lib",
-    "ui": "@feedgot/ui/components"
+    "hooks": "@feedgot/ui/hooks"
+  },
+  "registries": {
+    "@tailark": "https://tailark.com/r/{name}.json"
   }
 }

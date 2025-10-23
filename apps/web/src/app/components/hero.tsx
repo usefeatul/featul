@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { Play, Star, Users, Zap } from 'lucide-react'
 import { Container } from './container'
-import { FreeIcon } from './icons/free'
-import { UsersIcon } from './icons/users'
-import { SetupIcon } from './icons/setup'
+import { FreeIcon } from '@feedgot/ui/icons/free'
+import { UsersIcon } from '@feedgot/ui/icons/users'
+import { SetupIcon } from '@feedgot/ui/icons/setup'
 
 interface FeatureHighlight {
   icon: React.ComponentType<{ className?: string }>
@@ -20,7 +20,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden">
 
-      <Container maxWidth="5xl">
+      <Container maxWidth="6xl">
         <div className="pt-10 pb-24 sm:pt-16 sm:pb-32">
           <div className="max-w-4xl text-left">
             {/* Main heading */}
@@ -34,8 +34,7 @@ export function Hero() {
 
             {/* Subtitle */}
             <p className="mt-6 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Seline is an easy-to-use website & product analytics platform. Insightful,
-              lightweight, independent.
+              feedgot is a complete SaaS feedback platform featuring organized feedback boards, auto-syncing roadmaps, self-writing changelogs, and automated engagement loops
             </p>
 
             {/* CTAs */}

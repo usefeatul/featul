@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from "@feedgot/ui/lib/utils"
 
 type ContainerProps = {
   children: React.ReactNode
@@ -24,10 +25,10 @@ export function Container({
       ? 'max-w-6xl'
       : 'max-w-7xl'
 
-  const base = `mx-auto ${widthClass} px-12 sm:px-16 lg:px-20 xl:px-24`
-  const offset = withNavbarOffset ? ' pt-16' : ''
+  const paddingX = 'px-12 sm:px-16 lg:px-20 xl:px-24'
+  const base = cn('mx-auto', widthClass, paddingX, withNavbarOffset && 'pt-16', className)
 
   return (
-    <Component className={`${base}${offset} ${className}`}>{children}</Component>
+    <Component className={base}>{children}</Component>
   )
 }

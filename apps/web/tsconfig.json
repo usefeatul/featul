@@ -39,7 +39,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "**/*.d.ts"
-  ],
+, "../../packages/ui/src/icons/free.tsx", "../../packages/ui/src/icons/link.tsx", "../../packages/ui/src/icons/setup.tsx", "../../packages/ui/src/icons/users.tsx"  ],
   "exclude": [
     "node_modules"
   ]
