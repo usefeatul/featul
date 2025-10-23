@@ -18,7 +18,7 @@ export default function Navbar() {
         "fixed top-0 left-0 right-0 z-50 bg-background"
       )}
     >
-      <Container>
+      <Container maxWidth="5xl">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <div className="flex items-center">
