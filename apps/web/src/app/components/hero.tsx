@@ -26,7 +26,7 @@ export function Hero() {
             {/* Main heading */}
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
               The
-              <span className="mx-2 inline-block rounded-md bg-blue-100 px-3 py-1 text-blue-900">
+              <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-1 text-primary">
                 simple and joyful
               </span>
               Google Analytics alternative
@@ -42,7 +42,7 @@ export function Hero() {
             <div className="mt-8 flex flex-col items-start justify-start gap-4 sm:flex-row sm:gap-6">
               <Link
                 href="/signup"
-                className="inline-flex items-center rounded-md bg-[#3b82f6] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#2563eb]"
+                className="inline-flex items-center rounded-md bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Add to your website
               </Link>

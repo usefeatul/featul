@@ -36,17 +36,16 @@ export default function Navbar() {
               <Link 
                 key={item.name}
                 href={item.href} 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-1 hover:bg-muted"
               >
                 {item.name}
               </Link>
             ))}
-            <span className="hidden lg:inline-flex items-center text-lg leading-none">👩🏻‍🦱👨🏼‍🦳👩🏽‍💻</span>
             {after.map((item) => (
               <Link 
                 key={item.name}
                 href={item.href} 
-                className={"text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" + (item.name === "Docs" ? " inline-flex items-center" : "")}
+                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-1 hover:bg-muted"
               >
                 {item.name}
                 {item.name === "Docs" && (
@@ -71,7 +70,7 @@ export default function Navbar() {
             ))}
             <Link
               href="/signup"
-              className="inline-flex items-center rounded-full bg-[#3b82f6] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2563eb]"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Start for free
             </Link>
