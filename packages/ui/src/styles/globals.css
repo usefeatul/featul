@@ -40,10 +40,10 @@
   --sidebar-accent-foreground: oklch(0.1448 0 0);
   --sidebar-border: oklch(0.93 0 0);
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
-  --font-sans: Inter, sans-serif;
-  --font-serif: Georgia, serif;
+  --font-sans: Inter, "Inter Fallback", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: roobert, "roobert Fallback";
   --font-mono: Fira Code, monospace;
-  --radius: 0.3rem;
+  --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -2px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -2px hsl(0 0% 0% / 0.05);
   --shadow-sm:
@@ -94,10 +94,10 @@
   --sidebar-accent-foreground: oklch(0.9851 0 0);
   --sidebar-border: oklch(0.2686 0 0);
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
-  --font-sans: Inter, sans-serif;
-  --font-serif: Georgia, serif;
+  --font-sans: Inter, "Inter Fallback", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: roobert, "roobert Fallback";
   --font-mono: Fira Code, monospace;
-  --radius: 0.3rem;
+  --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -2px hsl(0 0% 0% / 0.1);
   --shadow-xs: 0px 4px 8px -2px hsl(0 0% 0% / 0.1);
   --shadow-sm:
@@ -178,7 +178,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     letter-spacing: var(--tracking-normal);
   }
 }
