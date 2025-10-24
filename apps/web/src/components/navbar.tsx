@@ -44,7 +44,7 @@ export default function Navbar() {
               <Link 
                 key={item.name}
                 href={item.href} 
-                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-1 hover:bg-muted"
+                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-1 hover:bg-secondary"
               >
                 {item.name}
               </Link>
@@ -53,7 +53,7 @@ export default function Navbar() {
               <Link 
                 key={item.name}
                 href={item.href} 
-                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-1 hover:bg-muted"
+                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-1 hover:bg-secondary"
               >
                 {item.name}
                 {item.name === "Docs" && (
