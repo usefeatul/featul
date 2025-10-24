@@ -6,7 +6,7 @@ import { footerNavigationConfig } from '@/config/footerNav'
 export default function FooterSection() {
   return (
     <footer className="border-t bg-white pt-20 dark:bg-transparent">
-      <Container maxWidth="5xl">
+      <Container maxWidth="6xl">
         <div className="grid gap-12 md:grid-cols-5">
           <div className="md:col-span-2">
             <Link href="/" aria-label="go home" className="block size-fit">

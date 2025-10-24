@@ -18,7 +18,7 @@ export default function Navbar() {
         "fixed top-0 left-0 right-0 z-50 bg-background"
       )}
     >
-      <Container maxWidth="5xl">
+      <Container maxWidth="6xl">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <div className="flex items-center">
@@ -78,7 +78,7 @@ export default function Navbar() {
             ))}
             <Link
               href="/signup"
-              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
             >
               Start for free
             </Link>

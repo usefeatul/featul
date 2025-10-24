@@ -20,20 +20,20 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden">
 
-      <Container maxWidth="5xl">
+      <Container maxWidth="6xl">
         <div className="pt-10 pb-24 sm:pt-16 sm:pb-32">
           <div className="max-w-4xl text-left">
             {/* Main heading */}
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
+            <h1 className="text-3xl font-light tracking-tight text-foreground sm:text-5xl">
               The
               <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-1 text-primary">
                 simple and joyful
               </span>
-              Google Analytics alternative
+              <span className="block mt-2">open-source feedback alternative</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="mt-6 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+            <p className="mt-6 max-w-2xl text-xs leading-7 text-muted-foreground sm:text-sm">
               feedgot is a complete SaaS feedback platform featuring organized feedback boards, auto-syncing roadmaps, self-writing changelogs, and automated engagement loops
             </p>
 

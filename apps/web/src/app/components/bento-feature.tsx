@@ -12,7 +12,7 @@ const GLODIE_AVATAR = 'https://avatars.githubusercontent.com/u/99137927?v=4'
 
 export default function BentoFeature() {
     return (
-        <Container maxWidth="5xl">
+        <Container maxWidth="6xl">
         <section>
             <div className="py-24">
                 <div className="mx-auto w-full max-w-5xl px-6">
