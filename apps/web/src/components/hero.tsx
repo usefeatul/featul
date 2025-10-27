@@ -23,9 +23,9 @@ export function Hero() {
           <HeroContent />
 
           {/* Screenshot card */}
-          <div className="mt-12 max-w-5xl rounded-2xl border border-border bg-white">
+          <div className="mt-6 max-w-5xl rounded-sm shadow-black/50 shadow-2xl">
             <div className="relative">
-              <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-xl shadow-2xl shadow-zinc-950/50 translate-y-[3px]">
+              <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-sm shadow-2xl shadow-zinc-950/50 translate-y-[3px]">
                 <Image
                   src={imageSrc}
                   alt={`Feedgot ${active} preview`}
@@ -42,13 +42,10 @@ export function Hero() {
                   {/* Background mask to keep shadow behind the line */}
                   <div className="absolute inset-x-0 -top-[2px] h-[2px] bg-background"></div>
                   {/* Background mask below the line to hide most of the image, leaving a subtle sliver visible */}
-                  <div className="absolute inset-x-0 top-[1px] h-[2px] bg-background"></div>
+                  <div className="absolute inset-x-0 top-[1px] h-[20px] bg-gray-50"></div>
                 </div>
                 <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
-                  <div className="flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-border/60 shadow-lg px-3 py-2">
-                    <span className="text-xs text-muted-foreground hidden sm:inline">
-                      {active.charAt(0).toUpperCase() + active.slice(1)}
-                    </span>
+                  <div className="flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-border/60 shadow-2xl px-3 py-2">
                     <div
                       role="group"
                       aria-label="Preview feature"
