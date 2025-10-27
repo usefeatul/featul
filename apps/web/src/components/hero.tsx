@@ -25,7 +25,7 @@ export function Hero() {
           {/* Screenshot card */}
           <div className="mt-12 max-w-5xl rounded-2xl border border-border bg-white">
             <div className="relative">
-              <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted shadow-lg">
+              <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-xl shadow-2xl shadow-zinc-950/50 translate-y-[2px]">
                 <Image
                   src={imageSrc}
                   alt={`Feedgot ${active} preview`}
@@ -36,9 +36,13 @@ export function Hero() {
               </div>
 
               {/* Full-bleed bottom border + centered pill */}
-              <div className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 w-screen">
-                <div className="border-b border-border"></div>
-                <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
+              <div className="pointer-events-none absolute left-1/2 bottom-[1px] -translate-x-1/2 w-screen z-20">
+                <div className="relative">
+                  <div className="border-b border-border"></div>
+                  {/* White mask to keep shadow behind the line */}
+                  <div className="absolute inset-x-0 -top-[2px] h-[2px] bg-white"></div>
+                </div>
+                <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
                   <div className="flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-border/60 shadow-lg px-3 py-2">
                     <span className="text-xs text-muted-foreground hidden sm:inline">
                       {active.charAt(0).toUpperCase() + active.slice(1)}
