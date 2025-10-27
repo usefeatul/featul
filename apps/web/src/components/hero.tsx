@@ -25,7 +25,7 @@ export function Hero() {
           {/* Screenshot card */}
           <div className="mt-12 max-w-5xl rounded-2xl border border-border bg-white">
             <div className="relative">
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-muted">
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted shadow-lg">
                 <Image
                   src={imageSrc}
                   alt={`Feedgot ${active} preview`}
