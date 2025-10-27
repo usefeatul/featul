@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "@feedgot/ui/globals.css";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 /* WebKit scrollbar customization */
 *::-webkit-scrollbar {
@@ -24,3 +27,4 @@
 html {
   scrollbar-width: thin;
 }
+
