@@ -1,21 +1,32 @@
+'use client'
 import Link from "next/link"
 import Image from "next/image"
 import { navigationConfig } from "@/config/homeNav"
 import { Container } from "./container"
 import { LinkIcon } from "@feedgot/ui/icons/link"
 import { cn } from "@feedgot/ui/lib/utils"
+import { useEffect, useState } from 'react'
 
 export default function Navbar() {
   const main = navigationConfig.main
   const before = main.slice(0, 2)
   const after = main.slice(2)
 
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
 
 
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 bg-background"
+        "fixed top-0 left-0 right-0 z-50 bg-background",
+        scrolled && "border-b border-border"
       )}
     >
       <Container maxWidth="6xl">
@@ -44,7 +55,7 @@ export default function Navbar() {
               <Link 
                 key={item.name}
                 href={item.href} 
-                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
+                className="inline-flex items-center text-sm font-medium text-zinc-500 hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
               >
                 {item.name}
               </Link>
@@ -53,7 +64,7 @@ export default function Navbar() {
               <Link 
                 key={item.name}
                 href={item.href} 
-                className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
+                className="inline-flex items-center text-sm font-medium text-zinc-500 hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
               >
                 {item.name}
                 {item.name === "Docs" && (
@@ -62,16 +73,16 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
-          <span className="hidden md:inline-block mx-2 text-muted-foreground">|</span>
+          <span className="hidden md:inline-block mx-2 text-accent">|</span>
 
           {/* Auth + CTA */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ml-2">
             {navigationConfig.auth.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm font-medium text-zinc-500 hover:text-foreground transition-colors hover:bg-accent rounded-md px-2 py-2"
               >
                 {item.name}
               </Link>

@@ -1,40 +1,43 @@
-import Link from 'next/link'
-import { Play, Star, Users, Zap } from 'lucide-react'
-import { Container } from './container'
-import { FreeIcon } from '@feedgot/ui/icons/free'
-import { UsersIcon } from '@feedgot/ui/icons/users'
-import { SetupIcon } from '@feedgot/ui/icons/setup'
+import Link from "next/link";
+import { Play, Star, Users, Zap } from "lucide-react";
+import { Container } from "./container";
+import { FreeIcon } from "@feedgot/ui/icons/free";
+import { UsersIcon } from "@feedgot/ui/icons/users";
+import { SetupIcon } from "@feedgot/ui/icons/setup";
 
 interface FeatureHighlight {
-  icon: React.ComponentType<{ className?: string }>
-  text: string
+  icon: React.ComponentType<{ className?: string }>;
+  text: string;
 }
 
 const featureHighlights: FeatureHighlight[] = [
-  { icon: Star, text: 'Free forever' },
-  { icon: Zap, text: '30-second setup' },
-  { icon: Users, text: 'Unlimited users' },
-]
+  { icon: Star, text: "Free forever" },
+  { icon: Zap, text: "30-second setup" },
+  { icon: Users, text: "Unlimited users" },
+];
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
-
       <Container maxWidth="6xl">
         <div className="pt-10 pb-24 sm:pt-16 sm:pb-32">
           <div className="max-w-4xl text-left">
             {/* Main heading */}
-            <h1 className="text-3xl font-light tracking-tight text-foreground sm:text-5xl">
+            <h1 className="text-3xl  tracking-tight font-serif font-extrabold text-foreground sm:text-5xl">
               The
               <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-1 text-primary">
                 simple and joyful
               </span>
-              <span className="block mt-2">open-source feedback alternative</span>
+              <span className="block mt-2">
+                open-source feedback alternative
+              </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="mt-6 max-w-2xl text-xs leading-7 text-muted-foreground sm:text-sm">
-              feedgot is a complete SaaS feedback platform featuring organized feedback boards, auto-syncing roadmaps, self-writing changelogs, and automated engagement loops
+            <p className="mt-6 max-w-xl text-md leading-7 font-lighter text-zinc-500 sm:text-md">
+              Feedgot is a complete SaaS feedback platform featuring organized
+              feedback boards, auto-syncing roadmaps, self-writing changelogs,
+              and automated engagement loops
             </p>
 
             {/* CTAs */}
@@ -81,5 +84,5 @@ export function Hero() {
         </div>
       </Container>
     </section>
-  )
+  );
 }
