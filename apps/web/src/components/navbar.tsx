@@ -39,10 +39,10 @@ export default function Navbar() {
               className="inline-flex items-center gap-3"
             >
               <Image 
-                src="/logo.png" 
+                src="/logo1.png" 
                 alt="Feedgot" 
-                width={24} 
-                height={24} 
+                width={30} 
+                height={30} 
                 priority 
               />
               <span className="sr-only">Feedgot</span>
@@ -50,12 +50,12 @@ export default function Navbar() {
           </div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-6 md:ml-auto">
+          <nav className="hidden md:flex items-center font-medium text-sm gap-6 md:ml-auto">
             {before.map((item) => (
               <Link 
                 key={item.name}
                 href={item.href} 
-                className="inline-flex items-center text-sm font-medium text-zinc-500 hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
+                className="inline-flex items-center  text-gray-500 hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
               >
                 {item.name}
               </Link>
@@ -64,7 +64,7 @@ export default function Navbar() {
               <Link 
                 key={item.name}
                 href={item.href} 
-                className="inline-flex items-center text-sm font-medium text-zinc-500 hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
+                className="inline-flex items-center  text-gray-500  hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-accent"
               >
                 {item.name}
                 {item.name === "Docs" && (

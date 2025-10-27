@@ -30,7 +30,7 @@ export function HeroContent() {
       {/* CTAs */}
       <div className="mt-8 flex flex-col items-start justify-start gap-4 sm:flex-row sm:gap-6">
         <HotkeyLink href="/signup" hotkeyHref="https://dashboard.feedbot.com">
-          Add to your website
+          Get started Free
         </HotkeyLink>
         <Button asChild variant="outline" size="lg" className="text-gray-500">
           <Link href="/demo">
