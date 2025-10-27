@@ -8,6 +8,7 @@ export function FreeIcon(props: React.SVGProps<SVGSVGElement>) {
       width={width}
       height={height}
       viewBox="0 0 18 18"
+      opacity={0.4}
       {...rest}
     >
       <title>gift</title>

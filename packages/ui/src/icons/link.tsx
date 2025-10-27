@@ -11,7 +11,7 @@ export function LinkIcon(props: React.SVGProps<SVGSVGElement>) {
       {...rest}
     >
       <title>pointer</title>
-      <g fill="currentColor">
+      <g fill="currentColor" opacity={0.4}>
         <path
           fillRule="evenodd"
           clipRule="evenodd"

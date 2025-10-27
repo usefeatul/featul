@@ -11,8 +11,15 @@ export function ArrowIcon(props: React.SVGProps<SVGSVGElement>) {
       {...rest}
     >
       <title>arrow-up-right</title>
-      <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
-        <line x1="8" y1="12" x2="16" y2="4" />
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeOpacity={0.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+      >
+        <line x1="10" y1="10" x2="16" y2="4" />
         <polyline points="16 11 16 4 9 4" />
       </g>
     </svg>

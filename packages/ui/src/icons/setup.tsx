@@ -11,7 +11,7 @@ export function SetupIcon(props: React.SVGProps<SVGSVGElement>) {
       {...rest}
     >
       <title>sliders</title>
-      <g fill="currentColor">
+      <g fill="currentColor" opacity={0.4}>
         <path d="m11.25,9.5H.75c-.414,0-.75-.336-.75-.75s.336-.75.75-.75h10.5c.414,0,.75.336.75.75s-.336.75-.75.75Z" />
         <path d="m11.25,4H.75c-.414,0-.75-.336-.75-.75s.336-.75.75-.75h10.5c.414,0,.75.336.75.75s-.336.75-.75.75Z" />
         <circle cx="4.5" cy="8.75" r="2.5" />
