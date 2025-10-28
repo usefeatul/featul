@@ -42,7 +42,7 @@ export function HeroContent() {
 
       {/* Feature highlights row */}
       <div
-        className="mt-8 flex items-center gap-6 text-sm text-muted-foreground"
+        className="mt-8 flex items-center gap-6 text-sm text-gray-500"
         aria-label="Key highlights"
       >
         <span className="inline-flex items-center gap-2">

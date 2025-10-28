@@ -1,14 +1,25 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "./container";
 import Image from "next/image";
 import { HeroContent } from "./hero-content";
 import { Button } from "@feedgot/ui/components/button";
+// Removed icon import; using subtle ring nudge instead of text/icon
 
 export function Hero() {
   const [active, setActive] = useState<"dashboard" | "roadmap" | "changelog">(
     "dashboard"
   );
+
+  // Subtle pill highlight that appears briefly and hides after first switch
+  const [showPillHint, setShowPillHint] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setShowPillHint(false), 7000);
+    return () => clearTimeout(t);
+  }, []);
+  useEffect(() => {
+    if (active !== "dashboard") setShowPillHint(false);
+  }, [active]);
 
   const imageSrc = {
     dashboard: "/image/image.jpeg",
@@ -23,7 +34,7 @@ export function Hero() {
           <HeroContent />
 
           {/* Screenshot card */}
-          <div className="mt-6 max-w-5xl rounded-sm shadow-black/50 shadow-2xl">
+          <div className="mt-6 max-w-6xl rounded-sm shadow-black shadow-2xl">
             <div className="relative">
               <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-sm shadow-2xl shadow-zinc-950/50 translate-y-[3px]">
                 <Image
@@ -45,20 +56,23 @@ export function Hero() {
                   <div className="absolute inset-x-0 top-[1px] h-[20px] bg-gray-50"></div>
                 </div>
                 <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
-                  <div className="flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-md ring-1 ring-border/60 shadow-2xl px-3 py-2">
+                  <div className="relative flex items-center gap-1.5 rounded-lg bg-white/80 backdrop-blur-md ring-1 ring-border/60 shadow-2xl px-2 py-1.5">
+                    {showPillHint && (
+                      <div className="pointer-events-none absolute inset-0 rounded-lg ring-2 ring-border/60 animate-pulse"></div>
+                    )}
                     <div
                       role="group"
                       aria-label="Preview feature"
-                      className="inline-flex items-center gap-1"
+                      className="relative z-10 inline-flex items-center gap-1"
                     >
                       <Button
                         size="sm"
                         variant="ghost"
                         className={`${
                           active === "dashboard"
-                            ? "bg-white text-foreground border border-border shadow-sm"
+                            ? "bg-black text-white border border-border shadow-sm"
                             : "bg-transparent text-muted-foreground hover:bg-white/70"
-                        } rounded-full px-3`}
+                        } rounded-lg px-2`}
                         onClick={() => setActive("dashboard")}
                         aria-pressed={active === "dashboard"}
                       >
@@ -69,9 +83,9 @@ export function Hero() {
                         variant="ghost"
                         className={`${
                           active === "roadmap"
-                            ? "bg-white text-foreground border border-border shadow-sm"
+                            ? "bg-black text-white border border-border shadow-sm"
                             : "bg-transparent text-muted-foreground hover:bg-white/70"
-                        } rounded-full px-3`}
+                        } rounded-lg px-2`}
                         onClick={() => setActive("roadmap")}
                         aria-pressed={active === "roadmap"}
                       >
@@ -82,9 +96,9 @@ export function Hero() {
                         variant="ghost"
                         className={`${
                           active === "changelog"
-                            ? "bg-white text-foreground border border-border shadow-sm"
+                            ? "bg-black text-white border border-border shadow-sm"
                             : "bg-transparent text-muted-foreground hover:bg-white/70"
-                        } rounded-full px-3`}
+                        } rounded-lg px-2`}
                         onClick={() => setActive("changelog")}
                         aria-pressed={active === "changelog"}
                       >
@@ -97,7 +111,7 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Pointer temporarily removed */}
+          {/* Subtle ring nudge occurs inside the pill above */}
         </div>
       </Container>
     </section>
