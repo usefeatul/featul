@@ -6,6 +6,7 @@ import { Container } from "./container"
 import { ArrowIcon } from "@feedgot/ui/icons/arrow"
 import { cn } from "@feedgot/ui/lib/utils"
 import { useEffect, useState } from 'react'
+import { Button } from "@feedgot/ui/components/button"
 
 export default function Navbar() {
   const main = navigationConfig.main
@@ -87,12 +88,9 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
-            <Link
-              href="/signup"
-              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
-            >
-              Start for free
-            </Link>
+            <Button asChild className="font-semibold">
+              <Link href="/signup">Start for free</Link>
+            </Button>
           </div>
         </div>
       </Container>
