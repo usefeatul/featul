@@ -36,7 +36,7 @@ export function Hero() {
           {/* Screenshot card */}
           <div className="mt-6 max-w-6xl rounded-sm shadow-black shadow-2xl">
             <div className="relative">
-              <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-sm shadow-2xl shadow-zinc-950/50 translate-y-[3px]">
+              <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-sm shadow-2xl shadow-zinc-950/50 translate-y-[3px] outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background">
                 <Image
                   src={imageSrc}
                   alt={`Feedgot ${active} preview`}
