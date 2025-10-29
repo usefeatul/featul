@@ -8,18 +8,18 @@ import { LiveDemo } from "./live-demo";
 
 export function HeroContent() {
   return (
-    <div className="mx-auto max-w-5xl lg:max-w-6xl px-2 sm:px-4 lg:px-8 text-left">
+    <div className="mx-auto max-w-5xl lg:max-w-6xl px-0 sm:px-0 lg:px-0 text-left">
       {/* Main heading */}
       <h1 className="text-3xl sm:text-5xl md:text-6xl leading-tight tracking-normal sm:tracking-tight font-serif font-extrabold text-foreground text-balance">
         The
-        <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-1 text-primary">
+        <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-0 text-primary leading-none align-middle">
           simple and joyful
         </span>
-        <span className="block mt-2">open-source feedback alternative</span>
+        <span className="block mt-0">open-source feedback alternative</span>
       </h1>
 
       {/* Subtitle */}
-      <p className="mt-6 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-base sm:text-lg md:text-xl leading-relaxed text-muted-foreground text-balance">
+      <p className="mt-6 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-base sm:text-lg md:text-xl leading-relaxed text-zinc-500 text-balance">
         Feedgot is a complete SaaS feedback platform featuring organized
         feedback boards, auto-syncing roadmaps, self-writing changelogs, and
         automated engagement loops

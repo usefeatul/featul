@@ -30,7 +30,7 @@ export default function Navbar() {
         scrolled && "border-b border-border"
       )}
     >
-      <Container maxWidth="6xl">
+      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <div className="flex items-center">
