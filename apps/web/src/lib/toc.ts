@@ -43,7 +43,6 @@ export function generateToc(html?: string | null): { html: string; items: TocIte
 
     // inject id if missing
     if (!idMatch) {
-      const space = attrs?.length ? "" : ""
       return `<h${level}${attrs} id="${unique}">${inner}</h${level}>`
     }
     // replace existing id with unique if needed

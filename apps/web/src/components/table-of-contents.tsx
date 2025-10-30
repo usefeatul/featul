@@ -48,7 +48,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
         className
       )}
     >
-      <div className="text-xs font-bold text-foreground mb-2">{title}</div>
+      <div className="text-md font-bold text-foreground mb-2">{title}</div>
       <ul className="space-y-1 list-none pl-0 m-0">
         {items.map((item, i) => (
           <li key={item.id} className={cn("leading-snug text-left")}> 

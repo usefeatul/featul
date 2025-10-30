@@ -1,6 +1,5 @@
 "use client"
 import Link from "next/link"
-import { Card, CardHeader, CardTitle, CardDescription } from "@feedgot/ui/components/card"
 import { Button } from "@feedgot/ui/components/button"
 import { cn } from "@feedgot/ui/lib/utils"
 
@@ -23,21 +22,15 @@ export function PromoCard({
 }: PromoCardProps) {
   return (
     <div className={cn("w-full", className)}>
-      <Card className="">
-        <CardHeader className="p-4">
-          <CardTitle className="text-sm font-semibold text-foreground">
-            {title}
-          </CardTitle>
-          <CardDescription className="mt-1 text-xs text-zinc-500">
-            {description}
-          </CardDescription>
-          <div className="mt-1">
-            <Button asChild className="w-full">
-              <Link href={ctaHref}>{ctaLabel}</Link>
-            </Button>
-          </div>
-        </CardHeader>
-      </Card>
+      <div className="rounded-lg bg-primary/10 p-2">
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <p className="mt-1 text-xs text-zinc-500">{description}</p>
+        <div className="mt-2">
+          <Button asChild className="w-full">
+            <Link href={ctaHref}>{ctaLabel}</Link>
+          </Button>
+        </div>
+      </div>
       <p className="mt-2 text-center text-[11px] text-zinc-500">{subtext}</p>
     </div>
   )

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Prose } from "@/components/prose"
 import { generateToc } from "@/lib/toc"
 import { TableOfContents } from "@/components/table-of-contents"
+import { PromoCard } from "@/components/promo-card"
 import type { MarblePost } from "@/types/marble"
 
 type SinglePostProps = {
@@ -17,7 +18,7 @@ function estimateReadingTime(html?: string | null) {
   return Math.max(1, Math.round(words / 200))
 }
 
-export function SinglePost({ post, backHref = "/blog", showBack = true }: SinglePostProps) {
+export function SinglePost({ post}: SinglePostProps) {
   const date = post.publishedAt ? new Date(post.publishedAt) : null
   const reading = estimateReadingTime(post.content)
   const { html, items } = generateToc(post.content)
@@ -74,15 +75,19 @@ export function SinglePost({ post, backHref = "/blog", showBack = true }: Single
             </div>
           ) : null}
 
+          {/* Mobile Promo card (always visible) */}
+          <div className="mb-8 lg:hidden w-full">
+            <PromoCard />
+          </div>
+
           <Prose html={html ?? undefined} />
         </div>
 
-        {/* Right column ToC aligned with very top */}
-        {items.length > 0 ? (
-          <aside className="hidden lg:block sticky top-24 h-fit">
-            <TableOfContents items={items} />
-          </aside>
-        ) : null}
+        {/* Right column (ToC + Promo) aligned to top */}
+        <aside className="hidden lg:block sticky top-24 h-fit space-y-6">
+          {items.length > 0 ? <TableOfContents items={items} /> : null}
+          <PromoCard />
+        </aside>
       </div>
     </article>
   )
