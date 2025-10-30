@@ -4,6 +4,8 @@ import { Container } from "@/components/container"
 import { getSinglePost } from "@/lib/query"
 import type { MarblePostResponse } from "@/types/marble"
 import { SinglePost } from "@/components/single-post"
+import CTA from "@/components/cta"
+
 
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -29,6 +31,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <SinglePost post={post} />
       </Container>
+        <CTA/>
     </main>
   )
 }

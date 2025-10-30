@@ -2,7 +2,7 @@ import { Container } from "./container";
 import { HotkeyLink } from "./hotkey-link";
 import { LiveDemo } from "./live-demo";
 
-export default function StatsSection() {
+export default function CTA() {
   return (
     <section className="bg-background py-12 sm:py-16">
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">

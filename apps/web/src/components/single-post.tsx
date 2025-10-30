@@ -1,8 +1,8 @@
 import Link from "next/link"
-import { Button } from "@feedgot/ui/components/button"
 import { Prose } from "@/components/prose"
 import { generateToc } from "@/lib/toc"
 import { TableOfContents } from "@/components/table-of-contents"
+import { PromoCard } from "@/components/promo-card"
 import type { MarblePost } from "@/types/marble"
 
 type SinglePostProps = {
@@ -29,24 +29,17 @@ export function SinglePost({ post, backHref = "/blog", showBack = true }: Single
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-12">
         {/* Left column */}
         <div className="text-left w-full max-w-3xl">
-          {showBack ? (
-            <div className="mb-6">
-              <Button asChild variant="outline" size="sm">
-                <Link href={backHref}>Back to Blog</Link>
-              </Button>
-            </div>
-          ) : null}
 
           {/* Breadcrumb for subtle context */}
-          <nav aria-label="Breadcrumb" className="mb-3 text-xs text-muted-foreground">
-            <Link href="/blog" className="hover:underline hover:text-foreground">Blog</Link>
+          <nav aria-label="Breadcrumb" className="mb-3 text-md text-muted-foreground">
+            <Link href="/blog" className=" hover:text-primary">Blog</Link>
             <span aria-hidden className="mx-1">›</span>
-            <span className="text-foreground/80 line-clamp-1">{post.title}</span>
+            <span className="text-foreground/80 break-words">{post.title}</span>
           </nav>
 
           {/* Title/meta constrained to left column width */}
           <header className="mb-6 text-left">
-            <h1 className="text-foreground text-3xl md:text-4xl font-bold">{post.title}</h1>
+            <h1 className="text-foreground text-3xl md:text-4xl font-bold leading-tight tracking-tight break-words text-balance">{post.title}</h1>
             {post.excerpt ? <p className="text-muted-foreground mt-3">{post.excerpt}</p> : null}
             {date ? (
               <div className="text-xs text-muted-foreground mt-3">
@@ -75,6 +68,11 @@ export function SinglePost({ post, backHref = "/blog", showBack = true }: Single
             </div>
           ) : null}
 
+          {/* Mobile promo card under ToC */}
+          <div className="lg:hidden mb-8 w-full">
+            <PromoCard />
+          </div>
+
           <Prose html={html ?? undefined} />
         </div>
 
@@ -82,6 +80,7 @@ export function SinglePost({ post, backHref = "/blog", showBack = true }: Single
         {items.length > 0 ? (
           <aside className="hidden lg:block sticky top-24 h-fit">
             <TableOfContents items={items} />
+            <PromoCard className="mt-6" />
           </aside>
         ) : null}
       </div>
