@@ -9,7 +9,7 @@ import { StatusIndicator } from "@/components/status-indicator";
 export default function FooterSection() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t bg-background">
+    <footer className="bg-background">
       <Container maxWidth="6xl" className="py-10 md:py-14">
         <div className="grid items-start gap-10 md:grid-cols-5">
           {/* Brand & meta */}
@@ -22,13 +22,11 @@ export default function FooterSection() {
               <Logo />
               <span className="text-sm font-medium">Feedgot</span>
             </Link>
-            <p className="text-muted-foreground mt-2 text-sm">
-              Made and hosted in EU.
-            </p>
-            <p className="text-muted-foreground mt-1 text-sm">
+            <p className="text-zinc-500 mt-1 text-sm">Made and hosted in EU.</p>
+            <p className="text-zinc-500 mt-1 text-sm">
               Customer feedback platform • © {year}
             </p>
-            <div className="mt-4 flex items-center gap-3 text-muted-foreground">
+            <div className="mt-4 flex items-center gap-3 text-zinc-500 ">
               {/* GitHub */}
               <Link
                 href="#"
@@ -37,7 +35,7 @@ export default function FooterSection() {
                 aria-label="GitHub"
                 className="hover:text-foreground"
               >
-                <GitHubIcon className="text-current" size={14} />
+                <GitHubIcon className="text-current hover:text-primary" size={19} />
               </Link>
               {/* Twitter/X */}
               <Link
@@ -47,7 +45,7 @@ export default function FooterSection() {
                 aria-label="Twitter"
                 className="hover:text-foreground"
               >
-                <TwitterIcon className="text-current" size={14} />
+                <TwitterIcon className="text-current hover:text-primary" size={14} />
               </Link>
             </div>
           </div>
@@ -64,7 +62,7 @@ export default function FooterSection() {
                     <Link
                       key={idx}
                       href={item.href}
-                      className="text-muted-foreground hover:text-foreground block transition-colors"
+                      className="text-zinc-500 hover:text-primary block transition-colors"
                     >
                       {item.name === "Status page" ? (
                         <span className="inline-flex items-center gap-2">
@@ -80,11 +78,6 @@ export default function FooterSection() {
               ))}
             </div>
           </nav>
-        </div>
-
-        {/* Bottom bar */}
-        <div className="border-t mt-10 pt-6 flex flex-col items-center justify-between gap-3 text-xs text-muted-foreground md:flex-row">
-          <span>© {year} Feedgot. All rights reserved.</span>
         </div>
       </Container>
     </footer>
