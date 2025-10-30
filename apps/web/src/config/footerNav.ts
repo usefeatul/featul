@@ -20,43 +20,26 @@ export const footerNavigationConfig: FooterNavigationConfig = {
       ],
     },
     {
-      title: 'Company',
+      title: 'Alternatives',
       items: [
-        { name: 'About us', href: '#' },
-      ],
-    },
-    {
-      title: 'Solutions',
-      items: [
-        { name: 'Website visitor tracking', href: '#' },
-        { name: 'Shopify analytics', href: '#' },
-      ],
-    },
-    {
-      title: 'Compare',
-      items: [
-        { name: 'Google Analytics', href: '#' },
-        { name: 'PostHog', href: '#' },
+        { name: 'UserJot', href: '#' },
+        { name: 'Featurebase', href: '#' },
+        { name: 'Nolt', href: '#' },
+        { name: 'Canny', href: '#' },
+        { name: 'Upvoty', href: '#' },
       ],
     },
     {
       title: 'Resources',
       items: [
         { name: 'Blog', href: '/blog' },
-        { name: 'Terms & definitions', href: '#' },
-      ],
-    },
-    {
-      title: 'Contact us',
-      items: [
-        { name: 'Email', href: '#' },
-        { name: 'Live chat', href: '#' },
+
       ],
     },
     {
       title: 'Legal',
       items: [
-        { name: 'Terms & conditions', href: '#' },
+        { name: 'Terms', href: '#' },
         { name: 'Privacy', href: '#' },
         { name: 'GDPR', href: '#' },
       ],

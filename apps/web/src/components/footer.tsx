@@ -1,28 +1,34 @@
-import Link from 'next/link'
-import { Container } from './container'
-import { Logo } from '@/components/logo'
-import { footerNavigationConfig } from '@/config/footerNav'
-import { GitHubIcon } from '@feedgot/ui/icons/github'
-import { TwitterIcon } from '@feedgot/ui/icons/twitter'
+import Link from "next/link";
+import { Container } from "./container";
+import { Logo } from "@/components/logo";
+import { footerNavigationConfig } from "@/config/footerNav";
+import { GitHubIcon } from "@feedgot/ui/icons/github";
+import { TwitterIcon } from "@feedgot/ui/icons/twitter";
+import { StatusIndicator } from "@/components/status-indicator";
 
 export default function FooterSection() {
+  const year = new Date().getFullYear();
   return (
-    <footer className="bg-background py-12 md:py-16">
-      <Container maxWidth="6xl">
-        <div className="grid items-start gap-10 md:grid-cols-6">
+    <footer className="border-t bg-background">
+      <Container maxWidth="6xl" className="py-10 md:py-14">
+        <div className="grid items-start gap-10 md:grid-cols-5">
           {/* Brand & meta */}
           <div className="md:col-span-2">
-            <Link href="/" aria-label="go home" className="inline-flex items-center gap-2">
+            <Link
+              href="/"
+              aria-label="Go home"
+              className="inline-flex items-center gap-2"
+            >
               <Logo />
               <span className="text-sm font-medium">Feedgot</span>
             </Link>
             <p className="text-muted-foreground mt-2 text-sm">
               Made and hosted in EU.
             </p>
-            <p className="text-zinc-500 mt-1 text-sm">
-              Customer Feedback, {new Date().getFullYear()}.
+            <p className="text-muted-foreground mt-1 text-sm">
+              Customer feedback platform • © {year}
             </p>
-            <div className="mt-3 flex items-center gap-3 text-gray-400">
+            <div className="mt-4 flex items-center gap-3 text-muted-foreground">
               {/* GitHub */}
               <Link
                 href="#"
@@ -47,31 +53,40 @@ export default function FooterSection() {
           </div>
 
           {/* Navigation groups */}
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 md:col-span-4">
-            {footerNavigationConfig.groups.map((group, index) => (
-              <div key={index} className="space-y-3 text-sm">
-                <span className="block text-sm font-semibold">{group.title}</span>
-                {group.items.map((item, idx) => (
-                  <Link
-                    key={idx}
-                    href={item.href}
-                    className="text-gray-400 hover:text-foreground block transition-colors"
-                  >
-                    {item.name === 'Status page' ? (
-                      <span className="inline-flex items-center gap-2">
-                        <span className="bg-green-500 inline-block size-1.5 rounded-full" />
-                        {item.name}
-                      </span>
-                    ) : (
-                      <span>{item.name}</span>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            ))}
-          </div>
+          <nav aria-label="Footer" className="md:col-span-3">
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+              {footerNavigationConfig.groups.map((group, index) => (
+                <div key={index} className="space-y-3 text-sm">
+                  <span className="text-foreground block text-sm font-semibold">
+                    {group.title}
+                  </span>
+                  {group.items.map((item, idx) => (
+                    <Link
+                      key={idx}
+                      href={item.href}
+                      className="text-muted-foreground hover:text-foreground block transition-colors"
+                    >
+                      {item.name === "Status page" ? (
+                        <span className="inline-flex items-center gap-2">
+                          <StatusIndicator />
+                          {item.name}
+                        </span>
+                      ) : (
+                        <span>{item.name}</span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </nav>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="border-t mt-10 pt-6 flex flex-col items-center justify-between gap-3 text-xs text-muted-foreground md:flex-row">
+          <span>© {year} Feedgot. All rights reserved.</span>
         </div>
       </Container>
     </footer>
-  )
+  );
 }
