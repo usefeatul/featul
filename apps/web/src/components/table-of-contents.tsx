@@ -19,13 +19,13 @@ export function TableOfContents({ items, className, title = "Table of content" }
       )}
     >
       <div className="text-xs font-bold text-foreground mb-2">{title}</div>
-      <ul className="space-y-1">
+      <ul className="space-y-1 list-none pl-0 m-0">
         {items.map((item) => (
-          <li key={item.id} className={cn("leading-snug", item.level === 3 && "pl-4")}> 
+          <li key={item.id} className={cn("leading-snug text-left")}> 
             <Link
               href={`#${item.id}`}
               className={cn(
-                "block py-1 text-zinc-500 hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                "block py-1 text-left text-zinc-500 hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
                 item.level === 2 ? "font-medium" : "font-normal"
               )}
             >
