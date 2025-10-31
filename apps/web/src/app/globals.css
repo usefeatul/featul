@@ -4,11 +4,11 @@
 @plugin "@tailwindcss/typography";
 
 /* Smooth scrolling for in-page anchors, respecting reduced motion */
-html:focus-within {
+html {
   scroll-behavior: smooth;
 }
 @media (prefers-reduced-motion: reduce) {
-  html:focus-within {
+  html {
     scroll-behavior: auto;
   }
 }
