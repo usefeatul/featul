@@ -1,27 +1,8 @@
 "use client"
-
 import { cn } from "@feedgot/ui/lib/utils"
+import type { StatusIndicatorProps } from "../../types/status"
+import { colorForStatus } from "../../types/status"
 
-type StatusIndicatorProps = {
-  status?: "operational" | "degraded" | "partial-outage" | "major-outage"
-  pulse?: boolean
-  className?: string
-  srLabel?: string
-}
-
-function colorForStatus(status: StatusIndicatorProps["status"]) {
-  switch (status) {
-    case "degraded":
-      return "bg-yellow-500"
-    case "partial-outage":
-      return "bg-orange-500"
-    case "major-outage":
-      return "bg-red-500"
-    case "operational":
-    default:
-      return "bg-green-500"
-  }
-}
 
 export function StatusIndicator({
   status = "operational",

@@ -3,8 +3,8 @@
 import { FreeIcon } from "@feedgot/ui/icons/free";
 import { UsersIcon } from "@feedgot/ui/icons/users";
 import { SetupIcon } from "@feedgot/ui/icons/setup";
-import { HotkeyLink } from "./hotkey-link";
-import { LiveDemo } from "./live-demo";
+import { HotkeyLink } from "../hotkey-link";
+import { LiveDemo } from "../live-demo";
 
 export function HeroContent() {
   return (

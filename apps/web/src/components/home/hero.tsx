@@ -4,7 +4,6 @@ import { Container } from "../container";
 import Image from "next/image";
 import { HeroContent } from "./hero-content";
 import { Button } from "@feedgot/ui/components/button";
-// Removed icon import; using subtle ring nudge instead of text/icon
 
 export function Hero() {
   const [active, setActive] = useState<"dashboard" | "roadmap" | "changelog">(

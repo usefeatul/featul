@@ -6,7 +6,7 @@ import { UpIcon } from "@feedgot/ui/icons/up";
 import type {
   ReadingProgressProps,
   ScrollBehaviorOption,
-} from "../../types/reading-progress.types";
+} from "../../types/reading";
 
 
 function clamp(n: number, min = 0, max = 1) {
@@ -158,7 +158,7 @@ export function ReadingProgress({
         title="Scroll to top"
         className={cn(
           "inline-flex items-center gap-4 rounded-full",
-          "bg-black/85 text-white dark:bg-zinc-900",
+          "bg-black/95 text-white dark:bg-zinc-900",
           "px-4 py-3 text-xs font-medium shadow/50 shadow-sm",
           "border border-white/10 dark:border-zinc-800"
         )}

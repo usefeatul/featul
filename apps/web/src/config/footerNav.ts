@@ -39,9 +39,9 @@ export const footerNavigationConfig: FooterNavigationConfig = {
     {
       title: 'Legal',
       items: [
-        { name: 'Terms', href: '#' },
-        { name: 'Privacy', href: '#' },
-        { name: 'GDPR', href: '#' },
+        { name: 'Terms', href: '/terms' },
+        { name: 'Privacy', href: '/privacy' },
+        { name: 'GDPR', href: '/gdpr' },
       ],
     },
   ],

@@ -1,7 +1,7 @@
 'use client'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@feedgot/ui/components/accordion'
-import { Container } from './container'
+import { Container } from '../container'
 import { ChevronDownIcon } from 'lucide-react'
 
 export default function FAQsFour() {

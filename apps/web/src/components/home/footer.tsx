@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Container } from "./container";
+import { Container } from "../container";
 import { Logo } from "@/components/logo";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { GitHubIcon } from "@feedgot/ui/icons/github";
