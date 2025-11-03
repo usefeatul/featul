@@ -43,10 +43,12 @@ export default function FeatureAdoptionTool() {
       </div>
 
       <div className="mt-6">
-        <Card>
+        <Card> 
           <CardHeader>
             <CardTitle className="text-base">Cohort inputs</CardTitle>
-            <CardDescription>Enter cohort size and adopters.</CardDescription>
+            <CardDescription>
+              Add cohorts and enter the number of eligible users and adopters. The summary updates instantly.
+            </CardDescription>
             <CardAction>
               <Button
                 variant="outline"
@@ -118,25 +120,25 @@ export default function FeatureAdoptionTool() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Summary</CardTitle>
-            <CardDescription>Snapshot across all cohorts.</CardDescription>
+            <CardDescription>Overall adoption across cohorts. Tiles show key metrics.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <div className="text-zinc-500">Adoption rate</div>
-                <div className="font-mono text-foreground text-base">{formatPct(totals.rate)}</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Adoption rate</div>
+                <div className="mt-1 font-mono text-sm text-foreground">{formatPct(totals.rate)}</div>
               </div>
-              <div>
-                <div className="text-zinc-500">Status</div>
-                <div>{totals.status}</div>
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Status</div>
+                <div className="mt-1 text-sm">{totals.status}</div>
               </div>
-              <div>
-                <div className="text-zinc-500">Adopters</div>
-                <div className="font-mono tabular-nums">{totals.adopted.toLocaleString()}</div>
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Adopters</div>
+                <div className="mt-1 font-mono text-sm tabular-nums">{totals.adopted.toLocaleString()}</div>
               </div>
-              <div>
-                <div className="text-zinc-500">Eligible users</div>
-                <div className="font-mono tabular-nums">{totals.size.toLocaleString()}</div>
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Eligible users</div>
+                <div className="mt-1 font-mono text-sm tabular-nums">{totals.size.toLocaleString()}</div>
               </div>
             </div>
           </CardContent>

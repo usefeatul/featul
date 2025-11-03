@@ -51,7 +51,9 @@ export default function CohortAnalysisTool() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Cohort inputs</CardTitle>
-            <CardDescription>Size and retention percentages.</CardDescription>
+            <CardDescription>
+              Add cohorts and enter the size plus retention % for M1–M3. The summary updates instantly.
+            </CardDescription>
             <CardAction>
               <Button
                 variant="outline"
@@ -135,25 +137,25 @@ export default function CohortAnalysisTool() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Summary</CardTitle>
-            <CardDescription>Average retention by period.</CardDescription>
+            <CardDescription>Average retention across cohorts. Tiles show key aggregates.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <div className="text-zinc-500">Avg M1</div>
-                <div className="font-mono tabular-nums">{Math.round(avgRetention.m1)}%</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Avg M1</div>
+                <div className="mt-1 font-mono text-sm tabular-nums">{Math.round(avgRetention.m1)}%</div>
               </div>
-              <div>
-                <div className="text-zinc-500">Avg M2</div>
-                <div className="font-mono tabular-nums">{Math.round(avgRetention.m2)}%</div>
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Avg M2</div>
+                <div className="mt-1 font-mono text-sm tabular-nums">{Math.round(avgRetention.m2)}%</div>
               </div>
-              <div>
-                <div className="text-zinc-500">Avg M3</div>
-                <div className="font-mono tabular-nums">{Math.round(avgRetention.m3)}%</div>
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Avg M3</div>
+                <div className="mt-1 font-mono text-sm tabular-nums">{Math.round(avgRetention.m3)}%</div>
               </div>
-              <div>
-                <div className="text-zinc-500">Cohorts</div>
-                <div className="font-mono tabular-nums">{cohorts.length}</div>
+              <div className="rounded-md border p-3">
+                <div className="text-xs text-zinc-500">Cohorts</div>
+                <div className="mt-1 font-mono text-sm tabular-nums">{cohorts.length}</div>
               </div>
             </div>
           </CardContent>
