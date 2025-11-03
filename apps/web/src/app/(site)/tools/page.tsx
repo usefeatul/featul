@@ -3,9 +3,6 @@ import { Container } from "@/components/container"
 import CategoryList from "@/components/tools/category-list"
 
 
-import Link from "next/link"
-
-
 
 export const metadata: Metadata = {
   title: "Free Tools by Category",
@@ -20,9 +17,6 @@ export default function ToolsIndexPage() {
           <h1 className="text-balance font-serif text-3xl font-bold md:text-4xl lg:text-5xl">Tools</h1>
           <p className="text-zinc-500 mt-4 max-w-2xl">Explore 30+ tools soon — organized in clear categories to help you find the right calculator or template fast.</p>
           <CategoryList />
-          <div className="mt-8">
-            <Link href="/tools/categories" className="text-sm text-primary underline">View all categories</Link>
-          </div>
         </section>
       </Container>
     </main>
