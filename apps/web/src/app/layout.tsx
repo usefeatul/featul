@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { fontsClassName } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,15 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Seline analytics */}
-
         <Script
           src="https://cdn.seline.com/seline.js"
           data-token="1eadc8582cdf3ff"
           strategy="afterInteractive"
         />
       </head>
-      <body className="">{children}</body>
+      <body className={fontsClassName}>{children}</body>
     </html>
   );
 }

@@ -34,7 +34,7 @@ export default function FeatureAdoptionTool() {
 
   return (
     <div>
-      <div className="prose prose-sm sm:prose-base prose-zinc dark:prose-invert mt-6">
+      <div className="prose prose-sm sm:prose-base prose-zinc dark:prose-invert mt-6 tracking-wide">
         <h2>Feature adoption calculator</h2>
         <p>
           Measure how many eligible users adopt a new feature across cohorts. Adoption rate is
@@ -45,7 +45,7 @@ export default function FeatureAdoptionTool() {
 
       <div className="mt-6 grid grid-cols-1 gap-4">
         <Card>
-          <CardHeader className="space-y-1">
+          <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>
               Add cohorts and enter the number of eligible users and adopters. The summary updates instantly.
@@ -109,7 +109,7 @@ export default function FeatureAdoptionTool() {
 
       {/* Summary card stacked below inputs */}
         <Card>
-          <CardHeader className="space-y-1">
+          <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Overall adoption across cohorts. Tiles show key metrics.</CardDescription>
           </CardHeader>

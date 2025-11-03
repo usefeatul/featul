@@ -5,12 +5,13 @@ import { UsersIcon } from "@feedgot/ui/icons/users";
 import { SetupIcon } from "@feedgot/ui/icons/setup";
 import { HotkeyLink } from "../global/hotkey-link";
 import { LiveDemo } from "../global/live-demo";
+import { roboto } from "../../app/fonts";
 
 export function HeroContent() {
   return (
     <div className="mx-auto max-w-5xl lg:max-w-6xl px-0 sm:px-0 lg:px-0 text-left">
       {/* Main heading */}
-      <h1 className="text-3xl sm:text-5xl md:text-6xl leading-tight tracking-normal sm:tracking-tight font-serif font-extrabold text-foreground text-balance">
+      <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-extrabold text-foreground text-balance">
         The
         <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-0 text-primary leading-none align-middle">
           simple and joyful

@@ -46,7 +46,7 @@ export default async function CategoryPage({ params }: Props) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h1 className="text-balance font-serif text-3xl font-bold md:text-4xl">{cat.name}</h1>
+          <h1 className="text-balance text-3xl font-bold md:text-4xl">{cat.name}</h1>
           <p className="text-zinc-500 mt-4">{cat.description}</p>
           <ToolList categorySlug={cat.slug} tools={cat.tools} />
         </section>

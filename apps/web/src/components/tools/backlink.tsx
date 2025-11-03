@@ -19,7 +19,7 @@ export default function BackLink({ text = "View our other tools", className = "m
       <Link
         href={href}
         aria-label="Back to our tools categories"
-        className="inline-flex items-center text-sm text-zinc-500 hover:text-foreground"
+        className="inline-flex items-center text-sm text-zinc-500 hover:text-foreground tracking-wide"
       >
         <ArrowLeft className="mr-1 h-4 w-4" /> {text}
       </Link>

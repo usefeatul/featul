@@ -17,7 +17,7 @@ export default async function BlogPage() {
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <section className="py-16 md:py-24">
           <div className="mx-auto max-w-6xl text-center">
-            <h1 className="text-balance font-serif text-3xl font-bold md:text-4xl lg:text-5xl">Blog</h1>
+            <h1 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl">Blog</h1>
             <p className="text-zinc-500 mt-4">Notes on Feedgot's journey empowering actionable customer feedback.</p>
           </div>
 

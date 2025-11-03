@@ -17,7 +17,7 @@ export default function ToolsIndexPage() {
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <section className="py-12 sm:py-16">
           <p className="text-sm text-zinc-500">Growth tools • {totalTools} calculators</p>
-          <h1 className="text-balance font-serif text-3xl font-bold md:text-4xl lg:text-5xl mt-2">Practical SaaS calculators for clear, data‑led decisions</h1>
+          <h1 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl mt-2">Practical SaaS calculators for clear, data‑led decisions</h1>
           <p className="text-zinc-500 mt-4 max-w-2xl">Calculate core SaaS metrics including MRR, CAC, LTV, churn, and runway.</p>
           <CategoryList />
         </section>

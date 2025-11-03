@@ -46,7 +46,7 @@ export default function CohortAnalysisTool() {
 
   return (
     <div>
-      <div className="prose prose-sm sm:prose-base prose-zinc dark:prose-invert mt-6">
+      <div className="prose prose-sm sm:prose-base prose-zinc dark:prose-invert mt-6 tracking-wide">
         <h2>Cohort retention analysis</h2>
         <p>
           Analyze retention by signup month. Enter cohort size and retention
@@ -62,7 +62,7 @@ export default function CohortAnalysisTool() {
 
       <div className="mt-6 grid grid-cols-1 gap-4">
         <Card>
-          <CardHeader>
+          <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>
               Add cohorts and enter the size plus retention % for M1–M3. The
@@ -161,7 +161,7 @@ export default function CohortAnalysisTool() {
         </Card>
         {/* Summary card stacked below inputs */}
         <Card>
-          <CardHeader>
+          <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>
               Average retention across cohorts. Tiles show key aggregates.

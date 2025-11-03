@@ -3,13 +3,18 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
-/* Smooth scrolling for in-page anchors, respecting reduced motion */
 html {
   scroll-behavior: smooth;
 }
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-roboto), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   }
 }
 
