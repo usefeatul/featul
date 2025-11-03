@@ -5,7 +5,6 @@ import { UsersIcon } from "@feedgot/ui/icons/users";
 import { SetupIcon } from "@feedgot/ui/icons/setup";
 import { HotkeyLink } from "../global/hotkey-link";
 import { LiveDemo } from "../global/live-demo";
-import { roboto } from "../../app/fonts";
 
 export function HeroContent() {
   return (
@@ -38,18 +37,18 @@ export function HeroContent() {
 
       {/* Feature highlights row */}
       <div
-        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base text-gray-500"
+        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base text-zinc-500"
         aria-label="Key highlights"
       >
         <span className="inline-flex items-center gap-2">
           <FreeIcon width={18} height={18} className="text-foreground" />
           Free forever
         </span>
-        <span className="hidden sm:inline-flex items-center gap-2">
+        <span className=" inline-flex items-center gap-2">
           <SetupIcon width={18} height={18} className="text-foreground" />
           30-second setup
         </span>
-        <span className="hidden sm:inline-flex items-center gap-2">
+        <span className="inline-flex items-center gap-2">
           <UsersIcon width={18} height={18} className="text-foreground" />
           Unlimited users
         </span>
