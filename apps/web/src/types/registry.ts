@@ -22,6 +22,13 @@ import PaybackPeriodTool from '../components/tools/finance/payback-period'
 import BreakEvenTool from '../components/tools/finance/break-even'
 import OpexRatioTool from '../components/tools/finance/opex-ratio'
 import RevenuePerEmployeeTool from '../components/tools/finance/revenue-per-employee'
+import PriceElasticityTool from '../components/tools/pricing-valuation/price-elasticity'
+import ValueBasedPricingTool from '../components/tools/pricing-valuation/value-based-pricing'
+import SaasValuationTool from '../components/tools/pricing-valuation/saas-valuation'
+import FreemiumConversionTool from '../components/tools/pricing-valuation/freemium-conversion'
+import DiscountImpactTool from '../components/tools/pricing-valuation/discount-impact'
+import TierPricingOptimizerTool from '../components/tools/pricing-valuation/tier-pricing-optimizer'
+import WtpSurveyTool from '../components/tools/pricing-valuation/wtp-survey'
 
 export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
   'product-feature-analytics': {
@@ -54,5 +61,14 @@ export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
     'break-even-analysis': BreakEvenTool,
     'operating-expense-ratio': OpexRatioTool,
     'revenue-per-employee': RevenuePerEmployeeTool,
+  },
+  'pricing-valuation': {
+    'price-elasticity': PriceElasticityTool,
+    'value-based-pricing': ValueBasedPricingTool,
+    'saas-valuation': SaasValuationTool,
+    'freemium-conversion-rate': FreemiumConversionTool,
+    'discount-impact': DiscountImpactTool,
+    'tier-pricing-optimizer': TierPricingOptimizerTool,
+    'willingness-to-pay': WtpSurveyTool,
   },
 }
