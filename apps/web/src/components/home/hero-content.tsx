@@ -32,7 +32,7 @@ export function HeroContent() {
           hotkeyHref="https://dashboard.feedbot.com"
           className="w-full sm:w-auto"
         />
-        <LiveDemo className="w-full sm:w-auto text-gray-500" />
+        <LiveDemo className="w-full sm:w-auto text-zinc-500" />
       </div>
 
       {/* Feature highlights row */}
