@@ -1,12 +1,12 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@feedgot/ui/components/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from "@feedgot/ui/components/card"
 import { Label } from "@feedgot/ui/components/label"
 import { Input } from "@feedgot/ui/components/input"
 import { Badge } from "@feedgot/ui/components/badge"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@feedgot/ui/components/chart"
-import * as Recharts from "recharts"
+import { Button } from "@feedgot/ui/components/button"
+import { Plus, Trash } from "lucide-react"
 
 type Cohort = { label: string; size: number; adopted: number }
 
@@ -25,14 +25,6 @@ export default function FeatureAdoptionTool() {
     return { size, adopted, rate, status }
   }, [cohorts])
 
-  const chartData = useMemo(() => {
-    const notAdopted = Math.max(totals.size - totals.adopted, 0)
-    return [
-      { name: "Adopted", value: totals.adopted },
-      { name: "Not adopted", value: notAdopted },
-    ]
-  }, [totals])
-
   const updateCohort = (idx: number, patch: Partial<Cohort>) => {
     setCohorts((prev) => prev.map((c, i) => (i === idx ? { ...c, ...patch } : c)))
   }
@@ -50,11 +42,20 @@ export default function FeatureAdoptionTool() {
         </p>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div className="mt-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>Enter cohort size and adopters.</CardDescription>
+            <CardAction>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCohorts((prev) => [...prev, { label: `Cohort ${prev.length + 1}`, size: 50, adopted: 20 }])}
+              >
+                <Plus className="mr-1" /> Add cohort
+              </Button>
+            </CardAction>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -88,6 +89,17 @@ export default function FeatureAdoptionTool() {
                       onChange={(e) => updateCohort(i, { adopted: Number(e.target.value) })}
                     />
                   </div>
+                  <div className="col-span-2 sm:col-span-3 flex justify-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCohorts((prev) => prev.filter((_, idx) => idx !== i))}
+                      aria-label={`Remove ${c.label}`}
+                    >
+                      <Trash className="mr-1" /> Remove
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -99,75 +111,114 @@ export default function FeatureAdoptionTool() {
             <Badge variant="outline">{totals.status}</Badge>
           </CardFooter>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Adoption distribution</CardTitle>
-            <CardDescription>Adopted vs not adopted.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              id="feature-adoption"
-              config={{ adopted: { label: "Adopted" }, not: { label: "Not adopted" } }}
-              className="mx-auto max-w-sm"
-            >
-              <Recharts.ResponsiveContainer width="100%" height={220}>
-                <Recharts.PieChart>
-                  <ChartTooltip cursor={false} content={<ChartTooltipContent hideIndicator />} />
-                  <Recharts.Pie
-                    data={chartData}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={50}
-                    outerRadius={95}
-                    paddingAngle={2}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Recharts.Cell
-                        key={`cell-${index}`}
-                        fill={index === 0 ? "#16a34a" : "#e5e7eb"}
-                      />
-                    ))}
-                  </Recharts.Pie>
-                </Recharts.PieChart>
-              </Recharts.ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-          <CardFooter>
-            <div className="text-xs text-muted-foreground">{totals.adopted.toLocaleString()} adopted of {totals.size.toLocaleString()} eligible</div>
-          </CardFooter>
-        </Card>
       </div>
 
+      {/* Interactive summary card below inputs */}
       <div className="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Per‑cohort performance</CardTitle>
-            <CardDescription>Quick snapshot of adoption by cohort.</CardDescription>
+            <CardTitle className="text-base">Summary</CardTitle>
+            <CardDescription>Snapshot across all cohorts.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {cohorts.map((c, i) => {
-                const rate = c.size > 0 ? (c.adopted / c.size) * 100 : 0
-                return (
-                  <div key={i} className="grid gap-3 sm:grid-cols-[1fr_auto] items-center">
-                    <div className="min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-medium truncate">{c.label}</span>
-                        <span className="text-xs text-muted-foreground">{c.adopted.toLocaleString()} / {c.size.toLocaleString()}</span>
-                      </div>
-                      <div className="h-2 mt-2 bg-zinc-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-600" style={{ width: `${Math.min(Math.max(rate, 0), 100)}%` }} />
-                      </div>
-                    </div>
-                    <span className="text-sm font-mono tabular-nums">{formatPct(rate)}</span>
-                  </div>
-                )
-              })}
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <div className="text-zinc-500">Adoption rate</div>
+                <div className="font-mono text-foreground text-base">{formatPct(totals.rate)}</div>
+              </div>
+              <div>
+                <div className="text-zinc-500">Status</div>
+                <div>{totals.status}</div>
+              </div>
+              <div>
+                <div className="text-zinc-500">Adopters</div>
+                <div className="font-mono tabular-nums">{totals.adopted.toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-zinc-500">Eligible users</div>
+                <div className="font-mono tabular-nums">{totals.size.toLocaleString()}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      <section className="mt-8 prose prose-sm sm:prose-base prose-zinc dark:prose-invert">
+        <h3>Feature adoption explained</h3>
+        <p>
+          Feature adoption measures the share of eligible users who have successfully used a new capability at least
+          once. It is a leading indicator for product discovery, onboarding quality, and time‑to‑value.
+        </p>
+        <p>
+          Formula: <code>adoption (%) = adopters ÷ eligible users × 100</code>. Adoption is related to activation and
+          retention but not the same: activation checks whether a user completes the necessary setup; adoption checks if
+          they actually use the feature; retention checks if they keep using it over time.
+        </p>
+
+        <h4>What each input means</h4>
+        <ul>
+          <li>
+            <strong>Label</strong>: The cohort name (for example, “This month” or a segment like “Self‑serve EU”).
+          </li>
+          <li>
+            <strong>Cohort size</strong>: Number of <em>eligible</em> users in the cohort. Eligibility means the user could
+            reasonably access the feature (correct plan, permissions, platform, etc.).
+          </li>
+          <li>
+            <strong>Adopted</strong>: Count of users who used the feature at least once in the period.
+          </li>
+        </ul>
+
+        <h4>How to use the calculator</h4>
+        <ol>
+          <li>Add one or more cohorts that reflect how you roll out or segment users.</li>
+          <li>Enter the eligible users and the number who adopted the feature.</li>
+          <li>Read the summary for overall adoption rate and status.</li>
+          <li>Compare cohorts to spot areas needing better onboarding or messaging.</li>
+        </ol>
+
+        <h4>Interpreting results</h4>
+        <ul>
+          <li>
+            <strong>{formatPct(totals.rate)}</strong> overall adoption today. Status is shown as <strong>{totals.status}</strong> to
+            provide quick guidance.
+          </li>
+          <li>Below ~20% usually signals discoverability or eligibility issues.</li>
+          <li>20–40% is moderate; users find it but may not yet see strong value.</li>
+          <li>40%+ indicates good adoption for broad features. Niche features can be healthy at lower levels.</li>
+        </ul>
+
+        <h4>Example</h4>
+        <p>
+          With {totals.size.toLocaleString()} eligible users across the cohorts above and
+          {" "}{totals.adopted.toLocaleString()} adopters, the adoption rate is
+          {" "}<code>{formatPct(totals.rate)}</code>. If adoption is lower than expected, focus on eligibility checks,
+          in‑product prompts, and first‑time guidance.
+        </p>
+
+        <h4>Benchmarks and pitfalls</h4>
+        <ul>
+          <li>Benchmarks vary by product type, audience, and feature scope. Use internal baselines first.</li>
+          <li>Do not count page views or impressions as adoption; require a verifiable action.</li>
+          <li>Ensure the denominator is truly eligible users to avoid under‑ or over‑stating adoption.</li>
+          <li>Watch seasonality and rollout timing; compare like‑for‑like periods.</li>
+        </ul>
+
+        <h4>Ways to improve adoption</h4>
+        <ul>
+          <li>Announce in context near related workflows, not just via global banners.</li>
+          <li>Offer lightweight guidance (tooltips, hints) over blocking modals.</li>
+          <li>Instrument first‑use and repeat‑use separately to understand depth of value.</li>
+          <li>Target cohorts with lower adoption using tailored nudges or examples.</li>
+        </ul>
+
+        <h4>Related metrics to track</h4>
+        <ul>
+          <li>Activation completion rate for prerequisites.</li>
+          <li>Repeat usage frequency (weekly or monthly).</li>
+          <li>Task success rate and time‑to‑value for feature‑related flows.</li>
+        </ul>
+      </section>
     </div>
   )
 }

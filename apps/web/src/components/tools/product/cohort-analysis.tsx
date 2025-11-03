@@ -1,11 +1,11 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@feedgot/ui/components/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardAction } from "@feedgot/ui/components/card"
 import { Label } from "@feedgot/ui/components/label"
 import { Input } from "@feedgot/ui/components/input"
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@feedgot/ui/components/chart"
-import * as Recharts from "recharts"
+import { Button } from "@feedgot/ui/components/button"
+import { Plus, Trash } from "lucide-react"
 
 type Cohort = {
   label: string
@@ -32,14 +32,6 @@ export default function CohortAnalysisTool() {
     return { m1: avg("m1"), m2: avg("m2"), m3: avg("m3") }
   }, [cohorts])
 
-  const chartData = useMemo(() => {
-    return [
-      { month: "Month 1", retention: avgRetention.m1 },
-      { month: "Month 2", retention: avgRetention.m2 },
-      { month: "Month 3", retention: avgRetention.m3 },
-    ]
-  }, [avgRetention])
-
   const formatPct = (n: number) => `${n.toFixed(0)}%`
 
   return (
@@ -55,11 +47,20 @@ export default function CohortAnalysisTool() {
         </p>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div className="mt-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>Size and retention percentages.</CardDescription>
+            <CardAction>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCohorts((prev) => [...prev, { label: `Cohort ${prev.length + 1}`, size: 80, m1: 65, m2: 50, m3: 40 }])}
+              >
+                <Plus className="mr-1" /> Add cohort
+              </Button>
+            </CardAction>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -112,83 +113,118 @@ export default function CohortAnalysisTool() {
                       onChange={(e) => update(i, { m3: Number(e.target.value) })}
                     />
                   </div>
+                  <div className="col-span-2 sm:col-span-5 flex justify-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCohorts((prev) => prev.filter((_, idx) => idx !== i))}
+                      aria-label={`Remove ${c.label}`}
+                    >
+                      <Trash className="mr-1" /> Remove
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Average retention</CardTitle>
-            <CardDescription>Across all cohorts.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer id="cohort-retention" config={{ retention: { label: "Retention" } }}>
-              <Recharts.ResponsiveContainer width="100%" height={220}>
-                <Recharts.LineChart data={chartData} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
-                  <Recharts.CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <Recharts.XAxis dataKey="month" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                  <Recharts.YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Recharts.Line type="monotone" dataKey="retention" stroke="#0ea5e9" strokeWidth={2} dot={{ r: 2 }} />
-                  <ChartLegend content={<ChartLegendContent />} />
-                </Recharts.LineChart>
-              </Recharts.ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
       </div>
-
+      {/* Interactive summary card below inputs */}
       <div className="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Retention matrix</CardTitle>
-            <CardDescription>Users retained by cohort and month.</CardDescription>
+            <CardTitle className="text-base">Summary</CardTitle>
+            <CardDescription>Average retention by period.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="text-muted-foreground">
-                    <th className="text-left font-medium pr-4">Cohort</th>
-                    <th className="text-left font-medium pr-4">Size</th>
-                    <th className="text-left font-medium pr-4">M1</th>
-                    <th className="text-left font-medium pr-4">M2</th>
-                    <th className="text-left font-medium pr-4">M3</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {cohorts.map((c, i) => {
-                    const m1c = Math.round((c.size * c.m1) / 100)
-                    const m2c = Math.round((c.size * c.m2) / 100)
-                    const m3c = Math.round((c.size * c.m3) / 100)
-                    const cell = (pct: number) => (
-                      <td className="py-2 pr-4">
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-24 rounded-full bg-zinc-200 overflow-hidden">
-                            <div className="h-full bg-sky-600" style={{ width: `${Math.min(Math.max(pct, 0), 100)}%` }} />
-                          </div>
-                          <span className="font-mono tabular-nums">{formatPct(pct)}</span>
-                        </div>
-                      </td>
-                    )
-                    return (
-                      <tr key={i}>
-                        <td className="py-2 pr-4">{c.label}</td>
-                        <td className="py-2 pr-4">{c.size.toLocaleString()}</td>
-                        {cell(c.m1)}
-                        {cell(c.m2)}
-                        {cell(c.m3)}
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <div className="text-zinc-500">Avg M1</div>
+                <div className="font-mono tabular-nums">{Math.round(avgRetention.m1)}%</div>
+              </div>
+              <div>
+                <div className="text-zinc-500">Avg M2</div>
+                <div className="font-mono tabular-nums">{Math.round(avgRetention.m2)}%</div>
+              </div>
+              <div>
+                <div className="text-zinc-500">Avg M3</div>
+                <div className="font-mono tabular-nums">{Math.round(avgRetention.m3)}%</div>
+              </div>
+              <div>
+                <div className="text-zinc-500">Cohorts</div>
+                <div className="font-mono tabular-nums">{cohorts.length}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      <section className="mt-8 prose prose-sm sm:prose-base prose-zinc dark:prose-invert">
+        <h3>Cohort retention basics</h3>
+        <p>
+          Retention measures how many users from a given cohort are still active after a period. It is essential for
+          validating long‑term value, product‑market fit, and sustainable growth.
+        </p>
+        <p>
+          Formula: <code>retention (%) = active users at period ÷ original cohort size × 100</code>. Month 1 (M1)
+          gives a read on activation quality; M2–M3 show whether users develop ongoing habits.
+        </p>
+
+        <h4>What each input means</h4>
+        <ul>
+          <li>
+            <strong>Label</strong>: Cohort name (for example, a signup month like “Jan”).
+          </li>
+          <li>
+            <strong>Cohort size</strong>: Users who entered the product in that month.
+          </li>
+          <li>
+            <strong>M1/M2/M3 %</strong>: Share of that cohort active in each subsequent month.
+          </li>
+        </ul>
+
+        <h4>How to use the calculator</h4>
+        <ol>
+          <li>Add cohorts by month or segment you want to compare.</li>
+          <li>Enter the cohort size and retention percentages for M1–M3.</li>
+          <li>Review the summary for average retention and number of cohorts.</li>
+          <li>Compare cohorts to identify where activation or long‑term value is weaker.</li>
+        </ol>
+
+        <h4>Interpreting results</h4>
+        <ul>
+          <li>
+            Average retention today: <strong>{Math.round(avgRetention.m1)}%</strong> at M1,
+            {" "}<strong>{Math.round(avgRetention.m2)}%</strong> at M2,
+            {" "}<strong>{Math.round(avgRetention.m3)}%</strong> at M3.
+          </li>
+          <li>Large drop from M1→M2 often means users don’t build a repeat habit.</li>
+          <li>Stable M2→M3 suggests sustained value or sticky workflows.</li>
+          <li>Benchmark internally over time; absolute benchmarks vary widely by product.</li>
+        </ul>
+
+        <h4>Example</h4>
+        <p>
+          If M1 averages around {Math.round(avgRetention.m1)}% and then drops to
+          {" "}{Math.round(avgRetention.m2)}% at M2, focus on reinforcing value moments and prompts that bring users back
+          to the core workflow in weeks 2–4.
+        </p>
+
+        <h4>Common pitfalls</h4>
+        <ul>
+          <li>Mixing seasonality and growth spikes—compare like cohorts to avoid bias.</li>
+          <li>Using logins instead of meaningful activity—define “active” as completing a core action.</li>
+          <li>Small cohort sizes—aggregate or smooth to reduce noise.</li>
+        </ul>
+
+        <h4>Actions to improve retention</h4>
+        <ul>
+          <li>Map activation steps; remove friction and reduce time‑to‑value.</li>
+          <li>Segment by source, plan, or persona; prioritize cohorts with the biggest gaps.</li>
+          <li>Encourage repeat usage with timely, contextual nudges and saved workflows.</li>
+        </ul>
+      </section>
     </div>
   )
 }
