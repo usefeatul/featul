@@ -82,6 +82,30 @@ export default function CpaCalculatorTool() {
         <p>
           Attribution window and definition of acquisition must be consistent. Consider CLTV and payback alongside CPA.
         </p>
+        <h3>Formula</h3>
+        <p>
+          CPA = Total Spend ÷ Acquisitions. Use consistent definitions (e.g., paid user, MQL, SQL) to compare across channels.
+        </p>
+        <h3>CPA vs CAC, CPL, CPC</h3>
+        <p>
+          CAC (Customer Acquisition Cost) often includes non‑media costs like salaries and tooling; CPA is typically media‑only. CPL is cost per lead; CPC is cost per click. Align metric choice to funnel stage and business model.
+        </p>
+        <h3>Benchmarks</h3>
+        <p>
+          Benchmarks vary widely by industry and intent. B2B SaaS CPAs can be high given lifetime value; consumer apps may target lower CPAs. Compare CPA to CLTV and payback period, not in isolation.
+        </p>
+        <h3>How to reduce CPA</h3>
+        <ul>
+          <li>Improve targeting and exclude low‑intent segments.</li>
+          <li>Test creatives and landing pages for relevance and clarity.</li>
+          <li>Optimize bidding strategies and budgets by channel performance.</li>
+          <li>Enhance onboarding and pricing to lift conversion rates.</li>
+          <li>Use incrementality tests to avoid inefficient spend.</li>
+        </ul>
+        <h3>Example</h3>
+        <p>
+          With $15,000 spend and 400 acquisitions, CPA = $15,000 ÷ 400 = $37.50. Evaluate against CLTV and payback goals to decide scaling.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -91,6 +115,8 @@ export default function CpaCalculatorTool() {
           mainEntity: [
             { '@type': 'Question', name: 'How is CPA calculated?', acceptedAnswer: { '@type': 'Answer', text: 'CPA = Total Ad Spend ÷ Number of Acquisitions.' } },
             { '@type': 'Question', name: 'When should I use CPA?', acceptedAnswer: { '@type': 'Answer', text: 'Use CPA to compare acquisition efficiency across campaigns and channels.' } },
+            { '@type': 'Question', name: 'What is the difference between CPA and CAC?', acceptedAnswer: { '@type': 'Answer', text: 'CAC includes broader costs beyond media (salaries, tooling); CPA is typically media spend only.' } },
+            { '@type': 'Question', name: 'How can I lower CPA?', acceptedAnswer: { '@type': 'Answer', text: 'Improve targeting, creatives, and conversion rates; allocate budget to high‑return channels and test incrementality.' } },
           ],
         })}
       </script>

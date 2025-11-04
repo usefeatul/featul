@@ -136,6 +136,28 @@ export default function FunnelConversionTool() {
         <p>
           Stages can be correlated and vary by cohort. Use event tracking and experimentation to validate improvements.
         </p>
+        <h3>Formula</h3>
+        <p>
+          Stage 1 = Top × Rate<sub>1</sub>; Stage 2 = Stage 1 × Rate<sub>2</sub>; Stage 3 = Stage 2 × Rate<sub>3</sub>. Overall conversion = Stage 3 ÷ Top × 100%.
+        </p>
+        <h3>Drop‑off analysis</h3>
+        <p>
+          Compute drop‑off at each stage to locate bottlenecks. Pair with qualitative insights (session replays, surveys) and test hypotheses to reduce friction.
+        </p>
+        <h3>Benchmarks</h3>
+        <p>
+          Benchmarks depend on product, pricing, and audience. Activation and purchase rates often vary widely; use cohort and segment analysis to define realistic targets.
+        </p>
+        <h3>Improve each stage</h3>
+        <ul>
+          <li>Top → Signup: align value proposition, simplify forms, reduce load times.</li>
+          <li>Signup → Activate: guide onboarding, highlight aha moments, nudge via emails.</li>
+          <li>Activate → Purchase: clarify pricing, social proof, trial extensions, sales assists.</li>
+        </ul>
+        <h3>Example</h3>
+        <p>
+          With Top = 50,000, rates 40% → 25% → 10%: Stage 1 = 20,000, Stage 2 = 5,000, Stage 3 = 500. Overall conversion = 500 ÷ 50,000 × 100% = 1%.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -145,6 +167,8 @@ export default function FunnelConversionTool() {
           mainEntity: [
             { '@type': 'Question', name: 'How is overall conversion calculated?', acceptedAnswer: { '@type': 'Answer', text: 'Multiply each stage rate and apply to top‑of‑funnel volume to get final conversions and overall rate.' } },
             { '@type': 'Question', name: 'Which stage should I optimize?', acceptedAnswer: { '@type': 'Answer', text: 'Start with the largest drop‑off and test improvements with clear metrics and segment breakdowns.' } },
+            { '@type': 'Question', name: 'What is a funnel?', acceptedAnswer: { '@type': 'Answer', text: 'A funnel models sequential user steps (e.g., visit, signup, activate, purchase) to measure progression and drop‑offs.' } },
+            { '@type': 'Question', name: 'How do cohorts help funnel analysis?', acceptedAnswer: { '@type': 'Answer', text: 'Cohorts group users by shared traits or start times, revealing stage differences and guiding targeted improvements.' } },
           ],
         })}
       </script>

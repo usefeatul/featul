@@ -110,6 +110,26 @@ export default function RoiCalculatorTool() {
         <p>
           ROI can ignore time value and non‑monetary benefits. Consider risk, attribution accuracy, and long‑term effects.
         </p>
+        <h3>Formula</h3>
+        <p>
+          ROI = (Return − Cost) ÷ Cost × 100%. Payback factor = Return ÷ Cost. Net profit = Return − Cost.
+        </p>
+        <h3>ROI vs ROMI vs ROAS</h3>
+        <p>
+          ROI measures overall investment efficiency. ROMI focuses on marketing by converting attributed revenue to profit using margin. ROAS (Return on Ad Spend) is revenue ÷ ad spend and ignores margin, so it can mislead if margins are thin.
+        </p>
+        <h3>Payback period</h3>
+        <p>
+          Payback indicates how quickly returns cover costs. A payback &gt; 1.0× means the campaign returned more than it cost; shorter periods reduce capital risk.
+        </p>
+        <h3>Time value (NPV, IRR)</h3>
+        <p>
+          For multi‑period investments, use discounted cash flows. Net Present Value (NPV) and Internal Rate of Return (IRR) incorporate the time value of money and are more robust than simple ROI.
+        </p>
+        <h3>Step‑by‑step example</h3>
+        <p>
+          Cost = $10,000, Return = $13,000 → Net profit = $3,000, ROI = $3,000 ÷ $10,000 × 100% = 30%, Payback = $13,000 ÷ $10,000 = 1.3×.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -120,6 +140,8 @@ export default function RoiCalculatorTool() {
             { '@type': 'Question', name: 'What is ROI?', acceptedAnswer: { '@type': 'Answer', text: 'Return on Investment compares net profit to investment cost to evaluate efficiency.' } },
             { '@type': 'Question', name: 'How do I calculate ROI?', acceptedAnswer: { '@type': 'Answer', text: 'ROI = (Return − Cost) ÷ Cost × 100%.' } },
             { '@type': 'Question', name: 'When is ROI useful?', acceptedAnswer: { '@type': 'Answer', text: 'Use ROI to compare initiatives, prioritize budgets, and track campaign efficiency.' } },
+            { '@type': 'Question', name: 'What is the difference between ROI, ROMI, and ROAS?', acceptedAnswer: { '@type': 'Answer', text: 'ROI is overall investment efficiency, ROMI uses margin to convert attributed revenue to profit, and ROAS is revenue ÷ ad spend without margin.' } },
+            { '@type': 'Question', name: 'Is 30% ROI good?', acceptedAnswer: { '@type': 'Answer', text: 'It depends on risk, payback period, and opportunity cost. Compare against your hurdle rate and alternatives.' } },
           ],
         })}
       </script>

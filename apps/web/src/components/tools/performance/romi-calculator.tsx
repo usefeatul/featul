@@ -120,6 +120,25 @@ export default function RomiCalculatorTool() {
         <p>
           Attribution and margin accuracy are critical. Consider lag effects and non‑direct benefits like brand lift.
         </p>
+        <h3>Formula</h3>
+        <p>
+          Incremental profit = Attributed revenue × Gross margin. ROMI = (Incremental profit − Spend) ÷ Spend × 100%. Revenue‑to‑spend ratio = Attributed revenue ÷ Spend.
+        </p>
+        <h3>ROMI vs ROAS vs ROI</h3>
+        <p>
+          ROAS focuses on revenue per dollar of ad spend (revenue ÷ spend) and ignores margin. ROMI incorporates margin to reflect profit. ROI applies more broadly to any investment and can include fixed costs beyond marketing.
+        </p>
+        <h3>Attribution and incremental lift</h3>
+        <p>
+          Accurate ROMI depends on incremental effects, not just correlated revenue. Use experiments or causal modeling to separate true lift from baseline demand and halo effects.
+        </p>
+        <h3>Best practices and pitfalls</h3>
+        <ul>
+          <li>Use consistent margin assumptions by product mix and channel.</li>
+          <li>Account for time lags and repeat purchases where relevant.</li>
+          <li>Validate attribution with controlled tests or MMM.</li>
+          <li>Combine ROMI with payback and CLTV to guide scaling decisions.</li>
+        </ul>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -130,6 +149,8 @@ export default function RomiCalculatorTool() {
             { '@type': 'Question', name: 'What is ROMI?', acceptedAnswer: { '@type': 'Answer', text: 'ROMI evaluates campaign profitability by converting revenue to profit using gross margin.' } },
             { '@type': 'Question', name: 'How do I calculate ROMI?', acceptedAnswer: { '@type': 'Answer', text: 'ROMI = (Incremental Profit − Spend) ÷ Spend × 100%.' } },
             { '@type': 'Question', name: 'Why is margin used?', acceptedAnswer: { '@type': 'Answer', text: 'Margin converts revenue to profit, focusing ROMI on true economic return.' } },
+            { '@type': 'Question', name: 'How is ROMI different from ROAS?', acceptedAnswer: { '@type': 'Answer', text: 'ROAS is revenue ÷ ad spend and ignores margin; ROMI incorporates margin to estimate profit.' } },
+            { '@type': 'Question', name: 'How do I measure incremental lift?', acceptedAnswer: { '@type': 'Answer', text: 'Use holdouts, geo experiments, or causal models (MMM) to estimate lift beyond baseline demand.' } },
           ],
         })}
       </script>

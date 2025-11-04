@@ -92,6 +92,30 @@ export default function EngagementRateTool() {
         <p>
           Interaction definitions vary by platform. Normalize by content type and audience segment for fair comparisons.
         </p>
+        <h3>Formula</h3>
+        <p>
+          Engagement rate = Engagements ÷ Impressions × 100%. Engagements per 1,000 impressions = Engagements ÷ Impressions × 1,000.
+        </p>
+        <h3>What counts as an engagement?</h3>
+        <p>
+          Depending on platform, engagements may include likes, comments, shares, clicks, saves, video plays, or dwell time. Define a consistent set for comparison.
+        </p>
+        <h3>Benchmarks</h3>
+        <p>
+          Typical ranges vary: organic social posts might see 0.5–2% engagement, paid campaigns differ by objective. Focus on relative trends within your audience and content type.
+        </p>
+        <h3>How to increase engagement</h3>
+        <ul>
+          <li>Write clear, audience‑specific headlines and CTAs.</li>
+          <li>Use visuals and storytelling tailored to each platform.</li>
+          <li>Post consistently and at optimal times for your audience.</li>
+          <li>Encourage interaction (questions, polls) and respond to comments.</li>
+          <li>Test formats (video, carousel) and iterate on winners.</li>
+        </ul>
+        <h3>Example</h3>
+        <p>
+          If a post receives 3,500 engagements from 100,000 impressions, rate = 3,500 ÷ 100,000 × 100% = 3.5%. Engagements per 1k = 35.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -101,6 +125,8 @@ export default function EngagementRateTool() {
           mainEntity: [
             { '@type': 'Question', name: 'How is engagement rate calculated?', acceptedAnswer: { '@type': 'Answer', text: 'Engagement rate = Engagements ÷ Impressions × 100%.' } },
             { '@type': 'Question', name: 'What counts as an engagement?', acceptedAnswer: { '@type': 'Answer', text: 'Interactions such as likes, comments, shares, clicks, or saves.' } },
+            { '@type': 'Question', name: 'What is a good engagement rate?', acceptedAnswer: { '@type': 'Answer', text: 'It varies by platform and content type; benchmark against your historical performance and audience.' } },
+            { '@type': 'Question', name: 'How can I improve engagement?', acceptedAnswer: { '@type': 'Answer', text: 'Publish relevant content, optimize timing and CTAs, use platform‑native formats, and iterate via testing.' } },
           ],
         })}
       </script>
