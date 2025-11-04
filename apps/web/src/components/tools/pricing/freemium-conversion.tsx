@@ -142,6 +142,26 @@ export default function FreemiumConversionTool() {
         <p>
           Rates vary by cohort and can be correlated. Use cohort analysis and experimentation to validate assumptions.
         </p>
+        <h3>Formula</h3>
+        <p>
+          Overall freemium conversion rate = <strong>activation × paywall exposure × purchase</strong>. Improving earlier stages amplifies downstream paid conversions.
+        </p>
+        <h3>Benchmarks</h3>
+        <p>
+          Activation can range 30–70% depending on onboarding quality; paywall exposure 30–60% based on gating strategy; purchase 1–8% by segment and price. Treat these as directional and test for your audience.
+        </p>
+        <h3>Stage optimization ideas</h3>
+        <p>
+          Activation: guided setup, shortcuts, templates. Paywall: value‑based gating, progressive limits, timely prompts. Purchase: contextual upsells, annual discounts, usage‑based price metrics aligned to value.
+        </p>
+        <h3>Common pitfalls</h3>
+        <p>
+          Gating too early (blocking value discovery), gating too late (low urgency), overly generic upgrade prompts, and ignoring cohort differences. Measure retention alongside conversion to avoid churn‑prone upgrades.
+        </p>
+        <h3>Step‑by‑step example</h3>
+        <p>
+          Signups S = 10,000. Activation A = 60% ⇒ 6,000 activated. Paywall exposure E = 50% ⇒ 3,000 hits. Purchase P = 5% ⇒ 150 paid conversions. Overall = A × E × P = 1.5%.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -159,26 +179,34 @@ export default function FreemiumConversionTool() {
             },
             {
               '@type': 'Question',
-              name: 'What should I optimize first?',
+              name: 'What is a good freemium conversion rate?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Start with activation; improvements cascade and raise all downstream conversion counts.'
+                text: 'Ranges vary widely by product; many PLG products see 0.5–5% overall. Focus on improving activation first, then paywall exposure, then purchase.'
               }
             },
             {
               '@type': 'Question',
-              name: 'How do I use the freemium calculator?',
+              name: 'Where should I place the paywall?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Enter signups and stage rates for activation, paywall exposure, and purchase. The tool outputs overall conversion and expected paid conversions.'
+                text: 'Gate high‑value moments after value discovery (e.g., limits, premium features). Avoid blocking core setup before first value.'
               }
             },
             {
               '@type': 'Question',
-              name: 'What are typical limitations?',
+              name: 'Trial vs. freemium?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Rates vary by cohort and are often correlated; treat outputs as directional and validate with experiments.'
+                text: 'Trials add urgency for complex products; freemium suits habitual, self‑serve use. Many products combine both via free tier plus premium trial prompts.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'How do I validate improvements?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Use cohort analysis, randomized experiments, and track retention and upgrade quality to ensure durable gains.'
               }
             }
           ]

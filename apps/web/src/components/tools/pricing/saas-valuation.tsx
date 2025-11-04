@@ -132,6 +132,22 @@ export default function SaasValuationTool() {
         <p>
           Multiples are market‑driven and can change rapidly. This model ignores debt, cash, and detailed DCF analysis; treat it as a quick triangulation.
         </p>
+        <h3>Growth and quality factors</h3>
+        <p>
+          Higher growth, strong gross margin, and high NRR (e.g., 120%+) typically support higher EV/ARR multiples. Efficiency (e.g., burn multiple, Rule of 40) also influences ranges.
+        </p>
+        <h3>Multiples vs. DCF</h3>
+        <p>
+          Multiples quickly triangulate value using market comps; discounted cash flow (DCF) incorporates time value and profitability paths. Use both for a more robust view.
+        </p>
+        <h3>Sensitivity and ranges</h3>
+        <p>
+          Present ranges (e.g., 7–9×) rather than point estimates. Document assumptions on growth, margin, retention, and market conditions to contextualize where you land in the band.
+        </p>
+        <h3>Best practices</h3>
+        <p>
+          Build a comps set, adjust for your profile, check EV/ARR and EV/Revenue, and reconcile with DCF. Highlight cash and debt adjustments separately.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -152,7 +168,7 @@ export default function SaasValuationTool() {
               name: 'What affects multiples?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Growth, gross margin, retention, profitability, and market sentiment typically drive multiple ranges.'
+                text: 'Growth, gross margin, net dollar retention, profitability, efficiency, and market sentiment typically drive multiple ranges.'
               }
             },
             {
@@ -160,15 +176,23 @@ export default function SaasValuationTool() {
               name: 'How should I pick the multiple?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Use public comps, private transaction reports, and adjust for your growth, margin, and retention profile.'
+                text: 'Use public comps and private transaction reports; adjust for your growth, margin, and retention profile and present a range.'
               }
             },
             {
               '@type': 'Question',
-              name: 'What are limitations of multiple-based valuation?',
+              name: 'Multiples vs. DCF?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'It is market-driven and ignores cash, debt, and discounted cash flow detail. Treat as a directional range.'
+                text: 'Multiples are quick market-based benchmarks; DCF incorporates time value and profit trajectories. Use both for triangulation.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'Do I adjust for cash and debt?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Yes. Enterprise value typically equals equity value plus debt minus cash; consider these adjustments when reconciling to equity value.'
               }
             }
           ]

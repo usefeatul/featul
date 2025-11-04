@@ -161,6 +161,22 @@ export default function TierPricingOptimizerTool() {
         <p>
           Shares are estimates and can shift with packaging. Consider adding an enterprise tier or add‑ons if top segments are constrained.
         </p>
+        <h3>Design principles</h3>
+        <p>
+          Good‑better‑best tiering, clear price fences (limits, features, SLAs), and decoy tiers can nudge selection. Keep tiers simple and value‑aligned.
+        </p>
+        <h3>Benchmarks</h3>
+        <p>
+          Many products see mixes around 50–35–15 or 60–30–10 (basic/standard/premium). Your mix should evolve with packaging and segment focus.
+        </p>
+        <h3>Common pitfalls</h3>
+        <p>
+          Overlapping tiers, confusing limits, underpriced premium plans, and excessive complexity. Monitor upgrade quality and churn across tiers.
+        </p>
+        <h3>Step‑by‑step check</h3>
+        <p>
+          Normalize shares to sum to 100%, compute weighted ARPU, and multiply by signups. Test alternative price points and feature fences to observe share shifts.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -178,26 +194,34 @@ export default function TierPricingOptimizerTool() {
             },
             {
               '@type': 'Question',
-              name: 'What is ARPU?',
+              name: 'How many tiers should I offer?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Average revenue per user across the mix of tiers.'
+                text: 'Three tiers (good‑better‑best) is a common starting point; add enterprise and/or add‑ons when segment needs diverge.'
               }
             },
             {
               '@type': 'Question',
-              name: 'How do I optimize tier pricing?',
+              name: 'What is a decoy tier?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Test price points, adjust feature differentiation, and monitor share shifts to move customers to higher-value tiers.'
+                text: 'A tier intentionally less attractive to make the middle or premium tier appear more valuable by comparison.'
               }
             },
             {
               '@type': 'Question',
-              name: 'What are common limits of this model?',
+              name: 'Add‑ons vs. tiers?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Assumes fixed shares and three tiers; in practice, shares shift with packaging, and enterprise deals may sit outside tiers.'
+                text: 'Use tiers for core value bundles; add‑ons for specialized needs (advanced features, higher limits). Avoid overlapping benefits.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'Should I grandfather existing customers?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Grandfathering reduces churn during price changes; offer upgrade paths with clear added value for new prices.'
               }
             }
           ]

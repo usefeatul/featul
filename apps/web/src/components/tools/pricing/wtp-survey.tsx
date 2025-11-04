@@ -120,6 +120,18 @@ export default function WtpSurveyTool() {
         <p>
           Surveys can suffer bias. Combine WTP with observed behavior (trials, upgrades) and revisit as value evolves.
         </p>
+        <h3>Methodologies</h3>
+        <p>
+          Van Westendorp (too cheap/cheap/expensive/too expensive), Gabor‑Granger discrete choice, and conjoint analysis help estimate WTP and sensitivity across features and price levels.
+        </p>
+        <h3>Sampling & bias</h3>
+        <p>
+          Use representative samples, avoid leading questions, and watch for outliers. Consider trimming extremes and bootstrapping to stabilize estimates.
+        </p>
+        <h3>From survey to pricing</h3>
+        <p>
+          Use the interquartile band as a corridor, then test prices against actual behavior. Segment by persona to tailor tiers and price fences.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -153,10 +165,18 @@ export default function WtpSurveyTool() {
             },
             {
               '@type': 'Question',
-              name: 'How should I use WTP data?',
+              name: 'Van Westendorp vs. Gabor-Granger?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Use the interquartile band as a pricing corridor and pair with observed behavior and segmentation.'
+                text: 'Van Westendorp uses four price perception questions; Gabor-Granger tests discrete price choices. Conjoint adds feature trade-offs.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'How many responses do I need?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Aim for 100+ representative responses; more is better for stable estimates. Use bootstrapping when samples are smaller.'
               }
             }
           ]

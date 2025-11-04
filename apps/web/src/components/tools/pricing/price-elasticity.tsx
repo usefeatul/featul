@@ -154,6 +154,26 @@ export default function PriceElasticityTool() {
         <p>
           Run A/B price tests, segment customers by value, and analyze cross‑elasticity for bundles or tiers. Pair elasticity analysis with contribution margin to avoid chasing volume at the expense of profit.
         </p>
+        <h3>Arc vs. point elasticity</h3>
+        <p>
+          Point elasticity uses two specific points; arc (midpoint) elasticity averages changes between points to reduce bias from base selection. For small changes, both are similar; for larger changes, arc is often preferred.
+        </p>
+        <h3>Benchmarks</h3>
+        <p>
+          Many B2B SaaS products exhibit inelastic demand near list price (|E| &lt; 1), especially for essential workflows. Consumer goods often show more elastic behavior, and promos can temporarily increase elasticity.
+        </p>
+        <h3>Revenue vs. profit</h3>
+        <p>
+          A price increase may raise revenue with inelastic demand, but margins and churn risk also matter. Combine elasticity with contribution margin and retention data before making large changes.
+        </p>
+        <h3>Pricing psychology</h3>
+        <p>
+          Charm pricing (e.g., $29 vs. $30), anchoring via tier ladders, and bundling can shift perceived value and effective elasticity without changing cost structure.
+        </p>
+        <h3>Step‑by‑step check</h3>
+        <p>
+          Compute %ΔP and %ΔQ, then divide to get elasticity. Classify sensitivity, compare baseline vs. new revenue, and assess profit impact before rollout.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -171,26 +191,34 @@ export default function PriceElasticityTool() {
             },
             {
               '@type': 'Question',
-              name: 'How do I interpret elasticity values?',
+              name: 'When does increasing price raise revenue?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Elastic (>1) means quantity responds more than price; inelastic (<1) means quantity responds less; around 1 is unit elastic.'
+                text: 'If demand is inelastic (|E| < 1), moderate price increases can raise revenue. Always check margin and retention risk.'
               }
             },
             {
               '@type': 'Question',
-              name: 'How do I use the elasticity calculator?',
+              name: 'Arc vs. point elasticity?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Enter a baseline price and quantity and a new price and quantity (from tests or estimates). The calculator returns elasticity, sensitivity classification, and revenue impact.'
+                text: 'Arc (midpoint) elasticity averages changes between points to reduce base bias; point elasticity uses the change relative to a single baseline.'
               }
             },
             {
               '@type': 'Question',
-              name: 'What are common limitations?',
+              name: 'How many data points do I need?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Elasticity varies by segment and over time. Two-point estimates ignore non-linear demand curves, competitive responses, and external factors like seasonality.'
+                text: 'Two points provide a rough estimate; more points across different price levels help fit a demand curve and improve accuracy.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'How do I account for seasonality?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Run tests over comparable periods and segment by channel or cohort; use time series controls for seasonal variation.'
               }
             }
           ]

@@ -130,6 +130,22 @@ export default function ValueBasedPricingTool() {
         <p>
           WTP varies by segment and context. Use robust sampling, avoid anchoring bias, and revisit inputs as product value changes.
         </p>
+        <h3>WTP methods</h3>
+        <p>
+          Use Van Westendorp Price Sensitivity Meter (too cheap/cheap/expensive/too expensive), Gabor‑Granger discrete choices, or conjoint analysis to estimate WTP and drivers of value.
+        </p>
+        <h3>Choosing a price metric</h3>
+        <p>
+          Align pricing units to customer value (per seat, per usage, per feature). The right metric increases fairness and improves upgrade paths.
+        </p>
+        <h3>Communicating value</h3>
+        <p>
+          Clearly tie price to outcomes (time saved, revenue gained, risk reduced). Anchoring benefits improves acceptance at value‑based price points.
+        </p>
+        <h3>Best practices</h3>
+        <p>
+          Segment by cohort, test tier ladders, set floor prices, and revisit WTP periodically as product value evolves.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -147,6 +163,22 @@ export default function ValueBasedPricingTool() {
             },
             {
               '@type': 'Question',
+              name: 'How do I measure WTP?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Use Van Westendorp, Gabor-Granger, or conjoint studies to estimate willingness to pay and value drivers.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'How do I choose a price metric?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Pick a unit aligned to realized value (per seat, per usage, per feature) to improve fairness and upgrade paths.'
+              }
+            },
+            {
+              '@type': 'Question',
               name: 'How do I use the calculator?',
               acceptedAnswer: {
                 '@type': 'Answer',
@@ -155,18 +187,10 @@ export default function ValueBasedPricingTool() {
             },
             {
               '@type': 'Question',
-              name: 'Why does value-based pricing matter?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'It aligns price with customer-perceived benefits, improving revenue quality and retention.'
-              }
-            },
-            {
-              '@type': 'Question',
               name: 'What are common pitfalls?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Poor WTP sampling, anchoring bias, ignoring segment differences, and setting prices above perceived value.'
+                text: 'Poor sampling, anchoring bias, ignoring segments, and setting prices above perceived value; revisit WTP as product value evolves.'
               }
             }
           ]

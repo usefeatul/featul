@@ -159,6 +159,34 @@ export default function DiscountImpactTool() {
         <p>
           Uplift estimates are context‑dependent. Watch for fatigue, anchoring to sale prices, and cannibalization of full‑price purchases.
         </p>
+        <h3>Formula</h3>
+        <p>
+          Baseline revenue per visitor is <strong>P × C</strong>, where P is price and C is conversion rate. After a discount <strong>d</strong> and conversion uplift <strong>u</strong>, revenue becomes <strong>P × (1 − d) × C × (1 + u)</strong>.
+        </p>
+        <h3>Break‑even uplift</h3>
+        <p>
+          To break even, set new revenue ≥ baseline: (1 − d)(1 + u) ≥ 1 ⇒ 1 + u ≥ 1 ÷ (1 − d) ⇒ <strong>u ≥ d ÷ (1 − d)</strong>. For a 20% discount, the required uplift is 25%.
+        </p>
+        <h3>Margin considerations</h3>
+        <p>
+          Discounts reduce unit margin. If variable cost is meaningful, pair this analysis with contribution margin to ensure promotions don’t drive high‑volume, low‑profit outcomes.
+        </p>
+        <h3>Benchmarks & scenarios</h3>
+        <p>
+          Small time‑boxed discounts (5–15%) often yield modest uplift in low‑ticket B2C. In B2B SaaS, discounts are typically used for annual prepay or multi‑seat deals rather than public promos; measure incrementality and guard against price anchoring.
+        </p>
+        <h3>Common pitfalls</h3>
+        <p>
+          Overusing discounts, stacking coupons, confusing terms (net vs. gross), and ignoring cannibalization from pulling forward demand can misstate true impact.
+        </p>
+        <h3>Step‑by‑step example</h3>
+        <p>
+          Baseline: P = $30, C = 4% ⇒ $1.20 per visitor. Promo: d = 20% ⇒ price $24; uplift u = 25% ⇒ conversion 5%. New revenue = $24 × 5% = $1.20. Break‑even condition holds (u = 25% = d ÷ (1 − d)).
+        </p>
+        <h3>Best practices</h3>
+        <p>
+          Use discount ladders for targeted segments, time‑box promotions, set floor prices, and monitor net lift via A/B testing. Consider value‑based incentives (add‑ons, extended trials) to avoid brand erosion.
+        </p>
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
@@ -171,31 +199,47 @@ export default function DiscountImpactTool() {
               name: 'How do discounts affect revenue?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Discounts lower price but may raise conversion; the net effect depends on uplift magnitude.'
+                text: 'Discounts lower price but may raise conversion; the net effect depends on uplift magnitude and margin.'
               }
             },
             {
               '@type': 'Question',
-              name: 'What baseline should I use?',
+              name: 'What conversion uplift is needed to break even?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Use typical price and conversion for your audience; test for seasonality.'
+                text: 'Break-even uplift u satisfies (1−d)(1+u) ≥ 1, so u ≥ d/(1−d). For a 20% discount, uplift must be at least 25%.'
               }
             },
             {
               '@type': 'Question',
-              name: 'How do I use the discount impact calculator?',
+              name: 'How should I set baselines for analysis?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Input base price and conversion with discount percentage and expected uplift to compute new revenue per 1,000 visitors.'
+                text: 'Use typical price and conversion for the same audience and season; validate via A/B tests where possible.'
               }
             },
             {
               '@type': 'Question',
-              name: 'What are common pitfalls of promotions?',
+              name: 'Do discounts hurt margins?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Overuse can anchor buyers to sale prices, reduce perceived value, and cannibalize full-price purchases.'
+                text: 'Yes, discounts reduce unit margin. Pair this with contribution margin analysis to ensure promotions remain profitable.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'Should I stack coupons or run continuous promos?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Avoid continual discounting and stacking; it anchors perceived value to sale prices and can cannibalize full-price purchases.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'How do I measure true uplift?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Use randomized A/B tests, segment analysis, and consider pull-forward demand to isolate incremental conversions.'
               }
             }
           ]
