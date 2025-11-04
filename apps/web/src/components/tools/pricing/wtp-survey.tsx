@@ -60,7 +60,7 @@ export default function WtpSurveyTool() {
             <CardTitle>Count</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">{count}</div>
+            <div className="text-xl font-semibold">{count}</div>
             <div className="text-sm text-muted-foreground">responses</div>
           </CardContent>
         </Card>
@@ -69,7 +69,7 @@ export default function WtpSurveyTool() {
             <CardTitle>Mean</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">{formatCurrencyExact(mean)}</div>
+            <div className="text-xl font-semibold">{formatCurrencyExact(mean)}</div>
             <div className="text-sm text-muted-foreground">average price</div>
           </CardContent>
         </Card>
@@ -78,7 +78,7 @@ export default function WtpSurveyTool() {
             <CardTitle>Median</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">{formatCurrencyExact(median ?? 0)}</div>
+            <div className="text-xl font-semibold">{formatCurrencyExact(median ?? 0)}</div>
             <div className="text-sm text-muted-foreground">middle of distribution</div>
           </CardContent>
         </Card>
@@ -86,8 +86,10 @@ export default function WtpSurveyTool() {
           <CardHeader>
             <CardTitle>Recommended Band</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">{formatCurrencyExact(p25)} – {formatCurrencyExact(p75)}</div>
+          <CardContent className="flex flex-col items-start gap-1">
+            <div className="text-xl font-semibold leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+              {formatCurrencyExact(p25)} – {formatCurrencyExact(p75)}
+            </div>
             <div className="text-sm text-muted-foreground">interquartile range</div>
           </CardContent>
         </Card>
