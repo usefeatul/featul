@@ -4,6 +4,8 @@ import { getPosts } from "@/lib/query"
 import { BlogCard } from "@/components/blog/blog-card"
 import type { MarblePostListResponse } from "@/types/marble"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Blog",
   description: "Insights, updates, and engineering stories from the team.",

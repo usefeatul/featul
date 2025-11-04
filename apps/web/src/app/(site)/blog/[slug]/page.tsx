@@ -6,6 +6,8 @@ import type { MarblePostResponse } from "@/types/marble"
 import { SinglePost } from "@/components/blog/single-post"
 import CTA from "@/components/home/cta"
 
+export const dynamic = "force-dynamic"
+
 
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
