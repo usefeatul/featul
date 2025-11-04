@@ -13,6 +13,9 @@ import RetentionRateTool from '../components/tools/customer/retention-rate'
 import CustomerCohortsTool from '../components/tools/customer/customer-cohorts'
 import FeatureAdoptionTool from '../components/tools/product/feature-adoption'
 import CohortAnalysisTool from '../components/tools/product/cohort-analysis'
+import StickinessCalculator from '../components/tools/product/stickiness-calculator'
+import TtfvCalculator from '../components/tools/product/ttfv-calculator'
+import FeatureUsageFrequency from '../components/tools/product/feature-usage-frequency'
 import RunwayTool from '../components/tools/finance/runway'
 import GrossMarginTool from '../components/tools/finance/gross-margin'
 import BurnRateTool from '../components/tools/finance/burn-rate'
@@ -41,6 +44,9 @@ export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
   'product-feature-analytics': {
     'feature-adoption-calculator': FeatureAdoptionTool,
     'cohort-analysis': CohortAnalysisTool,
+    'stickiness-calculator': StickinessCalculator,
+    'ttfv-calculator': TtfvCalculator,
+    'feature-usage-frequency': FeatureUsageFrequency,
   },
   'revenue-growth': {
     'mrr-calculator': MrrTool,

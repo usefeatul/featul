@@ -1,6 +1,7 @@
 export const NEW_TOOL_SLUGS = new Set<string>([
-  "feature-adoption-calculator",
-  "cohort-analysis",
+  "stickiness-calculator",
+  "ttfv-calculator",
+  "feature-usage-frequency",
 ])
 
 export function isToolNew(slug: string) {

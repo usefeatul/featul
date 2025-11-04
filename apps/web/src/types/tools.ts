@@ -30,12 +30,28 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         slug: 'feature-adoption-calculator',
         name: 'Feature Adoption',
         description: 'Estimate feature adoption rates by cohort.',
-        isNew: true,
       },
       {
         slug: 'cohort-analysis',
         name: 'Cohort Analysis',
         description: 'Analyze retention by signup month and usage.',
+      },
+      {
+        slug: 'stickiness-calculator',
+        name: 'Stickiness',
+        description: 'Estimate DAU/MAU stickiness to gauge habit formation.',
+        isNew: true,
+      },
+      {
+        slug: 'ttfv-calculator',
+        name: 'Time to First Value (TTFV)',
+        description: 'Measure the share of new users achieving first value within a window.',
+        isNew: true,
+      },
+      {
+        slug: 'feature-usage-frequency',
+        name: 'Feature Usage Frequency',
+        description: 'Calculate average feature uses per active user in a period.',
         isNew: true,
       },
     ],
@@ -50,6 +66,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         slug: 'mrr-calculator',
         name: 'MRR calculator',
         description: 'Compute monthly recurring revenue and model growth.',
+        isNew: true,
         contentSections: [
           { title: 'What is MRR?', body: 'Monthly Recurring Revenue (MRR) measures predictable subscription revenue within a month.' },
           { title: 'Basic formula', body: 'MRR = Sum of all active subscription revenue for the month', code: 'MRR = sum(active subscriptions for the month)' },
@@ -80,6 +97,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         slug: 'nps-calculator',
         name: 'NPS calculator',
         description: 'Compute Net Promoter Score by cohort.',
+        isNew: true,
         contentSections: [
           { title: 'What is NPS?', body: 'Net Promoter Score (NPS) measures customer loyalty based on 0–10 ratings.' },
           { title: 'Calculation', body: 'NPS = % Promoters (9–10) − % Detractors (0–6)' },
@@ -114,6 +132,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
     slug: 'pricing-valuation',
     name: 'Pricing & Valuation',
     description: 'Analyze pricing strategies and estimate enterprise value.',
+    isNew: true,
     tools: [
       { slug: 'price-elasticity', name: 'Price Elasticity', description: 'Estimate demand sensitivity to price changes.' },
       { slug: 'value-based-pricing', name: 'Value-based Pricing', description: 'Price according to perceived customer value.' },
