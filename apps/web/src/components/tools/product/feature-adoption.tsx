@@ -1,11 +1,11 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import BackLink from "@/components/tools/backlink"
+import BackLink from "@/components/tools/global/backlink"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from "@feedgot/ui/components/card"
 import { Label } from "@feedgot/ui/components/label"
 import { Input } from "@feedgot/ui/components/input"
-import { Badge } from "@feedgot/ui/components/badge"
+import StatusBadge from "@/components/tools/global/status-badge"
 import { Button } from "@feedgot/ui/components/button"
 import { Plus, Trash } from "lucide-react"
 
@@ -44,7 +44,7 @@ export default function FeatureAdoptionTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card>
+        <Card className="bg-muted">
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>
@@ -68,8 +68,9 @@ export default function FeatureAdoptionTool() {
                     <Label htmlFor={`size-${i}`}>Cohort size</Label>
                     <Input
                       id={`size-${i}`}
-                      type="number"
-                      min={0}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={isFinite(c.size) ? c.size : 0}
                       onChange={(e) => updateCohort(i, { size: Number(e.target.value) })}
                     />
@@ -78,8 +79,9 @@ export default function FeatureAdoptionTool() {
                     <Label htmlFor={`adopted-${i}`}>Adopted</Label>
                     <Input
                       id={`adopted-${i}`}
-                      type="number"
-                      min={0}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={isFinite(c.adopted) ? c.adopted : 0}
                       onChange={(e) => updateCohort(i, { adopted: Number(e.target.value) })}
                     />
@@ -87,7 +89,7 @@ export default function FeatureAdoptionTool() {
                   <div className="flex justify-end self-end">
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="destructive"
                       size="sm"
                       onClick={() => setCohorts((prev) => prev.filter((_, idx) => idx !== i))}
                       aria-label={`Remove cohort ${i + 1}`}
@@ -103,12 +105,12 @@ export default function FeatureAdoptionTool() {
             <div className="text-sm text-zinc-500">
               Overall adoption <span className="font-mono ml-1 text-foreground">{formatPct(totals.rate)}</span>
             </div>
-            <Badge variant="outline">{totals.status}</Badge>
+            <StatusBadge status={totals.status as any} />
           </CardFooter>
         </Card>
 
       {/* Summary card stacked below inputs */}
-        <Card>
+        <Card className="bg-muted">
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Overall adoption across cohorts. Tiles show key metrics.</CardDescription>

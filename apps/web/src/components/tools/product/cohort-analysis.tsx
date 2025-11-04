@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import BackLink from "@/components/tools/backlink";
+import BackLink from "@/components/tools/global/backlink";
 import {
   Card,
   CardHeader,
@@ -61,7 +61,7 @@ export default function CohortAnalysisTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card>
+        <Card className="bg-muted">
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>
@@ -94,8 +94,9 @@ export default function CohortAnalysisTool() {
                     <Label htmlFor={`size-${i}`}>Cohort size</Label>
                     <Input
                       id={`size-${i}`}
-                      type="number"
-                      min={0}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={isFinite(c.size) ? c.size : 0}
                       onChange={(e) =>
                         update(i, { size: Number(e.target.value) })
@@ -106,9 +107,9 @@ export default function CohortAnalysisTool() {
                     <Label htmlFor={`m1-${i}`}>M1 %</Label>
                     <Input
                       id={`m1-${i}`}
-                      type="number"
-                      min={0}
-                      max={100}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={isFinite(c.m1) ? c.m1 : 0}
                       onChange={(e) =>
                         update(i, { m1: Number(e.target.value) })
@@ -119,9 +120,9 @@ export default function CohortAnalysisTool() {
                     <Label htmlFor={`m2-${i}`}>M2 %</Label>
                     <Input
                       id={`m2-${i}`}
-                      type="number"
-                      min={0}
-                      max={100}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={isFinite(c.m2) ? c.m2 : 0}
                       onChange={(e) =>
                         update(i, { m2: Number(e.target.value) })
@@ -132,9 +133,9 @@ export default function CohortAnalysisTool() {
                     <Label htmlFor={`m3-${i}`}>M3 %</Label>
                     <Input
                       id={`m3-${i}`}
-                      type="number"
-                      min={0}
-                      max={100}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={isFinite(c.m3) ? c.m3 : 0}
                       onChange={(e) =>
                         update(i, { m3: Number(e.target.value) })
@@ -144,7 +145,7 @@ export default function CohortAnalysisTool() {
                   <div className="flex justify-end self-end">
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="destructive"
                       size="sm"
                       onClick={() =>
                         setCohorts((prev) => prev.filter((_, idx) => idx !== i))
@@ -160,7 +161,7 @@ export default function CohortAnalysisTool() {
           </CardContent>
         </Card>
         {/* Summary card stacked below inputs */}
-        <Card>
+        <Card className="bg-muted">
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>

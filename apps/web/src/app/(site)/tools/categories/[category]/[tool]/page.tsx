@@ -4,8 +4,8 @@ import { notFound } from "next/navigation"
 import { Container } from "@/components/global/container"
 import { getCategoryBySlug, getToolBySlugs, getAllToolParams } from "@/types/tools"
 import { TOOL_COMPONENTS } from "@/types/registry"
-import ToolTemplate from "@/components/tools/template"
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@feedgot/ui/components/breadcrumb"
+import ToolTemplate from "@/components/tools/global/template"
+
 
 type Props = { params: Promise<{ category: string; tool: string }> }
 

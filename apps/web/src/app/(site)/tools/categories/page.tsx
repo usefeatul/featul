@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { Container } from "@/components/global/container"
-import CategoryList from "@/components/tools/category-list"
+import CategoryList from "@/components/tools/global/category-list"
 
 export const metadata: Metadata = {
   title: "All Tool Categories",

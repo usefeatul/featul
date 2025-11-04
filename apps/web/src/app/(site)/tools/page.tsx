@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Container } from "@/components/global/container"
 import { TOOL_CATEGORIES } from "@/types/tools"
-import CategoryList from "@/components/tools/category-list"
+import CategoryList from "@/components/tools/global/category-list"
 
 
 

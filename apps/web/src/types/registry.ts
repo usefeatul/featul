@@ -22,13 +22,20 @@ import PaybackPeriodTool from '../components/tools/finance/payback-period'
 import BreakEvenTool from '../components/tools/finance/break-even'
 import OpexRatioTool from '../components/tools/finance/opex-ratio'
 import RevenuePerEmployeeTool from '../components/tools/finance/revenue-per-employee'
-import PriceElasticityTool from '../components/tools/pricing-valuation/price-elasticity'
-import ValueBasedPricingTool from '../components/tools/pricing-valuation/value-based-pricing'
-import SaasValuationTool from '../components/tools/pricing-valuation/saas-valuation'
-import FreemiumConversionTool from '../components/tools/pricing-valuation/freemium-conversion'
-import DiscountImpactTool from '../components/tools/pricing-valuation/discount-impact'
-import TierPricingOptimizerTool from '../components/tools/pricing-valuation/tier-pricing-optimizer'
-import WtpSurveyTool from '../components/tools/pricing-valuation/wtp-survey'
+import PriceElasticityTool from '../components/tools/pricing/price-elasticity'
+import ValueBasedPricingTool from '../components/tools/pricing/value-based-pricing'
+import SaasValuationTool from '../components/tools/pricing/saas-valuation'
+import FreemiumConversionTool from '../components/tools/pricing/freemium-conversion'
+import DiscountImpactTool from '../components/tools/pricing/discount-impact'
+import TierPricingOptimizerTool from '../components/tools/pricing/tier-pricing-optimizer'
+import WtpSurveyTool from '../components/tools/pricing/wtp-survey'
+import RoiTool from '../components/tools/performance/roi-calculator'
+import RomiTool from '../components/tools/performance/romi-calculator'
+import ConversionRateTool from '../components/tools/performance/conversion-rate-calculator'
+import AbTestSignificanceTool from '../components/tools/performance/ab-test-significance'
+import CpaTool from '../components/tools/performance/cpa-calculator'
+import EngagementRateTool from '../components/tools/performance/engagement-rate'
+import FunnelConversionTool from '../components/tools/performance/funnel-conversion'
 
 export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
   'product-feature-analytics': {
@@ -70,5 +77,14 @@ export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
     'discount-impact': DiscountImpactTool,
     'tier-pricing-optimizer': TierPricingOptimizerTool,
     'willingness-to-pay': WtpSurveyTool,
+  },
+  'performance-roi': {
+    'roi-calculator': RoiTool,
+    'romi-calculator': RomiTool,
+    'conversion-rate-calculator': ConversionRateTool,
+    'ab-test-significance': AbTestSignificanceTool,
+    'cpa-calculator': CpaTool,
+    'engagement-rate': EngagementRateTool,
+    'funnel-conversion': FunnelConversionTool,
   },
 }

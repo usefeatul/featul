@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import BackLink from "@/components/tools/backlink";
+import BackLink from "@/components/tools/global/backlink";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@feedgot/ui/components/card";
 import { Label } from "@feedgot/ui/components/label";
 import { Input } from "@feedgot/ui/components/input";

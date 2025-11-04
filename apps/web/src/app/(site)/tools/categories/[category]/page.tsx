@@ -3,7 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Container } from "@/components/global/container"
 import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools"
-import ToolList from "@/components/tools/tool-list"
+import ToolList from "@/components/tools/global/tool-list"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@feedgot/ui/components/breadcrumb"
 
 type Props = { params: Promise<{ category: string }> }
