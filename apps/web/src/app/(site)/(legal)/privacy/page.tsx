@@ -12,8 +12,9 @@ export default function PrivacyPage() {
   return (
     <main>
       <Container withNavbarOffset maxWidth="6xl" className="pt-24 sm:pt-28 pb-12 px-4 sm:px-16 lg:px-20 xl:px-24">
-        <article className="prose prose-sm sm:prose-base prose-zinc dark:prose-invert">
-          <h1>Privacy Policy</h1>
+        <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
+          <article className="prose prose-sm sm:prose-base prose-zinc dark:prose-invert text-left prose-headings:text-left mx-auto">
+           <h1>Privacy Policy</h1>
           <p><strong>Last updated:</strong> 31 October 2025</p>
           <p>
             This Privacy Policy explains how <strong>feedgot</strong> ("feedgot", "we", "us", "our") collects, uses,
@@ -155,7 +156,8 @@ export default function PrivacyPage() {
             {" "}
             <a href="mailto:contact@feedgot.com" className="text-primary">contact@feedgot.com</a>.
           </p>
-        </article>
+          </article>
+        </div>
       </Container>
     </main>
   )
