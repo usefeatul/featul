@@ -3,6 +3,7 @@ export type FeatureSupport = boolean | 'partial'
 export interface ComparisonFeature {
   key: string
   label: string
+  description?: string
   feedgot: FeatureSupport
   competitor: FeatureSupport
 }
@@ -22,16 +23,16 @@ export interface Alternative {
 
 // Base features we commonly compare across tools
 const baseFeatures: Omit<ComparisonFeature, 'competitor'>[] = [
-  { key: 'eu_hosting', label: 'EU Hosting', feedgot: true },
-  { key: 'gdpr', label: 'GDPR Compliance', feedgot: true },
-  { key: 'feedback_boards', label: 'Feedback Boards', feedgot: true },
-  { key: 'feature_voting', label: 'Feature Voting', feedgot: true },
-  { key: 'public_roadmap', label: 'Public Roadmap', feedgot: true },
-  { key: 'changelog', label: 'Changelog', feedgot: true },
-  { key: 'embeddable_widget', label: 'Embeddable Widget', feedgot: true },
-  { key: 'api', label: 'API Access', feedgot: true },
-  { key: 'sso', label: 'SSO', feedgot: 'partial' },
-  { key: 'slack', label: 'Slack Integration', feedgot: true },
+  { key: 'eu_hosting', label: 'EU Hosting', description: 'Default EU data hosting and residency options. Keeps user data regional by default for compliance and performance.', feedgot: true },
+  { key: 'gdpr', label: 'GDPR Compliance', description: 'Built-in consent and data controls aligned with GDPR. Reduce legal overhead with sensible defaults and auditability.', feedgot: true },
+  { key: 'feedback_boards', label: 'Feedback Boards', description: 'Collect and organize user feedback in dedicated boards. Prioritize themes and requests with tags and status.', feedgot: true },
+  { key: 'feature_voting', label: 'Feature Voting', description: 'Let users upvote ideas to surface priorities. Balance qualitative comments with quantitative signals.', feedgot: true },
+  { key: 'public_roadmap', label: 'Public Roadmap', description: 'Share progress publicly with transparent planning. Keep stakeholders aligned with statuses and timelines.', feedgot: true },
+  { key: 'changelog', label: 'Changelog', description: 'Publish releases and updates with clean release notes. Auto-link roadmap items to close the loop.', feedgot: true },
+  { key: 'embeddable_widget', label: 'Embeddable Widget', description: 'Embed feedback capture directly in your app. Gather context without forcing users to switch surfaces.', feedgot: true },
+  { key: 'api', label: 'API Access', description: 'Integrate via API to automate and customize workflows. Sync issues, tags, and statuses with your tools.', feedgot: true },
+  { key: 'sso', label: 'SSO', description: 'Single sign-on support for secure, centralized authentication. Works with common identity providers.', feedgot: 'partial' },
+  { key: 'slack', label: 'Slack Integration', description: 'Receive notifications and triage feedback in Slack. Respond quickly and keep the team in the loop.', feedgot: true },
 ]
 
 function withCompetitor(

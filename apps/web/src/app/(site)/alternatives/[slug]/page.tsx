@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AlternativeHero } from "@/components/alternatives/hero";
 import FAQs from "@/components/home/faq";
-import ComparisonBento from "@/components/alternatives/comparison-bento";
-import ComparisonFeature from "@/components/alternatives/comparison-feature";
+import TLDR from "@/components/alternatives/tldr";
+import Compare from "@/components/alternatives/compare";
 import StatsSection from "@/components/home/cta";
 import { getAltDescription } from "@/types/descriptions";
 import { createArticleMetadata } from "@/lib/seo";
@@ -46,8 +46,8 @@ export default async function AlternativePage({
   return (
     <main className="min-h-screen pt-16">
       <AlternativeHero alt={alt} />
-      <ComparisonBento alt={alt} />
-      <ComparisonFeature alt={alt} />
+      <TLDR alt={alt} />
+      <Compare alt={alt} />
       <FAQs />
       <StatsSection />
     </main>
