@@ -8,7 +8,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
 
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
-      <section className="py-12">
+      <section className="py-2">
         <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
           <BookmarkIcon aria-hidden className="size-5 text-primary" />
           <h2 className="mt-6 text-foreground text-balance text-1xl sm:text-2xl font-semibold">

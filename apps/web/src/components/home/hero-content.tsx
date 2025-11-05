@@ -8,7 +8,7 @@ import { LiveDemo } from "../global/live-demo";
 
 export function HeroContent() {
   return (
-    <div className="mx-auto max-w-5xl lg:max-w-6xl px-0 sm:px-0 lg:px-0 text-left">
+    <div className="mx-auto max-w-5xl lg:max-w-6xl px-0 text-left">
       {/* Main heading */}
       <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-extrabold text-foreground text-balance">
         The

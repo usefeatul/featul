@@ -43,7 +43,7 @@ export default function Navbar() {
       )}
     >
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
-        <div className="flex items-center justify-between h-14">
+        <div className="mx-auto w-full max-w-6xl px-0 sm:px-6 flex items-center justify-between h-14">
           <Link
             href="/"
             aria-label="Go home"

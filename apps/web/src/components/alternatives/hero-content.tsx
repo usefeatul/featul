@@ -8,7 +8,7 @@ import { LiveDemo } from "@/components/global/live-demo";
 
 export function AlternativeHeroContent({ name, description }: { name: string; description?: string }) {
   return (
-    <div className="mx-auto max-w-5xl lg:max-w-6xl px-0 sm:px-0 lg:px-0 text-left mt-14 sm:mt-0">
+    <div className="mx-auto max-w-5xl lg:max-w-6xl text-left mt-14 sm:mt-0">
       {/* Main heading */}
       <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-extrabold text-foreground text-balance">
         The
