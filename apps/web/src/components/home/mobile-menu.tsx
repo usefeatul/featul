@@ -6,6 +6,7 @@ import { Logo } from "../global/logo";
 import { Button } from "@feedgot/ui/components/button";
 import { MenuIcon } from "@feedgot/ui/icons/menu";
 import { navigationConfig } from "@/config/homeNav";
+import { useIsMobile } from "@feedgot/ui/hooks/use-mobile";
 
 type MobileMenuProps = {
   open: boolean;
@@ -13,16 +14,18 @@ type MobileMenuProps = {
 };
 
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
+  const isMobile = useIsMobile();
+
   useEffect(() => {
-    if (!open) return;
+    if (!open || !isMobile) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev || "";
     };
-  }, [open]);
-
-  if (!open) return null;
+  }, [open, isMobile]);
+  // Only render on mobile when open
+  if (!open || !isMobile) return null;
 
   return (
     <div className="md:hidden fixed inset-0 z-[60] bg-background">
@@ -35,7 +38,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         <button
           type="button"
           aria-label="Close menu"
-          className="inline-flex items-center justify-center rounded-md p-2 bg-gray-100 hover:bg-gray-200"
+          className="inline-flex items-center justify-center rounded-lg p-2 bg-muted"
           onClick={onClose}
         >
           <MenuIcon width={22} height={22} className="text-foreground" />
