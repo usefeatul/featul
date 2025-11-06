@@ -1,5 +1,4 @@
 import { Container } from "../global/container";
-import { Separator } from "@feedgot/ui/components/separator";
 import { CollectIcon } from "@feedgot/ui/icons/collect";
 
 export default function Create() {
@@ -21,13 +20,12 @@ export default function Create() {
               <h3 className="mt-4 text-foreground text-lg font-medium">
                 Create workspace
               </h3>
-              <p className="text-zinc-500 mt-2 text-base leading-7">
+              <p className="text-zinc-500 mt-2 text-base leading-7 sm:max-w-[60ch]">
                 Sign up with just an email. Pick a name. That’s it. No credit
                 card, no sales call, no 47‑field form.
               </p>
             </div>
 
-            <Separator orientation="vertical" className="hidden sm:block mx-4 bg-muted/30" />
 
             {/* Step 2 */}
             <div className="sm:flex-1 sm:px-6">
@@ -37,13 +35,12 @@ export default function Create() {
               <h3 className="mt-4 text-foreground text-lg font-medium">
                 Add to your app
               </h3>
-              <p className="text-zinc-500 mt-2 text-base leading-7">
+              <p className="text-zinc-500 mt-2 text-base leading-7 sm:max-w-[60ch]">
                 Copy one line of code for the widget, or just share your board
                 link. Both work instantly.
               </p>
             </div>
 
-            <Separator orientation="vertical" className="hidden sm:block mx-4 bg-muted/30" />
 
             {/* Step 3 */}
             <div className="sm:flex-1 sm:px-6">
@@ -53,7 +50,7 @@ export default function Create() {
               <h3 className="mt-4 text-foreground text-lg font-medium">
                 Watch magic happen
               </h3>
-              <p className="text-zinc-500 mt-2 text-base leading-7">
+              <p className="text-zinc-500 mt-2 text-base leading-7 sm:max-w-[60ch]">
                 Users start submitting. Votes pile up. You ship features. Users
                 get notified. Churn drops.
               </p>

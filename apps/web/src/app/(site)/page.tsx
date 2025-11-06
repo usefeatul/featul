@@ -10,6 +10,7 @@ import BentoFeature from '@/components/home/bento-feature'
 import StatsSection from '@/components/home/cta'
 import Setup from '@/components/home/setup'
 import Create from '@/components/home/create'
+import Listening from '@/components/home/listening'
 
 
 export const metadata: Metadata = createPageMetadata({
@@ -24,9 +25,10 @@ export default function Home() {
     <main className="min-h-screen pt-16">
       <Hero />
       <BentoFeature />
-      <Feature />
       <Setup />
+      <Feature />
       <Create />
+      <Listening />
       <Faq />
       <StatsSection />
     </main>
