@@ -12,9 +12,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
   return (
     <div className="pointer-events-none absolute left-1/2 bottom-[1px] -translate-x-1/2 w-screen z-20">
       <div className="relative">
-        <div className="border-b border-border"></div>
-        <div className="absolute inset-x-0 -top-[2px] h-[2px] bg-background"></div>
-        <div className="absolute inset-x-0 top-[1px] h-[20px] bg-gray-50"></div>
+        <div className="absolute inset-x-0 -top-[2px] h-[15px] border-t border-border bg-background"></div>
       </div>
 
       <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
