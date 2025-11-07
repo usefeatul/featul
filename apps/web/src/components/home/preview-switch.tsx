@@ -26,7 +26,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
           <div role="group" aria-label="Preview feature" className="relative z-10 inline-flex items-center gap-3">
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               className={`${active === 'dashboard' ? 'bg-primary text-white border border-border' : 'bg-transparent text-muted-foreground hover:bg-white/70'} rounded-xl px-2`}
               onClick={() => onChange('dashboard')}
               aria-pressed={active === 'dashboard'}
@@ -35,7 +35,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               className={`${active === 'roadmap' ? 'bg-primary text-white border border-border' : 'bg-transparent text-muted-foreground hover:bg-white/70'} rounded-xl px-2`}
               onClick={() => onChange('roadmap')}
               aria-pressed={active === 'roadmap'}
@@ -44,7 +44,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               className={`${active === 'changelog' ? 'bg-primary text-white border border-border' : 'bg-transparent text-muted-foreground hover:bg-white/70'} rounded-xl px-2`}
               onClick={() => onChange('changelog')}
               aria-pressed={active === 'changelog'}
