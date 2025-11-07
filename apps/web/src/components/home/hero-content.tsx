@@ -13,16 +13,16 @@ export function HeroContent() {
       <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-extrabold text-foreground text-balance">
         The
         <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-0 text-primary leading-none align-middle">
-          simple and joyful
+          simple, fast and privacy-first
         </span>
-        <span className="block mt-0">open-source feedback alternative</span>
+        <span className="block mt-0">feedback alternative</span>
       </h1>
 
       {/* Subtitle */}
       <p className="mt-6 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-base sm:text-lg md:text-xl leading-relaxed text-accent text-balance">
-        Feedgot is a complete SaaS feedback platform featuring organized
-        feedback boards, auto-syncing roadmaps, self-writing changelogs, and
-        automated engagement loops
+        Feedgot focuses on what feedback tools overlook — transparent, simple,
+        privacy-first product feedback with organized boards, auto-syncing
+        roadmaps, and self-writing changelogs.
       </p>
 
       {/* CTAs */}
@@ -31,9 +31,15 @@ export function HeroContent() {
           href="/signup"
           hotkeyHref="https://dashboard.feedbot.com"
           className="w-full sm:w-auto"
+          label="Add to your website"
         />
         <LiveDemo className="w-full sm:w-auto text-accent" />
       </div>
+
+      {/* Reassurance microcopy */}
+      <p className="mt-3 text-xs sm:text-sm text-accent">
+        no credit card required. no obligation. quick setup.
+      </p>
 
       {/* Feature highlights row */}
       <div
