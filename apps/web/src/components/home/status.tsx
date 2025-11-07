@@ -18,7 +18,7 @@ export function StatusButton({ href = "https://status.feedgot.com", label = "sta
       className={cn(
         "inline-flex items-center gap-2 px-2.5 py-1 text-sm rounded-sm",
         "border border-border/50 ring-1 ring-border/50 ring-offset-1 ring-offset-background",
-        "text-zinc-600 hover:text-foreground hover:bg-accent transition-colors",
+        "text-zinc-600 hover:text-foreground hover:bg-muted transition-colors",
         className
       )}
     >

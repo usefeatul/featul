@@ -61,15 +61,15 @@ export default function CltvCacRatioTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">CLTV/CAC</div>
+                <div className="text-xs text-accent">CLTV/CAC</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatRatio(ratio)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">CLTV</div>
+                <div className="text-xs text-accent">CLTV</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(Number(cltv))}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">CAC</div>
+                <div className="text-xs text-accent">CAC</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(Number(cac))}</div>
               </div>
             </div>

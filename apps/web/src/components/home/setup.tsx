@@ -14,7 +14,7 @@ export default function Setup() {
 
           <div className="mt-4 grid gap-6 sm:grid-cols-2 ">
             <div className="rounded-lg p-0">
-              <p className="text-zinc-500 text-base sm:text-md tracking-widest leading-7 text-balance">
+              <p className="text-accent text-base sm:text-md tracking-widest leading-7 text-balance">
                 Launch a public feedback portal on your own subdomain
                 <span className="inline rounded-md bg-primary/15 px-2 py-0 text-primary tracking-widest ml-1">
                   feedback.yourbrand.com
@@ -25,7 +25,7 @@ export default function Setup() {
               </p>
             </div>
             <div className="rounded-lg p-0">
-              <p className="text-zinc-500 text-base sm:text-md tracking-wide leading-7 text-balance">
+              <p className="text-accent text-base sm:text-md tracking-wide leading-7 text-balance">
                 Add our in‑app widget with a light snippet
                 <span className="inline rounded-md bg-primary/15 px-2 py-0 text-primary tracking-widest ml-1">
                   {"<script src=\"...\"></script>"}

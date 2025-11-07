@@ -16,7 +16,7 @@ export default function FAQsFour() {
                 </div>
 
                 <div className="mt-4 max-w-xl">
-                    <p className="text-zinc-500 text-sm">
+                    <p className="text-accent text-sm">
                         Get the essentials of feedback management—and see how Feedgot helps you ship better products.
                     </p>
                     <Accordion
@@ -37,7 +37,7 @@ export default function FAQsFour() {
                                             </span>
                                         </AccordionTrigger>
                                         <AccordionContent className="pl-6">
-                                            <p className="text-left text-zinc-500 text-md leading-relaxed">{item.answer}</p>
+                                            <p className="text-left text-accent text-md leading-relaxed">{item.answer}</p>
                                         </AccordionContent>
                                     </AccordionItem>
                                 </div>

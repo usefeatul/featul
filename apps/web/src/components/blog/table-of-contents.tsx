@@ -94,7 +94,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
     <nav
       aria-label="Table of contents"
       className={cn(
-        "text-sm text-zinc-500 max-h-[75vh] overflow-auto",
+        "text-sm text-accent max-h-[75vh] overflow-auto",
         className
       )}
     >
@@ -106,7 +106,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
               href={`#${item.id}`}
               onClick={(e) => onAnchorClick(e, item.id)}
               className={cn(
-                "block py-1 text-left text-zinc-500 hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                "block py-1 text-left text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
                 item.level === 2 ? "font-medium" : "font-normal",
                 activeId === item.id && "text-primary font-semibold"
               )}

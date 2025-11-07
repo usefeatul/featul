@@ -13,7 +13,7 @@ export default function Listening() {
             Build what your users actually need.
             <span className="block mt-1">Listen and act.</span>
           </h2>
-          <p className="mt-4 text-zinc-500 text-md leading-6 text-balance sm:max-w-4xl">
+          <p className="mt-4 text-accent text-md leading-6 text-balance sm:max-w-4xl">
             Feedgot gives every request a single homecaptured, organized, and
             ready to ship. No more buried DMs, scattered emails, or forgotten
             ideas.
@@ -29,7 +29,7 @@ export default function Listening() {
                 <h3 className="text-foreground text-base font-medium">
                   Prioritize what users love
                 </h3>
-                <p className="text-zinc-500 mt-1 text-sm leading-6 sm:max-w-[34ch]">
+                <p className="text-accent mt-1 text-sm leading-6 sm:max-w-[34ch]">
                   Spot ideas with real momentum, not just the loudest voices.
                 </p>
               </div>
@@ -44,7 +44,7 @@ export default function Listening() {
                 <h3 className="text-foreground text-base font-medium">
                   Reduce churn
                 </h3>
-                <p className="text-zinc-500 mt-1 text-sm leading-6 sm:max-w-[34ch]">
+                <p className="text-accent mt-1 text-sm leading-6 sm:max-w-[34ch]">
                   Show progress on requests so customers stay and engage.
                 </p>
               </div>
@@ -61,7 +61,7 @@ export default function Listening() {
                 <h3 className="text-foreground text-base font-medium">
                   Save hours each week
                 </h3>
-                <p className="text-zinc-500 mt-1 text-sm leading-6 sm:max-w-[34ch]">
+                <p className="text-accent mt-1 text-sm leading-6 sm:max-w-[34ch]">
                   Stop chasing feedback across docs, spreadsheets, and emails.
                 </p>
               </div>
@@ -76,7 +76,7 @@ export default function Listening() {
                 <h3 className="text-foreground text-base font-medium">
                   Team aligned
                 </h3>
-                <p className="text-zinc-500 mt-1 text-sm leading-6 sm:max-w-[34ch]">
+                <p className="text-accent mt-1 text-sm leading-6 sm:max-w-[34ch]">
                   Shared priorities keep everyone focused—no endless debates.
                 </p>
               </div>

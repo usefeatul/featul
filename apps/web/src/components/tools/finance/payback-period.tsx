@@ -72,19 +72,19 @@ export default function PaybackPeriodTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Payback</div>
+                <div className="text-xs text-accent">Payback</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{`${formatNumber(months)} months`}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">CAC</div>
+                <div className="text-xs text-accent">CAC</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{parseNumber(cac).toLocaleString()}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">ARPU</div>
+                <div className="text-xs text-accent">ARPU</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{parseNumber(arpu).toLocaleString()}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Gross margin</div>
+                <div className="text-xs text-accent">Gross margin</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{`${parseNumber(grossMarginPct).toFixed(0)}%`}</div>
               </div>
             </div>

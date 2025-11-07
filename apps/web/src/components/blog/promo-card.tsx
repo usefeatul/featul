@@ -24,14 +24,14 @@ export function PromoCard({
     <div className={cn("w-full", className)}>
       <div className="rounded-lg bg-primary/10 p-2">
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-        <p className="mt-1 text-xs text-zinc-500">{description}</p>
+        <p className="mt-1 text-xs text-accent">{description}</p>
         <div className="mt-2">
           <Button asChild className="w-full">
             <Link href={ctaHref}>{ctaLabel}</Link>
           </Button>
         </div>
       </div>
-      <p className="mt-2 text-center text-[11px] text-zinc-500">{subtext}</p>
+      <p className="mt-2 text-center text-[11px] text-accent">{subtext}</p>
     </div>
   )
 }

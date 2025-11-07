@@ -66,11 +66,11 @@ export default function RetentionRateTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Retention</div>
+                <div className="text-xs text-accent">Retention</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.retention)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Churn</div>
+                <div className="text-xs text-accent">Churn</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.churn)}</div>
               </div>
             </div>

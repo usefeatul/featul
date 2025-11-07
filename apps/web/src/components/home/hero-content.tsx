@@ -19,7 +19,7 @@ export function HeroContent() {
       </h1>
 
       {/* Subtitle */}
-      <p className="mt-6 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-base sm:text-lg md:text-xl leading-relaxed text-zinc-500 text-balance">
+      <p className="mt-6 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-base sm:text-lg md:text-xl leading-relaxed text-accent text-balance">
         Feedgot is a complete SaaS feedback platform featuring organized
         feedback boards, auto-syncing roadmaps, self-writing changelogs, and
         automated engagement loops
@@ -32,12 +32,12 @@ export function HeroContent() {
           hotkeyHref="https://dashboard.feedbot.com"
           className="w-full sm:w-auto"
         />
-        <LiveDemo className="w-full sm:w-auto text-zinc-500" />
+        <LiveDemo className="w-full sm:w-auto text-accent" />
       </div>
 
       {/* Feature highlights row */}
       <div
-        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base text-zinc-500"
+        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base text-accent"
         aria-label="Key highlights"
       >
         <span className="inline-flex items-center gap-2">

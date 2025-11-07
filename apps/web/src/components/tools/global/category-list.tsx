@@ -34,7 +34,7 @@ export default function CategoryList() {
                 return <Icon className="size-5 text-black mb-3" />
               })()}
               <CardTitle className="font-medium text-lg">{cat.name}</CardTitle>
-              <CardDescription className="mt-1 text-zinc-500">{cat.description}</CardDescription>
+              <CardDescription className="mt-1 text-accent">{cat.description}</CardDescription>
             </CardHeader>
             <CardFooter className="px-6 sm:px-8 pt-0 justify-between">
               <span className="text-xs text-muted-foreground">{cat.tools.length} tools</span>

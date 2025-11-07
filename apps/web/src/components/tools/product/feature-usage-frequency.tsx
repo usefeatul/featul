@@ -74,7 +74,7 @@ export default function FeatureUsageFrequency() {
             </div>
           </CardContent>
           <CardFooter className="justify-between">
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-accent">
               Avg uses/user <span className="font-mono ml-1 text-foreground">{fmt(metrics.avg)}</span>
             </div>
             <StatusBadge status={metrics.status as any} />
@@ -89,19 +89,19 @@ export default function FeatureUsageFrequency() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">Avg uses/user</div>
+                <div className="text-xs text-accent">Avg uses/user</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{fmt(metrics.avg)}</div>
               </div>
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">Status</div>
+                <div className="text-xs text-accent">Status</div>
                 <div className="mt-1 text-base leading-tight">{metrics.status}</div>
               </div>
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">Active users</div>
+                <div className="text-xs text-accent">Active users</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{isFinite(activeUsers) ? activeUsers.toLocaleString() : 0}</div>
               </div>
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">Total uses</div>
+                <div className="text-xs text-accent">Total uses</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{isFinite(totalUses) ? totalUses.toLocaleString() : 0}</div>
               </div>
             </div>

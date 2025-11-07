@@ -102,7 +102,7 @@ export default function FeatureAdoptionTool() {
             </div>
           </CardContent>
           <CardFooter className="justify-between">
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-accent">
               Overall adoption <span className="font-mono ml-1 text-foreground">{formatPct(totals.rate)}</span>
             </div>
             <StatusBadge status={totals.status as any} />
@@ -118,19 +118,19 @@ export default function FeatureAdoptionTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Adoption rate</div>
+                <div className="text-xs text-accent">Adoption rate</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(totals.rate)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Status</div>
+                <div className="text-xs text-accent">Status</div>
                 <div className="mt-1 text-base leading-tight">{totals.status}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Adopters</div>
+                <div className="text-xs text-accent">Adopters</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{totals.adopted.toLocaleString()}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Eligible users</div>
+                <div className="text-xs text-accent">Eligible users</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{totals.size.toLocaleString()}</div>
               </div>
             </div>

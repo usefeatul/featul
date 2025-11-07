@@ -71,11 +71,11 @@ export default function GrossMarginTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Gross profit</div>
+                <div className="text-xs text-accent">Gross profit</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(grossProfit)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Gross margin</div>
+                <div className="text-xs text-accent">Gross margin</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(grossMargin)}</div>
               </div>
             </div>

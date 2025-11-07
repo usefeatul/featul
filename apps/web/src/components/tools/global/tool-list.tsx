@@ -22,7 +22,7 @@ export default function ToolList({ categorySlug, tools }: { categorySlug: string
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-sm text-zinc-500 line-clamp-2">{tool.description}</p>
+              <p className="mt-1 text-sm text-accent line-clamp-2">{tool.description}</p>
             </div>
             <ChevronRight className="mt-0.5 size-4 shrink-0 text-zinc-400 group-hover:text-black transition-colors" />
           </Link>

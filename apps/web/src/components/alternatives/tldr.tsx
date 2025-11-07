@@ -16,12 +16,12 @@ export default function TLDR({ alt }: { alt: Alternative }) {
           </h2>
           <div className="mt-4 grid gap-6 sm:grid-cols-2">
             <div className="rounded-lg p-0">
-              <p className="text-zinc-500 text-base sm:text-md tracking-widest leading-7 text-balance">
+              <p className="text-accent text-base sm:text-md tracking-widest leading-7 text-balance">
                 {description}
               </p>
             </div>
             <div className="rounded-lg p-0">
-              <p className="text-zinc-500 text-base sm:text-md tracking-wide leading-7 text-balance">
+              <p className="text-accent text-base sm:text-md tracking-wide leading-7 text-balance">
                 Feedgot is a modern,
                 <span className="inline rounded-md bg-primary/15 px-2 py-0 text-primary tracking-widest">
                   privacy‑first

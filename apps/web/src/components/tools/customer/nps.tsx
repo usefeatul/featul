@@ -81,19 +81,19 @@ export default function NpsTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">NPS</div>
+                <div className="text-xs text-accent">NPS</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{metrics.nps}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Promoters</div>
+                <div className="text-xs text-accent">Promoters</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.promoterPct)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Detractors</div>
+                <div className="text-xs text-accent">Detractors</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.detractorPct)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Responses</div>
+                <div className="text-xs text-accent">Responses</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{metrics.total.toLocaleString()}</div>
               </div>
             </div>

@@ -66,15 +66,15 @@ export default function NetMarginTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Net margin</div>
+                <div className="text-xs text-accent">Net margin</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(netMarginPct)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Net income</div>
+                <div className="text-xs text-accent">Net income</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(parseNumber(netIncome))}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Revenue</div>
+                <div className="text-xs text-accent">Revenue</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(parseNumber(revenue))}</div>
               </div>
             </div>

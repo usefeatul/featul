@@ -60,15 +60,15 @@ export default function ActivationRateTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Activation rate</div>
+                <div className="text-xs text-accent">Activation rate</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(activation)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Signups</div>
+                <div className="text-xs text-accent">Signups</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{signups.toLocaleString()}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Activated</div>
+                <div className="text-xs text-accent">Activated</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{activated.toLocaleString()}</div>
               </div>
             </div>

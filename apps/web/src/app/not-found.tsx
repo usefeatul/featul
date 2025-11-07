@@ -5,7 +5,7 @@ export default function NotFound() {
     <main className="min-h-screen grid place-items-center">
       <div className="mx-auto max-w-lg  text-center">
         <h1 className="text-3xl font-sans tracking-wider ">Whoops…</h1>
-        <p className="text-zinc-500 mt-2 text-sm font-mono">
+        <p className="text-accent mt-2 text-sm font-mono">
           Sorry, there's no such page. Go back
           <Link
             href="/"
