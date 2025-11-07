@@ -75,7 +75,7 @@ export default function TtfvCalculator() {
             </div>
           </CardContent>
           <CardFooter className="justify-between">
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-accent">
               Within {isFinite(windowDays) ? windowDays : 0} days
               <span className="font-mono ml-1 text-foreground">{fmtPct(metrics.rate)}</span>
             </div>
@@ -91,19 +91,19 @@ export default function TtfvCalculator() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">TTFV rate</div>
+                <div className="text-xs text-accent">TTFV rate</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{fmtPct(metrics.rate)}</div>
               </div>
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">Status</div>
+                <div className="text-xs text-accent">Status</div>
                 <div className="mt-1 text-base leading-tight">{metrics.status}</div>
               </div>
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">Signups</div>
+                <div className="text-xs text-accent">Signups</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{isFinite(signups) ? signups.toLocaleString() : 0}</div>
               </div>
               <div className="rounded-md border p-3 text-center">
-                <div className="text-xs text-zinc-500">Reached value</div>
+                <div className="text-xs text-accent">Reached value</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{isFinite(firstValueUsers) ? firstValueUsers.toLocaleString() : 0}</div>
               </div>
             </div>

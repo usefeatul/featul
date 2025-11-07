@@ -16,7 +16,7 @@ export default function BentoFeature() {
                 <h3 className="text-foreground text-lg font-semibold">
                   Human-coded
                 </h3>
-                <p className="text-zinc-500 text-balance">
+                <p className="text-accent text-balance">
                   Hand-built and maintained by seasoned engineers. Secure, reliable,
                   and fast—crafted with care, not vibes.
                 </p>
@@ -27,7 +27,7 @@ export default function BentoFeature() {
                 <h3 className="text-foreground text-lg font-semibold">
                   Advanced bot detection
                 </h3>
-                <p className="text-zinc-500 text-balance">
+                <p className="text-accent text-balance">
                   In an AI-heavy web, keeping bots out matters. We aim for
                   top-tier detection to keep your analytics trustworthy.
                 </p>
@@ -37,7 +37,7 @@ export default function BentoFeature() {
                 <h3 className="text-foreground text-lg font-semibold">
                   Founded in 2024
                 </h3>
-                <p className="text-zinc-500 text-balance">
+                <p className="text-accent text-balance">
                   Since 2024, Feedgot has grown into a customer feedback platform,
                   processing hundreds of feedback submissions.
                 </p>

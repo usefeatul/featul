@@ -19,7 +19,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
           </div>
 
           <div className="mt-4 max-w-xl">
-            <p className="text-zinc-500 text-sm">
+            <p className="text-accent text-sm">
               {description}
             </p>
             <Accordion type="single" collapsible className="w-full">
@@ -33,7 +33,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
                       </span>
                     </AccordionTrigger>
                     <AccordionContent className="pl-6">
-                      <p className="text-left text-zinc-500 text-md leading-relaxed">{item.answer}</p>
+                      <p className="text-left text-accent text-md leading-relaxed">{item.answer}</p>
                     </AccordionContent>
                   </AccordionItem>
                 </div>

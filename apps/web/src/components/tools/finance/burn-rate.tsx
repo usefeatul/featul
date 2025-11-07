@@ -65,19 +65,19 @@ export default function BurnRateTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Net burn</div>
+                <div className="text-xs text-accent">Net burn</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{`${formatCurrencyExact(Math.max(netBurn, 0))} / month`}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Inflow</div>
+                <div className="text-xs text-accent">Inflow</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(parseNumber(cashInflow))}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Outflow</div>
+                <div className="text-xs text-accent">Outflow</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(parseNumber(cashOutflow))}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Status</div>
+                <div className="text-xs text-accent">Status</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{netBurn <= 0 ? "Positive cash flow" : "Burning cash"}</div>
               </div>
             </div>

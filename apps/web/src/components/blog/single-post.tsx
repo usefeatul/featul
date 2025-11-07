@@ -40,7 +40,7 @@ export function SinglePost({ post }: SinglePostProps) {
             <span aria-hidden className="mx-1">
               ›
             </span>
-            <span className="text-zinc-500 break-words">{post.title}</span>
+            <span className="text-accent break-words">{post.title}</span>
           </nav>
 
           {/* Title/meta constrained to left column width */}
@@ -53,7 +53,7 @@ export function SinglePost({ post }: SinglePostProps) {
             ) : null}
             {date ? (
               <div className="mt-3 text-xs flex items-center flex-wrap">
-                <span className="text-zinc-500">Posted on</span>
+                <span className="text-accent">Posted on</span>
                 <time
                   className="ml-1 text-primary"
                   dateTime={date.toISOString()}
@@ -77,7 +77,7 @@ export function SinglePost({ post }: SinglePostProps) {
                     {authorName ? (
                       <span className="mx-2 text-zinc-300">•</span>
                     ) : null}
-                    <span className="text-zinc-500">{reading} min read</span>
+                    <span className="text-accent">{reading} min read</span>
                   </>
                 ) : null}
               </div>

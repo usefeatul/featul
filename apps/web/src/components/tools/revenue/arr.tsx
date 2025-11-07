@@ -61,15 +61,15 @@ export default function ArrTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">ARR</div>
+                <div className="text-xs text-accent">ARR</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(arr)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">MRR</div>
+                <div className="text-xs text-accent">MRR</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(Number(mrr))}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Multiplier</div>
+                <div className="text-xs text-accent">Multiplier</div>
                 <div className="mt-1 text-base leading-tight">× 12</div>
               </div>
             </div>

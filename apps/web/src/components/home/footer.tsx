@@ -22,14 +22,14 @@ export default function FooterSection() {
                 <Logo />
                 <span className="text-sm font-medium">Feedgot</span>
               </Link>
-              <p className="text-zinc-500 mt-1 text-sm">Made and hosted in EU.</p>
-              <p className="text-zinc-500 mt-1 text-sm">
+              <p className="text-accent mt-1 text-sm">Made and hosted in EU.</p>
+              <p className="text-accent mt-1 text-sm">
                 Customer feedback platform • © {year}
               </p>
               <div className="mt-2">
                 <StatusButton />
               </div>
-              <div className="mt-4 flex items-center gap-3 text-zinc-500 ">
+              <div className="mt-4 flex items-center gap-3 text-accent ">
                 <Link
                   href="#"
                   target="_blank"
@@ -69,7 +69,7 @@ export default function FooterSection() {
                       <Link
                         key={idx}
                         href={item.href}
-                        className="text-zinc-500 hover:text-primary block transition-colors"
+                        className="text-accent hover:text-primary block transition-colors"
                       >
                         <span>{item.name}</span>
                       </Link>

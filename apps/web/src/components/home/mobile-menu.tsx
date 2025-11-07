@@ -51,7 +51,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             <Link
               key={item.name}
               href={item.href}
-              className="block rounded-md px-2 py-2 text-lg text-zinc-500 hover:text-foreground hover:bg-accent"
+              className="block rounded-md px-2 py-2 text-lg text-accent hover:text-foreground hover:bg-muted"
               onClick={onClose}
             >
               {item.name}
@@ -63,7 +63,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="block rounded-md px-2 py-2 mb-4 text-lg font-medium text-zinc-500 hover:text-foreground hover:bg-accent"
+                className="block rounded-md px-2 py-2 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted"
                 onClick={onClose}
               >
                 {item.name}

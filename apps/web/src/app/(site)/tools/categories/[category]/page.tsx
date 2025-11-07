@@ -30,7 +30,7 @@ export default async function CategoryPage({ params }: Props) {
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <section className="py-12 sm:py-16">
           <Breadcrumb className="mb-6">
-            <BreadcrumbList className="text-zinc-500">
+            <BreadcrumbList className="text-accent">
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/tools">Tools</Link>
@@ -49,7 +49,7 @@ export default async function CategoryPage({ params }: Props) {
             </BreadcrumbList>
           </Breadcrumb>
           <h1 className="text-balance text-3xl font-bold md:text-4xl">{cat.name}</h1>
-          <p className="text-zinc-500 mt-4">{cat.description}</p>
+          <p className="text-accent mt-4">{cat.description}</p>
           <ToolList categorySlug={cat.slug} tools={cat.tools} />
         </section>
       </Container>

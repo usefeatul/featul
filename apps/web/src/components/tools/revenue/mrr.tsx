@@ -99,7 +99,7 @@ export default function MrrTool() {
             </div>
           </CardContent>
           <CardFooter className="justify-between">
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-accent">
               Total MRR <span className="font-mono ml-1 text-foreground">{formatCurrencyExact(totals.mrr)}</span>
             </div>
             <Badge variant="outline">{plans.length} plans</Badge>
@@ -115,19 +115,19 @@ export default function MrrTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">MRR</div>
+                <div className="text-xs text-accent">MRR</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(totals.mrr)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">ARPU</div>
+                <div className="text-xs text-accent">ARPU</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(totals.arpu)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Customers</div>
+                <div className="text-xs text-accent">Customers</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{totals.customers.toLocaleString()}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Plans</div>
+                <div className="text-xs text-accent">Plans</div>
                 <div className="mt-1 text-base leading-tight">{plans.length}</div>
               </div>
             </div>

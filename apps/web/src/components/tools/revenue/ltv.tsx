@@ -77,19 +77,19 @@ export default function LtvTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">LTV</div>
+                <div className="text-xs text-accent">LTV</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(metrics.ltv)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">ARPU</div>
+                <div className="text-xs text-accent">ARPU</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(Number(arpu))}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Churn</div>
+                <div className="text-xs text-accent">Churn</div>
                 <div className="mt-1 font-mono text-base leading-tight">{formatPct(Number(churnPct))}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Gross margin</div>
+                <div className="text-xs text-accent">Gross margin</div>
                 <div className="mt-1 font-mono text-base leading-tight">{formatPct(Number(grossMarginPct))}</div>
               </div>
             </div>

@@ -12,7 +12,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
           <h2 className="mt-6 text-foreground text-balance text-3xl sm:text-4xl font-semibold">
             Side‑by‑side features
           </h2>
-          <p className="text-zinc-500 mt-3">
+          <p className="text-accent mt-3">
             Quick comparison of essential capabilities across {alt.name} and
             Feedgot.
           </p>
@@ -42,7 +42,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
                         {f.label}
                       </div>
                       {f.description && (
-                        <p className="text-zinc-500 text-sm sm:text-md leading-6 sm:leading-relaxed">
+                        <p className="text-accent text-sm sm:text-md leading-6 sm:leading-relaxed">
                           {f.description}
                         </p>
                       )}
@@ -67,7 +67,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
             </ul>
           </div>
 
-          <p className="text-zinc-500 mt-6 text-md sm:text-lg">
+          <p className="text-accent mt-6 text-md sm:text-lg">
             Partial means the feature is available with limitations or requires
             workarounds.
           </p>

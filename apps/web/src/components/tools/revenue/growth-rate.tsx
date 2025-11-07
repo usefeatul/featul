@@ -70,15 +70,15 @@ export default function GrowthRateTool() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Period growth</div>
+                <div className="text-xs text-accent">Period growth</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.periodGrowth)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Monthly CAGR</div>
+                <div className="text-xs text-accent">Monthly CAGR</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.cagr)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Months</div>
+                <div className="text-xs text-accent">Months</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{months}</div>
               </div>
             </div>

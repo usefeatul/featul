@@ -20,7 +20,7 @@ export default function Create() {
               <h3 className="mt-4 text-foreground text-lg font-medium">
                 Create workspace
               </h3>
-              <p className="text-zinc-500 mt-2 text-base leading-7 sm:max-w-[60ch]">
+              <p className="text-accent mt-2 text-base leading-7 sm:max-w-[60ch]">
                 Sign up with just an email. Pick a name. That’s it. No credit
                 card, no sales call, no 47‑field form.
               </p>
@@ -35,7 +35,7 @@ export default function Create() {
               <h3 className="mt-4 text-foreground text-lg font-medium">
                 Add to your app
               </h3>
-              <p className="text-zinc-500 mt-2 text-base leading-7 sm:max-w-[60ch]">
+              <p className="text-accent mt-2 text-base leading-7 sm:max-w-[60ch]">
                 Copy one line of code for the widget, or just share your board
                 link. Both work instantly.
               </p>
@@ -50,7 +50,7 @@ export default function Create() {
               <h3 className="mt-4 text-foreground text-lg font-medium">
                 Watch magic happen
               </h3>
-              <p className="text-zinc-500 mt-2 text-base leading-7 sm:max-w-[60ch]">
+              <p className="text-accent mt-2 text-base leading-7 sm:max-w-[60ch]">
                 Users start submitting. Votes pile up. You ship features. Users
                 get notified. Churn drops.
               </p>
@@ -59,7 +59,7 @@ export default function Create() {
 
           <div className="mt-10 flex items-start gap-3">
             <div className="h-5 w-[4px] bg-primary rounded-full" aria-hidden />
-            <p className="text-zinc-500 text-sm sm:text-base">
+            <p className="text-accent text-sm sm:text-base">
               Seriously, it’s that simple. Our average customer is collecting feedback within 2 minutes of signing up.
             </p>
           </div>

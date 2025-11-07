@@ -77,7 +77,7 @@ export default function StickinessCalculator() {
             </div>
           </CardContent>
           <CardFooter className="justify-between">
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-accent">
               DAU/MAU <span className="font-mono ml-1 text-foreground">{fmtPct(metrics.sDauMau)}</span>
             </div>
             <StatusBadge status={metrics.status as any} />
@@ -92,19 +92,19 @@ export default function StickinessCalculator() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">DAU/MAU</div>
+                <div className="text-xs text-accent">DAU/MAU</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{fmtPct(metrics.sDauMau)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">WAU/MAU</div>
+                <div className="text-xs text-accent">WAU/MAU</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{fmtPct(metrics.sWauMau)}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">Status</div>
+                <div className="text-xs text-accent">Status</div>
                 <div className="mt-1 text-base leading-tight">{metrics.status}</div>
               </div>
               <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
-                <div className="text-xs text-zinc-500">MAU</div>
+                <div className="text-xs text-accent">MAU</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{isFinite(mau) ? mau.toLocaleString() : 0}</div>
               </div>
             </div>
