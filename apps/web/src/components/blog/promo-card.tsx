@@ -1,16 +1,16 @@
-"use client"
-import Link from "next/link"
-import { Button } from "@feedgot/ui/components/button"
-import { cn } from "@feedgot/ui/lib/utils"
+"use client";
+import Link from "next/link";
+import { Button } from "@feedgot/ui/components/button";
+import { cn } from "@feedgot/ui/lib/utils";
 
 type PromoCardProps = {
-  className?: string
-  title?: string
-  description?: string
-  ctaHref?: string
-  ctaLabel?: string
-  subtext?: string
-}
+  className?: string;
+  title?: string;
+  description?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+  subtext?: string;
+};
 
 export function PromoCard({
   className,
@@ -22,9 +22,9 @@ export function PromoCard({
 }: PromoCardProps) {
   return (
     <div className={cn("w-full", className)}>
-      <div className="rounded-lg bg-primary/10 p-2">
+      <div className="rounded-md bg-primary/10 p-2">
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-        <p className="mt-1 text-xs text-accent">{description}</p>
+        <p className="mt-1 text-xs text-accent leading-5">{description}</p>
         <div className="mt-2">
           <Button asChild className="w-full">
             <Link href={ctaHref}>{ctaLabel}</Link>
@@ -33,5 +33,5 @@ export function PromoCard({
       </div>
       <p className="mt-2 text-center text-[11px] text-accent">{subtext}</p>
     </div>
-  )
+  );
 }

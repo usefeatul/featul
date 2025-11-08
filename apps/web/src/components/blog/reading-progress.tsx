@@ -8,11 +8,9 @@ import type {
   ScrollBehaviorOption,
 } from "../../types/reading";
 
-
 function clamp(n: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, n));
 }
-
 
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -130,7 +128,9 @@ export function ReadingProgress({
 
   if (!visible) return null;
 
-  const scrollTopBehavior: ScrollBehaviorOption = prefersReducedMotion ? "auto" : "smooth";
+  const scrollTopBehavior: ScrollBehaviorOption = prefersReducedMotion
+    ? "auto"
+    : "smooth";
 
   return (
     <div
@@ -152,14 +152,12 @@ export function ReadingProgress({
     >
       <button
         type="button"
-        onClick={() =>
-          window.scrollTo({ top: 0, behavior: scrollTopBehavior })
-        }
+        onClick={() => window.scrollTo({ top: 0, behavior: scrollTopBehavior })}
         title="Scroll to top"
         className={cn(
-          "inline-flex items-center gap-4 rounded-full",
+          "inline-flex items-center gap-4 rounded-lg",
           "bg-black/95 text-white dark:bg-zinc-900",
-          "px-4 py-3 text-xs font-medium shadow/50 shadow-sm",
+          "px-4 py-2 text-xs font-medium shadow/50",
           "border border-white/10 dark:border-zinc-800"
         )}
       >
