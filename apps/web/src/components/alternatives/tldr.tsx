@@ -23,12 +23,12 @@ export default function TLDR({ alt }: { alt: Alternative }) {
             <div className="rounded-lg p-0">
               <p className="text-accent text-base sm:text-md tracking-wide leading-7 text-balance">
                 Feedgot is a modern,
-                <span className="inline rounded-md bg-primary/15 px-2 py-0 text-primary tracking-widest">
+                <span className="inline rounded-md bg-primary/50 px-2 py-0 text-black tracking-widest">
                   privacy‑first
                 </span>
                 alternative designed to be simple to set up and pleasant to use.
                 With EU hosting by default and an
-                <span className="inline rounded-md bg-primary/15 px-2 py-0 text-primary tracking-widest">
+                <span className="inline rounded-md bg-primary/50 px-2 py-0 text-black tracking-widest">
                   end‑to‑end workflow
                 </span>
                 —feedback boards, public roadmap, and changelog—you can get

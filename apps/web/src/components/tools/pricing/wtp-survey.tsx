@@ -44,7 +44,7 @@ export default function WtpSurveyTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>WTP Responses</CardTitle>
           </CardHeader>
@@ -55,7 +55,7 @@ export default function WtpSurveyTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Count</CardTitle>
           </CardHeader>
@@ -64,7 +64,7 @@ export default function WtpSurveyTool() {
             <div className="text-sm text-muted-foreground">responses</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Mean</CardTitle>
           </CardHeader>
@@ -73,7 +73,7 @@ export default function WtpSurveyTool() {
             <div className="text-sm text-muted-foreground">average price</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Median</CardTitle>
           </CardHeader>
@@ -82,7 +82,7 @@ export default function WtpSurveyTool() {
             <div className="text-sm text-muted-foreground">middle of distribution</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Recommended Band</CardTitle>
           </CardHeader>

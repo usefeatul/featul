@@ -60,7 +60,7 @@ export default function AbTestSignificanceTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Visitors A</CardTitle>
           </CardHeader>
@@ -68,15 +68,15 @@ export default function AbTestSignificanceTool() {
             <Input value={visitorsA} onChange={(e) => setVisitorsA(e.target.value)} placeholder="20,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Conversions A</CardTitle>
           </CardHeader>
           <CardContent>
             <Input value={conversionsA} onChange={(e) => setConversionsA(e.target.value)} placeholder="500" />
-          </CardContent>
+          </CardContent>  
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Visitors B</CardTitle>
           </CardHeader>
@@ -84,7 +84,7 @@ export default function AbTestSignificanceTool() {
             <Input value={visitorsB} onChange={(e) => setVisitorsB(e.target.value)} placeholder="20,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Conversions B</CardTitle>
           </CardHeader>
@@ -92,7 +92,7 @@ export default function AbTestSignificanceTool() {
             <Input value={conversionsB} onChange={(e) => setConversionsB(e.target.value)} placeholder="600" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>    
           <CardHeader>
             <CardTitle>Alpha</CardTitle>
           </CardHeader>
@@ -103,7 +103,7 @@ export default function AbTestSignificanceTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>CR A</CardTitle>
           </CardHeader>
@@ -112,7 +112,7 @@ export default function AbTestSignificanceTool() {
             <div className="text-sm text-muted-foreground">conversions ÷ visitors</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>CR B</CardTitle>
           </CardHeader>
@@ -121,7 +121,7 @@ export default function AbTestSignificanceTool() {
             <div className="text-sm text-muted-foreground">conversions ÷ visitors</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Abs Lift</CardTitle>
           </CardHeader>
@@ -130,7 +130,7 @@ export default function AbTestSignificanceTool() {
             <div className="text-sm text-muted-foreground">B − A (pp)</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >   
           <CardHeader>
             <CardTitle>Rel Lift</CardTitle>
           </CardHeader>
@@ -139,7 +139,7 @@ export default function AbTestSignificanceTool() {
             <div className="text-sm text-muted-foreground">(B − A) ÷ A</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>p‑value</CardTitle>
           </CardHeader>
@@ -151,7 +151,7 @@ export default function AbTestSignificanceTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Significant?</CardTitle>
           </CardHeader>

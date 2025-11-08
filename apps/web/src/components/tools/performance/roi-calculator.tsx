@@ -39,7 +39,7 @@ export default function RoiCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Investment Cost</CardTitle>
           </CardHeader>
@@ -47,7 +47,7 @@ export default function RoiCalculatorTool() {
             <Input value={investment} onChange={(e) => setInvestment(e.target.value)} placeholder="$10,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Return (Revenue/Profit)</CardTitle>
           </CardHeader>
@@ -58,7 +58,7 @@ export default function RoiCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>ROI</CardTitle>
           </CardHeader>
@@ -67,7 +67,7 @@ export default function RoiCalculatorTool() {
             <div className="text-sm text-muted-foreground">(Return − Cost) ÷ Cost</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Net Profit</CardTitle>
           </CardHeader>
@@ -76,7 +76,7 @@ export default function RoiCalculatorTool() {
             <div className="text-sm text-muted-foreground">Return − cost</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Payback Factor</CardTitle>
           </CardHeader>

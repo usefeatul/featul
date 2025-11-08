@@ -34,7 +34,7 @@ export default function BurnRateTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter monthly cash inflows and outflows.</CardDescription>
@@ -57,7 +57,7 @@ export default function BurnRateTool() {
           </CardContent>
         </Card>
 
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Monthly burn overview.</CardDescription>

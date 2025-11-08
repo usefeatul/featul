@@ -44,7 +44,7 @@ export default function FeatureAdoptionTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>
@@ -110,7 +110,7 @@ export default function FeatureAdoptionTool() {
         </Card>
 
       {/* Summary card stacked below inputs */}
-        <Card className="bg-muted">
+        <Card >
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Overall adoption across cohorts. Tiles show key metrics.</CardDescription>

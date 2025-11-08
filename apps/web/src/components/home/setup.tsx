@@ -16,7 +16,7 @@ export default function Setup() {
             <div className="rounded-lg p-0">
               <p className="text-accent text-base sm:text-md tracking-widest leading-7 text-balance">
                 Launch a public feedback portal on your own subdomain
-                <span className="inline rounded-md bg-primary/15 px-2 py-0 text-primary tracking-widest ml-1">
+                <span className="inline rounded-md bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
                   feedback.yourbrand.com
                 </span>
                 or use Feedgot’s hosted space. Customers can browse ideas,
@@ -27,7 +27,7 @@ export default function Setup() {
             <div className="rounded-lg p-0">
               <p className="text-accent text-base sm:text-md tracking-wide leading-7 text-balance">
                 Add our in‑app widget with a light snippet
-                <span className="inline rounded-md bg-primary/15 px-2 py-0 text-primary tracking-widest ml-1">
+                <span className="inline rounded-md bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
                   {"<script src=\"...\"></script>"}
                 </span>
                 so users can submit ideas without leaving. They see your

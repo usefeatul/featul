@@ -35,7 +35,7 @@ export default function RunwayTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter current cash and monthly net burn.</CardDescription>
@@ -58,7 +58,7 @@ export default function RunwayTool() {
           </CardContent>
         </Card>
 
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Runway and inputs overview.</CardDescription>

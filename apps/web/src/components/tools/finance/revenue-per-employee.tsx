@@ -34,7 +34,7 @@ export default function RevenuePerEmployeeTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter revenue and number of employees.</CardDescription>
@@ -57,7 +57,7 @@ export default function RevenuePerEmployeeTool() {
           </CardContent>
         </Card>
 
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Revenue efficiency per teammate.</CardDescription>

@@ -43,7 +43,7 @@ export default function BreakEvenTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter price, variable cost and fixed costs.</CardDescription>
@@ -70,7 +70,7 @@ export default function BreakEvenTool() {
           </CardContent>
         </Card>
 
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Break-even metrics overview.</CardDescription>

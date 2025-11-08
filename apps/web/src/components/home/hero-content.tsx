@@ -10,19 +10,17 @@ export function HeroContent() {
   return (
     <div className="mx-auto max-w-5xl lg:max-w-6xl px-0 text-left">
       {/* Main heading */}
-      <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-extrabold text-foreground text-balance">
+      <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-semibold text-foreground text-balance">
         The
-        <span className="mx-2 inline-block rounded-md bg-primary/15 px-3 py-0 text-primary leading-none align-middle">
-          simple, fast and privacy-first
+        <span className="mx-2 inline-block rounded-md bg-primary/30 px-2 py-1 text-black/70 leading-none align-middle">
+          simple and fast
         </span>
-        <span className="block mt-0">feedback alternative</span>
+        <span className="block mt-0"> Customer feedback alternative</span>
       </h1>
 
       {/* Subtitle */}
-      <p className="mt-6 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-base sm:text-lg md:text-xl leading-relaxed text-accent text-balance">
-        Feedgot focuses on what feedback tools overlook — transparent, simple,
-        privacy-first product feedback with organized boards, auto-syncing
-        roadmaps, and self-writing changelogs.
+      <p className="mt-6 max-w-xl sm:max-w-2xl lg:max-w-3xl text-base sm:text-base md:text-lg leading-relaxed text-accent text-balance">
+        Feedgot is a privacy-first, open-source customer feedback platform that's both insightful and lightweight
       </p>
 
       {/* CTAs */}

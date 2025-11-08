@@ -41,7 +41,7 @@ export default function SaasValuationTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>ARR</CardTitle>
           </CardHeader>
@@ -49,7 +49,7 @@ export default function SaasValuationTool() {
             <Input value={arr} onChange={(e) => setArr(e.target.value)} placeholder="$1,200,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Revenue Multiple</CardTitle>
           </CardHeader>
@@ -57,7 +57,7 @@ export default function SaasValuationTool() {
             <Input value={multiple} onChange={(e) => setMultiple(e.target.value)} placeholder="8" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Growth Rate</CardTitle>
           </CardHeader>
@@ -65,7 +65,7 @@ export default function SaasValuationTool() {
             <Input value={growthPct} onChange={(e) => setGrowthPct(e.target.value)} placeholder="40%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Gross Margin</CardTitle>
           </CardHeader>
@@ -76,7 +76,7 @@ export default function SaasValuationTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Enterprise Value</CardTitle>
           </CardHeader>
@@ -85,7 +85,7 @@ export default function SaasValuationTool() {
             <div className="text-sm text-muted-foreground">ARR × multiple</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Sensitivity −1x</CardTitle>
           </CardHeader>
@@ -94,7 +94,7 @@ export default function SaasValuationTool() {
             <div className="text-sm text-muted-foreground">Lower-bound check</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Sensitivity +1x</CardTitle>
           </CardHeader>

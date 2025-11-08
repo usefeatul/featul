@@ -55,7 +55,7 @@ export default function TierPricingOptimizerTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Monthly Signups</CardTitle>
           </CardHeader>
@@ -63,7 +63,7 @@ export default function TierPricingOptimizerTool() {
             <Input value={signups} onChange={(e) => setSignups(e.target.value)} placeholder="1,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Basic Price</CardTitle>
           </CardHeader>
@@ -71,7 +71,7 @@ export default function TierPricingOptimizerTool() {
             <Input value={priceBasic} onChange={(e) => setPriceBasic(e.target.value)} placeholder="$15" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Basic Share</CardTitle>
           </CardHeader>
@@ -79,7 +79,7 @@ export default function TierPricingOptimizerTool() {
             <Input value={shareBasic} onChange={(e) => setShareBasic(e.target.value)} placeholder="50%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Standard Price</CardTitle>
           </CardHeader>
@@ -87,7 +87,7 @@ export default function TierPricingOptimizerTool() {
             <Input value={priceStd} onChange={(e) => setPriceStd(e.target.value)} placeholder="$30" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Standard Share</CardTitle>
           </CardHeader>
@@ -95,7 +95,7 @@ export default function TierPricingOptimizerTool() {
             <Input value={shareStd} onChange={(e) => setShareStd(e.target.value)} placeholder="35%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Premium Price</CardTitle>
           </CardHeader>
@@ -103,7 +103,7 @@ export default function TierPricingOptimizerTool() {
             <Input value={pricePrem} onChange={(e) => setPricePrem(e.target.value)} placeholder="$60" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Premium Share</CardTitle>
           </CardHeader>
@@ -114,7 +114,7 @@ export default function TierPricingOptimizerTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Weighted ARPU</CardTitle>
           </CardHeader>
@@ -123,7 +123,7 @@ export default function TierPricingOptimizerTool() {
             <div className="text-sm text-muted-foreground">shares normalized to sum 100%</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Monthly Revenue</CardTitle>
           </CardHeader>

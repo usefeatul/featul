@@ -43,7 +43,7 @@ export default function ValueBasedPricingTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Average WTP</CardTitle>
           </CardHeader>
@@ -51,7 +51,7 @@ export default function ValueBasedPricingTool() {
             <Input value={wtpAvg} onChange={(e) => setWtpAvg(e.target.value)} placeholder="$50" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Unit Cost</CardTitle>
           </CardHeader>
@@ -59,7 +59,7 @@ export default function ValueBasedPricingTool() {
             <Input value={unitCost} onChange={(e) => setUnitCost(e.target.value)} placeholder="$15" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Target Margin</CardTitle>
           </CardHeader>
@@ -70,7 +70,7 @@ export default function ValueBasedPricingTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Margin Floor</CardTitle>
           </CardHeader>
@@ -79,7 +79,7 @@ export default function ValueBasedPricingTool() {
             <div className="text-sm text-muted-foreground">Minimum price to meet margin</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>WTP Anchor</CardTitle>
           </CardHeader>
@@ -88,7 +88,7 @@ export default function ValueBasedPricingTool() {
             <div className="text-sm text-muted-foreground">Customer value limit</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Suggested Target</CardTitle>
           </CardHeader>

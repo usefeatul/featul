@@ -35,7 +35,7 @@ export default function ConversionRateCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Visitors</CardTitle>
           </CardHeader>
@@ -43,7 +43,7 @@ export default function ConversionRateCalculatorTool() {
             <Input value={visitors} onChange={(e) => setVisitors(e.target.value)} placeholder="100,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Conversions</CardTitle>
           </CardHeader>
@@ -54,7 +54,7 @@ export default function ConversionRateCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Conversion Rate</CardTitle>
           </CardHeader>
@@ -63,7 +63,7 @@ export default function ConversionRateCalculatorTool() {
             <div className="text-sm text-muted-foreground">conversions ÷ visitors</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Conversions / 1k</CardTitle>
           </CardHeader>
@@ -72,7 +72,7 @@ export default function ConversionRateCalculatorTool() {
             <div className="text-sm text-muted-foreground">per 1,000 visitors</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Non‑conversions</CardTitle>
           </CardHeader>

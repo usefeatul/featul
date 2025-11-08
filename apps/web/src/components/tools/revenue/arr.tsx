@@ -28,7 +28,7 @@ export default function ArrTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter your current monthly recurring revenue.</CardDescription>
@@ -53,7 +53,7 @@ export default function ArrTool() {
         </Card>
 
         {/* Summary card */}
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Annualized view based on current monthly recurring revenue.</CardDescription>

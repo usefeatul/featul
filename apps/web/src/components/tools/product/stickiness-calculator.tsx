@@ -34,7 +34,7 @@ export default function StickinessCalculator() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter active user counts for the period. Summary updates instantly.</CardDescription>
@@ -84,7 +84,7 @@ export default function StickinessCalculator() {
           </CardFooter>
         </Card>
 
-        <Card className="bg-muted">
+        <Card >
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Stickiness ratios derived from your inputs.</CardDescription>

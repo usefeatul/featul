@@ -18,7 +18,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
           </p>
 
           <div className="mt-10">
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-2 sm:gap-x-12 bg-muted/30 sticky top-2 z-10 rounded-md">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-2 sm:gap-x-12  sticky top-2  z-10 rounded-md">
               <div className="pl-0 pr-2 sm:pr-4 py-2 sm:py-3 text-xs sm:text-lg font-semibold text-foreground text-left">
                 Feature
               </div>
@@ -34,7 +34,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
               {alt.features.map((f) => (
                 <li
                   key={f.key}
-                  className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-2 sm:gap-x-12"
+                  className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-2 sm:gap-x-12 hover:bg-muted/30"
                 >
                   <div className="pl-0 pr-2 sm:pr-4 py-2 sm:py-3">
                     <div className="text-left space-y-1">
@@ -67,7 +67,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
             </ul>
           </div>
 
-          <p className="text-accent mt-6 text-md sm:text-lg">
+          <p className="text-accent mt-6 text-sm">
             Partial means the feature is available with limitations or requires
             workarounds.
           </p>

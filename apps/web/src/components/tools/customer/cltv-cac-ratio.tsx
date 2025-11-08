@@ -30,7 +30,7 @@ export default function CltvCacRatioTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter CLTV and CAC, or copy LTV from the LTV tool.</CardDescription>
@@ -53,7 +53,7 @@ export default function CltvCacRatioTool() {
           </CardContent>
         </Card>
 
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Value generated per $1 of acquisition spend.</CardDescription>

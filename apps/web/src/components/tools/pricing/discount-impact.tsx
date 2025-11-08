@@ -47,7 +47,7 @@ export default function DiscountImpactTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Base Price</CardTitle>
           </CardHeader>
@@ -55,7 +55,7 @@ export default function DiscountImpactTool() {
             <Input value={basePrice} onChange={(e) => setBasePrice(e.target.value)} placeholder="$30" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Baseline Conversion</CardTitle>
           </CardHeader>
@@ -63,7 +63,7 @@ export default function DiscountImpactTool() {
             <Input value={baselineConvPct} onChange={(e) => setBaselineConvPct(e.target.value)} placeholder="4%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Discount</CardTitle>
           </CardHeader>
@@ -71,7 +71,7 @@ export default function DiscountImpactTool() {
             <Input value={discountPct} onChange={(e) => setDiscountPct(e.target.value)} placeholder="20%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Conversion Uplift</CardTitle>
           </CardHeader>
@@ -82,7 +82,7 @@ export default function DiscountImpactTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>New Price</CardTitle>
           </CardHeader>
@@ -91,7 +91,7 @@ export default function DiscountImpactTool() {
             <div className="text-sm text-muted-foreground">after discount</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>New Conversion</CardTitle>
           </CardHeader>
@@ -100,7 +100,7 @@ export default function DiscountImpactTool() {
             <div className="text-sm text-muted-foreground">with uplift</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Baseline Rev / 1k</CardTitle>
           </CardHeader>
@@ -109,7 +109,7 @@ export default function DiscountImpactTool() {
             <div className="text-sm text-muted-foreground">per 1,000 visitors</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>New Rev / 1k</CardTitle>
           </CardHeader>
@@ -121,7 +121,7 @@ export default function DiscountImpactTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Revenue Δ / 1k</CardTitle>
           </CardHeader>

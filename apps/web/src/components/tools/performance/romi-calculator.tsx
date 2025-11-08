@@ -41,7 +41,7 @@ export default function RomiCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Marketing Spend</CardTitle>
           </CardHeader>
@@ -49,7 +49,7 @@ export default function RomiCalculatorTool() {
             <Input value={spend} onChange={(e) => setSpend(e.target.value)} placeholder="$20,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Attributed Revenue</CardTitle>
           </CardHeader>
@@ -57,7 +57,7 @@ export default function RomiCalculatorTool() {
             <Input value={attributedRevenue} onChange={(e) => setAttributedRevenue(e.target.value)} placeholder="$60,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Gross Margin</CardTitle>
           </CardHeader>
@@ -68,7 +68,7 @@ export default function RomiCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>ROMI</CardTitle>
           </CardHeader>
@@ -77,7 +77,7 @@ export default function RomiCalculatorTool() {
             <div className="text-sm text-muted-foreground">(Incremental profit − spend) ÷ spend</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Incremental Profit</CardTitle>
           </CardHeader>
@@ -86,7 +86,7 @@ export default function RomiCalculatorTool() {
             <div className="text-sm text-muted-foreground">Revenue × margin</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Revenue ÷ Spend</CardTitle>
           </CardHeader>

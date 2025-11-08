@@ -41,7 +41,7 @@ export default function FunnelConversionTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Top of Funnel</CardTitle>
           </CardHeader>
@@ -49,7 +49,7 @@ export default function FunnelConversionTool() {
             <Input value={top} onChange={(e) => setTop(e.target.value)} placeholder="50,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Step 1 Rate</CardTitle>
           </CardHeader>
@@ -57,7 +57,7 @@ export default function FunnelConversionTool() {
             <Input value={rate1} onChange={(e) => setRate1(e.target.value)} placeholder="40%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Step 2 Rate</CardTitle>
           </CardHeader>
@@ -65,7 +65,7 @@ export default function FunnelConversionTool() {
             <Input value={rate2} onChange={(e) => setRate2(e.target.value)} placeholder="25%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Step 3 Rate</CardTitle>
           </CardHeader>
@@ -76,7 +76,7 @@ export default function FunnelConversionTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Stage 1</CardTitle>
           </CardHeader>
@@ -85,7 +85,7 @@ export default function FunnelConversionTool() {
             <div className="text-sm text-muted-foreground">after step 1</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Stage 2</CardTitle>
           </CardHeader>
@@ -94,7 +94,7 @@ export default function FunnelConversionTool() {
             <div className="text-sm text-muted-foreground">after step 2</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Stage 3 (Converted)</CardTitle>
           </CardHeader>
@@ -106,7 +106,7 @@ export default function FunnelConversionTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader>
             <CardTitle>Overall Conversion</CardTitle>
           </CardHeader>

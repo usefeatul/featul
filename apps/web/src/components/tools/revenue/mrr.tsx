@@ -47,7 +47,7 @@ export default function MrrTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Plan inputs</CardTitle>
             <CardDescription>Enter customers and price per month for each plan or tier.</CardDescription>
@@ -107,7 +107,7 @@ export default function MrrTool() {
         </Card>
 
         {/* Summary card stacked below inputs */}
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Overall MRR and key aggregates for quick reference.</CardDescription>

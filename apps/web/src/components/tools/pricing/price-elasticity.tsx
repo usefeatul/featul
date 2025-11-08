@@ -50,7 +50,7 @@ export default function PriceElasticityTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Baseline Price</CardTitle>
           </CardHeader>
@@ -58,7 +58,7 @@ export default function PriceElasticityTool() {
             <Input value={p0} onChange={(e) => setP0(e.target.value)} placeholder="$20" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Baseline Quantity</CardTitle>
           </CardHeader>
@@ -66,7 +66,7 @@ export default function PriceElasticityTool() {
             <Input value={q0} onChange={(e) => setQ0(e.target.value)} placeholder="1000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>New Price</CardTitle>
           </CardHeader>
@@ -74,7 +74,7 @@ export default function PriceElasticityTool() {
             <Input value={p1} onChange={(e) => setP1(e.target.value)} placeholder="$25" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>New Quantity</CardTitle>
           </CardHeader>
@@ -85,7 +85,7 @@ export default function PriceElasticityTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Elasticity</CardTitle>
           </CardHeader>
@@ -94,7 +94,7 @@ export default function PriceElasticityTool() {
             <div className="text-sm text-muted-foreground">{classification}</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Price Change</CardTitle>
           </CardHeader>
@@ -103,7 +103,7 @@ export default function PriceElasticityTool() {
             <div className="text-sm text-muted-foreground">vs baseline</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Quantity Change</CardTitle>
           </CardHeader>
@@ -112,7 +112,7 @@ export default function PriceElasticityTool() {
             <div className="text-sm text-muted-foreground">vs baseline</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Revenue Impact</CardTitle>
           </CardHeader>

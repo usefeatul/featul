@@ -32,7 +32,7 @@ export default function TtfvCalculator() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter signups and first‑value completions for the period.</CardDescription>
@@ -83,7 +83,7 @@ export default function TtfvCalculator() {
           </CardFooter>
         </Card>
 
-        <Card className="bg-muted">
+        <Card >
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>TTFV rate and helpful context.</CardDescription>

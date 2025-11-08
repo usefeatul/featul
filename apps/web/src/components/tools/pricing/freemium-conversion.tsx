@@ -42,7 +42,7 @@ export default function FreemiumConversionTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Monthly Signups</CardTitle>
           </CardHeader>
@@ -50,7 +50,7 @@ export default function FreemiumConversionTool() {
             <Input value={signups} onChange={(e) => setSignups(e.target.value)} placeholder="10,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Activation Rate</CardTitle>
           </CardHeader>
@@ -58,7 +58,7 @@ export default function FreemiumConversionTool() {
             <Input value={activationPct} onChange={(e) => setActivationPct(e.target.value)} placeholder="60%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Paywall Exposure</CardTitle>
           </CardHeader>
@@ -66,7 +66,7 @@ export default function FreemiumConversionTool() {
             <Input value={paywallHitPct} onChange={(e) => setPaywallHitPct(e.target.value)} placeholder="50%" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Purchase Rate</CardTitle>
           </CardHeader>
@@ -77,7 +77,7 @@ export default function FreemiumConversionTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Conversion Rate</CardTitle>
           </CardHeader>
@@ -86,7 +86,7 @@ export default function FreemiumConversionTool() {
             <div className="text-sm text-muted-foreground">activation × paywall × purchase</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Activated Users</CardTitle>
           </CardHeader>
@@ -95,7 +95,7 @@ export default function FreemiumConversionTool() {
             <div className="text-sm text-muted-foreground">per month</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Paywall Hits</CardTitle>
           </CardHeader>
@@ -104,7 +104,7 @@ export default function FreemiumConversionTool() {
             <div className="text-sm text-muted-foreground">activated × paywall</div>
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Paid Conversions</CardTitle>
           </CardHeader>

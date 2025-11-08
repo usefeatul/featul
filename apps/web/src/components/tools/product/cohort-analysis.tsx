@@ -61,7 +61,7 @@ export default function CohortAnalysisTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Cohort inputs</CardTitle>
             <CardDescription>
@@ -161,7 +161,7 @@ export default function CohortAnalysisTool() {
           </CardContent>
         </Card>
         {/* Summary card stacked below inputs */}
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>

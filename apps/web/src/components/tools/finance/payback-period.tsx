@@ -37,7 +37,7 @@ export default function PaybackPeriodTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter CAC, ARPU and gross margin.</CardDescription>
@@ -64,7 +64,7 @@ export default function PaybackPeriodTool() {
           </CardContent>
         </Card>
 
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Payback and inputs overview.</CardDescription>

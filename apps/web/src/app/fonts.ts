@@ -1,19 +1,18 @@
-import { Manrope, Roboto } from "next/font/google";
+import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 
-// Primary font for body text
-export const manrope = Manrope({
+// Self-hosted via next/font: Plus Jakarta Sans for body text
+export const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-manrope",
+  variable: "--font-jakarta",
 });
 
-// Secondary font available for targeted usage
-export const roboto = Roboto({
+// Playfair Display for headings
+export const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
   display: "swap",
-  variable: "--font-roboto",
+  variable: "--font-playfair",
 });
 
-// Apply Manrope globally; expose Roboto via CSS variable
-export const fontsClassName = `${manrope.className} ${manrope.variable} ${roboto.variable}`;
+// Expose CSS variables only to avoid overriding Tailwind font-sans
+export const fontsClassName = `${jakarta.variable} ${playfair.variable}`;

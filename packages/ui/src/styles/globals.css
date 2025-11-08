@@ -18,9 +18,9 @@
   --primary-foreground: oklch(0.9848 0.0013 106.4233);
   --secondary: oklch(0.9699 0.0013 106.4238);
   --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(91.583% 0.0001 271.152);
+  --muted: oklch(92.797% 0.00011 271.152);
   --muted-foreground: oklch(0 0 0);
-  --accent: oklch(65.666% 0.00007 271.152);
+  --accent: oklch(67.968% 0.00008 271.152);
   --accent-foreground: oklch(0 0 0);
   --destructive: oklch(0.6280 0.2577 29.2339);
   --destructive-foreground: oklch(0.9848 0.0013 106.4233);
@@ -40,9 +40,10 @@
   --sidebar-accent-foreground: oklch(0 0 0);
   --sidebar-border: oklch(0.9219 0 0);
   --sidebar-ring: oklch(0.6984 0.1458 243.7185);
-  --font-sans: Inter,Inter Fallback,ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-heading: var(--font-playfair), ui-serif, Georgia, "Times New Roman", Times, serif;
   --font-serif: Times;
-  --font-mono: roobert,roobert Fallback,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  --font-mono: roobert, roobert Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --radius: 0.5rem;
   --shadow-2xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.03);
   --shadow-xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.03);
@@ -96,9 +97,10 @@
   --sidebar-accent-foreground: oklch(0.9848 0.0013 106.4233);
   --sidebar-border: oklch(0.3211 0 0);
   --sidebar-ring: oklch(0.6984 0.1458 243.7185);
-  --font-sans: Inter,Inter Fallback,ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-heading: var(--font-playfair), ui-serif, Georgia, "Times New Roman", Times, serif;
   --font-serif: Times;
-  --font-mono: roobert,roobert Fallback,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  --font-mono: roobert, roobert Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --radius: 0.5rem;
   --shadow-2xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.13);
   --shadow-xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.13);
@@ -152,8 +154,9 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: Inter,Inter Fallback,ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-  --font-mono: roobert,roobert Fallback,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-heading: var(--font-heading);
+  --font-mono: roobert, roobert Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-serif: Times;
 
   --radius-sm: calc(var(--radius) - 4px);

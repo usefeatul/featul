@@ -33,7 +33,7 @@ export default function CpaCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Ad Spend</CardTitle>
           </CardHeader>
@@ -41,7 +41,7 @@ export default function CpaCalculatorTool() {
             <Input value={spend} onChange={(e) => setSpend(e.target.value)} placeholder="$15,000" />
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>Acquisitions</CardTitle>
           </CardHeader>
@@ -52,7 +52,7 @@ export default function CpaCalculatorTool() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-muted">
+        <Card >
           <CardHeader>
             <CardTitle>CPA</CardTitle>
           </CardHeader>

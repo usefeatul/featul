@@ -37,7 +37,7 @@ export default function LtvTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter ARPU, monthly churn, and gross margin.</CardDescription>
@@ -69,7 +69,7 @@ export default function LtvTool() {
         </Card>
 
         {/* Summary card */}
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Gross‑margin adjusted lifetime value and implied lifetime.</CardDescription>

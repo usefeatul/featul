@@ -38,7 +38,7 @@ export default function GrowthRateTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter start and end values and the number of months.</CardDescription>
@@ -62,7 +62,7 @@ export default function GrowthRateTool() {
         </Card>
 
         {/* Summary card */}
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Period growth and monthly compound growth.</CardDescription>

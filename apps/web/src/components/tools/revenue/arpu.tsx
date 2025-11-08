@@ -28,7 +28,7 @@ export default function ArpuTool() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4">
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Inputs</CardTitle>
             <CardDescription>Enter monthly recurring revenue and active customers.</CardDescription>
@@ -52,7 +52,7 @@ export default function ArpuTool() {
         </Card>
 
         {/* Summary card */}
-        <Card className="bg-muted">
+        <Card>
           <CardHeader className="space-y-1 tracking-wide">
             <CardTitle className="text-base">Summary</CardTitle>
             <CardDescription>Average monthly revenue per user.</CardDescription>
