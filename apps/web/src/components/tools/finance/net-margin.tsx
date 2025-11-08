@@ -109,7 +109,6 @@ export default function NetMarginTool() {
           <p><strong>How does net margin differ from gross margin?</strong> Gross margin excludes operating expenses; net margin includes them.</p>
           <p><strong>What’s a good net margin in SaaS?</strong> It varies widely by stage; low single digits in growth, higher in mature firms.</p>
           <p><strong>Should I exclude one‑time costs?</strong> Track adjusted margin for comparability, but keep GAAP margin for completeness.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is net margin?","acceptedAnswer":{"@type":"Answer","text":"Net margin is the percent of revenue left after all expenses."}},{"@type":"Question","name":"How is net margin different from gross margin?","acceptedAnswer":{"@type":"Answer","text":"Gross margin excludes operating expenses, net margin includes them."}},{"@type":"Question","name":"What is a good net margin for SaaS?","acceptedAnswer":{"@type":"Answer","text":"Ranges by stage; low single digits in growth, higher when mature."}}]})}</script>
         </div>
       </div>
     </div>

@@ -131,20 +131,6 @@ export default function ConversionRateCalculatorTool() {
           If 2,500 users convert out of 100,000 visitors, CR = 2,500 ÷ 100,000 × 100% = 2.5%. Conversions per 1k visitors = 2,500 ÷ 100,000 × 1,000 = 25.
         </p>
       </div>
-
-      <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            { '@type': 'Question', name: 'How is conversion rate calculated?', acceptedAnswer: { '@type': 'Answer', text: 'Conversion rate = Conversions ÷ Visitors × 100%.' } },
-            { '@type': 'Question', name: 'What affects conversion rate?', acceptedAnswer: { '@type': 'Answer', text: 'Traffic quality, UX friction, value communication, and pricing.' } },
-            { '@type': 'Question', name: 'What is a good conversion rate?', acceptedAnswer: { '@type': 'Answer', text: 'It depends on industry and intent. E‑commerce often sees 1–3%, lead‑gen 2–7%, but compare to your own baseline.' } },
-            { '@type': 'Question', name: 'How can I improve conversion rate?', acceptedAnswer: { '@type': 'Answer', text: 'Align messaging to intent, simplify UX, add social proof, test pricing, and measure accurately by segment.' } },
-            { '@type': 'Question', name: 'Does price influence conversion rate?', acceptedAnswer: { '@type': 'Answer', text: 'Yes—perceived value and price framing affect conversion. Test bundles, discounts, and transparent comparables.' } },
-          ],
-        })}
-      </script>
     </div>
   );
 }

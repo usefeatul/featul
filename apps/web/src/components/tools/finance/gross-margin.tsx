@@ -110,7 +110,6 @@ export default function GrossMarginTool() {
           <p><strong>What’s a good SaaS gross margin?</strong> 70–85% is typical for mature SaaS; infra‑heavy platforms may be lower.</p>
           <p><strong>Does customer support belong in COGS?</strong> If it scales directly with product delivery, include an appropriate share.</p>
           <p><strong>How does discounting affect margin?</strong> Discounts reduce revenue and therefore margin; track discount impact separately.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is gross margin?","acceptedAnswer":{"@type":"Answer","text":"Gross margin is the percent of revenue left after COGS."}},{"@type":"Question","name":"What is a good gross margin for SaaS?","acceptedAnswer":{"@type":"Answer","text":"70–85% for mature SaaS, lower for infra‑heavy products."}},{"@type":"Question","name":"Should support be included in COGS?","acceptedAnswer":{"@type":"Answer","text":"Include costs tied directly to product delivery and usage."}}]})}</script>
         </div>
       </div>
     </div>

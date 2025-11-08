@@ -119,7 +119,6 @@ export default function PaybackPeriodTool() {
           <p><strong>What is a good CAC payback?</strong> Under 12 months for SMB; enterprise can tolerate longer with large deals.</p>
           <p><strong>Should I use gross or net revenue?</strong> Use ARPU and gross margin to reflect delivery costs.</p>
           <p><strong>How does churn affect payback?</strong> High churn reduces lifetime gross profit, effectively lengthening payback.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is CAC payback?","acceptedAnswer":{"@type":"Answer","text":"Time for gross profit to recover customer acquisition cost."}},{"@type":"Question","name":"What is a good payback period in SaaS?","acceptedAnswer":{"@type":"Answer","text":"Under 12 months for SMB motions; enterprise may be longer."}},{"@type":"Question","name":"How does churn impact payback?","acceptedAnswer":{"@type":"Answer","text":"Churn reduces lifetime gross profit, lengthening payback."}}]})}</script>
         </div>
       </div>
     </div>

@@ -108,7 +108,6 @@ export default function RevenuePerEmployeeTool() {
           <p><strong>What’s a good RPE?</strong> Varies widely; early SaaS may be $100k–$200k, mature companies higher.</p>
           <p><strong>Should I use FTE or total headcount?</strong> Prefer average FTEs during the period for consistency.</p>
           <p><strong>How often should I track RPE?</strong> Quarterly gives a balanced view across hiring cycles.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is revenue per employee?","acceptedAnswer":{"@type":"Answer","text":"RPE is revenue divided by number of employees, a proxy for efficiency."}},{"@type":"Question","name":"What is a good RPE for SaaS?","acceptedAnswer":{"@type":"Answer","text":"Early SaaS may be $100k–$200k per employee; mature can be higher."}},{"@type":"Question","name":"Should I use FTEs or total headcount?","acceptedAnswer":{"@type":"Answer","text":"Use average FTEs for the period to improve comparability."}}]})}</script>
         </div>
       </div>
     </div>

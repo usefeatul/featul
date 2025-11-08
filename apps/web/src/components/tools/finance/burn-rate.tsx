@@ -111,7 +111,6 @@ export default function BurnRateTool() {
           <p><strong>Which burn should I report—gross or net?</strong> Report net; it captures inflows and reflects actual cash usage.</p>
           <p><strong>Is high burn always bad?</strong> Not if ROI is compelling and cash runway is sufficient; monitor carefully.</p>
           <p><strong>How often should burn be tracked?</strong> Weekly for ops, monthly for reporting; alert on large spikes.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is burn rate?","acceptedAnswer":{"@type":"Answer","text":"Burn rate is the net monthly cash outflow (outflow minus inflow)."}},{"@type":"Question","name":"Should I report gross or net burn?","acceptedAnswer":{"@type":"Answer","text":"Net burn is more informative because it includes inflows."}},{"@type":"Question","name":"Is a high burn rate always bad?","acceptedAnswer":{"@type":"Answer","text":"Not necessarily—if ROI is strong and runway is sufficient."}}]})}</script>
         </div>
       </div>
     </div>

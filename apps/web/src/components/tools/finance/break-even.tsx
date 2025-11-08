@@ -125,7 +125,6 @@ export default function BreakEvenTool() {
           <p><strong>Is break-even the same as payback?</strong> No—break-even looks at units and revenue; payback focuses on recovering CAC via gross profit.</p>
           <p><strong>Which costs count as fixed?</strong> Costs that don’t vary with units in the short term (e.g., salaries, rent).</p>
           <p><strong>Can break-even change over time?</strong> Yes—pricing, cost structure, and volume mix shift margins and fixed costs.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is break-even?","acceptedAnswer":{"@type":"Answer","text":"The point where total revenue equals total costs and profit is zero."}},{"@type":"Question","name":"Which costs are fixed?","acceptedAnswer":{"@type":"Answer","text":"Fixed costs are expenses that do not change with production volume in the short term."}},{"@type":"Question","name":"How can I improve break-even?","acceptedAnswer":{"@type":"Answer","text":"Increase price, reduce variable costs, or spread fixed costs across more volume."}}]})}</script>
         </div>
       </div>
     </div>

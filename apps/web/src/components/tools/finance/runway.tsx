@@ -109,7 +109,6 @@ export default function RunwayTool() {
           <p><strong>Is runway based on net or gross burn?</strong> Use net burn (outflow − inflow). Gross burn ignores inflows and overstates risk.</p>
           <p><strong>What’s a good runway?</strong> 12–18 months is common for SaaS to safely iterate and raise; longer if sales cycles are slow.</p>
           <p><strong>How often should I recalculate?</strong> Monthly, or anytime burn or cash position changes materially.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is startup runway?","acceptedAnswer":{"@type":"Answer","text":"Runway is the number of months current cash covers given net monthly cash burn."}},{"@type":"Question","name":"Is runway based on net or gross burn?","acceptedAnswer":{"@type":"Answer","text":"Use net burn (outflow minus inflow). Gross burn overstates cash usage."}},{"@type":"Question","name":"What’s a good runway for a SaaS startup?","acceptedAnswer":{"@type":"Answer","text":"Aim for 12–18 months to iterate and fundraise; more if cycles are long."}}]})}</script>
         </div>
       </div>
     </div>

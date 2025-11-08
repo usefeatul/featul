@@ -107,19 +107,6 @@ export default function CpaCalculatorTool() {
           With $15,000 spend and 400 acquisitions, CPA = $15,000 ÷ 400 = $37.50. Evaluate against CLTV and payback goals to decide scaling.
         </p>
       </div>
-
-      <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            { '@type': 'Question', name: 'How is CPA calculated?', acceptedAnswer: { '@type': 'Answer', text: 'CPA = Total Ad Spend ÷ Number of Acquisitions.' } },
-            { '@type': 'Question', name: 'When should I use CPA?', acceptedAnswer: { '@type': 'Answer', text: 'Use CPA to compare acquisition efficiency across campaigns and channels.' } },
-            { '@type': 'Question', name: 'What is the difference between CPA and CAC?', acceptedAnswer: { '@type': 'Answer', text: 'CAC includes broader costs beyond media (salaries, tooling); CPA is typically media spend only.' } },
-            { '@type': 'Question', name: 'How can I lower CPA?', acceptedAnswer: { '@type': 'Answer', text: 'Improve targeting, creatives, and conversion rates; allocate budget to high‑return channels and test incrementality.' } },
-          ],
-        })}
-      </script>
     </div>
   );
 }

@@ -109,7 +109,6 @@ export default function OpexRatioTool() {
           <p><strong>What is a good OpEx ratio?</strong> It varies by model and stage; trend direction and quality of spend matter most.</p>
           <p><strong>Should COGS be included?</strong> No—OpEx excludes COGS; it covers operating expenses like R&D, S&M, and G&A.</p>
           <p><strong>How does revenue scale affect the ratio?</strong> As revenue grows, the ratio should generally decline if the business is scaling efficiently.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a good OpEx ratio?","acceptedAnswer":{"@type":"Answer","text":"It depends on the business model and stage; focus on trend and spend quality."}},{"@type":"Question","name":"Does OpEx include COGS?","acceptedAnswer":{"@type":"Answer","text":"No. OpEx excludes COGS and includes operating expenses like R&D, Sales & Marketing, and G&A."}},{"@type":"Question","name":"How should OpEx ratio change with scale?","acceptedAnswer":{"@type":"Answer","text":"It should decline as revenue grows if the business scales efficiently."}}]})}</script>
         </div>
       </div>
     </div>

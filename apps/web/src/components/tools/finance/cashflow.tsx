@@ -118,7 +118,6 @@ export default function CashFlowTool() {
           <p><strong>Is positive operating cash flow required to be healthy?</strong> It’s a strong signal but early growth may be investing in acquisition.</p>
           <p><strong>How often should cash flow be reviewed?</strong> Monthly management reporting and quarterly board reviews are common.</p>
           <p><strong>How does cash flow relate to runway?</strong> Persistent negative operating cash flow increases burn and shortens runway.</p>
-          <script type="application/ld+json" suppressHydrationWarning>{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is cash flow?","acceptedAnswer":{"@type":"Answer","text":"Cash flow is the net movement of cash across operating, investing, and financing activities."}},{"@type":"Question","name":"How often should cash flow be reviewed?","acceptedAnswer":{"@type":"Answer","text":"Monthly for management and quarterly for board reviews are typical."}},{"@type":"Question","name":"How does cash flow affect runway?","acceptedAnswer":{"@type":"Answer","text":"Negative operating cash flow increases burn and reduces runway."}}]})}</script>
         </div>
       </div>
     </div>
