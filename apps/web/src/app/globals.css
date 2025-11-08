@@ -3,6 +3,11 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
+@theme {
+
+  --text-xs: 0.8rem;
+}
+
 html {
   scroll-behavior: smooth;
 }

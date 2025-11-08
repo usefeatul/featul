@@ -19,7 +19,7 @@ export function HeroContent() {
       </h1>
 
       {/* Subtitle */}
-      <p className="mt-6 max-w-xl sm:max-w-2xl lg:max-w-3xl text-base sm:text-base md:text-lg leading-relaxed text-accent text-balance">
+      <p className="mt-6 max-w-xl sm:max-w-2xl lg:max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed text-accent text-balance">
         Feedgot is a privacy-first, open-source customer feedback platform that's both insightful and lightweight
       </p>
 
@@ -33,27 +33,20 @@ export function HeroContent() {
         />
         <LiveDemo className="w-full sm:w-auto text-accent" />
       </div>
-
-      {/* Reassurance microcopy */}
-      <p className="mt-3 text-xs sm:text-sm text-accent">
-        no credit card required. no obligation. quick setup.
-      </p>
-
-      {/* Feature highlights row */}
       <div
-        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base text-accent"
+        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs  text-accent"
         aria-label="Key highlights"
       >
         <span className="inline-flex items-center gap-2">
-          <FreeIcon width={18} height={18} className="text-foreground" />
+          <FreeIcon width={14} height={14} className="text-foreground" />
           Free forever
         </span>
         <span className=" inline-flex items-center gap-2">
-          <SetupIcon width={18} height={18} className="text-foreground" />
+          <SetupIcon width={14} height={14} className="text-foreground" />
           30-second setup
         </span>
         <span className="inline-flex items-center gap-2">
-          <UsersIcon width={18} height={18} className="text-foreground" />
+          <UsersIcon width={14} height={14} className="text-foreground" />
           Unlimited users
         </span>
       </div>
