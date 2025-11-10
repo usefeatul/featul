@@ -58,7 +58,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center text-accent hover:text-foreground transition-colors rounded-md px-2.5 py-2.5 hover:bg-muted min-h-[32px]"
+                className="inline-flex items-center rounded-md h-8 px-3 text-accent hover:text-foreground transition-colors hover:bg-muted"
               >
                 {item.name}
               </Link>
@@ -67,7 +67,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center text-accent hover:text-foreground transition-colors rounded-md px-2.5 py-2.5 hover:bg-muted min-h-[32px]"
+                className="inline-flex items-center rounded-md h-8 px-3 text-accent hover:text-foreground transition-colors hover:bg-muted"
               >
                 {item.name}
                 {item.name === "Docs" && (
@@ -84,18 +84,18 @@ export default function Navbar() {
           </div>
 
           {/* Auth + CTA */}
-          <div className="hidden md:flex items-center gap-4 ml-2">
+          <div className="hidden md:flex items-center gap-4">
             {navigationConfig.auth.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="text-sm font-medium text-accent hover:text-foreground transition-colors hover:bg-muted rounded-md px-2.5 py-2.5 min-h-[32px]"
+                className="text-sm font-medium inline-flex items-center rounded-md h-8 px-3 text-accent hover:text-foreground transition-colors hover:bg-muted"
               >
                 {item.name}
               </Link>
             ))}
-            <Button asChild className="font-semibold">
+            <Button asChild size="sm" className="font-semibold">
               <Link href="/signup" data-sln-event="cta: start for free clicked">
                 Start for free
               </Link>
