@@ -32,7 +32,6 @@ export default function Home() {
       <Create />
       <Faq />
       <StatsSection />
-      {/* Debug overlay and controls for layout alignment checks */}
       <DebugTools />
     </main>
   )
