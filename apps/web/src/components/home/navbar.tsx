@@ -57,7 +57,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center  text-accent hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-muted"
+                className="inline-flex items-center text-accent hover:text-foreground transition-colors rounded-md px-2.5 py-2.5 hover:bg-muted min-h-[32px]"
               >
                 {item.name}
               </Link>
@@ -66,7 +66,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center  text-accent  hover:text-foreground transition-colors rounded-md px-2 py-2 hover:bg-muted"
+                className="inline-flex items-center text-accent hover:text-foreground transition-colors rounded-md px-2.5 py-2.5 hover:bg-muted min-h-[32px]"
               >
                 {item.name}
                 {item.name === "Docs" && (
@@ -87,7 +87,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="text-sm font-medium text-accent hover:text-foreground transition-colors hover:bg-muted rounded-md px-2 py-2"
+                className="text-sm font-medium text-accent hover:text-foreground transition-colors hover:bg-muted rounded-md px-2.5 py-2.5 min-h-[32px]"
               >
                 {item.name}
               </Link>

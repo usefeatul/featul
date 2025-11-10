@@ -9,7 +9,7 @@ export default function FeaturesSection() {
         <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <section>
             <div className="py-24">
-                <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
+                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
                     <h2 className="text-foreground text-balance text-3xl sm:text-4xl font-semibold">
                         <span className="text-muted-foreground">jean daly Marketing teams with</span> AI-driven solutions
                     </h2>
@@ -17,7 +17,7 @@ export default function FeaturesSection() {
                         <div className="col-span-full space-y-4">
                             <Card
                                 className="overflow-hidden px-6 sm:col-span-2">
-                                <div className="mask-b-from-75% mx-auto -mt-2 max-w-sm px-2 pt-8">
+                                <div className="mask-b-from-75% mx-auto mt-0 max-w-sm px-2 pt-8">
                                     <AIAssistantIllustration />
                                 </div>
                             </Card>

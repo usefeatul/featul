@@ -23,7 +23,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function Home() {
   return (
-    <main className="min-h-screen pt-16">
+    <main className="min-h-screen pt-16 space-y-16 md:space-y-24">
       <Hero />
       <Listening />
       <BentoFeature />

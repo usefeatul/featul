@@ -63,7 +63,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="block rounded-md px-2 py-2 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted"
+                className="block rounded-md px-3 py-2.5 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted min-h-[36px]"
                 onClick={onClose}
               >
                 {item.name}

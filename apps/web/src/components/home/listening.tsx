@@ -8,7 +8,7 @@ export default function Listening() {
   return (
     <Container maxWidth="6xl" className="px-6 sm:px-16 lg:px-20 xl:px-24">
       <section className="py-16">
-        <div className="mx-auto w-full max-w-6xl px-2 sm:px-4">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl font-bold">
             Build what your users actually need.
             <span className="block mt-1">Listen and act.</span>

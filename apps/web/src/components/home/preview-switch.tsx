@@ -16,7 +16,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
       </div>
 
       <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
-        <div className="relative flex items-center gap-1.5 rounded-xl bg-white/80 backdrop-blur-md ring-1 ring-border/60 shadow-2xl px-2 py-1.5">
+        <div className="relative flex items-center gap-1.5 rounded-xl bg-white/95 backdrop-blur-md ring-1 ring-border/60 shadow-2xl px-2 py-1.5">
           {showHint && (
             <div className="pointer-events-none absolute inset-0 rounded-xl ring-2 ring-border/60 animate-pulse"></div>
           )}
@@ -25,7 +25,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === 'dashboard' ? 'bg-primary text-white border border-border' : 'bg-transparent text-muted-foreground hover:bg-white/70'} rounded-xl px-2`}
+              className={`${active === 'dashboard' ? 'bg-primary text-white border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange('dashboard')}
               aria-pressed={active === 'dashboard'}
             >
@@ -34,7 +34,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === 'roadmap' ? 'bg-primary text-white border border-border' : 'bg-transparent text-muted-foreground hover:bg-white/70'} rounded-xl px-2`}
+              className={`${active === 'roadmap' ? 'bg-primary text-white border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange('roadmap')}
               aria-pressed={active === 'roadmap'}
             >
@@ -43,7 +43,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === 'changelog' ? 'bg-primary text-white border border-border' : 'bg-transparent text-muted-foreground hover:bg-white/70'} rounded-xl px-2`}
+              className={`${active === 'changelog' ? 'bg-primary text-white border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange('changelog')}
               aria-pressed={active === 'changelog'}
             >

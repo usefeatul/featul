@@ -8,7 +8,7 @@ import { LiveDemo } from "../global/live-demo";
 
 export function HeroContent() {
   return (
-    <div className="mx-auto max-w-5xl lg:max-w-6xl px-0 text-left">
+    <div className="mx-auto max-w-5xl lg:max-w-6xl px-4 text-left">
       {/* Main heading */}
       <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-semibold text-foreground text-balance">
         The
@@ -28,10 +28,10 @@ export function HeroContent() {
         <HotkeyLink
           href="/signup"
           hotkeyHref="https://dashboard.feedbot.com"
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto min-h-[40px] min-w-[40px]"
           label="Add to your website"
         />
-        <LiveDemo className="w-full sm:w-auto text-accent" />
+        <LiveDemo className="w-full sm:w-auto min-h-[40px] min-w-[40px]" />
       </div>
       <div
         className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs  text-accent"

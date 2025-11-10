@@ -62,39 +62,63 @@ function collectDiagnostics(): Diagnostic[] {
   const main = document.querySelector("main") ?? document.body;
   const sections = Array.from(main.querySelectorAll("section"));
 
-  // 1) Baseline grid and spacing checks
-  let prevRect: DOMRect | null = null;
+  // 1) Baseline grid and spacing checks (measure content area, not full section box)
+  let prevContentBottom: number | null = null;
   const nodesForGrid = sections.length ? sections : Array.from(main.children) as HTMLElement[];
   nodesForGrid.forEach((el, idx) => {
-    const rect = (el as HTMLElement).getBoundingClientRect();
-    const leftDelta = nearestGridDelta(rect.left);
-    const rightDelta = nearestGridDelta(rect.right);
-    if (leftDelta > 1.5) {
-      diags.push({ id: `grid-left-${idx}`, message: `Left edge off baseline by ~${leftDelta.toFixed(1)}px`, severity: "warn", rect });
+    const target = (el.firstElementChild as HTMLElement) ?? (el as HTMLElement);
+    const rect = target.getBoundingClientRect();
+    const styles = getComputedStyle(target);
+    const padL = parseFloat(styles.paddingLeft || "0");
+    const padR = parseFloat(styles.paddingRight || "0");
+    const padT = parseFloat(styles.paddingTop || "0");
+    const padB = parseFloat(styles.paddingBottom || "0");
+    const borderL = parseFloat(styles.borderLeftWidth || "0");
+    const borderR = parseFloat(styles.borderRightWidth || "0");
+    const borderT = parseFloat(styles.borderTopWidth || "0");
+    const borderB = parseFloat(styles.borderBottomWidth || "0");
+
+    const contentLeft = rect.left + padL + borderL;
+    const contentRight = rect.right - padR - borderR;
+    const contentTop = rect.top + padT + borderT;
+    const contentBottom = rect.bottom - padB - borderB;
+
+    const leftDelta = nearestGridDelta(contentLeft);
+    const rightDelta = nearestGridDelta(contentRight);
+    if (leftDelta > 3.5) {
+      diags.push({ id: `grid-left-${idx}`, message: `Left content edge off 8px grid by ~${leftDelta.toFixed(1)}px`, severity: "warn", rect });
     }
-    if (rightDelta > 1.5) {
-      diags.push({ id: `grid-right-${idx}`, message: `Right edge off baseline by ~${rightDelta.toFixed(1)}px`, severity: "warn", rect });
+    if (rightDelta > 3.5) {
+      diags.push({ id: `grid-right-${idx}`, message: `Right content edge off 8px grid by ~${rightDelta.toFixed(1)}px`, severity: "warn", rect });
     }
-    if (prevRect) {
-      const gap = rect.top - prevRect.bottom;
-      const gapDelta = nearestGridDelta(gap);
-      if (gap < 24) {
-        diags.push({ id: `spacing-small-${idx}`, message: `Section spacing likely too tight: ${Math.round(gap)}px (min ~24px)`, severity: "warn", rect });
-      } else if (gapDelta > 1.5) {
+    if (prevContentBottom !== null) {
+      const visualGap = contentTop - prevContentBottom; // accounts for inner paddings/borders
+      const gapDelta = nearestGridDelta(visualGap);
+      if (visualGap < 24) {
+        diags.push({ id: `spacing-small-${idx}`, message: `Section spacing likely tight: ~${Math.round(visualGap)}px (target ≥24px)`, severity: "warn", rect });
+      } else if (gapDelta > 3.5) {
         diags.push({ id: `spacing-grid-${idx}`, message: `Section spacing not on 8px rhythm: offset ~${gapDelta.toFixed(1)}px`, severity: "info", rect });
       }
     }
-    prevRect = rect;
+    prevContentBottom = contentBottom;
   });
 
   // 2) Safe area margins (content too close to viewport edges)
   nodesForGrid.forEach((el, idx) => {
-    const rect = (el as HTMLElement).getBoundingClientRect();
-    if (rect.left < 12) {
-      diags.push({ id: `safe-left-${idx}`, message: `Content left edge within 12px of viewport`, severity: "error", rect });
+    const target = (el.firstElementChild as HTMLElement) ?? (el as HTMLElement);
+    const rect = target.getBoundingClientRect();
+    const styles = getComputedStyle(target);
+    const padL = parseFloat(styles.paddingLeft || "0");
+    const padR = parseFloat(styles.paddingRight || "0");
+    const borderL = parseFloat(styles.borderLeftWidth || "0");
+    const borderR = parseFloat(styles.borderRightWidth || "0");
+    const contentLeft = rect.left + padL + borderL;
+    const contentRight = rect.right - padR - borderR;
+    if (contentLeft < 12) {
+      diags.push({ id: `safe-left-${idx}`, message: `Content left within 12px of viewport`, severity: "error", rect });
     }
-    if (window.innerWidth - rect.right < 12) {
-      diags.push({ id: `safe-right-${idx}`, message: `Content right edge within 12px of viewport`, severity: "error", rect });
+    if (window.innerWidth - contentRight < 12) {
+      diags.push({ id: `safe-right-${idx}`, message: `Content right within 12px of viewport`, severity: "error", rect });
     }
   });
 
