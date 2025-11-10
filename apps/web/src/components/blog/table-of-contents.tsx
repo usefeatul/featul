@@ -81,8 +81,13 @@ export function TableOfContents({ items, className, title = "Table of content" }
       const nodes = Array.from(list.children) as HTMLElement[]
       const count = Math.min(5, nodes.length)
       if (count === 0) return
-      const height = nodes.slice(0, count).reduce((sum, el) => sum + el.getBoundingClientRect().height, 0)
-      setCollapsedHeight(Math.ceil(height))
+      const first = nodes[0]
+      const last = nodes[count - 1]
+      // Include spacing introduced by Tailwind's space-y utilities by using offsets
+      if (!last) return
+      const height = (last.offsetTop + last.offsetHeight) - (first?.offsetTop ?? 0)
+      // Add a small buffer to avoid clipping due to rounding/scrollbar
+      setCollapsedHeight(Math.ceil(height) + 2)
     }
 
     // Initial compute and a microtask to catch font/layout changes
@@ -178,7 +183,9 @@ export function TableOfContents({ items, className, title = "Table of content" }
           ))}
         </ul>
       ) : (
-        <ScrollArea className="pr-1" style={collapsedHeight ? { height: collapsedHeight } : undefined}>
+        <ScrollArea className={cn("pr-1", collapsedHeight ? undefined : "h-44")}
+          style={collapsedHeight ? { height: collapsedHeight } : undefined}
+        >
           <ul className="space-y-1 list-none pl-0 m-0">
             {items.map((item, i) => (
               <li key={item.id} className={cn("leading-snug text-left")}> 
