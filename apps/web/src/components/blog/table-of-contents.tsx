@@ -35,6 +35,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
         "text-sm text-accent",
         className
       )}
+       data-component="TableOfContents"
     >
       <div className="text-md font-bold text-foreground mb-2">{title}</div>
       {expanded ? (

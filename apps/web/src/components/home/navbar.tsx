@@ -5,6 +5,7 @@ import { Container } from "../global/container";
 import { ArrowIcon } from "@feedgot/ui/icons/arrow";
 import { MenuIcon } from "@feedgot/ui/icons/menu";
 import { cn } from "@feedgot/ui/lib/utils";
+import { Separator } from "@feedgot/ui/components/separator";
 import { useEffect, useState } from "react";
 import { Button } from "@feedgot/ui/components/button";
 import { Logo } from "../global/logo";
@@ -26,7 +27,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Ensure mobile menu doesn't remain open when switching to desktop
   useEffect(() => {
     if (!isMobile && mobileOpen) {
       setMobileOpen(false);
@@ -79,7 +79,9 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
-          <span className="hidden md:inline-block mx-2 text-accent">|</span>
+          <div className="hidden md:flex items-center mx-2 h-4">
+            <Separator orientation="vertical" className="h-full" />
+          </div>
 
           {/* Auth + CTA */}
           <div className="hidden md:flex items-center gap-4 ml-2">

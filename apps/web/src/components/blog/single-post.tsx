@@ -34,7 +34,7 @@ export function SinglePost({ post }: SinglePostProps) {
             aria-label="Breadcrumb"
             className="mb-3 text-sm text-muted-foreground"
           >
-            <Link href="/blog" className=" hover:text-primary">
+            <Link href="/blog" className="inline-flex items-center h-8 px-2 -mx-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 hover:text-primary">
               Blog
             </Link>
             <span aria-hidden className="mx-1">
