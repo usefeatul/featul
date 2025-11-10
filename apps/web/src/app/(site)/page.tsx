@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { createPageMetadata } from '@/lib/seo'
 import { DEFAULT_DESCRIPTION } from '@/config/seo'
 import { Hero } from '@/components/home/hero'
-import Feature from '@/components/home/feature'
 import Faq from '@/components/home/faq'
 // import BentoFeature from '@/components/home/featureCard'
 import StatsSection from '@/components/home/cta'
@@ -28,7 +27,6 @@ export default function Home() {
       <FeaturesSection />
       {/* <BentoFeature /> */}
       <Setup />
-      <Feature />
       <Create />
       <Faq />
       <StatsSection />
