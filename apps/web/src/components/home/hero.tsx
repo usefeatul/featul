@@ -37,12 +37,9 @@ export function Hero() {
                   className="object-cover"
                 />
               </div>
-
               <PreviewSwitchPill active={active} onChange={setActive} showHint={showPillHint} />
               </div>
             </div>
-
-            {/* Subtle ring nudge occurs inside the pill above */}
           </div>
         </div>
       </Container>

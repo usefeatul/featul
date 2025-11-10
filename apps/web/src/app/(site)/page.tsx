@@ -32,7 +32,6 @@ export default function Home() {
       <Create />
       <Faq />
       <StatsSection />
-      <DebugTools />
     </main>
   )
 }

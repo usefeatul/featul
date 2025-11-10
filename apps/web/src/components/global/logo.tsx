@@ -1,12 +1,12 @@
 import Image from 'next/image'
 
-export function Logo({ className = '' }: { className?: string }) {
+export function Logo({ className = '', size = 24 }: { className?: string; size?: number }) {
   return (
     <Image
       src="/logo1.png"
       alt="Feedgot"
-      width={24}
-      height={24}
+      width={size}
+      height={size}
       priority
       className={className}
     />

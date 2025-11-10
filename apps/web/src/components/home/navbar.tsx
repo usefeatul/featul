@@ -50,8 +50,8 @@ export default function Navbar() {
             aria-label="Go home"
             className="inline-flex items-center gap-2"
           >
-            <Logo />
-            <span className="text-md font-medium">Feedgot</span>
+            <Logo size={26} />
+            {/* <span className="text-lg font-medium">Feedgot</span> */}
           </Link>
           <nav className="hidden md:flex items-center font-medium text-sm gap-6 md:ml-auto">
             {before.map((item) => (
