@@ -26,21 +26,21 @@ export default async function CategoryPage({ params }: Props) {
   if (!cat) return notFound()
 
   return (
-    <main className="min-[height:calc(100vh-64px)]  pt-16 bg-background">
+    <main className="min-h-[calc(100vh-64px)] pt-16 bg-background">
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
-        <section className="py-12 sm:py-16">
+        <section className="py-12 sm:py-16" data-component="ToolsCategory">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <Breadcrumb className="mb-6">
               <BreadcrumbList className="text-accent">
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/tools">Tools</Link>
+                    <Link href="/tools" className="inline-flex h-8 items-center px-2">Tools</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/tools/categories">Categories</Link>
+                    <Link href="/tools/categories" className="inline-flex h-8 items-center px-2">Categories</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />

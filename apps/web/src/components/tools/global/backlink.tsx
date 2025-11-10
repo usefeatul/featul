@@ -15,11 +15,11 @@ export default function BackLink({ text = "View our other tools", className = "m
   const href = category ? `/tools/categories/${category}` : "/tools/categories"
 
   return (
-    <div className={className}>
+    <div className={className} data-component="BackLink">
       <Link
         href={href}
         aria-label="Back to our tools categories"
-        className="inline-flex items-center text-sm text-accent hover:text-foreground tracking-wide"
+        className="inline-flex h-8 items-center px-2 rounded-sm text-sm text-accent hover:text-foreground tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
       >
         <ArrowLeft className="mr-1 h-4 w-4" /> {text}
       </Link>

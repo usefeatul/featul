@@ -15,7 +15,7 @@ export default function ToolsIndexPage() {
   return (
     <main className="min-[height:calc(100vh-64px)]  pt-16 bg-background">
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
-        <section className="py-12 sm:py-16">
+        <section className="py-12 sm:py-16" data-component="ToolsIndex">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <p className="text-sm text-accent ">Growth tools • {totalTools} calculators</p>
             <h1 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl mt-4">Practical SaaS calculators for clear, data‑led decisions</h1>

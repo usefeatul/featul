@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, Fragment } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@feedgot/ui/components/button";
 
 type Severity = "info" | "warn" | "error";
@@ -175,9 +176,10 @@ function collectDiagnostics(): Diagnostic[] {
 export function DebugTools() {
   const [showGrid, setShowGrid] = usePersistentBoolean("__debug_grid", false);
   const [showOutline, setShowOutline] = usePersistentBoolean("__debug_outline", false);
-  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showAnalysis, setShowAnalysis] = usePersistentBoolean("__debug_analysis", false);
   const [results, setResults] = useState<Diagnostic[]>([]);
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -210,6 +212,16 @@ export function DebugTools() {
     setResults(diags);
     setShowAnalysis(true);
   }
+
+  // Auto re-run analysis when navigating if analysis mode is on
+  useEffect(() => {
+    if (!mounted) return;
+    if (showAnalysis) {
+      const diags = collectDiagnostics();
+      setResults(diags);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, showAnalysis, mounted]);
 
   function copyReport() {
     const text = results
