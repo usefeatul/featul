@@ -41,6 +41,7 @@ export default function Navbar() {
           ? "backdrop-blur-lg bg-background/70 border-b border-border"
           : "bg-background"
       )}
+      data-component="Navbar"
     >
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-6xl px-0 sm:px-6 flex items-center justify-between h-14">

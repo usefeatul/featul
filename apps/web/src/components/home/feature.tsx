@@ -7,7 +7,7 @@ import { AIAssistantIllustration } from '@/components/home/illustrations/AIAssis
 export default function FeaturesSection() {
     return (
         <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
-        <section>
+        <section data-component="FeaturesSection">
             <div className="py-24">
                 <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
                     <h2 className="text-foreground text-balance text-3xl sm:text-4xl font-semibold">

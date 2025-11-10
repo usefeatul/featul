@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Fragment } from "react";
 import { Button } from "@feedgot/ui/components/button";
 
 type Severity = "info" | "warn" | "error";
@@ -9,6 +9,7 @@ type Diagnostic = {
   message: string;
   severity: Severity;
   rect?: DOMRect;
+  component?: string;
 };
 
 function usePersistentBoolean(key: string, defaultValue: boolean) {
@@ -65,6 +66,12 @@ function collectDiagnostics(): Diagnostic[] {
   // 1) Baseline grid and spacing checks (measure content area, not full section box)
   let prevContentBottom: number | null = null;
   const nodesForGrid = sections.length ? sections : Array.from(main.children) as HTMLElement[];
+  const getComponentName = (el: Element | null): string | undefined => {
+    if (!el) return undefined;
+    const tagged = el.closest('[data-component]') as HTMLElement | null;
+    return tagged?.getAttribute('data-component') ?? undefined;
+  };
+
   nodesForGrid.forEach((el, idx) => {
     const target = (el.firstElementChild as HTMLElement) ?? (el as HTMLElement);
     const rect = target.getBoundingClientRect();
@@ -85,19 +92,20 @@ function collectDiagnostics(): Diagnostic[] {
 
     const leftDelta = nearestGridDelta(contentLeft);
     const rightDelta = nearestGridDelta(contentRight);
+    const component = getComponentName(target);
     if (leftDelta > 3.5) {
-      diags.push({ id: `grid-left-${idx}`, message: `Left content edge off 8px grid by ~${leftDelta.toFixed(1)}px`, severity: "warn", rect });
+      diags.push({ id: `grid-left-${idx}`, message: `Left content edge off 8px grid by ~${leftDelta.toFixed(1)}px`, severity: "warn", rect, component });
     }
     if (rightDelta > 3.5) {
-      diags.push({ id: `grid-right-${idx}`, message: `Right content edge off 8px grid by ~${rightDelta.toFixed(1)}px`, severity: "warn", rect });
+      diags.push({ id: `grid-right-${idx}`, message: `Right content edge off 8px grid by ~${rightDelta.toFixed(1)}px`, severity: "warn", rect, component });
     }
     if (prevContentBottom !== null) {
       const visualGap = contentTop - prevContentBottom; // accounts for inner paddings/borders
       const gapDelta = nearestGridDelta(visualGap);
       if (visualGap < 24) {
-        diags.push({ id: `spacing-small-${idx}`, message: `Section spacing likely tight: ~${Math.round(visualGap)}px (target ≥24px)`, severity: "warn", rect });
+        diags.push({ id: `spacing-small-${idx}`, message: `Section spacing likely tight: ~${Math.round(visualGap)}px (target ≥24px)`, severity: "warn", rect, component });
       } else if (gapDelta > 3.5) {
-        diags.push({ id: `spacing-grid-${idx}`, message: `Section spacing not on 8px rhythm: offset ~${gapDelta.toFixed(1)}px`, severity: "info", rect });
+        diags.push({ id: `spacing-grid-${idx}`, message: `Section spacing not on 8px rhythm: offset ~${gapDelta.toFixed(1)}px`, severity: "info", rect, component });
       }
     }
     prevContentBottom = contentBottom;
@@ -114,11 +122,12 @@ function collectDiagnostics(): Diagnostic[] {
     const borderR = parseFloat(styles.borderRightWidth || "0");
     const contentLeft = rect.left + padL + borderL;
     const contentRight = rect.right - padR - borderR;
+    const component = getComponentName(target);
     if (contentLeft < 12) {
-      diags.push({ id: `safe-left-${idx}`, message: `Content left within 12px of viewport`, severity: "error", rect });
+      diags.push({ id: `safe-left-${idx}`, message: `Content left within 12px of viewport`, severity: "error", rect, component });
     }
     if (window.innerWidth - contentRight < 12) {
-      diags.push({ id: `safe-right-${idx}`, message: `Content right within 12px of viewport`, severity: "error", rect });
+      diags.push({ id: `safe-right-${idx}`, message: `Content right within 12px of viewport`, severity: "error", rect, component });
     }
   });
 
@@ -127,7 +136,7 @@ function collectDiagnostics(): Diagnostic[] {
   buttons.forEach((btn, i) => {
     const r = btn.getBoundingClientRect();
     if (r.width < 32 || r.height < 32) {
-      diags.push({ id: `tap-${i}`, message: `Tap target small (${Math.round(r.width)}×${Math.round(r.height)}px). Aim ≥32×32px`, severity: "warn", rect: r });
+      diags.push({ id: `tap-${i}`, message: `Tap target small (${Math.round(r.width)}×${Math.round(r.height)}px). Aim ≥32×32px`, severity: "warn", rect: r, component: getComponentName(btn) });
     }
   });
 
@@ -155,7 +164,7 @@ function collectDiagnostics(): Diagnostic[] {
     if (fg && bg) {
       const ratio = contrastRatio(fg, bg);
       if (ratio < 4.5) {
-        diags.push({ id: `contrast-${i}`, message: `Low contrast (~${ratio.toFixed(2)}:1). Target ≥4.5:1 for text`, severity: "warn", rect: el.getBoundingClientRect() });
+        diags.push({ id: `contrast-${i}`, message: `Low contrast (~${ratio.toFixed(2)}:1). Target ≥4.5:1 for text`, severity: "warn", rect: el.getBoundingClientRect(), component: getComponentName(el) });
       }
     }
   });
@@ -234,20 +243,38 @@ export function DebugTools() {
 
       {mounted && showAnalysis && results.map((r) =>
         r.rect ? (
-          <div
-            key={r.id}
-            aria-hidden
-            className="pointer-events-none fixed z-[9998]"
-            style={{
-              left: `${Math.max(0, r.rect.left)}px`,
-              top: `${Math.max(0, r.rect.top)}px`,
-              width: `${Math.max(0, r.rect.width)}px`,
-              height: `${Math.max(0, r.rect.height)}px`,
-              border: `2px solid ${r.severity === "error" ? "rgba(255,0,0,0.8)" : r.severity === "warn" ? "rgba(255,140,0,0.8)" : "rgba(0,112,244,0.7)"}`,
-              boxShadow: "0 0 0 2px rgba(0,0,0,0.05)",
-              background: r.severity === "error" ? "rgba(255,0,0,0.06)" : r.severity === "warn" ? "rgba(255,140,0,0.06)" : "rgba(0,112,244,0.06)",
-            }}
-          />
+          <Fragment key={r.id}>
+            <div
+              aria-hidden
+              className="pointer-events-none fixed z-[9998]"
+              style={{
+                left: `${Math.max(0, r.rect.left)}px`,
+                top: `${Math.max(0, r.rect.top)}px`,
+                width: `${Math.max(0, r.rect.width)}px`,
+                height: `${Math.max(0, r.rect.height)}px`,
+                border: `2px solid ${r.severity === "error" ? "rgba(255,0,0,0.8)" : r.severity === "warn" ? "rgba(255,140,0,0.8)" : "rgba(0,112,244,0.7)"}`,
+                boxShadow: "0 0 0 2px rgba(0,0,0,0.05)",
+                background: r.severity === "error" ? "rgba(255,0,0,0.06)" : r.severity === "warn" ? "rgba(255,140,0,0.06)" : "rgba(0,112,244,0.06)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none fixed z-[9999] text-[11px]"
+              style={{
+                left: `${Math.max(0, r.rect.left)}px`,
+                top: `${Math.max(0, r.rect.top - 18)}px`,
+                padding: "2px 6px",
+                borderRadius: "6px",
+                color: r.severity === "error" ? "#7f1d1d" : r.severity === "warn" ? "#7c2d12" : "#1e40af",
+                background: r.severity === "error" ? "rgba(255,0,0,0.12)" : r.severity === "warn" ? "rgba(255,140,0,0.12)" : "rgba(0,112,244,0.12)",
+                border: `1px solid ${r.severity === "error" ? "rgba(255,0,0,0.5)" : r.severity === "warn" ? "rgba(255,140,0,0.5)" : "rgba(0,112,244,0.5)"}`,
+                maxWidth: "56ch",
+                backdropFilter: "blur(2px)",
+              }}
+            >
+              {r.component ? `[${r.component}] ` : ""}{r.severity.toUpperCase()}: {r.message}
+            </div>
+          </Fragment>
         ) : null
       )}
 
@@ -292,7 +319,7 @@ export function DebugTools() {
               {results.slice(0, 12).map((r) => (
                 <li key={r.id}>
                   <span className={r.severity === "error" ? "text-red-600" : r.severity === "warn" ? "text-orange-600" : "text-blue-600"}>
-                    {r.severity.toUpperCase()}: {r.message}
+                    {r.component ? `[${r.component}] ` : ""}{r.severity.toUpperCase()}: {r.message}
                   </span>
                 </li>
               ))}

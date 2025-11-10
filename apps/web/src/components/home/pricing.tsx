@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@feedgot/ui/compon
 
 export default function Pricing() {
     return (
-        <div className="bg-background relative py-12 sm:py-16 md:py-24">
+        <div className="bg-background relative py-12 sm:py-16 md:py-24" data-component="Pricing">
             <div className="mx-auto max-w-6xl px-4 sm:px-6">
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">Pricing that scale with your business</h2>

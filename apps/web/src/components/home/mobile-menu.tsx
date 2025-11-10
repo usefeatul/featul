@@ -28,7 +28,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   if (!open || !isMobile) return null;
 
   return (
-    <div className="md:hidden fixed inset-0 z-[60] bg-background">
+    <div className="md:hidden fixed inset-0 z-[60] bg-background" data-component="MobileMenu">
       {/* Sheet header */}
       <div className="flex items-center justify-between h-14  px-4 sm:px-16 lg:px-20 xl:px-24">
         <span className="inline-flex items-center gap-2">

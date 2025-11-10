@@ -4,7 +4,7 @@ import { LiveDemo } from "../global/live-demo";
 
 export default function CTA() {
   return (
-    <section className="bg-background py-12 sm:py-16">
+    <section className="bg-background py-12 sm:py-16" data-component="CTA">
       <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="bg-white p-6 sm:p-8 rounded-lg border border-black/10 ring-1 ring-border/60 ring-offset-1 ring-offset-background transition-all">

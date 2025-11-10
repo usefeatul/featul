@@ -25,7 +25,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === 'dashboard' ? 'bg-primary text-white border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
+              className={`${active === 'dashboard' ? 'bg-primary text-foreground border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange('dashboard')}
               aria-pressed={active === 'dashboard'}
             >
@@ -34,7 +34,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === 'roadmap' ? 'bg-primary text-white border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
+              className={`${active === 'roadmap' ? 'bg-primary text-foreground border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange('roadmap')}
               aria-pressed={active === 'roadmap'}
             >
@@ -43,7 +43,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === 'changelog' ? 'bg-primary text-white border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
+              className={`${active === 'changelog' ? 'bg-primary text-foreground border border-border' : 'bg-transparent text-foreground hover:bg-white'} rounded-xl px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange('changelog')}
               aria-pressed={active === 'changelog'}
             >

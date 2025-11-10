@@ -9,7 +9,7 @@ export default function FAQsFour() {
 
     return (
         <Container  maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
-            <section className="py-16 md:py-24">
+            <section className="py-16 md:py-24" data-component="FAQ">
                 <div className="max-w-5xl px-4 sm:px-6">
                 <div className="max-w-xl text-left">
                     <h2 className="text-balance text-3xl font-semibold">Questions &amp; Answers</h2>
