@@ -135,8 +135,6 @@ function collectDiagnostics(): Diagnostic[] {
   // 3) Tap target sizes
   const buttons = Array.from(main.querySelectorAll<HTMLElement>("button, [role='button'], a[href]"));
   buttons.forEach((btn, i) => {
-    // Skip elements that are not rendered (display:none or collapsed)
-    if (btn.getClientRects().length === 0) return;
     const r = btn.getBoundingClientRect();
     if (r.width < 32 || r.height < 32) {
       diags.push({ id: `tap-${i}`, message: `Tap target small (${Math.round(r.width)}×${Math.round(r.height)}px). Aim ≥32×32px`, severity: "warn", rect: r, component: getComponentName(btn) });
