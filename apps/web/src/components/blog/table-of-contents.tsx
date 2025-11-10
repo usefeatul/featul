@@ -1,8 +1,9 @@
 "use client"
 import { cn } from "@feedgot/ui/lib/utils"
 import type { TocItem } from "@/lib/toc"
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { usePrefersReducedMotion } from "../../hooks/use-prefers-reduced-motion"
+import { ScrollArea } from "@feedgot/ui/components/scroll-area"
 
 type TableOfContentsProps = {
   items: TocItem[]
@@ -14,6 +15,9 @@ export function TableOfContents({ items, className, title = "Table of content" }
   if (!items?.length) return null
   const [activeId, setActiveId] = useState<string | null>(items[0]?.id ?? null)
   const prefersReducedMotion = usePrefersReducedMotion()
+  const [expanded, setExpanded] = useState(false)
+  const [collapsedHeight, setCollapsedHeight] = useState<number | undefined>(undefined)
+  const navRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const headings = items
@@ -41,6 +45,60 @@ export function TableOfContents({ items, className, title = "Table of content" }
     headings.forEach((h) => observer.observe(h))
     return () => observer.disconnect()
   }, [items])
+
+  // Keep active item visible inside the ScrollArea when collapsed
+  useEffect(() => {
+    if (!activeId || expanded) return
+    const container = navRef.current
+    if (!container) return
+    const viewport = container.querySelector<HTMLElement>('[data-slot="scroll-area-viewport"]')
+    if (!viewport) return
+    const selectorId = (() => {
+      try {
+        // Safely escape in case id contains special characters
+        // @ts-ignore: CSS.escape may not be typed in TS lib
+        return CSS?.escape ? CSS.escape(activeId) : activeId
+      } catch {
+        return activeId
+      }
+    })()
+    const anchor = viewport.querySelector<HTMLElement>(`a[href="#${selectorId}"]`)
+    if (anchor) {
+      anchor.scrollIntoView({ block: "nearest", inline: "nearest" })
+    }
+  }, [activeId, expanded])
+
+  // Dynamically size collapsed ScrollArea to exactly 5 items
+  useLayoutEffect(() => {
+    if (expanded) return
+    const container = navRef.current
+    if (!container) return
+    const viewport = container.querySelector<HTMLElement>('[data-slot="scroll-area-viewport"]')
+    const list = viewport?.querySelector<HTMLUListElement>('ul')
+    if (!viewport || !list) return
+
+    const compute = () => {
+      const nodes = Array.from(list.children) as HTMLElement[]
+      const count = Math.min(5, nodes.length)
+      if (count === 0) return
+      const height = nodes.slice(0, count).reduce((sum, el) => sum + el.getBoundingClientRect().height, 0)
+      setCollapsedHeight(Math.ceil(height))
+    }
+
+    // Initial compute and a microtask to catch font/layout changes
+    compute()
+    const t = setTimeout(compute, 0)
+
+    // Observe viewport and first 5 items for responsive recalculation
+    const ro = new ResizeObserver(() => compute())
+    ro.observe(viewport)
+    Array.from(list.children).slice(0, 5).forEach((el) => ro.observe(el as HTMLElement))
+
+    return () => {
+      clearTimeout(t)
+      ro.disconnect()
+    }
+  }, [items, expanded])
 
   function onAnchorClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     
@@ -91,32 +149,69 @@ export function TableOfContents({ items, className, title = "Table of content" }
   }
   return (
     <nav
+      ref={navRef}
       aria-label="Table of contents"
       className={cn(
-        "text-sm text-accent max-h-[75vh] overflow-auto",
+        "text-sm text-accent",
         className
       )}
     >
       <div className="text-md font-bold text-foreground mb-2">{title}</div>
-      <ul className="space-y-1 list-none pl-0 m-0">
-        {items.map((item, i) => (
-          <li key={item.id} className={cn("leading-snug text-left")}> 
-            <a
-              href={`#${item.id}`}
-              onClick={(e) => onAnchorClick(e, item.id)}
-              className={cn(
-                "block py-1 text-left text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
-                item.level === 2 ? "font-medium" : "font-normal",
-                activeId === item.id && "text-primary font-semibold"
-              )}
-              aria-current={activeId === item.id ? "page" : undefined}
-            >
-              <span className="mr-2 tabular-nums">{i + 1}.</span>
-              {item.text}
-            </a>
-          </li>
-        ))}
-      </ul>
+      {expanded ? (
+        <ul className="space-y-1 list-none pl-0 m-0">
+          {items.map((item, i) => (
+            <li key={item.id} className={cn("leading-snug text-left")}> 
+              <a
+                href={`#${item.id}`}
+                onClick={(e) => onAnchorClick(e, item.id)}
+                className={cn(
+                  "block py-1 text-left text-xs text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                  item.level === 2 ? "font-light" : "font-normal",
+                  activeId === item.id && "text-primary font-light"
+                )}
+                aria-current={activeId === item.id ? "page" : undefined}
+              >
+                <span className="mr-2 tabular-nums">{i + 1}.</span>
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ScrollArea className="pr-1" style={collapsedHeight ? { height: collapsedHeight } : undefined}>
+          <ul className="space-y-1 list-none pl-0 m-0">
+            {items.map((item, i) => (
+              <li key={item.id} className={cn("leading-snug text-left")}> 
+                <a
+                  href={`#${item.id}`}
+                  onClick={(e) => onAnchorClick(e, item.id)}
+                  className={cn(
+                    "block py-1 text-left text-xs text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                    item.level === 2 ? "font-light" : "font-normal",
+                    activeId === item.id && "text-primary font-light"
+                  )}
+                  aria-current={activeId === item.id ? "page" : undefined}
+                >
+                  <span className="mr-2 tabular-nums">{i + 1}.</span>
+                  {item.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
+      )}
+      {items.length > 5 && (
+        <div className="mt-2 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="text-xs text-muted-foreground hover:text-primary hover:underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm"
+            aria-expanded={expanded}
+          >
+            {expanded ? "Show less" : "Show more"}
+          </button>
+        </div>
+      )}
     </nav>
   )
 }
