@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { ReactScan } from "@feedgot/ui/global/react-scan";
+import { DebugTools } from "@/components/dev/debug-tools";
 
 import { fontsClassName } from "./fonts";
 import "./globals.css";
@@ -81,7 +82,10 @@ export default function RootLayout({
         />
         <OrganizationJsonLd />
       </head>
-      <body className={fontsClassName}>{children}</body>
+      <body className={fontsClassName}>
+        {children}
+        <DebugTools />
+      </body>
     </html>
   );
 }
