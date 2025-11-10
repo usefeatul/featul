@@ -23,3 +23,11 @@ html {
   }
 }
 
+/* Debug outline mode: highlights element boundaries when enabled */
+:root[data-debug-outline="true"] * {
+  outline: 1px solid rgba(255, 0, 0, 0.18);
+}
+:root[data-debug-outline="true"] *:hover {
+  outline-color: rgba(255, 140, 0, 0.32);
+}
+

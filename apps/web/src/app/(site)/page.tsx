@@ -11,6 +11,7 @@ import StatsSection from '@/components/home/cta'
 import Setup from '@/components/home/setup'
 import Create from '@/components/home/create'
 import Listening from '@/components/home/listening'
+import DebugTools from '@/components/dev/debug-tools'
 
 
 export const metadata: Metadata = createPageMetadata({
@@ -31,6 +32,8 @@ export default function Home() {
       <Create />
       <Faq />
       <StatsSection />
+      {/* Debug overlay and controls for layout alignment checks */}
+      <DebugTools />
     </main>
   )
 }
