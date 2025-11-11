@@ -17,17 +17,19 @@ export function HotkeyLink({
   children,
   label,
 }: HotkeyLinkProps) {
-  const DASHBOARD_URL = "https://dashboard.feedbot.com";
+  const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL;
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLAnchorElement>) => {
       const key = e.key?.toLowerCase();
       if (key === hotkey.toLowerCase()) {
         e.preventDefault();
         // Navigate to the dashboard when the hotkey is pressed while focused on the link
-        window.location.assign(DASHBOARD_URL);
+        if (DASHBOARD_URL) {
+          window.location.assign(DASHBOARD_URL);
+        }
       }
     },
-    [hotkey]
+    [hotkey, DASHBOARD_URL]
   );
 
   // Global hotkey while component is mounted (with accessibility guards)
@@ -44,17 +46,19 @@ export function HotkeyLink({
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key?.toLowerCase() === hotkey.toLowerCase()) {
         e.preventDefault();
-        window.location.assign(DASHBOARD_URL);
+        if (DASHBOARD_URL) {
+          window.location.assign(DASHBOARD_URL);
+        }
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [hotkey]);
+  }, [hotkey, DASHBOARD_URL]);
 
   return (
     <Button asChild variant="default" size="lg" className={className}>
       <Link
-        href={DASHBOARD_URL}
+        href={DASHBOARD_URL ?? "#"}
         onKeyDown={handleKeyDown}
         aria-keyshortcuts={hotkey.toUpperCase()}
         data-sln-event="cta: get started free clicked"
