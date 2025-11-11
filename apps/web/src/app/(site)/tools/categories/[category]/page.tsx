@@ -5,6 +5,10 @@ import { Container } from "@/components/global/container"
 import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools"
 import ToolList from "@/components/tools/global/tool-list"
 import { createPageMetadata } from "@/lib/seo"
+import { SITE_URL } from "@/config/seo"
+import { buildCategoryItemListSchema, buildCategoryBreadcrumbSchema } from "@/lib/structured-data"
+import { getCategoryIntro } from "@/lib/category-intros"
+import { JsonLd } from "@/components/global/seo/json-ld"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@feedgot/ui/components/breadcrumb"
 
 type Props = { params: Promise<{ category: string }> }
@@ -24,6 +28,19 @@ export default async function CategoryPage({ params }: Props) {
   const { category } = await params
   const cat = getCategoryBySlug(category)
   if (!cat) return notFound()
+
+  const itemListSchema = buildCategoryItemListSchema({
+    siteUrl: SITE_URL,
+    categorySlug: cat.slug,
+    categoryName: cat.name,
+    tools: cat.tools,
+  })
+  const breadcrumbSchema = buildCategoryBreadcrumbSchema({
+    siteUrl: SITE_URL,
+    categorySlug: cat.slug,
+    categoryName: cat.name,
+  })
+  const intro = getCategoryIntro(cat.slug, cat.name)
 
   return (
     <main className="min-h-[calc(100vh-64px)] pt-16 bg-background">
@@ -51,7 +68,10 @@ export default async function CategoryPage({ params }: Props) {
             </Breadcrumb>
             <h1 className="text-balance text-3xl font-bold md:text-4xl">{cat.name}</h1>
             <p className="text-accent mt-4">{cat.description}</p>
+            <p className="text-accent/80 mt-2">{intro}</p>
             <ToolList categorySlug={cat.slug} tools={cat.tools} />
+            <JsonLd id="category-itemlist-jsonld" data={itemListSchema} />
+            <JsonLd id="category-breadcrumb-jsonld" data={breadcrumbSchema} />
           </div>
         </section>
       </Container>

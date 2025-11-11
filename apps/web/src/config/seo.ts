@@ -34,3 +34,12 @@ export function getOrganizationJsonLd() {
     ],
   }
 }
+
+export function getWebsiteJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    url: SITE_URL,
+    name: DEFAULT_TITLE,
+  }
+}
