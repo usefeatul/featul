@@ -72,7 +72,7 @@ export function SinglePost({ post }: SinglePostProps) {
                   <img
                     src={author?.image ?? ""}
                     alt={author?.name ?? "Author"}
-                    className="h-6 w-6 rounded-full object-cover"
+                    className="h-5 w-5 rounded-full object-cover translate-y-[0.5px]"
                   />
                 ) : null}
                 {authorName ? (

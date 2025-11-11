@@ -1,14 +1,14 @@
-import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 
-// Self-hosted via next/font: Plus Jakarta Sans for body text
-export const jakarta = Plus_Jakarta_Sans({
+// Body: Manrope
+export const jakarta = Manrope({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-jakarta",
 });
 
-// Playfair Display for headings
-export const playfair = Playfair_Display({
+// Headings: Sora
+export const playfair = Sora({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-playfair",
