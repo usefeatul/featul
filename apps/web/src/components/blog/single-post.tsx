@@ -23,7 +23,8 @@ export function SinglePost({ post }: SinglePostProps) {
   const date = post.publishedAt ? new Date(post.publishedAt) : null;
   const reading = estimateReadingTime(post.content);
   const { html, items } = generateToc(post.content);
-  const authorName = post.author?.name ?? post.authors?.[0]?.name ?? null;
+  const author = post.author ?? (post.authors && post.authors.length > 0 ? post.authors[0] : null);
+  const authorName = author?.name ?? null;
 
   return (
     <article className="py-16 md:py-24">
@@ -52,7 +53,7 @@ export function SinglePost({ post }: SinglePostProps) {
               <p className="text-muted-foreground mt-3">{post.excerpt}</p>
             ) : null}
             {date ? (
-              <div className="mt-3 text-xs flex items-center flex-wrap">
+              <div className="mt-3 text-xs flex items-center flex-wrap gap-2">
                 <span className="text-accent">Posted on</span>
                 <time
                   className="ml-1 text-primary"
@@ -66,6 +67,13 @@ export function SinglePost({ post }: SinglePostProps) {
                 </time>
                 {authorName || reading ? (
                   <span className="mx-2 text-zinc-300">•</span>
+                ) : null}
+                {(author?.image) ? (
+                  <img
+                    src={author?.image ?? ""}
+                    alt={author?.name ?? "Author"}
+                    className="h-6 w-6 rounded-full object-cover"
+                  />
                 ) : null}
                 {authorName ? (
                   <span className="text-black dark:text-foreground font-medium">

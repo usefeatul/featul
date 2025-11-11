@@ -43,6 +43,7 @@ export type MarbleCategoryListResponse = {
 export type MarbleAuthor = {
   id: string
   name: string
+  image?: string | null
   avatar?: string | null
   bio?: string | null
 }
