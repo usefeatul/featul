@@ -44,14 +44,14 @@ export function BlogCard({ post }: BlogCardProps) {
           {(categoryName || tagNames.length > 0) ? (
             <div className="flex flex-wrap items-center gap-2">
               {categoryName && (
-                <span className="inline-flex w-fit items-center rounded-sm border border-border bg-primary/20 px-2 py-[2px] text-xs text-accent">
+                <span className="inline-flex w-fit items-center rounded-sm border border-border bg-primary/70 px-2 py-[2px] text-xs text-black">
                   {categoryName}
                 </span>
               )}
               {tagNames.map((t, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex w-fit items-center rounded-sm border border-border/60 bg-muted px-2 py-[2px] text-xs text-accent"
+                  className="inline-flex w-fit items-center rounded-sm border border-border/60 bg-muted px-2 py-[2px] text-xs text-black"
                 >
                   {t}
                 </span>
