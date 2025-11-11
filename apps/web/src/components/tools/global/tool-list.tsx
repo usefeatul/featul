@@ -17,8 +17,8 @@ export default function ToolList({ categorySlug, tools }: { categorySlug: string
               <div className="flex items-center gap-2">
                 <h3 className="text-[15px] md:text-base font-medium text-foreground truncate">{tool.name}</h3>
                 {(tool.isNew || isToolNew(tool.slug)) && (
-                  <span className="inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary">
-                    New
+                  <span className="inline-flex items-center gap-1.5 rounded-sm px-1 py-0.5 text-[10px] font-medium bg-primary/20 text-primary border border-primary/30 group-hover:bg-primary/15 group-hover:border-primary/40 transition-colors">
+                    NEW
                   </span>
                 )}
               </div>
