@@ -11,6 +11,7 @@ export function BlogCard({ post }: BlogCardProps) {
   const author =
     post.author ??
     (post.authors && post.authors.length > 0 ? post.authors[0] : null);
+  const avatarSrc = author?.image ?? "";
   const toPlain = (s?: string | null) => (s ? s.replace(/<[^>]+>/g, " ") : "");
   const words = `${toPlain(post.content)} ${toPlain(post.excerpt)}`
     .trim()
@@ -59,9 +60,9 @@ export function BlogCard({ post }: BlogCardProps) {
           ) : null}
 
           <div className="mt-3 flex items-center gap-2">
-            {author?.avatar ? (
+            {avatarSrc ? (
               <img
-                src={author.avatar}
+                src={avatarSrc}
                 alt={author?.name ?? "Author"}
                 className="h-6 w-6 rounded-full object-cover"
               />
