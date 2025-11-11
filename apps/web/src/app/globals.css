@@ -19,8 +19,13 @@ html {
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading), ui-serif, Georgia, "Times New Roman", Times, serif;
+    font-family: var(--font-playfair), ui-serif, Georgia, "Times New Roman", Times, serif;
   }
+
+
+   /* h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair), ui-serif, Georgia, "Times New Roman", Times, serif;
+  } */
 }
 
 /* Debug outline mode: highlights element boundaries when enabled */

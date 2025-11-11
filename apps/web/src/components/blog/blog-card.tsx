@@ -44,14 +44,14 @@ export function BlogCard({ post }: BlogCardProps) {
           {(categoryName || tagNames.length > 0) ? (
             <div className="flex flex-wrap items-center gap-2">
               {categoryName && (
-                <span className="inline-flex w-fit items-center rounded-sm border border-border bg-muted/40 px-2 py-[2px] text-xs text-accent">
+                <span className="inline-flex w-fit items-center rounded-sm border border-border bg-primary/20 px-2 py-[2px] text-xs text-accent">
                   {categoryName}
                 </span>
               )}
               {tagNames.map((t, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex w-fit items-center rounded-sm border border-border/60 bg-muted/30 px-2 py-[2px] text-xs text-accent"
+                  className="inline-flex w-fit items-center rounded-sm border border-border/60 bg-muted px-2 py-[2px] text-xs text-accent"
                 >
                   {t}
                 </span>
@@ -64,16 +64,16 @@ export function BlogCard({ post }: BlogCardProps) {
               <img
                 src={avatarSrc}
                 alt={author?.name ?? "Author"}
-                className="h-6 w-6 rounded-full object-cover"
+                className="h-5 w-5 rounded-full object-cover translate-y-[0.5px]"
               />
             ) : null}
             {author?.name ? (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-primary">
                 {author.name}
               </span>
             ) : null}
             {date ? (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-accent">
                 {date.toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "short",
@@ -81,16 +81,19 @@ export function BlogCard({ post }: BlogCardProps) {
                 })}
               </span>
             ) : (
-              <span className="text-xs text-muted-foreground">Latest</span>
+              <span className="text-xs text-accent">Latest</span>
             )}
             {readMinutes ? (
-              <span className="text-xs text-muted-foreground">
-                • {readMinutes} min read
-              </span>
+              <>
+                <span className="mb-1 text-zinc-300">•</span>
+                <span className="text-xs text-accent">
+                  {readMinutes} min read
+                </span>
+              </>
             ) : null}
           </div>
 
-          <h3 className="mt-2 text-base font-semibold text-foreground line-clamp-2">
+          <h3 className="mt-2 text-base font-semibold text-foreground group-hover:text-primary line-clamp-2">
             {post.title}
           </h3>
           {post.excerpt ? (

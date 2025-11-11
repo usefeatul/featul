@@ -12,7 +12,7 @@ export function HeroContent() {
       {/* Main heading */}
       <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-semibold text-foreground text-balance">
         The
-        <span className="mx-2 inline-flex items-center align-baseline rounded-md bg-primary/40 px-2 py-[2px] text-black/70">
+        <span className="mx-2 inline-flex items-center align-baseline rounded-md bg-primary/30 px-2 py-[2px] text-black/70">
           simple and fast
         </span>
         <span className="block mt-0"> Customer feedback alternative</span>
@@ -31,7 +31,7 @@ export function HeroContent() {
           className="w-full sm:w-auto min-h-[40px] min-w-[40px]"
           label="Add to your website"
         />
-        <LiveDemo className="w-full sm:w-auto min-h-[40px] min-w-[40px]" />
+        <LiveDemo className="w-full sm:w-auto min-h-[40px] text-accent min-w-[40px]" />
       </div>
       <div
         className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs  text-accent"
