@@ -26,30 +26,30 @@ export default function FeaturesSection() {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
       <section>
-        <div className="bg-background py-24">
+        <div className="bg-background py-16 sm:py-24">
           <div className="mx-auto w-full max-w-5xl px-6">
             <div>
-              <h2 className="text-foreground mt-4 text-4xl font-semibold">
+              <h2 className="text-foreground mt-4 text-3xl sm:text-4xl font-semibold">
                 Personal AI, with you Anywhere
               </h2>
-              <p className="text-accent mb-12 mt-4 text-balance text-md">
+              <p className="text-accent mb-8 sm:mb-12 mt-4 text-balance text-base sm:text-md">
                 Quick AI lives a single hotkey away - ready to quickly appear as
                 a floating window above your other apps. Get instant assistance
                 whether you're browsing, coding, or writing documents.
               </p>
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
               {/* Long top card (1) */}
-              <Card className="relative p-8 md:col-span-2">
+              <Card className="relative p-4 sm:p-6 md:p-8 md:col-span-2">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <AiIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
                   <h3 className="text-foreground text-sm sm:text-base font-semibold">Quick AI</h3>
                   <CardAccent>Always ready with a single hotkey.</CardAccent>
                 </div>
-                <div className="flex flex-col gap-6 md:flex-row md:items-center">
-                  <div className="flex-1 mt-16 text-left">
-                    <p className="text-muted-foreground mt-3 text-lg">
+                <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center">
+                  <div className="flex-1 mt-12 sm:mt-16 text-left">
+                    <p className="text-muted-foreground mt-3 text-base sm:text-lg">
                       Summon a focused assistant with a single hotkey. Draft content,
                       schedule meetings, and move work forward without context switching.
                     </p>
@@ -59,7 +59,7 @@ export default function FeaturesSection() {
                     </div>
                   </div>
                   <div className="flex-1">
-                    <div className="mx-auto max-w-sm">
+                    <div className="mx-auto max-w-[18rem] sm:max-w-sm">
                       <ScheduleIllustation className="w-full" variant="mixed" />
                     </div>
                   </div>
@@ -67,7 +67,7 @@ export default function FeaturesSection() {
               </Card>
 
               {/* Row 2 (2 items) */}
-              <Card className="relative p-6">
+              <Card className="relative p-4 sm:p-6">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <ChartIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
@@ -83,7 +83,7 @@ export default function FeaturesSection() {
                   </p>
                 </div>
               </Card>
-              <Card className="relative p-6">
+              <Card className="relative p-4 sm:p-6">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <UsersIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
@@ -101,7 +101,7 @@ export default function FeaturesSection() {
               </Card>
 
               {/* Row 3 (2 items) */}
-              <Card className="relative p-6">
+              <Card className="relative p-4 sm:p-6">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <SetupIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
@@ -110,7 +110,7 @@ export default function FeaturesSection() {
                 </div>
                 <div className="flex aspect-video items-center justify-center">
                   <div className="text-center">
-                    <ul className="text-muted-foreground mx-auto w-fit font-mono text-lg font-medium">
+                    <ul className="text-muted-foreground mx-auto w-fit font-mono text-base sm:text-lg font-medium">
                       <li>Blog post outline</li>
                       <li>Social content calendar</li>
                       <li>Landing page copy</li>
@@ -123,7 +123,7 @@ export default function FeaturesSection() {
                   </p>
                 </div>
               </Card>
-              <Card className="relative p-6">
+              <Card className="relative p-4 sm:p-6">
                 <CardTag>optional</CardTag>
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <SetupIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
@@ -215,7 +215,7 @@ export const ScheduleIllustation = ({
         </Button>
       </div>
       <span>
-        <span className="bg-secondary text-secondary-foreground py-1">
+        <span className="bg-secondary text-secondary-foreground py-1 text-xs sm:text-sm">
           Tomorrow 8:30 pm
         </span>{" "}
         is our priority.
@@ -232,7 +232,7 @@ export const CodeIllustration = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <ul className="text-muted-foreground mx-auto w-fit font-mono text-2xl font-medium">
+      <ul className="text-muted-foreground mx-auto w-fit font-mono text-xl sm:text-2xl font-medium">
         {["Images", "Variables", "Pages", "Components", "Styles"].map(
           (item, index) => (
             <li

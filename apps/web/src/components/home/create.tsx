@@ -21,20 +21,20 @@ export default function Create() {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
       <section>
-        <div className="bg-background py-24">
+        <div className="bg-background py-16 sm:py-24">
           <div className="mx-auto w-full max-w-5xl px-6">
             <div>
-              <h2 className="text-foreground mt-4 text-4xl font-semibold">
+              <h2 className="text-foreground mt-4 text-3xl sm:text-4xl font-semibold">
                 Up and running in 30 seconds
               </h2>
-              <p className="text-accent mb-12 mt-4 text-balance text-lg">
+              <p className="text-accent mb-8 sm:mb-12 mt-4 text-balance text-base sm:text-lg">
                 Sign up with an email, create your workspace, then add one line
                 of code or share your board link. You’re ready to collect feedback.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <Card className="relative p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+              <Card className="relative p-4 sm:p-6">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <ChartIcon className="size-4 text-primary opacity-100"   opacity={1} aria-hidden />
@@ -45,13 +45,13 @@ export default function Create() {
                   <CodeIllustration className="w-full" />
                 </div>
                 <div className="text-center">
-                  <p className="text-muted-foreground mt-4 text-balance text-lg">
+                  <p className="text-muted-foreground mt-4 text-balance text-base sm:text-lg">
                     Effortlessly plan and execute your marketing campaigns
                     organized.
                   </p>
                 </div>
               </Card>
-              <Card className="relative p-6">
+              <Card className="relative p-4 sm:p-6">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <UsersIcon className="size-4 text-primary opacity-100"  opacity={1} aria-hidden />
@@ -62,13 +62,13 @@ export default function Create() {
                   <ScheduleIllustation className="border" variant="mixed" />
                 </div>
                 <div className="text-center">
-                  <p className="text-muted-foreground mt-4 text-balance text-lg">
+                  <p className="text-muted-foreground mt-4 text-balance text-base sm:text-lg">
                     Effortlessly book and manage your meetings. Stay on top of
                     your schedule.
                   </p>
                 </div>
               </Card>
-              <Card className="relative p-6 col-span-2">
+              <Card className="relative p-4 sm:p-6 sm:col-span-2">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
                   <SetupIcon className="size-4 text-primary opacity-100"  opacity={1} aria-hidden />
@@ -79,7 +79,7 @@ export default function Create() {
                   <ScheduleIllustation className="border" variant="mixed" />
                 </div>
                 <div className="text-center">
-                  <p className="text-muted-foreground mt-4 text-balance text-lg">
+                  <p className="text-muted-foreground mt-4 text-balance text-base sm:text-lg">
                     Sign up with just an email and pick a name — that’s it.
                   </p>
                 </div>
@@ -145,7 +145,7 @@ export const ScheduleIllustation = ({
         </Button>
       </div>
       <span>
-        <span className="bg-secondary text-secondary-foreground py-1">Tomorrow 8:30 pm</span>{" "}
+        <span className="bg-secondary text-secondary-foreground py-1 text-xs sm:text-sm">Tomorrow 8:30 pm</span>{" "}
         is our priority.
       </span>
     </div>
@@ -160,7 +160,7 @@ export const CodeIllustration = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <ul className="text-muted-foreground mx-auto w-fit font-mono text-2xl font-medium">
+      <ul className="text-muted-foreground mx-auto w-fit font-mono text-xl sm:text-2xl font-medium">
         {["Variables", "Pages", "Components", ].map((item, index) => (
           <li
             key={index}

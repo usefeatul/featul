@@ -10,34 +10,34 @@ export default function FeatureCard() {
       <section>
         <div>
           <div className="mx-auto w-full max-w-6xl px-6">
-            <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="overflow-hidden p-6 flex flex-col items-start gap-2">
+            <div className="mt-10 sm:mt-16 grid grid-cols-1 gap-3 sm:gap-4">
+              <Card className="overflow-hidden p-4 sm:p-6 flex flex-col items-start gap-2">
                 <LoveIcon className="text-primary size-5" />
-                <h3 className="text-foreground text-lg font-semibold">
+                <h3 className="text-foreground text-base sm:text-lg font-semibold">
                   Human-coded
                 </h3>
-                <p className="text-accent text-balance">
+                <p className="text-accent text-balance text-sm sm:text-base">
                   Hand-built and maintained by seasoned engineers. Secure, reliable,
                   and fast—crafted with care, not vibes.
                 </p>
               </Card>
 
-              <Card className="group overflow-hidden p-6 flex flex-col items-start gap-2">
+              <Card className="group overflow-hidden p-4 sm:p-6 flex flex-col items-start gap-2">
                 <FaceIcon className="text-primary size-5" />
-                <h3 className="text-foreground text-lg font-semibold">
+                <h3 className="text-foreground text-base sm:text-lg font-semibold">
                   Advanced bot detection
                 </h3>
-                <p className="text-accent text-balance">
+                <p className="text-accent text-balance text-sm sm:text-base">
                   In an AI-heavy web, keeping bots out matters. We aim for
                   top-tier detection to keep your analytics trustworthy.
                 </p>
               </Card>
-              <Card className="group overflow-hidden p-6 flex flex-col items-start gap-2">
+              <Card className="group overflow-hidden p-4 sm:p-6 flex flex-col items-start gap-2">
                 <FoundedIcon className="text-primary size-5" />
-                <h3 className="text-foreground text-lg font-semibold">
+                <h3 className="text-foreground text-base sm:text-lg font-semibold">
                   Founded in 2024
                 </h3>
-                <p className="text-accent text-balance">
+                <p className="text-accent text-balance text-sm sm:text-base">
                   Since 2024, Feedgot has grown into a customer feedback platform,
                   processing hundreds of feedback submissions.
                 </p>

@@ -84,7 +84,7 @@ export default function RootLayout({
       </head>
       <body className={fontsClassName}>
         {children}
-        <DebugTools />
+        {/* <DebugTools /> */}
       </body>
     </html>
   );
