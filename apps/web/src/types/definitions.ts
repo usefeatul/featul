@@ -18,6 +18,8 @@ export type Definition = {
   example?: { title: string; body: string };
   faqs?: DefinitionFaq[];
   related?: string[];
+  author?: string;
+  publishedAt?: string;
   essay?: {
     intro?: string;
     analysis?: string;
@@ -31,6 +33,12 @@ export type Definition = {
   };
 };
 
+const computePublishedDate = (index: number): string => {
+  const day = 11 + (index % 20)
+  const dd = String(day).padStart(2, "0")
+  return `2025-11-${dd}`
+}
+
 export const getDefinitionContent = (d: Definition): string => {
   if (d.content) return d.content
   const parts: string[] = []
@@ -42,7 +50,7 @@ export const getDefinitionContent = (d: Definition): string => {
   return parts.join(" ")
 }
 
-export const DEFINITIONS: Definition[] = [
+export const DEFINITIONS: Definition[] = ([
   {
     slug: "mrr",
     name: "Monthly Recurring Revenue (MRR)",
@@ -915,7 +923,11 @@ export const DEFINITIONS: Definition[] = [
     ],
     related: ["cpa", "roi"],
   },
-];
+] as Definition[]).map((d, i) => ({
+  ...d,
+  author: d.author ?? "Jean Daly",
+  publishedAt: d.publishedAt ?? computePublishedDate(i),
+}))
 
 export const getDefinitionBySlug = (slug: string): Definition | undefined => {
   const match = DEFINITIONS.find((d) => d.slug === slug)
