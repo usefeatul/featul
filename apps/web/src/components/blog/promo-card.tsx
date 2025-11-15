@@ -31,7 +31,7 @@ export function PromoCard({
           </Button>
         </div>
       </div>
-      <p className="mt-2 text-center text-xs text-accent">{subtext}</p>
+      <p className="mt-2 text-center text-xs text-accent/80">{subtext}</p>
     </div>
   );
 }

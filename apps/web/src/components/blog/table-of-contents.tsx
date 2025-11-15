@@ -46,7 +46,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
                 href={`#${item.id}`}
                 onClick={(e) => onAnchorClick(e, item.id)}
                 className={cn(
-                  "block py-1 text-left text-xs text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                  "block py-1 text-left text-md text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
                   item.level === 2 ? "font-light" : "font-normal",
                   activeId === item.id && "text-primary font-light"
                 )}
@@ -59,7 +59,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
           ))}
         </ul>
       ) : (
-        <ScrollArea className="pr-1 h-[8.75rem]">
+        <ScrollArea className="pr-1 h-[9rem]">
           <ul className="space-y-1 list-none pl-0 m-0">
             {items.map((item, i) => (
               <li key={item.id} className={cn("leading-snug text-left")}> 
@@ -67,7 +67,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
                   href={`#${item.id}`}
                   onClick={(e) => onAnchorClick(e, item.id)}
                   className={cn(
-                    "block py-1 text-left text-xs text-accent truncate hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                    "block py-1 text-left text-md text-accent truncate hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
                     item.level === 2 ? "font-light" : "font-normal",
                     activeId === item.id && "text-primary font-light"
                   )}
