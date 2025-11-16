@@ -4,11 +4,12 @@ import { StatusIcon } from "./status-icon";
 import { SquareIcon } from "@feedgot/ui/icons/square";
 import { AccentBar } from "@/components/home/cardElements";
 
+
 export default function Compare({ alt }: { alt: Alternative }) {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
       <section className="py-16">
-        <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
+        <div className="mx-auto  w-full max-w-6xl px-0 sm:px-6">
           <SquareIcon aria-hidden className="size-5 text-primary" />
           <h2 className="mt-6 text-foreground text-balance text-3xl sm:text-4xl font-semibold">
             Side‑by‑side features
@@ -18,8 +19,8 @@ export default function Compare({ alt }: { alt: Alternative }) {
             Feedgot.
           </p>
 
-          <div className="mt-10">
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-2 sm:gap-x-12  sticky top-2  z-10 rounded-md">
+          <div className="mt-12 sm:mt-14">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-3 sm:gap-x-14 sticky top-2 z-10 rounded-md">
               <div className="pl-0 pr-2 sm:pr-4 py-2 sm:py-3 text-xs sm:text-lg font-semibold text-foreground text-left">
                 Feature
               </div>
@@ -35,15 +36,15 @@ export default function Compare({ alt }: { alt: Alternative }) {
               {alt.features.map((f) => (
                 <li
                   key={f.key}
-                  className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-2 sm:gap-x-12 hover:bg-muted/30"
+                  className="grid p-1 grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-3 sm:gap-x-14 hover:bg-muted/20"
                 >
                   <div className="pl-0 pr-2 sm:pr-4 py-2 sm:py-3">
                     <div className="text-left space-y-1">
-                      <div className="text-base sm:text-lg font-semibold text-foreground">
+                      <div className="text-base sm:text-md font-semibold text-foreground">
                         {f.label}
                       </div>
                       {f.description && (
-                        <p className="text-accent text-sm sm:text-md leading-6 sm:leading-relaxed">
+                        <p className="text-accent text-sm  leading-6 sm:leading-relaxed">
                           {f.description}
                         </p>
                       )}
