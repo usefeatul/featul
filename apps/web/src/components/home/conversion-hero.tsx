@@ -19,28 +19,38 @@ export function ConversionHero() {
               <span className="block mt-1 text-accent/80">
                 Collect, prioritize, and ship what matters with
                 <span className="mx-1 inline-flex items-center gap-1 rounded-md bg-foreground/5 px-2 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline">
-                  <BoardIcon className="size-8" />
+                  <BoardIcon className="size-8 text-primary" />
                   boards
                 </span>
                 ,
                 <span className="mx-1 inline-flex items-center gap-1 rounded-md bg-foreground/5 px-2 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline">
-                  <RoadmapIcon className="size-8" />
+                  <RoadmapIcon className="size-8 text-primary" />
                   roadmaps
                 </span>
                 , and
                 <span className="mx-1 inline-flex items-center gap-1 rounded-md bg-foreground/5 px-2 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline">
-                  <ChangelogIcon className="size-8" />
+                  <ChangelogIcon className="size-8 text-primary" />
                   changelogs
                 </span>
                 .
               </span>
             </h1>
             <p className="mt-3 text-accent/90 text-xs sm:text-sm md:text-sm leading-relaxed max-w-lg sm:max-w-xl">
-              Set up your complete customer feedback system in under 5 minutes. Engage your users, prioritize what matters, and ship features they'll love. No complex setup, no privacy concerns just results.
+              Set up your complete customer feedback system in under 5 minutes.
+              Engage your users, prioritize what matters, and ship features
+              they'll love. No complex setup, no privacy concerns just results.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <HotkeyLink className="w-full sm:w-auto si !h-9 !px-3 rounded-sm" label="Add to your website" />
-              <Button asChild variant="outline" size="sm" className="w-full sm:w-auto h-9 px-3 rounded-sm text-accent">
+              <HotkeyLink
+                className="w-full sm:w-auto si !h-9 !px-3 rounded-sm"
+                label="Add to your website"
+              />
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto h-9 px-3 rounded-sm text-accent"
+              >
                 <Link href="#demo" aria-label="Get a demo">
                   Get a demo
                 </Link>
