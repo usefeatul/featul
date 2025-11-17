@@ -7,8 +7,10 @@ import { Button } from "@feedgot/ui/components/button";
 import { BoardIcon } from "@feedgot/ui/icons/board";
 import { RoadmapIcon } from "@feedgot/ui/icons/roadmap";
 import { ChangelogIcon } from "@feedgot/ui/icons/changelog";
+import { useIsMobile } from "@feedgot/ui/hooks/use-mobile";
 
 export function ConversionHero() {
+  const isMobile = useIsMobile();
   return (
     <section className="relative" data-component="ConversionHero">
       <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
@@ -18,18 +20,18 @@ export function ConversionHero() {
               Build better products with customer feedback.
               <span className="block mt-1 text-accent/80">
                 Collect, prioritize, and ship what matters with
-                <span className="mx-1 inline-flex items-center gap-1 rounded-md bg-foreground/5 px-2 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline">
-                  <BoardIcon className="size-8 text-primary" />
+                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
+                  <BoardIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   boards
                 </span>
                 ,
-                <span className="mx-1 inline-flex items-center gap-1 rounded-md bg-foreground/5 px-2 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline">
-                  <RoadmapIcon className="size-8 text-primary" />
+                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
+                  <RoadmapIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   roadmaps
                 </span>
                 , and
-                <span className="mx-1 inline-flex items-center gap-1 rounded-md bg-foreground/5 px-2 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline">
-                  <ChangelogIcon className="size-8 text-primary" />
+                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
+                  <ChangelogIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   changelogs
                 </span>
                 .
