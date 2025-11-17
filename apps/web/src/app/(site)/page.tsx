@@ -9,6 +9,7 @@ import Create from "@/components/home/create";
 import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/featureTwo";
 import { ConversionHero } from "@/components/home/conversion-hero";
+import Benefits from "@/components/home/benefits";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Privacy‑first product feedback, roadmaps, and changelogs | Feedgot",
@@ -26,6 +27,7 @@ export default function Home() {
       <FeaturesSection />
       <Setup />
       <Create />
+      <Benefits />
       <Faq />
       <StatsSection />
     </main>
