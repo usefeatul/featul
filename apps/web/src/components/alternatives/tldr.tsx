@@ -7,7 +7,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");
 
   return (
-    <Container maxWidth="6xl" className="px-6 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section className="py-16" data-component="TLDR">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <BookmarkIcon aria-hidden className="size-5 text-primary mb-2 sm:mb-3" opacity={1} />

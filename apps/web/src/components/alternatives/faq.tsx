@@ -16,7 +16,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
   const limitedItems = items.slice(0, 6);
 
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section className="py-16 md:py-24">
         <div className="max-w-5xl px-0 sm:px-6">
           <div className="max-w-xl text-left">

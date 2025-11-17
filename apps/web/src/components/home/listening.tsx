@@ -6,10 +6,10 @@ import { AccentBar } from "./cardElements";
 
 export default function Listening() {
   return (
-    <Container maxWidth="6xl" className="px-6 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section className="" data-component="Listening">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <h2 className="text-foreground text-balance text-3xl sm:text-4xl font-bold">
+          <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-bold">
             Build what your users actually need.
             <span className="block mt-1">Listen and act.</span>
           </h2>

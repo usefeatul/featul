@@ -27,7 +27,7 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <main className="min-h-[calc(100vh-64px)] pt-16 bg-background">
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <section className="py-12 sm:py-16" data-component="ToolsCategory">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <Breadcrumb className="mb-6">

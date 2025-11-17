@@ -11,7 +11,7 @@ import { ChangelogIcon } from "@feedgot/ui/icons/changelog";
 
 export default function Benefits() {
   return (
-    <Container maxWidth="6xl" className="px-6 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section data-component="Benefits">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl font-semibold text-center">

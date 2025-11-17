@@ -10,7 +10,7 @@ import { topPlans, selfHostedPlan } from '../../types/plan'
 export default function Pricing() {
   return (
     <section className="bg-background" data-component="Pricing">
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <section className="py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <div className="text-center max-w-2xl mx-auto">

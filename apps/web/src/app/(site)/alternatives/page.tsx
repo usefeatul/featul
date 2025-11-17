@@ -13,7 +13,7 @@ export const metadata = createPageMetadata({
 
 export default function AlternativesIndexPage() {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section className="pt-10 md:pt-16">
         <div className="max-w-3xl">
           <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">

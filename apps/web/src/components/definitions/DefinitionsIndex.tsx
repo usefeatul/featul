@@ -7,7 +7,7 @@ export default function DefinitionsIndex({ items }: { items: Definition[] }) {
   const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name))
   return (
     <main className="min-h-screen pt-16">
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <section className="py-12 sm:py-16" data-component="DefinitionsIndex">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <p className="text-sm text-accent">Glossary • {sorted.length} terms</p>

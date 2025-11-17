@@ -14,7 +14,7 @@ export default function ToolsIndexPage() {
   const totalTools = TOOL_CATEGORIES.reduce((sum, c) => sum + c.tools.length, 0)
   return (
     <main className="min-[height:calc(100vh-64px)]  pt-16 bg-background">
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <section className="py-12 sm:py-16" data-component="ToolsIndex">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <p className="text-sm text-accent ">Growth tools • {totalTools} calculators</p>

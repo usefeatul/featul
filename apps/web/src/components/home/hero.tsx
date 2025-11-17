@@ -23,7 +23,7 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden" data-component="Hero">
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
           <div className="pt-10 pb-24 sm:pt-16 sm:pb-32 mt-8">
             <HeroContent />

@@ -43,7 +43,7 @@ export default function Navbar() {
       )}
       data-component="Navbar"
     >
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <div className="mx-auto w-full max-w-6xl px-0 sm:px-6 flex items-center justify-between h-14">
           <Link
             href="/"

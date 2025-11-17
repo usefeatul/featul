@@ -43,7 +43,7 @@ export default function FeatureCard({ withinContainer = true }: { withinContaine
 
   if (withinContainer) {
     return (
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">{content}</Container>
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">{content}</Container>
     );
   }
   return content;

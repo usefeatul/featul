@@ -23,23 +23,21 @@ import { CardAccent, CardTag, AccentBar } from "./cardElements";
 
 export default function FeaturesSection() {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section>
         <div className="bg-background py-16 sm:py-24">
           <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
             <div>
-              <h2 className="text-foreground mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold">
-
-
+              <h2 className="text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">
                 Personal AI, with you Anywhere
               </h2>
               <div className="mt-10 flex items-stretch gap-3">
                 <AccentBar />
                 <p className="text-accent text-sm sm:text-base">
-                  Quick AI jean lives a single hotkey away - ready to quickly appear
-                  as a floating window above your other apps. Get instant
+                  Quick AI jean lives a single hotkey away - ready to quickly
+                  appear as a floating window above your other apps. Get instant
                   assistance whether you're browsing, coding, or writing
-                  documents. 
+                  documents.
                 </p>
               </div>
             </div>

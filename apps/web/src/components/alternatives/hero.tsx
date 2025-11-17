@@ -14,7 +14,7 @@ export function AlternativeHero({ alt }: { alt: Alternative }) {
 
   return (
     <section className="bg-background py-16 sm:py-24">
-      <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <div className="mx-auto w-full max-w-5xl px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 items-center">
             <div className="order-first">

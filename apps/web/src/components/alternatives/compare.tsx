@@ -7,7 +7,7 @@ import { AccentBar } from "@/components/home/cardElements";
 
 export default function Compare({ alt }: { alt: Alternative }) {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section className="py-16">
         <div className="mx-auto  w-full max-w-6xl px-0 sm:px-6">
           <SquareIcon aria-hidden className="size-5 text-primary" />

@@ -20,12 +20,12 @@ import FeatureCard from "./featureCard";
 
 export default function Create() {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section>
         <div className="bg-background py-16 sm:py-24">
           <div className="mx-auto w-full max-w-5xl px-6">
             <div>
-              <h2 className="text-foreground mt-4 text-3xl sm:text-4xl font-semibold">
+              <h2 className="text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">
                 Up and running in 30 seconds
               </h2>
               <div className="mt-10 flex items-start gap-2">

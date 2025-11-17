@@ -10,7 +10,7 @@ import { BookmarkIcon } from "@feedgot/ui/icons/bookmark";
 
 export default function WhyBetter({ alt }: { alt: Alternative }) {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-16 lg:px-20 xl:px-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-3xl sm:text-4xl font-semibold">
