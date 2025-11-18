@@ -1,10 +1,4 @@
 {
-  "extends": "@feedgot/tsconfig/nextjs.json",
-  "references": [
-    { "path": "../../packages/db" },
-    { "path": "../../packages/auth" },
-    { "path": "../../packages/api" }
-  ],
   "compilerOptions": {
     "lib": [
       "dom",
@@ -45,7 +39,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "**/*.d.ts"
-, "../../packages/db/drizzle.config.ts", "../../packages/ui/src/components/toggle-group.tsx", "../../packages/ui/src/components/sonner.tsx", "../../packages/ui/src/components/sidebar.tsx", "../../packages/ui/src/components/chart.tsx", "../../packages/ui/src/components/drawer.tsx", "../../packages/ui/src/components/checkbox.tsx", "../../packages/ui/src/components/breadcrumb.tsx", "../../packages/ui/src/components/table.tsx", "../../packages/ui/src/components/sheet.tsx", "../../packages/auth/src/workspace.ts", "../../packages/auth/src/session.ts"  ],
+,  ],
   "exclude": [
     "node_modules"
   ]

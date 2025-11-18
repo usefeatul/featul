@@ -8,6 +8,4 @@ if (!DATABASE_URL) {
 }
 
 export const db = drizzle(neon(DATABASE_URL), { schema })
-
-// Export schema tables for Better Auth and application use
 export const { user, session, account, verification, workspace, workspaceMember } = schema

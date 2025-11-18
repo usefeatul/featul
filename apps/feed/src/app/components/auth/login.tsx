@@ -3,17 +3,19 @@
 import { useState, useEffect } from "react"
 import { authClient } from "@feedgot/auth/client"
 import { Button } from "@feedgot/ui/components/button"
+import { Input } from "@feedgot/ui/components/input"
+import { Label } from "@feedgot/ui/components/label"
 import { Badge } from "@feedgot/ui/components/badge"
-import { GoogleIcon } from '@feedgot/ui/icons/google';
-import GitHubIcon from '@feedgot/ui/icons/github';
+import { GoogleIcon } from "@feedgot/ui/icons/google"
+import GitHubIcon from "@feedgot/ui/icons/github"
+import Link from "next/link"
 
-export function Login() {
+export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [lastUsedMethod, setLastUsedMethod] = useState<string | null>(null)
 
   useEffect(() => {
-    // Get the last used login method when component mounts
     const lastMethod = authClient.getLastUsedLoginMethod()
     setLastUsedMethod(lastMethod)
   }, [])
@@ -47,98 +49,90 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-background">
-      {/* Logo in top-left corner */}
-      <div className="absolute top-6 left-6">
-        <img src="/logo.svg" alt="Feedgot" className="h-8 w-auto" />
-      </div>
-      
-      {/* Main content */}
-       <div className="flex flex-1 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-         <div className="w-full max-w-sm space-y-8">
-           <div className="text-center">
-             <h1 className="text-4xl font-bold tracking-tight text-foreground">
-               Welcome back
-             </h1>
-             <p className="mt-3 text-base text-muted-foreground">
-               Sign in to your Feedgot account
-             </p>
-           </div>
-           
-           <div className="mt-8 space-y-6">
-             {error && (
-               <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
-                 {error}
-               </div>
-             )}
-             
-             <div className="space-y-3 flex flex-col items-center">
-                <div className="relative">
-                  <Button
-                    variant={lastUsedMethod === "google" ? "default" : "outline"}
-                    onClick={handleGoogleSignIn}
-                    disabled={isLoading}
-                    className={`w-64 h-10 text-sm font-medium border-2 transition-colors ${
-                      lastUsedMethod === "google" 
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                        : "hover:bg-slate-50 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    <GoogleIcon className="mr-2 h-4 w-4" />
-                    {isLoading ? "Signing in..." : "Continue with Google"}
-                  </Button>
-                  {lastUsedMethod === "google" && (
-                    <Badge 
-                      variant="secondary" 
-                      className="absolute -top-2 -right-2 text-xs px-2 py-0.5"
-                    >
-                      Last used
-                    </Badge>
-                  )}
-                </div>
-                
-                <div className="relative">
-                  <Button
-                    variant={lastUsedMethod === "github" ? "default" : "outline"}
-                    onClick={handleGithubSignIn}
-                    disabled={isLoading}
-                    className={`w-64 h-10 text-sm font-medium border-2 transition-colors ${
-                      lastUsedMethod === "github" 
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                        : "hover:bg-slate-50 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    <GitHubIcon className="mr-2 h-4 w-4" />
-                    {isLoading ? "Signing in..." : "Continue with GitHub"}
-                  </Button>
-                  {lastUsedMethod === "github" && (
-                    <Badge 
-                      variant="secondary" 
-                      className="absolute -top-2 -right-2 text-xs px-2 py-0.5"
-                    >
-                      Last used
-                    </Badge>
-                  )}
-                </div>
+    <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
+      <form
+        action="#"
+        className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
+      >
+        <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
+          <div className="text-center">
+            <Link href="/" aria-label="go home" className="mx-auto block w-fit">
+              <span className="text-xl font-semibold">Feedgot</span>
+            </Link>
+            <h1 className="mb-1 mt-4 text-xl font-semibold">Sign In</h1>
+            <p className="text-sm">Welcome back! Sign in to continue</p>
+            {lastUsedMethod && (
+              <div className="mt-3 flex justify-center">
+                <Badge variant="outline">Last used: {lastUsedMethod}</Badge>
               </div>
-           </div>
-         </div>
-       </div>
-      
-      {/* Terms and Privacy Policy */}
-      <div className="pb-6 px-4 text-center">
-        <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
-          By clicking "Continue with Google" or "Continue with GitHub", you agree to our{" "}
-          <a href="/terms" className="underline hover:text-foreground transition-colors">
-            Terms of Conditions
-          </a>{" "}
-          and{" "}
-          <a href="/privacy" className="underline hover:text-foreground transition-colors">
-            Privacy Policy
-          </a>
-          .
-        </p>
-      </div>
-    </div>
+            )}
+            {error && (
+              <div className="mt-3 flex justify-center">
+                <Badge variant="destructive">{error}</Badge>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-6 space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="block text-sm">
+                Username
+              </Label>
+              <Input type="email" required name="email" id="email" />
+            </div>
+
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="pwd" className="text-sm">
+                  Password
+                </Label>
+                <Button asChild variant="link" size="sm">
+                  <Link href="#" className="link intent-info variant-ghost text-sm">
+                    Forgot your Password ?
+                  </Link>
+                </Button>
+              </div>
+              <Input
+                type="password"
+                required
+                name="pwd"
+                id="pwd"
+                className="input sz-md variant-mixed"
+              />
+            </div>
+
+            <Button className="w-full" type="button" disabled={isLoading}>
+              Sign In
+            </Button>
+          </div>
+
+          <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <hr className="border-dashed" />
+            <span className="text-muted-foreground text-xs">Or continue With</span>
+            <hr className="border-dashed" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Button type="button" variant="outline" onClick={handleGoogleSignIn} disabled={isLoading}>
+              <GoogleIcon className="size-4" />
+              <span>Google</span>
+            </Button>
+            <Button type="button" variant="outline" onClick={handleGithubSignIn} disabled={isLoading}>
+              <GitHubIcon className="size-4" />
+              <span>GitHub</span>
+            </Button>
+          </div>
+        </div>
+
+        <div className="p-3">
+          <p className="text-accent-foreground text-center text-sm">
+            Don't have an account ?
+            <Button asChild variant="link" className="px-2">
+              <Link href="#">Create account</Link>
+            </Button>
+          </p>
+        </div>
+      </form>
+    </section>
   )
 }
