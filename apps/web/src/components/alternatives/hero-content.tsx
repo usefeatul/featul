@@ -22,7 +22,7 @@ export function AlternativeHeroContent({
         {description ?? (
           <>
             Compare {name} and Feedgot — transparent by design, focused on
-            simplicity and user-first UX. Organized feedback boards,
+            simplicity and user first UX. Organized feedback boards,
             auto-syncing roadmaps, and self-writing changelogs.
           </>
         )}

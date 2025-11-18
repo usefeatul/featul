@@ -104,7 +104,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'nolt-2',
         question: 'Does Feedgot have EU hosting?',
         answer:
-          'Yes—EU by default, with GDPR-friendly settings to reduce legal overhead and simplify compliance.',
+          'Yes EU by default, with GDPR-friendly settings to reduce legal overhead and simplify compliance.',
       },
       {
         id: 'nolt-3',

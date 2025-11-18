@@ -69,13 +69,13 @@ export default function Compare({ alt }: { alt: Alternative }) {
             </ul>
           </div>
 
-          <div className="mt-10 flex items-stretch gap-2">
-            <AccentBar width={6} />
             <p className="text-accent/70 text-sm leading-6 text-balance sm:max-w-4xl">
               Partial means the feature is available with limitations or
               requires workarounds.
             </p>
-          </div>
+          {/* <div className="mt-10 flex items-stretch gap-2">
+            <AccentBar width={6} />
+          </div> */}
         </div>
       </section>
     </Container>

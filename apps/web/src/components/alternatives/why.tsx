@@ -14,35 +14,30 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
-            What makes Feedgot different
+            Why organizations choose Feedgot over {alt.name}
           </h2>
 
           <div className="mt-10 flex items-start gap-2">
             <AccentBar width={8} />
             <p className="text-accent text-sm sm:text-base">
-              If you’re comparing {alt.name} with Feedgot, here’s how Feedgot’s
-              focus on privacy, speed, and a unified workflow changes day‑to‑day
-              work.
+              While {alt.name} provides feedback collection, Feedgot offers a fundamentally different approach prioritizing data sovereignty, rapid implementation, and workflows that adapt to your processes rather than forcing you to adapt to rigid systems.
             </p>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-14 items-start">
+          <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-14 items-start">
             <div className="sm:relative sm:mt-2">
               <div className="flex items-start gap-3">
                 <ShieldIcon className="size-4 sm:size-5 text-primary" opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Own your feedback
+                  Complete data ownership and compliance
                 </h3>
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  Keep control over where data lives with EU hosting options and
-                  practical GDPR defaults. Teams get clarity on compliance
-                  without juggling extra tools.
+                  Maintain complete control over your feedback data with EU hosting and built-in GDPR compliance. Feedgot ensures your data remains portable migrate, self-host, or integrate without losing valuable insights.
                 </p>
                 <p>
-                  Data export stays straightforward and portable, so switching
-                  or self‑hosting later doesn’t mean starting from zero.
+                  Unlike platforms that lock you into proprietary formats, our open export standards protect your investment and give you the freedom to evolve your tech stack without starting from zero.
                 </p>
               </div>
             </div>
@@ -51,18 +46,15 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
               <div className="flex items-start gap-3">
                 <SetupIcon className="size-4 sm:size-5 text-primary" opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Start in minutes
+                  Enterprise-grade deployment in minutes
                 </h3>
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  Share a hosted space right away or drop in the widget with a
-                  single snippet. Configuration is simple—statuses, tags, and
-                  branding are ready out of the box.
+                  Deploy a branded feedback portal with a single line of code. Pre-configured workflows and tagging eliminate setup complexity start collecting feedback immediately without infrastructure changes.
                 </p>
                 <p>
-                  Collect feedback where users already are, without redirect
-                  loops or complex setup guides.
+                  Traditional enterprise systems require weeks of implementation. Feedgot reverses this paradigm, letting you share hosted spaces instantly while maintaining your existing user experience flow.
                 </p>
               </div>
             </div>
@@ -71,18 +63,15 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
               <div className="flex items-start gap-3">
                 <FeatherIcon className="size-4 sm:size-5 text-primary" opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Tiny footprint
+                  Performance-optimized architecture
                 </h3>
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  The widget loads fast and plays nicely with performance
-                  budgets. Assets are lazy‑loaded and cached so pages stay
-                  snappy.
+                  Our lightweight widget loads fast with lazy-loading and intelligent caching. Collect comprehensive feedback without impacting your site's performance or user experience.
                 </p>
                 <p>
-                  Keep UX smooth while still gathering the context you need to
-                  prioritize confidently.
+                  Every millisecond matters for conversion rates. Our performance-first approach ensures you gather insights while maintaining the speed that keeps users engaged and satisfied.
                 </p>
               </div>
             </div>
@@ -91,18 +80,15 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
               <div className="flex items-start gap-3">
                 <ChartIcon className="size-4 sm:size-5 text-primary"  opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Clear over complex
+                  Intuitive workflow design
                 </h3>
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  Boards, votes, statuses, roadmaps, and release notes—no maze
-                  of features. Feedgot favors signal and ship‑ability over
-                  configuration sprawl.
+                  Avoid feature bloat with a focused approach. Our unified workflow connects feedback collection, prioritization, and roadmapping in one coherent system no maze of unused configuration options.
                 </p>
                 <p>
-                  You get a single flow from idea to shipped change, visible to
-                  your users at each step.
+                  Enterprise software should solve problems, not create them. We focus on capabilities that directly improve your team's ability to act on customer feedback efficiently.
                 </p>
               </div>
             </div>
@@ -111,18 +97,15 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
               <div className="flex items-start gap-3">
                 <UsersIcon className="size-4 sm:size-5 text-primary" opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Human support
+                  Direct access to product expertise
                 </h3>
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  Talk to the builders. We keep answers short, practical, and
-                  focused on helping you ship. Documentation stays concise, and
-                  examples map to common SaaS workflows.
+                  Skip generic support responses. Communicate directly with our engineering team for actionable solutions based on deep technical understanding, not scripted replies.
                 </p>
                 <p>
-                  Self‑hosting or cloud—either way, you won’t be left waiting
-                  for a forum reply.
+                  Get expert guidance from the team who built the platform. We help you maximize value quickly, whether you're cloud-hosted or self-hosted.
                 </p>
               </div>
             </div>
@@ -131,18 +114,15 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
               <div className="flex items-start gap-3">
                 <BookmarkIcon className="size-4 sm:size-5 text-primary"  opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Details that add up
+                  Thoughtful user experience
                 </h3>
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  Keyboard‑friendly triage, consistent spacing, and accessible
-                  components reduce friction. Roadmap and changelog stay in sync
-                  without manual back‑and‑forth.
+                  Built-in accessibility and automatic roadmap-changelog sync eliminate manual coordination. Small efficiencies compound, letting your team focus on strategic decisions rather than administrative tasks.
                 </p>
                 <p>
-                  Small touches make everyday work calmer and keep your team
-                  focused on outcomes.
+                  The details matter from keyboard navigation to consistent spacing. These thoughtful touches make daily work smoother and keep teams focused on outcomes, not tool management.
                 </p>
               </div>
             </div>

@@ -20,7 +20,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
       <section className="py-16 md:py-24">
         <div className="max-w-5xl px-0 sm:px-6">
           <div className="max-w-xl text-left">
-            <h2 className="text-balance text-2xl font-semibold">
+            <h2 className="text-balance text-3xl font-semibold">
               Questions about {alt.name} vs Feedgot
             </h2>
           </div>
@@ -34,7 +34,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
                     value={item.id}
                     className="border-none px-0 py-3"
                   >
-                    <AccordionTrigger className="group cursor-pointer text-left text-sm  font-medium !no-underline hover:!no-underline justify-start [&>svg]:hidden">
+                    <AccordionTrigger className="group cursor-pointer text-left text-md  font-medium !no-underline hover:!no-underline justify-start [&>svg]:hidden">
                       <span className="inline-flex items-center gap-2">
                         <ChevronDownIcon className="size-4 text-primary transition-transform duration-200 group-data-[state=open]:rotate-180" />
                         <span>{item.question}</span>
