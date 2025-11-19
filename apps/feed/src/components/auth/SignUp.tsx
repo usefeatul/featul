@@ -10,6 +10,8 @@ import { Badge } from "@feedgot/ui/components/badge"
 import { GoogleIcon } from "@feedgot/ui/icons/google"
 import GitHubIcon from "@feedgot/ui/icons/github"
 import Link from "next/link"
+import { toast } from "sonner"
+import { isStrongPassword, strongPasswordPattern } from "@feedgot/auth/password"
 
 export default function SignUp() {
   const router = useRouter()
@@ -22,11 +24,18 @@ export default function SignUp() {
     setIsLoading(true)
     setError("")
     try {
+      if (!isStrongPassword(password)) {
+        toast.error("Password must be 8+ chars, include uppercase, lowercase, number, and symbol")
+        setError("Weak password")
+        return
+      }
       const displayName = email.split("@")[0] || email
       await authClient.signUp.email({ name: displayName, email, password, callbackURL: "/auth/verify?email=" + encodeURIComponent(email) })
+      toast.success("Account created. Check your email for the code")
       router.push(`/auth/verify?email=${encodeURIComponent(email)}`)
     } catch (e: any) {
       setError(e?.message || "Failed to sign up")
+      toast.error(e?.message || "Failed to sign up")
     } finally {
       setIsLoading(false)
     }
@@ -39,6 +48,7 @@ export default function SignUp() {
       await authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" })
     } catch (err) {
       setError("Failed with Google")
+      toast.error("Failed with Google")
       setIsLoading(false)
     }
   }
@@ -50,6 +60,7 @@ export default function SignUp() {
       await authClient.signIn.social({ provider: "github", callbackURL: "/dashboard" })
     } catch (err) {
       setError("Failed with GitHub")
+      toast.error("Failed with GitHub")
       setIsLoading(false)
     }
   }
@@ -96,7 +107,7 @@ export default function SignUp() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="block text-sm">Password</Label>
-              <Input type="password" required id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input type="password" required id="password" value={password} onChange={(e) => setPassword(e.target.value)} pattern={strongPasswordPattern} title="8+ chars, uppercase, lowercase, number and symbol" />
             </div>
 
             <Button className="w-full" type="submit" disabled={isLoading}>Sign Up</Button>

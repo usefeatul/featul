@@ -8,6 +8,7 @@ import { Input } from "@feedgot/ui/components/input"
 import { Label } from "@feedgot/ui/components/label"
 import { Badge } from "@feedgot/ui/components/badge"
 import Link from "next/link"
+import { toast } from "sonner"
 
 export default function Verify() {
   const router = useRouter()
@@ -30,8 +31,10 @@ export default function Verify() {
     try {
       await authClient.emailOtp.sendVerificationOtp({ email, type: "email-verification" })
       setInfo("Verification code sent")
+      toast.success("Verification code sent")
     } catch (e: any) {
       setError(e?.message || "Failed to send code")
+      toast.error(e?.message || "Failed to send code")
     } finally {
       setIsLoading(false)
     }
@@ -43,9 +46,11 @@ export default function Verify() {
     setInfo("")
     try {
       await authClient.emailOtp.verifyEmail({ email, otp: code })
+      toast.success("Email verified")
       router.push("/dashboard")
     } catch (e: any) {
       setError(e?.message || "Invalid or expired code")
+      toast.error(e?.message || "Invalid or expired code")
     } finally {
       setIsLoading(false)
     }

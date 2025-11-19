@@ -13,7 +13,9 @@
     "./client": "./src/client.ts",
     "./auth": "./src/auth.ts",
     "./server": "./src/auth.ts",
-    "./workspace": "./src/workspace.ts"
+    "./workspace": "./src/workspace.ts",
+    "./password": "./src/password.ts",
+    "./*": "./src/*"
   },
   "dependencies": {
     "better-auth": "^1.3.9",

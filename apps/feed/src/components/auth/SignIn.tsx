@@ -10,6 +10,7 @@ import { GoogleIcon } from "@feedgot/ui/icons/google"
 import GitHubIcon from "@feedgot/ui/icons/github"
 import { Badge } from "@feedgot/ui/components/badge"
 import Link from "next/link"
+import { toast } from "sonner"
 
 export default function SignIn() {
   const router = useRouter()
@@ -25,6 +26,7 @@ export default function SignIn() {
       await authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" })
     } catch (err) {
       setError("Failed to sign in with Google")
+      toast.error("Failed to sign in with Google")
       setIsLoading(false)
     }
   }
@@ -36,6 +38,7 @@ export default function SignIn() {
       await authClient.signIn.social({ provider: "github", callbackURL: "/dashboard" })
     } catch (err) {
       setError("Failed to sign in with GitHub")
+      toast.error("Failed to sign in with GitHub")
       setIsLoading(false)
     }
   }
@@ -47,12 +50,15 @@ export default function SignIn() {
       await authClient.signIn.email({ email, password, callbackURL: "/dashboard" }, {
         onError: (ctx) => {
           if (ctx.error.status === 403) {
+            toast.info("Please verify your email")
             router.push(`/auth/verify?email=${encodeURIComponent(email)}`)
             return
           }
           setError(ctx.error.message)
+          toast.error(ctx.error.message)
         },
         onSuccess: () => {
+          toast.success("Signed in")
           router.push("/dashboard")
         },
         onRequest: () => {},
