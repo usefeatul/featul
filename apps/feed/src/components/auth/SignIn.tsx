@@ -161,7 +161,7 @@ export default function SignIn() {
                 name="password"
                 id="pwd"
                 autoComplete="current-password"
-                placeholder="Enter your password"
+                placeholder="••••••••"
                 className="placeholder:text-accent/50"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

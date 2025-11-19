@@ -157,7 +157,7 @@ export default function SignUp() {
                 required
                 id="password"
                 autoComplete="new-password"
-                placeholder="Create a strong password"
+                placeholder="••••••••"
                 className="placeholder:text-accent/50"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

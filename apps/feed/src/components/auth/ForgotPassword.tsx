@@ -104,7 +104,7 @@ export default function ForgotPassword() {
           <div className="mt-6 space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email" className="block text-sm">Email</Label>
-              <Input type="email" required id="email" autoComplete="email" placeholder="you@example.com" className="placeholder:text-accent/50" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input type="email" required id="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
 
             {hasSent && (
@@ -121,8 +121,6 @@ export default function ForgotPassword() {
                     pattern="^[0-9]{6}$"
                     title="Enter the 6-digit code"
                     autoComplete="one-time-code"
-                    placeholder="123456"
-                    className="placeholder:text-accent/50"
                     aria-invalid={submitted && Boolean(error)}
                     aria-describedby={submitted && error ? "code-error" : undefined}
                   />
@@ -138,7 +136,7 @@ export default function ForgotPassword() {
                     required
                     id="password"
                     autoComplete="new-password"
-                    placeholder="Choose a new password"
+                    placeholder="••••••••"
                     className="placeholder:text-accent/50"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
