@@ -4,7 +4,7 @@ import { organization, lastLoginMethod, emailOTP } from "better-auth/plugins"
 import { db, user, session, account, verification } from "@feedgot/db"
 import { sendEmail } from "./email"
 import { createAuthMiddleware, APIError } from "better-auth/api"
-import { isStrongPassword } from "./password"
+import { getPasswordError } from "./password"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -21,8 +21,6 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
-    minPasswordLength: 8,
-    maxPasswordLength: 128,
   },
 
   emailVerification: {
@@ -67,10 +65,9 @@ export const auth = betterAuth({
       const isPasswordOp = ctx.path === "/sign-up/email" || ctx.path === "/change-password" || ctx.path === "/set-password"
       if (!isPasswordOp) return
       const pwd = ctx.body?.password ?? ctx.body?.newPassword
-      if (!isStrongPassword(String(pwd || ""))) {
-        throw new APIError("BAD_REQUEST", {
-          message: "Password must be 8+ chars incl. uppercase, lowercase, number, symbol",
-        })
+      const msg = getPasswordError(String(pwd || ""))
+      if (msg) {
+        throw new APIError("BAD_REQUEST", { message: msg })
       }
     }),
   },

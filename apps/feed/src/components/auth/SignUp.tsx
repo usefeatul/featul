@@ -11,7 +11,7 @@ import { GoogleIcon } from "@feedgot/ui/icons/google"
 import GitHubIcon from "@feedgot/ui/icons/github"
 import Link from "next/link"
 import { toast } from "sonner"
-import { isStrongPassword, strongPasswordPattern } from "@feedgot/auth/password"
+import { strongPasswordPattern, getPasswordError } from "@feedgot/auth/password"
 
 export default function SignUp() {
   const router = useRouter()
@@ -19,14 +19,17 @@ export default function SignUp() {
   const [error, setError] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = async () => {
     setIsLoading(true)
     setError("")
+    setSubmitted(true)
     try {
-      if (!isStrongPassword(password)) {
-        toast.error("Password must be 8+ chars, include uppercase, lowercase, number, and symbol")
-        setError("Weak password")
+      const msg = getPasswordError(password)
+      if (msg) {
+        toast.error(msg)
+        setError(msg)
         return
       }
       const displayName = email.split("@")[0] || email
@@ -107,7 +110,22 @@ export default function SignUp() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="block text-sm">Password</Label>
-              <Input type="password" required id="password" value={password} onChange={(e) => setPassword(e.target.value)} pattern={strongPasswordPattern} title="8+ chars, uppercase, lowercase, number and symbol" />
+              <Input
+                type="password"
+                required
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                pattern={strongPasswordPattern}
+                title="8+ chars, uppercase, lowercase, number and symbol"
+                aria-invalid={submitted && Boolean(getPasswordError(password))}
+                aria-describedby={submitted && getPasswordError(password) ? "password-error" : undefined}
+              />
+              {submitted && getPasswordError(password) && (
+                <p id="password-error" className="text-destructive text-xs">
+                  {getPasswordError(password)}
+                </p>
+              )}
             </div>
 
             <Button className="w-full" type="submit" disabled={isLoading}>Sign Up</Button>
