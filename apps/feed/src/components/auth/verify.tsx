@@ -45,7 +45,12 @@ export default function Verify() {
     setError("")
     setInfo("")
     try {
-      await authClient.emailOtp.verifyEmail({ email, otp: code })
+      const { error } = await authClient.emailOtp.verifyEmail({ email, otp: code })
+      if (error) {
+        setError(error.message || "Verification failed")
+        toast.error(error.message)
+        return
+      }
       toast.success("Email verified")
       router.push("/dashboard")
     } catch (e: any) {
@@ -63,16 +68,6 @@ export default function Verify() {
           <div className="text-center">
             <h1 className="mb-2 mt-4 text-xl font-semibold">Verify Email</h1>
             <p className="text-sm text-accent mb-2">Enter the code sent to your email</p>
-            {error && (
-              <div className="mt-3 flex justify-center">
-                <Badge variant="destructive">{error}</Badge>
-              </div>
-            )}
-            {info && (
-              <div className="mt-3 flex justify-center">
-                <Badge>{info}</Badge>
-              </div>
-            )}
           </div>
 
           <div className="mt-6 space-y-6">
@@ -83,7 +78,7 @@ export default function Verify() {
 
             <div className="space-y-2">
               <Label htmlFor="code" className="block text-sm">Verification Code</Label>
-              <Input type="text" required id="code" value={code} onChange={(e) => setCode(e.target.value)} />
+              <Input type="text" required id="code" value={code} onChange={(e) => setCode(e.target.value)} inputMode="numeric" pattern="^[0-9]{6}$" title="Enter the 6-digit code" />
             </div>
 
             <LoadingButton className="w-full" type="submit" loading={isLoading}>Verify</LoadingButton>
