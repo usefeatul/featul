@@ -64,8 +64,25 @@ export default function ForgotPassword() {
         toast.error(error.message || "Reset failed")
         return
       }
-      toast.success("Password reset. Please sign in")
-      router.push("/auth/sign-in")
+      toast.success("Password reset")
+      await authClient.signIn.email(
+        { email: email.trim(), password, callbackURL: "/dashboard" },
+        {
+          onError: (ctx) => {
+            if (ctx.error.status === 403) {
+              toast.info("Please verify your email")
+              router.push(`/auth/verify?email=${encodeURIComponent(email.trim())}`)
+              return
+            }
+            setError(ctx.error.message)
+            toast.error(ctx.error.message)
+          },
+          onSuccess: () => {
+            toast.success("Signed in")
+            router.push("/dashboard")
+          },
+        }
+      )
     } catch (e: any) {
       setError(e?.message || "Reset failed")
       toast.error(e?.message || "Reset failed")
