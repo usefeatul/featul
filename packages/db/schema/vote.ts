@@ -17,7 +17,7 @@ export const vote = pgTable(
     fingerprint: text('fingerprint'),
     type: text('type', { enum: ['upvote', 'downvote'] }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
   },
   (table) => ({
     votePostUserUnique: uniqueIndex('vote_post_user_unique').on(table.postId, table.userId),
@@ -43,7 +43,7 @@ export const voteAggregate = pgTable(
     downvotes: integer('downvotes').default(0),
     totalVotes: integer('total_votes').default(0),
     score: integer('score').default(0),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
   },
   (table) => ({
     voteAggregateTargetUnique: uniqueIndex('vote_aggregate_target_unique').on(table.postId, table.commentId),
@@ -65,7 +65,7 @@ export const userVoteHistory = pgTable('user_vote_history', {
   // Engagement metrics
   lastVotedAt: timestamp('last_voted_at'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
 })
 
 export type Vote = typeof vote.$inferSelect

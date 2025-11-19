@@ -74,7 +74,7 @@ export const tag = pgTable(
     description: text('description'),
     isActive: boolean('is_active').default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
   },
   (table) => ({
     tagSlugBoardUnique: uniqueIndex('tag_slug_board_unique').on(table.boardId, table.slug),

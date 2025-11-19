@@ -37,7 +37,7 @@ export const comment = pgTable(
     isPinned: boolean("is_pinned").default(false),
     isEdited: boolean("is_edited").default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
     editedAt: timestamp("edited_at"),
     moderatedBy: text("moderated_by").references(() => user.id),
     moderatedAt: timestamp("moderated_at"),

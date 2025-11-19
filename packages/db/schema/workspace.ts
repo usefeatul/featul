@@ -15,7 +15,7 @@ export const workspace = pgTable('workspace', {
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
-  // Branding settings
+  // Branding settings 
   logo: text('logo'), // URL to logo image
   primaryColor: text('primary_color').default('#3b82f6'), // hex color
   theme: text('theme', { enum: ['light', 'dark', 'system'] }).default('system'),
@@ -39,9 +39,27 @@ export const workspaceMember = pgTable('workspace_member',{
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
-    role: text('role', { enum: ['owner', 'admin', 'member', 'viewer'] })
+    role: text('role', { enum: ['admin', 'member', 'viewer'] })
       .notNull()
       .default('member'),
+    permissions: json('permissions')
+      .$type<{
+        canManageWorkspace: boolean
+        canManageBilling: boolean
+        canManageMembers: boolean
+        canManageBoards: boolean
+        canModerateAllBoards: boolean
+        canConfigureBranding: boolean
+      }>()
+      .notNull()
+      .default({
+        canManageWorkspace: false,
+        canManageBilling: false,
+        canManageMembers: false,
+        canManageBoards: false,
+        canModerateAllBoards: false,
+        canConfigureBranding: false,
+      }),
     invitedBy: text('invited_by')
       .references(() => user.id),
     invitedAt: timestamp('invited_at'),
