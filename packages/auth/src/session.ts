@@ -12,19 +12,3 @@ export async function getServerSession() {
     return null;
   }
 }
-
-export async function requireAuth() {
-  const session = await getServerSession();
-  if (!session) {
-    throw new Error("Authentication required");
-  }
-  return session;
-}
-
-export async function requireUser() {
-  const session = await getServerSession();
-  if (!session?.user) {
-    throw new Error("User authentication required");
-  }
-  return session.user;
-}
