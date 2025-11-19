@@ -73,12 +73,9 @@ export default function SignUp() {
     <section className="flex min-h-screen bg-background">
       <form noValidate className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]" onSubmit={(e) => { e.preventDefault(); handleSubmit() }}>
         <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
-          <div className="text-center">
-            <Link href="/" aria-label="go home" className="mx-auto block w-fit">
-              <span className="text-xl font-semibold">Feedgot</span>
-            </Link>
-            <h1 className="mb-2 mt-4 text-xl font-semibold">Create Account</h1>
-            <p className="text-sm text-accent mb-2">Sign up with social or email</p>
+          <div className="text-left">
+            <h1 className="mb-2 mt-4 text-xl font-semibold text-left">Sign up to Feedgot</h1>
+            <p className="text-sm text-accent mb-2 text-left">Sign up with social or email</p>
           </div>
 
           <div className="mt-6 space-y-6">

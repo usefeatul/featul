@@ -9,6 +9,7 @@ import { Label } from "@feedgot/ui/components/label"
 import { Badge } from "@feedgot/ui/components/badge"
 import Link from "next/link"
 import { toast } from "sonner"
+import { LoadingButton } from "@/components/loading-button"
 
 export default function Verify() {
   const router = useRouter()
@@ -65,9 +66,9 @@ export default function Verify() {
     <section className="flex min-h-screen bg-background">
       <form className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]" onSubmit={(e) => { e.preventDefault(); verify() }}>
         <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
-          <div className="text-center">
-            <h1 className="mb-2 mt-4 text-xl font-semibold">Verify Email</h1>
-            <p className="text-sm text-accent mb-2">Enter the code sent to your email</p>
+          <div className="text-left">
+            <h1 className="mb-2 mt-4 text-xl font-semibold text-left">Verify your  email</h1>
+            <p className="text-sm text-accent mb-2 text-left">Enter the code sent to your email</p>
           </div>
 
           <div className="mt-6 space-y-6">
@@ -98,4 +99,3 @@ export default function Verify() {
     </section>
   )
 }
-import { LoadingButton } from "@/components/loading-button"

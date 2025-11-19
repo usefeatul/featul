@@ -72,14 +72,11 @@ export default function SignIn() {
     <section className="flex min-h-screen bg-background">
       <form className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]" onSubmit={(e) => { e.preventDefault(); handleEmailSignIn() }}>
         <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
-          <div className="text-center">
-            <Link href="/" aria-label="go home" className="mx-auto block w-fit">
-              <span className="text-xl font-semibold">Feedgot</span>
-            </Link>
-            <h1 className="mb-2 mt-4 text-xl font-semibold">Sign In</h1>
-            <p className="text-sm text-accent mb-2">Welcome back! Sign in to continue</p>
+          <div className="text-left">
+            <h1 className="mb-2 mt-4 text-xl font-semibold text-left">Sign in to Feedgot</h1>
+            <p className="text-sm text-accent mb-2 text-left">Welcome back! Sign in to continue</p>
             {error && (
-              <div className="mt-3 flex justify-center">
+              <div className="mt-3 flex justify-start">
                 <Badge variant="destructive">{error}</Badge>
               </div>
             )}
