@@ -11,8 +11,6 @@ export async function sendEmail({ to, subject, html, text }: EmailPayload) {
 
   if (!apiKey) {
     console.log(`[email:dev] to=${to} subject=${subject}`)
-    if (html) console.log(html)
-    if (text) console.log(text)
     return
   }
 

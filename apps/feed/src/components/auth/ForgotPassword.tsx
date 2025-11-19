@@ -64,7 +64,8 @@ export default function ForgotPassword() {
         toast.error(error.message || "Reset failed")
         return
       }
-      toast.success("Password reset")
+      toast.success("Password reset", { duration: 2000 })
+      await new Promise((r) => setTimeout(r, 600))
       await authClient.signIn.email(
         { email: email.trim(), password, callbackURL: "/dashboard" },
         {
@@ -78,7 +79,7 @@ export default function ForgotPassword() {
             toast.error(ctx.error.message)
           },
           onSuccess: () => {
-            toast.success("Signed in")
+            setTimeout(() => toast.success("Signed in"), 400)
             router.push("/dashboard")
           },
         }
