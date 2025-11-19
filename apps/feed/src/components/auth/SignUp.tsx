@@ -176,7 +176,7 @@ export default function SignUp() {
             <LoadingButton className="w-full" type="submit" loading={isLoading}>
               Sign Up
             </LoadingButton>
-            {error && <p className="text-destructive text-xs mt-2">{error}</p>}
+
           </div>
         </div>
 
