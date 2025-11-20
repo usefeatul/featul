@@ -5,12 +5,20 @@ import { Button } from "@feedgot/ui/components/button"
 import { Label } from "@feedgot/ui/components/label"
 import { Input } from "@feedgot/ui/components/input"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { LoadingButton } from "@/components/loading-button"
+import { client } from "@/lib/client"
 
 type Props = { className?: string }
 
 export default function CreateProjectForm({ className = "" }: Props) {
+  const router = useRouter()
   const [name, setName] = useState("")
   const [domain, setDomain] = useState("")
+  const [slug, setSlug] = useState("")
+  const [checkingSlug, setCheckingSlug] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
   const [timezone, setTimezone] = useState<string>(
     typeof Intl !== "undefined" && Intl.DateTimeFormat().resolvedOptions().timeZone
       ? Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -54,6 +62,57 @@ export default function CreateProjectForm({ className = "" }: Props) {
     return base
   }, [])
 
+  useEffect(() => {
+    const s = name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+    setSlug(s)
+  }, [name])
+
+  const checkSlugAvailability = async () => {
+    if (!slug) return
+    setCheckingSlug(true)
+    try {
+      const res = await client.workspace.checkSlug.$get({ slug })
+      const data = await res.json()
+      if (!data.available) {
+        toast.error("Slug is already taken")
+      } else {
+        toast.success("Slug available")
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to check slug")
+    } finally {
+      setCheckingSlug(false)
+    }
+  }
+
+  const handleCreate = async () => {
+    setIsCreating(true)
+    try {
+      const res = await client.workspace.create.$post({
+        name: name.trim(),
+        domain: domain.trim(),
+        slug: slug.trim(),
+        timezone,
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        toast.error(err?.message || "Failed to create workspace")
+        return
+      }
+      toast.success("Workspace created")
+      router.push("/dashboard")
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to create workspace")
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
   return (
     <section className="flex min-h-screen bg-background">
       <div className={`w-full max-w-sm m-auto md:translate-x-[8%] lg:translate-x-[12%] ${className}`}>
@@ -74,8 +133,19 @@ export default function CreateProjectForm({ className = "" }: Props) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="domain" className="block text-sm">Domain</Label>
+                <Label htmlFor="domain" className="block text-sm">Website</Label>
                 <Input id="domain" type="url" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="https://mywebsite.com" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="slug" className="block text-sm">Subdomain</Label>
+                <div className="flex items-center gap-2">
+                  <Input id="slug" value={slug} onChange={(e) => setSlug(e.target.value.toLowerCase())} placeholder="mywebsite" />
+                  <Button type="button" variant="outline" onClick={checkSlugAvailability} disabled={checkingSlug} className="whitespace-nowrap">
+                    {checkingSlug ? "Checking..." : "Check"}
+                  </Button>
+                </div>
+                <p className="text-[12px] text-accent">Your workspace will be accessible at {slug ? `${slug}.feedgot.com` : "<slug>.feedgot.com"}.</p>
               </div>
 
               <div className="space-y-2">
@@ -96,7 +166,7 @@ export default function CreateProjectForm({ className = "" }: Props) {
                 <p className="text-[12px] text-accent">All project graphs, ranges and timestamps will be matched to this timezone. Can be updated later.</p>
               </div>
 
-              <Button className="w-full" type="button">Create project</Button>
+              <LoadingButton className="w-full" type="button" loading={isCreating} onClick={handleCreate}>Create workspace</LoadingButton>
             </div>
           </div>
           <div className="p-3">

@@ -1,4 +1,5 @@
 import { jstack } from "jstack"
+import { createWorkspaceRouter } from "./router/workspace"
 
 export function createAppRouter(opts: { db: any; auth: any; getHeaders: () => any }) {
   const j = jstack.init()
@@ -28,7 +29,7 @@ export function createAppRouter(opts: { db: any; auth: any; getHeaders: () => an
     .use(j.defaults.cors)
     .onError(j.defaults.errorHandler)
 
-  const workspaceRouter = j.router()
+  const workspaceRouter = createWorkspaceRouter(j, privateProcedure, publicProcedure)
 
   const appRouter = j.mergeRouters(api, {
     workspace: workspaceRouter,

@@ -5,7 +5,7 @@ export const workspace = pgTable('workspace', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(), // for subdomain like mantlz.feedgot.com
-  description: text('description'),
+  domain: text('domain').notNull(),
   ownerId: text('owner_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
@@ -15,13 +15,12 @@ export const workspace = pgTable('workspace', {
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
-  // Branding settings 
   logo: text('logo'), // URL to logo image
   primaryColor: text('primary_color').default('#3b82f6'), // hex color
   theme: text('theme', { enum: ['light', 'dark', 'system'] }).default('system'),
   hideBranding: boolean('hide_branding').default(false), // "Powered by FeedGot"
   customDomain: text('custom_domain'), // for custom domains
-  // Subscription info
+  timezone: text('timezone').notNull().default('UTC'),
   stripeCustomerId: text('stripe_customer_id'),
   stripeSubscriptionId: text('stripe_subscription_id'),
   subscriptionStatus: text('subscription_status', { 
