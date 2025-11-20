@@ -8,7 +8,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { LoadingButton } from "@/components/loading-button"
-import { client } from "@/lib/client"
+import { client } from "@feedgot/api/client"
 
 type Props = { className?: string }
 
@@ -76,7 +76,7 @@ export default function CreateProjectForm({ className = "" }: Props) {
     if (!slug) return
     setCheckingSlug(true)
     try {
-      const res = await client.workspace.checkSlug.$get({ slug })
+      const res = await client.workspace.checkSlug.$post({ slug })
       const data = await res.json()
       if (!data.available) {
         toast.error("Slug is already taken")

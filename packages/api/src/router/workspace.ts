@@ -1,6 +1,7 @@
 import { HTTPException } from "hono/http-exception"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
+import { j, privateProcedure } from "@feedgot/api"
 import { workspace, workspaceMember } from "@feedgot/db"
 
 export function createWorkspaceRouter(j: ReturnType<any>, privateProcedure: any) {
@@ -20,7 +21,7 @@ export function createWorkspaceRouter(j: ReturnType<any>, privateProcedure: any)
   return j.router({
     checkSlug: privateProcedure
       .input(z.object({ slug: slugSchema }))
-      .query(async ({ ctx, input, c }) => {
+      .mutation(async ({ ctx, input, c }) => {
         const existing = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
