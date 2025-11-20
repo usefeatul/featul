@@ -1,4 +1,5 @@
 import React from 'react'
+import type { Metadata } from 'next'
 
 const Homepage = () => {
   return (
@@ -9,3 +10,10 @@ const Homepage = () => {
 }
 
 export default Homepage
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  description: 'Overview of your projects in Feedgot.',
+  alternates: { canonical: '/dashboard' },
+  robots: { index: false, follow: false },
+}
