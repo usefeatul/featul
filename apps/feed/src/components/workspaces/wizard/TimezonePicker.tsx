@@ -1,0 +1,72 @@
+"use client"
+
+import { useMemo, useState } from "react"
+import { Button } from "@feedgot/ui/components/button"
+import { Input } from "@feedgot/ui/components/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@feedgot/ui/components/popover"
+import { Globe2, ChevronDown } from "lucide-react"
+
+export default function TimezonePicker({ value, onChange, now }: { value: string; onChange: (v: string) => void; now: Date }) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState("")
+
+  const timezones = useMemo(() => {
+    const sup = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : []
+    if (sup && sup.length) return sup
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const base = ["UTC", "Europe/London", "Europe/Paris", "America/New_York", "America/Los_Angeles", "Asia/Tokyo"]
+    if (detected && !base.includes(detected)) return [detected, ...base]
+    return base
+  }, [])
+
+  const timeString = useMemo(() => {
+    try {
+      return new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: value }).format(now)
+    } catch {
+      return new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true }).format(now)
+    }
+  }, [value, now])
+
+  const formatTime = (tz: string) => new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: tz }).format(now)
+  const friendlyTZ = (tz: string) => tz.split("/").slice(-1)[0]?.replace(/_/g, " ") ?? tz
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return timezones
+    return timezones.filter((t) => t.toLowerCase().includes(q) || friendlyTZ(t).toLowerCase().includes(q))
+  }, [query, timezones])
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" className="w-full justify-start gap-2">
+          <Globe2 className="size-4" />
+          <span className="truncate">{friendlyTZ(value)}</span>
+          <span className="ml-auto text-xs px-2 py-1 rounded-md border bg-muted">{timeString}</span>
+          <ChevronDown className="size-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0 w-[360px]">
+        <div className="text-xs text-accent border-b px-3 py-2">Your local time - {timeString}, {now.toLocaleDateString()}</div>
+        <div className="p-2">
+          <Input placeholder="Search by city or country..." value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        <div className="max-h-64 overflow-y-auto">
+          {filtered.map((tz) => (
+            <button
+              key={tz}
+              type="button"
+              onClick={() => {
+                onChange(tz)
+                setOpen(false)
+              }}
+              className="w-full text-left px-3 py-2 hover:bg-muted flex items-center gap-2"
+            >
+              <span className="flex-1 truncate">{tz}</span>
+              <span className="text-xs">{formatTime(tz)}</span>
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}

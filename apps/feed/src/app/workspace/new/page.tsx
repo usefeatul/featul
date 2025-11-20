@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import CreateProjectForm from "@/components/workspaces/CreateForm"
+import WorkspaceWizard from "@/components/workspaces/wizard/Wizard"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@feedgot/auth/session"
@@ -41,11 +41,5 @@ export default async function NewWorkspacePage() {
     redirect(`/workspaces/${memberWs.slug}`)
   }
 
-  return (
-    <section className="min-h-screen flex items-center">
-      <div className="w-full">
-        <CreateProjectForm />
-      </div>
-    </section>
-  )
+  return <WorkspaceWizard />
 }
