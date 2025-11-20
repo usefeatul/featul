@@ -4,7 +4,8 @@ import { getSessionCookie } from "better-auth/cookies"
 
 export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
-  if (pathname.startsWith("/dashboard")) {
+  const needsAuth = pathname.startsWith("/dashboard") || pathname.startsWith("/workspaces")
+  if (needsAuth) {
     const cookie = getSessionCookie(req)
     if (!cookie) {
       const url = new URL("/auth/sign-in", req.url)
