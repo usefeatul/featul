@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react"
 import { Button } from "@feedgot/ui/components/button"
 import { Label } from "@feedgot/ui/components/label"
 import { Input } from "@feedgot/ui/components/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@feedgot/ui/components/popover"
+import { Globe2, ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -17,7 +19,6 @@ export default function CreateProjectForm({ className = "" }: Props) {
   const [name, setName] = useState("")
   const [domain, setDomain] = useState("")
   const [slug, setSlug] = useState("")
-  const [checkingSlug, setCheckingSlug] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [timezone, setTimezone] = useState<string>(
     typeof Intl !== "undefined" && Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -25,6 +26,8 @@ export default function CreateProjectForm({ className = "" }: Props) {
       : "UTC"
   )
   const [now, setNow] = useState<Date>(new Date())
+  const [tzOpen, setTzOpen] = useState(false)
+  const [tzQuery, setTzQuery] = useState("")
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60000)
@@ -49,6 +52,8 @@ export default function CreateProjectForm({ className = "" }: Props) {
   }, [timezone, now])
 
   const timezones = useMemo(() => {
+    const sup = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : []
+    if (sup && sup.length) return sup
     const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
     const base = [
       "UTC",
@@ -72,23 +77,16 @@ export default function CreateProjectForm({ className = "" }: Props) {
     setSlug(s)
   }, [name])
 
-  const checkSlugAvailability = async () => {
-    if (!slug) return
-    setCheckingSlug(true)
-    try {
-      const res = await client.workspace.checkSlug.$post({ slug })
-      const data = await res.json()
-      if (!data.available) {
-        toast.error("Slug is already taken")
-      } else {
-        toast.success("Slug available")
-      }
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to check slug")
-    } finally {
-      setCheckingSlug(false)
-    }
-  }
+  const formatTime = (tz: string) =>
+    new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: tz }).format(now)
+
+  const friendlyTZ = (tz: string) => tz.split("/").slice(-1)[0].replace(/_/g, " ")
+
+  const filteredTZs = useMemo(() => {
+    const q = tzQuery.trim().toLowerCase()
+    if (!q) return timezones
+    return timezones.filter((t) => t.toLowerCase().includes(q) || friendlyTZ(t).toLowerCase().includes(q))
+  }, [tzQuery, timezones])
 
   const handleCreate = async () => {
     setIsCreating(true)
@@ -135,36 +133,49 @@ export default function CreateProjectForm({ className = "" }: Props) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="domain" className="block text-sm">Website</Label>
-                <Input id="domain" type="url" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="https://mywebsite.com" />
+                <Label htmlFor="domain" className="block text-sm">Domain</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-accent">https://</span>
+                  <Input id="domain" type="text" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="mywebsite.com" className="pl-16" />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="slug" className="block text-sm">Subdomain</Label>
-                <div className="flex items-center gap-2">
-                  <Input id="slug" value={slug} onChange={(e) => setSlug(e.target.value.toLowerCase())} placeholder="mywebsite" />
-                  <Button type="button" variant="outline" onClick={checkSlugAvailability} disabled={checkingSlug} className="whitespace-nowrap">
-                    {checkingSlug ? "Checking..." : "Check"}
-                  </Button>
-                </div>
-                <p className="text-[12px] text-accent">Your workspace will be accessible at {slug ? `${slug}.feedgot.com` : "<slug>.feedgot.com"}.</p>
-              </div>
+              {/* Slug is derived from name; hidden in UI. */}
 
               <div className="space-y-2">
-                <Label htmlFor="timezone" className="block text-sm">Timezone</Label>
-                <div className="flex items-center gap-2">
-                  <select
-                    id="timezone"
-                    value={timezone}
-                    onChange={(e) => setTimezone(e.target.value)}
-                    className="flex-1 rounded-md border bg-background px-3 py-2 text-sm"
-                  >
-                    {timezones.map((tz) => (
-                      <option key={tz} value={tz}>{tz}</option>
-                    ))}
-                  </select>
-                  <span className="text-xs text-accent px-2 py-1 rounded-md border bg-muted">{timeString}</span>
-                </div>
+                <Label className="block text-sm">Timezone</Label>
+                <Popover open={tzOpen} onOpenChange={setTzOpen}>
+                  <PopoverTrigger asChild>
+                    <Button type="button" variant="outline" className="w-full justify-start gap-2">
+                      <Globe2 className="size-4" />
+                      <span className="truncate">{friendlyTZ(timezone)}</span>
+                      <span className="ml-auto text-xs px-2 py-1 rounded-md border bg-muted">{timeString}</span>
+                      <ChevronDown className="size-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 w-[360px]">
+                    <div className="text-xs text-accent border-b px-3 py-2">Your local time - {timeString}, {now.toLocaleDateString()}</div>
+                    <div className="p-2">
+                      <Input placeholder="Search by city or country..." value={tzQuery} onChange={(e) => setTzQuery(e.target.value)} />
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {filteredTZs.map((tz) => (
+                        <button
+                          key={tz}
+                          type="button"
+                          onClick={() => {
+                            setTimezone(tz)
+                            setTzOpen(false)
+                          }}
+                          className="w-full text-left px-3 py-2 hover:bg-muted flex items-center gap-2"
+                        >
+                          <span className="flex-1 truncate">{tz}</span>
+                          <span className="text-xs">{formatTime(tz)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <p className="text-[12px] text-accent">All project graphs, ranges and timestamps will be matched to this timezone. Can be updated later.</p>
               </div>
 
