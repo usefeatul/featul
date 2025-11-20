@@ -1,0 +1,11 @@
+
+[0m[2m[35m$[0m [2m[1mnext lint[0m
+[33m`next lint` is deprecated and will be removed in Next.js 16.
+[39mFor new projects, use [1mcreate-next-app[22m to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+[1mnpx @next/codemod@canary next-lint-to-eslint-cli .[22m
+
+[1m[36m?[39m How would you like to configure ESLint? https://nextjs.org/docs/app/api-reference/config/eslint[22m
+[?25l[36m❯ [39m [1m[4m[36mStrict[39m[24m[22m[1m[33m (recommended)[39m[22m
+   Base
+   Cancel
