@@ -7,7 +7,7 @@ type EmailPayload = {
 
 export async function sendEmail({ to, subject, html, text }: EmailPayload) {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.RESEND_FROM || "Feedgot <onboarding@resend.dev>"
+  const from = process.env.RESEND_FROM || "Feedgot <no-reply@feedgot.com>"
 
   if (!apiKey) {
     console.log(`[email:dev] to=${to} subject=${subject}`)
@@ -24,8 +24,12 @@ export async function sendEmail({ to, subject, html, text }: EmailPayload) {
   })
 
   if (!res.ok) {
-    const body = await res.text()
-    console.error("Resend email failed", res.status, body)
+    const bodyText = await res.text()
+    if (res.status === 403 && process.env.NODE_ENV !== "production") {
+      console.warn(`[email:test-only] to=${to} subject=${subject} reason=${bodyText}`)
+      return
+    }
+    console.error("Resend email failed", res.status, bodyText)
     throw new Error("Failed to send email")
   }
 }

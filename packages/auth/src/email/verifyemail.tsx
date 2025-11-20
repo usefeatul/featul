@@ -1,5 +1,5 @@
 import React from "react"
-import { render } from "@react-email/render"
+import { render, toPlainText } from "@react-email/render"
 import { BrandedEmail, Brand } from "./brandedemail"
 
 type VerifyType = "email-verification" | "forget-password" | "sign-in"
@@ -27,9 +27,9 @@ export function VerifyEmail({ otp, type, brand }: { otp: string; type: VerifyTyp
   )
 }
 
-export function renderVerifyEmail(otp: string, type: VerifyType, brand?: Brand) {
+export async function renderVerifyEmail(otp: string, type: VerifyType, brand?: Brand) {
   const element = <VerifyEmail otp={otp} type={type} brand={brand} />
-  const html = render(element)
-  const text = render(element, { plainText: true })
+  const html = await render(element)
+  const text = toPlainText(html)
   return { html, text }
 }

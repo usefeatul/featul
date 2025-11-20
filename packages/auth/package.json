@@ -19,7 +19,9 @@
   },
   "dependencies": {
     "better-auth": "^1.3.9",
-    "@feedgot/db": "workspace:*"
+    "@feedgot/db": "workspace:*",
+    "@react-email/components": "^1.0.1",
+    "@react-email/render": "^2.0.0"
 
   },
   "devDependencies": {
