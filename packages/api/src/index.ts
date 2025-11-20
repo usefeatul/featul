@@ -4,11 +4,11 @@ import { createWorkspaceRouter } from "./router/workspace"
 export function createAppRouter(opts: { db: any; auth: any; getHeaders: () => any }) {
   const j = jstack.init()
 
-  const databaseMiddleware = j.middleware(async ({ next }) => {
+  const databaseMiddleware = j.middleware(async ({ next }: any) => {
     return await next({ db: opts.db })
   })
 
-  const authMiddleware = j.middleware(async ({ next }) => {
+  const authMiddleware = j.middleware(async ({ next }: any) => {
     const session = await opts.auth.api.getSession({
       headers: await opts.getHeaders(),
     })
