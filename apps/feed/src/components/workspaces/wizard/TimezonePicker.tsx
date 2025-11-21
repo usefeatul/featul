@@ -48,7 +48,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
       <PopoverContent className="p-0 w-[360px]">
         <div className="text-xs text-accent border-b px-3 py-2">Your local time - {timeString}, {now.toLocaleDateString()}</div>
         <div className="p-2">
-          <Input placeholder="Search by city or country..." value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input placeholder="Search by city or country..." value={query} onChange={(e) => setQuery(e.target.value)} className="placeholder:text-accent/70" />
         </div>
         <div className="max-h-64 overflow-y-auto">
           {filtered.map((tz) => (

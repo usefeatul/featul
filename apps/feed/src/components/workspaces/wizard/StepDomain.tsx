@@ -15,7 +15,7 @@ export default function StepDomain({ domain, onChange, isValid }: { domain: stri
         <Label htmlFor="domain" className="block text-sm">Website</Label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-accent">https://</span>
-          <Input id="domain" type="text" value={domain} onChange={(e) => onChange(e.target.value)} placeholder="mywebsite.com" className="pl-16" aria-invalid={!isValid && domain.length > 0} />
+          <Input id="domain" type="text" value={domain} onChange={(e) => onChange(e.target.value)} placeholder="mywebsite.com" className="pl-16 placeholder:text-accent/70" aria-invalid={!isValid && domain.length > 0} />
           {!isValid && domain.length > 0 ? (
             <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive size-4" />
           ) : null}

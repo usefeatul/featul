@@ -12,7 +12,7 @@ export default function StepName({ name, onChange }: { name: string; onChange: (
       </div>
       <div className="space-y-2">
         <Label htmlFor="name" className="block text-sm">Name</Label>
-        <Input id="name" value={name} onChange={(e) => onChange(e.target.value)} placeholder="Mywebsite" />
+        <Input id="name" value={name} onChange={(e) => onChange(e.target.value)} placeholder="Mywebsite" className="placeholder:text-accent/70" />
       </div>
     </div>
   )

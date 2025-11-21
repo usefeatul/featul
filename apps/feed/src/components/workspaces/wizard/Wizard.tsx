@@ -112,8 +112,8 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
   }
 
   return (
-    <section className="flex min-h-[80vh] bg-background pr-6 md:pr-10 lg:pr-16">
-      <div className={`w-full max-w-3xl ml-auto my-auto ${className}`}>
+    <section className="flex min-h-screen items-center justify-center bg-background px-6 md:px-10 lg:px-16">
+      <div className={`w-full max-w-3xl mx-auto ${className}`}>
         <div className="bg-card rounded-[calc(var(--radius)+.125rem)] border shadow-md overflow-hidden">
           <div className="flex">
             <div className="w-2/5 p-6 border-r flex flex-col">
