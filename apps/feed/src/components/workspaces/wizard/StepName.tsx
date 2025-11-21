@@ -11,7 +11,6 @@ export default function StepName({ name, onChange }: { name: string; onChange: (
         <p className="text-sm text-accent">A clear name helps your team identify it faster.</p>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="name" className="block text-sm">Name</Label>
         <Input id="name" value={name} onChange={(e) => onChange(e.target.value)} placeholder="Mywebsite" className="placeholder:text-accent/70" />
       </div>
     </div>

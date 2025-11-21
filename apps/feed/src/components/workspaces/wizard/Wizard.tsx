@@ -114,7 +114,7 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
         <div className="bg-card rounded-[calc(var(--radius)+.125rem)] border shadow-md overflow-hidden">
           <div className="flex">
             <div className="w-2/5 p-6 border-r flex flex-col">
-              <div className="mb-6">
+              <div className="mb-10">
                 <Progress step={step} total={total} />
               </div>
 
