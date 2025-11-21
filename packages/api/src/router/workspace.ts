@@ -1,11 +1,22 @@
 import { HTTPException } from "hono/http-exception"
 import { eq } from "drizzle-orm"
-import { j, privateProcedure } from "../jstack"
+import { j, privateProcedure, publicProcedure } from "../jstack"
 import { workspace, workspaceMember } from "@feedgot/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema } from "../validators/workspace"
 
 export function createWorkspaceRouter() {
   return j.router({
+    bySlug: publicProcedure
+      .input(checkSlugInputSchema)
+      .get(async ({ ctx, input, c }: any) => {
+        const [ws] = await ctx.db
+          .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, domain: workspace.domain })
+          .from(workspace)
+          .where(eq(workspace.slug, input.slug))
+          .limit(1)
+        if (!ws) return c.json({ workspace: null })
+        return c.superjson({ workspace: ws })
+      }),
     checkSlug: privateProcedure
       .input(checkSlugInputSchema)
       .post(async ({ ctx, input, c }: any) => {
