@@ -1,30 +1,13 @@
 import { HTTPException } from "hono/http-exception"
 import { eq } from "drizzle-orm"
-import { z } from "zod"
-import { j, privateProcedure } from "../jstack";
+import { j, privateProcedure } from "../jstack"
 import { workspace, workspaceMember } from "@feedgot/db"
+import { createWorkspaceInputSchema, checkSlugInputSchema } from "../validators/workspace"
 
 export function createWorkspaceRouter() {
-  const slugSchema = z
-    .string()
-    .min(5)
-    .max(32)
-    .regex(/^[a-z0-9-]+$/, "Slug must be lowercase letters, numbers, or hyphens")
-
-  const createInput = z.object({
-    name: z.string().min(1).max(64),
-    domain: z
-      .string()
-      .trim()
-      .transform((v) => (v.startsWith("http://") || v.startsWith("https://") ? v : `https://${v}`))
-      .pipe(z.string().url()),
-    slug: slugSchema,
-    timezone: z.string().min(1),
-  })
-
   return j.router({
     checkSlug: privateProcedure
-      .input(z.object({ slug: slugSchema }))
+      .input(checkSlugInputSchema)
       .post(async ({ ctx, input, c }: any) => {
         const existing = await ctx.db
           .select({ id: workspace.id })
@@ -50,7 +33,7 @@ export function createWorkspaceRouter() {
     }),
 
     create: privateProcedure
-      .input(createInput)
+      .input(createWorkspaceInputSchema)
       .post(async ({ ctx, input, c }: any) => {
         const slug = input.slug.toLowerCase()
         const exists = await ctx.db
