@@ -12,8 +12,9 @@ export function middleware(req: NextRequest) {
   const isMainDomain = hostNoPort.endsWith(".feedgot.com")
   const hasSub = (isLocal && parts.length >= 2) || (isMainDomain && parts.length >= 3)
   const subdomain = hasSub ? parts[0] : ""
+  const reservedSubdomains = new Set(["www", "app"]) 
 
-  if (subdomain && subdomain !== "www") {
+  if (subdomain && !reservedSubdomains.has(subdomain)) {
     const url = req.nextUrl.clone()
     url.pathname = `/subdomain/${subdomain}${pathname === "/" ? "" : pathname}`
     return NextResponse.rewrite(url)
