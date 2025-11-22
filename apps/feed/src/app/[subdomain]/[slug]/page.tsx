@@ -1,5 +1,6 @@
 import { db, workspace } from "@feedgot/db"
 import { eq } from "drizzle-orm"
+import Board from "@/components/boards/Board"
 
 export const dynamic = "force-dynamic"
 
@@ -30,59 +31,11 @@ export default async function SitePage({ params, searchParams }: { params: Promi
           ))}
         </nav>
 
-        {tab==="issues" && (
-          <section className="mt-6">
-            <ul className="space-y-3">
-              {["Enable dark mode","Improve search","Mobile layout tweaks"].map((t, i) => (
-                <li key={i} className="p-4 rounded-md border border-zinc-200 dark:border-zinc-800">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{t}</span>
-                    <span className="text-xs text-accent">▲ {Math.floor(Math.random()*50)+1}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {tab==="issues" && <Board workspaceSlug={slug} boardSlug="issues" className="mt-6" />}
 
-        {tab==="roadmap" && (
-          <section className="mt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { id: "planned", name: "Planned", color: "#6b7280", items: ["SSO", "Custom themes"] },
-                { id: "in-progress", name: "In Progress", color: "#f59e0b", items: ["Real-time comments"] },
-                { id: "completed", name: "Completed", color: "#10b981", items: ["Voting", "Changelog page"] },
-              ].map((s) => (
-                <div key={s.id} className="p-4 rounded-md border border-zinc-200 dark:border-zinc-800">
-                  <h3 className="text-sm font-semibold" style={{ color: s.color }}>{s.name}</h3>
-                  <ul className="mt-3 space-y-2">
-                    {s.items.map((it, i) => (
-                      <li key={i} className="text-sm">{it}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {tab==="roadmap" && <Board workspaceSlug={slug} boardSlug="roadmap" className="mt-6" />}
 
-        {tab==="changelog" && (
-          <section className="mt-6">
-            <ul className="space-y-3">
-              {[
-                { title: "v0.2 – Voting", date: "2025-11-10" },
-                { title: "v0.1 – Initial release", date: "2025-11-01" },
-              ].map((u, i) => (
-                <li key={i} className="p-4 rounded-md border border-zinc-200 dark:border-zinc-800">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{u.title}</span>
-                    <span className="text-xs text-accent">{u.date}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {tab==="changelog" && <Board workspaceSlug={slug} boardSlug="changelog" className="mt-6" />}
       </div>
     </main>
   )
