@@ -4,6 +4,7 @@ import { getSessionCookie } from "better-auth/cookies"
 
 export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
+  const first = pathname.split("/")[1] || ""
 
   const host = req.headers.get("host") || ""
   const hostNoPort = host.replace(/:\d+$/, "")
@@ -15,9 +16,15 @@ export function middleware(req: NextRequest) {
   const reservedSubdomains = new Set(["www", "app"]) 
 
   if (subdomain && !reservedSubdomains.has(subdomain)) {
-    const url = req.nextUrl.clone()
-    url.pathname = `/subdomain/${subdomain}${pathname === "/" ? "" : pathname}`
-    return NextResponse.rewrite(url)
+    if (pathname === "/") {
+      const url = req.nextUrl.clone()
+      url.pathname = `/${subdomain}/${subdomain}`
+      return NextResponse.rewrite(url)
+    }
+    const publicBoards = new Set(["issues", "roadmap", "changelog"]) 
+    if (publicBoards.has(first)) {
+      return NextResponse.next()
+    }
   }
 
   const needsAuth = pathname.startsWith("/workspaces")

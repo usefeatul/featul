@@ -18,19 +18,22 @@ type BaseMetaArgs = {
   image?: string
   absoluteTitle?: boolean
   indexable?: boolean
+  baseUrl?: string
 }
 
-export function createPageMetadata({ title, description, path, image, absoluteTitle, indexable }: BaseMetaArgs): Metadata {
+export function createPageMetadata({ title, description, path, image, absoluteTitle, indexable, baseUrl }: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonical = normalizePath(path || '/')
   const titleProp: Metadata['title'] = absoluteTitle ? { absolute: title } : title
+  const base = baseUrl || SITE_URL
+  const fullUrl = `${base}${canonical}`
   return {
     title: titleProp,
     description,
-    alternates: { canonical },
+    alternates: { canonical: baseUrl ? fullUrl : canonical },
     ...(indexable === false ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
-      url: pageUrl(path || '/'),
+      url: fullUrl,
       type: 'website',
       title,
       description,

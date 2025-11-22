@@ -1,16 +1,34 @@
+import type { Metadata } from "next"
+import { createPageMetadata } from "@/lib/seo"
+import { SITE_URL } from "@/config/seo"
 import { db, workspace } from "@feedgot/db"
 import { eq } from "drizzle-orm"
-import PostList from "@/components/boards/PostList"
-import Sidebar from "@/components/boards/Sidebar"
-import WorkspaceHeader from "@/components/boards/WorkspaceHeader"
-import { Container } from "@/components/container"
+import BoardsView from "@/components/boards/BoardsView"
 
 export const dynamic = "force-dynamic"
 
-export default async function SitePage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams?: Promise<{ tab?: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const sp = searchParams ? await searchParams : {}
-  const tab = sp?.tab === "roadmap" || sp?.tab === "changelog" ? sp.tab! : "issues"
+
+  const [ws] = await db
+    .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, domain: workspace.domain })
+    .from(workspace)
+    .where(eq(workspace.slug, slug))
+    .limit(1)
+
+  const name = ws?.name || slug
+  const domain = ws?.domain || `${slug}.feedgot.com`
+  const proto = new URL(SITE_URL).protocol.replace(":", "")
+  const baseUrl = SITE_URL.includes("localhost") ? SITE_URL : `${proto}//${domain}`
+  const path = "/"
+  const title = `All Feedback - ${name}`
+  const description = `Public feedback and ideas for ${name}.`
+
+  return createPageMetadata({ title, description, path, absoluteTitle: true, baseUrl })
+}
+
+export default async function SitePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
 
   const [ws] = await db
     .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, domain: workspace.domain })
@@ -21,20 +39,6 @@ export default async function SitePage({ params, searchParams }: { params: Promi
   const name = ws?.name || slug
 
   return (
-    <main className="min-h-screen bg-background">
-      <WorkspaceHeader name={name} slug={slug} activeTab={tab as any} className="w-full rounded-none border-0 border-b border-zinc-200 dark:border-zinc-800" />
-
-      <Container maxWidth="5xl">
-
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-[7fr_3fr] gap-6">
-          <div>
-            {tab==="issues" && <PostList workspaceSlug={slug} boardSlug="issues" />}
-            {tab==="roadmap" && <PostList workspaceSlug={slug} boardSlug="roadmap" />}
-            {tab==="changelog" && <PostList workspaceSlug={slug} boardSlug="changelog" />}
-          </div>
-          <Sidebar workspaceSlug={slug} />
-        </div>
-      </Container>
-    </main>
+    <BoardsView workspaceSlug={slug} workspaceName={name} defaultTab={"issues"} />
   )
 }
