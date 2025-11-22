@@ -52,7 +52,7 @@ export default function PostModal({ open, onOpenChange, postId }: { open: boolea
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[min(92vw,1000px)] p-0">
+      <DialogContent className="w-[min(92vw,980px)] max-h-[70vh] overflow-y-auto p-0">
         {!p ? (
           <div className="p-8 text-center">
             <div className="text-sm text-muted-foreground">Loading…</div>
@@ -81,7 +81,7 @@ export default function PostModal({ open, onOpenChange, postId }: { open: boolea
                 </div>
               ) : null}
               {p.content ? <div className="mt-5 text-sm leading-6 text-foreground/90 whitespace-pre-wrap">{p.content}</div> : null}
-              <div className="mt-6 flex items-center justify-between rounded-lg border bg-card p-3">
+              <div className="mt-6 flex items-center justify-between rounded-lg bg-card p-3">
                 <div className="flex items-center gap-2">
                   <Star className="size-4 text-primary" />
                   <span className="text-xs text-muted-foreground">View all similar posts</span>
@@ -91,7 +91,7 @@ export default function PostModal({ open, onOpenChange, postId }: { open: boolea
                   <ChevronRight className="size-4 ml-1" />
                 </Button>
               </div>
-              <div className="mt-3 flex items-center justify-between rounded-lg bg-muted/60 border p-3">
+              <div className="mt-3 flex items-center justify-between rounded-lg bg-muted/60 p-3">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="size-4 text-primary" />
                   <span className="text-xs text-muted-foreground">Please authenticate to join the conversation.</span>
@@ -148,52 +148,49 @@ export default function PostModal({ open, onOpenChange, postId }: { open: boolea
                 </div>
               )}
             </div>
-            <aside className="border-l bg-card p-6 md:p-8 space-y-6">
-              <div className="rounded-lg border p-4">
-                <div className="text-sm font-medium">Upvoters</div>
-                <div className="mt-1 text-xs text-muted-foreground">▲ {p.upvotes ?? 0}</div>
+            <aside className="border-l bg-card p-6 md:p-7 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">Upvotes</div>
+                <div className="text-xs font-medium">▲ {p.upvotes ?? 0}</div>
               </div>
-              <div className="rounded-lg border p-4">
-                <div className="text-sm font-medium">Status</div>
-                <div className="mt-2 text-xs">
-                  <span className="px-2 py-1 rounded-md bg-primary/10 text-primary">{p.status || "Published"}</span>
-                </div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">Status</div>
+                <span className="px-2 py-1 rounded-md bg-primary/10 text-primary text-xs">{p.status || "Published"}</span>
               </div>
-              <div className="rounded-lg border p-4">
-                <div className="text-sm font-medium">Board</div>
-                <div className="mt-1 text-xs text-muted-foreground">{b?.name}</div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">Board</div>
+                <div className="text-xs">{b?.name}</div>
               </div>
               {tags.length > 0 ? (
-                <div className="rounded-lg border p-4">
-                  <div className="text-sm font-medium">Tags</div>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                <div className="flex items-start justify-between">
+                  <div className="text-xs text-muted-foreground">Tags</div>
+                  <div className="flex flex-wrap gap-1">
                     {tags.map((t) => (
-                      <span key={t.id} className="text-xs px-2 py-1 rounded-md border" style={{ borderColor: t.color || undefined }}>
+                      <span key={t.id} className="text-[11px] px-2 py-0.5 rounded-md bg-muted text-muted-foreground" style={{ backgroundColor: t.color ? `${t.color}22` : undefined }}>
                         {t.name}
                       </span>
                     ))}
                   </div>
                 </div>
               ) : null}
-              <div className="rounded-lg border p-4">
-                <div className="text-sm font-medium">ETA</div>
-                <div className="mt-1 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">ETA</div>
+                <div className="text-xs text-muted-foreground">
                   {p.publishedAt ? new Date(p.publishedAt as any).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "—"}
                 </div>
               </div>
-              <div className="rounded-lg border p-4">
-                <div className="text-sm font-medium">Date</div>
-                <div className="mt-1 text-xs text-muted-foreground">{formatRelative(p.createdAt || null)}</div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">Date</div>
+                <div className="text-xs text-muted-foreground">{formatRelative(p.createdAt || null)}</div>
               </div>
-              <div className="rounded-lg border p-4">
-                <div className="text-sm font-medium">Author</div>
-                <div className="mt-1 text-xs text-muted-foreground">{p.authorName || "Anonymous"}</div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">Author</div>
+                <div className="text-xs text-muted-foreground">{p.authorName || "Anonymous"}</div>
               </div>
-              <div className="rounded-lg border p-4">
-                <div className="text-sm font-medium">Subscribe to post</div>
-                <p className="mt-1 text-xs text-muted-foreground">Get notified by email when there are changes.</p>
-                <Button size="sm" className="mt-3 text-xs">
-                  <Bell className="size-4 mr-2" />
+              <div className="pt-2">
+                <div className="text-xs text-muted-foreground">Subscribe to post</div>
+                <Button size="sm" variant="secondary" className="mt-2 h-7 text-xs px-3">
+                  <Bell className="size-3.5 mr-2" />
                   Get notified
                 </Button>
               </div>
