@@ -126,20 +126,20 @@ export default function PostModal({ open, onOpenChange, postId }: { open: boolea
             <aside className="border-l bg-card p-6 md:p-7 space-y-3">
               <div className="grid grid-cols-[120px_1fr] items-center">
                 <div className="text-xs text-muted-foreground">Upvotes</div>
-                <span className="justify-self-end text-left text-xs font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground">▲ {p.upvotes ?? 0}</span>
+                <span className="justify-self-start text-left text-xs font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground">▲ {p.upvotes ?? 0}</span>
               </div>
               <div className="grid grid-cols-[120px_1fr] items-center">
                 <div className="text-xs text-muted-foreground">Status</div>
-                <span className="justify-self-end text-left px-2 py-1 rounded-md bg-muted text-muted-foreground text-xs">{p.status || "Published"}</span>
+                <span className="justify-self-start text-left px-2 py-1 rounded-md bg-muted text-muted-foreground text-xs">{p.status || "Published"}</span>
               </div>
               <div className="grid grid-cols-[120px_1fr] items-center">
                 <div className="text-xs text-muted-foreground">Board</div>
-                <span className="justify-self-end text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">{b?.name}</span>
+                <span className="justify-self-start text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">{b?.name}</span>
               </div>
               {tags.length > 0 ? (
                 <div className="grid grid-cols-[120px_1fr] items-start">
                   <div className="text-xs text-muted-foreground">Tags</div>
-                  <div className="justify-self-end flex flex-wrap gap-1">
+                  <div className="justify-self-start flex flex-wrap gap-1">
                     {tags.map((t) => (
                       <span
                         key={t.id}
@@ -154,17 +154,17 @@ export default function PostModal({ open, onOpenChange, postId }: { open: boolea
               ) : null}
               <div className="grid grid-cols-[120px_1fr] items-center">
                 <div className="text-xs text-muted-foreground">ETA</div>
-                <span className="justify-self-end text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">
+                <span className="justify-self-start text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">
                   {p.publishedAt ? new Date(p.publishedAt as any).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "—"}
                 </span>
               </div>
               <div className="grid grid-cols-[120px_1fr] items-center">
                 <div className="text-xs text-muted-foreground">Date</div>
-                <span className="justify-self-end text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">{formatRelative(p.createdAt || null)}</span>
+                <span className="justify-self-start text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">{formatRelative(p.createdAt || null)}</span>
               </div>
               <div className="grid grid-cols-[120px_1fr] items-center">
                 <div className="text-xs text-muted-foreground">Author</div>
-                <span className="justify-self-end text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">{p.authorName || "Anonymous"}</span>
+                <span className="justify-self-start text-left text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">{p.authorName || "Anonymous"}</span>
               </div>
             </aside>
           </div>
