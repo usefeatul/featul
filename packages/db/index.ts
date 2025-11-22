@@ -8,4 +8,31 @@ if (!DATABASE_URL) {
 }
 
 export const db = drizzle(neon(DATABASE_URL), { schema })
-export const { user, session, account, verification, workspace, workspaceMember } = schema
+export const {
+  user,
+  session,
+  account,
+  verification,
+  workspace,
+  workspaceMember,
+  workspaceInvite,
+  board,
+  boardCategory,
+  boardModerator,
+  post,
+  tag,
+  postTag,
+  postView,
+  postUpdate,
+  comment,
+  commentReaction,
+  commentMention,
+  commentReport,
+  vote,
+  voteAggregate,
+  userVoteHistory,
+  brandingConfig,
+  colorPalette,
+  customTheme,
+  brandingAsset,
+} = schema
