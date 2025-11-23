@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Providers } from "../components/providers/providers";
 import "./styles/globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
+//
 import {
   SITE_URL,
   DEFAULT_TITLE,
