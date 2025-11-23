@@ -6,6 +6,7 @@ import { cn } from "@feedgot/ui/lib/utils";
 import { client } from "@feedgot/api/client";
 import { getSlugFromPath } from "./nav";
 import { formatTime12h } from "@/lib/time";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@feedgot/ui/components/tooltip";
 
 type Props = {
   className?: string;
@@ -52,7 +53,16 @@ export default function Timezone({ className = "" }: Props) {
     <div className={cn("px-3", className)}>
       <div className="flex items-center justify-between">
         <span className="text-xs text-accent">TIME</span>
-        <span className="rounded-sm bg-muted px-2 py-0.5 text-xs font-mono text-foreground">{time}</span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="rounded-sm bg-muted px-2 py-0.5 text-xs font-mono text-foreground">{time}</span>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6} align="end">
+              Current workspace time in the workspace's timezone. All dates, ranges, and graphs you see are matched to this timezone.
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );
