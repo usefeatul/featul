@@ -87,13 +87,13 @@ export default function WorkspaceSwitcher({
               <img
                 src={currentLogo}
                 alt={currentName}
-                className="w-6 h-6 rounded-sm"
+                className="w-6 h-6 rounded-sm bg-muted border ring-1 ring-border/40 shadow-sm"
               />
             ) : (
-              <div className="w-6 h-6 rounded-sm bg-muted border" />
+              <div className="w-6 h-6 rounded-sm bg-muted border ring-1 ring-border/40" />
             )}
             <span className="transition-colors">{currentName}</span>
-            <DropdownIcon className="ml-auto size-3 text-foreground/80 group-hover:text-primary transition-colors" />
+            <DropdownIcon className="ml-auto size-3 text-foreground/80 transition-colors" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -122,10 +122,10 @@ export default function WorkspaceSwitcher({
                       <img
                         src={logoUrl}
                         alt={w.name}
-                        className="w-6 h-6 rounded-sm"
+                        className="w-6 h-6 rounded-sm bg-muted border ring-1 ring-border/40 shadow-sm"
                       />
                     ) : (
-                      <div className="w-6 h-6 rounded-sm bg-muted" />
+                      <div className="w-6 h-6 rounded-sm bg-muted border ring-1 ring-border/40" />
                     )}
                     <span className="truncate text-sm">{w.name}</span>
                     {isCurrent ? (
