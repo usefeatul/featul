@@ -71,7 +71,7 @@ function TabsList({
       ref={listRef as any}
       data-slot="tabs-list"
       className={cn(
-        "relative inline-flex w-fit items-center gap-2 border-b pb-1",
+        "relative flex w-full items-center gap-2 border-b pb-1",
         className
       )}
       {...props}
@@ -97,7 +97,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "inline-flex items-center justify-center gap-1.5 px-2 py-1 text-sm font-medium whitespace-nowrap border-b-2 border-transparent hover:bg-accent/20 transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground",
+        "inline-flex items-center justify-center gap-1.5 px-2 py-1 text-sm font-medium whitespace-nowrap border-b-2 border-transparent hover:bg-accent/10 transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground",
         className
       )}
       {...props}
