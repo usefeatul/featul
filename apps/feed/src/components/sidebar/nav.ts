@@ -10,7 +10,7 @@ import { BoardIcon } from "@feedgot/ui/icons/board"
 import { SettingIcon } from "@feedgot/ui/icons/setting"
 import { AiIcon } from "@feedgot/ui/icons/ai"
 import { DocIcon } from "@feedgot/ui/icons/doc"
-import type { NavItem } from "./types"
+import type { NavItem } from "../../types/types"
 
 function w(slug: string, p: string) {
   return slug ? `/workspaces/${slug}${p}` : `/workspaces${p}`

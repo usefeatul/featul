@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@feedgot/ui/lib/utils";
-import type { NavItem } from "./types";
+import type { NavItem } from "../../types/types";
 import {
   buildTopNav,
   buildMiddleNav,
@@ -14,31 +14,13 @@ import {
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import SignOutButton from "@/components/auth/SignOutButton";
 import Timezone from "./Timezone";
+import SidebarItem from "./SidebarItem";
+import SidebarSection from "./SidebarSection";
 const secondaryNav: NavItem[] = buildBottomNav();
 
 export default function Sidebar({ className = "" }: { className?: string }) {
   const pathname = usePathname();
   const slug = getSlugFromPath(pathname);
-
-  const renderItem = (item: NavItem) => {
-    const Icon = item.icon;
-    const active =
-      pathname === item.href ||
-      (item.href !== "/" && pathname.startsWith(item.href));
-    return (
-      <Link
-        key={item.label}
-        href={item.href}
-        className={cn(
-          "group flex items-center gap-2 rounded-md px-3 py-2 text-sm",
-          active ? "bg-card text-foreground" : "text-accent hover:bg-muted"
-        )}
-      >
-        <Icon className="w-[18px] h-[18px] text-foreground/80 group-hover:text-primary transition-colors" />
-        <span className="transition-colors">{item.label}</span>
-      </Link>
-    );
-  };
 
   const primaryNav = buildTopNav(slug);
   const middleNav = buildMiddleNav(slug);
@@ -58,20 +40,24 @@ export default function Sidebar({ className = "" }: { className?: string }) {
         <WorkspaceSwitcher className="mt-3" />
         <Timezone className="mt-2" />
       </div>
-      <nav className="p-3">
-        <div className="mb-2 text-xs text-accent">REQUEST</div>
-        <div className="space-y-1">{primaryNav.map(renderItem)}</div>
-      </nav>
+      <SidebarSection title="REQUEST">
+        {primaryNav.map((item) => (
+          <SidebarItem key={item.label} item={item} pathname={pathname} />
+        ))}
+      </SidebarSection>
 
-      <div className="p-3 mt-4">
-        <div className="mb-2 text-xs text-accent">WORKSPACE</div>
-        <div className="space-y-1">{middleNav.map(renderItem)}</div>
-      </div>
+      <SidebarSection title="WORKSPACE" className="mt-4">
+        {middleNav.map((item) => (
+          <SidebarItem key={item.label} item={item} pathname={pathname} />
+        ))}
+      </SidebarSection>
 
-      <div className="mt-auto p-3 pb-8 space-y-1">
-        {secondaryNav.map(renderItem)}
+      <SidebarSection className="mt-auto pb-8">
+        {secondaryNav.map((item) => (
+          <SidebarItem key={item.label} item={item} pathname={pathname} />
+        ))}
         <SignOutButton />
-      </div>
+      </SidebarSection>
     </aside>
   );
 }
