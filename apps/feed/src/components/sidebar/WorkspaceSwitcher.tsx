@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@feedgot/ui/components/dropdown-menu";
 import { client } from "@feedgot/api/client";
-import { getSlugFromPath } from "./nav";
+import { getSlugFromPath } from "../../config/nav";
 import { DropdownIcon } from "@feedgot/ui/icons/dropdown";
 import { Check } from "lucide-react";
 

@@ -1,4 +1,4 @@
-import { Container } from "@/components/container"
+import { Container } from "@/components/global/container"
 import Sidebar from "@/components/sidebar/Sidebar"
 import MobileSidebar from "@/components/sidebar/MobileSidebar"
 

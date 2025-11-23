@@ -5,7 +5,7 @@ import Link from "next/link";
 import { cn } from "@feedgot/ui/lib/utils";
 import { DrawerTrigger } from "@feedgot/ui/components/drawer";
 import type { NavItem } from "../../types/types";
-import MoreIcon from "./more";
+import MoreIcon from "@feedgot/ui/icons/more";
 
 export default function MobileBottomBar({ items }: { items: NavItem[] }) {
   return (

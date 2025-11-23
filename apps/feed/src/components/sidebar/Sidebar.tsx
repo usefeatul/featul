@@ -10,7 +10,7 @@ import {
   buildMiddleNav,
   buildBottomNav,
   getSlugFromPath,
-} from "./nav";
+} from "../../config/nav";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import SignOutButton from "@/components/auth/SignOutButton";
 import Timezone from "./Timezone";

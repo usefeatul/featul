@@ -9,7 +9,7 @@ import {
   buildMiddleNav,
   buildBottomNav,
   getSlugFromPath,
-} from "./nav";
+} from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
 

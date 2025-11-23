@@ -10,7 +10,7 @@ import { BoardIcon } from "@feedgot/ui/icons/board"
 import { SettingIcon } from "@feedgot/ui/icons/setting"
 import { AiIcon } from "@feedgot/ui/icons/ai"
 import { DocIcon } from "@feedgot/ui/icons/doc"
-import type { NavItem } from "../../types/types"
+import type { NavItem } from "../types/types"
 
 function w(slug: string, p: string) {
   return slug ? `/workspaces/${slug}${p}` : `/workspaces${p}`
@@ -24,8 +24,8 @@ export function getSlugFromPath(pathname: string) {
 export function buildTopNav(slug: string): NavItem[] {
   return [
     { label: "Planned", href: w(slug, "/planned"), icon: PlannedIcon },
-    { label: "In Progress", href: w(slug, "/inprogress"), icon: InProgressIcon },
-    { label: "In Reviewing", href: w(slug, "/inreviewing"), icon: InReviewingIcon },
+    { label: "Progress", href: w(slug, "/inprogress"), icon: InProgressIcon },
+    { label: "Review", href: w(slug, "/inreviewing"), icon: InReviewingIcon },
     { label: "Complete", href: w(slug, "/complete"), icon: CompleteIcon },
     { label: "Pending", href: w(slug, "/pending"), icon: PendingIcon },
     { label: "Closed", href: w(slug, "/closed"), icon: CloseIcon },
