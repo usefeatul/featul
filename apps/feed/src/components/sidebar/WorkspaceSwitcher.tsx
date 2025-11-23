@@ -82,7 +82,7 @@ export default function WorkspaceSwitcher({
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer">
-          <div className="group flex items-center gap-2 rounded-md px-2 py-2 text-sm text-accent hover:bg-muted cursor-pointer">
+          <div className="group flex items-center gap-2 rounded-md px-2 py-2 text-md text-accent hover:bg-muted cursor-pointer">
             {currentLogo ? (
               <div className="relative w-6 h-6 rounded-sm bg-muted border ring-1 ring-border  overflow-hidden">
                 <img
@@ -131,11 +131,11 @@ export default function WorkspaceSwitcher({
                     ) : (
                       <div className="w-6 h-6 rounded-sm bg-muted border ring-1 ring-border" />
                     )}
-                    <span className="truncate text-sm">{w.name}</span>
+                    <span className="truncate text-md">{w.name}</span>
                   </DropdownMenuItem>
                 );
               })}
-              <DropdownMenuItem onSelect={handleCreateNew} className="text-sm flex items-center gap-2 px-2 py-2 rounded-md hover:bg-muted">
+              <DropdownMenuItem onSelect={handleCreateNew} className="text-md flex items-center gap-2 px-2 py-2 rounded-md hover:bg-muted">
                 <PlusIcon className="size-4" />
                 Add workspace
               </DropdownMenuItem>

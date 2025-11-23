@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, Fragment } from "react";
-import { usePathname } from "next/navigation";
 import { Button } from "@feedgot/ui/components/button";
 
 type Severity = "info" | "warn" | "error";
@@ -16,16 +15,13 @@ type Diagnostic = {
 function usePersistentBoolean(key: string, defaultValue: boolean) {
   const [value, setValue] = useState<boolean>(defaultValue);
 
-  // Read persisted value after mount to avoid SSR/CSR mismatch
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(key);
       if (raw !== null) setValue(raw === "true");
     } catch {}
-    // only re-run if key changes
   }, [key]);
 
-  // Persist changes
   useEffect(() => {
     try {
       window.localStorage.setItem(key, String(value));
@@ -48,7 +44,9 @@ function parseRGB(color: string | null): [number, number, number] | null {
 }
 
 function luminance([r, g, b]: [number, number, number]) {
-  const srgb = [r, g, b].map((v) => v / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  const srgb = [r, g, b]
+    .map((v) => v / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
   return (srgb[0] ?? 0) * 0.2126 + (srgb[1] ?? 0) * 0.7152 + (srgb[2] ?? 0) * 0.0722;
 }
 
@@ -64,9 +62,8 @@ function collectDiagnostics(): Diagnostic[] {
   const main = document.querySelector("main") ?? document.body;
   const sections = Array.from(main.querySelectorAll("section"));
 
-  // 1) Baseline grid and spacing checks (measure content area, not full section box)
   let prevContentBottom: number | null = null;
-  const nodesForGrid = sections.length ? sections : Array.from(main.children) as HTMLElement[];
+  const nodesForGrid = sections.length ? sections : (Array.from(main.children) as HTMLElement[]);
   const getComponentName = (el: Element | null): string | undefined => {
     if (!el) return undefined;
     const tagged = el.closest('[data-component]') as HTMLElement | null;
@@ -101,7 +98,7 @@ function collectDiagnostics(): Diagnostic[] {
       diags.push({ id: `grid-right-${idx}`, message: `Right content edge off 8px grid by ~${rightDelta.toFixed(1)}px`, severity: "warn", rect, component });
     }
     if (prevContentBottom !== null) {
-      const visualGap = contentTop - prevContentBottom; // accounts for inner paddings/borders
+      const visualGap = contentTop - prevContentBottom;
       const gapDelta = nearestGridDelta(visualGap);
       if (visualGap < 24) {
         diags.push({ id: `spacing-small-${idx}`, message: `Section spacing likely tight: ~${Math.round(visualGap)}px (target ≥24px)`, severity: "warn", rect, component });
@@ -112,7 +109,6 @@ function collectDiagnostics(): Diagnostic[] {
     prevContentBottom = contentBottom;
   });
 
-  // 2) Safe area margins (content too close to viewport edges)
   nodesForGrid.forEach((el, idx) => {
     const target = (el.firstElementChild as HTMLElement) ?? (el as HTMLElement);
     const rect = target.getBoundingClientRect();
@@ -132,7 +128,6 @@ function collectDiagnostics(): Diagnostic[] {
     }
   });
 
-  // 3) Tap target sizes
   const buttons = Array.from(main.querySelectorAll<HTMLElement>("button, [role='button'], a[href]"));
   buttons.forEach((btn, i) => {
     const r = btn.getBoundingClientRect();
@@ -141,13 +136,11 @@ function collectDiagnostics(): Diagnostic[] {
     }
   });
 
-  // 4) Horizontal overflow
   const doc = document.documentElement;
   if (doc.scrollWidth > doc.clientWidth + 2) {
     diags.push({ id: "overflow-x", message: "Horizontal overflow detected. Some element exceeds viewport width.", severity: "error" });
   }
 
-  // 5) Body text size
   const paragraphs = Array.from(main.querySelectorAll<HTMLElement>("p"));
   paragraphs.slice(0, 40).forEach((p, i) => {
     const size = parseFloat(getComputedStyle(p).fontSize || "0");
@@ -156,7 +149,6 @@ function collectDiagnostics(): Diagnostic[] {
     }
   });
 
-  // 6) Contrast for buttons/links
   const bodyBg = parseRGB(getComputedStyle(document.body).backgroundColor) || [255, 255, 255];
   buttons.slice(0, 80).forEach((el, i) => {
     const styles = getComputedStyle(el);
@@ -181,13 +173,15 @@ export function DebugTools() {
   const [showAnalysis, setShowAnalysis] = usePersistentBoolean("__debug_analysis", false);
   const [results, setResults] = useState<Diagnostic[]>([]);
   const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
+  const [pathname, setPathname] = useState<string>("");
 
   useEffect(() => {
     setMounted(true);
+    try {
+      setPathname(window.location.pathname);
+    } catch {}
   }, []);
 
-  // Toggle global outline via data attribute so scoped CSS can handle it
   useEffect(() => {
     if (!mounted) return;
     const root = document.documentElement;
@@ -215,20 +209,26 @@ export function DebugTools() {
     setShowAnalysis(true);
   }
 
-  // Auto re-run analysis when navigating if analysis mode is on
   useEffect(() => {
     if (!mounted) return;
-    if (showAnalysis) {
-      const diags = collectDiagnostics();
-      setResults(diags);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, showAnalysis, mounted]);
+    if (!showAnalysis) return;
+    let lastPath = pathname;
+    const interval = window.setInterval(() => {
+      const current = window.location.pathname;
+      if (current !== lastPath) {
+        lastPath = current;
+        setPathname(current);
+        const diags = collectDiagnostics();
+        setResults(diags);
+      }
+    }, 700);
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [showAnalysis, mounted, pathname]);
 
   function copyReport() {
-    const text = results
-      .map((r) => `${r.severity.toUpperCase()}: ${r.message}`)
-      .join("\n");
+    const text = results.map((r) => `${r.severity.toUpperCase()}: ${r.message}`).join("\n");
     try {
       navigator.clipboard.writeText(text);
     } catch {}
@@ -350,3 +350,4 @@ export function DebugTools() {
 }
 
 export default DebugTools;
+

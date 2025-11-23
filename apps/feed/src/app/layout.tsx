@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Providers } from "../components/providers/providers";
 import "./styles/globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
+import { DebugTools } from "@feedgot/ui/global/debug-tools";
 //
 import {
   SITE_URL,
@@ -82,6 +83,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>
+        {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "true") && <DebugTools />}
       </body>
     </html>
   );

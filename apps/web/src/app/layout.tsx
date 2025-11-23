@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { ReactScan } from "@feedgot/ui/global/react-scan";
-import { DebugTools } from "@/components/dev/debug-tools";
+import { DebugTools } from "@feedgot/ui/global/debug-tools";
 import "./globals.css";
 import { SITE_URL, DEFAULT_TITLE, TITLE_TEMPLATE, DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS } from "@/config/seo";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
