@@ -22,15 +22,70 @@ function TabsList({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List>) {
+  const listRef = React.useRef<HTMLDivElement | null>(null)
+  const [indicator, setIndicator] = React.useState<{ left: number; width: number; top: number; visible: boolean }>({ left: 0, width: 0, top: 0, visible: false })
+
+  const measure = React.useCallback((el: HTMLElement | null) => {
+    if (!el || !listRef.current) return
+    const rect = el.getBoundingClientRect()
+    const parentRect = listRef.current.getBoundingClientRect()
+    const left = rect.left - parentRect.left
+    const width = rect.width
+    const top = rect.bottom - parentRect.top - 2
+    setIndicator({ left, width, top, visible: true })
+  }, [])
+
+  const measureActive = React.useCallback(() => {
+    const root = listRef.current
+    if (!root) return
+    const active = root.querySelector<HTMLElement>('[data-slot="tabs-trigger"][data-state="active"]')
+    measure(active)
+  }, [measure])
+
+  React.useEffect(() => {
+    const root = listRef.current
+    if (!root) return
+    const triggers = Array.from(root.querySelectorAll<HTMLElement>('[data-slot="tabs-trigger"]'))
+    const onEnter = (e: Event) => measure(e.currentTarget as HTMLElement)
+    const onLeaveList = () => measureActive()
+    triggers.forEach((t) => {
+      t.addEventListener('mouseenter', onEnter)
+      t.addEventListener('focus', onEnter)
+    })
+    root.addEventListener('mouseleave', onLeaveList)
+    measureActive()
+    const onResize = () => measureActive()
+    window.addEventListener('resize', onResize)
+    return () => {
+      triggers.forEach((t) => {
+        t.removeEventListener('mouseenter', onEnter)
+        t.removeEventListener('focus', onEnter)
+      })
+      root.removeEventListener('mouseleave', onLeaveList)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [measureActive, measure])
+
   return (
     <TabsPrimitive.List
+      ref={listRef as any}
       data-slot="tabs-list"
       className={cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+        "relative inline-flex w-fit items-center gap-2 border-b",
         className
       )}
       {...props}
-    />
+    >
+      {props.children}
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute h-[2px] rounded-full bg-primary transition-[left,width,top] duration-200",
+          indicator.visible ? 'opacity-100' : 'opacity-0'
+        )}
+        style={{ left: indicator.left, width: indicator.width, top: indicator.top }}
+      />
+    </TabsPrimitive.List>
   )
 }
 
@@ -42,7 +97,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "inline-flex items-center justify-center gap-1.5 px-2 py-1 text-sm font-medium whitespace-nowrap border-b-2 border-transparent hover:bg-accent/10 transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground",
         className
       )}
       {...props}
