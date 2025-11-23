@@ -84,7 +84,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
-      {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "true")}
+      {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "true") && <DebugTools />}
     </html>
   );
 }

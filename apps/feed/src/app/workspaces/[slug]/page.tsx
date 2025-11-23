@@ -1,41 +1,47 @@
-import { notFound, redirect } from "next/navigation"
-import UserInfo from "@/components/auth/UserInfo"
 import { getServerSession } from "@feedgot/auth/session"
 import { db, workspace } from "@feedgot/db"
 import { eq } from "drizzle-orm"
-import { Button } from "@feedgot/ui/components/button"
 
 export const dynamic = "force-dynamic"
 
-export default async function WorkspacePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  const session = await getServerSession()
-  if (!session?.user) {
-    redirect(`/auth/sign-in?redirect=/workspaces/${slug}`)
-  }
+export default async function WorkspacePage({ params }: { params: { slug: string } }) {
+  const { slug } = params
+  let ws: { id?: string; name: string; slug: string } | null = null
+  try {
+    const session = await getServerSession()
+    if (session?.user) {
+      const [found] = await db
+        .select({ id: workspace.id, name: workspace.name, slug: workspace.slug })
+        .from(workspace)
+        .where(eq(workspace.slug, slug))
+        .limit(1)
+      ws = found || null
+    }
+  } catch {}
 
-  const [ws] = await db
-    .select({ id: workspace.id, name: workspace.name, slug: workspace.slug })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1)
-
-  if (!ws) notFound()
-
+  const name = ws?.name || `${slug} Workspace`
   return (
-    <section className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-semibold">{ws.name}</h1>
+    <section className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">{name}</h1>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="bg-card rounded-md border p-4">
+          <div className="text-sm text-accent">Open Requests</div>
+          <div className="mt-2 text-3xl font-semibold">24</div>
         </div>
-        <div className="flex items-center gap-3">
-          {/* <Button asChild>
-            <a href={`https://${ws.slug}.feedgot.com`} aria-label="Open workspace subdomain">
-              Open {ws.slug}.feedgot.com
-            </a>
-          </Button> */}
-          {/* <UserInfo user={session.user} /> */}
+        <div className="bg-card rounded-md border p-4">
+          <div className="text-sm text-accent">Completed</div>
+          <div className="mt-2 text-3xl font-semibold">128</div>
         </div>
+        <div className="bg-card rounded-md border p-4">
+          <div className="text-sm text-accent">Active Review</div>
+          <div className="mt-2 text-3xl font-semibold">7</div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <div className="xl:col-span-2 bg-card rounded-md border p-4 h-[300px] flex items-center justify-center text-accent">Graph placeholder</div>
+        <div className="bg-card rounded-md border p-4 h-[300px] flex items-center justify-center text-accent">Recent activity</div>
       </div>
     </section>
   )
