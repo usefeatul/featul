@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@feedgot/ui/lib/utils";
 import { client } from "@feedgot/api/client";
 import { getSlugFromPath } from "./nav";
+import { formatTime12h } from "@/lib/time";
 
 type Props = {
   className?: string;
@@ -39,24 +40,7 @@ export default function Timezone({ className = "" }: Props) {
 
   React.useEffect(() => {
     if (!tz) return;
-    const format = () => {
-      try {
-        const parts = new Intl.DateTimeFormat(undefined, {
-          timeZone: tz,
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }).formatToParts(new Date());
-        const hour = parts.find((p) => p.type === "hour")?.value || "";
-        const minute = parts.find((p) => p.type === "minute")?.value || "";
-        const dayPeriodRaw = parts.find((p) => p.type === "dayPeriod")?.value || "";
-        const dayPeriod = dayPeriodRaw ? dayPeriodRaw.toUpperCase() : "";
-        const s = `${hour}:${minute} ${dayPeriod}`;
-        setTime(s.trim());
-      } catch {
-        setTime(null);
-      }
-    };
+    const format = () => setTime(formatTime12h(tz));
     format();
     const id = setInterval(format, 1000);
     return () => clearInterval(id);
@@ -68,7 +52,7 @@ export default function Timezone({ className = "" }: Props) {
     <div className={cn("px-3", className)}>
       <div className="flex items-center justify-between">
         <span className="text-xs text-accent">TIME</span>
-        <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-mono text-foreground">{time}</span>
+        <span className="rounded-sm bg-muted px-2 py-0.5 text-xs font-mono text-foreground">{time}</span>
       </div>
     </div>
   );
