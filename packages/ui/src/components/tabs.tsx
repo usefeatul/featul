@@ -32,7 +32,7 @@ function TabsList({
     const parentRect = listRef.current.getBoundingClientRect()
     const left = rect.left - parentRect.left
     const width = rect.width
-    setIndicator({ left, width, visible: true })
+    requestAnimationFrame(() => setIndicator({ left, width, visible: true }))
   }, [])
 
   const measureHover = React.useCallback((el: HTMLElement | null) => {
@@ -41,7 +41,7 @@ function TabsList({
     const parentRect = listRef.current.getBoundingClientRect()
     const left = rect.left - parentRect.left
     const width = rect.width
-    setHover({ left, width, visible: true })
+    requestAnimationFrame(() => setHover({ left, width, visible: true }))
   }, [])
 
   const measureActive = React.useCallback(() => {
@@ -96,19 +96,19 @@ function TabsList({
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute top-0 bottom-1 rounded-md bg-accent/10 transition-[left,width] duration-200",
+          "pointer-events-none absolute top-0 bottom-1 rounded-md bg-accent/10 transition-[transform,width] duration-200 will-change-transform",
           hover.visible ? 'opacity-100' : 'opacity-0'
         )}
-        style={{ left: hover.left, width: hover.width }}
+        style={{ transform: `translateX(${hover.left}px)`, width: hover.width }}
       />
       {props.children}
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute bottom-0 h-[2px] rounded-full bg-primary transition-[left,width] duration-200",
+          "pointer-events-none absolute bottom-0 h-[2px] rounded-full bg-primary transition-transform duration-200 will-change-transform",
           indicator.visible ? 'opacity-100' : 'opacity-0'
         )}
-        style={{ left: indicator.left, width: indicator.width }}
+        style={{ transform: `translateX(${indicator.left}px)`, width: indicator.width }}
       />
     </TabsPrimitive.List>
   )
