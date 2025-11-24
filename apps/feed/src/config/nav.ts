@@ -16,6 +16,12 @@ function w(slug: string, p: string) {
   return slug ? `/workspaces/${slug}${p}` : `/workspaces${p}`
 }
 
+function publicBoardUrl(slug: string) {
+  const s = (slug || "").trim()
+  if (!s) return "https://feedgot.com"
+  return `https://${s}.feedgot.com`
+}
+
 export function getSlugFromPath(pathname: string) {
   const parts = pathname.split("/")
   return parts[2] || ""
@@ -36,7 +42,7 @@ export function buildMiddleNav(slug: string): NavItem[] {
   return [
     { label: "Roadmap", href: w(slug, "/roadmap"), icon: RoadmapIcon },
     { label: "Changelog", href: w(slug, "/changelog"), icon: ChangelogIcon },
-    { label: "My Board", href: w(slug, "/board"), icon: BoardIcon },
+    { label: "My Board", href: publicBoardUrl(slug), icon: BoardIcon, external: true },
     { label: "Settings", href: w(slug, "/settings/branding"), icon: SettingIcon },
   ]
 }

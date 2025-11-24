@@ -30,33 +30,28 @@ function TabsList({
   const ctx = React.useContext(GliderContext)
   const [indicator, setIndicator] = React.useState<{ left: number; width: number; visible: boolean }>({ left: 0, width: 0, visible: false })
   const [hover, setHover] = React.useState<{ left: number; width: number; visible: boolean }>({ left: 0, width: 0, visible: false })
-  const lockUntil = React.useRef<number>(0)
-  const lockTarget = React.useRef<HTMLElement | null>(null)
+  const [ready, setReady] = React.useState(false)
 
   const measure = React.useCallback((el: HTMLElement | null) => {
     if (!el || !listRef.current) return
     const left = el.offsetLeft
     const width = el.offsetWidth
-    requestAnimationFrame(() => setIndicator({ left, width, visible: true }))
+    requestAnimationFrame(() => {
+      setIndicator({ left, width, visible: true })
+    })
   }, [])
 
   const measureHover = React.useCallback((el: HTMLElement | null) => {
-    if (!el || !listRef.current) return
+    const root = listRef.current
+    if (!root) return
+    if (!el) {
+      requestAnimationFrame(() => setHover((prev) => ({ left: prev.left, width: prev.width, visible: false })))
+      return
+    }
     const left = el.offsetLeft
     const width = el.offsetWidth
     requestAnimationFrame(() => setHover({ left, width, visible: true }))
   }, [])
-
-  const measureActive = React.useCallback(() => {
-    const root = listRef.current
-    if (!root) return
-    const active = root.querySelector<HTMLElement>('[data-slot="tabs-trigger"][data-state="active"]')
-    if (!active) return
-    if (lockUntil.current > performance.now() && active !== lockTarget.current) return
-    measure(active)
-    lockUntil.current = 0
-    lockTarget.current = null
-  }, [measure])
 
   React.useLayoutEffect(() => {
     const root = listRef.current
@@ -64,56 +59,34 @@ function TabsList({
     const v = ctx?.value
     if (!v) return
     const el = root.querySelector<HTMLElement>(`[data-slot="tabs-trigger"][data-value="${v}"]`)
-    if (el) measure(el)
+    setReady(true)
+    measure(el)
   }, [ctx?.value, measure])
-
-  React.useEffect(() => {
-    const root = listRef.current
-    if (!root) return
-    const triggers = Array.from(root.querySelectorAll<HTMLElement>("[data-slot=\"tabs-trigger\"]"))
-    const onEnter = (e: Event) => measureHover(e.currentTarget as HTMLElement)
-    const onLeave = () => setHover((h) => ({ ...h, visible: false }))
-    const onDown = (e: Event) => { const el = e.currentTarget as HTMLElement; lockUntil.current = performance.now() + 200; lockTarget.current = el; measure(el) }
-    triggers.forEach((t) => {
-      t.addEventListener("mouseenter", onEnter)
-      t.addEventListener("pointerdown", onDown)
-    })
-    root.addEventListener("mouseleave", onLeave)
-    return () => {
-      triggers.forEach((t) => {
-        t.removeEventListener("mouseenter", onEnter)
-        t.removeEventListener("pointerdown", onDown)
-      })
-      root.removeEventListener("mouseleave", onLeave)
-    }
-  }, [measureHover, measure])
 
   return (
     <TabsPrimitive.List
       ref={listRef as any}
       data-slot="tabs-list"
-      className={cn(
-        "relative flex w-full items-center gap-2 border-b pb-1",
-        className
-      )}
+      className={cn("relative flex w-full items-center gap-2 border-b pb-1", className)}
+      onPointerLeave={() => setHover((prev) => ({ left: prev.left, width: prev.width, visible: false }))}
       {...props}
->
+    >
       <span
         aria-hidden
         className={cn(
           "pointer-events-none absolute top-0 bottom-1 rounded-md bg-accent/10 transition-[transform,width] duration-200 will-change-transform",
-          hover.visible ? 'opacity-100' : 'opacity-0'
+          hover.visible ? "opacity-100" : "opacity-0"
         )}
         style={{ transform: `translateX(${hover.left}px)`, width: hover.width }}
       />
-      <GliderContext.Provider value={{ value: ctx?.value, onHover: (el) => measureHover(el), onActive: (el) => measure(el) }}>
+      <GliderContext.Provider value={{ value: ctx?.value, onHover: (el) => measureHover(el), onActive: (el) => { setReady(false); measure(el); measureHover(null) } }}>
         {props.children}
       </GliderContext.Provider>
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute bottom-0 h-[2px] rounded-full bg-primary transition-transform duration-200 will-change-transform",
-          indicator.visible ? 'opacity-100' : 'opacity-0'
+          ready ? "pointer-events-none absolute bottom-0 h-[2px] rounded-full bg-primary transition-transform duration-200 will-change-transform" : "pointer-events-none absolute bottom-0 h-[2px] rounded-full bg-primary transition-none",
+          indicator.visible ? "opacity-100" : "opacity-0"
         )}
         style={{ transform: `translateX(${indicator.left}px)`, width: indicator.width }}
       />
