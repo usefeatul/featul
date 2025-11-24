@@ -44,14 +44,24 @@ export default function BrandingSection({ slug }: { slug: string }) {
   const handleSave = async () => {
     if (saving) return
     setSaving(true)
+    const root = document.documentElement
+    const prevP = getComputedStyle(root).getPropertyValue("--primary").trim()
+    const p = primaryColor.trim()
+    const a = accentColor.trim()
+    root.style.setProperty("--primary", p)
+    root.style.setProperty("--ring", p)
+    root.style.setProperty("--sidebar-primary", p)
     try {
-      const res = await client.branding.update.$post({ slug, logoUrl: logoUrl.trim(), primaryColor: primaryColor.trim(), accentColor: accentColor.trim() })
+      const res = await client.branding.update.$post({ slug, logoUrl: logoUrl.trim(), primaryColor: p, accentColor: a })
       if (!res.ok) {
         const err = await res.json().catch(() => null)
         throw new Error(err?.message || "Update failed")
       }
       toast.success("Branding updated")
     } catch (e) {
+      root.style.setProperty("--primary", prevP || "#3b82f6")
+      root.style.setProperty("--ring", prevP || "#3b82f6")
+      root.style.setProperty("--sidebar-primary", prevP || "#3b82f6")
       toast.error("Failed to update branding")
     } finally {
       setSaving(false)
@@ -71,8 +81,14 @@ export default function BrandingSection({ slug }: { slug: string }) {
             <Select value={colorKey} onValueChange={(k) => {
               const c = BRANDING_COLORS.find((x) => x.key === k) || BRANDING_COLORS[0]
               setColorKey(k)
-              setPrimaryColor(c?.primary ?? "#3b82f6")
-              setAccentColor(c?.accent ?? "#60a5fa")
+              const p = c?.primary ?? "#3b82f6"
+              const a = c?.accent ?? "#60a5fa"
+              setPrimaryColor(p)
+              setAccentColor(a)
+              const root = document.documentElement
+              root.style.setProperty("--primary", p)
+              root.style.setProperty("--ring", p)
+              root.style.setProperty("--sidebar-primary", p)
             }}>
               <SelectTrigger id="color" className="min-w-[12rem]">
                 <SelectValue placeholder="Select a color" />
