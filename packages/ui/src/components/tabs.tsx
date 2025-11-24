@@ -23,7 +23,7 @@ function TabsList({
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List>) {
   const listRef = React.useRef<HTMLDivElement | null>(null)
-  const [indicator, setIndicator] = React.useState<{ left: number; width: number; top: number; visible: boolean }>({ left: 0, width: 0, top: 0, visible: false })
+  const [indicator, setIndicator] = React.useState<{ left: number; width: number; visible: boolean }>({ left: 0, width: 0, visible: false })
 
   const measure = React.useCallback((el: HTMLElement | null) => {
     if (!el || !listRef.current) return
@@ -31,8 +31,7 @@ function TabsList({
     const parentRect = listRef.current.getBoundingClientRect()
     const left = rect.left - parentRect.left
     const width = rect.width
-    const top = parentRect.height - 2
-    setIndicator({ left, width, top, visible: true })
+    setIndicator({ left, width, visible: true })
   }, [])
 
   const measureActive = React.useCallback(() => {
@@ -80,10 +79,10 @@ function TabsList({
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute h-[2px] rounded-full bg-primary transition-[left,width,top] duration-200",
+          "pointer-events-none absolute bottom-0 h-[2px] rounded-full bg-primary transition-[left,width] duration-200",
           indicator.visible ? 'opacity-100' : 'opacity-0'
         )}
-        style={{ left: indicator.left, width: indicator.width, top: indicator.top }}
+        style={{ left: indicator.left, width: indicator.width }}
       />
     </TabsPrimitive.List>
   )
