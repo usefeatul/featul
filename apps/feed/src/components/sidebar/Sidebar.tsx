@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@feedgot/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
 import {
@@ -20,10 +20,39 @@ const secondaryNav: NavItem[] = buildBottomNav();
 
 export default function Sidebar({ className = "" }: { className?: string }) {
   const pathname = usePathname();
+  const router = useRouter();
   const slug = getSlugFromPath(pathname);
 
   const primaryNav = buildTopNav(slug);
   const middleNav = buildMiddleNav(slug);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      const tag = t?.tagName || "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || (t && (t as any).isContentEditable)) return;
+      const key = e.key.toLowerCase();
+      if (key === "r" || key === "c" || key === "b") {
+        const target =
+          key === "r"
+            ? middleNav.find((i) => i.label.toLowerCase() === "roadmap")
+            : key === "c"
+            ? middleNav.find((i) => i.label.toLowerCase() === "changelog")
+            : middleNav.find((i) => i.label.toLowerCase() === "my board");
+        if (target) {
+          if (target.external) {
+            window.open(target.href, "_blank");
+          } else {
+            router.push(target.href);
+          }
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [middleNav, router]);
+
   return (
     <aside
       className={cn(
@@ -47,9 +76,19 @@ export default function Sidebar({ className = "" }: { className?: string }) {
       </SidebarSection>
 
       <SidebarSection title="WORKSPACE" className="mt-4">
-        {middleNav.map((item) => (
-          <SidebarItem key={item.label} item={item} pathname={pathname} />
-        ))}
+        {middleNav.map((item) => {
+          const letter = item.label === "Roadmap" ? "R" : item.label === "Changelog" ? "C" : item.label === "My Board" ? "B" : "";
+          return (
+            <div key={item.label} className="relative">
+              <SidebarItem item={item} pathname={pathname} />
+              {letter ? (
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-[10px] font-mono text-accent">
+                  {letter}
+                </span>
+              ) : null}
+            </div>
+          );
+        })}
       </SidebarSection>
 
       <SidebarSection className="mt-auto pb-8">
