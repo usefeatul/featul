@@ -26,7 +26,7 @@ export default function SignIn() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/workspaces/new",
+        callbackURL: "/start",
       });
     } catch (err) {
       setError("Failed to sign in with Google");
@@ -41,7 +41,7 @@ export default function SignIn() {
     try {
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/workspaces/new",
+        callbackURL: "/start",
       });
     } catch (err) {
       setError("Failed to sign in with GitHub");
@@ -55,7 +55,7 @@ export default function SignIn() {
     setError("");
     try {
       await authClient.signIn.email(
-        { email: email.trim(), password, callbackURL: "/workspaces/new" },
+        { email: email.trim(), password, callbackURL: "/start" },
         {
           onError: (ctx) => {
             if (ctx.error.status === 403) {
@@ -68,7 +68,7 @@ export default function SignIn() {
           },
           onSuccess: () => {
             toast.success("Signed in");
-            router.push("/workspaces/new");
+            router.push("/start");
           },
         }
       );

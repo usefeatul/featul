@@ -1,21 +1,23 @@
 import type { Metadata } from "next"
-import WorkspaceWizard from "@/components/workspaces/wizard/Wizard"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@feedgot/auth/session"
+import { findFirstAccessibleWorkspaceSlug } from "@/lib/workspace"
 
 export const dynamic = "force-dynamic"
 export const metadata: Metadata = createPageMetadata({
-  title: "New Project",
-  description: "Create a new project in Feedgot.",
-  path: "/workspaces/new",
+  title: "Start",
+  description: "Start",
+  path: "/start",
   indexable: false,
 })
 
-export default async function NewWorkspacePage() {
+export default async function StartPage() {
   const session = await getServerSession()
   if (!session?.user) {
-    redirect("/auth/sign-in?redirect=/workspaces/new")
+    redirect("/auth/sign-in?redirect=/start")
   }
-  return <WorkspaceWizard />
+  const slug = await findFirstAccessibleWorkspaceSlug(session.user.id)
+  if (slug) redirect(`/workspaces/${slug}`)
+  redirect("/workspaces/new")
 }
