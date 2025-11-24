@@ -54,6 +54,12 @@ export default function SettingsTabs({ slug }: Props) {
     }
   }, [paramSection, value])
 
+  React.useEffect(() => {
+    sections.forEach((s) => {
+      router.prefetch(`/workspaces/${slug}/settings/${encodeURIComponent(s.value)}`)
+    })
+  }, [router, slug])
+
   return (
     <section className="p-3 space-y-4">
       <SettingsHeader title="Settings" description="View and manage your workspace settings." />
