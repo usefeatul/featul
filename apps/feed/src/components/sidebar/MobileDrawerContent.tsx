@@ -3,7 +3,7 @@
 import React from "react";
 import { ScrollArea } from "@feedgot/ui/components/scroll-area";
 import { DrawerContent, DrawerClose, DrawerHeader, DrawerTitle } from "@feedgot/ui/components/drawer";
-import type { NavItem } from "../../types/types";
+import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";

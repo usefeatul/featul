@@ -1,28 +1,16 @@
 "use client"
 
 import React from "react"
-import SectionCard from "../SectionCard"
+import SectionCard from "../global/SectionCard"
 import { Input } from "@feedgot/ui/components/input"
-import { Label } from "@feedgot/ui/components/label"
-import { Button } from "@feedgot/ui/components/button"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
 import { LoadingButton } from "@/components/loading-button"
-import { client } from "@feedgot/api/client"
+import { loadBrandingBySlug, saveBranding } from "./service"
 import { toast } from "sonner"
 import { Switch } from "@feedgot/ui/components/switch"
 import { Badge } from "@feedgot/ui/components/badge"
-import DropdownIcon from "@feedgot/ui/icons/dropdown"
-import { BRANDING_COLORS, findColorByPrimary, applyBrandPrimary } from "../colors"
-
-type BrandingConfig = {
-  logoUrl?: string
-  primaryColor?: string
-  accentColor?: string
-  theme?: "light" | "dark" | "system" | "custom"
-  hidePoweredBy?: boolean
-}
-
-type BrandingResponse = { config: BrandingConfig | null }
+import { BRANDING_COLORS, findColorByPrimary, applyBrandPrimary } from "../../../types/colors"
+import ColorPicker from "./ColorPicker"
+import ThemePicker from "./ThemePicker"
 
 export default function BrandingSection({ slug }: { slug: string }) {
   const [logoUrl, setLogoUrl] = React.useState("")
@@ -38,9 +26,7 @@ export default function BrandingSection({ slug }: { slug: string }) {
     let mounted = true
     void (async () => {
       try {
-        const res = await client.branding.byWorkspaceSlug.$get({ slug })
-        const data = (await res.json()) as BrandingResponse
-        const conf = data?.config
+        const conf = await loadBrandingBySlug(slug)
         if (mounted && conf) {
           setLogoUrl(conf.logoUrl || "")
           const currentPrimary = conf.primaryColor || "#3b82f6"
@@ -68,11 +54,8 @@ export default function BrandingSection({ slug }: { slug: string }) {
     const a = accentColor.trim()
     applyBrandPrimary(p)
     try {
-      const res = await client.branding.update.$post({ slug, logoUrl: logoUrl.trim(), primaryColor: p, accentColor: a, theme, hidePoweredBy })
-      if (!res.ok) {
-        const err = await res.json().catch(() => null)
-        throw new Error(err?.message || "Update failed")
-      }
+      const ok = await saveBranding(slug, { logoUrl: logoUrl.trim(), primaryColor: p, accentColor: a, theme, hidePoweredBy })
+      if (!ok) throw new Error("Update failed")
       toast.success("Branding updated")
     } catch (e) {
       applyBrandPrimary(prevP || "#3b82f6")
@@ -91,62 +74,25 @@ export default function BrandingSection({ slug }: { slug: string }) {
             <Input id="logo" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://example.com/logo.png" className="h-9" />
           </div>
         </div>
-
         <div className="flex items-center justify-between p-4">
           <div className="text-sm">Primary Color</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button type="button" variant="outline" className="h-9 w-fit min-w-0 justify-between px-2">
-                  <span className="inline-flex items-center gap-2">
-                    <span className="w-4 h-4 rounded-full border" style={{ background: primaryColor }} />
-                  </span>
-                  <DropdownIcon className="opacity-60" size={12} />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent list>
-                <PopoverList>
-                  {BRANDING_COLORS.map((c) => (
-                    <PopoverListItem
-                      key={c.key}
-                      accent={c.primary}
-                      onClick={() => {
-                        setColorKey(c.key)
-                        setPrimaryColor(c.primary)
-                        setAccentColor(c.accent)
-                        applyBrandPrimary(c.primary)
-                      }}
-                    >
-                      <span className="w-4 h-4 rounded-full border" style={{ background: c.primary }} />
-                      <span className="text-sm">{c.name}</span>
-                    </PopoverListItem>
-                  ))}
-                </PopoverList>
-              </PopoverContent>
-            </Popover>
+            <ColorPicker
+              valueKey={colorKey}
+              valueHex={primaryColor}
+              onSelect={(c) => {
+                setColorKey(c.key)
+                setPrimaryColor(c.primary)
+                setAccentColor(c.accent)
+                applyBrandPrimary(c.primary)
+              }}
+            />
           </div>
         </div>
-
         <div className="flex items-center justify-between p-4">
           <div className="text-sm">Theme</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button type="button" variant="outline" className="h-9 w-fit min-w-0 justify-between px-2">
-                  <span className="text-sm capitalize">{theme}</span>
-                  <DropdownIcon className="opacity-60" size={12} />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent list>
-                <PopoverList>
-                  {(["system", "light", "dark"] as const).map((t) => (
-                    <PopoverListItem key={t} onClick={() => setTheme(t)}>
-                      <span className="text-sm capitalize">{t}</span>
-                    </PopoverListItem>
-                  ))}
-                </PopoverList>
-              </PopoverContent>
-            </Popover>
+            <ThemePicker value={theme} onSelect={(t) => setTheme(t)} />
           </div>
         </div>
 

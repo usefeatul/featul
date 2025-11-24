@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import SettingsTabs from "@/components/settings/SettingsTabs"
+import SettingsTabs from "@/components/settings/global/SettingsTabs"
 import { createPageMetadata } from "@/lib/seo"
 
 export const dynamic = "force-dynamic"

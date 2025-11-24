@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@feedgot/ui/lib/utils";
-import type { NavItem } from "../../types/types";
+import type { NavItem } from "../../types/nav";
 import {
   buildTopNav,
   buildMiddleNav,

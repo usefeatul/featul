@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import SectionCard from "../SectionCard"
+import SectionCard from "../global/SectionCard"
 import { Input } from "@feedgot/ui/components/input"
 import { Label } from "@feedgot/ui/components/label"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@feedgot/ui/components/select"
