@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useRouter, useParams, useSearchParams } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@feedgot/ui/components/tabs"
 import SettingsHeader from "./Header"
 import BrandingSection from "../branding/Branding"
@@ -13,37 +13,19 @@ import DomainSection from "../domain/Domain"
 import IntegrationsSection from "../integrations/Integrations"
 import SSOSection from "../sso/SSO"
 import DataSection from "../data/Data"
+import { SECTIONS } from "../../../config/sections"
 
 type Props = { slug: string }
 
-const sections = [
-  { value: "branding", label: "Branding", desc: "Customize logo and identity" },
-  { value: "team", label: "Team", desc: "Manage members and roles" },
-  { value: "feedback", label: "Feedback", desc: "Configure boards and feedback" },
-  { value: "changelog", label: "Changelog", desc: "Manage product updates" },
-  { value: "billing", label: "Billing", desc: "Subscriptions and invoices" },
-  { value: "domain", label: "Domain", desc: "Custom domain settings" },
-  { value: "integrations", label: "Integrations", desc: "Connect external tools" },
-  { value: "sso", label: "SSO", desc: "Single sign-on setup" },
-  { value: "data", label: "Data", desc: "Export and data controls" },
-]
+const sections = SECTIONS
 
 export default function SettingsTabs({ slug }: Props) {
   const router = useRouter()
-  const search = useSearchParams()
   const routeParams = useParams()
   const paramSection = typeof routeParams?.section === "string" ? routeParams.section : undefined
-  const initial = paramSection || search?.get("tab") || sections[0]?.value
-  const [value, setValue] = React.useState(initial)
-
-  React.useEffect(() => {
-    const rp = typeof routeParams?.section === "string" ? routeParams.section : undefined
-    if (rp && rp !== value) setValue(rp)
-    else if (!rp && value !== sections[0]?.value) setValue(sections[0]?.value)
-  }, [routeParams, value])
+  const value = paramSection || sections[0]?.value
 
   const onValueChange = (v: string) => {
-    setValue(v)
     const url = `/workspaces/${slug}/settings/${encodeURIComponent(v)}`
     router.replace(url)
   }
@@ -72,7 +54,7 @@ export default function SettingsTabs({ slug }: Props) {
 
         {sections.map((s) => (
           <TabsContent key={s.value} value={s.value} className="mt-2">
-            <SectionRenderer slug={slug} section={s.value} description={s.desc} />
+            <SectionRenderer slug={slug} section={s.value} />
           </TabsContent>
         ))}
       </Tabs>
@@ -80,7 +62,7 @@ export default function SettingsTabs({ slug }: Props) {
   )
 }
 
-function SectionRenderer({ slug, section, description }: { slug: string; section: string; description: string }) {
+function SectionRenderer({ slug, section }: { slug: string; section: string }) {
   switch (section) {
     case "branding":
       return <BrandingSection slug={slug} />
