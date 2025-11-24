@@ -4,8 +4,10 @@ import { eq } from "drizzle-orm"
 
 export const dynamic = "force-dynamic"
 
-export default async function WorkspacePage({ params }: { params: { slug: string } }) {
-  const { slug } = params
+type Props = { params: Promise<{ slug: string }> }
+
+export default async function WorkspacePage({ params }: Props) {
+  const { slug } = await params
   let ws: { id?: string; name: string; slug: string } | null = null
   try {
     const session = await getServerSession()

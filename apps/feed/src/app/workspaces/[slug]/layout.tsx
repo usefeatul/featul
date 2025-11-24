@@ -5,8 +5,8 @@ import { getBrandingColorsBySlug } from "@/lib/workspace"
 
 export const dynamic = "force-dynamic"
 
-export default async function WorkspaceLayout({ children, params }: { children: React.ReactNode; params: { slug: string } }) {
-  const slug = params.slug
+export default async function WorkspaceLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   const { primary: p } = await getBrandingColorsBySlug(slug)
   return (
     <Container className="min-h-screen flex gap-6" maxWidth="8xl">
