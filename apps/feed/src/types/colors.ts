@@ -31,6 +31,8 @@ export function findColorByPrimary(hex: string): ColorOption | undefined {
 export function applyBrandPrimary(hex: string): void {
   const root = document.documentElement
   const p = hex.trim()
+  const prev = getComputedStyle(root).getPropertyValue("--primary").trim()
+  if (prev.toLowerCase() === p.toLowerCase()) return
   root.style.setProperty("--primary", p)
   root.style.setProperty("--ring", p)
   root.style.setProperty("--sidebar-primary", p)
