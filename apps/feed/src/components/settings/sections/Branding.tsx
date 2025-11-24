@@ -7,24 +7,33 @@ import { Label } from "@feedgot/ui/components/label"
 import { LoadingButton } from "@/components/loading-button"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@feedgot/ui/components/select"
+import { BRANDING_COLORS } from "../colors"
 
 export default function BrandingSection({ slug }: { slug: string }) {
   const [logoUrl, setLogoUrl] = React.useState("")
   const [primaryColor, setPrimaryColor] = React.useState("#3b82f6")
+  const [accentColor, setAccentColor] = React.useState("#60a5fa")
+  const [colorKey, setColorKey] = React.useState<string>("blue")
   const [saving, setSaving] = React.useState(false)
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     let mounted = true
-    ;(async () => {
+    void (async () => {
       try {
         const res = await client.branding.byWorkspaceSlug.$get({ slug })
-        const conf = (res as any)?.config
+        const data = await res.json()
+        const conf = data?.config
         if (mounted && conf) {
           setLogoUrl(conf.logoUrl || "")
-          setPrimaryColor(conf.primaryColor || "#3b82f6")
+          const currentPrimary = conf.primaryColor || "#3b82f6"
+          const found = BRANDING_COLORS.find((c) => c.primary.toLowerCase() === currentPrimary.toLowerCase())
+          setPrimaryColor(currentPrimary)
+          setAccentColor(conf.accentColor || found?.accent || "#60a5fa")
+          setColorKey(found?.key || "blue")
         }
-      } catch {}
+      } catch (e) {}
       finally {
         if (mounted) setLoading(false)
       }
@@ -36,9 +45,13 @@ export default function BrandingSection({ slug }: { slug: string }) {
     if (saving) return
     setSaving(true)
     try {
-      await client.branding.update.$post({ slug, logoUrl: logoUrl.trim(), primaryColor: primaryColor.trim() as any })
+      const res = await client.branding.update.$post({ slug, logoUrl: logoUrl.trim(), primaryColor: primaryColor.trim(), accentColor: accentColor.trim() })
+      if (!res.ok) {
+        const err = await res.json().catch(() => null)
+        throw new Error(err?.message || "Update failed")
+      }
       toast.success("Branding updated")
-    } catch {
+    } catch (e) {
       toast.error("Failed to update branding")
     } finally {
       setSaving(false)
@@ -53,11 +66,31 @@ export default function BrandingSection({ slug }: { slug: string }) {
           <Input id="logo" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://example.com/logo.png" className="placeholder:text-accent/60" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="primary">Primary Color</Label>
+          <Label htmlFor="color">Brand Color</Label>
           <div className="flex items-center gap-2">
-            <Input id="primary" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} placeholder="#3b82f6" className="placeholder:text-accent/60" />
-            <div aria-hidden className="w-6 h-6 rounded border" style={{ background: primaryColor }} />
-          </div>
+            <Select value={colorKey} onValueChange={(k) => {
+              const c = BRANDING_COLORS.find((x) => x.key === k) || BRANDING_COLORS[0]
+              setColorKey(k)
+              setPrimaryColor(c?.primary ?? "#3b82f6")
+              setAccentColor(c?.accent ?? "#60a5fa")
+            }}>
+              <SelectTrigger id="color" className="min-w-[12rem]">
+                <SelectValue placeholder="Select a color" />
+              </SelectTrigger>
+              <SelectContent>
+                {BRANDING_COLORS.map((c) => (
+                  <SelectItem key={c.key} value={c.key}>
+                    <span className="inline-flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-sm border" style={{ background: c.primary }} />
+                      <span>{c.name}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div aria-hidden className="w-6 h-6 rounded border" style={{ backgroundColor: primaryColor }} />
+      </div>
+          <p className="text-xs text-accent">Applies to primary accents across the workspace.</p>
         </div>
         <div className="pt-2">
           <LoadingButton onClick={handleSave} loading={saving} disabled={loading}>Save Changes</LoadingButton>
