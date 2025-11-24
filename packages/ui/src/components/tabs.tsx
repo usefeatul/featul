@@ -96,7 +96,7 @@ function TabsList({
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute inset-y-0 rounded-md bg-accent/10 transition-[left,width] duration-200",
+          "pointer-events-none absolute top-0 bottom-1 rounded-md bg-accent/10 transition-[left,width] duration-200",
           hover.visible ? 'opacity-100' : 'opacity-0'
         )}
         style={{ left: hover.left, width: hover.width }}
