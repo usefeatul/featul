@@ -37,7 +37,7 @@ export function buildMiddleNav(slug: string): NavItem[] {
     { label: "Roadmap", href: w(slug, "/roadmap"), icon: RoadmapIcon },
     { label: "Changelog", href: w(slug, "/changelog"), icon: ChangelogIcon },
     { label: "My Board", href: w(slug, "/board"), icon: BoardIcon },
-    { label: "Settings", href: w(slug, "/settings"), icon: SettingIcon },
+    { label: "Settings", href: w(slug, "/settings/branding"), icon: SettingIcon },
   ]
 }
 

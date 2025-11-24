@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@feedgot/ui/components/tabs"
 import SettingsHeader from "./Header"
 import BrandingSection from "../branding/Branding"
@@ -30,22 +30,29 @@ const sections = [
 
 export default function SettingsTabs({ slug }: Props) {
   const router = useRouter()
-  const params = useSearchParams()
-  const initial = params?.get("tab") || sections[0]?.value
+  const search = useSearchParams()
+  const routeParams = useParams()
+  const paramSection = typeof routeParams?.section === "string" ? routeParams.section : undefined
+  const initial = paramSection || search?.get("tab") || sections[0]?.value
   const [value, setValue] = React.useState(initial)
 
   React.useEffect(() => {
-    const q = params.get("tab")
-    if (q && q !== value) setValue(q)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params])
+    const rp = typeof routeParams?.section === "string" ? routeParams.section : undefined
+    if (rp && rp !== value) setValue(rp)
+    else if (!rp && value !== sections[0]?.value) setValue(sections[0]?.value)
+  }, [routeParams, value])
 
   const onValueChange = (v: string) => {
     setValue(v)
-    const base = `/workspaces/${slug}/settings`
-    const url = `${base}?tab=${encodeURIComponent(v)}`
+    const url = `/workspaces/${slug}/settings/${encodeURIComponent(v)}`
     router.replace(url)
   }
+
+  React.useEffect(() => {
+    if (!paramSection && value) {
+      router.replace(`/workspaces/${slug}/settings/${encodeURIComponent(value)}`)
+    }
+  }, [paramSection, value])
 
   return (
     <section className="p-3 space-y-4">
