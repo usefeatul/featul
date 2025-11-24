@@ -24,6 +24,7 @@ function TabsList({
 }: React.ComponentProps<typeof TabsPrimitive.List>) {
   const listRef = React.useRef<HTMLDivElement | null>(null)
   const [indicator, setIndicator] = React.useState<{ left: number; width: number; visible: boolean }>({ left: 0, width: 0, visible: false })
+  const [hover, setHover] = React.useState<{ left: number; width: number; visible: boolean }>({ left: 0, width: 0, visible: false })
 
   const measure = React.useCallback((el: HTMLElement | null) => {
     if (!el || !listRef.current) return
@@ -32,6 +33,15 @@ function TabsList({
     const left = rect.left - parentRect.left
     const width = rect.width
     setIndicator({ left, width, visible: true })
+  }, [])
+
+  const measureHover = React.useCallback((el: HTMLElement | null) => {
+    if (!el || !listRef.current) return
+    const rect = el.getBoundingClientRect()
+    const parentRect = listRef.current.getBoundingClientRect()
+    const left = rect.left - parentRect.left
+    const width = rect.width
+    setHover({ left, width, visible: true })
   }, [])
 
   const measureActive = React.useCallback(() => {
@@ -44,26 +54,34 @@ function TabsList({
   React.useEffect(() => {
     const root = listRef.current
     if (!root) return
-    const triggers = Array.from(root.querySelectorAll<HTMLElement>('[data-slot="tabs-trigger"]'))
-    const onEnter = (e: Event) => measure(e.currentTarget as HTMLElement)
-    const onLeaveList = () => measureActive()
-    triggers.forEach((t) => {
-      t.addEventListener('mouseenter', onEnter)
-      t.addEventListener('focus', onEnter)
-    })
-    root.addEventListener('mouseleave', onLeaveList)
+    const observer = new MutationObserver(() => measureActive())
+    observer.observe(root, { attributes: true, subtree: true, attributeFilter: ['data-state', 'class', 'style'] })
     measureActive()
     const onResize = () => measureActive()
     window.addEventListener('resize', onResize)
     return () => {
-      triggers.forEach((t) => {
-        t.removeEventListener('mouseenter', onEnter)
-        t.removeEventListener('focus', onEnter)
-      })
-      root.removeEventListener('mouseleave', onLeaveList)
+      observer.disconnect()
       window.removeEventListener('resize', onResize)
     }
   }, [measureActive, measure])
+
+  React.useEffect(() => {
+    const root = listRef.current
+    if (!root) return
+    const triggers = Array.from(root.querySelectorAll<HTMLElement>("[data-slot=\"tabs-trigger\"]"))
+    const onEnter = (e: Event) => measureHover(e.currentTarget as HTMLElement)
+    const onLeave = () => setHover((h) => ({ ...h, visible: false }))
+    triggers.forEach((t) => {
+      t.addEventListener("mouseenter", onEnter)
+    })
+    root.addEventListener("mouseleave", onLeave)
+    return () => {
+      triggers.forEach((t) => {
+        t.removeEventListener("mouseenter", onEnter)
+      })
+      root.removeEventListener("mouseleave", onLeave)
+    }
+  }, [measureHover])
 
   return (
     <TabsPrimitive.List
@@ -75,6 +93,14 @@ function TabsList({
       )}
       {...props}
     >
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-y-0 rounded-md bg-accent/10 transition-[left,width] duration-200",
+          hover.visible ? 'opacity-100' : 'opacity-0'
+        )}
+        style={{ left: hover.left, width: hover.width }}
+      />
       {props.children}
       <span
         aria-hidden
@@ -96,7 +122,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "inline-flex items-center justify-center gap-1.5 px-2 py-1 text-sm font-medium whitespace-nowrap border-b-2 border-transparent hover:bg-accent/10 transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground",
+        "inline-flex items-center justify-center gap-1.5 px-2 py-1 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground",
         className
       )}
       {...props}
