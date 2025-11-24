@@ -33,7 +33,7 @@ export default function Sidebar({ className = "" }: { className?: string }) {
       )}
     >
       <div className="p-3">
-        <div className="group flex items-center gap-2 rounded-md px-3 py-2">
+        <div className="group flex items-center gap-2 rounded-md px-2 py-2">
           <img src="/logo.svg" alt="feedback" className="h-6 w-6" />
           <div className="text-sm font-semibold">feedback</div>
         </div>

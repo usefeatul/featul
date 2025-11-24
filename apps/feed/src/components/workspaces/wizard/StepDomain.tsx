@@ -13,7 +13,7 @@ export default function StepDomain({ domain, onChange, isValid }: { domain: stri
       </div>
       <div className="space-y-2">
         <div className="relative flex items-center">
-          <span className="inline-flex items-center h-10 px-3 bg-muted border rounded-l-md text-accent select-none">https://</span>
+          <span className="inline-flex items-center h-10 px-3 bg-accent/50 border rounded-l-md text-black select-none">https://</span>
           <Input id="domain" type="text" value={domain} onChange={(e) => onChange(e.target.value)} placeholder="mywebsite.com" className="h-10 flex-1 rounded-l-none border-l-0 placeholder:text-accent/70" aria-invalid={!isValid && domain.length > 0} />
           {!isValid && domain.length > 0 ? (
             <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive size-4" />
