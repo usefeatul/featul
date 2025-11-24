@@ -1,6 +1,5 @@
 import { pgTable, text, timestamp, boolean, integer, json, uuid, uniqueIndex } from 'drizzle-orm/pg-core'
 import { user } from './auth'
-import { plan } from './plan'
 
 export const workspace = pgTable('workspace', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -12,7 +11,6 @@ export const workspace = pgTable('workspace', {
     .references(() => user.id, { onDelete: 'cascade' }),
   plan: text('plan', { enum: ['free', 'starter', 'professional'] })
     .notNull()
-    .references(() => plan.slug)
     .default('free'),
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),

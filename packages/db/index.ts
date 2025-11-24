@@ -33,5 +33,4 @@ export const {
   colorPalette,
   customTheme,
   brandingAsset,
-  plan,
 } = schema

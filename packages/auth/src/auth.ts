@@ -6,6 +6,8 @@ import { sendVerificationOtpEmail, sendWelcome } from "./email"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { getPasswordError } from "./password"
 
+
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",

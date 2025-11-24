@@ -1,5 +1,4 @@
 import { pgTable, text, timestamp, boolean, integer, json } from 'drizzle-orm/pg-core'
-import { plan } from './plan'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -12,7 +11,6 @@ export const user = pgTable('user', {
   updatedAt: timestamp('updated_at').notNull(),
   plan: text('plan', { enum: ['free', 'starter', 'professional'] })
     .notNull()
-    .references(() => plan.slug)
     .default('free'),
   stripeId: text('stripe_id').unique(),
   hadTrial: boolean('had_trial').default(false),
