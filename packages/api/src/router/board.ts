@@ -1,4 +1,5 @@
 import { eq, and, sql } from "drizzle-orm"
+import { z } from "zod"
 import { j, publicProcedure } from "../jstack"
 import { workspace, board, post, postTag, tag, comment, user } from "@feedgot/db"
 import { checkSlugInputSchema } from "../validators/workspace"
@@ -43,6 +44,37 @@ export function createBoardRouter() {
         )
 
         return c.superjson({ boards: withCounts })
+      }),
+
+    searchPostsByWorkspaceSlug: publicProcedure
+      .input(z.object({ slug: checkSlugInputSchema.shape.slug, q: z.string().min(2).max(128) }))
+      .get(async ({ ctx, input, c }: any) => {
+        const [ws] = await ctx.db
+          .select({ id: workspace.id })
+          .from(workspace)
+          .where(eq(workspace.slug, input.slug))
+          .limit(1)
+        if (!ws) return c.superjson({ posts: [] })
+
+        const q = input.q.trim()
+        const wildcard = `%${q}%`
+
+        const rows = await ctx.db
+          .select({
+            id: post.id,
+            title: post.title,
+            slug: post.slug,
+            createdAt: post.createdAt,
+            upvotes: post.upvotes,
+          })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), sql`(${post.title} ilike ${wildcard} or ${post.content} ilike ${wildcard})`))
+          .orderBy(sql`least(100, ${post.upvotes}) desc`, sql`${post.createdAt} desc`)
+          .limit(20)
+
+        c.header("Cache-Control", "public, max-age=5, stale-while-revalidate=60")
+        return c.superjson({ posts: rows })
       }),
 
     postsByBoard: publicProcedure

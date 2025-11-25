@@ -54,7 +54,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
   const statusFilter = statusRaw.map(normalizeStatus)
   if (statusFilter.length === 0) statusFilter.push("pending", "under-review", "planned", "in-progress")
 
-  const boardSlugs = boardRaw.map((b: string) => b.trim().toLowerCase()).filter(Boolean)
+  const boardSlugs = (search ? [] : boardRaw.map((b: string) => b.trim().toLowerCase())).filter(Boolean)
   const tagSlugs = tagRaw.map((t: string) => t.trim().toLowerCase()).filter(Boolean)
   const rows = await getWorkspacePosts(slug, {
     statuses: statusFilter,

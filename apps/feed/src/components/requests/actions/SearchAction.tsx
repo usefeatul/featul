@@ -13,8 +13,9 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-  CommandSeparator,
 } from "@feedgot/ui/components/command"
+import { useQuery } from "@tanstack/react-query"
+import { client } from "@feedgot/api/client"
 
 export default function SearchAction({ className = "" }: { className?: string }) {
   const router = useRouter()
@@ -42,6 +43,17 @@ export default function SearchAction({ className = "" }: { className?: string })
     setOpen(false)
   }
 
+  const { data: results = [], isLoading } = useQuery({
+    queryKey: ["search", slug, value],
+    enabled: open && value.trim().length >= 2,
+    queryFn: async () => {
+      const res = await client.board.searchPostsByWorkspaceSlug.$get({ slug, q: value.trim() })
+      const data = await res.json()
+      return (data?.posts || []) as { id: string; title: string; slug: string }[]
+    },
+    staleTime: 10_000,
+  })
+
   return (
     <>
       <button
@@ -64,14 +76,16 @@ export default function SearchAction({ className = "" }: { className?: string })
           }}
         />
         <CommandList>
-          <CommandEmpty>No matches. Press Enter to search.</CommandEmpty>
-          <CommandGroup heading="Actions">
-            <CommandItem onSelect={runSearch} disabled={!value.trim()}>
-              Search “{value || ""}” in requests
-            </CommandItem>
-            <CommandItem onSelect={clearSearch} disabled={!sp.get("search")}>Clear search</CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
+          <CommandEmpty />
+          {isLoading ? null : results.length > 0 ? (
+            <CommandGroup>
+              {results.map((r) => (
+                <CommandItem key={r.id} onSelect={() => router.push(`/workspaces/${slug}/requests/${r.slug}`)}>
+                  {r.title}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
         </CommandList>
       </CommandDialog>
     </>
