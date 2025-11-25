@@ -6,20 +6,8 @@ import { LayersIcon } from "@feedgot/ui/icons/layers"
 import { cn } from "@feedgot/ui/lib/utils"
 import { client } from "@feedgot/api/client"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-
-function parseArrayParam(v: string | null): string[] {
-  try {
-    if (!v) return []
-    const arr = JSON.parse(v)
-    return Array.isArray(arr) ? arr : []
-  } catch {
-    return []
-  }
-}
-
-function enc(arr: string[]) {
-  return encodeURIComponent(JSON.stringify(arr))
-}
+import { getSlugFromPath } from "@/config/nav"
+import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request-filters"
 
 export default function BoardsAction({ className = "" }: { className?: string }) {
   const router = useRouter()
@@ -29,13 +17,10 @@ export default function BoardsAction({ className = "" }: { className?: string })
   const [loading, setLoading] = React.useState(false)
   const [items, setItems] = React.useState<Array<{ id: string; name: string; slug: string }>>([])
 
-  const slug = React.useMemo(() => {
-    const parts = pathname.split("/")
-    return parts[2] || ""
-  }, [pathname])
+  const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
 
   const selected = React.useMemo(() => parseArrayParam(sp.get("board")), [sp])
-  const isAllSelected = React.useMemo(() => items.length > 0 && selected.length === items.length, [items, selected])
+  const isAllSelected = React.useMemo(() => isAllSel(items.map((i) => i.slug), selected), [items, selected])
 
   React.useEffect(() => {
     let mounted = true
@@ -53,22 +38,14 @@ export default function BoardsAction({ className = "" }: { className?: string })
   }, [slug])
 
   const toggle = (slugItem: string) => {
-    const next = selected.includes(slugItem) ? selected.filter((s) => s !== slugItem) : [...selected, slugItem]
-    const status = sp.get("status") || encodeURIComponent(JSON.stringify([]))
-    const tags = sp.get("tag") || encodeURIComponent(JSON.stringify([]))
-    const order = sp.get("order") || "newest"
-    const search = sp.get("search") || ""
-    const href = `/workspaces/${slug}/requests?status=${status}&board=${enc(next)}&tag=${tags}&order=${order}&search=${search}`
+    const next = toggleValue(selected, slugItem)
+    const href = buildRequestsUrl(slug, sp, { board: next })
     router.push(href)
   }
 
   const selectAll = () => {
     const next = isAllSelected ? [] : items.map((i) => i.slug)
-    const status = sp.get("status") || encodeURIComponent(JSON.stringify([]))
-    const tags = sp.get("tag") || encodeURIComponent(JSON.stringify([]))
-    const order = sp.get("order") || "newest"
-    const search = sp.get("search") || ""
-    const href = `/workspaces/${slug}/requests?status=${status}&board=${enc(next)}&tag=${tags}&order=${order}&search=${search}`
+    const href = buildRequestsUrl(slug, sp, { board: next })
     router.push(href)
   }
 
@@ -86,16 +63,16 @@ export default function BoardsAction({ className = "" }: { className?: string })
           <div className="p-3 text-sm text-accent">No boards</div>
         ) : (
           <PopoverList>
-            <PopoverListItem onClick={selectAll}>
-              <span className="text-sm">Select all</span>
-              {isAllSelected ? <span className="ml-auto text-xs">✓</span> : null}
-            </PopoverListItem>
             {items.map((it) => (
               <PopoverListItem key={it.id} onClick={() => toggle(it.slug)}>
                 <span className="text-sm truncate">{it.name}</span>
                 {selected.includes(it.slug) ? <span className="ml-auto text-xs">✓</span> : null}
               </PopoverListItem>
             ))}
+            <PopoverListItem onClick={selectAll}>
+              <span className="text-sm">Select all</span>
+              {isAllSelected ? <span className="ml-auto text-xs">✓</span> : null}
+            </PopoverListItem>
           </PopoverList>
         )}
       </PopoverContent>

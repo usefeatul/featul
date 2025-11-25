@@ -4,6 +4,7 @@ import React from "react"
 import { usePathname } from "next/navigation"
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections"
 import HeaderActions from "@/components/requests/HeaderActions"
+import FilterSummary from "@/components/requests/FilterSummary"
 
 function resolveTitle(segment: string): string {
   const s = segment.toLowerCase()
@@ -30,7 +31,14 @@ export default function WorkspaceHeader() {
   return (
     <div className="mt-3.5">
       <div className="flex items-center justify-between">
-        {title ? <h1 className="text-xl font-semibold">{title}</h1> : <div />}
+        {title ? (
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-semibold">{title}</h1>
+            {show ? <FilterSummary /> : null}
+          </div>
+        ) : (
+          <div />
+        )}
         {show ? <HeaderActions /> : null}
       </div>
     </div>

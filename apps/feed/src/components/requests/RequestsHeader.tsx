@@ -17,26 +17,5 @@ function toLabel(s: string) {
 }
 
 export default function RequestsHeader({ selectedStatuses, className = "" }: { selectedStatuses: string[]; className?: string }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  useSearchParams()
-  const statusLabels = useMemo(() => selectedStatuses.map(toLabel), [selectedStatuses])
-
-  const clearFilters = () => {
-    const slug = getSlugFromPath(pathname)
-    router.push(workspaceBase(slug))
-  }
-
-  return (
-    <div className={cn("flex items-center", className)}>
-      {statusLabels.length > 0 ? (
-        <div className="flex items-center gap-1">
-          {statusLabels.map((l) => (
-            <span key={l} className="rounded-md bg-muted px-2 py-0.5 text-xs">{l}</span>
-          ))}
-          <button type="button" onClick={clearFilters} className="text-xs text-primary hover:underline px-2 py-0.5">Clear</button>
-        </div>
-      ) : null}
-    </div>
-  )
+  return <div className={cn("flex items-center", className)} />
 }
