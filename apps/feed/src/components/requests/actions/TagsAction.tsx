@@ -35,6 +35,7 @@ export default function TagsAction({ className = "" }: { className?: string }) {
   }, [pathname])
 
   const selected = React.useMemo(() => parseArrayParam(sp.get("tag")), [sp])
+  const isAllSelected = React.useMemo(() => items.length > 0 && selected.length === items.length, [items, selected])
 
   React.useEffect(() => {
     let mounted = true
@@ -61,14 +62,14 @@ export default function TagsAction({ className = "" }: { className?: string }) {
     router.push(href)
   }
 
-  const clear = () => {
+  const selectAll = () => {
+    const next = isAllSelected ? [] : items.map((i) => i.slug)
     const status = sp.get("status") || encodeURIComponent(JSON.stringify([]))
     const boards = sp.get("board") || encodeURIComponent(JSON.stringify([]))
     const order = sp.get("order") || "newest"
     const search = sp.get("search") || ""
-    const href = `/workspaces/${slug}/requests?status=${status}&board=${boards}&tag=${enc([])}&order=${order}&search=${search}`
+    const href = `/workspaces/${slug}/requests?status=${status}&board=${boards}&tag=${enc(next)}&order=${order}&search=${search}`
     router.push(href)
-    setOpen(false)
   }
 
   return (
@@ -85,6 +86,10 @@ export default function TagsAction({ className = "" }: { className?: string }) {
           <div className="p-3 text-sm text-accent">No tags</div>
         ) : (
           <PopoverList>
+            <PopoverListItem onClick={selectAll}>
+              <span className="text-sm">Select all</span>
+              {isAllSelected ? <span className="ml-auto text-xs">✓</span> : null}
+            </PopoverListItem>
             {items.map((it) => (
               <PopoverListItem key={it.id} onClick={() => toggle(it.slug)}>
                 <span className="text-sm truncate">{it.name}</span>
@@ -94,9 +99,6 @@ export default function TagsAction({ className = "" }: { className?: string }) {
             ))}
           </PopoverList>
         )}
-        <div className="p-2 flex items-center justify-end">
-          <button type="button" onClick={clear} className="text-xs text-primary hover:underline px-2 py-1">Clear</button>
-        </div>
       </PopoverContent>
     </Popover>
   )

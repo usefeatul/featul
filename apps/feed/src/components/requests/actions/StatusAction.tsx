@@ -41,6 +41,8 @@ export default function StatusAction({ className = "" }: { className?: string })
   }, [pathname])
 
   const selected = React.useMemo(() => parseArrayParam(sp.get("status")).map((s) => String(s).toLowerCase()), [sp])
+  const allValues = React.useMemo(() => options.map((o) => o.value), [])
+  const isAllSelected = React.useMemo(() => selected.length === allValues.length && allValues.length > 0, [selected, allValues])
 
   const toggle = (v: string) => {
     const next = selected.includes(v) ? selected.filter((s) => s !== v) : [...selected, v]
@@ -52,14 +54,14 @@ export default function StatusAction({ className = "" }: { className?: string })
     router.push(href)
   }
 
-  const clear = () => {
+  const selectAll = () => {
+    const next = isAllSelected ? [] : allValues
     const boards = sp.get("board") || encodeURIComponent(JSON.stringify([]))
     const tags = sp.get("tag") || encodeURIComponent(JSON.stringify([]))
     const order = sp.get("order") || "newest"
     const search = sp.get("search") || ""
-    const href = `/workspaces/${slug}/requests?status=${enc([])}&board=${boards}&tag=${tags}&order=${order}&search=${search}`
+    const href = `/workspaces/${slug}/requests?status=${enc(next)}&board=${boards}&tag=${tags}&order=${order}&search=${search}`
     router.push(href)
-    setOpen(false)
   }
 
   return (
@@ -71,6 +73,10 @@ export default function StatusAction({ className = "" }: { className?: string })
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
+          <PopoverListItem onClick={selectAll}>
+            <span className="text-sm">Select all</span>
+            {isAllSelected ? <span className="ml-auto text-xs">✓</span> : null}
+          </PopoverListItem>
           {options.map((opt) => (
             <PopoverListItem key={opt.value} onClick={() => toggle(opt.value)}>
               <span className="text-sm">{opt.label}</span>
@@ -78,9 +84,6 @@ export default function StatusAction({ className = "" }: { className?: string })
             </PopoverListItem>
           ))}
         </PopoverList>
-        <div className="p-2 flex items-center justify-end">
-          <button type="button" onClick={clear} className="text-xs text-primary hover:underline px-2 py-1">Clear</button>
-        </div>
       </PopoverContent>
     </Popover>
   )
