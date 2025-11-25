@@ -127,14 +127,18 @@ function CommandSeparator({
 
 function CommandItem({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
-      className={cn("bg-card hover:bg-primary hover:text-primary-foreground data-[selected=true]:bg-card data-[selected=true]:text-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-3 rounded-sm px-4 py-3 my-1 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4", className)}
+      className={cn("bg-card text-muted-foreground hover:bg-primary hover:text-black aria-[selected=true]:bg-primary aria-[selected=true]:text-black [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-3 rounded-sm px-4 py-3 my-1 text-sm outline-hidden select-none transition-colors duration-150 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 group", className)}
       {...props}
-    />
+    >
+      <span className="truncate">{children}</span>
+      <span className="ml-auto hidden group-hover:inline group-aria-[selected=true]:inline bg-card text-foreground border rounded-sm px-2 py-0.5 text-xs">open</span>
+    </CommandPrimitive.Item>
   )
 }
 
