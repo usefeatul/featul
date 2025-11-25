@@ -16,7 +16,7 @@ export default async function WorkspacePage({ params }: Props) {
 
   return (
     <section className="space-y-4">
-      <WorkspaceHeaderActionsToggle enabled title="Requests" />
+      <WorkspaceHeaderActionsToggle enabled />
       <RequestsHeader selectedStatuses={[]} />
       <RequestList items={rows as any} workspaceSlug={slug} />
     </section>
