@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import Link from "next/link"
 import StatusIcon from "./StatusIcon"
 
@@ -18,7 +19,7 @@ export type RequestItemData = {
   boardName: string
 }
 
-export default function RequestItem({ item, workspaceSlug }: { item: RequestItemData; workspaceSlug: string }) {
+function RequestItemBase({ item, workspaceSlug }: { item: RequestItemData; workspaceSlug: string }) {
   const href = `/workspaces/${workspaceSlug}/requests/${item.slug}`
   return (
     <li className="rounded-md border bg-card p-3">
@@ -36,11 +37,13 @@ export default function RequestItem({ item, workspaceSlug }: { item: RequestItem
             <span className="rounded-md bg-muted px-2 py-0.5">{item.roadmapStatus || "pending"}</span>
             <span>↑ {item.upvotes}</span>
             <span>💬 {item.commentCount}</span>
-            <span>{new Date(item.publishedAt ?? item.createdAt).toLocaleDateString()}</span>
+            <span>{new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
           </div>
         </div>
       </div>
     </li>
   )
 }
+
+export default React.memo(RequestItemBase)
 

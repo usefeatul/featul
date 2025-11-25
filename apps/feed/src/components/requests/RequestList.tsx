@@ -1,8 +1,9 @@
 "use client"
 
+import React from "react"
 import RequestItem, { type RequestItemData } from "./RequestItem"
 
-export default function RequestList({ items, workspaceSlug }: { items: RequestItemData[]; workspaceSlug: string }) {
+function RequestListBase({ items, workspaceSlug }: { items: RequestItemData[]; workspaceSlug: string }) {
   if (items.length === 0) {
     return <div className="text-accent text-sm">No requests found</div>
   }
@@ -14,4 +15,6 @@ export default function RequestList({ items, workspaceSlug }: { items: RequestIt
     </ul>
   )
 }
+
+export default React.memo(RequestListBase)
 
