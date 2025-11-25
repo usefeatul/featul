@@ -28,13 +28,18 @@ export function getSlugFromPath(pathname: string) {
 }
 
 export function buildTopNav(slug: string): NavItem[] {
+  const empty = encodeURIComponent(JSON.stringify([]))
+  function buildHref(statuses: string[]) {
+    const s = encodeURIComponent(JSON.stringify(statuses))
+    return w(slug, `/requests?status=${s}&board=${empty}&tag=${empty}&order=newest&search=`)
+  }
   return [
-    { label: "Planned", href: w(slug, "/planned"), icon: PlannedIcon },
-    { label: "Progress", href: w(slug, "/inprogress"), icon: InProgressIcon },
-    { label: "Review", href: w(slug, "/inreviewing"), icon: InReviewingIcon },
-    { label: "Complete", href: w(slug, "/complete"), icon: CompleteIcon },
-    { label: "Pending", href: w(slug, "/pending"), icon: PendingIcon },
-    { label: "Closed", href: w(slug, "/closed"), icon: CloseIcon },
+    { label: "Planned", href: buildHref(["PLANNED"]), icon: PlannedIcon },
+    { label: "Progress", href: buildHref(["PROGRESS"]), icon: InProgressIcon },
+    { label: "Review", href: buildHref(["REVIEW"]), icon: InReviewingIcon },
+    { label: "Complete", href: buildHref(["COMPLETED"]), icon: CompleteIcon },
+    { label: "Pending", href: buildHref(["PENDING"]), icon: PendingIcon },
+    { label: "Closed", href: buildHref(["CLOSED"]), icon: CloseIcon },
   ]
 }
 
