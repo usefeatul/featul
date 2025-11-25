@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@feedgot/ui/lib/utils"
+import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import HeaderActions from "./HeaderActions"
 
 function toLabel(s: string) {
@@ -19,15 +20,12 @@ function toLabel(s: string) {
 export default function RequestsHeader({ selectedStatuses, className = "" }: { selectedStatuses: string[]; className?: string }) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
+  useSearchParams()
   const statusLabels = useMemo(() => selectedStatuses.map(toLabel), [selectedStatuses])
 
   const clearFilters = () => {
-    const sp = new URLSearchParams(searchParams.toString())
-    sp.delete("status")
-    sp.set("order", "newest")
-    const u = `${pathname}?${sp.toString()}`
-    router.push(u)
+    const slug = getSlugFromPath(pathname)
+    router.push(workspaceBase(slug))
   }
 
   return (
