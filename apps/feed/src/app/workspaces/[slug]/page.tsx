@@ -15,8 +15,7 @@ export default async function WorkspacePage({ params }: Props) {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="text-xl font-semibold">{ws.name}</div>
+      <div className="flex items-center justify-end">
         <HeaderActions />
       </div>
       <div className="text-sm text-accent">{rows.length} items</div>
