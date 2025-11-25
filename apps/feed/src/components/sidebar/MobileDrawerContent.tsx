@@ -2,7 +2,8 @@
 
 import React from "react";
 import { ScrollArea } from "@feedgot/ui/components/scroll-area";
-import { DrawerContent } from "@feedgot/ui/components/drawer";
+import { DrawerContent, DrawerTitle } from "@feedgot/ui/components/drawer";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
@@ -21,6 +22,9 @@ export default function MobileDrawerContent({
 }) {
   return (
     <DrawerContent>
+      <VisuallyHidden>
+        <DrawerTitle>Menu</DrawerTitle>
+      </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
           <div className="group flex items-center gap-2 rounded-md px-2 py-2">
