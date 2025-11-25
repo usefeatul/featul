@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
 import { SearchIcon } from "lucide-react"
-import XMarkIcon from "@feedgot/ui/icons/xmark"
 
 import { cn } from "@feedgot/ui/lib/utils"
 import {
@@ -12,7 +11,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@feedgot/ui/components/dialog"
 
 function Command({
@@ -22,7 +20,7 @@ function Command({
   return (
     <CommandPrimitive
       data-slot="command"
-      className={cn("bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md", className)}
+      className={cn("bg-card text-foreground flex h-full w-full flex-col overflow-hidden rounded-sm ", className)}
       {...props}
     />
   )
@@ -33,13 +31,11 @@ function CommandDialog({
   description = "Search for a command to run...",
   children,
   className,
-  showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof Dialog> & {
   title?: string
   description?: string
   className?: string
-  showCloseButton?: boolean
 }) {
   return (
     <Dialog {...props}>
@@ -47,17 +43,7 @@ function CommandDialog({
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
-      <DialogContent className={cn("overflow-hidden p-0 w-[min(92vw,480px)] !top-28 sm:!top-40", className)}>
-        {showCloseButton ? (
-          <DialogClose asChild>
-            <button
-              aria-label="Close"
-              className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md border bg-card text-accent hover:text-foreground"
-            >
-              <XMarkIcon className="size-4" />
-            </button>
-          </DialogClose>
-        ) : null}
+      <DialogContent className={cn("overflow-hidden  w-[min(92vw,600px)] top-26 sm:top-46 min-h-[80px] bg-card", className)}>
         <Command className="">
           {children}
         </Command>
@@ -73,13 +59,13 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex h-9 items-center gap-2 border-b px-3"
+      className="bg-card flex h-12 items-center gap-3 border-b px-6"
     >
-      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <SearchIcon className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          "placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+          "placeholder:text-accent flex h-12 w-full rounded-sm bg-transparent px-3 py-3 text-md outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         {...props}
@@ -95,7 +81,7 @@ function CommandList({
   return (
     <CommandPrimitive.List
       data-slot="command-list"
-      className={cn("max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto", className)}
+      className={cn("bg-card max-h-[520px] scroll-py-1 overflow-x-hidden overflow-y-auto", className)}
       {...props}
     />
   )
@@ -120,7 +106,7 @@ function CommandGroup({
   return (
     <CommandPrimitive.Group
       data-slot="command-group"
-      className={cn("text-foreground overflow-hidden p-1", className)}
+      className={cn("bg-card text-foreground overflow-hidden", className)}
       {...props}
     />
   )
@@ -133,7 +119,7 @@ function CommandSeparator({
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
-      className={cn("bg-border -mx-1 h-px", className)}
+      className={cn("bg-border -mx-1 h-px my-2", className)}
       {...props}
     />
   )
@@ -146,7 +132,7 @@ function CommandItem({
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
-      className={cn("bg-card hover:bg-primary hover:text-primary-foreground data-[selected=true]:bg-card data-[selected=true]:text-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4", className)}
+      className={cn("bg-card hover:bg-primary hover:text-primary-foreground data-[selected=true]:bg-card data-[selected=true]:text-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-3 rounded-sm px-4 py-3 my-1 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4", className)}
       {...props}
     />
   )
