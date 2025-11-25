@@ -1,8 +1,10 @@
-import Link from "next/link"
 import { getServerSession } from "@feedgot/auth/session"
 import { findFirstAccessibleWorkspaceSlug } from "@/lib/workspace"
+import NotFoundWorkspaceLink from "@/components/global/NotFoundWorkspaceLink"
+
 
 export const dynamic = "force-dynamic"
+
 
 export default async function NotFound() {
   const session = await getServerSession()
@@ -18,13 +20,11 @@ export default async function NotFound() {
         <h1 className="text-2xl sm:text-3xl font-sans tracking-wider">Whoops…</h1>
         <p className="text-accent mt-2 text-xs sm:text-sm font-mono leading-relaxed">
           Sorry, there's no such page. Go to your
-          <Link
-            href={href}
+          <NotFoundWorkspaceLink
+            defaultHref={href}
             className="ml-1 text-primary text-xs sm:text-sm font-normal hover:text-primary"
-            aria-label="Go to workspace"
-          >
-            workspace
-          </Link>
+            ariaLabel="Go to workspace"
+          />
           .
         </p>
       </div>
