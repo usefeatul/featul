@@ -58,7 +58,7 @@ export default function SearchAction({ className = "" }: { className?: string })
     <>
       <button
         type="button"
-        className={cn("rounded-md border bg-card px-2 py-1 cursor-pointer", className)}
+        className={cn("rounded-md border bg-card px-2 py-2 cursor-pointer", className)}
         aria-label="Search"
         onClick={() => setOpen(true)}
       >
