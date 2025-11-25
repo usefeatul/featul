@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ScrollArea } from "@feedgot/ui/components/scroll-area";
-import { DrawerContent, DrawerClose, DrawerHeader, DrawerTitle } from "@feedgot/ui/components/drawer";
+import { DrawerContent } from "@feedgot/ui/components/drawer";
 import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
@@ -23,18 +23,10 @@ export default function MobileDrawerContent({
     <DrawerContent>
       <ScrollArea className="h-full">
         <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-md px-3 py-2">
+          <div className="group flex items-center gap-2 rounded-md px-2 py-2">
             <img src="/logo.svg" alt="feedback" className="h-6 w-6" />
             <div className="text-sm font-semibold">feedback</div>
-            <DrawerClose asChild>
-              <button className="ml-auto rounded-md px-2 py-1 text-xs text-accent hover:bg-muted">
-                Close
-              </button>
-            </DrawerClose>
           </div>
-          <DrawerHeader>
-            <DrawerTitle>Menu</DrawerTitle>
-          </DrawerHeader>
           <WorkspaceSwitcher className="mt-3" />
           <Timezone className="mt-2" />
         </div>
@@ -55,4 +47,3 @@ export default function MobileDrawerContent({
     </DrawerContent>
   );
 }
-
