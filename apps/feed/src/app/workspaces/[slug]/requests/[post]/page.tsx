@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { db, workspace, board, post } from "@feedgot/db"
 import { eq, and, sql } from "drizzle-orm"
-import StatusIcon from "@/components/requests/StatusIcon"
+import RequestDetail from "@/components/requests/RequestDetail"
 
 export const dynamic = "force-dynamic"
 
@@ -36,21 +36,5 @@ export default async function RequestDetailPage({ params }: Props) {
     .limit(1)
   if (!p) return notFound()
 
-  return (
-    <section className="space-y-4">
-      <div className="flex items-center gap-2">
-        <StatusIcon status={p.roadmapStatus || undefined} className="w-[20px] h-[20px] text-foreground/80" />
-        <h1 className="text-xl font-semibold">{p.title}</h1>
-      </div>
-      {p.image ? <img src={p.image} alt="" className="w-full max-w-xl rounded-md object-cover border" /> : null}
-      <div className="text-sm text-accent">{p.boardName}</div>
-      <div className="mt-2 flex items-center gap-3 text-xs text-accent">
-        <span className="rounded-md bg-muted px-2 py-0.5">{p.roadmapStatus || "pending"}</span>
-        <span>↑ {p.upvotes}</span>
-        <span>💬 {p.commentCount}</span>
-        <span>{new Date(p.publishedAt ?? p.createdAt).toLocaleDateString()}</span>
-      </div>
-      {p.content ? <div className="prose dark:prose-invert text-sm">{p.content}</div> : null}
-    </section>
-  )
+  return <RequestDetail post={p as any} />
 }
