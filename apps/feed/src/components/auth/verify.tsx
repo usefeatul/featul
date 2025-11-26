@@ -62,7 +62,7 @@ export default function Verify() {
         return;
       }
       toast.success("Email verified");
-      router.push("/dashboard");
+      router.push("/start");
     } catch (e: any) {
       setError(e?.message || "Invalid or expired code");
       toast.error(e?.message || "Invalid or expired code");
