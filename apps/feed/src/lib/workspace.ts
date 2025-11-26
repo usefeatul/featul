@@ -69,6 +69,23 @@ export async function getWorkspaceTimezoneBySlug(slug: string): Promise<string |
   return (ws as any)?.timezone || null
 }
 
+export async function listUserWorkspaces(userId: string): Promise<Array<{ id: string; name: string; slug: string; logo?: string | null }>> {
+  const owned = await db
+    .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, logo: workspace.logo })
+    .from(workspace)
+    .where(eq(workspace.ownerId, userId))
+
+  const memberRows = await db
+    .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, logo: workspace.logo })
+    .from(workspaceMember)
+    .innerJoin(workspace, eq(workspaceMember.workspaceId, workspace.id))
+    .where(eq(workspaceMember.userId, userId))
+
+  const map = new Map<string, { id: string; name: string; slug: string; logo?: string | null }>()
+  for (const w of owned.concat(memberRows)) map.set(w.id, w as any)
+  return Array.from(map.values())
+}
+
 export async function getWorkspacePosts(slug: string, opts?: { statuses?: string[]; boardSlugs?: string[]; tagSlugs?: string[]; order?: "newest" | "oldest"; search?: string; limit?: number; offset?: number }) {
   const ws = await getWorkspaceBySlug(slug)
   if (!ws) return []

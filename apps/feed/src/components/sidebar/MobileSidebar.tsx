@@ -13,7 +13,7 @@ import {
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
 
-export default function MobileSidebar({ className = "", initialCounts, initialTimezone, initialServerNow, initialWorkspace }: { className?: string; initialCounts?: Record<string, number>; initialTimezone?: string | null; initialServerNow?: number; initialWorkspace?: { id: string; name: string; slug: string; logo?: string | null } | undefined }) {
+export default function MobileSidebar({ className = "", initialCounts, initialTimezone, initialServerNow, initialWorkspace, initialWorkspaces }: { className?: string; initialCounts?: Record<string, number>; initialTimezone?: string | null; initialServerNow?: number; initialWorkspace?: { id: string; name: string; slug: string; logo?: string | null } | undefined; initialWorkspaces?: { id: string; name: string; slug: string; logo?: string | null }[] | undefined }) {
   const pathname = usePathname() || "/";
   const slug = getSlugFromPath(pathname);
   const primaryNav = buildTopNav(slug);
@@ -32,6 +32,7 @@ export default function MobileSidebar({ className = "", initialCounts, initialTi
           initialServerNow={initialServerNow}
           secondaryNav={secondaryNav}
           initialWorkspace={initialWorkspace as any}
+          initialWorkspaces={initialWorkspaces as any}
         />
       </Drawer>
     </div>

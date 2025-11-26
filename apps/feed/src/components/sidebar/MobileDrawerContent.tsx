@@ -19,6 +19,7 @@ export default function MobileDrawerContent({
   initialTimezone,
   initialServerNow,
   initialWorkspace,
+  initialWorkspaces,
 }: {
   pathname: string;
   primaryNav: NavItem[];
@@ -27,6 +28,7 @@ export default function MobileDrawerContent({
   initialTimezone?: string | null;
   initialServerNow?: number;
   initialWorkspace?: { id: string; name: string; slug: string; logo?: string | null } | undefined;
+  initialWorkspaces?: { id: string; name: string; slug: string; logo?: string | null }[] | undefined;
 }) {
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
@@ -42,7 +44,7 @@ export default function MobileDrawerContent({
             <img src="/logo.svg" alt="feedback" className="h-6 w-6" />
             <div className="text-sm font-semibold">feedback</div>
           </div>
-          <WorkspaceSwitcher className="mt-3" initialWorkspace={initialWorkspace as any} />
+          <WorkspaceSwitcher className="mt-3" initialWorkspace={initialWorkspace as any} initialWorkspaces={initialWorkspaces as any} />
           <Timezone className="mt-2" initialTimezone={initialTimezone} initialServerNow={initialServerNow} />
         </div>
 

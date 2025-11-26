@@ -9,7 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@feedgot/ui/components/dropdown-menu";
-import { client } from "@feedgot/api/client";
+import { client } from "@feedgot/api/client"
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@feedgot/ui/icons/chevron";
 import { PlusIcon } from "@feedgot/ui/icons/plus";
@@ -26,13 +27,28 @@ type Ws = {
 export default function WorkspaceSwitcher({
   className = "",
   initialWorkspace,
+  initialWorkspaces,
 }: {
   className?: string;
   initialWorkspace?: Ws | null;
+  initialWorkspaces?: Ws[];
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [workspaces, setWorkspaces] = React.useState<Ws[]>([]);
+  const queryClient = useQueryClient();
+  const { data: workspaces = [] } = useQuery({
+    queryKey: ["workspaces"],
+    queryFn: async () => {
+      const res = await client.workspace.listMine.$get();
+      const data = await res.json();
+      return (data?.workspaces || []) as Ws[];
+    },
+    initialData: initialWorkspaces || [],
+    staleTime: 300_000,
+    gcTime: 300_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
   const [currentDetails, setCurrentDetails] = React.useState<Ws | null>(initialWorkspace || null);
   const [open, setOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname || "");
@@ -42,14 +58,10 @@ export default function WorkspaceSwitcher({
     let active = true;
     (async () => {
       try {
-        const [listRes, detailRes] = await Promise.all([
-          client.workspace.listMine.$get(),
-          slug ? client.workspace.bySlug.$get({ slug }) : Promise.resolve(null),
-        ]);
+        if (!slug) return;
+        const detailRes = await client.workspace.bySlug.$get({ slug });
         if (!active) return;
-        const listData = await listRes.json();
-        const detailData = detailRes ? await detailRes.json() : null;
-        setWorkspaces(listData?.workspaces || []);
+        const detailData = await detailRes.json();
         setCurrentDetails(detailData?.workspace || null);
       } catch {
         if (!active) return;
@@ -88,13 +100,31 @@ export default function WorkspaceSwitcher({
   return (
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger className="w-full cursor-pointer">
+        <DropdownMenuTrigger
+          className="w-full cursor-pointer"
+          onMouseEnter={() => {
+            try {
+              queryClient.prefetchQuery({
+                queryKey: ["workspaces"],
+                queryFn: async () => {
+                  const res = await client.workspace.listMine.$get();
+                  const data = await res.json();
+                  return (data?.workspaces || []) as Ws[];
+                },
+                staleTime: 300_000,
+                gcTime: 300_000,
+              });
+            } catch {}
+          }}
+        >
           <div className="group flex items-center gap-2 rounded-md px-2 py-2 text-md text-accent hover:bg-muted cursor-pointer">
             <div className={cn("relative w-6 h-6 rounded-md border ring-1 ring-border overflow-hidden", currentLogo ? "bg-transparent" : "bg-muted")}>
               {currentLogo ? (
                 <img
                   src={currentLogo}
                   alt={currentName}
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               ) : null}
@@ -130,6 +160,8 @@ export default function WorkspaceSwitcher({
                         <img
                           src={logoUrl}
                           alt={w.name}
+                          loading="lazy"
+                          decoding="async"
                           className="absolute inset-0 w-full h-full object-cover"
                         />
                       </div>
