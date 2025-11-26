@@ -227,13 +227,13 @@ export function createBoardRouter() {
             name: tag.name,
             slug: tag.slug,
             color: tag.color,
-            count: sql<number>`count(*)`,
+            count: sql<number>`count(${board.id})`,
           })
-          .from(postTag)
-          .innerJoin(tag, eq(postTag.tagId, tag.id))
-          .innerJoin(post, eq(postTag.postId, post.id))
-          .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+          .from(tag)
+          .leftJoin(postTag, eq(postTag.tagId, tag.id))
+          .leftJoin(post, eq(postTag.postId, post.id))
+          .leftJoin(board, and(eq(post.boardId, board.id), eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+          .where(eq(tag.workspaceId, ws.id))
           .groupBy(tag.id, tag.name, tag.slug, tag.color)
 
         return c.superjson({ tags: rows })
