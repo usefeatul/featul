@@ -125,14 +125,27 @@ export function createBoardRouter() {
             image: post.image,
             upvotes: post.upvotes,
             commentCount: post.commentCount,
+            priority: post.priority,
+            effort: post.effort,
+            isPinned: post.isPinned,
+            isLocked: post.isLocked,
+            isFeatured: post.isFeatured,
             publishedAt: post.publishedAt,
             createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
             authorId: post.authorId,
             authorName: post.authorName,
             authorEmail: post.authorEmail,
             isAnonymous: post.isAnonymous,
             status: post.status,
             roadmapStatus: post.roadmapStatus,
+            metadata: post.metadata,
+            metaTitle: post.metaTitle,
+            metaDescription: post.metaDescription,
+            moderatedBy: post.moderatedBy,
+            moderatedAt: post.moderatedAt,
+            moderationReason: post.moderationReason,
+            duplicateOfId: post.duplicateOfId,
           })
           .from(post)
           .where(eq(post.id, input.postId))
@@ -140,7 +153,16 @@ export function createBoardRouter() {
         if (!p) return c.superjson({ post: null })
 
         const [b] = await ctx.db
-          .select({ id: board.id, name: board.name, slug: board.slug })
+          .select({
+            id: board.id,
+            name: board.name,
+            slug: board.slug,
+            isPublic: board.isPublic,
+            allowAnonymous: board.allowAnonymous,
+            allowVoting: board.allowVoting,
+            allowComments: board.allowComments,
+            roadmapStatuses: board.roadmapStatuses,
+          })
           .from(board)
           .where(eq(board.id, p.boardId))
           .limit(1)
@@ -159,7 +181,16 @@ export function createBoardRouter() {
             authorName: comment.authorName,
             authorEmail: comment.authorEmail,
             createdAt: comment.createdAt,
+            updatedAt: comment.updatedAt,
+            editedAt: comment.editedAt,
             upvotes: comment.upvotes,
+            status: comment.status,
+            replyCount: comment.replyCount,
+            depth: comment.depth,
+            isPinned: comment.isPinned,
+            isEdited: comment.isEdited,
+            parentId: comment.parentId,
+            metadata: comment.metadata,
           })
           .from(comment)
           .where(eq(comment.postId, p.id))

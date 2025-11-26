@@ -13,6 +13,11 @@ export type RequestDetailData = {
   upvotes: number
   commentCount: number
   roadmapStatus: string | null
+  priority?: string | null
+  effort?: string | null
+  isFeatured?: boolean
+  isLocked?: boolean
+  isPinned?: boolean
   publishedAt: string | null
   createdAt: string
   boardName: string
@@ -39,6 +44,9 @@ export default function RequestDetail({ post }: { post: RequestDetailData }) {
               </span>
             </div>
           </div>
+          {post.image ? (
+            <img src={post.image} alt="" className="w-48 h-36 rounded-md object-cover border" />
+          ) : null}
           {post.content ? <div className="prose dark:prose-invert text-sm">{post.content}</div> : null}
           <div className="rounded-md border bg-card p-3">
             <div className="flex items-center justify-between">
@@ -58,10 +66,14 @@ export default function RequestDetail({ post }: { post: RequestDetailData }) {
               <span className="rounded-md bg-muted px-2 py-0.5">{post.roadmapStatus || "pending"}</span>
               <span>{formatted}</span>
             </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-accent">
+              {post.priority ? <span className="rounded-md bg-muted px-2 py-0.5">{post.priority}</span> : null}
+              {post.effort ? <span className="rounded-md bg-muted px-2 py-0.5">{post.effort}</span> : null}
+              {post.isPinned ? <span className="rounded-md bg-muted px-2 py-0.5">pinned</span> : null}
+              {post.isLocked ? <span className="rounded-md bg-muted px-2 py-0.5">locked</span> : null}
+              {post.isFeatured ? <span className="rounded-md bg-muted px-2 py-0.5">featured</span> : null}
+            </div>
           </div>
-          {post.image ? (
-            <img src={post.image} alt="" className="w-full rounded-md object-cover border" />
-          ) : null}
         </aside>
       </div>
     </section>
