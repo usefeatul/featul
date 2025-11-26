@@ -25,13 +25,15 @@ type Ws = {
 
 export default function WorkspaceSwitcher({
   className = "",
+  initialWorkspace,
 }: {
   className?: string;
+  initialWorkspace?: Ws | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const [workspaces, setWorkspaces] = React.useState<Ws[]>([]);
-  const [currentDetails, setCurrentDetails] = React.useState<Ws | null>(null);
+  const [currentDetails, setCurrentDetails] = React.useState<Ws | null>(initialWorkspace || null);
   const [open, setOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname || "");
   const liveLogo = useWorkspaceLogo(slug || "");
@@ -88,17 +90,15 @@ export default function WorkspaceSwitcher({
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer">
           <div className="group flex items-center gap-2 rounded-md px-2 py-2 text-md text-accent hover:bg-muted cursor-pointer">
-            {currentLogo ? (
-              <div className="relative w-6 h-6 rounded-md bg-muted border ring-1 ring-border  overflow-hidden">
+            <div className={cn("relative w-6 h-6 rounded-md border ring-1 ring-border overflow-hidden", currentLogo ? "bg-transparent" : "bg-muted")}>
+              {currentLogo ? (
                 <img
                   src={currentLogo}
                   alt={currentName}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-              </div>
-            ) : (
-              <div className="w-6 h-6 rounded-md bg-muted border ring-1 ring-border" />
-            )}
+              ) : null}
+            </div>
             <span className="transition-colors">{currentName}</span>
             <ChevronIcon className="ml-auto size-3 text-foreground/80 transition-colors" />
           </div>
