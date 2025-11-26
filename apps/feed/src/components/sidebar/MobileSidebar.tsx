@@ -13,7 +13,7 @@ import {
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
 
-export default function MobileSidebar({ className = "" }: { className?: string }) {
+export default function MobileSidebar({ className = "", initialCounts }: { className?: string; initialCounts?: Record<string, number> }) {
   const pathname = usePathname() || "/";
   const slug = getSlugFromPath(pathname);
   const primaryNav = buildTopNav(slug);
@@ -27,6 +27,7 @@ export default function MobileSidebar({ className = "" }: { className?: string }
         <MobileDrawerContent
           pathname={pathname}
           primaryNav={primaryNav}
+          statusCounts={initialCounts}
           secondaryNav={secondaryNav}
         />
       </Drawer>

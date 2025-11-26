@@ -20,7 +20,7 @@ import SidebarSection from "./SidebarSection";
 import { useQuery } from "@tanstack/react-query";
 const secondaryNav: NavItem[] = buildBottomNav();
 
-export default function Sidebar({ className = "" }: { className?: string }) {
+export default function Sidebar({ className = "", initialCounts }: { className?: string; initialCounts?: Record<string, number> }) {
   const pathname = usePathname();
   const router = useRouter();
   const slug = getSlugFromPath(pathname);
@@ -35,11 +35,16 @@ export default function Sidebar({ className = "" }: { className?: string }) {
     queryFn: async () => {
       if (!slug) return null as any;
       const res = await fetch(`/api/status-counts?slug=${encodeURIComponent(slug)}`);
-      const json = await res.json();
-      return json?.counts || null;
+      const json = (await res.json()) as { counts?: Record<string, number> };
+      return json.counts || null;
     },
     enabled: !!slug,
-    staleTime: 30_000,
+    staleTime: 60_000,
+    gcTime: 300_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    initialData: initialCounts,
+    placeholderData: (prev) => prev ?? initialCounts ?? null,
   });
 
   const statusKey = (label: string) => {

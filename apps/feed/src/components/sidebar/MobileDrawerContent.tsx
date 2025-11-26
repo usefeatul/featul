@@ -14,12 +14,21 @@ import SignOutButton from "@/components/auth/SignOutButton";
 export default function MobileDrawerContent({
   pathname,
   primaryNav,
+  statusCounts,
   secondaryNav,
 }: {
   pathname: string;
   primaryNav: NavItem[];
+  statusCounts?: Record<string, number>;
   secondaryNav: NavItem[];
 }) {
+  const statusKey = (label: string) => {
+    const t = label.trim().toLowerCase();
+    if (t === "progress") return "in-progress";
+    if (t === "review") return "under-review";
+    if (t === "complete") return "completed";
+    return t;
+  };
   return (
     <DrawerContent>
       <VisuallyHidden>
@@ -37,7 +46,7 @@ export default function MobileDrawerContent({
 
         <SidebarSection title="REQUEST">
           {primaryNav.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={pathname} />
+            <SidebarItem key={item.label} item={item} pathname={pathname} count={statusCounts ? statusCounts[statusKey(item.label)] : undefined} />
           ))}
         </SidebarSection>
 
