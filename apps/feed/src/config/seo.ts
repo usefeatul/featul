@@ -1,7 +1,7 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
 
 export const DEFAULT_TITLE = "Feedgot"
-export const TITLE_TEMPLATE = "%s | Feedgot"
+export const TITLE_TEMPLATE = "%s — Feedgot"
 
 export const DEFAULT_DESCRIPTION =
   "Plan, track, and ship projects with Feedgot."

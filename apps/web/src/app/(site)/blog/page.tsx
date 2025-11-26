@@ -8,7 +8,7 @@ import { createPageMetadata } from "@/lib/seo"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Blog | Product leadership, feedback, and building in public",
+  title: "Blog — Product leadership, feedback, and building in public",
   description: "Essays on customer‑driven development, alignment, and shipping with clarity.",
   path: "/blog",
 })
