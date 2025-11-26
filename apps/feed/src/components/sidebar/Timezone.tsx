@@ -12,11 +12,11 @@ type Props = {
   className?: string;
 };
 
-export default function Timezone({ className = "" }: Props) {
+export default function Timezone({ className = "", initialTimezone }: { className?: string; initialTimezone?: string }) {
   const pathname = usePathname();
   const slug = getSlugFromPath(pathname || "");
-  const [tz, setTz] = React.useState<string | null>(null);
-  const [time, setTime] = React.useState<string | null>(null);
+  const [tz, setTz] = React.useState<string | null>(initialTimezone || null);
+  const [time, setTime] = React.useState<string | null>(() => (initialTimezone ? formatTime12h(initialTimezone) : null));
 
   React.useEffect(() => {
     let active = true;

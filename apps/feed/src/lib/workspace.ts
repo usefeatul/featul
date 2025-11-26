@@ -65,6 +65,15 @@ export async function getWorkspaceBySlug(slug: string): Promise<{ id: string; na
   return ws || null
 }
 
+export async function getWorkspaceTimezoneBySlug(slug: string): Promise<string | null> {
+  const [ws] = await db
+    .select({ timezone: workspace.timezone })
+    .from(workspace)
+    .where(eq(workspace.slug, slug))
+    .limit(1)
+  return (ws as any)?.timezone || null
+}
+
 export async function getWorkspacePosts(slug: string, opts?: { statuses?: string[]; boardSlugs?: string[]; tagSlugs?: string[]; order?: "newest" | "oldest"; search?: string }) {
   const ws = await getWorkspaceBySlug(slug)
   if (!ws) return []

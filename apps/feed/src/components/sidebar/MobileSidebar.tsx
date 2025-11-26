@@ -13,7 +13,7 @@ import {
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
 
-export default function MobileSidebar({ className = "", initialCounts }: { className?: string; initialCounts?: Record<string, number> }) {
+export default function MobileSidebar({ className = "", initialCounts, initialTimezone }: { className?: string; initialCounts?: Record<string, number>; initialTimezone?: string }) {
   const pathname = usePathname() || "/";
   const slug = getSlugFromPath(pathname);
   const primaryNav = buildTopNav(slug);
@@ -28,6 +28,7 @@ export default function MobileSidebar({ className = "", initialCounts }: { class
           pathname={pathname}
           primaryNav={primaryNav}
           statusCounts={initialCounts}
+          initialTimezone={initialTimezone}
           secondaryNav={secondaryNav}
         />
       </Drawer>

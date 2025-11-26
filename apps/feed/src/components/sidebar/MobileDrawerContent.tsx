@@ -16,11 +16,13 @@ export default function MobileDrawerContent({
   primaryNav,
   statusCounts,
   secondaryNav,
+  initialTimezone,
 }: {
   pathname: string;
   primaryNav: NavItem[];
   statusCounts?: Record<string, number>;
   secondaryNav: NavItem[];
+  initialTimezone?: string;
 }) {
   const statusKey = (label: string) => {
     const t = label.trim().toLowerCase();
@@ -41,7 +43,7 @@ export default function MobileDrawerContent({
             <div className="text-sm font-semibold">feedback</div>
           </div>
           <WorkspaceSwitcher className="mt-3" />
-          <Timezone className="mt-2" />
+          <Timezone className="mt-2" initialTimezone={initialTimezone} />
         </div>
 
         <SidebarSection title="REQUEST">
