@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, json, uuid, uniqueIndex, foreignKey } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, integer, json, uuid, uniqueIndex, foreignKey, index } from 'drizzle-orm/pg-core'
 import { board } from './feedback'
 import { workspace } from './workspace'
 import { user } from './auth'
@@ -51,6 +51,9 @@ export const post = pgTable(
       foreignColumns: [table.id],
       name: 'post_duplicate_of_id_post_id_fk',
     }).onDelete('set null'),
+    postBoardIdIdx: index('post_board_id_idx').on(table.boardId),
+    postRoadmapStatusIdx: index('post_roadmap_status_idx').on(table.roadmapStatus),
+    postCreatedAtIdx: index('post_created_at_idx').on(table.createdAt),
   } as const)
 )
 
@@ -90,6 +93,8 @@ export const postTag = pgTable(
   },
   (table) => ({
     postTagUnique: uniqueIndex('post_tag_unique').on(table.postId, table.tagId),
+    postTagPostIdIdx: index('post_tag_post_id_idx').on(table.postId),
+    postTagTagIdIdx: index('post_tag_tag_id_idx').on(table.tagId),
   } as const)
 )
 

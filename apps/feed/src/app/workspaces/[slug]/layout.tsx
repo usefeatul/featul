@@ -9,9 +9,12 @@ export const dynamic = "force-dynamic"
 
 export default async function WorkspaceLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { primary: p } = await getBrandingColorsBySlug(slug)
-  const counts = await getWorkspaceStatusCounts(slug)
-  const timezone = await getWorkspaceTimezoneBySlug(slug)
+  const [branding, counts, timezone] = await Promise.all([
+    getBrandingColorsBySlug(slug),
+    getWorkspaceStatusCounts(slug),
+    getWorkspaceTimezoneBySlug(slug),
+  ])
+  const { primary: p } = branding
   const serverNow = Date.now()
   return (
     <Container className="min-h-screen md:flex md:gap-6 !px-0" maxWidth="8xl">

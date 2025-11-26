@@ -8,6 +8,7 @@ import {
   json,
   uuid,
   uniqueIndex,
+  index,
 } from 'drizzle-orm/pg-core'
 import { workspace } from './workspace'
 import { user } from './auth'
@@ -66,6 +67,8 @@ export const board = pgTable(
       table.workspaceId,
       table.slug,
     ),
+    boardWorkspaceIdIdx: index('board_workspace_id_idx').on(table.workspaceId),
+    boardIsSystemIdx: index('board_is_system_idx').on(table.isSystem),
   }),
 )
 
