@@ -81,11 +81,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
 
   return (
     <section className="space-y-4">
-      {rows.length > 0 ? (
-        <div className="text-sm text-accent mt-3 tabular-nums">
-          {rows.length} {rows.length === 1 ? "Post" : "Posts"}
-        </div>
-      ) : null}
+      
       <RequestList items={rows as any} workspaceSlug={slug} />
       <RequestPagination workspaceSlug={slug} page={page} pageSize={pageSize} totalCount={totalCount} />
     </section>

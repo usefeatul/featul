@@ -22,7 +22,7 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
 
   if (totalCount <= 0) return null
 
-  const { totalPages, from, to, prevHref, nextHref, firstHref, lastHref } = useMemo(() => {
+  const { totalPages, from, to, prevHref, nextHref, firstHref, lastHref, pageCount } = useMemo(() => {
     const tp = Math.max(1, Math.ceil(Math.max(totalCount, 0) / Math.max(pageSize, 1)))
     const pPrev = Math.max(page - 1, 1)
     const pNext = Math.min(page + 1, tp)
@@ -36,19 +36,16 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
       nextHref: mk(workspaceSlug, params as any, { page: pNext }),
       firstHref: mk(workspaceSlug, params as any, { page: 1 }),
       lastHref: mk(workspaceSlug, params as any, { page: tp }),
+      pageCount: totalCount > 0 ? (t - f + 1) : 0,
     }
   }, [workspaceSlug, page, pageSize, totalCount, params, mk])
 
   return (
     <div className="mt-4 mb-4 flex w-full flex-col items-stretch justify-center gap-2 sm:mb-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
       <div className="order-2 w-full text-center text-sm text-accent tabular-nums sm:order-1 sm:w-auto sm:text-left">
-        {totalCount > 0 ? (
-          <span>
-            {from}–{to} of {totalCount}
-          </span>
-        ) : (
-          <span>0</span>
-        )}
+        <span>
+          {pageCount} {pageCount === 1 ? "Post" : "Posts"} · {from}–{to} of {totalCount}
+        </span>
       </div>
 
       <div className="order-1 flex min-w-0 w-full flex-wrap items-center justify-center gap-2 sm:order-2 sm:w-auto sm:justify-start">
