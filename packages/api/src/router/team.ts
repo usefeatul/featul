@@ -124,7 +124,7 @@ export function createTeamRouter() {
       .input(inviteMemberInputSchema)
       .post(async ({ ctx, input, c }: any) => {
         const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
+          .select({ id: workspace.id, ownerId: workspace.ownerId, name: workspace.name })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
           .limit(1)

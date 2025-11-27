@@ -5,6 +5,8 @@ import MobileSidebar from "@/components/sidebar/MobileSidebar"
 import { getBrandingColorsBySlug, getWorkspaceStatusCounts, getWorkspaceTimezoneBySlug, getWorkspaceBySlug, listUserWorkspaces } from "@/lib/workspace"
 import WorkspaceHeader from "@/components/global/WorkspaceHeader"
 import { getServerSession } from "@feedgot/auth/session"
+import { redirect } from "next/navigation"
+import UnauthorizedWorkspace from "@/components/global/Unauthorized"
 
 export const dynamic = "force-dynamic"
 
@@ -12,6 +14,9 @@ export default async function WorkspaceLayout({ children, params }: { children: 
   const { slug } = await params
   const session = await getServerSession()
   const userId = session?.user?.id || null
+  if (!userId) {
+    redirect(`/auth/sign-in?redirect=/workspaces/${slug}`)
+  }
   const [branding, counts, timezone, ws, workspaceList] = await Promise.all([
     getBrandingColorsBySlug(slug),
     getWorkspaceStatusCounts(slug),
@@ -19,6 +24,11 @@ export default async function WorkspaceLayout({ children, params }: { children: 
     getWorkspaceBySlug(slug),
     userId ? listUserWorkspaces(userId) : Promise.resolve([]),
   ])
+  const hasAccess = workspaceList.some((w) => w.slug === slug)
+  const fallbackSlug = workspaceList[0]?.slug || null
+  if (!hasAccess) {
+    return <UnauthorizedWorkspace slug={slug} fallbackSlug={fallbackSlug} />
+  }
   const { primary: p } = branding
   const serverNow = Date.now()
   return (

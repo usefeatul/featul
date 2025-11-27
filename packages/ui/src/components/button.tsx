@@ -22,7 +22,7 @@ const interactive =
           ghost:
             cn("hover:bg-muted hover:text-accent-foreground", interactive, "ring-border/50 hover:ring-accent/60 dark:hover:bg-muted/50"),
           link: "text-primary underline-offset-4 hover:underline bg-transparent",
-          quiet: "bg-primary text-primary-foreground hover:bg-primary/70",
+          quiet: cn("bg-primary text-primary-foreground hover:bg-primary/70"),
         },
         size: {
           default: "h-8 px-2 py-2 has-[>svg]:px-3",
