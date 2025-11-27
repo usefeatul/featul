@@ -9,12 +9,8 @@ import type { Invite } from "./types";
 import { getInitials } from "@/utils/user-utils";
 import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
+import { roleBadgeClass } from "./role-badge";
 
-function badgeFor(role: "admin" | "member" | "viewer") {
-  if (role === "admin") return "bg-orange-50 text-orange-500";
-  if (role === "viewer") return "bg-green-50 text-green-500";
-  return "bg-card text-accent";
-}
 
 export default function InviteRow({
   slug,
@@ -82,7 +78,7 @@ export default function InviteRow({
       </TableCell>
       <TableCell className="px-4 w-48">
         <div className="relative h-6">
-          <span className={cn("text-xs px-2 py-0.5 rounded-md capitalize absolute left-1/2 -translate-x-1/2", badgeFor(i.role))}>{i.role}</span>
+          <span className={cn("text-xs px-2 py-0.5 rounded-md capitalize absolute left-1/2 -translate-x-1/2", roleBadgeClass(i.role))}>{i.role}</span>
           <div className="absolute right-0 top-1/2 -translate-y-1/2">
             <Popover open={menuFor === i.id} onOpenChange={(v) => setMenuFor(v ? i.id : null)}>
               <PopoverTrigger asChild>

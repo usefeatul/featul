@@ -5,13 +5,7 @@ import { Button } from "@feedgot/ui/components/button";
 import { cn } from "@feedgot/ui/lib/utils";
 import { MoreVertical } from "lucide-react";
 import type { Member } from "./types";
-
-function badgeFor(m: Member) {
-  if (m.isOwner) return "bg-primary/20 text-primary";
-  if (m.role === "admin") return "bg-orange-50 text-orange-500";
-  if (m.role === "viewer") return "bg-green-50 text-green-500";
-  return "bg-card text-accent";
-}
+import { roleBadgeClass } from "./role-badge";
 
 export default function RoleCell({
   m,
@@ -27,7 +21,7 @@ export default function RoleCell({
   return (
     <TableCell className="px-4 w-48">
       <div className="relative h-6">
-        <span className={cn("text-xs px-2 py-0.5 rounded-md capitalize absolute left-1/2 -translate-x-1/2", badgeFor(m))}>{m.isOwner ? "owner" : m.role}</span>
+        <span className={cn("text-xs px-2 py-0.5 rounded-md capitalize absolute left-1/2 -translate-x-1/2", roleBadgeClass(m.role, m.isOwner))}>{m.isOwner ? "owner" : m.role}</span>
         <div className="absolute right-0 top-1/2 -translate-y-1/2">
           <Popover open={menuFor === m.userId} onOpenChange={(v) => setMenuFor(v ? m.userId : null)}>
             <PopoverTrigger asChild>
