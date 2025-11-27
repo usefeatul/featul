@@ -49,21 +49,23 @@ export function normalizeStatus(s: string): string {
 }
 
 export async function getWorkspaceBySlug(slug: string): Promise<{ id: string; name: string; slug: string; logo?: string | null; domain?: string | null } | null> {
-  const [ws] = await db
-    .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, logo: workspace.logo, domain: workspace.domain })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1)
-  return ws || null
+  try {
+    const res = await client.workspace.bySlug.$get({ slug })
+    const data = await res.json()
+    return (data?.workspace || null) as any
+  } catch {
+    return null
+  }
 }
 
 export async function getWorkspaceTimezoneBySlug(slug: string): Promise<string | null> {
-  const [ws] = await db
-    .select({ timezone: workspace.timezone })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1)
-  return (ws as any)?.timezone || null
+  try {
+    const res = await client.workspace.bySlug.$get({ slug })
+    const data = await res.json()
+    return (data?.workspace?.timezone || null) as string | null
+  } catch {
+    return null
+  }
 }
 
 export async function listUserWorkspaces(userId: string): Promise<Array<{ id: string; name: string; slug: string; logo?: string | null }>> {
