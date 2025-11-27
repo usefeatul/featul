@@ -90,6 +90,7 @@ async function main() {
         roadmapStatus: randItem(statuses),
         publishedAt: randomRecentDate(180),
         commentCount: randInt(0, 12),
+        upvotes: randInt(0, 200),
       })
     }
     return rows

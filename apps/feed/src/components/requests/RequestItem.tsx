@@ -37,14 +37,16 @@ function RequestItemBase({ item, workspaceSlug }: { item: RequestItemData; works
           {item.title}
         </Link>
         <div className="ml-auto flex items-center gap-3 text-xs text-accent">
-          <span className="inline-flex items-center gap-1.5">
-            <LoveIcon aria-hidden className="w-4 h-4" />
-            <span className="tabular-nums">{item.upvotes}</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <CommentsIcon aria-hidden className="w-4 h-4" />
-            <span className="tabular-nums">{item.commentCount}</span>
-          </span>
+          <div className="inline-flex items-center gap-2 bg-muted rounded-full ring-1 ring-border px-2 py-1">
+            <span className="inline-flex items-center gap-1.5">
+              <LoveIcon aria-hidden className="w-4 h-4" />
+              <span className="tabular-nums">{item.upvotes}</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <CommentsIcon aria-hidden className="w-4 h-4" />
+              <span className="tabular-nums">{item.commentCount}</span>
+            </span>
+          </div>
           <span>{new Intl.DateTimeFormat(undefined, { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
           <Avatar className="size-6 bg-muted ring-1 ring-border rounded-full">
             <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
