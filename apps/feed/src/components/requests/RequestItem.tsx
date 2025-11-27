@@ -5,6 +5,8 @@ import Link from "next/link"
 import StatusIcon from "./StatusIcon"
 import { LoveIcon } from "@feedgot/ui/icons/love"
 import { CommentsIcon } from "@feedgot/ui/icons/comments"
+import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avatar"
+import { getInitials } from "@/utils/user-utils"
 
 export type RequestItemData = {
   id: string
@@ -19,6 +21,9 @@ export type RequestItemData = {
   createdAt: string
   boardSlug: string
   boardName: string
+  authorImage?: string | null
+  authorName?: string | null
+  isAnonymous?: boolean
 }
 
 function RequestItemBase({ item, workspaceSlug }: { item: RequestItemData; workspaceSlug: string }) {
@@ -27,6 +32,10 @@ function RequestItemBase({ item, workspaceSlug }: { item: RequestItemData; works
     <li className="rounded-md border bg-card p-3">
       <div className="flex items-center gap-3">
         <StatusIcon status={item.roadmapStatus || undefined} className="w-[18px] h-[18px] text-foreground/80" />
+        <Avatar className="size-6">
+          <AvatarImage src={!item.isAnonymous && item.authorImage ? item.authorImage : ""} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
+          <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
+        </Avatar>
         <Link href={href} className="text-sm font-medium text-foreground hover:text-primary truncate flex-1">
           {item.title}
         </Link>

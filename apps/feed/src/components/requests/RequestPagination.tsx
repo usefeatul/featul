@@ -38,7 +38,7 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
   }, [workspaceSlug, page, pageSize, totalCount, params, mk])
 
   return (
-    <div className="mt-4 mb-2 flex w-full flex-col items-stretch justify-center gap-2 sm:mb-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+    <div className="mt-4 mb-4 flex w-full flex-col items-stretch justify-center gap-2 sm:mb-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
       <div className="order-2 w-full text-center text-sm text-accent tabular-nums sm:order-1 sm:w-auto sm:text-left">
         {totalCount > 0 ? (
           <span>

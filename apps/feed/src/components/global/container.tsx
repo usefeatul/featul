@@ -28,7 +28,7 @@ export function Container({
       : 'max-w-[88rem]'
 
   const paddingX = 'px-12 sm:px-16 lg:px-20 xl:px-24'
-  const base = cn('mx-auto', widthClass, paddingX, withNavbarOffset && 'pt-16', className)
+  const base = cn('mx-auto', widthClass, paddingX, withNavbarOffset && 'pt-2', className)
 
   return (
     <Component className={base}>{children}</Component>

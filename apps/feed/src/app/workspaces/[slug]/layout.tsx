@@ -36,7 +36,7 @@ export default async function WorkspaceLayout({ children, params }: { children: 
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
       <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialWorkspaces={workspaceList} />
-      <main className="mt-4 w-full md:flex-1 px-3 sm:px-4 pb-20 md:pb-0">
+      <main className="w-full md:flex-1 px-1 sm:px-2 pb-10 md:pb-0">
         <WorkspaceHeader />
         {children}
       </main>

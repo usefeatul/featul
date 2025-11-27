@@ -294,7 +294,7 @@ export function DebugTools() {
         <div className="flex items-center gap-1">
           <Button
             size="sm"
-            variant={showGrid ? "default" : "outline"}
+            variant={showGrid ? "quiet" : "outline"}
             onClick={() => setShowGrid((v) => !v)}
             aria-pressed={showGrid}
             aria-label="Toggle baseline grid overlay"
@@ -303,7 +303,7 @@ export function DebugTools() {
           </Button>
           <Button
             size="sm"
-            variant={showOutline ? "default" : "outline"}
+            variant={showOutline ? "quiet" : "outline"}
             onClick={() => setShowOutline((v) => !v)}
             aria-pressed={showOutline}
             aria-label="Toggle element outlines"
@@ -312,7 +312,7 @@ export function DebugTools() {
           </Button>
           <Button
             size="sm"
-            variant="default"
+            variant="quiet"
             onClick={analyze}
             aria-label="Analyze layout for UX issues"
           >
@@ -339,8 +339,8 @@ export function DebugTools() {
               ))}
             </ul>
             <div className="mt-1 flex gap-1">
-              <Button size="sm" variant="outline" onClick={copyReport} aria-label="Copy analysis report">Copy</Button>
-              <Button size="sm" variant="outline" onClick={resetAll} aria-label="Reset debug toggles">Reset</Button>
+              <Button size="sm" variant="quiet" onClick={copyReport} aria-label="Copy analysis report">Copy</Button>
+              <Button size="sm" variant="quiet" onClick={resetAll} aria-label="Reset debug toggles">Reset</Button>
             </div>
           </div>
         )}

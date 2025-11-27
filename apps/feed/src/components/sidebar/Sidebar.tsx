@@ -59,15 +59,15 @@ export default function Sidebar({ className = "", initialCounts, initialTimezone
       onFocus={() => setHotkeysActive(true)}
       onBlur={() => setHotkeysActive(false)}
       className={cn(
-        "mt-4 hidden md:flex md:h-screen w-full md:w-60 flex-col bg-background",
+        "mt-1 hidden md:flex md:h-screen w-full md:w-60 flex-col bg-background",
         "md:sticky md:top-4",
         className
       )}
     >
-      <div className="p-3">
+      <div className="p-2">
         <div className="group flex items-center gap-2 rounded-md px-2 py-2">
           <img src="/logo.svg" alt="feedback" className="h-6 w-6" />
-          <div className="text-sm font-semibold">feedgot</div>
+          <div className="text-md font-semibold">feedgot</div>
         </div>
         <WorkspaceSwitcher className="mt-3" initialWorkspace={initialWorkspace as any} initialWorkspaces={initialWorkspaces as any} />
         <Timezone className="mt-2" initialTimezone={initialTimezone} initialServerNow={initialServerNow} />
