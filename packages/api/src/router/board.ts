@@ -112,8 +112,12 @@ export function createBoardRouter() {
           })
           .from(post)
           .where(eq(post.boardId, b.id))
-
-        return c.superjson({ posts: postsList })
+        const toAvatar = (seed?: string | null) => `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')}`
+        const withAvatars = postsList.map((p: any) => ({
+          ...p,
+          authorImage: p.authorImage || toAvatar(p.id || p.slug),
+        }))
+        return c.superjson({ posts: withAvatars })
       }),
 
     postDetail: publicProcedure
@@ -208,7 +212,9 @@ export function createBoardRouter() {
           author = au || null
         }
 
-        return c.superjson({ post: p, board: b || null, tags: tagsList, comments: commentsList, author })
+        const toAvatar = (seed?: string | null) => `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')}`
+        const postWithAvatar = { ...p, authorImage: p.authorImage || toAvatar(p.id || p.slug) }
+        return c.superjson({ post: postWithAvatar, board: b || null, tags: tagsList, comments: commentsList, author })
       }),
 
     tagsByWorkspaceSlug: publicProcedure

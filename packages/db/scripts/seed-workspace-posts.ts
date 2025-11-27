@@ -2,10 +2,10 @@ import 'dotenv/config'
 import { db, post, board, workspace, user } from '../index'
 import { eq, inArray } from 'drizzle-orm'
 
-const WORKSPACE_ID = '4ffc23bd-3811-49a7-b6fe-7803a9f73251'
-const FEATURE_BOARD_ID = '3d4724c5-657a-47a0-a0cd-b897bcd98811'
-const BUGS_BOARD_ID = '7c7ae8bf-4975-4b3e-adc9-c112c94f68f1'
-const USER_ID = 'RknE6O4w0RMR47CovyYxY8ar8mK3D6tu'
+const WORKSPACE_ID = 'b43b792e-e113-4d83-938d-4ab5dc391ec7'
+const FEATURE_BOARD_ID = 'c8506da7-2f0d-4c9d-a9b3-7613a17f497c'
+const BUGS_BOARD_ID = 'c678e4a3-fd51-4304-bdd2-fafc7d8c0e53'
+const USER_ID = 'EyUcJjKxIS2KL2rjhYmNN8AYtjnhor78'
 
 function slugify(s: string) {
   return s
@@ -68,16 +68,19 @@ async function main() {
     for (let i = 0; i < count; i++) {
       const title = randomTitle(kind)
       const slug = `${slugify(title)}-${Math.random().toString(36).slice(2, 8)}`
+      const isAnon = Math.random() < 0.3
       rows.push({
         boardId: b.id,
         title,
         content: randomContent(kind),
         slug,
-        authorId,
-        isAnonymous: false,
+        authorId: isAnon ? undefined : authorId,
+        authorImage: randomAvatarUrl(slug),
+        isAnonymous: isAnon,
         status: 'published',
         roadmapStatus: randItem(statuses),
         publishedAt: randomRecentDate(180),
+        commentCount: randInt(0, 12),
       })
     }
     return rows
@@ -93,4 +96,7 @@ async function main() {
 main()
   .then(() => { console.log('Inserted 100 posts (50 per board)') })
   .catch((err) => { console.error(err); process.exit(1) })
-
+function randomAvatarUrl(seed?: string | null, style: 'identicon' | 'avataaars' = 'identicon') {
+  const s = encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${s}`
+}
