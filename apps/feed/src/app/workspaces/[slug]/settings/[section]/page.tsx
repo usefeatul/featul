@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, section } = await params
   const m = getSectionMeta(section)
   return createPageMetadata({
-    title: `Settings – ${m.label}`,
+    title: `${m.label}`,
     description: m.desc,
     path: `/workspaces/${slug}/settings/${section}`,
     indexable: false,
