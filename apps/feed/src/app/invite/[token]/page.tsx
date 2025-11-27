@@ -4,10 +4,15 @@ import React from "react"
 import { useRouter } from "next/navigation"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
+import Invite from "@/components/invite/Invite"
+import { authClient } from "@feedgot/auth/client"
 
 export default function InviteAcceptPage({ params }: { params: Promise<{ token: string }> }) {
   const [busy, setBusy] = React.useState(false)
-  const [ok, setOk] = React.useState<boolean | null>(null)
+  const [token, setToken] = React.useState<string>("")
+  const [workspaceName, setWorkspaceName] = React.useState<string | null>(null)
+  const [workspaceLogo, setWorkspaceLogo] = React.useState<string | null>(null)
+  const [user, setUser] = React.useState<any>(null)
   const router = useRouter()
 
   React.useEffect(() => {
@@ -15,41 +20,56 @@ export default function InviteAcceptPage({ params }: { params: Promise<{ token: 
     ;(async () => {
       const { token } = await params
       if (!token) return
-      setBusy(true)
+      setToken(token)
       try {
-        const res = await client.team.acceptInvite.$post({ token })
+        const res = await client.team.inviteByToken.$get({ token })
+        const data = await res.json()
         if (!mounted) return
-        if (!res.ok) {
-          setOk(false)
-          toast.error("Invite failed")
-          return
-        }
-        setOk(true)
-        toast.success("Invite accepted")
-        setTimeout(() => router.replace("/start"), 600)
-      } catch {
-        if (!mounted) return
-        setOk(false)
-        toast.error("Invite failed")
-      } finally {
-        if (mounted) setBusy(false)
-      }
+        setWorkspaceName((data?.invite?.workspaceName as string) || null)
+        setWorkspaceLogo((data?.invite?.workspaceLogo as string) || null)
+        const s = await authClient.getSession()
+        if (mounted) setUser(s?.data?.user || null)
+      } catch {}
     })()
     return () => {
       mounted = false
     }
-  }, [params, router])
+  }, [params])
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4">
-      <div className="bg-card rounded-xl border shadow-sm p-6 w-[min(92vw,520px)]">
-        <h1 className="text-lg font-semibold">Accepting invite</h1>
-        <p className="text-sm text-accent mt-1">Please wait…</p>
-        <div className="mt-4 text-sm">
-          {busy ? "Processing" : ok ? "Redirecting" : ok === false ? "Invite invalid or expired" : null}
-        </div>
-      </div>
-    </div>
+    <Invite
+      workspaceName={workspaceName}
+      workspaceLogo={workspaceLogo}
+      user={user}
+      busy={busy}
+      onAccept={async () => {
+        if (!token || busy) return
+        setBusy(true)
+        try {
+          const res = await client.team.acceptInvite.$post({ token })
+          if (!res.ok) throw new Error("Invite failed")
+          toast.success("Invite accepted")
+          router.replace("/start")
+        } catch (e) {
+          toast.error("Invite failed")
+        } finally {
+          setBusy(false)
+        }
+      }}
+      onDecline={async () => {
+        if (!token || busy) return
+        setBusy(true)
+        try {
+          const res = await client.team.declineInvite.$post({ token })
+          if (!res.ok) throw new Error("Decline failed")
+          toast.success("Invite declined")
+          router.replace("/start")
+        } catch (e) {
+          toast.error("Invite failed")
+        } finally {
+          setBusy(false)
+        }
+      }}
+    />
   )
 }
-

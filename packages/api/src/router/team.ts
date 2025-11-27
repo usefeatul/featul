@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception"
 import { and, eq, gt, isNull } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { workspace, workspaceMember, workspaceInvite, user } from "@feedgot/db"
+import { workspace, workspaceMember, workspaceInvite, user, brandingConfig } from "@feedgot/db"
 import { sendWorkspaceInvite } from "@feedgot/auth/email"
 import {
   byWorkspaceInputSchema,
@@ -154,7 +154,19 @@ export function createTeamRouter() {
         try {
           const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
           const url = `${baseUrl}/invite/${token}`
-          await sendWorkspaceInvite(input.email.trim().toLowerCase(), ws.name || "Workspace", url)
+          const [branding] = await ctx.db
+            .select({ primaryColor: brandingConfig.primaryColor })
+            .from(brandingConfig)
+            .where(eq(brandingConfig.workspaceId, ws.id))
+            .limit(1)
+          const brand = {
+            name: ws.name || "Feedgot",
+            logoUrl: undefined,
+            primaryColor: branding?.primaryColor || undefined,
+            backgroundColor: undefined,
+            textColor: undefined,
+          }
+          await sendWorkspaceInvite(input.email.trim().toLowerCase(), ws.name || "Workspace", url, brand as any)
         } catch {}
 
         return c.superjson({ ok: true, token })
@@ -321,6 +333,46 @@ export function createTeamRouter() {
           .where(eq(workspaceInvite.id, inv.id))
 
         return c.json({ ok: true })
+      }),
+
+    declineInvite: privateProcedure
+      .input(acceptInviteInputSchema)
+      .post(async ({ ctx, input, c }: any) => {
+        const [inv] = await ctx.db
+          .select({ id: workspaceInvite.id, email: workspaceInvite.email, expiresAt: workspaceInvite.expiresAt })
+          .from(workspaceInvite)
+          .where(eq(workspaceInvite.token, input.token))
+          .limit(1)
+        if (!inv) throw new HTTPException(404, { message: "Invalid invite" })
+        if (inv.expiresAt && inv.expiresAt.getTime() < Date.now()) throw new HTTPException(410, { message: "Invite expired" })
+
+        const me = ctx.session.user
+        if (!me?.email || me.email.toLowerCase() !== inv.email.toLowerCase()) throw new HTTPException(403, { message: "Email mismatch" })
+
+        await ctx.db.delete(workspaceInvite).where(eq(workspaceInvite.id, inv.id))
+        return c.json({ ok: true })
+      }),
+
+    inviteByToken: privateProcedure
+      .input(acceptInviteInputSchema)
+      .get(async ({ ctx, input, c }: any) => {
+        const [inv] = await ctx.db
+          .select({ id: workspaceInvite.id, workspaceId: workspaceInvite.workspaceId, email: workspaceInvite.email, role: workspaceInvite.role, expiresAt: workspaceInvite.expiresAt, acceptedAt: workspaceInvite.acceptedAt })
+          .from(workspaceInvite)
+          .where(eq(workspaceInvite.token, input.token))
+          .limit(1)
+        if (!inv) return c.superjson({ invite: null })
+
+        const me = ctx.session.user
+        if (!me?.email || me.email.toLowerCase() !== inv.email.toLowerCase()) throw new HTTPException(403, { message: "Email mismatch" })
+        if (inv.expiresAt && inv.expiresAt.getTime() < Date.now()) return c.superjson({ invite: null })
+
+        const [ws] = await ctx.db
+          .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, logo: workspace.logo })
+          .from(workspace)
+          .where(eq(workspace.id, inv.workspaceId))
+          .limit(1)
+        return c.superjson({ invite: { workspaceName: ws?.name || "Workspace", workspaceLogo: ws?.logo || null, role: inv.role } })
       }),
 
     addExisting: privateProcedure
