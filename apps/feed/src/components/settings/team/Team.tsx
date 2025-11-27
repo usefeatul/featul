@@ -66,18 +66,18 @@ export default function TeamSection({
     }
   };
 
-  const handleRevoke = async (inviteId: string) => {
+  const handleRemoveMember = async (userId: string) => {
     try {
-      const res = await client.team.revokeInvite.$post({ slug, inviteId });
-      if (!res.ok) throw new Error("Revoke failed");
-      toast.success("Invite revoked");
+      const res = await client.team.removeMember.$post({ slug, userId });
+      if (!res.ok) throw new Error("Remove failed");
+      toast.success("Member removed");
       queryClient.setQueryData(["team", slug], (prev: any) => {
         const p = prev || { members: [], invites: [], meId: null };
-        const nextInvites = (p.invites || []).filter((i: any) => i.id === inviteId ? false : true);
-        return { ...p, invites: nextInvites };
+        const nextMembers = (p.members || []).filter((m: any) => m.userId !== userId);
+        return { ...p, members: nextMembers };
       });
     } catch (e) {
-      toast.error("Failed to revoke invite");
+      toast.error("Failed to remove member");
     }
   };
 
@@ -100,7 +100,7 @@ export default function TeamSection({
                   </TableRow>
                 ) : (
                   (data.members || []).map((m: Member) => (
-                    <MemberRow key={m.userId} m={m} menuFor={menuFor} setMenuFor={setMenuFor} onRoleChange={handleRoleChange} />
+                    <MemberRow key={m.userId} m={m} menuFor={menuFor} setMenuFor={setMenuFor} onRoleChange={handleRoleChange} onRemoveMember={handleRemoveMember} />
                   ))
                 )}
               </TableBody>

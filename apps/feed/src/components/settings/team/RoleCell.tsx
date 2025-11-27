@@ -12,11 +12,13 @@ export default function RoleCell({
   menuFor,
   setMenuFor,
   onRoleChange,
+  onRemoveMember,
 }: {
   m: Member;
   menuFor: string | null;
   setMenuFor: (id: string | null) => void;
   onRoleChange: (userId: string, role: "admin" | "member" | "viewer") => void;
+  onRemoveMember: (userId: string) => void;
 }) {
   return (
     <TableCell className="px-4 w-48">
@@ -42,6 +44,11 @@ export default function RoleCell({
                     {m.role === r ? <span className="ml-auto text-xs">✓</span> : null}
                   </PopoverListItem>
                 ))}
+                {!m.isOwner ? (
+                  <PopoverListItem role="menuitem" onClick={() => onRemoveMember(m.userId)}>
+                    <span className="text-sm text-red-500">Remove</span>
+                  </PopoverListItem>
+                ) : null}
               </PopoverList>
             </PopoverContent>
           </Popover>

@@ -10,11 +10,13 @@ export default function MemberRow({
   menuFor,
   setMenuFor,
   onRoleChange,
+  onRemoveMember,
 }: {
   m: Member;
   menuFor: string | null;
   setMenuFor: (id: string | null) => void;
   onRoleChange: (userId: string, role: "admin" | "member" | "viewer") => void;
+  onRemoveMember: (userId: string) => void;
 }) {
   return (
     <TableRow>
@@ -30,7 +32,7 @@ export default function MemberRow({
           </div>
         </div>
       </TableCell>
-      <RoleCell m={m} menuFor={menuFor} setMenuFor={setMenuFor} onRoleChange={onRoleChange} />
+      <RoleCell m={m} menuFor={menuFor} setMenuFor={setMenuFor} onRoleChange={onRoleChange} onRemoveMember={onRemoveMember} />
     </TableRow>
   );
 }

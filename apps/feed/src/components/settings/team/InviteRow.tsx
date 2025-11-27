@@ -100,7 +100,7 @@ export default function InviteRow({
                     </PopoverListItem>
                   ))}
                   <PopoverListItem role="menuitem" onClick={handleRevoke}>
-                    <span className="text-sm">Revoke invite</span>
+                    <span className="text-sm">Revoke</span>
                   </PopoverListItem>
                 </PopoverList>
               </PopoverContent>
