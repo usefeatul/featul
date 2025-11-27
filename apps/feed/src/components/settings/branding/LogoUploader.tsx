@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Image from "next/image"
 import { toast } from "sonner"
 import { getLogoUploadUrl, saveBranding } from "./service"
 import { setWorkspaceLogo } from "@/lib/branding-store"
@@ -42,6 +43,7 @@ export default function LogoUploader({ slug, value = "", onChange }: Props) {
     reader.onload = () => setPreview(typeof reader.result === "string" ? reader.result : "")
     reader.readAsDataURL(file)
     setUploading(true)
+    const toastId = toast.loading("Uploading logo...")
     try {
       const { uploadUrl, publicUrl } = await getLogoUploadUrl(slug, file.name, file.type)
       const res = await fetch(uploadUrl, {
@@ -50,13 +52,14 @@ export default function LogoUploader({ slug, value = "", onChange }: Props) {
         body: file,
       })
       if (!res.ok) throw new Error("Upload failed")
+      toast.loading("Saving...", { id: toastId })
       const ok = await saveBranding(slug, { logoUrl: publicUrl })
       if (!ok) throw new Error("Save failed")
       setWorkspaceLogo(slug, publicUrl)
       onChange(publicUrl)
-      toast.success("Logo updated")
+      toast.success("Logo updated", { id: toastId })
     } catch (e: any) {
-      toast.error(e?.message || "Failed to upload")
+      toast.error(e?.message || "Failed to upload", { id: toastId })
     } finally {
       setUploading(false)
     }
@@ -87,7 +90,15 @@ export default function LogoUploader({ slug, value = "", onChange }: Props) {
       aria-label="Upload workspace logo"
     >
       {preview ? (
-        <img src={preview} alt="Logo" className="absolute inset-0 w-full h-full object-cover" />
+        <Image
+          src={preview}
+          alt="Logo"
+          fill
+          sizes="32px"
+          className="object-cover"
+          unoptimized
+          loader={({ src }) => src}
+        />
       ) : null}
       <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={onInputChange} />
     </div>

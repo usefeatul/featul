@@ -1,13 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: [
-          'lh3.googleusercontent.com', // Google authentication provider
-          'avatars.githubusercontent.com', // GitHub authentication provider
-          'github.com', // GitHub profile images
-          'githubusercontent.com', // GitHub raw content
-          'gravatar.com', // Gravatar images (commonly used as fallback)
-          'www.google.com',
+        remotePatterns: [
+          { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },
+          { protocol: 'https', hostname: 'avatars.githubusercontent.com', pathname: '/**' },
+          { protocol: 'https', hostname: 'github.com', pathname: '/**' },
+          { protocol: 'https', hostname: 'githubusercontent.com', pathname: '/**' },
+          { protocol: 'https', hostname: 'gravatar.com', pathname: '/**' },
+          { protocol: 'https', hostname: 'www.google.com', pathname: '/**' },
+          { protocol: 'https', hostname: 'pub-e058408694e44c9e829046a8a6d5d1a5.r2.dev', pathname: '/**' },
         ],
       },
       turbopack: {
