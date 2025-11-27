@@ -1,4 +1,4 @@
-import { db, workspace, workspaceMember, brandingConfig, board, post, postTag, tag } from "@feedgot/db"
+import { db, workspace, workspaceMember, board, post, postTag, tag } from "@feedgot/db"
 import { eq, and, inArray, desc, asc, sql } from "drizzle-orm"
 import { client } from "@feedgot/api/client"
 
@@ -22,15 +22,14 @@ export async function findFirstAccessibleWorkspaceSlug(userId: string): Promise<
 }
 
 export async function getBrandingColorsBySlug(slug: string): Promise<{ primary: string }> {
-  let primary = "#3b82f6"
-  const [row] = await db
-    .select({ primaryColor: brandingConfig.primaryColor })
-    .from(workspace)
-    .leftJoin(brandingConfig, eq(brandingConfig.workspaceId, workspace.id))
-    .where(eq(workspace.slug, slug))
-    .limit(1)
-  if (row?.primaryColor) primary = row.primaryColor
-  return { primary }
+  try {
+    const res = await client.branding.byWorkspaceSlug.$get({ slug })
+    const data = await res.json()
+    const primary = (data?.config?.primaryColor || "#3b82f6") as string
+    return { primary }
+  } catch {
+    return { primary: "#3b82f6" }
+  }
 }
 
 
