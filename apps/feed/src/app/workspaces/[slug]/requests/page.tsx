@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
 import { getServerSession } from "@feedgot/auth/session"
 import { notFound } from "next/navigation"
-import { getWorkspaceBySlug, getWorkspacePosts, normalizeStatus } from "@/lib/workspace"
+import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normalizeStatus } from "@/lib/workspace"
 import { parseArrayParam } from "@/utils/request-filters"
 
 import RequestList from "@/components/requests/RequestList"
+import RequestPagination from "@/components/requests/RequestPagination"
 import { createPageMetadata } from "@/lib/seo"
 
 export const dynamic = "force-dynamic"
@@ -53,7 +54,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
   const tagRaw = parseArrayParam((sp as any).tag)
   const order = typeof (sp as any).order === "string" && (sp as any).order ? (sp as any).order : "newest"
   const search = typeof (sp as any).search === "string" ? (sp as any).search : ""
-  const pageSize = Math.max(Number((sp as any).pageSize) || 50, 1)
+  const pageSize = Math.max(Number((sp as any).pageSize) || 20, 1)
   const page = Math.max(Number((sp as any).page) || 1, 1)
   const offset = (page - 1) * pageSize
 
@@ -71,6 +72,12 @@ export default async function RequestsPage({ params, searchParams }: Props) {
     limit: pageSize,
     offset,
   })
+  const totalCount = await getWorkspacePostsCount(slug, {
+    statuses: statusFilter,
+    boardSlugs,
+    tagSlugs,
+    search,
+  })
 
   return (
     <section className="space-y-4">
@@ -80,6 +87,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
         </div>
       ) : null}
       <RequestList items={rows as any} workspaceSlug={slug} />
+      <RequestPagination workspaceSlug={slug} page={page} pageSize={pageSize} totalCount={totalCount} />
     </section>
   )
 }

@@ -142,6 +142,49 @@ export async function getWorkspacePosts(slug: string, opts?: { statuses?: string
 
   return rows
 }
+
+export async function getWorkspacePostsCount(slug: string, opts?: { statuses?: string[]; boardSlugs?: string[]; tagSlugs?: string[]; search?: string }) {
+  const ws = await getWorkspaceBySlug(slug)
+  if (!ws) return 0
+
+  const normalizedStatuses = (opts?.statuses || []).map(normalizeStatus).filter(Boolean)
+  const matchStatuses = Array.from(new Set(normalizedStatuses))
+  const boardSlugs = (opts?.boardSlugs || []).map((s) => s.trim().toLowerCase()).filter(Boolean)
+  const tagSlugs = (opts?.tagSlugs || []).map((s) => s.trim().toLowerCase()).filter(Boolean)
+  const search = (opts?.search || "").trim()
+
+  let tagPostIds: string[] | null = null
+  if (tagSlugs.length > 0) {
+    const rows = await db
+      .select({ postId: postTag.postId })
+      .from(postTag)
+      .innerJoin(tag, eq(postTag.tagId, tag.id))
+      .innerJoin(post, eq(postTag.postId, post.id))
+      .innerJoin(board, eq(post.boardId, board.id))
+      .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), inArray(tag.slug, tagSlugs)))
+    tagPostIds = Array.from(new Set(rows.map((r) => r.postId)))
+    if (tagPostIds.length === 0) {
+      return 0
+    }
+  }
+
+  const filters: any[] = [eq(board.workspaceId, ws.id), eq(board.isSystem, false)]
+  if (matchStatuses.length > 0) filters.push(inArray(post.roadmapStatus, matchStatuses))
+  if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs))
+  if (tagPostIds) filters.push(inArray(post.id, tagPostIds))
+  if (search) {
+    filters.push(sql`to_tsvector('english', coalesce(${post.title}, '') || ' ' || coalesce(${post.content}, '')) @@ plainto_tsquery('english', ${search})`)
+  }
+
+  const [row] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(and(...filters) as any)
+    .limit(1)
+
+  return Number((row as any)?.count || 0)
+}
 export async function getWorkspaceStatusCounts(slug: string): Promise<Record<string, number>> {
   const ws = await getWorkspaceBySlug(slug)
   if (!ws) return {}
