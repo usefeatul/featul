@@ -44,23 +44,20 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="top-1/2 -translate-y-1/2 w-[min(92vw,520px)] sm:w-[420px] m-4">
         <DialogHeader>
           <DialogTitle>Invite member</DialogTitle>
           <DialogDescription>Send an invite by email</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="invite-email">Email</Label>
-            <Input id="invite-email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="invite-email" className="sr-only">Email</Label>
+            <Input id="invite-email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 h-9" />
 
-          <div className="space-y-2">
-            <Label>Role</Label>
             <Popover open={roleOpen} onOpenChange={setRoleOpen}>
               <PopoverTrigger asChild>
-                <Button type="button" variant="ghost" size="sm" className="h-7 px-2">
+                <Button type="button" variant="ghost" className="h-9 px-2">
                   <span className="rounded-md bg-card px-2 py-0.5 capitalize">{role}</span>
                   <DropdownIcon className="ml-1 opacity-60" size={12} />
                 </Button>
@@ -87,4 +84,3 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
     </Dialog>
   )
 }
-
