@@ -39,14 +39,10 @@ export function normalizeStatus(s: string): string {
   const map: Record<string, string> = {
     pending: "pending",
     review: "review",
-    underreview: "review",
     planned: "planned",
     progress: "progress",
-    inprogress: "progress",
     completed: "completed",
-    complete: "completed",
     closed: "closed",
-    close: "closed",
   }
   return map[t] || raw
 }
