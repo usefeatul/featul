@@ -2,18 +2,17 @@
 
 import React from "react";
 import SectionCard from "../global/SectionCard";
-import { Label } from "@feedgot/ui/components/label";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@feedgot/ui/components/select";
 import { Button } from "@feedgot/ui/components/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@feedgot/ui/components/table";
+import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avatar";
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover";
+import { Label } from "@feedgot/ui/components/label";
+import { cn } from "@feedgot/ui/lib/utils";
+import { MoreVertical } from "lucide-react";
 import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
 import InviteMemberModal from "./InviteMemberModal";
+import { getInitials } from "@/utils/user-utils";
 
 type Member = {
   userId: string;
@@ -41,6 +40,7 @@ export default function TeamSection({ slug }: { slug: string }) {
   const [loading, setLoading] = React.useState(true);
   const [inviteOpen, setInviteOpen] = React.useState(false);
   const [meId, setMeId] = React.useState<string | null>(null);
+  const [menuFor, setMenuFor] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     let mounted = true;
@@ -86,6 +86,7 @@ export default function TeamSection({ slug }: { slug: string }) {
       setMembers((prev) =>
         prev.map((m) => (m.userId === userId ? { ...m, role: newRole } : m))
       );
+      setMenuFor(null);
     } catch (e) {
       toast.error("Failed to update role");
     }
@@ -113,56 +114,72 @@ export default function TeamSection({ slug }: { slug: string }) {
     }
   };
 
+  const badgeFor = (m: Member) => {
+    if (m.isOwner) return "bg-muted text-accent";
+    if (m.role === "admin") return "bg-primary/10 text-primary";
+    if (m.role === "viewer") return "bg-muted text-accent";
+    return "bg-card text-accent";
+  };
+
   return (
-    <SectionCard title="Team" description="Manage members and roles">
+    <SectionCard title="Manage Members" description="Members have access to your workspace.">
       <div className="space-y-6">
         <div className="space-y-2">
-          <Label>Members</Label>
-          <div className="divide-y">
-            {members.length === 0 && !loading ? (
-              <div className="p-4 text-sm text-accent">No members</div>
-            ) : (
-              members.map((m) => (
-                <div
-                  key={m.userId}
-                  className="p-4 flex items-center justify-between gap-4"
-                >
-                  <div className="min-w-0">
-                    <div className="font-medium truncate">
-                      {m.name || m.email || m.userId}
-                    </div>
-                    <div className="text-xs text-accent truncate">
-                      {m.email}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Select
-                      value={m.role}
-                      onValueChange={(v) =>
-                        handleRoleChange(m.userId, v as any)
-                      }
-                      disabled={m.isOwner === true}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue placeholder="Role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="member">Member</SelectItem>
-                        <SelectItem value="viewer">Viewer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleRemove(m.userId)}
-                      disabled={m.isOwner === true}
-                    >
-                      {m.isOwner ? "Owner" : m.userId === meId ? "Leave" : "Remove"}
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
+          <div className="rounded-md border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="px-4">Name</TableHead>
+                  <TableHead className="px-4 text-right">Role</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {members.length === 0 && !loading ? (
+                  <TableRow>
+                    <TableCell colSpan={2} className="px-4 py-6 text-accent">No members</TableCell>
+                  </TableRow>
+                ) : (
+                  members.map((m) => (
+                    <TableRow key={m.userId}>
+                      <TableCell className="px-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Avatar>
+                            <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
+                            <AvatarFallback>{getInitials(m.name || m.email || "")}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <div className="font-medium truncate">{m.name || m.email || m.userId}</div>
+                            <div className="text-xs text-accent truncate">{m.email}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 text-right">
+                        <div className="inline-flex items-center gap-2 justify-end">
+                          <span className={cn("text-xs px-2 py-0.5 rounded-md capitalize", badgeFor(m))}>{m.isOwner ? "owner" : m.role}</span>
+                          <Popover open={menuFor === m.userId} onOpenChange={(v) => setMenuFor(v ? m.userId : null)}>
+                            <PopoverTrigger asChild>
+                              <Button type="button" variant="ghost" size="icon-sm" disabled={m.isOwner === true} aria-label="More">
+                                <MoreVertical className="size-4" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent list className="min-w-[160px]">
+                              <PopoverList>
+                                {(["admin","member","viewer"] as const).map((r) => (
+                                  <PopoverListItem key={r} role="menuitemradio" aria-checked={m.role === r} onClick={() => handleRoleChange(m.userId, r)}>
+                                    <span className="text-sm capitalize">{r}</span>
+                                    {m.role === r ? <span className="ml-auto text-xs">✓</span> : null}
+                                  </PopoverListItem>
+                                ))}
+                              </PopoverList>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
         </div>
 
@@ -195,14 +212,13 @@ export default function TeamSection({ slug }: { slug: string }) {
           </div>
         </div>
 
-        <div className="pt-2 flex items-center justify-start">
-          <Button
-            type="button"
-            variant="quiet"
-            onClick={() => setInviteOpen(true)}
-          >
-            Invite
-          </Button>
+        <div className="pt-2 space-y-2">
+          <div className="text-sm text-accent">Invite a new member to your workspace.</div>
+          <div className="flex items-center justify-start">
+            <Button type="button" variant="quiet" onClick={() => setInviteOpen(true)}>
+              Invite Member
+            </Button>
+          </div>
           <InviteMemberModal
             slug={slug}
             open={inviteOpen}
