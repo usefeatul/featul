@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem }
 import { ListFilterIcon } from "@feedgot/ui/icons/list-filter"
 import { cn } from "@feedgot/ui/lib/utils"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { getSlugFromPath } from "@/config/nav"
+import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request-filters"
 
 const options = [
@@ -31,12 +31,22 @@ export default function StatusAction({ className = "" }: { className?: string })
 
   const toggle = (v: string) => {
     const next = toggleValue(selected, v)
+    if (next.length === 0) {
+      const href = workspaceBase(slug)
+      React.startTransition(() => router.replace(href, { scroll: false }))
+      return
+    }
     const href = buildRequestsUrl(slug, sp, { status: next })
     React.startTransition(() => router.push(href, { scroll: false }))
   }
 
   const selectAll = () => {
-    const next = isAllSelected ? [] : allValues
+    if (isAllSelected) {
+      const href = workspaceBase(slug)
+      React.startTransition(() => router.replace(href, { scroll: false }))
+      return
+    }
+    const next = allValues
     const href = buildRequestsUrl(slug, sp, { status: next })
     React.startTransition(() => router.push(href, { scroll: false }))
   }

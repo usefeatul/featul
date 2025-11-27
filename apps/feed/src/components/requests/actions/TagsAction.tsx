@@ -7,7 +7,7 @@ import { cn } from "@feedgot/ui/lib/utils"
 import { client } from "@feedgot/api/client"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getSlugFromPath } from "@/config/nav"
+import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request-filters"
 
 export default function TagsAction({ className = "" }: { className?: string }) {
@@ -55,12 +55,22 @@ export default function TagsAction({ className = "" }: { className?: string }) {
 
   const toggle = (tagSlug: string) => {
     const next = toggleValue(selected, tagSlug)
+    if (next.length === 0) {
+      const href = workspaceBase(slug)
+      React.startTransition(() => router.replace(href, { scroll: false }))
+      return
+    }
     const href = buildRequestsUrl(slug, sp, { tag: next })
     React.startTransition(() => router.push(href, { scroll: false }))
   }
 
   const selectAll = () => {
-    const next = isAllSelected ? [] : items.map((i: { slug: string }) => i.slug)
+    if (isAllSelected) {
+      const href = workspaceBase(slug)
+      React.startTransition(() => router.replace(href, { scroll: false }))
+      return
+    }
+    const next = items.map((i: { slug: string }) => i.slug)
     const href = buildRequestsUrl(slug, sp, { tag: next })
     React.startTransition(() => router.push(href, { scroll: false }))
   }
