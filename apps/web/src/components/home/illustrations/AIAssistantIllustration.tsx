@@ -22,15 +22,15 @@ export function AIAssistantIllustration() {
 
         <div className="flex justify-between">
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" className="size-8 rounded-2xl bg-transparent shadow-none" aria-label="Add">
+            <Button variant="outline" size="icon" className="size-8 rounded-sm bg-transparent shadow-none" aria-label="Add">
               <Plus />
             </Button>
-            <Button variant="outline" size="icon" className="size-8 rounded-2xl bg-transparent shadow-none" aria-label="Global">
+            <Button variant="outline" size="icon" className="size-8 rounded-sm bg-transparent shadow-none" aria-label="Global">
               <Globe />
             </Button>
           </div>
 
-          <Button size="icon" className="size-8 rounded-2xl bg-black" aria-label="Send">
+          <Button size="icon" className="size-8 rounded-sm bg-black" aria-label="Send">
             <ArrowUp strokeWidth={3} />
           </Button>
         </div>

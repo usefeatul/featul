@@ -18,7 +18,7 @@ export default function Benefits() {
             Opinionated feedback for customer driven teams
           </h2>
 
-          <div className="mt-6 sm:mt-8 rounded-2xl border border-foreground/10 bg-white p-5 sm:p-8 shadow-md">
+          <div className="mt-6 sm:mt-8 rounded-sm border border-foreground/10 bg-white p-5 sm:p-8 shadow-md">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 auto-rows-fr">
               <div className="flex h-full flex-col">
                 <div className="flex items-start gap-3">
