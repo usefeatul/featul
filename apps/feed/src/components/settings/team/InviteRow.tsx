@@ -34,19 +34,19 @@ export default function InviteRow({
     try {
       const revokeRes = await client.team.revokeInvite.$post({ slug, inviteId: i.id });
       if (!revokeRes.ok) {
-        const err = await revokeRes.json().catch(() => null);
+        const err = (await revokeRes.json().catch(() => null)) as { message?: string } | null;
         throw new Error(err?.message || "Revoke failed");
       }
       const inviteRes = await client.team.invite.$post({ slug, email: i.email, role: newRole });
       if (!inviteRes.ok) {
-        const err = await inviteRes.json().catch(() => null);
+        const err = (await inviteRes.json().catch(() => null)) as { message?: string } | null;
         throw new Error(err?.message || "Invite failed");
       }
       toast.success("Invite updated");
       onChanged();
       setMenuFor(null);
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to update invite");
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Failed to update invite");
     } finally {
       updatingRef.current = false;
     }
@@ -58,14 +58,14 @@ export default function InviteRow({
     try {
       const res = await client.team.revokeInvite.$post({ slug, inviteId: i.id });
       if (!res.ok) {
-        const err = await res.json().catch(() => null);
+        const err = (await res.json().catch(() => null)) as { message?: string } | null;
         throw new Error(err?.message || "Revoke failed");
       }
       toast.success("Invite revoked");
       onChanged();
       setMenuFor(null);
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to revoke invite");
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Failed to revoke invite");
     } finally {
       updatingRef.current = false;
     }

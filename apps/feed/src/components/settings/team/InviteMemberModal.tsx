@@ -28,15 +28,15 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
     try {
       const res = await client.team.invite.$post({ slug, email: value, role })
       if (!res.ok) {
-        const err = await res.json().catch(() => null)
+        const err = (await res.json().catch(() => null)) as { message?: string } | null
         throw new Error(err?.message || "Invite failed")
       }
       toast.success("Invite sent")
       setEmail("")
       onInvited()
       onOpenChange(false)
-    } catch (e) {
-      toast.error(e?.message || "Failed to invite member")
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Failed to invite member")
     } finally {
       setLoading(false)
     }

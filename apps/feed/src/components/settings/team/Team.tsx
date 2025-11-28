@@ -29,7 +29,7 @@ export default function TeamSection({
     queryFn: async () => {
       const res = await client.team.membersByWorkspaceSlug.$get({ slug });
       const d = await res.json();
-      return { members: d?.members || [], invites: d?.invites || [], meId: d?.meId || null };
+      return { members: d?.members || [], invites: d?.invites || [], meId: (d as { meId?: string })?.meId ?? null };
     },
     initialData: (initialMembers || initialInvites || initialMeId) ? { members: initialMembers || [], invites: initialInvites || [], meId: initialMeId ?? null } : undefined,
     staleTime: 300000,
@@ -54,18 +54,18 @@ export default function TeamSection({
         role: newRole,
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => null);
+        const err = (await res.json().catch(() => null)) as { message?: string } | null;
         throw new Error(err?.message || "Update failed");
       }
       toast.success("Role updated");
-      queryClient.setQueryData(["team", slug], (prev: any) => {
+      queryClient.setQueryData(["team", slug], (prev: { members: Member[]; invites: Invite[]; meId: string | null }) => {
         const p = prev || { members: [], invites: [], meId: null };
-        const nextMembers = (p.members || []).map((m: any) => (m.userId === userId ? { ...m, role: newRole } : m));
+        const nextMembers = (p.members || []).map((m: Member) => (m.userId === userId ? { ...m, role: newRole } : m));
         return { ...p, members: nextMembers };
       });
       setMenuFor(null);
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to update role");
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Failed to update role");
     }
   };
 
@@ -73,17 +73,17 @@ export default function TeamSection({
     try {
       const res = await client.team.removeMember.$post({ slug, userId });
       if (!res.ok) {
-        const err = await res.json().catch(() => null);
+        const err = (await res.json().catch(() => null)) as { message?: string } | null;
         throw new Error(err?.message || "Remove failed");
       }
       toast.success("Member removed");
-      queryClient.setQueryData(["team", slug], (prev: any) => {
+      queryClient.setQueryData(["team", slug], (prev: { members: Member[]; invites: Invite[]; meId: string | null }) => {
         const p = prev || { members: [], invites: [], meId: null };
-        const nextMembers = (p.members || []).filter((m: any) => m.userId !== userId);
+        const nextMembers = (p.members || []).filter((m: Member) => m.userId !== userId);
         return { ...p, members: nextMembers };
       });
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to remove member");
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Failed to remove member");
     }
   };
 
