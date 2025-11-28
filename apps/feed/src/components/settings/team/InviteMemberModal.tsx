@@ -36,7 +36,7 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
       onInvited()
       onOpenChange(false)
     } catch (e) {
-      toast.error("Failed to invite member")
+      toast.error(e?.message || "Failed to invite member")
     } finally {
       setLoading(false)
     }

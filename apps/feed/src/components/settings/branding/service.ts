@@ -7,7 +7,7 @@ export async function loadBrandingBySlug(slug: string): Promise<BrandingConfig |
   return data?.config || null
 }
 
-export async function saveBranding(slug: string, input: BrandingConfig & { logoUrl?: string }): Promise<boolean> {
+export async function saveBranding(slug: string, input: BrandingConfig & { logoUrl?: string }): Promise<{ ok: boolean; message?: string }> {
   const res = await client.branding.update.$post({
     slug,
     logoUrl: input.logoUrl,
@@ -15,7 +15,12 @@ export async function saveBranding(slug: string, input: BrandingConfig & { logoU
     theme: input.theme,
     hidePoweredBy: input.hidePoweredBy,
   })
-  return res.ok
+  let message: string | undefined
+  try {
+    const data = await res.json()
+    message = (data as any)?.message
+  } catch {}
+  return { ok: res.ok, message }
 }
 
 export async function getLogoUploadUrl(slug: string, fileName: string, contentType: string): Promise<{ uploadUrl: string; key: string; publicUrl: string }> {

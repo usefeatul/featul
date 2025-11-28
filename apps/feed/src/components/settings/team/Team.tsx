@@ -53,7 +53,10 @@ export default function TeamSection({
         userId,
         role: newRole,
       });
-      if (!res.ok) throw new Error("Update failed");
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.message || "Update failed");
+      }
       toast.success("Role updated");
       queryClient.setQueryData(["team", slug], (prev: any) => {
         const p = prev || { members: [], invites: [], meId: null };
@@ -61,23 +64,26 @@ export default function TeamSection({
         return { ...p, members: nextMembers };
       });
       setMenuFor(null);
-    } catch (e) {
-      toast.error("Failed to update role");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to update role");
     }
   };
 
   const handleRemoveMember = async (userId: string) => {
     try {
       const res = await client.team.removeMember.$post({ slug, userId });
-      if (!res.ok) throw new Error("Remove failed");
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.message || "Remove failed");
+      }
       toast.success("Member removed");
       queryClient.setQueryData(["team", slug], (prev: any) => {
         const p = prev || { members: [], invites: [], meId: null };
         const nextMembers = (p.members || []).filter((m: any) => m.userId !== userId);
         return { ...p, members: nextMembers };
       });
-    } catch (e) {
-      toast.error("Failed to remove member");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to remove member");
     }
   };
 

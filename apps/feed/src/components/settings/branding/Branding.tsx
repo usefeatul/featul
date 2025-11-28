@@ -56,13 +56,13 @@ export default function BrandingSection({ slug }: { slug: string }) {
     const a = accentColor.trim()
     applyBrandPrimary(p)
     try {
-      const ok = await saveBranding(slug, { logoUrl: logoUrl.trim(), primaryColor: p, accentColor: a, theme, hidePoweredBy })
-      if (!ok) throw new Error("Update failed")
+      const result = await saveBranding(slug, { logoUrl: logoUrl.trim(), primaryColor: p, accentColor: a, theme, hidePoweredBy })
+      if (!result.ok) throw new Error(result.message || "Update failed")
       if (logoUrl.trim()) setWorkspaceLogo(slug, logoUrl.trim())
       toast.success("Branding updated")
-    } catch (e) {
+    } catch (e: any) {
       applyBrandPrimary(prevP || "#3b82f6")
-      toast.error("Failed to update branding")
+      toast.error(e?.message || "Failed to update branding")
     } finally {
       setSaving(false)
     }
