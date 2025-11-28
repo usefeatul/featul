@@ -13,7 +13,7 @@ export type PlanLimits = {
 
 const LIMITS: Record<PlanKey, PlanLimits> = {
   free: {
-    maxMembers: 5,
+    maxMembers: 1,
     maxNonSystemBoards: 5,
     monthlyPostLimit: 100,
     allowBranding: false,
