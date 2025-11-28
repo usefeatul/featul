@@ -1,4 +1,4 @@
-import { eq, and, sql } from "drizzle-orm"
+import { eq, and, sql, inArray } from "drizzle-orm"
 import { z } from "zod"
 import { j, publicProcedure, privateProcedure } from "../jstack"
 import { workspace, board, post, postTag, tag, comment, user, workspaceMember } from "@feedgot/db"
@@ -268,35 +268,34 @@ export function createBoardRouter() {
         const boardSlugs = (input.search ? [] : (input.boardSlugs || []).map((b: string) => String(b).trim().toLowerCase()).filter(Boolean))
         const tagSlugs = (input.tagSlugs || []).map((t: string) => String(t).trim().toLowerCase()).filter(Boolean)
 
-        let tagPostIds: string[] | null = null
-        if (tagSlugs.length > 0) {
-          const tagRows = await ctx.db
-            .select({ postId: postTag.postId })
-            .from(postTag)
-            .innerJoin(tag, eq(postTag.tagId, tag.id))
-            .innerJoin(post, eq(postTag.postId, post.id))
-            .innerJoin(board, eq(post.boardId, board.id))
-            .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), sql`${tag.slug} in ${tagSlugs}`))
-          tagPostIds = Array.from(new Set(tagRows.map((r: { postId: string }) => String(r.postId))))
-          if (tagPostIds.length === 0) return c.superjson({ count: 0 })
-        }
-
         const filters: any[] = [eq(board.workspaceId, ws.id), eq(board.isSystem, false)]
-        if (normalizedStatuses.length > 0) filters.push(sql`${post.roadmapStatus} in ${normalizedStatuses}`)
-        if (boardSlugs.length > 0) filters.push(sql`${board.slug} in ${boardSlugs}`)
-        if (tagPostIds) filters.push(sql`${post.id} in ${tagPostIds}`)
+        if (normalizedStatuses.length > 0) filters.push(inArray(post.roadmapStatus, normalizedStatuses))
+        if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs))
         if ((input.search || '').trim()) {
           const q = `%${String(input.search).trim()}%`
           filters.push(sql`(${post.title} ilike ${q} or ${post.content} ilike ${q})`)
         }
 
-        const [row] = await ctx.db
-          .select({ count: sql<number>`count(*)` })
-          .from(post)
-          .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(...filters) as any)
-          .limit(1)
+        let row: { count: number } | undefined
+        if (tagSlugs.length > 0) {
+          ;[row] = await ctx.db
+            .select({ count: sql<number>`count(*)` })
+            .from(post)
+            .innerJoin(board, eq(post.boardId, board.id))
+            .innerJoin(postTag, eq(postTag.postId, post.id))
+            .innerJoin(tag, eq(postTag.tagId, tag.id))
+            .where(and(...filters, inArray(tag.slug, tagSlugs)) as any)
+            .limit(1)
+        } else {
+          ;[row] = await ctx.db
+            .select({ count: sql<number>`count(*)` })
+            .from(post)
+            .innerJoin(board, eq(post.boardId, board.id))
+            .where(and(...filters) as any)
+            .limit(1)
+        }
 
+        c.header("Cache-Control", "public, max-age=10, stale-while-revalidate=60")
         return c.superjson({ count: Number(row?.count || 0) })
       }),
 
