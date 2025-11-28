@@ -17,20 +17,20 @@ export function AIAssistantIllustration() {
           How can I optimize my neural network to reduce inference time while maintaining accuracy?
         </p>
       </div>
-      <div className="bg-foreground/5 -mx-3 -mb-3 mt-3 space-y-3 rounded-sm p-3">
+      <div className="bg-foreground/5 -mx-3 -mb-3 mt-3 space-y-3 rounded-md p-3">
         <div className="text-muted-foreground text-sm">Ask AI Assistant</div>
 
         <div className="flex justify-between">
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" className="size-8 rounded-sm bg-transparent shadow-none" aria-label="Add">
+            <Button variant="outline" size="icon" className="size-8 rounded-md bg-transparent shadow-none" aria-label="Add">
               <Plus />
             </Button>
-            <Button variant="outline" size="icon" className="size-8 rounded-sm bg-transparent shadow-none" aria-label="Global">
+            <Button variant="outline" size="icon" className="size-8 rounded-md bg-transparent shadow-none" aria-label="Global">
               <Globe />
             </Button>
           </div>
 
-          <Button size="icon" className="size-8 rounded-sm bg-black" aria-label="Send">
+          <Button size="icon" className="size-8 rounded-md bg-black" aria-label="Send">
             <ArrowUp strokeWidth={3} />
           </Button>
         </div>

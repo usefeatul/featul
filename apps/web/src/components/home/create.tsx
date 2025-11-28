@@ -117,7 +117,7 @@ export const ScheduleIllustation = ({
     <div className={cn("relative", className)}>
       <div
         className={cn(
-          "bg-background absolute left-1/2 top-6 -translate-x-1/2 flex items-center gap-2 rounded-sm p-1",
+          "bg-background absolute left-1/2 top-6 -translate-x-1/2 flex items-center gap-2 rounded-md p-1",
           {
             "shadow-black-950/10 shadow-lg": variant === "elevated",
             "border-foreground/10 border": variant === "outlined",
@@ -125,12 +125,12 @@ export const ScheduleIllustation = ({
           }
         )}
       >
-        <Button size="sm" className="rounded-sm">
+        <Button size="sm" className="rounded-md">
           <Calendar1 className="size-3" />
           <span className="text-sm font-medium">Schedule</span>
         </Button>
         <span className="bg-border block h-4 w-px"></span>
-        <ToggleGroup type="multiple" size="sm" className="gap-0.5 *:rounded-sm">
+        <ToggleGroup type="multiple" size="sm" className="gap-0.5 *:rounded-md">
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
             <Bold className="size-4" />
           </ToggleGroupItem>

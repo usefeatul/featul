@@ -38,7 +38,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         <button
           type="button"
           aria-label="Close menu"
-          className="inline-flex items-center justify-center rounded-sm p-2 bg-muted/70"
+          className="inline-flex items-center justify-center rounded-md p-2 bg-muted/70"
           onClick={onClose}
         >
           <MenuIcon width={20} height={20} className="text-accent" />
@@ -50,7 +50,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             <Link
               key={item.name}
               href={item.href}
-              className="block rounded-sm px-2 py-2 text-lg text-accent hover:text-foreground hover:bg-muted"
+              className="block rounded-md px-2 py-2 text-lg text-accent hover:text-foreground hover:bg-muted"
               onClick={onClose}
             >
               {item.name}
@@ -62,7 +62,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="block rounded-sm px-3 py-2.5 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted min-h-[36px]"
+                className="block rounded-md px-3 py-2.5 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted min-h-[36px]"
                 onClick={onClose}
               >
                 {item.name}

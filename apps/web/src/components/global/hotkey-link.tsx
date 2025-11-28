@@ -76,7 +76,7 @@ export function HotkeyLink({
         </span>
         <kbd
           aria-hidden
-          className=" rounded-sm font-light bg-white/20 px-2 py-0.5 text-xs leading-4"
+          className=" rounded-md font-light bg-white/20 px-2 py-0.5 text-xs leading-4"
         >
           {hotkey.toUpperCase()}
         </kbd>

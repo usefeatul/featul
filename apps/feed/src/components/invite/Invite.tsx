@@ -142,7 +142,7 @@ export default function Invite({
     <section className="flex min-h-screen items-center justify-center bg-background px-4 sm:px-5">
       <div className="w-full max-w-sm sm:max-w-md">
         {error ? (
-          <div className="rounded-sm border bg-card p-3 text-sm text-accent">
+          <div className="rounded-md border bg-card p-3 text-sm text-accent">
             {error}
             {user?.email ? <span className="ml-1">Signed in as {user.email}.</span> : null}
           </div>
@@ -159,7 +159,7 @@ export default function Invite({
               </p>
             )}
             <div className="mt-4 flex items-center justify-start gap-3">
-              <div className="rounded-sm border ring-1 ring-border overflow-hidden">
+              <div className="rounded-md border ring-1 ring-border overflow-hidden">
                 <Avatar className="size-8">
                   {workspaceLogo ? (
                     <AvatarImage

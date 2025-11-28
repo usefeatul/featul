@@ -25,7 +25,7 @@ function SidebarItem({
   }, []);
   const active = mounted && !item.external && (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)));
   const classes = cn(
-    "group flex items-center gap-2 rounded-sm px-3 py-2 text-xs md:text-sm",
+    "group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm",
     active ? "bg-card text-foreground" : "text-accent hover:bg-muted",
     className
   );
@@ -34,9 +34,9 @@ function SidebarItem({
       <Icon className="w-[18px] h-[18px] text-foreground/80 group-hover:text-primary transition-colors" />
       <span className="transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className="ml-auto rounded-sm bg-muted px-2 py-0.5 text-[10px] font-mono text-accent tabular-nums">{count}</span>
+        <span className="ml-auto rounded-md bg-muted px-2 py-0.5 text-[10px] font-mono text-accent tabular-nums">{count}</span>
       ) : shortcut ? (
-        <span className="ml-auto rounded-sm bg-muted px-2 py-0.5 text-[10px] font-mono text-accent">{shortcut}</span>
+        <span className="ml-auto rounded-md bg-muted px-2 py-0.5 text-[10px] font-mono text-accent">{shortcut}</span>
       ) : null}
     </>
   );

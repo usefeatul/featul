@@ -77,15 +77,15 @@ export default function BreakEvenTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Margin per unit</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(marginPerUnit)}</div>
               </div>
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Break-even units</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{breakEvenUnits.toFixed(0)}</div>
               </div>
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Break-even revenue</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(breakEvenRevenue)}</div>
               </div>

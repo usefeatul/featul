@@ -82,7 +82,7 @@ export default function LogoUploader({ slug, value = "", onChange }: Props) {
 
   return (
     <div
-      className="relative w-8 h-8 rounded-sm bg-muted border ring-1 ring-border overflow-hidden cursor-pointer"
+      className="relative w-8 h-8 rounded-md bg-muted border ring-1 ring-border overflow-hidden cursor-pointer"
       onClick={pick}
       onDrop={onDrop}
       onDragOver={onDragOver}

@@ -23,9 +23,9 @@ export default function Listening() {
           </div>
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
-            <div className="group relative rounded-sm border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow hover:shadow-sm">
+            <div className="group relative rounded-md border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow hover:shadow-sm">
               <div className="flex items-start gap-3">
-                <span className="inline-flex size-7 sm:size-8 items-center justify-center rounded-sm bg-foreground/5 text-rose-400 ring-1 ring-foreground/10 p-1 sm:p-1.5">
+                <span className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md bg-foreground/5 text-rose-400 ring-1 ring-foreground/10 p-1 sm:p-1.5">
                   <LoveIcon aria-hidden className="size-4" />
                 </span>
                 <div>
@@ -39,9 +39,9 @@ export default function Listening() {
               </div>
             </div>
 
-            <div className="group relative rounded-sm border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow hover:shadow-sm">
+            <div className="group relative rounded-md border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow hover:shadow-sm">
               <div className="flex items-start gap-3">
-                <span className="inline-flex size-7 sm:size-8 items-center justify-center rounded-sm bg-foreground/5 text-emerald-400 ring-1 ring-foreground/10 p-1 sm:p-1.5">
+                <span className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md bg-foreground/5 text-emerald-400 ring-1 ring-foreground/10 p-1 sm:p-1.5">
                   <ChartIcon aria-hidden className="size-4" />
                 </span>
                 <div>
@@ -55,9 +55,9 @@ export default function Listening() {
               </div>
             </div>
 
-            <div className="group relative rounded-sm border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow hover:shadow-sm">
+            <div className="group relative rounded-md border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow hover:shadow-sm">
               <div className="flex items-start gap-3">
-                <span className="inline-flex size-7 sm:size-8 items-center justify-center rounded-sm bg-foreground/5 text-blue-400 ring-1 ring-foreground/10 p-1 sm:p-1.5">
+                <span className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md bg-foreground/5 text-blue-400 ring-1 ring-foreground/10 p-1 sm:p-1.5">
                   <SetupIcon aria-hidden className="size-4" opacity={1} />
                 </span>
                 <div>

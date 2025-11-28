@@ -18,7 +18,7 @@ export default function InvitesList({
     return <div className="p-4 text-sm text-accent">No pending invites</div>;
   }
   return (
-    <div className="rounded-sm border overflow-hidden">
+    <div className="rounded-md border overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>

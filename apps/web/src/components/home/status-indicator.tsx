@@ -23,12 +23,12 @@ export function StatusIndicator({
         <span
           aria-hidden
           className={cn(
-            "absolute inset-0 rounded-sm opacity-75 animate-ping",
+            "absolute inset-0 rounded-md opacity-75 animate-ping",
             color
           )}
         />
       )}
-      <span className={cn("relative block size-2 rounded-sm", color)} />
+      <span className={cn("relative block size-2 rounded-md", color)} />
       <span className="sr-only">{label}</span>
     </span>
   )

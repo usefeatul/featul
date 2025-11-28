@@ -20,7 +20,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
           </p>
 
           <div className="mt-12 sm:mt-14">
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-3 sm:gap-x-14 sticky top-2 z-10 rounded-sm">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] sm:grid-cols-[1.5fr_1fr_1fr] items-center gap-x-3 sm:gap-x-14 sticky top-2 z-10 rounded-md">
               <div className="pl-0 pr-2 sm:pr-4 py-2 sm:py-3 text-xs sm:text-lg font-semibold text-foreground text-left">
                 Feature
               </div>

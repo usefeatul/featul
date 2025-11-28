@@ -95,7 +95,7 @@ export default function CustomerCohortsTool() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
               {metrics.map((row, i) => (
-                <div key={i} className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[96px]">
+                <div key={i} className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[96px]">
                   <div className="text-xs text-accent">{row.name}</div>
                   <div className="mt-1 text-xs text-accent">Size: {row.size.toLocaleString()}</div>
                   <div className="mt-2 font-mono text-sm leading-tight text-foreground">M1 {formatPct(row.m1Pct)}</div>

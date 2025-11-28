@@ -22,7 +22,7 @@ export function PromoCard({
 }: PromoCardProps) {
   return (
     <div className={cn("w-full", className)}>
-      <div className="rounded-sm bg-primary/10 p-2">
+      <div className="rounded-md bg-primary/10 p-2">
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
         <p className="mt-1 text-xs text-accent leading-5">{description}</p>
         <div className="mt-2">

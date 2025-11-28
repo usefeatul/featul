@@ -57,7 +57,7 @@ export default function Timezone({ className = "", initialTimezone, initialServe
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="rounded-sm bg-muted px-2 py-0.5 text-xs font-mono text-foreground">{time}</span>
+              <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-mono text-foreground">{time}</span>
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={6} align="end">
               <span className="font-bold">Current workspace time</span> in the workspace's timezone. All dates, ranges, and graphs you see are matched to this timezone.

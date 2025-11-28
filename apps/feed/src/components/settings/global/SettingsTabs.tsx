@@ -82,6 +82,6 @@ function SectionRenderer({ slug, section, initialTeam }: { slug: string; section
     case "data":
       return <DataSection />
     default:
-      return <div className="bg-card rounded-sm border p-4">Unknown section</div>
+      return <div className="bg-card rounded-md border p-4">Unknown section</div>
   }
 }

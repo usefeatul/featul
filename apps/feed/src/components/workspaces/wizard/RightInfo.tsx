@@ -16,7 +16,7 @@ export default function RightInfo() {
           return (
             <div
               key={b.label}
-              className={`${b.color} ${mobileOffsets[i]} ${mobileRot} text-white rounded-sm px-4 py-5 text-2xl font-bold shadow-md w-full text-center`}
+              className={`${b.color} ${mobileOffsets[i]} ${mobileRot} text-white rounded-md px-4 py-5 text-2xl font-bold shadow-md w-full text-center`}
             >
               {b.label}
             </div>
@@ -34,7 +34,7 @@ export default function RightInfo() {
           return (
             <div
               key={b.label}
-              className={`${b.color} absolute ${positions[i]} text-white rounded-sm px-6 sm:px-8 py-5 sm:py-6 text-4xl sm:text-5xl font-bold shadow-md w-[230px] sm:w-[230px] text-center`}
+              className={`${b.color} absolute ${positions[i]} text-white rounded-md px-6 sm:px-8 py-5 sm:py-6 text-4xl sm:text-5xl font-bold shadow-md w-[230px] sm:w-[230px] text-center`}
             >
               {b.label}
             </div>

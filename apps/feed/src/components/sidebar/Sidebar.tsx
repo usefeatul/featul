@@ -65,7 +65,7 @@ export default function Sidebar({ className = "", initialCounts, initialTimezone
       )}
     >
       <div className="p-2">
-        <div className="group flex items-center gap-2 rounded-sm px-2 py-2">
+        <div className="group flex items-center gap-2 rounded-md px-2 py-2">
           <img src="/logo.svg" alt="feedback" className="h-6 w-6" />
           <div className="text-md font-semibold">feedgot</div>
         </div>

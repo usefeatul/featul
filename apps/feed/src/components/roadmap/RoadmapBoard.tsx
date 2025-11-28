@@ -45,7 +45,7 @@ function RoadmapDraggable({ id, children, className = "" }: { id: string; childr
       {...listeners}
       {...attributes}
       style={{ transform: transform ? CSS.Translate.toString(transform) : undefined }}
-      className={"rounded-sm border bg-background px-3 py-2 overflow-hidden " + className}
+      className={"rounded-md border bg-background px-3 py-2 overflow-hidden " + className}
     >
       {children}
     </li>
@@ -124,7 +124,7 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems }: { w
             return (
               <Droppable key={s} id={s}>
                 {(ref) => (
-              <div ref={ref} className="rounded-sm border bg-card">
+              <div ref={ref} className="rounded-md border bg-card">
                 <div className="px-3 py-2 border-b flex items-center justify-between">
                   <div className="text-sm font-medium">{statusLabel(s)}</div>
                   <div className="text-xs text-accent tabular-nums">{itemsForStatus?.length ?? 0}</div>

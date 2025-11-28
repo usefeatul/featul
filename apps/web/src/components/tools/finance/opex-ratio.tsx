@@ -63,15 +63,15 @@ export default function OpexRatioTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">OpEx ratio</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(ratio)}</div>
               </div>
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Operating expenses</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{parseNumber(opex).toLocaleString()}</div>
               </div>
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Revenue</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{parseNumber(revenue).toLocaleString()}</div>
               </div>

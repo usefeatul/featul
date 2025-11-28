@@ -46,7 +46,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
                 href={`#${item.id}`}
                 onClick={(e) => onAnchorClick(e, item.id)}
                 className={cn(
-                  "block py-1 text-left text-md text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                  "block py-1 text-left text-md text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
                   item.level === 2 ? "font-light" : "font-normal",
                   activeId === item.id && "text-primary font-light"
                 )}
@@ -67,7 +67,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
                   href={`#${item.id}`}
                   onClick={(e) => onAnchorClick(e, item.id)}
                   className={cn(
-                    "block py-1 text-left text-md text-accent truncate hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
+                    "block py-1 text-left text-md text-accent truncate hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
                     item.level === 2 ? "font-light" : "font-normal",
                     activeId === item.id && "text-primary font-light"
                   )}
@@ -86,7 +86,7 @@ export function TableOfContents({ items, className, title = "Table of content" }
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="text-xs text-accent hover:text-primary cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm"
+            className="text-xs text-accent hover:text-primary cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md"
             aria-expanded={expanded}
           >
             {expanded ? "Show less" : "Show more"}

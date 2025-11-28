@@ -165,7 +165,7 @@ export default function WorkspaceSwitcher({
                     key={w.slug}
                     onSelect={() => handleSelectWorkspace(w.slug)}
                     className={cn(
-                      "flex items-center gap-2 px-2 py-2 rounded-sm",
+                      "flex items-center gap-2 px-2 py-2 rounde-sm",
                       isCurrent ? "bg-muted" : "hover:bg-muted"
                     )}
                   >

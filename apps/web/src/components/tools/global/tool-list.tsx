@@ -11,13 +11,13 @@ export default function ToolList({ categorySlug, tools }: { categorySlug: string
           <Link
             key={tool.slug}
             href={`/tools/categories/${categorySlug}/${tool.slug}`}
-            className="group flex items-start justify-between gap-4 py-2.5 sm:py-3 px-2.5 sm:px-3 rounded-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-ring"
+            className="group flex items-start justify-between gap-4 py-2.5 sm:py-3 px-2.5 sm:px-3 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-ring"
           >
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className="text-[15px] md:text-base font-medium text-foreground truncate">{tool.name}</h3>
                 {(tool.isNew || isToolNew(tool.slug)) && (
-                  <span className="inline-flex items-center gap-1.5 rounded-sm px-1 py-0.5 text-[10px] font-medium bg-primary/20 text-primary border border-primary/30 group-hover:bg-primary/15 group-hover:border-primary/40 transition-colors">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-1 py-0.5 text-[10px] font-medium bg-primary/20 text-primary border border-primary/30 group-hover:bg-primary/15 group-hover:border-primary/40 transition-colors">
                     NEW
                   </span>
                 )}

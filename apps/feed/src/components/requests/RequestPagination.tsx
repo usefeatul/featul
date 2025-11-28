@@ -69,7 +69,7 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
                 prefetch={false}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`rounded-sm border px-2 py-1 text-xs ${active ? "bg-card text-foreground" : "bg-muted text-accent hover:text-primary"}`}
+                className={`rounded-md border px-2 py-1 text-xs ${active ? "bg-card text-foreground" : "bg-muted text-accent hover:text-primary"}`}
               >
                 {s}
               </Link>

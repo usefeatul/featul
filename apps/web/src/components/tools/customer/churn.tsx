@@ -83,15 +83,15 @@ export default function ChurnTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Customer churn</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.customerChurn)}</div>
               </div>
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Retention</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.retention)}</div>
               </div>
-              <div className="rounded-sm border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Revenue churn</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(metrics.revenueChurn)}</div>
               </div>

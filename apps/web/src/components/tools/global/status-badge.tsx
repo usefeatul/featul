@@ -6,7 +6,7 @@ import { Badge } from "@feedgot/ui/components/badge";
 type Status = "Low" | "Moderate" | "Strong";
 
 export function getStatusBadgeProps(status: Status) {
-  const base = "px-2 h-6 text-xs rounded-sm";
+  const base = "px-2 h-6 text-xs rounded-md";
   if (status === "Low") {
     return {
       variant: "outline" as const,

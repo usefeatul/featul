@@ -6,7 +6,7 @@ export const CardAccent = ({ children }: { children: ReactNode }) => (
 );
 
 export const CardTag = ({ children = "no setup required" }: { children?: ReactNode }) => (
-  <span className="absolute right-3 top-3 text-accent text-xs border border-border bg-muted backdrop-blur-sm rounded-sm px-2 py-0.5">
+  <span className="absolute right-3 top-3 text-accent text-xs border border-border bg-muted backdrop-blur-sm rounded-md px-2 py-0.5">
     {children}
   </span>
 );
@@ -14,7 +14,7 @@ export const CardTag = ({ children = "no setup required" }: { children?: ReactNo
 export const AccentBar = ({ width = 10, height, className }: { width?: number; height?: number | string; className?: string }) => (
   <div
     aria-hidden
-    className={cn(height == null ? "self-stretch" : "", "rounded-sm bg-primary ring-2 ring-inset ring-primary", className)}
+    className={cn(height == null ? "self-stretch" : "", "rounded-md bg-primary ring-2 ring-inset ring-primary", className)}
     style={{ width, ...(height != null ? { height } : {}) }}
   />
 );

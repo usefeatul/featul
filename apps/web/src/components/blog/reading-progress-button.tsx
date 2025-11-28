@@ -44,7 +44,7 @@ export function ReadingProgressButton({
         onClick={() => window.scrollTo({ top: 0, behavior: scrollBehavior })}
         title="Scroll to top"
         className={cn(
-          "inline-flex items-center gap-4 rounded-sm min-h-8",
+          "inline-flex items-center gap-4 rounded-md min-h-8",
           "bg-black/95 text-white dark:bg-zinc-900",
           "px-3.5 py-2.5 text-xs font-medium shadow/50",
           "border border-white/10 dark:border-zinc-800"

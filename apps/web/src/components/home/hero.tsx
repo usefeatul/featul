@@ -27,9 +27,9 @@ export function Hero() {
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="pt-10 pb-24 sm:pt-16 sm:pb-32 mt-8">
             <HeroContent />
-            <div className="mt-4 w-full rounded-sm shadow-black shadow-2xl">
+            <div className="mt-4 w-full rounded-md shadow-black shadow-2xl">
               <div className="relative">
-              <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-sm shadow-2xl shadow-zinc-950/50 translate-y-[3px] outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background">
+              <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-md shadow-2xl shadow-zinc-950/50 translate-y-[3px] outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background">
                 <Image
                   src={imageSrc}
                   alt={`Feedgot ${active} preview`}

@@ -21,17 +21,17 @@ export function ConversionHero() {
               Build better products with customer feedback.
               <span className="block mt-1 text-accent/80">
                 Collect, prioritize, and ship what matters with
-                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-sm bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
+                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
                   <BoardIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   boards
                 </span>
                 ,
-                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-sm bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
+                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
                   <RoadmapIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   roadmaps
                 </span>
                 , and
-                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-sm bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
+                <span className={`mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md bg-foreground/5 py-0 text-accent/50 ring-1 ring-foreground/10 align-baseline`}>
                   <ChangelogIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   changelogs
                 </span>
@@ -45,14 +45,14 @@ export function ConversionHero() {
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <HotkeyLink
-                className="w-full sm:w-auto si !h-9 !px-3 rounded-sm"
+                className="w-full sm:w-auto si !h-9 !px-3 rounded-md"
                 label="Add to your website"
               />
               <Button
                 asChild
                 variant="outline"
                 size="sm"
-                className="w-full sm:w-auto h-9 px-3 rounded-sm text-accent"
+                className="w-full sm:w-auto h-9 px-3 rounded-md text-accent"
               >
                 <Link href="#demo" aria-label="Get a demo">
                   <span className="inline-flex items-center gap-1.5">

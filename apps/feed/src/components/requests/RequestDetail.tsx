@@ -53,10 +53,10 @@ export default function RequestDetail({ post, workspaceSlug }: { post: RequestDe
             </div>
           </div>
           {post.image ? (
-            <img src={post.image} alt="" className="w-48 h-36 rounded-sm object-cover border" />
+            <img src={post.image} alt="" className="w-48 h-36 rounded-md object-cover border" />
           ) : null}
           {post.content ? <div className="prose dark:prose-invert text-sm">{post.content}</div> : null}
-          <div className="rounded-sm border bg-card p-3">
+          <div className="rounded-md border bg-card p-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium">Comments</h2>
               <span className="text-xs text-accent">{post.commentCount}</span>
@@ -65,7 +65,7 @@ export default function RequestDetail({ post, workspaceSlug }: { post: RequestDe
           </div>
         </article>
         <aside className="space-y-4">
-          <div className="rounded-sm bg-card p-3">
+          <div className="rounded-md bg-card p-3">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-accent">Date</span>

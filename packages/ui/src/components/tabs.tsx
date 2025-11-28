@@ -114,7 +114,7 @@ function TabsList({
           {hover.visible && (
             <motion.div
               key="hover"
-              className={cn("pointer-events-none absolute top-0 bottom-1 left-0 rounded-sm bg-accent/10 z-0")}
+              className={cn("pointer-events-none absolute top-0 bottom-1 left-0 rounded-md bg-accent/10 z-0")}
               initial={{ opacity: 0, x: hover.x, width: hover.width }}
               animate={{ opacity: 1, x: hover.x, width: hover.width }}
               exit={{ opacity: 0, x: hover.x, width: hover.width }}
@@ -142,7 +142,7 @@ function TabsList({
               key="selected"
               aria-hidden
               className={cn(
-                "pointer-events-none absolute bottom-0  left-0 h-[2px] rounded-sm bg-primary z-10"
+                "pointer-events-none absolute bottom-0  left-0 h-[2px] rounded-md bg-primary z-10"
               )}
               initial={false}
               animate={{ x: indicator.x, width: indicator.width, opacity: 1 }}

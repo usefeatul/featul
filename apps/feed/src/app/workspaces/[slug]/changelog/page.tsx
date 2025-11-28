@@ -43,7 +43,7 @@ export default async function ChangelogPage({ params }: Props) {
     <section className="space-y-4">
       <div className="space-y-4">
         {entries.map((e) => (
-          <article key={`${e.date}-${e.title}`} className="rounded-sm border bg-card p-4">
+          <article key={`${e.date}-${e.title}`} className="rounded-md border bg-card p-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium">{e.title}</h2>
               <time className="text-xs text-accent" dateTime={e.date}>{new Date(e.date).toLocaleDateString()}</time>
@@ -52,7 +52,7 @@ export default async function ChangelogPage({ params }: Props) {
             {e.tags?.length ? (
               <div className="mt-3 flex flex-wrap gap-1">
                 {e.tags.map((t) => (
-                  <span key={t} className="text-[11px] rounded-sm bg-muted px-2 py-0.5 text-accent">{t}</span>
+                  <span key={t} className="text-[11px] rounded-md bg-muted px-2 py-0.5 text-accent">{t}</span>
                 ))}
               </div>
             ) : null}

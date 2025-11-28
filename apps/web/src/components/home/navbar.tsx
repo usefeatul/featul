@@ -58,7 +58,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center rounded-sm h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className="inline-flex items-center rounded-md h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
               >
                 {item.name}
               </Link>
@@ -67,7 +67,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center rounded-sm h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className="inline-flex items-center rounded-md h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
               >
                 {item.name}
                 {item.name === "Docs" && (
@@ -90,7 +90,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="text-sm font-medium inline-flex items-center rounded-sm h-8 px-3 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className="text-sm font-medium inline-flex items-center rounded-md h-8 px-3 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
               >
                 {item.name}
               </Link>
@@ -105,7 +105,7 @@ export default function Navbar() {
           <button
             type="button"
             aria-label="Toggle menu"
-            className="md:hidden inline-flex items-center justify-center rounded-sm p-2 bg-muted/70"
+            className="md:hidden inline-flex items-center justify-center rounded-md p-2 bg-muted/70"
             onClick={() => setMobileOpen((o) => !o)}
           >
             <MenuIcon width={20} height={20} className="text-accent" />
