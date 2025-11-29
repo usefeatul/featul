@@ -12,7 +12,7 @@ import DomainSection from "../domain/Domain"
 import IntegrationsSection from "../integrations/Integrations"
 import SSOSection from "../sso/SSO"
 import DataSection from "../data/Data"
-import type { Member, Invite } from "../team/types"
+import type { Member, Invite } from "../team/team"
 import { SECTIONS } from "../../../config/sections"
 
 type Props = { slug: string; initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null }; selectedSection?: string }

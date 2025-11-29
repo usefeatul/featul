@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@feedgot/ui/components/table";
-import type { Invite } from "./types";
+import type { Invite } from "./team";
 import InviteRow from "./InviteRow";
 
 export default function InvitesList({

@@ -3,12 +3,12 @@
 import React from "react";
 import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
-import { LoadingButton } from "@/components/loading-button";
+import { LoadingButton } from "@/components/global/loading-button";
 import {
   loadBrandingBySlug,
   saveBranding,
   updateWorkspaceName,
-} from "./service";
+} from "../../../lib/branding-service";
 import { toast } from "sonner";
 import { Switch } from "@feedgot/ui/components/switch";
 import {

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import WorkspaceWizard from "@/components/workspaces/wizard/Wizard"
+import WorkspaceWizard from "@/components/wizard/Wizard"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@feedgot/auth/session"

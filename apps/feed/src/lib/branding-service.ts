@@ -1,5 +1,5 @@
 import { client } from "@feedgot/api/client"
-import type { BrandingConfig, BrandingResponse } from "./types"
+import type { BrandingConfig, BrandingResponse } from "../types/branding"
 
 export async function loadBrandingBySlug(slug: string): Promise<BrandingConfig | null> {
   const res = await client.branding.byWorkspaceSlug.$get({ slug })

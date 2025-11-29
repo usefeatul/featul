@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import InviteMemberModal from "./InviteMemberModal";
 import MemberRow from "./MemberRow";
 import InvitesList from "./InvitesList";
-import type { Member, Invite } from "./types";
+import type { Member, Invite } from "./team";
 
  
 

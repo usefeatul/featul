@@ -11,7 +11,7 @@ import RightInfo from "./RightInfo"
 import { client } from "@feedgot/api/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { workspaceSchema, isNameValid, isDomainValid, isSlugValid, isTimezoneValid, cleanSlug, slugifyFromName } from "./validators"
+import { workspaceSchema, isNameValid, isDomainValid, isSlugValid, isTimezoneValid, cleanSlug, slugifyFromName } from "../../lib/validators"
 
 export default function WorkspaceWizard({ className = "" }: { className?: string }) {
   const router = useRouter()
@@ -146,15 +146,15 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
               )}
 
               <div className="mt-auto pt-6 flex items-center gap-3">
-                <Button type="button" variant="outline" onClick={prev} disabled={step === 0}>
+                <Button type="button" variant="quiet" onClick={prev} disabled={step === 0}>
                   ←
                 </Button>
                 {step < total - 1 ? (
-                  <Button type="button" onClick={next} disabled={!canNext}>
+                  <Button type="button" variant="quiet" onClick={next} disabled={!canNext}>
                     Next →
                   </Button>
                 ) : (
-                  <Button type="button" onClick={create} disabled={!canNext || isCreating}>
+                  <Button type="button" variant="quiet" onClick={create} disabled={!canNext || isCreating}>
                     {isCreating ? "Creating..." : "Create project →"}
                   </Button>
                 )}

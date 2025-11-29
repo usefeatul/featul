@@ -4,7 +4,7 @@ import { Input } from "@feedgot/ui/components/input"
 import { Link2, Loader2 } from "lucide-react"
 import  CompletedIcon  from "@feedgot/ui/icons/completed"
 import ClosedIcon from "@feedgot/ui/icons/closed"
-import { isSlugValid } from "./validators"
+import { isSlugValid } from "../../lib/validators"
 
 export default function StepSlug({ slug, onChange, checking, available }: { slug: string; onChange: (v: string) => void; checking: boolean; available: boolean | null }) {
   return (

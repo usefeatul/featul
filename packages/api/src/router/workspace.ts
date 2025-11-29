@@ -6,6 +6,7 @@ import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInp
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
+import { normalizePlan } from "../shared/plan"
 
 export function createWorkspaceRouter() {
   return j.router({
@@ -219,8 +220,8 @@ export function createWorkspaceRouter() {
             .limit(1)
           if (!ws) return c.json({ ok: false })
 
-          const plan = String(ws.plan || "free").toLowerCase()
-          if (!(plan === "starter" || plan === "professional")) {
+          const planKey = normalizePlan(String(ws.plan || "free"))
+          if (!(planKey === "starter" || planKey === "professional")) {
             throw new HTTPException(403, { message: "Custom domain available on Starter or Professional plans" })
           }
 
@@ -266,8 +267,8 @@ export function createWorkspaceRouter() {
             .where(eq(workspace.slug, input.slug))
             .limit(1)
           if (!ws) return c.json({ ok: false })
-          const plan = String(ws.plan || "free").toLowerCase()
-          if (!(plan === "starter" || plan === "professional")) {
+          const planKey = normalizePlan(String(ws.plan || "free"))
+          if (!(planKey === "starter" || planKey === "professional")) {
             throw new HTTPException(403, { message: "Custom domain available on Starter or Professional plans" })
           }
 

@@ -3,7 +3,7 @@
 import React from "react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { getLogoUploadUrl, saveBranding } from "./service"
+import { getLogoUploadUrl, saveBranding } from "../../../lib/branding-service"
 import { setWorkspaceLogo } from "@/lib/branding-store"
 
 type Props = {

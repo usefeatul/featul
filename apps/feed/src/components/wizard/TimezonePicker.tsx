@@ -26,8 +26,6 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
       return new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true }).format(now)
     }
   }, [value, now])
-
-  const formatTime = (tz: string) => new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: tz }).format(now)
   const friendlyTZ = (tz: string) => tz.split("/").slice(-1)[0]?.replace(/_/g, " ") ?? tz
   const formatTimeWithDate = (tz: string) => {
     const t = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: tz }).format(now)
@@ -43,7 +41,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="outline" className="w-full justify-start gap-2">
+        <Button type="button" variant="ghost" className="w-full justify-start gap-2">
           <Globe2 className="size-4" />
           <span className="truncate">{friendlyTZ(value)}</span>
           <span className="ml-auto text-xs px-2 py-1 rounded-md border bg-muted">{timeString}</span>

@@ -1,4 +1,4 @@
-import type { Role } from "./types";
+import type { Role } from "./team";
 
 export function roleBadgeClass(role: Role, isOwner?: boolean) {
   if (isOwner) return "bg-primary/20 text-primary";

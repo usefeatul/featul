@@ -32,7 +32,7 @@ export default async function WorkspaceLayout({ children, params }: { children: 
   const { primary: p } = branding
   const serverNow = Date.now()
   return (
-    <Container className="min-h-screen md:flex md:gap-4 !px-0" maxWidth="8xl">
+    <Container className="min-h-screen md:flex md:gap-4 !px-0" maxWidth="7xl">
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
       <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialWorkspaces={workspaceList} />

@@ -8,7 +8,7 @@ import { Input } from "@feedgot/ui/components/input";
 import { Label } from "@feedgot/ui/components/label";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/loading-button";
+import { LoadingButton } from "@/components/global/loading-button";
 
 export default function Verify() {
   const router = useRouter();

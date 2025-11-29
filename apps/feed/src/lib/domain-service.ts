@@ -1,5 +1,5 @@
 import { client } from "@feedgot/api/client";
-import type { DomainInfo } from "./types";
+import type { DomainInfo } from "../types/domain";
 
 async function safeJson<T = unknown>(res: Response): Promise<T | null> {
   try {

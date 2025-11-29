@@ -12,12 +12,13 @@ import {
   createDomain,
   verifyDomain,
   deleteDomain,
-} from "./service";
-import type { DomainInfo } from "./types";
+} from "../../../lib/domain-service";
+import type { DomainInfo } from "../../../types/domain";
 import { Label } from "@feedgot/ui/components/label";
 import DomainActions from "./DomainActions";
 import AddDomainDialog from "./AddDomainDialog";
 import { ArrowIcon } from "@feedgot/ui/icons/arrow";
+import { normalizePlan } from "@/lib/plan";
 
 export default function DomainSection({ slug }: { slug: string }) {
   const [open, setOpen] = React.useState(false);
@@ -30,7 +31,7 @@ export default function DomainSection({ slug }: { slug: string }) {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  const plan = data?.plan || "free";
+  const plan = normalizePlan(data?.plan || "free");
   const info = (data?.info || null) as DomainInfo;
   const canUse = plan === "starter" || plan === "professional";
 

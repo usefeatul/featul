@@ -7,7 +7,7 @@ import { Input } from "@feedgot/ui/components/input"
 import { Button } from "@feedgot/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
 import { DropdownIcon } from "@feedgot/ui/icons/dropdown"
-import { LoadingButton } from "@/components/loading-button"
+import { LoadingButton } from "@/components/global/loading-button"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
 
@@ -44,16 +44,16 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="top-1/2 -translate-y-1/2 w-[min(92vw,520px)] sm:w-[420px] m-4">
+      <DialogContent className="top-1/2 -translate-y-1/2 w-[min(92vw,450px)] sm:w-[380px] m-4">
         <DialogHeader>
           <DialogTitle>Invite member</DialogTitle>
-          <DialogDescription>Send an invite by email</DialogDescription>
+          <DialogDescription className="text-accent">Send an invite by email</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Label htmlFor="invite-email" className="sr-only">Email</Label>
-            <Input id="invite-email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 h-9" />
+            <Input id="invite-email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 h-8 placeholder:text-accent" />
 
             <Popover open={roleOpen} onOpenChange={setRoleOpen}>
               <PopoverTrigger asChild>

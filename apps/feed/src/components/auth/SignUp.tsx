@@ -14,7 +14,7 @@ import {
   strongPasswordPattern,
   getPasswordError,
 } from "@feedgot/auth/password";
-import { LoadingButton } from "@/components/loading-button";
+import { LoadingButton } from "@/components/global/loading-button";
 
 export default function SignUp() {
   const router = useRouter();

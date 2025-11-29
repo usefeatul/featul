@@ -10,7 +10,7 @@ import { GoogleIcon } from "@feedgot/ui/icons/google";
 import GitHubIcon from "@feedgot/ui/icons/github";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/loading-button";
+import { LoadingButton } from "@/components/global/loading-button";
 
 
 export default function SignIn() {

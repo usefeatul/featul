@@ -12,8 +12,8 @@ import {
 
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
-import type { DomainInfo } from "./types";
-import { dnsStatusBadgeClass } from "./types";
+import type { DomainInfo } from "./domain";
+import { dnsStatusBadgeClass } from "./domain";
 
 export default function RecordsTable({ info }: { info: DomainInfo }) {
   if (!info) return null;

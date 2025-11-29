@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { usePathname } from "next/navigation"
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections"
 import HeaderActions from "@/components/requests/HeaderActions"

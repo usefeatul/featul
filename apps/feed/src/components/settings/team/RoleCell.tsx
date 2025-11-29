@@ -4,7 +4,7 @@ import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem }
 import { Button } from "@feedgot/ui/components/button";
 import { cn } from "@feedgot/ui/lib/utils";
 import { MoreVertical } from "lucide-react";
-import type { Member } from "./types";
+import type { Member } from "./team";
 import { roleBadgeClass } from "./role-badge";
 
 export default function RoleCell({

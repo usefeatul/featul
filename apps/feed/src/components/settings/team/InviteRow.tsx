@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avat
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover";
 import { cn } from "@feedgot/ui/lib/utils";
 import { MoreVertical } from "lucide-react";
-import type { Invite } from "./types";
+import type { Invite } from "./team";
 import { getInitials } from "@/utils/user-utils";
 import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
