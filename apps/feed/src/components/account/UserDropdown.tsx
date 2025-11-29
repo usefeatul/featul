@@ -10,6 +10,9 @@ import { toast } from "sonner"
 import { getInitials, getDisplayUser } from "@/utils/user-utils"
 import { getSlugFromPath } from "@/config/nav"
 import { client } from "@feedgot/api/client"
+import { LogoutIcon } from "@feedgot/ui/icons/logout"
+import { SettingIcon } from "@feedgot/ui/icons/setting"
+import { AccountIcon } from "@feedgot/ui/icons/account"
 
 export default function UserDropdown({ className = "" }: { className?: string }) {
   const router = useRouter()
@@ -103,14 +106,17 @@ export default function UserDropdown({ className = "" }: { className?: string })
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-30 max-w-[40vw] p-2" side="bottom" align="center" sideOffset={8}>
-          <DropdownMenuItem onSelect={onAccount} className="px-2 py-2 rounded-sm">
-            Account
+          <DropdownMenuItem onSelect={onAccount} className="px-2 py-2 rounded-sm flex items-center gap-2">
+            <AccountIcon className="w-[18px] h-[18px] text-foreground/80" />
+            <span>Account</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={onSettings} className="px-2 py-2 rounded-sm">
-            Settings
+          <DropdownMenuItem onSelect={onSettings} className="px-2 py-2 rounded-sm flex items-center gap-2">
+            <SettingIcon className="w-[18px] h-[18px] text-foreground/80" />
+            <span>Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={onSignOut} className="px-2 py-2 rounded-sm" aria-disabled={loading}>
-            Sign out
+          <DropdownMenuItem onSelect={onSignOut} className="px-2 py-2 rounded-sm flex items-center gap-2" aria-disabled={loading}>
+            <LogoutIcon className="w-[18px] h-[18px] text-foreground/80" />
+            <span>Sign out</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
