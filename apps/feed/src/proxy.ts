@@ -4,7 +4,7 @@ import { getSessionCookie } from "better-auth/cookies"
 import { db, workspace } from "@feedgot/db"
 import { eq } from "drizzle-orm"
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const host = req.headers.get("host") || ""
   const hostNoPort = host.replace(/:\d+$/, "")
@@ -13,7 +13,7 @@ export async function middleware(req: NextRequest) {
   const isMainDomain = hostNoPort.endsWith(".feedgot.com")
   const hasSub = (isLocal && parts.length >= 2) || (isMainDomain && parts.length >= 3)
   const subdomain = hasSub ? parts[0] : ""
-  const reservedSubdomains = new Set(["www", "app"]) 
+  const reservedSubdomains = new Set(["www", "app"])
 
   if (subdomain && !reservedSubdomains.has(subdomain)) {
     if (pathname === "/") {
@@ -24,7 +24,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Fast edge redirect for auth pages
   if (pathname.startsWith("/auth/sign-in") || pathname.startsWith("/auth/sign-up")) {
     const sessionCookie = getSessionCookie(req)
     if (sessionCookie) {
@@ -43,7 +42,6 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Avoid loops on /start: only redirect if we have a concrete destination
   if (pathname === "/start") {
     const sessionCookie = getSessionCookie(req)
     if (sessionCookie) {
@@ -57,7 +55,6 @@ export async function middleware(req: NextRequest) {
         const url = new URL(`/workspaces/${last}`, req.url)
         return NextResponse.redirect(url)
       }
-      // No last workspace: let the /start page decide (no redirect here)
     }
   }
 
@@ -106,3 +103,4 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ["/", "/workspaces/:path*", "/auth/:path*", "/start"],
 }
+
