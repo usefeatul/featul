@@ -19,7 +19,6 @@ function w(slug: string, p: string) {
 function publicBoardUrlForWorkspace(slug: string, customDomain?: string | null) {
   const s = (slug || "").trim()
   if (customDomain && customDomain.trim()) return `https://${customDomain.trim()}`
-  if (!s) return "https://feedgot.com"
   return `https://${s}.feedgot.com`
 }
 
