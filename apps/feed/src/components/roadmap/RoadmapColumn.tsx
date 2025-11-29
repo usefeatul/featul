@@ -2,7 +2,8 @@
 
 import React from "react"
 import { useDroppable } from "@dnd-kit/core"
-import { MoveVertical, MoveHorizontal } from "lucide-react"
+import { MoveVerticalIcon } from "@feedgot/ui/icons/vertical"
+import { MoveHorizontalIcon } from "@feedgot/ui/icons/horizontal"
 import StatusIcon from "@/components/requests/StatusIcon"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -28,7 +29,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`rounded-md border overflow-hidden transition-all ${isOver ? "border-green-500 ring-2 ring-green-300" : "bg-card"}`}
+      className={`rounded-md border overflow-hidden transition-all ${isOver ? "border-green-300 ring-1 ring-green-200" : "bg-card"}`}
       layout
       initial={false}
       transition={{ type: "tween", ease: "easeOut", duration: disableMotion ? 0 : 0.12 }}
@@ -45,9 +46,9 @@ export default function RoadmapColumn({
       >
         {collapsed ? (
           <>
-            <MoveVertical className="size-3 block mx-auto text-accent" />
+            <MoveVerticalIcon className="size-3 block mx-auto text-accent" />
             <StatusIcon status={id} className="size-6 text-foreground/80 block mx-auto" />
-            <div className="text-[10px] font-mono tabular-nums rounded-full bg-muted px-2 py-0.5 text-accent ring-1 ring-border block mx-auto">{count}</div>
+            <div className="text-[10px] font-mono tabular-nums rounded-md bg-muted px-2 py-0.5 text-accent ring-1 ring-border block mx-auto">{count}</div>
           </>
         ) : (
           <>
@@ -57,7 +58,7 @@ export default function RoadmapColumn({
               <div className="text-[10px] font-mono tabular-nums rounded-md bg-muted px-1 py-0.5 text-accent shrink-0">{count}</div>
             </div>
             <div className="flex items-center gap-2">
-              <MoveHorizontal className="size-3 text-accent" />
+              <MoveHorizontalIcon className="size-3 text-accent" />
             </div>
           </>
         )}
@@ -74,7 +75,7 @@ export default function RoadmapColumn({
             {children}
             {isOver ? (
               <motion.li
-                className="mt-2 border-t-2 border-green-500 rounded-full"
+                className="mt-2 border-t-2 border-green-300 rounded-md"
                 aria-hidden
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
