@@ -2,7 +2,6 @@
 
 import React from "react"
 import Link from "next/link"
-import StatusIcon from "@/components/requests/StatusIcon"
 
 export type RoadmapItemData = {
   id: string
@@ -22,7 +21,6 @@ export default function RoadmapRequestItem({ item, workspaceSlug }: { item: Road
   return (
     <div className="flex flex-col w-full overflow-hidden min-w-0">
       <div className="flex items-center gap-2 min-w-0">
-        <StatusIcon status={item.roadmapStatus || undefined} className="w-[16px] h-[16px] text-foreground/80 shrink-0" />
         <Link href={href} className="text-sm font-medium text-foreground hover:text-primary truncate min-w-0">
           {item.title}
         </Link>

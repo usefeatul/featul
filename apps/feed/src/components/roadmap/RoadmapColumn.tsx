@@ -3,6 +3,7 @@
 import React from "react"
 import { useDroppable } from "@dnd-kit/core"
 import { ChevronDown } from "lucide-react"
+import StatusIcon from "@/components/requests/StatusIcon"
 
 export default function RoadmapColumn({
   id,
@@ -24,10 +25,10 @@ export default function RoadmapColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-md border overflow-hidden transition-all ${isOver ? "bg-primary border-primary" : "bg-card"}`}
+      className={`rounded-md border overflow-hidden transition-all ${isOver ? "bg-green-50 border-green-400" : "bg-card"}`}
     >
       <div
-        className={`${collapsed ? "px-2 py-1" : "px-3 py-2"} border-b flex items-center justify-between cursor-pointer`}
+        className={`${collapsed ? "px-2 py-1" : "px-3 py-2"} flex items-center justify-between cursor-pointer`}
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
@@ -36,9 +37,12 @@ export default function RoadmapColumn({
           if (e.key === "Enter" || e.key === " ") onToggle?.(!collapsed)
         }}
       >
-        {!collapsed ? <div className="text-sm font-medium truncate">{label}</div> : null}
+        <div className="flex items-center gap-2 min-w-0">
+          <StatusIcon status={id} className={`${collapsed ? "size-4" : "size-4"} text-foreground/80 shrink-0`} />
+          {!collapsed ? <div className="text-sm font-medium truncate flex-1">{label}</div> : null}
+          <div className="text-[10px] font-mono tabular-nums rounded-md bg-muted px-2 py-0.5 text-accent shrink-0">{count}</div>
+        </div>
         <div className="flex items-center gap-2">
-          <div className="text-xs text-accent tabular-nums">{count}</div>
           <button
             type="button"
             aria-label={collapsed ? "Expand" : "Collapse"}
@@ -53,7 +57,7 @@ export default function RoadmapColumn({
         </div>
       </div>
       {!collapsed ? (
-        <ul className={`p-3 space-y-2 min-h-24 ${isOver ? "bg-primary rounded-b-md" : ""}`}>{children}</ul>
+        <ul className={`p-3 space-y-2 min-h-24 ${isOver ? "bg-green-50 rounded-b-md" : ""}`}>{children}</ul>
       ) : null}
     </div>
   )

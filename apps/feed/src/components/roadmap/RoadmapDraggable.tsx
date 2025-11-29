@@ -12,7 +12,11 @@ export default function RoadmapDraggable({ id, children, className = "", isDragg
       {...listeners}
       {...attributes}
       style={{ transform: transform ? CSS.Translate.toString(transform) : undefined }}
-      className={"rounded-md border bg-background px-3 py-2 overflow-hidden " + (isDragging ? "opacity-0" : "") + (className ? " " + className : "")}
+      className={
+        "rounded-md border bg-background px-3 py-2 overflow-hidden cursor-grab active:cursor-grabbing select-none " +
+        (isDragging ? "opacity-0 " : "") +
+        (className ? className : "")
+      }
     >
       {children}
     </li>

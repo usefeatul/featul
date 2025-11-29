@@ -47,6 +47,21 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems }: { w
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }))
   const queryClient = useQueryClient()
 
+  React.useEffect(() => {
+    try {
+      if (activeId) {
+        document.body.style.cursor = "grabbing"
+      } else {
+        document.body.style.cursor = ""
+      }
+    } catch {}
+    return () => {
+      try {
+        document.body.style.cursor = ""
+      } catch {}
+    }
+  }, [activeId])
+
   const grouped = React.useMemo(() => {
     const acc: Record<string, Item[]> = {}
     for (const s of STATUSES) acc[s] = []
