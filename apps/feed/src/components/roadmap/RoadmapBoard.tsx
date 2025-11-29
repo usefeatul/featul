@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import RoadmapColumn from "@/components/roadmap/RoadmapColumn"
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable"
 import { ROADMAP_STATUSES, statusLabel, groupItemsByStatus, encodeCollapsed } from "@/lib/roadmap"
-import { STATUSES } from "../../../../../packages/api/src/shared/status"
+
 
 type Item = {
   id: string
@@ -73,7 +73,7 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
     setActiveId(null)
     if (!dragged) return
     const target = (overId || "").toLowerCase()
-    if (!STATUSES.includes(target as any)) return
+    if (!ROADMAP_STATUSES.includes(target as any)) return
     if ((dragged.roadmapStatus || "pending").toLowerCase() === target) return
     const normalize = (s: string) => {
       const raw = (s || "pending").trim().toLowerCase().replace(/[\s-]+/g, "")
