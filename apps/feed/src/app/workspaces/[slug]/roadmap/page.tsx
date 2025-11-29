@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function RoadmapPage({ params }: Props) {
   const { slug } = await params
 
-  const rows = await getWorkspacePosts(slug)
+  const rows = await getWorkspacePosts(slug, { limit: 5000 })
 
   return <RoadmapBoard workspaceSlug={slug} items={rows as any} />
 }

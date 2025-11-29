@@ -93,7 +93,7 @@ export async function getWorkspacePosts(slug: string, opts?: { statuses?: string
   const tagSlugs = (opts?.tagSlugs || []).map((s) => s.trim().toLowerCase()).filter(Boolean)
   const order = opts?.order === "oldest" ? asc(post.createdAt) : desc(post.createdAt)
   const search = (opts?.search || "").trim()
-  const lim = Math.min(Math.max(Number(opts?.limit ?? 50), 1), 200)
+  const lim = Math.min(Math.max(Number(opts?.limit ?? 50), 1), 5000)
   const off = Math.max(Number(opts?.offset ?? 0), 0)
 
   let tagPostIds: string[] | null = null
