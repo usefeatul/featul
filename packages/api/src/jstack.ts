@@ -1,7 +1,6 @@
 import { jstack } from "jstack"
 import { auth } from "@feedgot/auth/auth"
 import { headers } from "next/headers"
-import { HTTPException } from "hono/http-exception"
 
 import { db } from "@feedgot/db"
 
@@ -17,7 +16,7 @@ const authMiddleware = j.middleware(async ({ next }) => {
     headers: await headers(),
   })
   if (!session || !session.user) {
-    throw new HTTPException(401, { message: "Unauthorized" })
+    throw new Error("Unauthorized")
   }
   return await next({ session: session as any })
 })
