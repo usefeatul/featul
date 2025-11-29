@@ -13,14 +13,6 @@ import {
 } from "./service";
 import type { DomainInfo } from "./types";
 import { Label } from "@feedgot/ui/components/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@feedgot/ui/components/table";
 import DomainActions from "./DomainActions";
 import AddDomainDialog from "./AddDomainDialog";
 import { ArrowIcon } from "@feedgot/ui/icons/arrow";
@@ -146,34 +138,14 @@ export default function DomainSection({ slug }: { slug: string }) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label>DNS Records</Label>
-          <div className="rounded-md border overflow-hidden">
-            {info?.host ? (
+        {info?.host ? (
+          <div className="space-y-2">
+            <Label>DNS Records</Label>
+            <div className="rounded-md border overflow-hidden">
               <RecordsTable info={info} />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="px-3">Type</TableHead>
-                    <TableHead className="px-3">Name</TableHead>
-                    <TableHead className="px-3">Value</TableHead>
-                    <TableHead className="px-3 w-28 text-center">
-                      Status
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell colSpan={4} className="px-4 py-6 text-accent">
-                      No records
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            )}
+            </div>
           </div>
-        </div>
+        ) : null}
         <AddDomainDialog
           open={open}
           onOpenChange={setOpen}
