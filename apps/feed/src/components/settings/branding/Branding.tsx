@@ -82,7 +82,6 @@ export default function BrandingSection({ slug }: { slug: string }) {
           <div className="text-sm">Primary Color</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <ColorPicker
-              valueKey={colorKey}
               valueHex={primaryColor}
               onSelect={(c) => {
                 setColorKey(c.key)
