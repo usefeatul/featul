@@ -24,7 +24,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  if (pathname.startsWith("/auth/sign-in") || pathname.startsWith("/auth/sign-up") || pathname === "/start") {
+  // Fast edge redirect for auth pages
+  if (pathname.startsWith("/auth/sign-in") || pathname.startsWith("/auth/sign-up")) {
     const sessionCookie = getSessionCookie(req)
     if (sessionCookie) {
       const raw = req.nextUrl.searchParams.get("redirect") || ""
@@ -39,6 +40,24 @@ export async function middleware(req: NextRequest) {
       }
       const url = new URL("/start", req.url)
       return NextResponse.redirect(url)
+    }
+  }
+
+  // Avoid loops on /start: only redirect if we have a concrete destination
+  if (pathname === "/start") {
+    const sessionCookie = getSessionCookie(req)
+    if (sessionCookie) {
+      const raw = req.nextUrl.searchParams.get("redirect") || ""
+      if (raw.startsWith("/")) {
+        const url = new URL(raw, req.url)
+        return NextResponse.redirect(url)
+      }
+      const last = req.cookies.get("lastWorkspaceSlug")?.value || ""
+      if (last) {
+        const url = new URL(`/workspaces/${last}`, req.url)
+        return NextResponse.redirect(url)
+      }
+      // No last workspace: let the /start page decide (no redirect here)
     }
   }
 
