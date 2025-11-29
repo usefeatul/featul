@@ -25,7 +25,7 @@ export default function RoadmapColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-md border overflow-hidden transition-all ${isOver ? "bg-green-50 border-green-400" : "bg-card"}`}
+      className={`rounded-md border overflow-hidden transition-all ${isOver ? "border-green-500 ring-2 ring-green-300" : "bg-card"}`}
     >
       <div
         className={`${collapsed ? "px-2 py-1" : "px-3 py-2"} flex items-center justify-between cursor-pointer`}
@@ -57,7 +57,10 @@ export default function RoadmapColumn({
         </div>
       </div>
       {!collapsed ? (
-        <ul className={`p-3 space-y-2 min-h-24 ${isOver ? "bg-green-50 rounded-b-md" : ""}`}>{children}</ul>
+        <ul className={`p-3 space-y-2 min-h-24`}> 
+          {children}
+          {isOver ? <li className="mt-2 border-t-2 border-green-500 rounded-full" aria-hidden /> : null}
+        </ul>
       ) : null}
     </div>
   )
