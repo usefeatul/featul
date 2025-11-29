@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import SectionCard from "../global/SectionCard";
 import { toast } from "sonner";
 import { Button } from "@feedgot/ui/components/button";
@@ -18,30 +19,69 @@ import AddDomainDialog from "./AddDomainDialog";
 import { ArrowIcon } from "@feedgot/ui/icons/arrow";
 
 export default function DomainSection({ slug }: { slug: string }) {
-  const [plan, setPlan] = React.useState<string>("free");
-  const [info, setInfo] = React.useState<DomainInfo>(null);
-  const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const [verifying, setVerifying] = React.useState(false);
-  const load = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await loadDomain(slug);
-      setPlan(data.plan);
-
-      setInfo(data.info);
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, [slug]);
-
-  React.useEffect(() => {
-    void load();
-  }, [load]);
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["domain", slug],
+    queryFn: () => loadDomain(slug),
+    staleTime: 300000,
+    gcTime: 300000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  const plan = data?.plan || "free";
+  const info = (data?.info || null) as DomainInfo;
   const canUse = plan === "starter" || plan === "professional";
 
-  const handleCreate = async (base: string) => {
+  const createMutation = useMutation({
+    mutationFn: (base: string) => createDomain(slug, base),
+    onSuccess: (result) => {
+      if (!result.ok) {
+        toast.error(result.message || "Failed to add domain");
+        return;
+      }
+      toast.success("Domain added. Configure DNS and verify.");
+      setOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["domain", slug] });
+    },
+    onError: (e: unknown) => {
+      toast.error((e as Error)?.message || "Failed to add domain");
+    },
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: () => verifyDomain(slug),
+    onSuccess: (result) => {
+      if (!result.ok) {
+        toast.error(result.message || "Verify failed");
+      } else if (result.status === "verified") {
+        toast.success("Domain verified");
+      } else {
+        toast.info("Records not found yet. Still pending.");
+      }
+      queryClient.invalidateQueries({ queryKey: ["domain", slug] });
+    },
+    onError: (e: unknown) => {
+      toast.error((e as Error)?.message || "Failed to verify domain");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteDomain(slug),
+    onSuccess: (r) => {
+      if (!r.ok) {
+        toast.error(r.message || "Delete failed");
+        return;
+      }
+      toast.success("Domain deleted");
+      queryClient.invalidateQueries({ queryKey: ["domain", slug] });
+    },
+    onError: (e: unknown) => {
+      toast.error((e as Error)?.message || "Delete failed");
+    },
+  });
+
+  const handleCreate = (base: string) => {
     if (!canUse) {
       toast.error("Upgrade to Starter or Professional to use a custom domain");
       return;
@@ -51,32 +91,11 @@ export default function DomainSection({ slug }: { slug: string }) {
       toast.error("Enter a domain");
       return;
     }
-
-    try {
-      const result = await createDomain(slug, v);
-      if (!result.ok) throw new Error(result.message || "Failed to add domain");
-      toast.success("Domain added. Configure DNS and verify.");
-      setOpen(false);
-      await load();
-    } catch (e: unknown) {
-      toast.error((e as Error)?.message || "Failed to add domain");
-    } finally {
-    }
+    createMutation.mutate(v);
   };
 
-  const handleVerify = async () => {
-    setVerifying(true);
-    try {
-      const result = await verifyDomain(slug);
-      if (!result.ok) throw new Error(result?.message || "Verify failed");
-      if (result?.status === "verified") toast.success("Domain verified");
-      else toast.info("Records not found yet. Still pending.");
-      await load();
-    } catch (e: unknown) {
-      toast.error((e as Error)?.message || "Failed to verify domain");
-    } finally {
-      setVerifying(false);
-    }
+  const handleVerify = () => {
+    verifyMutation.mutate();
   };
 
   return (
@@ -93,17 +112,10 @@ export default function DomainSection({ slug }: { slug: string }) {
               </div>
               <div>
                 <DomainActions
-                  verifying={verifying}
+                  verifying={verifyMutation.isPending}
+                  deleting={deleteMutation.isPending}
                   onVerify={handleVerify}
-                  onDelete={async () => {
-                    const r = await deleteDomain(slug);
-                    if (!r.ok) {
-                      toast.error(r.message || "Delete failed");
-                      return;
-                    }
-                    toast.success("Domain deleted");
-                    await load();
-                  }}
+                  onDelete={() => deleteMutation.mutate()}
                 />
               </div>
             </div>
@@ -114,7 +126,7 @@ export default function DomainSection({ slug }: { slug: string }) {
                 type="button"
                 variant="quiet"
                 onClick={() => setOpen(true)}
-                disabled={loading || !canUse}
+                disabled={isLoading || !canUse}
               >
                 Add domain
               </Button>
@@ -150,6 +162,7 @@ export default function DomainSection({ slug }: { slug: string }) {
           open={open}
           onOpenChange={setOpen}
           onSave={(v) => handleCreate(v)}
+          saving={createMutation.isPending}
         />
       </div>
     </SectionCard>

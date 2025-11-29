@@ -13,10 +13,12 @@ import { MoreVertical } from "lucide-react";
 
 export default function DomainActions({
   verifying,
+  deleting,
   onVerify,
   onDelete,
 }: {
   verifying: boolean;
+  deleting?: boolean;
   onVerify: () => void;
   onDelete: () => void;
 }) {
@@ -46,6 +48,7 @@ export default function DomainActions({
               setOpen(false);
               onDelete();
             }}
+            aria-disabled={Boolean(deleting)}
           >
             <span className="text-sm text-red-500">Delete</span>
           </PopoverListItem>
