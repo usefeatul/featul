@@ -16,6 +16,7 @@ import {
 } from "../../utils/useSidebarHotkeys";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import SignOutButton from "@/components/auth/SignOutButton";
+import Image from "next/image";
 import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
@@ -125,7 +126,7 @@ export default function Sidebar({
     >
       <div className="p-2">
         <div className="group flex items-center gap-2 rounded-md px-2 py-2">
-          <img src="/logo.svg" alt="feedback" className="h-6 w-6" />
+          <Image src="/logo.svg" alt="feedback" width={24} height={24} className="h-6 w-6" priority />
           <div className="text-md font-semibold">feedgot</div>
         </div>
         <WorkspaceSwitcher
