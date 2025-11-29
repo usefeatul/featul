@@ -5,6 +5,7 @@ import { workspace, workspaceMember, board, brandingConfig, tag, post, workspace
 import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema } from "../validators/workspace"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
+import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
 
 export function createWorkspaceRouter() {
   return j.router({
@@ -329,6 +330,9 @@ export function createWorkspaceRouter() {
             try {
               await ctx.db.update(workspace).set({ customDomain: d.host, updatedAt: new Date() }).where(eq(workspace.id, ws.id))
             } catch {}
+            try {
+              await addDomainToProject(d.host)
+            } catch {}
           }
 
           return c.superjson({ ok: true, cnameValid, txtValid, status })
@@ -344,7 +348,23 @@ export function createWorkspaceRouter() {
             .limit(1)
           if (!ws) return c.json({ ok: false })
 
-          await ctx.db.delete(workspaceDomain).where(eq(workspaceDomain.workspaceId, ws.id))
+          const [d] = await ctx.db
+            .select({ host: workspaceDomain.host, id: workspaceDomain.id })
+            .from(workspaceDomain)
+            .where(eq(workspaceDomain.workspaceId, ws.id))
+            .limit(1)
+
+          if (d?.host) {
+            try {
+              await removeDomainFromProject(d.host)
+            } catch {}
+          }
+
+          if (d?.id) {
+            await ctx.db.delete(workspaceDomain).where(eq(workspaceDomain.id, d.id))
+          } else {
+            await ctx.db.delete(workspaceDomain).where(eq(workspaceDomain.workspaceId, ws.id))
+          }
           await ctx.db.update(workspace).set({ customDomain: null, updatedAt: new Date() }).where(eq(workspace.id, ws.id))
           return c.superjson({ ok: true })
         }),
