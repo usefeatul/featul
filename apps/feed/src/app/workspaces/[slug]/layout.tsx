@@ -35,12 +35,12 @@ export default async function WorkspaceLayout({ children, params }: { children: 
     <Container className="min-h-screen md:flex md:gap-4 !px-0" maxWidth="7xl">
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
-      <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialWorkspaces={workspaceList} />
+      <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
       <main className="w-full md:flex-1 px-3 sm:px-0 pb-10 md:pb-0">
         <WorkspaceHeader />
         {children}
       </main>
-      <MobileSidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialWorkspaces={workspaceList} />
+      <MobileSidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
     </Container>
   )
 }

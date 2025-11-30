@@ -20,6 +20,7 @@ export default function MobileDrawerContent({
   initialServerNow,
   initialWorkspace,
   initialWorkspaces,
+  initialUser,
 }: {
   pathname: string;
   primaryNav: NavItem[];
@@ -29,6 +30,7 @@ export default function MobileDrawerContent({
   initialServerNow?: number;
   initialWorkspace?: { id: string; name: string; slug: string; logo?: string | null } | undefined;
   initialWorkspaces?: { id: string; name: string; slug: string; logo?: string | null }[] | undefined;
+  initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
 }) {
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
@@ -58,7 +60,7 @@ export default function MobileDrawerContent({
           {secondaryNav.map((item) => (
             <SidebarItem key={item.label} item={item} pathname={pathname} />
           ))}
-          <UserDropdown />
+          <UserDropdown initialUser={initialUser} />
         </SidebarSection>
       </ScrollArea>
     </DrawerContent>

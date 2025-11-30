@@ -22,12 +22,13 @@ export default function MobileSidebar({
   initialServerNow,
   initialWorkspace,
   initialWorkspaces,
+  initialUser,
 }: {
   className?: string;
   initialCounts?: Record<string, number>;
   initialTimezone?: string | null;
   initialServerNow?: number;
-  initialWorkspace?:
+  initialWorkspace:
     | {
         id: string;
         name: string;
@@ -36,9 +37,10 @@ export default function MobileSidebar({
         customDomain?: string | null;
       }
     | undefined;
-  initialWorkspaces?:
+  initialWorkspaces:
     | { id: string; name: string; slug: string; logo?: string | null }[]
     | undefined;
+  initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
 }) {
   const pathname = usePathname() || "/";
   const slug = getSlugFromPath(pathname);
@@ -108,6 +110,7 @@ export default function MobileSidebar({
           secondaryNav={secondaryNav}
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
+          initialUser={initialUser}
         />
       </Drawer>
     </div>

@@ -31,6 +31,7 @@ export default function Sidebar({
   initialServerNow,
   initialWorkspace,
   initialWorkspaces,
+  initialUser,
 }: {
   className?: string;
   initialCounts?: Record<string, number>;
@@ -47,6 +48,7 @@ export default function Sidebar({
   initialWorkspaces?:
     | { id: string; name: string; slug: string; logo?: string | null }[]
     | undefined;
+  initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -168,7 +170,8 @@ export default function Sidebar({
         {secondaryNav.map((item) => (
           <SidebarItem key={item.label} item={item} pathname={pathname} />
         ))}
-        <UserDropdown />
+        <UserDropdown initialUser={initialUser}
+        />
       </SidebarSection>
     </aside>
   );

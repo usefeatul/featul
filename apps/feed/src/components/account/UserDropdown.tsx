@@ -14,7 +14,7 @@ import { LogoutIcon } from "@feedgot/ui/icons/logout"
 import { SettingIcon } from "@feedgot/ui/icons/setting"
 import { AccountIcon } from "@feedgot/ui/icons/account"
 
-export default function UserDropdown({ className = "" }: { className?: string }) {
+export default function UserDropdown({ className = "", initialUser }: { className?: string; initialUser?: { name?: string; email?: string; image?: string | null } }) {
   const router = useRouter()
   const pathname = usePathname() || "/"
   const slug = React.useMemo(() => {
@@ -26,7 +26,7 @@ export default function UserDropdown({ className = "" }: { className?: string })
   }, [pathname])
   const [open, setOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
-  const [user, setUser] = React.useState<{ name?: string; email?: string; image?: string | null } | null>(null)
+  const [user, setUser] = React.useState<{ name?: string; email?: string; image?: string | null } | null>(initialUser ?? null)
 
   React.useEffect(() => {
     let active = true
