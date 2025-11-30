@@ -14,6 +14,7 @@ import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
 
 type InviteProps = {
+  token?: string;
   workspaceName?: string | null;
   workspaceLogo?: string | null;
   inviterName?: string | null;
@@ -24,6 +25,7 @@ type InviteProps = {
   onDecline?: () => void;
 };
 export default function Invite({
+  token: tokenProp,
   workspaceName: wsNameProp,
   workspaceLogo: wsLogoProp,
   inviterName: inviterProp,
@@ -47,7 +49,7 @@ export default function Invite({
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const t = (tokenParam || "").trim();
+    const t = ((tokenProp || tokenParam) || "").trim();
     if (!t) return;
     setToken(t);
     let mounted = true;

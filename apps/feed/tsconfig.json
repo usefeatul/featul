@@ -41,7 +41,7 @@
     "**/*.d.ts",
     "../../packages/ui/src/icons/more.tsx",
     ".next/dev/types/**/*.ts"
-  ],
+, "next.config.ts"  ],
   "exclude": [
     "node_modules"
   ]
