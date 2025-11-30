@@ -14,7 +14,7 @@ export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 })
       width={size}
       height={size}
       viewBox="0 0 18 18"
-      opacity={0.7}
+      opacity={0.8}
       className={className}
     >
       <path opacity="0.4" d="M13.2501 2H4.75012C3.23134 2 2.00012 3.23122 2.00012 4.75V13.25C2.00012 14.7688 3.23134 16 4.75012 16H13.2501C14.7689 16 16.0001 14.7688 16.0001 13.25V4.75C16.0001 3.23122 14.7689 2 13.2501 2Z" fill="currentColor"></path>

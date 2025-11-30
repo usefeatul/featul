@@ -11,7 +11,7 @@ export function AiIcon({ title = "ai", width = 18, height = 18, opacity = 0.4, .
       xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
-      opacity={0.6}
+      opacity={0.7}
       viewBox="0 0 18 18"
       {...rest}
     >

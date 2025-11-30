@@ -11,19 +11,25 @@ function SidebarItem({
   className = "",
   shortcut,
   count,
+  mutedIcon = false,
 }: {
   item: NavItem;
   pathname: string;
   className?: string;
   shortcut?: string;
   count?: number;
+  mutedIcon?: boolean;
 }) {
   const Icon = item.icon;
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
-  const active = mounted && !item.external && (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)));
+  const active =
+    mounted &&
+    !item.external &&
+    (pathname === item.href ||
+      (item.href !== "/" && pathname.startsWith(item.href)));
   const classes = cn(
     "group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm",
     active ? "bg-card text-foreground" : "text-accent hover:bg-muted",
@@ -31,28 +37,47 @@ function SidebarItem({
   );
   const content = (
     <>
-      <Icon className="w-[18px] h-[18px] text-foreground/80 group-hover:text-primary transition-colors" />
+      <Icon
+        className={cn(
+          "size-5 text-foreground group-hover:text-primary transition-colors",
+          mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
+        )}
+      />
       <span className="transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className="ml-auto rounded-md bg-muted px-2 py-0.5 text-[10px] font-mono text-accent tabular-nums">{count}</span>
+        <span className="ml-auto rounded-md bg-muted px-1 py-0.5 text-[10px] font-mono text-accent tabular-nums">
+          {count}
+        </span>
       ) : shortcut ? (
-        <span className="ml-auto rounded-md bg-muted px-2 py-0.5 text-[10px] font-mono text-accent">{shortcut}</span>
+        <span className="ml-auto rounded-sm bg-muted px-1 py-0.5 text-[10px] font-mono text-accent">
+          {shortcut}
+        </span>
       ) : null}
     </>
   );
 
   if (item.external) {
     return (
-      <a href={item.href} target="_blank" rel="noopener noreferrer" className={classes} aria-current={active ? "page" : undefined}>
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={classes}
+        aria-current={active ? "page" : undefined}
+      >
         {content}
       </a>
     );
   }
 
   return (
-    <Link href={item.href} className={classes} aria-current={active ? "page" : undefined}>
+    <Link
+      href={item.href}
+      className={classes}
+      aria-current={active ? "page" : undefined}
+    >
       {content}
     </Link>
   );
 }
-export default React.memo(SidebarItem)
+export default React.memo(SidebarItem);

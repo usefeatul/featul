@@ -151,6 +151,7 @@ export default function Sidebar({
             count={
               statusCounts ? statusCounts[statusKey(item.label)] : undefined
             }
+            mutedIcon={false}
           />
         ))}
       </SidebarSection>
@@ -162,13 +163,14 @@ export default function Sidebar({
             item={item}
             pathname={pathname}
             shortcut={getShortcutForLabel(item.label)}
+            mutedIcon
           />
         ))}
       </SidebarSection>
 
       <SidebarSection className="mt-auto pb-8">
         {secondaryNav.map((item) => (
-          <SidebarItem key={item.label} item={item} pathname={pathname} />
+          <SidebarItem key={item.label} item={item} pathname={pathname} mutedIcon={false} />
         ))}
         <UserDropdown initialUser={initialUser}
         />
