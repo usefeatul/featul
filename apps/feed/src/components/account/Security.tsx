@@ -61,6 +61,16 @@ export default function Security() {
     try {
       if (token && token === currentToken) {
         await authClient.signOut()
+        try {
+          const arr = document.cookie.split(";")
+          arr.forEach((c) => {
+            const i = c.indexOf("=")
+            const n = (i > -1 ? c.substring(0, i) : c).trim()
+            if (!n) return
+            document.cookie = `${n}=; Max-Age=0; path=/;`
+            document.cookie = `${n}=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;`
+          })
+        } catch {}
         toast.success("Signed out")
         router.replace(`/auth/sign-in?redirect=${encodeURIComponent(pathname)}`)
       } else {
