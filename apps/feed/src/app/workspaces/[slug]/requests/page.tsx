@@ -18,7 +18,6 @@ type SearchParams = {
   order?: string
   search?: string
   page?: string | string[]
-  pageSize?: string | string[]
 }
 
 type Props = { params: Promise<{ slug: string }>; searchParams?: Promise<SearchParams> }
@@ -55,7 +54,8 @@ export default async function RequestsPage({ params, searchParams }: Props) {
   const tagRaw = parseArrayParam((sp as any).tag)
   const order = typeof (sp as any).order === "string" && (sp as any).order ? (sp as any).order : "newest"
   const search = typeof (sp as any).search === "string" ? (sp as any).search : ""
-  const pageSize = Math.max(Number((sp as any).pageSize) || 15, 1)
+  const PAGE_SIZE = 15
+  const pageSize = PAGE_SIZE
   const page = Math.max(Number((sp as any).page) || 1, 1)
   const offset = (page - 1) * pageSize
 
