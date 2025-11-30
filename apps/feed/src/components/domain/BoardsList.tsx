@@ -18,7 +18,8 @@ export function BoardsList({ slug, subdomain }: { slug: string; subdomain: strin
     ;(async () => {
       try {
         const res = await client.board.byWorkspaceSlug.$get({ slug })
-        const list = (res?.data || []) as Board[]
+        const data = await res.json()
+        const list = (data?.boards || []) as Board[]
         const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
         if (mounted) setBoards(filtered)
       } finally {
@@ -67,4 +68,3 @@ export function BoardsList({ slug, subdomain }: { slug: string; subdomain: strin
     </div>
   )
 }
-

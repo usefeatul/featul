@@ -19,7 +19,8 @@ export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: s
     ;(async () => {
       try {
         const res = await client.board.byWorkspaceSlug.$get({ slug })
-        const list = (res?.data || []) as Board[]
+        const data = await res.json()
+        const list = (data?.boards || []) as Board[]
         const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
         if (mounted) setBoards(filtered)
       } finally {
@@ -51,4 +52,3 @@ export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: s
     </Select>
   )
 }
-
