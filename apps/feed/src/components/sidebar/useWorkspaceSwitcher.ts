@@ -29,6 +29,7 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
     initialData: initialWorkspaces || [],
     staleTime: 300_000,
     gcTime: 300_000,
+    refetchOnMount: "always",
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   })
@@ -86,4 +87,3 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
 
   return { workspaces, all: workspaces, current, wsInfo, liveLogo, currentLogo, currentName, handleSelectWorkspace, handleCreateNew }
 }
-

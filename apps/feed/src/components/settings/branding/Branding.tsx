@@ -128,7 +128,21 @@ export default function BrandingSection({ slug }: { slug: string }) {
       if (canHidePoweredBy) brandingInput.hidePoweredBy = hidePoweredBy;
       const result = await saveBranding(slug, brandingInput);
       if (!result.ok) throw new Error(result.message || "Update failed");
-      if (logoUrl.trim() && canBranding) setWorkspaceLogo(slug, logoUrl.trim());
+      if (logoUrl.trim() && canBranding) {
+        setWorkspaceLogo(slug, logoUrl.trim());
+        try {
+          queryClient.setQueryData(["workspace", slug], (prev: any) =>
+            prev ? { ...prev, logo: logoUrl.trim() } : prev
+          );
+          queryClient.setQueryData(["workspaces"], (prev: any) => {
+            const list = Array.isArray(prev) ? prev : prev?.workspaces || [];
+            const next = list.map((w: any) =>
+              w?.slug === slug ? { ...w, logo: logoUrl.trim() } : w
+            );
+            return prev && prev.workspaces ? { ...prev, workspaces: next } : next;
+          });
+        } catch {}
+      }
       toast.success("Settings updated");
     } catch (e: any) {
       if (canBranding) applyBrandPrimary(prevP || "#3b82f6");

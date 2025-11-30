@@ -10,11 +10,13 @@ import TimezonePicker from "./TimezonePicker"
 import RightInfo from "./RightInfo"
 import { client } from "@feedgot/api/client"
 import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { workspaceSchema, isNameValid, isDomainValid, isSlugValid, isTimezoneValid, cleanSlug, slugifyFromName } from "../../lib/validators"
 
 export default function WorkspaceWizard({ className = "" }: { className?: string }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [step, setStep] = useState(0)
   const total = 4
 
@@ -100,6 +102,16 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
       const data = await res.json()
       toast.success("Workspace created")
       const createdSlug = data?.workspace?.slug || slug
+      try {
+        queryClient.setQueryData(["workspaces"], (prev: any) => {
+          const list = Array.isArray(prev) ? prev : prev?.workspaces || []
+          const next = [...list, data?.workspace].filter(Boolean)
+          return prev && prev.workspaces ? { ...prev, workspaces: next } : next
+        })
+        if (data?.workspace) {
+          queryClient.setQueryData(["workspace", createdSlug], data.workspace)
+        }
+      } catch {}
       router.push(`/workspaces/${createdSlug}`)
     } catch (e: unknown) {
       toast.error((e as { message?: string })?.message || "Failed to create workspace")

@@ -8,6 +8,7 @@ const nextConfig = {
           { protocol: 'https', hostname: 'githubusercontent.com', pathname: '/**' },
           { protocol: 'https', hostname: 'gravatar.com', pathname: '/**' },
           { protocol: 'https', hostname: 'www.google.com', pathname: '/**' },
+          { protocol: 'https', hostname: 't1.gstatic.com', pathname: '/**' },
           { protocol: 'https', hostname: 'pub-e058408694e44c9e829046a8a6d5d1a5.r2.dev', pathname: '/**' },
         ],
       },
