@@ -29,10 +29,12 @@ export function MainContent({
       <div className="lg:grid lg:grid-cols-[minmax(0,1.5fr)_250px] lg:gap-6">
         <div>
           <div className="mb-4">
-            <div className="lg:hidden flex items-center justify-end gap-1">
+            <div className="lg:hidden flex items-center justify-between gap-2">
               <BoardsDropdown slug={slug} subdomain={subdomain} />
-              <SortPopover subdomain={subdomain} slug={slug} />
-              <SearchAction />
+              <span className="inline-flex items-center gap-1">
+                <SortPopover subdomain={subdomain} slug={slug} />
+                <SearchAction />
+              </span>
             </div>
             <div className="hidden lg:flex items-center justify-start">
               <BoardsDropdown slug={slug} subdomain={subdomain} />

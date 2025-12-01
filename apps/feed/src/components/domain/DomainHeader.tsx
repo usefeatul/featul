@@ -6,6 +6,9 @@ import { usePathname } from "next/navigation"
 import { Button } from "@feedgot/ui/components/button"
 import { cn } from "@feedgot/ui/lib/utils"
 import { MobileBoardsMenu } from "./MobileBoardsMenu"
+import { CommentsIcon } from "@feedgot/ui/icons/comments"
+import { RoadmapIcon } from "@feedgot/ui/icons/roadmap"
+import { ChangelogIcon } from "@feedgot/ui/icons/changelog"
 
 type WorkspaceInfo = {
   id: string
@@ -26,9 +29,11 @@ export function DomainHeader({ workspace, subdomain }: { workspace: WorkspaceInf
   const itemCls = (active: boolean) => cn("rounded-md border px-3 py-2", active ? "bg-background/50 border-accent/20" : "border-transparent hover:bg-muted")
   return (
     <header className={cn("py-3 sm:py-5")}>      
-      <div className="md:hidden flex items-center justify-between w-full">
-        <MobileBoardsMenu slug={workspace.slug} subdomain={subdomain} />
-        <div className="inline-flex items-center justify-center">
+      <div className="md:hidden grid grid-cols-[1fr_auto_1fr] items-center w-full">
+        <div className="justify-self-start">
+          <MobileBoardsMenu slug={workspace.slug} subdomain={subdomain} />
+        </div>
+        <div className="inline-flex items-center justify-center justify-self-center">
           {workspace.logo ? (
             <Image src={workspace.logo} alt={workspace.name} width={32} height={32} className="rounded-sm object-cover" />
           ) : (
@@ -37,7 +42,7 @@ export function DomainHeader({ workspace, subdomain }: { workspace: WorkspaceInf
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-self-end">
           <Button asChild size="xs" variant="nav">
             <Link href="/auth/sign-in">Sign in</Link>
           </Button>
@@ -63,14 +68,29 @@ export function DomainHeader({ workspace, subdomain }: { workspace: WorkspaceInf
         <nav className="flex-1">
           <ul className="flex items-center gap-3 text-sm">
             <li>
-              <Link href={feedbackBase} className={itemCls(isFeedback)} aria-current={isFeedback ? "page" : undefined}>Feedback</Link>
-            </li>
-            <li>
-              <Link href={roadmapBase} className={itemCls(isRoadmap)} aria-current={isRoadmap ? "page" : undefined}>Roadmap</Link>
-            </li>
-            <li>
-              <Link href={changelogBase} className={itemCls(isChangelog)} aria-current={isChangelog ? "page" : undefined}>Changelog</Link>
-            </li>
+            <Link href={feedbackBase} className={itemCls(isFeedback)} aria-current={isFeedback ? "page" : undefined}>
+              <span className="inline-flex items-center gap-2">
+                Feedback
+                <CommentsIcon size={16} className="text-accent" />
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link href={roadmapBase} className={itemCls(isRoadmap)} aria-current={isRoadmap ? "page" : undefined}>
+              <span className="inline-flex items-center gap-2">
+                Roadmap
+                <RoadmapIcon size={16} className="text-accent" />
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link href={changelogBase} className={itemCls(isChangelog)} aria-current={isChangelog ? "page" : undefined}>
+              <span className="inline-flex items-center gap-2">
+                Changelog
+                <ChangelogIcon size={16} className="text-accent" />
+              </span>
+            </Link>
+          </li>
           </ul>
         </nav>
 

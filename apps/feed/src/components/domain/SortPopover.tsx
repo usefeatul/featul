@@ -36,7 +36,7 @@ export function SortPopover({ slug, subdomain }: { slug: string; subdomain: stri
           <ChevronDown className="size-4 ml-auto" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent list className="w-fit">
+      <PopoverContent id={`popover-${subdomain}-${slug}-sort`} align="end" list className="w-fit">
         <PopoverList>
           <PopoverListItem onClick={() => go("newest")}> 
             <span className="text-sm">Newest</span>

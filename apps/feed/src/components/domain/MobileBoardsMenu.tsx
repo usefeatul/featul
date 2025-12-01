@@ -1,59 +1,38 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
 import { MenuIcon } from "@feedgot/ui/icons/menu"
-import { client } from "@feedgot/api/client"
+import { AccentBar } from "@feedgot/ui/components/cardElements"
+import { CommentsIcon } from "@feedgot/ui/icons/comments"
+import { RoadmapIcon } from "@feedgot/ui/icons/roadmap"
+import { ChangelogIcon } from "@feedgot/ui/icons/changelog"
+import { cn } from "@feedgot/ui/lib/utils"
 
-type Board = { id: string; name: string; slug: string; type?: string | null }
 
 export function MobileBoardsMenu({ slug, subdomain }: { slug: string; subdomain: string }) {
   const router = useRouter()
+  const pathname = usePathname() || ""
   const [open, setOpen] = React.useState(false)
-  const [boards, setBoards] = React.useState<Board[]>([])
-  const [loading, setLoading] = React.useState(true)
-
-  React.useEffect(() => {
-    let mounted = true
-    const key = `boards:${slug}`
-    try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null
-      if (raw) {
-        const cached = JSON.parse(raw)
-        const list = ((cached?.boards || cached?.data) || []) as Board[]
-        const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
-        if (mounted) {
-          setBoards(filtered)
-          setLoading(false)
-        }
-      }
-    } catch {}
-    ;(async () => {
-      try {
-        const res = await client.board.byWorkspaceSlug.$get({ slug })
-        const data = await res.json()
-        const list = (data?.boards || []) as Board[]
-        const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
-        if (mounted) setBoards(filtered)
-        try {
-          if (typeof window !== "undefined") localStorage.setItem(key, JSON.stringify({ boards: filtered, ts: Date.now() }))
-        } catch {}
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [slug])
 
   function go(value: string) {
-    const base = `/${subdomain}/${slug}`
-    const next = value === "__all__" ? base : `${base}?board=${encodeURIComponent(value)}`
+    const base = `/${subdomain}`
+    const next =
+      value === "__all__"
+        ? `${base}/${slug}`
+        : value === "roadmap"
+        ? `${base}/roadmap`
+        : `${base}/changelog`
     setOpen(false)
     router.push(next)
   }
+
+  const active = pathname.startsWith(`/${subdomain}/roadmap`)
+    ? "roadmap"
+    : pathname.startsWith(`/${subdomain}/changelog`)
+    ? "changelog"
+    : "__all__"
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,24 +41,30 @@ export function MobileBoardsMenu({ slug, subdomain }: { slug: string; subdomain:
           type="button"
           aria-label="Open boards"
           className="inline-flex items-center justify-center rounded-md p-2 bg-muted/70 disabled:opacity-50"
-          disabled={loading}
+          disabled={false}
         >
           <MenuIcon width={20} height={20} className="text-accent" />
         </button>
       </PopoverTrigger>
-      <PopoverContent list className="min-w-[11rem] w-fit">
+      <PopoverContent id={`popover-${subdomain}-${slug}-mobile-menu`} align="start" list className="min-w-[11rem] w-fit">
         <PopoverList>
-          <PopoverListItem onClick={() => go("__all__")}>
-            <span className="text-sm">All Feedback</span>
+          <PopoverListItem onClick={() => go("__all__")}> 
+            <AccentBar width={2} className={active === "__all__" ? undefined : "bg-muted ring-0"} />
+            <span className={cn("text-sm", active === "__all__" ? "text-primary" : "text-muted-foreground")}>All Feedback</span>
+            <CommentsIcon size={16} className="text-accent ml-auto" />
           </PopoverListItem>
-          {boards.map((b) => (
-            <PopoverListItem key={b.id} onClick={() => go(b.slug)}>
-              <span className="text-sm">{b.name}</span>
-            </PopoverListItem>
-          ))}
+          <PopoverListItem onClick={() => go("roadmap")}> 
+            <AccentBar width={2} className={active === "roadmap" ? undefined : "bg-muted ring-0"} />
+            <span className={cn("text-sm", active === "roadmap" ? "text-primary" : "text-muted-foreground")}>Roadmap</span>
+            <RoadmapIcon size={16} className="text-accent ml-auto" />
+          </PopoverListItem>
+          <PopoverListItem onClick={() => go("changelog")}> 
+            <AccentBar width={2} className={active === "changelog" ? undefined : "bg-muted ring-0"} />
+            <span className={cn("text-sm", active === "changelog" ? "text-primary" : "text-muted-foreground")}>Changelog</span>
+            <ChangelogIcon size={16} className="text-accent ml-auto" />
+          </PopoverListItem>
         </PopoverList>
       </PopoverContent>
     </Popover>
   )
 }
-

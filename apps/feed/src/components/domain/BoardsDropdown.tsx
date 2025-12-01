@@ -70,7 +70,7 @@ export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: s
           <ChevronDown className="size-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent list className="min-w-[11rem] w-fit">
+      <PopoverContent id={`popover-${subdomain}-${slug}-boards`} align="start" list className="min-w-[11rem] w-fit">
         <PopoverList>
           <PopoverListItem onClick={() => go("__all__")}> 
             <span className="text-sm">All Feedback</span>

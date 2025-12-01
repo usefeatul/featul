@@ -27,7 +27,7 @@ export function Container({
       ? 'max-w-7xl'
       : 'max-w-[88rem]'
 
-  const paddingX = 'px-12 sm:px-16 lg:px-20 xl:px-24'
+  const paddingX = 'px-4 sm:px-8 lg:px-16 xl:px-20'
   const base = cn('mx-auto', widthClass, paddingX, withNavbarOffset && 'pt-2', className)
 
   return (
