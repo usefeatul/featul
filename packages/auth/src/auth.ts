@@ -80,13 +80,15 @@ export const auth = betterAuth({
     }),
   },
 
-  trustedOrigins: async () => {
+  trustedOrigins: async (request: Request) => {
     const raw = process.env.AUTH_TRUSTED_ORIGINS || ""
     const list = raw
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean)
-    return list
+    const origin = request.headers.get("origin") || ""
+    const extras = [origin].filter(Boolean)
+    return Array.from(new Set([...list, ...extras]))
   },
 
   advanced: {
