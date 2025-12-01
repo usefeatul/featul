@@ -22,16 +22,16 @@ export function DomainHeader({ workspace, subdomain }: { workspace: WorkspaceInf
   const isChangelog = pathname.startsWith(`${base}/changelog`)
   const itemCls = (active: boolean) => cn("rounded-md border px-3 py-2", active ? "bg-muted" : "border-transparent hover:bg-muted")
   return (
-    <header className={cn("flex items-center gap-6 py-10 sm:py-12")}>      
+    <header className={cn("flex items-center gap-2 py-4 sm:py-6")}>      
       <div className="flex items-center gap-3">
         {workspace.logo ? (
-          <Image src={workspace.logo} alt={workspace.name} width={36} height={36} className="rounded-sm object-cover" />
+          <Image src={workspace.logo} alt={workspace.name} width={32} height={32} className="rounded-sm object-cover" />
         ) : (
-          <div className="h-9 w-9 rounded-sm bg-muted flex items-center justify-center text-xs font-semibold">
+          <div className="h-9 w-9 rounded-sm bg-muted flex items-center justify-center text-md font-semibold">
             {workspace.name?.[0]?.toUpperCase()}
           </div>
         )}
-        <div className="text-sm font-medium">{workspace.name}</div>
+        <div className="text-md font-medium">{workspace.name}</div>
       </div>
 
       <nav className="flex-1">
@@ -49,10 +49,10 @@ export function DomainHeader({ workspace, subdomain }: { workspace: WorkspaceInf
       </nav>
 
       <div className="flex items-center gap-3">
-        <Button asChild size="sm" variant="outline">
+        <Button asChild size="xs" variant="outline">
           <Link href="/auth/sign-in">Sign in</Link>
         </Button>
-        <Button asChild size="sm">
+        <Button asChild size="xs">
           <Link href="/auth/sign-up">Sign up</Link>
         </Button>
       </div>

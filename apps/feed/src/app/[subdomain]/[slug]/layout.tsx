@@ -23,14 +23,14 @@ export default async function Layout({
 
   return (
     <>
-      <div className="bg-muted border-b">
-        <Container maxWidth="5xl">
-          <DomainHeader workspace={ws} subdomain={subdomain} />
-        </Container>
+      <div className="fixed inset-0 -z-10 flex flex-col">
+        <div className="bg-muted/50 border-b border-accent/10 h-44 sm:h-56" />
+        <div className="border-b flex-1" />
       </div>
-      <div className="bg-card border-b">
-        <Container maxWidth="5xl" className="pt-8">{children}</Container>
-      </div>
+      <Container maxWidth="5xl">
+        <DomainHeader workspace={ws} subdomain={subdomain} />
+      </Container>
+      <Container maxWidth="5xl">{children}</Container>
     </>
   )
 }
