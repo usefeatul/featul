@@ -7,8 +7,8 @@ import { DomainHeader } from "@/components/domain/DomainHeader"
 import BrandVarsEffect from "@/components/global/BrandVarsEffect"
 import { getBrandingBySlug } from "@/lib/workspace"
 import SubdomainThemeProvider from "@/components/domain/SubdomainThemeProvider"
-import "./domain.css"
-import Script from "next/script"
+// import "./domain.css"
+
 
 export default async function Layout({
   children,

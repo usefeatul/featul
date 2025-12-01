@@ -10,7 +10,7 @@ export default function SubdomainThemeProvider({ theme, children }: { theme: "li
       attribute="class"
       defaultTheme="system"
       enableSystem
-      storageKey="feedgot:domain-theme"
+      storageKey="theme"
       forcedTheme={forcedTheme as any}
       disableTransitionOnChange
     >

@@ -22,8 +22,8 @@ export function MainContent({
   pageSize: number
 }) {
   return (
-    <section className="mt-4">
-      <div className="lg:grid lg:grid-cols-[minmax(0,1.5fr)_280px] lg:gap-10">
+    <section className="mt-2">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1.5fr)_250px] lg:gap-6">
         <div>
           <div className="mb-4 flex items-center justify-start">
             <BoardsDropdown slug={slug} subdomain={subdomain} />
