@@ -1,10 +1,10 @@
-import { cn } from "@feedgot/ui/lib/utils"
-import type { HTMLAttributes } from "react"
+import { cn } from "@feedgot/ui/lib/utils";
+import type { HTMLAttributes } from "react";
 
 type ProseProps = HTMLAttributes<HTMLElement> & {
-  as?: "article"
-  html?: string
-}
+  as?: "article";
+  html?: string;
+};
 
 export function Prose({ children, html, className }: ProseProps) {
   return (
@@ -17,5 +17,5 @@ export function Prose({ children, html, className }: ProseProps) {
     >
       {html ? <div dangerouslySetInnerHTML={{ __html: html }} /> : children}
     </article>
-  )
+  );
 }
