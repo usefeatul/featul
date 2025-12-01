@@ -20,7 +20,7 @@ export default async function SitePage({
   searchParams,
 }: {
   params: Promise<{ subdomain: string; slug: string }>
-  searchParams: Promise<{ page?: string; board?: string }>
+  searchParams: Promise<{ page?: string; board?: string; order?: "newest" | "oldest" }>
 }) {
   const { subdomain, slug } = await params
   const sp = await searchParams
@@ -35,9 +35,10 @@ export default async function SitePage({
   const page = Math.max(1, Number(sp.page ?? "1") || 1)
   const offset = (page - 1) * PAGE_SIZE
   const boardSlug = sp.board || undefined
+  const order = sp.order === "oldest" ? "oldest" : "newest"
 
   const rows = await getWorkspacePosts(slug, {
-    order: "newest",
+    order,
     limit: PAGE_SIZE,
     offset,
     boardSlugs: boardSlug ? [boardSlug] : undefined,

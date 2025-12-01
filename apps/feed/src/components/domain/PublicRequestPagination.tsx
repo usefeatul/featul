@@ -22,11 +22,13 @@ export function PublicRequestPagination({
   if (totalCount <= pageSize) return null
 
   const board = search.get("board")
+  const order = search.get("order")
   const base = `/${subdomain}/${slug}`
   const makeHref = (p: number) => {
     const u = new URL(base, "http://dummy")
     u.searchParams.set("page", String(p))
     if (board) u.searchParams.set("board", board)
+    if (order) u.searchParams.set("order", order)
     const q = u.search ? `?${u.searchParams.toString()}` : ""
     return `${base}${q}`
   }
@@ -48,4 +50,3 @@ export function PublicRequestPagination({
     </div>
   )
 }
-
