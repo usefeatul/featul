@@ -14,7 +14,7 @@ type WorkspaceInfo = {
   logo: string | null
 }
 
-export function DomainHeader({ workspace, subdomain }: { workspace: WorkspaceInfo; subdomain: string }) {
+export function DomainHeader({ workspace, subdomain, branding }: { workspace: WorkspaceInfo; subdomain: string; branding?: { showLogo?: boolean; showWorkspaceName?: boolean } }) {
   const pathname = usePathname() || ""
   const feedbackBase = `/`
   const roadmapBase = `/roadmap`
@@ -26,14 +26,18 @@ export function DomainHeader({ workspace, subdomain }: { workspace: WorkspaceInf
   return (
     <header className={cn("flex items-center gap-1 py-4 sm:py-6")}>      
       <div className="flex items-center gap-1">
-        {workspace.logo ? (
-          <Image src={workspace.logo} alt={workspace.name} width={32} height={32} className="rounded-sm object-cover" />
-        ) : (
-          <div className="h-9 w-9 rounded-sm bg-muted flex items-center justify-center text-md font-semibold">
-            {workspace.name?.[0]?.toUpperCase()}
-          </div>
-        )}
-        <div className="text-md font-medium">{workspace.name}</div>
+        {branding?.showLogo !== false ? (
+          workspace.logo ? (
+            <Image src={workspace.logo} alt={workspace.name} width={32} height={32} className="rounded-sm object-cover" />
+          ) : (
+            <div className="h-9 w-9 rounded-sm bg-muted flex items-center justify-center text-md font-semibold">
+              {workspace.name?.[0]?.toUpperCase()}
+            </div>
+          )
+        ) : null}
+        {branding?.showWorkspaceName !== false ? (
+          <div className="text-md font-medium">{workspace.name}</div>
+        ) : null}
       </div>
       <span className="mx-2 text-accent" aria-hidden>|</span>
 
