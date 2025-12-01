@@ -74,10 +74,7 @@ export function MainContent({
             ) : (
               <div className="divide-y">
                 {(items as any[]).map((p: any) => (
-                  <PostCard
-                  key={p.id}
-                  item={p}
-                  />
+                  <PostCard key={p.id} item={p} />
                 ))}
               </div>
             )}
