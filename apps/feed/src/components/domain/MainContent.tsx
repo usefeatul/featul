@@ -44,14 +44,24 @@ export function MainContent({
         ) : null}
         <div>
           <div className="mb-4">
-            <div className="lg:hidden flex items-center justify-between gap-2">
-              <BoardsDropdown slug={slug} subdomain={subdomain} />
-              <span className="inline-flex items-center gap-1">
-                <SortPopover subdomain={subdomain} slug={slug} />
-                <SearchAction />
-              </span>
-            </div>
-            <div className="hidden lg:flex items-center justify-start">
+            {sidebarPosition === "left" ? (
+              <div className="lg:hidden flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1">
+                  <SortPopover subdomain={subdomain} slug={slug} />
+                  <SearchAction />
+                </span>
+                <BoardsDropdown slug={slug} subdomain={subdomain} />
+              </div>
+            ) : (
+              <div className="lg:hidden flex items-center justify-between gap-2">
+                <BoardsDropdown slug={slug} subdomain={subdomain} />
+                <span className="inline-flex items-center gap-1">
+                  <SortPopover subdomain={subdomain} slug={slug} />
+                  <SearchAction />
+                </span>
+              </div>
+            )}
+            <div className={sidebarPosition === "left" ? "hidden lg:flex items-center justify-end" : "hidden lg:flex items-center justify-start"}>
               <BoardsDropdown slug={slug} subdomain={subdomain} />
             </div>
           </div>

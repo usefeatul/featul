@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import PlannedIcon from "@feedgot/ui/icons/planned"
+import StatusIcon from "@/components/requests/StatusIcon"
+import { statusLabel } from "@/lib/roadmap"
 
 export type RoadmapItemData = {
   id: string
@@ -19,20 +20,18 @@ function toPlain(s?: string | null): string {
 export default function DomainRoadmapItem({ item, subdomain, slug }: { item: RoadmapItemData; subdomain: string; slug: string }) {
   const href = `/${subdomain}/${slug}/requests/${item.slug}`
   return (
-    <div className="flex flex-col w-full overflow-hidden min-w-0">
-      <div className="flex items-center gap-2 min-w-0">
-        <Link href={href} className="text-sm font-medium text-foreground hover:text-primary truncate min-w-0">
+    <div className="py-6 px-6 min-h-[140px]">
+      <div className="flex items-start gap-3">
+        <Link href={href} className="text-lg font-semibold text-foreground hover:text-primary flex-1">
           {item.title}
         </Link>
       </div>
       {item.content ? (
-        <p className="text-accent mt-1 text-xs break-words whitespace-normal line-clamp-2 max-w-full overflow-hidden">
-          {toPlain(item.content)}
-        </p>
+        <p className="mt-3 text-sm text-accent break-words whitespace-normal line-clamp-2">{toPlain(item.content)}</p>
       ) : null}
-      <div className="mt-3 flex items-center gap-1.5">
-        <PlannedIcon className="w-[18px] h-[18px] text-foreground/80" size={18} />
-        <span className="text-[11px] text-accent">Planned</span>
+      <div className="mt-3 inline-flex items-center gap-2">
+        <StatusIcon status={item.roadmapStatus || undefined} className="w-[18px] h-[18px] text-foreground/80" />
+        <span className="text-sm text-accent">{statusLabel(String(item.roadmapStatus || "pending"))}</span>
       </div>
     </div>
   )

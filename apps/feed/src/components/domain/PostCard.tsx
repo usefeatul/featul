@@ -36,7 +36,7 @@ function PostCardBase({ item, workspaceSlug, linkBase }: { item: RequestItemData
               <span className="tabular-nums">{item.commentCount}</span>
             </span>
           </div>
-          <Avatar className="size-8 bg-muted ring-1 ring-border rounded-md">
+          <Avatar className="size-6 px-1 py-1 bg-muted ring-1 ring-border rounded-md">
             <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
             <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
           </Avatar>

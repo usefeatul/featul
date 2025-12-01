@@ -63,7 +63,7 @@ export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: s
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="ghost" className="justify-start gap-2" disabled={loading}>
+        <Button type="button" variant="nav" className="justify-start gap-2 dark:bg-[#111113]" disabled={loading}>
           <ListTree className="size-4" />
           <span className="truncate">{label}</span>
           <span className="ml-auto" />
