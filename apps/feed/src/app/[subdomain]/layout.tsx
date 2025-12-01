@@ -49,8 +49,8 @@ export default async function Layout({
             </Container>
           )
         })()}
-        <div className="fixed bottom-4 left-0 right-0 z-30 md:static md:mt-6 md:mb-6">
-          <div className="mx-auto max-w-5xl px-4 sm:px-8 lg:px-16 xl:px-20">
+        <div className="fixed bottom-0 left-0 right-0 z-30">
+          <div className="mx-auto max-w-5xl px-4 sm:px-8 lg:px-16 xl:px-20 pb-3">
             <PoweredBy />
           </div>
         </div>

@@ -1,15 +1,15 @@
-import React from "react"
- 
-import { BoardsDropdown } from "./BoardsDropdown"
-import { PublicRequestPagination } from "./PublicRequestPagination"
-import { DomainSidebar } from "./DomainSidebar"
-import { SortPopover } from "./SortPopover"
-import { SearchAction } from "./SearchAction"
-import { SubmitIdeaCard } from "./SubmitIdeaCard"
-import PostCard from "@/components/posts/PostCard"
-import EmptyRequests from "@/components/requests/EmptyRequests"
+import React from "react";
 
-type Item = any
+import { BoardsDropdown } from "./BoardsDropdown";
+import { PublicRequestPagination } from "./PublicRequestPagination";
+import { DomainSidebar } from "./DomainSidebar";
+import { SortPopover } from "./SortPopover";
+import { SearchAction } from "./SearchAction";
+import { SubmitIdeaCard } from "./SubmitIdeaCard";
+import PostCard from "@/components/posts/PostCard";
+import EmptyDomainPosts from "./EmptyPosts";
+
+type Item = any;
 
 export function MainContent({
   subdomain,
@@ -20,17 +20,23 @@ export function MainContent({
   pageSize,
   sidebarPosition = "right",
 }: {
-  subdomain: string
-  slug: string
-  items: Item[]
-  totalCount: number
-  page: number
-  pageSize: number
-  sidebarPosition?: "left" | "right"
+  subdomain: string;
+  slug: string;
+  items: Item[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  sidebarPosition?: "left" | "right";
 }) {
   return (
     <section>
-      <div className={sidebarPosition === "left" ? "lg:grid lg:grid-cols-[250px_minmax(0,1.5fr)] lg:gap-6" : "lg:grid lg:grid-cols-[minmax(0,1.5fr)_250px] lg:gap-6"}>
+      <div
+        className={
+          sidebarPosition === "left"
+            ? "lg:grid lg:grid-cols-[250px_minmax(0,1.5fr)] lg:gap-6"
+            : "lg:grid lg:grid-cols-[minmax(0,1.5fr)_250px] lg:gap-6"
+        }
+      >
         {sidebarPosition === "left" ? (
           <aside className="hidden lg:block mt-10 lg:mt-0">
             <DomainSidebar subdomain={subdomain} slug={slug} />
@@ -52,16 +58,29 @@ export function MainContent({
           <div className="lg:hidden mb-4">
             <SubmitIdeaCard subdomain={subdomain} slug={slug} />
           </div>
-          {(items as any[]).length === 0 ? (
-            <EmptyRequests workspaceSlug={slug} />
-          ) : (
-            <div className="rounded-md border bg-card divide-y mt-4">
-              {(items as any[]).map((p: any) => (
-                <PostCard key={p.id} item={p} workspaceSlug={slug} linkBase={`/${subdomain}/${slug}`} />
-              ))}
-            </div>
-          )}
-          <PublicRequestPagination subdomain={subdomain} slug={slug} page={page} pageSize={pageSize} totalCount={totalCount} />
+          <div className="rounded-md border bg-card mt-4">
+            {(items as any[]).length === 0 ? (
+              <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+            ) : (
+              <div className="divide-y">
+                {(items as any[]).map((p: any) => (
+                  <PostCard
+                    key={p.id}
+                    item={p}
+                    workspaceSlug={slug}
+                    linkBase={`/${subdomain}/${slug}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          <PublicRequestPagination
+            subdomain={subdomain}
+            slug={slug}
+            page={page}
+            pageSize={pageSize}
+            totalCount={totalCount}
+          />
         </div>
         {sidebarPosition === "right" ? (
           <aside className="hidden lg:block mt-10 lg:mt-0">
@@ -70,5 +89,5 @@ export function MainContent({
         ) : null}
       </div>
     </section>
-  )
+  );
 }
