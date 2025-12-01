@@ -1,5 +1,7 @@
 import { auth } from "@feedgot/auth/auth"
 import { toNextJsHandler } from "better-auth/next-js"
+import { db, workspace } from "@feedgot/db"
+import { eq } from "drizzle-orm"
 
 const handler = toNextJsHandler(auth)
 
@@ -16,13 +18,20 @@ function toRegex(originPattern: string): RegExp | null {
   }
 }
 
-function isTrusted(origin: string): boolean {
+async function isTrusted(origin: string): Promise<boolean> {
   const raw = process.env.AUTH_TRUSTED_ORIGINS || ""
   const patterns = raw.split(",").map((s) => s.trim()).filter(Boolean)
   for (const p of patterns) {
     const r = toRegex(p)
     if (r && r.test(origin)) return true
   }
+  try {
+    const u = new URL(origin)
+    const host = u.hostname
+    if (!host) return false
+    const [ws] = await db.select({ id: workspace.id }).from(workspace).where(eq(workspace.domain, host)).limit(1)
+    if (ws?.id) return true
+  } catch {}
   return false
 }
 
@@ -35,9 +44,10 @@ function corsHeaders(origin: string): HeadersInit {
   }
 }
 
-function withCors(req: Request, res: Response): Response {
+async function withCors(req: Request, res: Response): Promise<Response> {
   const origin = req.headers.get("origin") || ""
-  if (origin && isTrusted(origin)) {
+  const trusted = await isTrusted(origin)
+  if (origin && trusted) {
     const h = new Headers(res.headers)
     const ch = corsHeaders(origin)
     Object.entries(ch).forEach(([k, v]) => h.set(k, v))
@@ -48,7 +58,7 @@ function withCors(req: Request, res: Response): Response {
 
 export const OPTIONS = async (req: Request) => {
   const origin = req.headers.get("origin") || ""
-  if (origin && isTrusted(origin)) {
+  if (origin && (await isTrusted(origin))) {
     return new Response(null, { status: 204, headers: corsHeaders(origin) })
   }
   return new Response(null, { status: 204 })
