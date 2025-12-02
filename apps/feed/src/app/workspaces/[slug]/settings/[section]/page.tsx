@@ -24,13 +24,15 @@ export default async function SettingsSectionPage({ params }: Props) {
   const { slug, section } = await params
   let initialChangelogVisible: boolean | undefined
   let initialHidePoweredBy: boolean | undefined
+  let initialPlan: string | undefined
   try {
     const [ws] = await db
-      .select({ id: workspace.id })
+      .select({ id: workspace.id, plan: workspace.plan })
       .from(workspace)
       .where(eq(workspace.slug, slug))
       .limit(1)
     if (ws?.id) {
+      initialPlan = String((ws as any)?.plan || "free")
       const [b] = await db
         .select({ isVisible: board.isVisible, isPublic: board.isPublic })
         .from(board)
@@ -45,5 +47,5 @@ export default async function SettingsSectionPage({ params }: Props) {
       initialHidePoweredBy = Boolean((br as any)?.hidePoweredBy)
     }
   } catch {}
-  return <SettingsTabs slug={slug} selectedSection={section} initialChangelogVisible={initialChangelogVisible} initialHidePoweredBy={initialHidePoweredBy} />
+  return <SettingsTabs slug={slug} selectedSection={section} initialChangelogVisible={initialChangelogVisible} initialHidePoweredBy={initialHidePoweredBy} initialPlan={initialPlan} />
 }

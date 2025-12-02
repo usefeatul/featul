@@ -28,7 +28,7 @@ import { client } from "@feedgot/api/client";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import {  getPlanLimits } from "@/lib/plan";
 
-export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: string; initialHidePoweredBy?: boolean }) {
+export default function BrandingSection({ slug, initialHidePoweredBy, initialPlan }: { slug: string; initialHidePoweredBy?: boolean; initialPlan?: string }) {
   const [logoUrl, setLogoUrl] = React.useState("");
   const [primaryColor, setPrimaryColor] = React.useState("#3b82f6");
   const [accentColor, setAccentColor] = React.useState("#60a5fa");
@@ -44,7 +44,7 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
   const [workspaceName, setWorkspaceName] = React.useState("");
   const originalNameRef = React.useRef<string>("");
   const queryClient = useQueryClient();
-  const [plan, setPlan] = React.useState<string>("free");
+  const [plan, setPlan] = React.useState<string>(initialPlan || "free");
   const { loading: brandingAccessLoading, canEditBranding } = useCanEditBranding(slug);
 
   React.useEffect(() => {
@@ -248,7 +248,7 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
         </div>
       </div>
       <div className="p-4">
-        <PlanNotice slug={slug} feature="branding" />
+        <PlanNotice slug={slug} feature="branding" plan={plan} />
       </div>
 
       <div className="px-4 pb-4">

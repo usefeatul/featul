@@ -22,7 +22,8 @@ export default function TeamSection({
   initialMembers,
   initialInvites,
   initialMeId,
-}: { slug: string; initialMembers?: Member[]; initialInvites?: Invite[]; initialMeId?: string | null }) {
+  initialPlan,
+}: { slug: string; initialMembers?: Member[]; initialInvites?: Invite[]; initialMeId?: string | null; initialPlan?: string }) {
   const [inviteOpen, setInviteOpen] = React.useState(false);
   const [menuFor, setMenuFor] = React.useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -124,7 +125,7 @@ export default function TeamSection({
 
         <div className="pt-2 space-y-2">
           <div className="text-sm text-accent">Invite a new member to your workspace.</div>
-                <PlanNotice slug={slug} feature="team" membersCount={(data.members || []).length} />
+                <PlanNotice slug={slug} feature="team" plan={initialPlan} membersCount={(data.members || []).length} />
           <div className="flex items-center justify-start">
             <Button
               type="button"

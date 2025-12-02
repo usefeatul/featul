@@ -15,11 +15,11 @@ import DataSection from "../data/Data"
 import type { Member, Invite } from "../../../types/team"
 import { SECTIONS } from "../../../config/sections"
 
-type Props = { slug: string; initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null }; selectedSection?: string; initialChangelogVisible?: boolean; initialHidePoweredBy?: boolean }
+type Props = { slug: string; initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null }; selectedSection?: string; initialChangelogVisible?: boolean; initialHidePoweredBy?: boolean; initialPlan?: string }
 
 const sections = SECTIONS
 
-export default function SettingsTabs({ slug, initialTeam, selectedSection, initialChangelogVisible, initialHidePoweredBy }: Props) {
+export default function SettingsTabs({ slug, initialTeam, selectedSection, initialChangelogVisible, initialHidePoweredBy, initialPlan }: Props) {
   const router = useRouter()
   const routeParams = useParams()
   const paramSection = typeof routeParams?.section === "string" ? routeParams.section : undefined
@@ -59,6 +59,7 @@ export default function SettingsTabs({ slug, initialTeam, selectedSection, initi
               initialTeam={initialTeam}
               initialChangelogVisible={initialChangelogVisible}
               initialHidePoweredBy={initialHidePoweredBy}
+              initialPlan={initialPlan}
             />
           </TabsContent>
         ))}
@@ -67,20 +68,20 @@ export default function SettingsTabs({ slug, initialTeam, selectedSection, initi
   )
 }
 
-function SectionRenderer({ slug, section, initialTeam, initialChangelogVisible, initialHidePoweredBy }: { slug: string; section: string; initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null }; initialChangelogVisible?: boolean; initialHidePoweredBy?: boolean }) {
+function SectionRenderer({ slug, section, initialTeam, initialChangelogVisible, initialHidePoweredBy, initialPlan }: { slug: string; section: string; initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null }; initialChangelogVisible?: boolean; initialHidePoweredBy?: boolean; initialPlan?: string }) {
   switch (section) {
     case "branding":
-      return <BrandingSection slug={slug} initialHidePoweredBy={initialHidePoweredBy} />
+      return <BrandingSection slug={slug} initialHidePoweredBy={initialHidePoweredBy} initialPlan={initialPlan} />
     case "team":
-      return <TeamSection slug={slug} initialMembers={initialTeam?.members} initialInvites={initialTeam?.invites} initialMeId={initialTeam?.meId} />
+      return <TeamSection slug={slug} initialMembers={initialTeam?.members} initialInvites={initialTeam?.invites} initialMeId={initialTeam?.meId} initialPlan={initialPlan} />
     case "feedback":
       return <FeedbackSection />
     case "changelog":
-      return <ChangelogSection slug={slug} initialIsVisible={initialChangelogVisible} />
+      return <ChangelogSection slug={slug} initialIsVisible={initialChangelogVisible} initialPlan={initialPlan} />
     case "billing":
       return <BillingSection />
     case "domain":
-      return <DomainSection slug={slug} />
+      return <DomainSection slug={slug} initialPlan={initialPlan} />
     case "integrations":
       return <IntegrationsSection />
     case "sso":

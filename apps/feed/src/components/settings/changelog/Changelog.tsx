@@ -11,7 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
 
-export default function ChangelogSection({ slug, initialIsVisible }: { slug: string; initialIsVisible?: boolean }) {
+export default function ChangelogSection({ slug, initialIsVisible, initialPlan }: { slug: string; initialIsVisible?: boolean; initialPlan?: string }) {
   const queryClient = useQueryClient()
   const { data = { isVisible: Boolean(initialIsVisible), moderators: [] }, isLoading, refetch } = useQuery({
     queryKey: ["changelog-settings", slug],
@@ -147,7 +147,7 @@ export default function ChangelogSection({ slug, initialIsVisible }: { slug: str
               </TableBody>
             </Table>
           </div>
-          <PlanNotice slug={slug} feature="changelog_tags" changelogTagsCount={(tagsData || []).length} />
+          <PlanNotice slug={slug} feature="changelog_tags" plan={initialPlan} changelogTagsCount={(tagsData || []).length} />
         </div>
 
         <div className="p-4 space-y-2">
@@ -180,7 +180,7 @@ export default function ChangelogSection({ slug, initialIsVisible }: { slug: str
               </TableBody>
             </Table>
           </div>
-          <PlanNotice slug={slug} feature="changelog_team" membersCount={undefined} />
+          <PlanNotice slug={slug} feature="changelog_team" plan={initialPlan} membersCount={undefined} />
           <div className="flex items-center gap-2">
             <Input className="h-9 w-[220px]" placeholder="Add moderator by user id" onKeyDown={async (e) => {
               const v = (e.target as HTMLInputElement).value

@@ -14,7 +14,7 @@ import AddDomainDialog from "./AddDomainDialog";
 import { ArrowIcon } from "@feedgot/ui/icons/arrow";
 import { normalizePlan } from "@/lib/plan";
 import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
-export default function DomainSection({ slug }: { slug: string }) {
+export default function DomainSection({ slug, initialPlan }: { slug: string; initialPlan?: string }) {
   const [open, setOpen] = React.useState(false);
   const { data, isLoading } = useDomain(slug);
   const plan = normalizePlan(data?.plan || "free");
@@ -98,7 +98,7 @@ export default function DomainSection({ slug }: { slug: string }) {
           saving={createMutation.isPending}
         />
 
-        <PlanNotice slug={slug} feature="domain" plan={plan} />
+        <PlanNotice slug={slug} feature="domain" plan={initialPlan || plan} />
       </div>
     </SectionCard>
   );
