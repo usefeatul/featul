@@ -35,8 +35,7 @@ export function DomainAuthModal({ open, onOpenChange, mode: initialMode = "sign-
     setLoading(false)
   }, [initialMode, open])
 
-  const rawRedirect = search?.get("redirect") || ""
-  const redirect = rawRedirect.startsWith("/") ? rawRedirect : "/start"
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "/"
 
   const broadcast = React.useMemo(() => (typeof window !== "undefined" ? new BroadcastChannel("auth") : null), [])
   React.useEffect(() => () => { broadcast?.close() }, [broadcast])
@@ -46,7 +45,7 @@ export function DomainAuthModal({ open, onOpenChange, mode: initialMode = "sign-
     setLoading(true)
     setError("")
     try {
-      await authClient.signIn.social({ provider, callbackURL: redirect })
+      await authClient.signIn.social({ provider, callbackURL: currentUrl })
     } catch (e) {
       toast.error(`Failed with ${provider}`)
       setError(`Failed with ${provider}`)
@@ -61,12 +60,11 @@ export function DomainAuthModal({ open, onOpenChange, mode: initialMode = "sign-
     setError("")
     try {
       await authClient.signIn.email(
-        { email: email.trim(), password, callbackURL: redirect },
+        { email: email.trim(), password },
         {
           onError: (ctx) => {
             if (ctx.error.status === 403) {
-              toast.info("Please verify your email")
-              router.push(`/auth/verify?email=${encodeURIComponent(email.trim())}${rawRedirect ? `&redirect=${encodeURIComponent(rawRedirect)}` : ""}`)
+              toast.info("Please verify your email to complete sign in")
               return
             }
             setError(ctx.error.message)
@@ -101,11 +99,10 @@ export function DomainAuthModal({ open, onOpenChange, mode: initialMode = "sign-
         name: displayName,
         email: email.trim(),
         password,
-        callbackURL: `/auth/verify?email=${encodeURIComponent(email.trim())}${rawRedirect ? `&redirect=${encodeURIComponent(rawRedirect)}` : ""}`,
       })
-      toast.success("Account created. Check your email for the code")
+      toast.success("Account created. Check your email for the verification code")
       broadcast?.postMessage({ type: "signed-up" })
-      router.push(`/auth/verify?email=${encodeURIComponent(email)}${rawRedirect ? `&redirect=${encodeURIComponent(rawRedirect)}` : ""}`)
+      onOpenChange(false)
     } catch (e: any) {
       setError(e?.message || "Failed to sign up")
       toast.error(e?.message || "Failed to sign up")
@@ -183,4 +180,3 @@ export function DomainAuthModal({ open, onOpenChange, mode: initialMode = "sign-
     </Dialog>
   )
 }
-
