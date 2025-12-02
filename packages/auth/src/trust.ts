@@ -15,6 +15,9 @@ function toRegex(originPattern: string): RegExp | null {
 }
 
 export async function isTrustedOrigin(origin: string): Promise<boolean> {
+  if (process.env.NODE_ENV === "production" && !origin.startsWith("https://")) {
+    return false
+  }
   const raw = process.env.AUTH_TRUSTED_ORIGINS || ""
   const patterns = raw.split(",").map((s) => s.trim()).filter(Boolean)
   for (const p of patterns) {
@@ -40,7 +43,8 @@ export function corsHeaders(origin: string): HeadersInit {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "content-type, authorization, x-requested-with",
+    "Access-Control-Allow-Headers": "content-type, authorization, x-requested-with, accept",
+    "Vary": "Origin",
   }
 }
 
@@ -67,7 +71,9 @@ export async function withCors(req: Request, res: Response): Promise<Response> {
 export const handlePreflight = async (req: Request) => {
   const origin = req.headers.get("origin") || ""
   if (origin && (await isTrustedOrigin(origin))) {
-    return new Response(null, { status: 204, headers: corsHeaders(origin) })
+    const h = new Headers(corsHeaders(origin))
+    h.set("Access-Control-Max-Age", "600")
+    return new Response(null, { status: 204, headers: h })
   }
   return new Response(null, { status: 204 })
 }
