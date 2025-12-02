@@ -16,17 +16,19 @@ export default function DomainActions({
   deleting,
   onVerify,
   onDelete,
+  disabled,
 }: {
   verifying: boolean;
   deleting?: boolean;
   onVerify: () => void;
   onDelete: () => void;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="ghost" size="icon-sm" aria-label="More">
+        <Button type="button" variant="ghost" size="icon-sm" aria-label="More" disabled={disabled}>
           <MoreVertical className="size-4" />
         </Button>
       </PopoverTrigger>
@@ -35,20 +37,22 @@ export default function DomainActions({
           <PopoverListItem
             role="menuitem"
             onClick={() => {
+              if (disabled) return;
               setOpen(false);
               onVerify();
             }}
-            aria-disabled={verifying}
+            aria-disabled={verifying || Boolean(disabled)}
           >
             <span className="text-sm">Verify</span>
           </PopoverListItem>
           <PopoverListItem
             role="menuitem"
             onClick={() => {
+              if (disabled) return;
               setOpen(false);
               onDelete();
             }}
-            aria-disabled={Boolean(deleting)}
+            aria-disabled={Boolean(deleting) || Boolean(disabled)}
           >
             <span className="text-sm text-red-500">Delete</span>
           </PopoverListItem>

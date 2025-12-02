@@ -25,6 +25,7 @@ import { setWorkspaceLogo } from "@/lib/branding-store";
 import { Input } from "@feedgot/ui/components/input";
 import { useQueryClient } from "@tanstack/react-query";
 import { client } from "@feedgot/api/client";
+import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import {  getPlanLimits } from "@/lib/plan";
 
 export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: string; initialHidePoweredBy?: boolean }) {
@@ -44,6 +45,7 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
   const originalNameRef = React.useRef<string>("");
   const queryClient = useQueryClient();
   const [plan, setPlan] = React.useState<string>("free");
+  const { loading: brandingAccessLoading, canEditBranding } = useCanEditBranding(slug);
 
   React.useEffect(() => {
     let mounted = true;
@@ -88,6 +90,7 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
             setPlan(String(w?.plan || "free"));
           }
         } catch {}
+        
       } catch (e) {
       } finally {
         if (mounted) setLoading(false);
@@ -100,6 +103,10 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
 
   const handleSave = async () => {
     if (saving) return;
+    if (!canEditBranding) {
+      toast.error("You don’t have permission to update branding");
+      return;
+    }
     setSaving(true);
     const root = document.documentElement;
     const prevP = getComputedStyle(root).getPropertyValue("--primary").trim();
@@ -186,7 +193,7 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
               slug={slug}
               value={logoUrl}
               onChange={setLogoUrl}
-              disabled={!getPlanLimits(plan).allowBranding}
+              disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
             />
           </div>
         </div>
@@ -201,28 +208,28 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
                 setAccentColor(c.accent);
                 applyBrandPrimary(c.primary);
               }}
-              disabled={!getPlanLimits(plan).allowBranding}
+              disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
             />
           </div>
         </div>
         <div className="flex items-center justify-between p-4">
           <div className="text-sm">Theme</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <ThemePicker value={theme} onSelect={(t) => setTheme(t)} />
+            <ThemePicker value={theme} onSelect={(t) => setTheme(t)} disabled={!canEditBranding} />
           </div>
         </div>
 
         <div className="flex items-center justify-between p-4">
           <div className="text-sm">Layout Style</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <LayoutStylePicker value={layoutStyle} onSelect={(l) => setLayoutStyle(l)} />
+            <LayoutStylePicker value={layoutStyle} onSelect={(l) => setLayoutStyle(l)} disabled={!canEditBranding} />
           </div>
         </div>
 
         <div className="flex items-center justify-between p-4">
           <div className="text-sm">Sidebar Position</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <SidebarPositionPicker value={sidebarPosition} onSelect={(p) => setSidebarPosition(p)} />
+            <SidebarPositionPicker value={sidebarPosition} onSelect={(p) => setSidebarPosition(p)} disabled={!canEditBranding} />
           </div>
         </div>
 
@@ -235,7 +242,7 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
               checked={hidePoweredBy}
               onCheckedChange={(v) => setHidePoweredBy(Boolean(v))}
               aria-label="Hide Powered by"
-              disabled={!getPlanLimits(plan).allowHidePoweredBy}
+              disabled={!getPlanLimits(plan).allowHidePoweredBy || !canEditBranding}
             />
           </div>
         </div>
@@ -245,7 +252,7 @@ export default function BrandingSection({ slug, initialHidePoweredBy }: { slug: 
       </div>
 
       <div className="px-4 pb-4">
-        <LoadingButton onClick={handleSave} loading={saving} disabled={loading}>
+        <LoadingButton onClick={handleSave} loading={saving} disabled={loading || brandingAccessLoading || !canEditBranding}>
           Save
         </LoadingButton>
       </div>

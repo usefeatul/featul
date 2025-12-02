@@ -6,11 +6,11 @@ import { DropdownIcon } from "@feedgot/ui/icons/dropdown"
 
 type LayoutStyle = "compact" | "comfortable" | "spacious"
 
-export default function LayoutStylePicker({ value, onSelect, options = ["compact", "comfortable", "spacious"] }: { value: LayoutStyle; onSelect: (l: LayoutStyle) => void; options?: LayoutStyle[] }) {
+export default function LayoutStylePicker({ value, onSelect, options = ["compact", "comfortable", "spacious"], disabled }: { value: LayoutStyle; onSelect: (l: LayoutStyle) => void; options?: LayoutStyle[]; disabled?: boolean }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button type="button" variant="outline" className="h-9 w-fit min-w-0 justify-between px-2">
+        <Button type="button" variant="outline" className="h-9 w-fit min-w-0 justify-between px-2" disabled={disabled}>
           <span className="text-sm capitalize">{value}</span>
           <DropdownIcon className="opacity-60" size={12} />
         </Button>
@@ -18,7 +18,7 @@ export default function LayoutStylePicker({ value, onSelect, options = ["compact
       <PopoverContent list>
         <PopoverList>
           {options.map((l) => (
-            <PopoverListItem key={l} onClick={() => onSelect(l)}>
+            <PopoverListItem key={l} onClick={() => !disabled && onSelect(l)}>
               <span className="text-sm capitalize">{l}</span>
             </PopoverListItem>
           ))}
@@ -27,4 +27,3 @@ export default function LayoutStylePicker({ value, onSelect, options = ["compact
     </Popover>
   )
 }
-

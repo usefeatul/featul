@@ -10,6 +10,7 @@ import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import InviteMemberModal from "./InviteMemberModal";
+import { useCanInvite } from "@/hooks/useWorkspaceAccess";
 import MemberRow from "./MemberRow";
 import InvitesList from "./InvitesList";
 import type { Member, Invite } from "../../../types/team";
@@ -37,6 +38,7 @@ export default function TeamSection({
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
+  const { loading: inviteAccessLoading, canInvite } = useCanInvite(slug);
 
 
 
@@ -124,7 +126,12 @@ export default function TeamSection({
           <div className="text-sm text-accent">Invite a new member to your workspace.</div>
                 <PlanNotice slug={slug} feature="team" membersCount={(data.members || []).length} />
           <div className="flex items-center justify-start">
-            <Button type="button" variant="quiet" onClick={() => setInviteOpen(true)}>
+            <Button
+              type="button"
+              variant="quiet"
+              onClick={() => setInviteOpen(true)}
+              disabled={isLoading || inviteAccessLoading || !canInvite}
+            >
               Invite Member
             </Button>
           </div>

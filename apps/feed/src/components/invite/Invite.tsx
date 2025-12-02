@@ -115,6 +115,11 @@ export default function Invite({
           targetSlug = all[0]?.slug || null;
         }
       } catch {}
+      if (targetSlug) {
+        try {
+          await authClient.organization.setActive({ organizationSlug: targetSlug });
+        } catch {}
+      }
       toast.success("Invite accepted");
       if (targetSlug) router.replace(`/workspaces/${targetSlug}`);
       else router.replace("/start");

@@ -36,7 +36,7 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
 
   const onFile = async (file: File) => {
     if (disabled) {
-      toast.error("Upgrade to change logo")
+      toast.error("You don’t have permission to change logo")
       return
     }
     if (!allowed.includes(file.type)) {

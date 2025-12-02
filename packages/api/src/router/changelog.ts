@@ -233,11 +233,22 @@ export function createChangelogRouter() {
         .input(z.object({ slug: bySlugSchema.shape.slug, name: z.string().min(1).max(64), color: z.string().optional() }))
         .post(async ({ ctx, input, c }) => {
           const [ws] = await ctx.db
-            .select({ id: workspace.id, plan: workspace.plan })
+            .select({ id: workspace.id, plan: workspace.plan, ownerId: workspace.ownerId })
             .from(workspace)
             .where(eq(workspace.slug, input.slug))
             .limit(1)
           if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+          let allowed = ws.ownerId === ctx.session.user.id
+          if (!allowed) {
+            const [member] = await ctx.db
+              .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+              .from(workspaceMember)
+              .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+              .limit(1)
+            const perms = (member?.permissions || {}) as Record<string, boolean>
+            if (member?.role === "admin" || perms?.canManageBoards) allowed = true
+          }
+          if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
           const [b] = await ctx.db
             .select({ id: board.id, changelogTags: board.changelogTags })
             .from(board)
@@ -262,11 +273,22 @@ export function createChangelogRouter() {
         .input(z.object({ slug: bySlugSchema.shape.slug, tagId: z.string().min(1) }))
         .post(async ({ ctx, input, c }) => {
           const [ws] = await ctx.db
-            .select({ id: workspace.id })
+            .select({ id: workspace.id, ownerId: workspace.ownerId })
             .from(workspace)
             .where(eq(workspace.slug, input.slug))
             .limit(1)
           if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+          let allowed = ws.ownerId === ctx.session.user.id
+          if (!allowed) {
+            const [member] = await ctx.db
+              .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+              .from(workspaceMember)
+              .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+              .limit(1)
+            const perms = (member?.permissions || {}) as Record<string, boolean>
+            if (member?.role === "admin" || perms?.canManageBoards) allowed = true
+          }
+          if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
           const [b] = await ctx.db
             .select({ id: board.id, changelogTags: board.changelogTags })
             .from(board)

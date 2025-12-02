@@ -214,11 +214,22 @@ export function createWorkspaceRouter() {
         .input(updateCustomDomainInputSchema)
         .post(async ({ ctx, input, c }) => {
           const [ws] = await ctx.db
-            .select({ id: workspace.id, plan: workspace.plan, domain: workspace.domain })
+            .select({ id: workspace.id, plan: workspace.plan, domain: workspace.domain, ownerId: workspace.ownerId })
             .from(workspace)
             .where(eq(workspace.slug, input.slug))
             .limit(1)
           if (!ws) return c.json({ ok: false })
+          let allowed = ws.ownerId === ctx.session.user.id
+          if (!allowed) {
+            const [me] = await ctx.db
+              .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+              .from(workspaceMember)
+              .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+              .limit(1)
+            const perms = (me?.permissions || {}) as Record<string, boolean>
+            if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
+          }
+          if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
           const planKey = normalizePlan(String(ws.plan || "free"))
           if (!(planKey === "starter" || planKey === "professional")) {
@@ -262,11 +273,22 @@ export function createWorkspaceRouter() {
         .input(createDomainInputSchema)
         .post(async ({ ctx, input, c }) => {
           const [ws] = await ctx.db
-            .select({ id: workspace.id, plan: workspace.plan })
+            .select({ id: workspace.id, plan: workspace.plan, ownerId: workspace.ownerId })
             .from(workspace)
             .where(eq(workspace.slug, input.slug))
             .limit(1)
           if (!ws) return c.json({ ok: false })
+          let allowed = ws.ownerId === ctx.session.user.id
+          if (!allowed) {
+            const [me] = await ctx.db
+              .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+              .from(workspaceMember)
+              .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+              .limit(1)
+            const perms = (me?.permissions || {}) as Record<string, boolean>
+            if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
+          }
+          if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
           const planKey = normalizePlan(String(ws.plan || "free"))
           if (!(planKey === "starter" || planKey === "professional")) {
             throw new HTTPException(403, { message: "Custom domain available on Starter or Professional plans" })
@@ -297,11 +319,22 @@ export function createWorkspaceRouter() {
         .input(verifyDomainInputSchema)
         .post(async ({ ctx, input, c }) => {
           const [ws] = await ctx.db
-            .select({ id: workspace.id })
+            .select({ id: workspace.id, ownerId: workspace.ownerId })
             .from(workspace)
             .where(eq(workspace.slug, input.slug))
             .limit(1)
           if (!ws) return c.json({ ok: false })
+          let allowed = ws.ownerId === ctx.session.user.id
+          if (!allowed) {
+            const [me] = await ctx.db
+              .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+              .from(workspaceMember)
+              .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+              .limit(1)
+            const perms = (me?.permissions || {}) as Record<string, boolean>
+            if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
+          }
+          if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
           const [d] = await ctx.db
             .select({ id: workspaceDomain.id, host: workspaceDomain.host, cnameTarget: workspaceDomain.cnameTarget, txtName: workspaceDomain.txtName, txtValue: workspaceDomain.txtValue })
@@ -343,11 +376,22 @@ export function createWorkspaceRouter() {
         .input(checkSlugInputSchema)
         .post(async ({ ctx, input, c }) => {
           const [ws] = await ctx.db
-            .select({ id: workspace.id })
+            .select({ id: workspace.id, ownerId: workspace.ownerId })
             .from(workspace)
             .where(eq(workspace.slug, input.slug))
             .limit(1)
           if (!ws) return c.json({ ok: false })
+          let allowed = ws.ownerId === ctx.session.user.id
+          if (!allowed) {
+            const [me] = await ctx.db
+              .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+              .from(workspaceMember)
+              .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+              .limit(1)
+            const perms = (me?.permissions || {}) as Record<string, boolean>
+            if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
+          }
+          if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
           const [d] = await ctx.db
             .select({ host: workspaceDomain.host, id: workspaceDomain.id })

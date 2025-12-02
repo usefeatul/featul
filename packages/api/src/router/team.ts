@@ -14,37 +14,8 @@ import {
   addExistingMemberInputSchema,
 } from "../validators/team"
 import { getPlanLimits } from "../shared/plan"
+import { mapPermissions } from "../shared/permissions"
 
-function mapPermissions(role: "admin" | "member" | "viewer") {
-  if (role === "admin") {
-    return {
-      canManageWorkspace: true,
-      canManageBilling: true,
-      canManageMembers: true,
-      canManageBoards: true,
-      canModerateAllBoards: true,
-      canConfigureBranding: true,
-    }
-  }
-  if (role === "member") {
-    return {
-      canManageWorkspace: false,
-      canManageBilling: false,
-      canManageMembers: false,
-      canManageBoards: true,
-      canModerateAllBoards: true,
-      canConfigureBranding: false,
-    }
-  }
-  return {
-    canManageWorkspace: false,
-    canManageBilling: false,
-    canManageMembers: false,
-    canManageBoards: false,
-    canModerateAllBoards: false,
-    canConfigureBranding: false,
-  }
-}
 
 export function createTeamRouter() {
   return j.router({
