@@ -52,11 +52,13 @@ export default function ChangelogSection({ slug }: { slug: string }) {
         const err = (await res.json().catch(() => null)) as { message?: string } | null
         throw new Error(err?.message || "Update failed")
       }
-      toast.success("Changelog visibility updated")
+      const msg = v ? "Changelog is now visible on your public site" : "Changelog is hidden from your public site"
+      toast.success(msg)
       queryClient.setQueryData(["changelog-settings", slug], (prev: any) => ({ ...(prev || {}), isVisible: v }))
     } catch (e: unknown) {
       setVisible(!v)
-      toast.error((e as { message?: string })?.message || "Failed to update visibility")
+      const m = (e as { message?: string })?.message || "Couldn't update changelog visibility"
+      toast.error(m)
     }
   }
 
