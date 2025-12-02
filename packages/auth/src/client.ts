@@ -9,6 +9,10 @@ import type { AuthServer } from "./auth"
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  fetch: async (url: string, init?: any) => {
+    const next = { ...(init || {}), credentials: "include" as const }
+    return fetch(url, next)
+  },
   plugins: [
     organizationClient({ schema: inferOrgAdditionalFields<AuthServer>() }),
     lastLoginMethodClient(),

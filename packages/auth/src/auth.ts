@@ -95,6 +95,13 @@ export const auth = betterAuth({
       enabled: Boolean(process.env.AUTH_COOKIE_DOMAIN),
       domain: process.env.AUTH_COOKIE_DOMAIN as string,
     },
+    cookies: {
+      session_token: {
+        attributes: {
+          sameSite: "none",
+        },
+      },
+    },
   },
 })
 
