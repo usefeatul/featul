@@ -1,7 +1,7 @@
 import React from "react"
 import { notFound } from "next/navigation"
-import { db, workspace } from "@feedgot/db"
-import { eq } from "drizzle-orm"
+import { db, workspace, board } from "@feedgot/db"
+import { eq, and } from "drizzle-orm"
 import { Container } from "@/components/global/container"
 import { DomainHeader } from "@/components/domain/DomainHeader"
 import BrandVarsEffect from "@/components/global/BrandVarsEffect"
@@ -28,6 +28,12 @@ export default async function Layout({
   if (!ws) notFound()
 
   const branding = await getBrandingBySlug(subdomain)
+  const [b] = await db
+    .select({ id: board.id, isVisible: board.isVisible, isPublic: board.isPublic })
+    .from(board)
+    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog" as any)))
+    .limit(1)
+  const changelogVisible = Boolean(b?.isVisible) && Boolean(b?.isPublic)
   const hidePoweredBy = Boolean(branding.hidePoweredBy)
   const p = branding.primary
   return (
@@ -44,7 +50,7 @@ export default async function Layout({
           const maxW = branding.layoutStyle === "compact" ? "4xl" : branding.layoutStyle === "spacious" ? "6xl" : "5xl"
           return (
             <Container maxWidth={maxW}>
-              <DomainHeader workspace={ws} subdomain={subdomain} />
+              <DomainHeader workspace={ws} subdomain={subdomain} changelogVisible={changelogVisible} />
               <div className="mt-6 pb-16 md:pb-0">{children}</div>
             </Container>
           )

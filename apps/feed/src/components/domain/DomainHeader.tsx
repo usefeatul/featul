@@ -26,9 +26,11 @@ type WorkspaceInfo = {
 export function DomainHeader({
   workspace,
   subdomain,
+  changelogVisible: initialChangelogVisible = true,
 }: {
   workspace: WorkspaceInfo;
   subdomain: string;
+  changelogVisible?: boolean;
 }) {
   const pathname = usePathname() || "";
   const feedbackBase = `/`;
@@ -41,7 +43,7 @@ export function DomainHeader({
   const [authMode, setAuthMode] = React.useState<"sign-in" | "sign-up">("sign-in");
   const [verifying, setVerifying] = React.useState(true);
   const [user, setUser] = React.useState<{ name?: string; email?: string; image?: string | null } | null>(null);
-  const [changelogVisible, setChangelogVisible] = React.useState(true);
+  const [changelogVisible, setChangelogVisible] = React.useState(Boolean(initialChangelogVisible));
   const itemCls = (active: boolean) =>
     cn(
       "rounded-md border px-3 py-2 group",
