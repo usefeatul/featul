@@ -63,8 +63,6 @@ export function createBoardRouter() {
             isVisible: z.boolean().optional(),
             isActive: z.boolean().optional(),
             allowAnonymous: z.boolean().optional(),
-            requireApproval: z.boolean().optional(),
-            allowVoting: z.boolean().optional(),
             allowComments: z.boolean().optional(),
             hidePublicMemberIdentity: z.boolean().optional(),
             sortOrder: z.number().int().optional(),
@@ -120,8 +118,6 @@ export function createBoardRouter() {
           slug: checkSlugInputSchema.shape.slug,
           patch: z.object({
             allowAnonymous: z.boolean().optional(),
-            requireApproval: z.boolean().optional(),
-            allowVoting: z.boolean().optional(),
             allowComments: z.boolean().optional(),
             hidePublicMemberIdentity: z.boolean().optional(),
           }),

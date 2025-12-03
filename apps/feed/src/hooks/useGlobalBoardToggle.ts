@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
 
-export type ToggleKey = "allowAnonymous" | "requireApproval" | "allowVoting" | "allowComments" | "hidePublicMemberIdentity"
+export type ToggleKey = "allowAnonymous" | "allowComments" | "hidePublicMemberIdentity"
 
 export function useGlobalBoardToggle(slug: string, key: ToggleKey, successMessage?: string) {
   const queryClient = useQueryClient()
