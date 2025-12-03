@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import SettingsTabs from "@/components/settings/global/SettingsTabs"
+import SettingsServer from "@/components/settings/global/SettingsServer"
 import { db, workspace, board, brandingConfig } from "@feedgot/db"
 import { and, eq } from "drizzle-orm"
 import { createPageMetadata } from "@/lib/seo"
@@ -82,7 +82,7 @@ export default async function SettingsSectionPage({ params }: Props) {
     initialDefaultDomain = String((dDomain as any)?.defaultDomain || "")
   } catch {}
   return (
-    <SettingsTabs
+    <SettingsServer
       slug={slug}
       selectedSection={section}
       initialChangelogVisible={initialChangelogVisible}

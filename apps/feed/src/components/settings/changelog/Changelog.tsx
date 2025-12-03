@@ -56,6 +56,7 @@ export default function ChangelogSection({
     staleTime: 300000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const { data: tagsData = [], isLoading: tagsLoading, refetch: refetchTags } = useQuery({

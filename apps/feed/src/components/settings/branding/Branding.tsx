@@ -29,20 +29,20 @@ import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import {  getPlanLimits } from "@/lib/plan";
 
 export default function BrandingSection({ slug, initialHidePoweredBy, initialPlan, initialConfig, initialWorkspaceName }: { slug: string; initialHidePoweredBy?: boolean; initialPlan?: string; initialConfig?: any; initialWorkspaceName?: string }) {
-  const [logoUrl, setLogoUrl] = React.useState("");
-  const [primaryColor, setPrimaryColor] = React.useState("#3b82f6");
-  const [accentColor, setAccentColor] = React.useState("#60a5fa");
-  const [colorKey, setColorKey] = React.useState<string>("blue");
-  const [theme, setTheme] = React.useState<"light" | "dark" | "system">(
-    "system"
-  );
-  const [hidePoweredBy, setHidePoweredBy] = React.useState<boolean>(Boolean(initialHidePoweredBy));
-  const [layoutStyle, setLayoutStyle] = React.useState<"compact" | "comfortable" | "spacious">("comfortable");
-  const [sidebarPosition, setSidebarPosition] = React.useState<"left" | "right">("left");
+  const initialPrimary = (initialConfig?.primaryColor as string | undefined) || "#3b82f6"
+  const initialFound = findColorByPrimary(initialPrimary) || BRANDING_COLORS[1]
+  const [logoUrl, setLogoUrl] = React.useState(String(initialConfig?.logoUrl || ""));
+  const [primaryColor, setPrimaryColor] = React.useState(initialPrimary);
+  const [accentColor, setAccentColor] = React.useState(String(initialConfig?.accentColor || (initialFound && initialFound.accent) || "#60a5fa"));
+  const [colorKey, setColorKey] = React.useState<string>(initialFound ? initialFound.key : "blue");
+  const [theme, setTheme] = React.useState<"light" | "dark" | "system">((initialConfig?.theme === "light" || initialConfig?.theme === "dark" || initialConfig?.theme === "system") ? initialConfig.theme : "system");
+  const [hidePoweredBy, setHidePoweredBy] = React.useState<boolean>(typeof initialHidePoweredBy === "boolean" ? Boolean(initialHidePoweredBy) : Boolean(initialConfig?.hidePoweredBy));
+  const [layoutStyle, setLayoutStyle] = React.useState<"compact" | "comfortable" | "spacious">((initialConfig?.layoutStyle === "compact" || initialConfig?.layoutStyle === "comfortable" || initialConfig?.layoutStyle === "spacious") ? initialConfig.layoutStyle : "comfortable");
+  const [sidebarPosition, setSidebarPosition] = React.useState<"left" | "right">((initialConfig?.sidebarPosition === "left" || initialConfig?.sidebarPosition === "right") ? initialConfig.sidebarPosition : "left");
   const [saving, setSaving] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [workspaceName, setWorkspaceName] = React.useState("");
-  const originalNameRef = React.useRef<string>("");
+  const [loading, setLoading] = React.useState(!initialConfig);
+  const [workspaceName, setWorkspaceName] = React.useState(String(initialWorkspaceName || ""));
+  const originalNameRef = React.useRef<string>(String(initialWorkspaceName || ""));
   const queryClient = useQueryClient();
   const [plan, setPlan] = React.useState<string>(initialPlan || "free");
   const { loading: brandingAccessLoading, canEditBranding } = useCanEditBranding(slug);

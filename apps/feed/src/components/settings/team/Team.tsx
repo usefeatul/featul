@@ -38,6 +38,7 @@ export default function TeamSection({
     staleTime: 300000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    refetchOnMount: false,
   });
   const { loading: inviteAccessLoading, canInvite } = useCanInvite(slug);
 
