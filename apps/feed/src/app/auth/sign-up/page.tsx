@@ -5,7 +5,8 @@ import { getServerSession } from "@feedgot/auth/session"
 import { redirect } from "next/navigation"
 import { findFirstAccessibleWorkspaceSlug } from "@/lib/workspace"
 
-export const revalidate = 30
+export const dynamic = "force-dynamic"
+
 
 export const metadata: Metadata = createPageMetadata({
   title: "Create Account",

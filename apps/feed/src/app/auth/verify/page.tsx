@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import Verify from "@/components/auth/verify"
 import { Suspense } from "react"
 import { createPageMetadata } from "@/lib/seo"
-export const revalidate = 30
+export const dynamic = "force-dynamic"
+
 
 export const metadata: Metadata = createPageMetadata({
   title: "Verify Email",

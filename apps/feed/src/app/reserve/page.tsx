@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { createPageMetadata } from "@/lib/seo"
 import ReserveForm from "@/components/reserve/ReserveForm"
 
-export const revalidate = 30
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = createPageMetadata({
   title: "Reserve your subdomain",

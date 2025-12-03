@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import ForgotPassword from "@/components/auth/ForgotPassword"
 import { createPageMetadata } from "@/lib/seo"
 
-export const revalidate = 30
+export const dynamic = "force-dynamic"
+
 
 export const metadata: Metadata = createPageMetadata({
   title: "Forgot Password",
