@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { motion } from "framer-motion"
 
 import { cn } from "@feedgot/ui/lib/utils"
 
@@ -17,14 +18,19 @@ const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      "fixed inset-0 z-50 bg-black/30 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
-    )}
-    {...props}
-  />
+  <DialogPrimitive.Overlay asChild>
+    <motion.div
+      ref={ref as any}
+      className={cn(
+        "fixed inset-0 z-50 bg-black/30",
+        className
+      )}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      {...props as any}
+    />
+  </DialogPrimitive.Overlay>
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
@@ -34,15 +40,20 @@ const DialogContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-4 border ring-1 ring-border shadow-sm sm:rounded-md duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        className
-      )}
-      {...props}
-    >
-      {children}
+    <DialogPrimitive.Content asChild {...props}>
+      <motion.div
+        ref={ref as any}
+        className={cn(
+          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-4 border ring-1 ring-border shadow-sm sm:rounded-md",
+          className
+        )}
+        initial={{ opacity: 0, scale: 0.98, y: -12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.98, y: -12 }}
+        transition={{ type: "spring", stiffness: 520, damping: 34, mass: 0.6 }}
+      >
+        {children}
+      </motion.div>
     </DialogPrimitive.Content>
   </DialogPortal>
 ))
