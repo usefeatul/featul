@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { LoveIcon } from "@feedgot/ui/icons/love"
+import { UpvoteButton } from "@/components/global/UpvoteButton"
 import { CommentsIcon } from "@feedgot/ui/icons/comments"
 import type { RequestItemData } from "@/components/requests/RequestItem"
 import StatusIcon from "@/components/requests/StatusIcon"
@@ -26,10 +26,12 @@ function PostCardBase({ item }: { item: RequestItemData }) {
         </Link>
         <div className="ml-auto flex items-center gap-3 text-xs text-accent">
           <div className="inline-flex items-center gap-2 bg-muted rounded-md ring-1 ring-border px-2 py-1">
-            <span className="inline-flex items-center gap-1">
-              <LoveIcon aria-hidden className="w-3 h-3" />
-              <span className="tabular-nums">{item.upvotes}</span>
-            </span>
+            <UpvoteButton 
+              postId={item.id} 
+              upvotes={item.upvotes} 
+              hasVoted={item.hasVoted} 
+              className="text-xs hover:text-red-500/80"
+            />
             <span className="inline-flex items-center gap-1">
               <CommentsIcon aria-hidden className="w-3 h-3" />
               <span className="tabular-nums">{item.commentCount}</span>

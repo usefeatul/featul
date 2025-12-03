@@ -2,7 +2,7 @@
 import { eq, and, sql, inArray, type SQLWrapper } from "drizzle-orm"
 import { z } from "zod"
 import { j, publicProcedure, privateProcedure } from "../jstack"
-import { workspace, board, post, postTag, tag, comment, user, workspaceMember } from "@feedgot/db"
+import { workspace, board, post, postTag, tag, comment, user, workspaceMember, vote } from "@feedgot/db"
 import { byIdSchema, updatePostMetaSchema, updatePostBoardSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
 import { byBoardInputSchema, boardSlugSchema } from "../validators/board"
@@ -441,23 +441,48 @@ export function createBoardRouter() {
           .limit(1)
         if (!b) return c.superjson({ posts: [] })
 
-        const postsList = await ctx.db
-          .select({
-            id: post.id,
-            title: post.title,
-            slug: post.slug,
-            content: post.content,
-            image: post.image,
-            authorImage: post.authorImage,
-            commentCount: post.commentCount,
-            upvotes: post.upvotes,
-            roadmapStatus: post.roadmapStatus,
-            publishedAt: post.publishedAt,
-          })
-          .from(post)
-          .where(eq(post.boardId, b.id))
+        const userId = ctx.session?.user?.id
+
+        let postsList
+        if (userId) {
+          postsList = await ctx.db
+            .select({
+              id: post.id,
+              title: post.title,
+              slug: post.slug,
+              content: post.content,
+              image: post.image,
+              authorImage: post.authorImage,
+              commentCount: post.commentCount,
+              upvotes: post.upvotes,
+              roadmapStatus: post.roadmapStatus,
+              publishedAt: post.publishedAt,
+              hasVoted: sql<boolean>`CASE WHEN ${vote.id} IS NOT NULL THEN true ELSE false END`,
+            })
+            .from(post)
+            .leftJoin(vote, and(eq(vote.postId, post.id), eq(vote.userId, userId)))
+            .where(eq(post.boardId, b.id))
+        } else {
+          postsList = await ctx.db
+            .select({
+              id: post.id,
+              title: post.title,
+              slug: post.slug,
+              content: post.content,
+              image: post.image,
+              authorImage: post.authorImage,
+              commentCount: post.commentCount,
+              upvotes: post.upvotes,
+              roadmapStatus: post.roadmapStatus,
+              publishedAt: post.publishedAt,
+              hasVoted: sql<boolean>`false`,
+            })
+            .from(post)
+            .where(eq(post.boardId, b.id))
+        }
+
         const toAvatar = (seed?: string | null) => `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')}`
-        const withAvatars = postsList.map((p: typeof post.$inferSelect) => ({
+        const withAvatars = postsList.map((p: any) => ({
           ...p,
           authorImage: p.authorImage || toAvatar(p.id || p.slug),
         }))
@@ -467,40 +492,86 @@ export function createBoardRouter() {
     postDetail: publicProcedure
       .input(byIdSchema)
       .get(async ({ ctx, input, c }) => {
-        const [p] = await ctx.db
-          .select({
-            id: post.id,
-            title: post.title,
-            content: post.content,
-            slug: post.slug,
-            boardId: post.boardId,
-            image: post.image,
-            upvotes: post.upvotes,
-            commentCount: post.commentCount,
-            isPinned: post.isPinned,
-            isLocked: post.isLocked,
-            isFeatured: post.isFeatured,
-            publishedAt: post.publishedAt,
-            createdAt: post.createdAt,
-            updatedAt: post.updatedAt,
-            authorId: post.authorId,
-            authorName: post.authorName,
-            authorEmail: post.authorEmail,
-            authorImage: post.authorImage,
-            isAnonymous: post.isAnonymous,
-            status: post.status,
-            roadmapStatus: post.roadmapStatus,
-            metadata: post.metadata,
-            metaTitle: post.metaTitle,
-            metaDescription: post.metaDescription,
-            moderatedBy: post.moderatedBy,
-            moderatedAt: post.moderatedAt,
-            moderationReason: post.moderationReason,
-            duplicateOfId: post.duplicateOfId,
-          })
-          .from(post)
-          .where(eq(post.id, input.postId))
-          .limit(1)
+        const userId = ctx.session?.user?.id
+        let p: any
+        
+        if (userId) {
+            const [res] = await ctx.db
+            .select({
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                slug: post.slug,
+                boardId: post.boardId,
+                image: post.image,
+                upvotes: post.upvotes,
+                commentCount: post.commentCount,
+                isPinned: post.isPinned,
+                isLocked: post.isLocked,
+                isFeatured: post.isFeatured,
+                publishedAt: post.publishedAt,
+                createdAt: post.createdAt,
+                updatedAt: post.updatedAt,
+                authorId: post.authorId,
+                authorName: post.authorName,
+                authorEmail: post.authorEmail,
+                authorImage: post.authorImage,
+                isAnonymous: post.isAnonymous,
+                status: post.status,
+                roadmapStatus: post.roadmapStatus,
+                metadata: post.metadata,
+                metaTitle: post.metaTitle,
+                metaDescription: post.metaDescription,
+                moderatedBy: post.moderatedBy,
+                moderatedAt: post.moderatedAt,
+                moderationReason: post.moderationReason,
+                duplicateOfId: post.duplicateOfId,
+                hasVoted: sql<boolean>`CASE WHEN ${vote.id} IS NOT NULL THEN true ELSE false END`,
+            })
+            .from(post)
+            .leftJoin(vote, and(eq(vote.postId, post.id), eq(vote.userId, userId)))
+            .where(eq(post.id, input.postId))
+            .limit(1)
+            p = res
+        } else {
+            const [res] = await ctx.db
+            .select({
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                slug: post.slug,
+                boardId: post.boardId,
+                image: post.image,
+                upvotes: post.upvotes,
+                commentCount: post.commentCount,
+                isPinned: post.isPinned,
+                isLocked: post.isLocked,
+                isFeatured: post.isFeatured,
+                publishedAt: post.publishedAt,
+                createdAt: post.createdAt,
+                updatedAt: post.updatedAt,
+                authorId: post.authorId,
+                authorName: post.authorName,
+                authorEmail: post.authorEmail,
+                authorImage: post.authorImage,
+                isAnonymous: post.isAnonymous,
+                status: post.status,
+                roadmapStatus: post.roadmapStatus,
+                metadata: post.metadata,
+                metaTitle: post.metaTitle,
+                metaDescription: post.metaDescription,
+                moderatedBy: post.moderatedBy,
+                moderatedAt: post.moderatedAt,
+                moderationReason: post.moderationReason,
+                duplicateOfId: post.duplicateOfId,
+                hasVoted: sql<boolean>`false`,
+            })
+            .from(post)
+            .where(eq(post.id, input.postId))
+            .limit(1)
+            p = res
+        }
+
         if (!p) return c.superjson({ post: null })
 
         const [b] = await ctx.db

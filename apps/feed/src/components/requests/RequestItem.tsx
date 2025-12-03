@@ -25,6 +25,7 @@ export type RequestItemData = {
   authorImage?: string | null
   authorName?: string | null
   isAnonymous?: boolean
+  hasVoted?: boolean
 }
 
 function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemData; workspaceSlug: string; linkBase?: string }) {

@@ -21,5 +21,12 @@ const authMiddleware = j.middleware(async ({ next }) => {
   return await next({ session: session as any })
 })
 
-export const publicProcedure = j.procedure.use(databaseMiddleware)
+const optionalAuthMiddleware = j.middleware(async ({ next }) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  return await next({ session: session as typeof session | null })
+})
+
+export const publicProcedure = j.procedure.use(databaseMiddleware).use(optionalAuthMiddleware)
 export const privateProcedure = publicProcedure.use(authMiddleware)
