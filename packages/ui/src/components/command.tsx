@@ -43,7 +43,13 @@ function CommandDialog({
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
-      <DialogContent className={cn("overflow-hidden  w-[min(92vw,600px)] top-26 sm:top-46 min-h-[100px] bg-card", className)}>
+      <DialogContent
+        className={cn(
+          "overflow-hidden w-[min(92vw,600px)] top-26 sm:top-46 min-h-[100px] max-h-[80vh] translate-y-0 bg-card",
+          className
+        )}
+        style={{ ["--tw-translate-y" as any]: "0" }}
+      >
         <Command className="">
           {children}
         </Command>

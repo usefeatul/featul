@@ -31,8 +31,8 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
   const base = linkBase || `/workspaces/${workspaceSlug}`
   const href = `${base}/requests/${item.slug}`
   return (
-    <li className="rounded-md border bg-card p-2.5">
-      <div className="flex items-center gap-3">
+    <div className="rounded-md border bg-card p-2.5">
+      <div className="flex items-center bg-card gap-3">
         <StatusIcon status={item.roadmapStatus || undefined} className="w-[18px] h-[18px] text-foreground/80" />
         <Link href={href} className="text-sm font-medium text-foreground hover:text-primary truncate flex-1">
           {item.title}
@@ -55,7 +55,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
           </Avatar>
         </div>
       </div>
-    </li>
+    </div>
   )
 }
 

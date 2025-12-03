@@ -2,10 +2,10 @@ import 'dotenv/config'
 import { db, post, board, workspace, user } from '../index'
 import { eq, inArray } from 'drizzle-orm'
 
-const WORKSPACE_ID = '613b9194-8e0c-4656-a920-2f5297bdd5ce'
-const FEATURE_BOARD_ID = '4c4b8f3b-cd03-416a-8162-74046cab944e'
-const BUGS_BOARD_ID = '684c6bb3-022c-4afc-83eb-86167000c4cb'
-const USER_ID = 'P2Ax50o7YWVNY99gihCsSIUELFU7vdK1'
+const WORKSPACE_ID = '6687b17b-4c31-4588-bfdb-01aeb0e6b929'
+const FEATURE_BOARD_ID = '9a6408db-263e-4252-a6c0-1716f77cbc37'
+const BUGS_BOARD_ID = '76c827ad-4efb-4fad-982a-503a4d08dd56'
+const USER_ID = 'TtlKtIIbnDeVxFVaAQar7dX7rxTj3Hge'
 
 function slugify(s: string) {
   return s
@@ -96,8 +96,8 @@ async function main() {
     return rows
   }
 
-  const featureRows = makeRows(featureBoard, 20, 'feature')
-  const bugRows = makeRows(bugBoard, 20, 'bug')
+  const featureRows = makeRows(featureBoard, 440, 'feature')
+  const bugRows = makeRows(bugBoard, 300, 'bug')
 
   await db.insert(post).values(featureRows)
   await db.insert(post).values(bugRows)
