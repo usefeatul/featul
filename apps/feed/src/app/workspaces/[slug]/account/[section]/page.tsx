@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import AccountTabs from "@/components/account/AccountTabs"
+import AccountServer from "@/components/account/AccountServer"
 import { createPageMetadata } from "@/lib/seo"
 import { getAccountSectionMeta } from "@/config/account-sections"
 import { getServerSession } from "@feedgot/auth/session"
@@ -26,5 +26,5 @@ export default async function AccountSectionPage({ params }: Props) {
   if (!session?.user) {
     redirect(`/auth/sign-in?redirect=/workspaces/${slug}/account/${encodeURIComponent(section)}`)
   }
-  return <AccountTabs selectedSection={section} initialUser={session.user} />
+  return <AccountServer slug={slug} selectedSection={section} initialUser={session.user} />
 }

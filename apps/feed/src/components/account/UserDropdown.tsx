@@ -21,7 +21,7 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
     const parts = (pathname || "/").split("/")
     if (parts[1] !== "workspaces") return getSlugFromPath(pathname)
     const maybe = parts[2] || ""
-    if (!maybe || maybe === "account" || maybe === "new") return ""
+    if (!maybe || maybe === "account/" || maybe === "new") return ""
     return maybe
   }, [pathname])
   const [open, setOpen] = React.useState(false)
@@ -46,14 +46,14 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
   const onAccount = React.useCallback(async () => {
     setOpen(false)
     if (slug) {
-      router.push(`/workspaces/${slug}/account`)
+      router.push(`/workspaces/${slug}/account/profile`)
       return
     }
     try {
       const res = await client.workspace.listMine.$get()
       const d = await res.json().catch(() => ({}))
       const s = ((d as { workspaces?: { slug: string }[] }).workspaces || [])[0]?.slug || ""
-      if (s) router.push(`/workspaces/${s}/account`)
+      if (s) router.push(`/workspaces/${s}/account/profile`)
       else router.push("/workspaces/new")
     } catch {
       router.push("/workspaces/new")
@@ -63,14 +63,14 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
   const onSettings = React.useCallback(async () => {
     setOpen(false)
     if (slug) {
-      router.push(`/workspaces/${slug}/settings`)
+      router.push(`/workspaces/${slug}/settings/branding`)
       return
     }
     try {
       const res = await client.workspace.listMine.$get()
       const d = await res.json().catch(() => ({}))
       const s = ((d as { workspaces?: { slug: string }[] }).workspaces || [])[0]?.slug || ""
-      if (s) router.push(`/workspaces/${s}/settings`)
+      if (s) router.push(`/workspaces/${s}/settings/branding`)
       else router.push("/workspaces/new")
     } catch {
       router.push("/workspaces/new")
