@@ -5,7 +5,7 @@ import { getSectionMeta } from "@/config/sections"
 import { getSettingsInitialData } from "@/lib/workspace"
 import { getServerSession } from "@feedgot/auth/session"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 30
 
 type Props = { params: Promise<{ slug: string; section: string }> }
 
