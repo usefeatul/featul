@@ -9,7 +9,7 @@ import { toast } from "sonner"
 import { authClient } from "@feedgot/auth/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
-export default function Security() {
+export default function Security({ initialMeSession, initialSessions }: { initialMeSession?: any; initialSessions?: { token: string; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[] | null }) {
   const router = useRouter()
   const pathname = usePathname() || "/"
   const queryClient = useQueryClient()
@@ -21,8 +21,11 @@ export default function Security() {
       return (s as any)?.data || null
     },
     staleTime: 60_000,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    initialData: () => (initialMeSession as any) || undefined,
+    placeholderData: (prev) => prev as any,
   })
   const currentToken = String(((meSession as any)?.session?.token || (meSession as any)?.token || ""))
 
@@ -34,8 +37,11 @@ export default function Security() {
       return arr
     },
     staleTime: 60_000,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    initialData: () => (Array.isArray(initialSessions) ? initialSessions : null),
+    placeholderData: (prev) => prev as any,
   })
 
   const [revoking, setRevoking] = React.useState<string | null>(null)

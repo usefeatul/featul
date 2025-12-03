@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import AccountServer from "@/components/account/AccountServer"
 import { createPageMetadata } from "@/lib/seo"
 import { getAccountSectionMeta } from "@/config/account-sections"
-import { getServerSession } from "@feedgot/auth/session"
+import { getServerSession, listServerSessions } from "@feedgot/auth/session"
 import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
@@ -26,5 +26,14 @@ export default async function AccountSectionPage({ params }: Props) {
   if (!session?.user) {
     redirect(`/auth/sign-in?redirect=/workspaces/${slug}/account/${encodeURIComponent(section)}`)
   }
-  return <AccountServer slug={slug} selectedSection={section} initialUser={session.user} />
+  const initialSessions = section === "security" ? await listServerSessions() : undefined
+  return (
+    <AccountServer
+      slug={slug}
+      selectedSection={section}
+      initialUser={session.user}
+      initialMeSession={session as any}
+      initialSessions={initialSessions}
+    />
+  )
 }

@@ -12,7 +12,7 @@ import { authClient } from "@feedgot/auth/client"
 
 export default function Profile({ initialUser }: { initialUser?: { name?: string; email?: string; image?: string | null } | null }) {
   const queryClient = useQueryClient()
-  const [name, setName] = React.useState("")
+  const [name, setName] = React.useState(() => String(initialUser?.name || "").trim())
   const [saving, setSaving] = React.useState(false)
   const { data } = useQuery<{ user: { name?: string; email?: string; image?: string | null } | null }>({
     queryKey: ["me"],
@@ -27,6 +27,8 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
     gcTime: 900_000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: !initialUser,
   })
 
   const user = data?.user || null
