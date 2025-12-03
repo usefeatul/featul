@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception"
 import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain } from "@feedgot/db"
+import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation } from "@feedgot/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema } from "../validators/workspace"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
@@ -25,12 +25,24 @@ export function createWorkspaceRouter() {
     checkSlug: privateProcedure
       .input(checkSlugInputSchema)
       .post(async ({ ctx, input, c }) => {
+        const slug = input.slug.toLowerCase()
         const existing = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(eq(workspace.slug, slug))
           .limit(1)
-        return c.json({ available: existing.length === 0 })
+        if (existing.length > 0) return c.json({ available: false })
+
+        const now = new Date()
+        const meEmail = (ctx.session.user.email || '').toLowerCase()
+        const [resv] = await ctx.db
+          .select({ email: workspaceSlugReservation.email, status: workspaceSlugReservation.status, expiresAt: workspaceSlugReservation.expiresAt })
+          .from(workspaceSlugReservation)
+          .where(eq(workspaceSlugReservation.slug, slug))
+          .limit(1)
+        const active = resv && resv.status === 'reserved' && resv.expiresAt && resv.expiresAt.getTime() > now.getTime()
+        const mine = active && String(resv?.email || '').toLowerCase() === meEmail
+        return c.json({ available: !active || mine })
       }),
 
     exists: privateProcedure.get(async ({ ctx, c }) => {
@@ -109,6 +121,21 @@ export function createWorkspaceRouter() {
           .limit(1)
         if (exists.length > 0) {
           throw new HTTPException(409, { message: "Slug is already taken" })
+        }
+
+        // If a reservation exists for this slug, enforce email ownership
+        const [resv] = await ctx.db
+          .select({ id: workspaceSlugReservation.id, email: workspaceSlugReservation.email, status: workspaceSlugReservation.status, expiresAt: workspaceSlugReservation.expiresAt })
+          .from(workspaceSlugReservation)
+          .where(eq(workspaceSlugReservation.slug, slug))
+          .limit(1)
+        if (resv) {
+          const expired = resv.expiresAt && resv.expiresAt.getTime() < Date.now()
+          const active = resv.status === "reserved" && !expired
+          const myEmail = (ctx.session.user.email || "").toLowerCase()
+          if (active && myEmail !== String(resv.email || "").toLowerCase()) {
+            throw new HTTPException(403, { message: "Slug is reserved by another email" })
+          }
         }
 
         const host = (() => {
@@ -198,6 +225,22 @@ export function createWorkspaceRouter() {
             { workspaceId: ws.id, name: "Bugs", slug: "bugs" },
             { workspaceId: ws.id, name: "Support", slug: "support" },
           ])
+
+          // Mark reservation as claimed
+          try {
+            const myEmail = (ctx.session.user.email || "").toLowerCase()
+            const [r] = await ctx.db
+              .select({ id: workspaceSlugReservation.id })
+              .from(workspaceSlugReservation)
+              .where(and(eq(workspaceSlugReservation.slug, slug), eq(workspaceSlugReservation.email, myEmail)))
+              .limit(1)
+            if (r?.id) {
+              await ctx.db
+                .update(workspaceSlugReservation)
+                .set({ status: "claimed", claimedAt: new Date(), claimedByUserId: ctx.session.user.id, updatedAt: new Date() })
+                .where(eq(workspaceSlugReservation.id, r.id))
+            }
+          } catch {}
         } catch {
           if (created?.id) {
             try {

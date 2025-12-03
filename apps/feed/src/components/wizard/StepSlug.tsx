@@ -6,7 +6,7 @@ import  CompletedIcon  from "@feedgot/ui/icons/completed"
 import ClosedIcon from "@feedgot/ui/icons/closed"
 import { isSlugValid } from "../../lib/validators"
 
-export default function StepSlug({ slug, onChange, checking, available }: { slug: string; onChange: (v: string) => void; checking: boolean; available: boolean | null }) {
+export default function StepSlug({ slug, onChange, checking, available, disabled = false }: { slug: string; onChange: (v: string) => void; checking: boolean; available: boolean | null; disabled?: boolean }) {
   return (
     <div className="space-y-4">
       <div>
@@ -24,6 +24,7 @@ export default function StepSlug({ slug, onChange, checking, available }: { slug
               placeholder="mywebsite"
               className="w-full placeholder:text-accent/70 pl-9 sm:pl-10 pr-16 sm:pr-24"
               aria-invalid={available === false || (!!slug && !isSlugValid(slug))}
+              disabled={disabled}
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-accent select-none pointer-events-none">.feedgot.com</span>
           </div>
@@ -41,8 +42,11 @@ export default function StepSlug({ slug, onChange, checking, available }: { slug
           if (!!slug && !isSlugValid(slug)) {
             return <p className="text-xs text-destructive">Only lowercase letters, minimum 5 characters.</p>
           }
-          if (available === false) {
+          if (!disabled && available === false) {
             return <p className="text-xs text-destructive">This subdomain is already taken.</p>
+          }
+          if (disabled) {
+            return <p className="text-xs text-accent">Reserved for you. Applied automatically.</p>
           }
           return null
         })()}

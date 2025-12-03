@@ -146,27 +146,26 @@ export default function Invite({
     }
   };
   return (
-    <section className="flex min-h-screen items-center justify-center bg-background px-4 sm:px-5">
-      <div className="w-full max-w-sm sm:max-w-md">
+    <section className="flex min-h-screen items-center justify-center bg-background px-4 sm:px-6">
+      <div className="w-full max-w-sm">
         {error ? (
-          <div className="rounded-md border bg-card p-3 text-sm text-accent">
+          <div className="mb-3 text-sm text-destructive">
             {error}
             {user?.email ? <span className="ml-1">Signed in as {user.email}.</span> : null}
           </div>
         ) : null}
         <div className="mx-auto w-full max-w-[380px]">
           <div className="text-left">
-            <h1 className="text-4xl font-semibold">You've been invited</h1>
+            <h1 className="text-3xl sm:text-4xl font-semibold">You've been invited</h1>
             {loading ? (
               <div className="mt-1 h-5 w-64 bg-muted rounded animate-pulse" />
             ) : (
-              <p className="mt-1 text-lg text-accent">
-                {inviterName || "Someone"} has invited you to join{" "}
-                {workspaceName || "this workspace"}
+              <p className="mt-1 text-sm sm:text-base text-accent">
+                {inviterName || "Someone"} has invited you to join {workspaceName || "this workspace"}
               </p>
             )}
             <div className="mt-4 flex items-center justify-start gap-3">
-              <div className="rounded-md border ring-1 ring-border overflow-hidden">
+              <div className="rounded-md overflow-hidden">
                 <Avatar className="size-8">
                   {workspaceLogo ? (
                     <AvatarImage
@@ -192,9 +191,7 @@ export default function Invite({
                       <div className="text-xs text-accent truncate">{name}</div>
                     ) : null}
                     {email ? (
-                      <div className="text-xs text-accent truncate">
-                        {email}
-                      </div>
+                      <div className="text-xs text-accent truncate">{email}</div>
                     ) : null}
                   </>
                 )}

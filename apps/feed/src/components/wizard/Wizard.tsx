@@ -9,7 +9,8 @@ import StepSlug from "./StepSlug"
 import TimezonePicker from "./TimezonePicker"
 import RightInfo from "./RightInfo"
 import { client } from "@feedgot/api/client"
-import { useRouter } from "next/navigation"
+ 
+import { useRouter, useSearchParams } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { workspaceSchema, isNameValid, isDomainValid, isSlugValid, isTimezoneValid, cleanSlug, slugifyFromName } from "../../lib/validators"
@@ -26,6 +27,7 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
   const [slugDirty, setSlugDirty] = useState(false)
   const [slugChecking, setSlugChecking] = useState(false)
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
+  const [slugLocked, setSlugLocked] = useState<string | null>(null)
 
   const [timezone, setTimezone] = useState<string>(
     typeof Intl !== "undefined" && Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -46,9 +48,34 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
     setSlug(s)
   }, [name, slugDirty])
 
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const initialLocked = (searchParams?.get("slug") || "").trim().toLowerCase()
+    let mounted = true
+    ;(async () => {
+      try {
+        const res = await client.reservation.claimOnSignup.$get()
+        const data = await res.json()
+        const locked = String(data?.slugLocked || initialLocked || "").trim().toLowerCase()
+        if (locked && mounted) {
+          setSlugLocked(locked)
+          setSlugDirty(true)
+          setSlug(locked)
+          setSlugAvailable(true)
+          setSlugChecking(false)
+        }
+      } catch {}
+    })()
+    return () => { mounted = false }
+  }, [searchParams])
+
   useEffect(() => {
     if (!slug || slug.length < 5) {
       setSlugAvailable(null)
+      return
+    }
+    if (slugLocked) {
+      setSlugAvailable(true)
       return
     }
     setSlugChecking(true)
@@ -123,17 +150,28 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
   return (
     <section className="flex min-h-screen items-center justify-center bg-background px-4 sm:px-6 md:px-10 lg:px-16">
       <div className={`w-full max-w-3xl mx-auto ${className}`}>
-        <div className="bg-card rounded-[calc(var(--radius)+.125rem)] border shadow-md overflow-hidden">
+        <div className="bg-card rounded-md border ring-1 ring-border overflow-hidden">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-2/5 p-4 sm:p-6 md:border-r border-b md:border-b-0 flex flex-col">
               <div className="mb-6 sm:mb-10">
                 <Progress step={step} total={total} />
               </div>
 
-              {step === 0 && <StepName name={name} onChange={setName} isValid={isNameValid(name)} />}
+              {step === 0 && (
+                <>
+                  <StepName name={name} onChange={setName} isValid={isNameValid(name)} />
+                  {slugLocked ? (
+                    <div className="mt-5">
+                      <div className="rounded-sm bg-muted/50 px-2 py-2 text-xs">
+                        <span className="text-accent">Reserved:</span> <span className="">{slugLocked}.feedgot.com</span>
+                      </div>
+                    </div>
+                  ) : null}
+                </>
+              )}
               {step === 1 && <StepDomain domain={domain} onChange={setDomain} isValid={domainValid} />}
               {step === 2 && (
-                <StepSlug
+              <StepSlug
                   slug={slug}
                   onChange={(v) => {
                     setSlugDirty(true)
@@ -141,6 +179,7 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
                   }}
                   checking={slugChecking}
                   available={slugAvailable}
+                  disabled={!!slugLocked}
                 />
               )}
               {step === 3 && (

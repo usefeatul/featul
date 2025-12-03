@@ -30,4 +30,5 @@ export const {
   voteAggregate,
   userVoteHistory,
   brandingConfig,
+  workspaceSlugReservation,
 } = schema
