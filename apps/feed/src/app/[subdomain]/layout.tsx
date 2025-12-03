@@ -44,7 +44,7 @@ export default async function Layout({
         <BrandVarsEffect primary={p} />
         <div className="fixed inset-0 -z-10 flex flex-col">
           <div className="bg-background  dark:bg-background dark:border-background/60 border-b border-2 h-44 sm:h-52" />
-          <div className="bg-card dark:bg-[#111113] border-b flex-1" />
+          <div className="bg-card dark:bg-black/40 border-b flex-1" />
         </div>
         {(() => {
           const maxW = branding.layoutStyle === "compact" ? "4xl" : branding.layoutStyle === "spacious" ? "6xl" : "5xl"

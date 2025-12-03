@@ -9,13 +9,20 @@ import { client } from "@feedgot/api/client"
 
 type Board = { id: string; name: string; slug: string; type?: string | null }
 
-export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: string }) {
+export function BoardsDropdown({ slug, subdomain, initialBoards }: { slug: string; subdomain: string; initialBoards?: Board[] }) {
   const router = useRouter()
   const search = useSearchParams()
   const selected = search.get("board") || "__all__"
   const [open, setOpen] = React.useState(false)
-  const [boards, setBoards] = React.useState<Board[]>([])
-  const [loading, setLoading] = React.useState(true)
+  function sortBoards(list: Board[]) {
+    return [...list].sort((a, b) => a.name.localeCompare(b.name))
+  }
+  const [boards, setBoards] = React.useState<Board[]>(() => {
+    const list = Array.isArray(initialBoards) ? initialBoards : []
+    const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
+    return sortBoards(filtered)
+  })
+  const [loading, setLoading] = React.useState(() => !(Array.isArray(initialBoards) && initialBoards.length > 0))
 
   React.useEffect(() => {
     let mounted = true
@@ -25,9 +32,9 @@ export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: s
       if (raw) {
         const cached = JSON.parse(raw)
         const list = ((cached?.boards || cached?.data) || []) as Board[]
-        const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
+        const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
         if (mounted) {
-          setBoards(filtered)
+          if (boards.length === 0) setBoards(filtered)
           setLoading(false)
         }
       }
@@ -37,7 +44,7 @@ export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: s
         const res = await client.board.byWorkspaceSlug.$get({ slug })
         const data = await res.json()
         const list = (data?.boards || []) as Board[]
-        const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
+        const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
         if (mounted) setBoards(filtered)
         try {
           if (typeof window !== "undefined") localStorage.setItem(key, JSON.stringify({ boards: filtered, ts: Date.now() }))
@@ -63,7 +70,7 @@ export function BoardsDropdown({ slug, subdomain }: { slug: string; subdomain: s
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="nav" className="justify-start gap-2 dark:bg-[#111113]" disabled={loading}>
+        <Button type="button" variant="nav" className="justify-start gap-2 dark:bg-black/40" disabled={loading}>
           <ListTree className="size-4" />
           <span className="truncate">{label}</span>
           <span className="ml-auto" />

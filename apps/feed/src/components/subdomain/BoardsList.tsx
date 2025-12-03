@@ -6,12 +6,18 @@ import { client } from "@feedgot/api/client"
 
 type Board = { id: string; name: string; slug: string; postCount?: number }
 
-export function BoardsList({ slug, subdomain }: { slug: string; subdomain: string }) {
+export function BoardsList({ slug, subdomain, initialBoards }: { slug: string; subdomain: string; initialBoards?: Board[] }) {
   const router = useRouter()
   const search = useSearchParams()
   const current = search.get("board") || "__all__"
-  const [boards, setBoards] = React.useState<Board[]>([])
-  const [loading, setLoading] = React.useState(true)
+  function sortBoards(list: Board[]) {
+    return [...list].sort((a, b) => a.name.localeCompare(b.name))
+  }
+  const [boards, setBoards] = React.useState<Board[]>(() => {
+    const list = Array.isArray(initialBoards) ? initialBoards : []
+    return sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
+  })
+  const [loading, setLoading] = React.useState(() => !(Array.isArray(initialBoards) && initialBoards.length > 0))
 
   React.useEffect(() => {
     let mounted = true
@@ -21,9 +27,9 @@ export function BoardsList({ slug, subdomain }: { slug: string; subdomain: strin
       if (raw) {
         const cached = JSON.parse(raw)
         const list = ((cached?.boards || cached?.data) || []) as Board[]
-        const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
+        const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
         if (mounted) {
-          setBoards(filtered)
+          if (boards.length === 0) setBoards(filtered)
           setLoading(false)
         }
       }
@@ -33,7 +39,7 @@ export function BoardsList({ slug, subdomain }: { slug: string; subdomain: strin
         const res = await client.board.byWorkspaceSlug.$get({ slug })
         const data = await res.json()
         const list = (data?.boards || []) as Board[]
-        const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
+        const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
         if (mounted) setBoards(filtered)
         try {
           if (typeof window !== "undefined") localStorage.setItem(key, JSON.stringify({ boards: filtered, ts: Date.now() }))
@@ -59,13 +65,13 @@ export function BoardsList({ slug, subdomain }: { slug: string; subdomain: strin
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm ${
-        active ? "bg-muted" : "hover:bg-muted"
+      className={`flex w-full items-center justify-between rounded-sm px-3 py-2 text-left text-sm cursor-pointer ${
+        active ? "bg-muted dark:bg-black/40" : "hover:bg-muted dark:hover:bg-black/60"
       }`}
       disabled={loading}
     >
       <span className="flex items-center gap-2">
-        <span className="inline-block h-2 w-2 rounded-full bg-accent" />
+        <span className="inline-block h-2 w-2 rounded-sm bg-primary" />
         {label}
       </span>
       <span className="text-xs text-accent w-10 text-right tabular-nums font-mono">{Number(count) || 0}</span>

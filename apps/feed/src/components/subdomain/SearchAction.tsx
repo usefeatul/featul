@@ -5,7 +5,7 @@ import { Search } from "lucide-react"
 
 export function SearchAction() {
   return (
-    <Button type="button" variant="nav" size="icon-sm" aria-label="Search" className="dark:bg-[#111113]">
+    <Button type="button" variant="nav" size="icon-sm" aria-label="Search" className="dark:bg-black/40">
       <Search className="size-4" />
     </Button>
   )

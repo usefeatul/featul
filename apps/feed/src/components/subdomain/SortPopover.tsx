@@ -30,7 +30,7 @@ export function SortPopover({ slug, subdomain }: { slug: string; subdomain: stri
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="nav" className="h-8 justify-start gap-2 dark:bg-[#111113]" aria-label="Sort" >
+        <Button type="button" variant="nav" className="h-8 justify-start gap-2 dark:bg-black/40" aria-label="Sort" >
           <ArrowDownAZ className="size-4" />
           <span className="truncate">{label}</span>
           <ChevronDown className="size-4 ml-auto" />

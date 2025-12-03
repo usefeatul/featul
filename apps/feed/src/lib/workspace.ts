@@ -273,6 +273,19 @@ export async function getWorkspaceStatusCounts(slug: string): Promise<Record<str
   return counts
 }
 
+export async function getWorkspaceBoards(slug: string): Promise<Array<{ id: string; name: string; slug: string; postCount: number }>> {
+  const ws = await getWorkspaceBySlug(slug)
+  if (!ws) return []
+  const rows = await db
+    .select({ id: board.id, name: board.name, slug: board.slug, postCount: sql<number>`count(${post.id})` })
+    .from(board)
+    .leftJoin(post, eq(post.boardId, board.id))
+    .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+    .orderBy(asc(board.name))
+    .groupBy(board.id)
+  return (rows as any[]).map((r) => ({ id: r.id, name: r.name, slug: r.slug, postCount: Number(r.postCount || 0) }))
+}
+
 export async function getPlannedRoadmapPosts(
   slug: string,
   opts?: { limit?: number; offset?: number; order?: "newest" | "oldest" }

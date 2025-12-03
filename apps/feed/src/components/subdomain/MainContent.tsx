@@ -19,6 +19,7 @@ export function MainContent({
   page,
   pageSize,
   sidebarPosition = "right",
+  initialBoards,
 }: {
   subdomain: string;
   slug: string;
@@ -27,6 +28,7 @@ export function MainContent({
   page: number;
   pageSize: number;
   sidebarPosition?: "left" | "right";
+  initialBoards?: Array<{ id: string; name: string; slug: string; postCount?: number }>;
 }) {
   return (
     <section>
@@ -39,7 +41,7 @@ export function MainContent({
       >
         {sidebarPosition === "left" ? (
           <aside className="hidden lg:block mt-10 lg:mt-0">
-            <DomainSidebar subdomain={subdomain} slug={slug} />
+            <DomainSidebar subdomain={subdomain} slug={slug} initialBoards={initialBoards} />
           </aside>
         ) : null}
         <div>
@@ -50,7 +52,7 @@ export function MainContent({
                   <SortPopover subdomain={subdomain} slug={slug} />
                   <SearchAction />
                 </span>
-                <BoardsDropdown slug={slug} subdomain={subdomain} />
+                <BoardsDropdown slug={slug} subdomain={subdomain} initialBoards={initialBoards} />
               </div>
             ) : (
               <div className="lg:hidden flex items-center justify-between gap-2">
@@ -62,7 +64,7 @@ export function MainContent({
               </div>
             )}
             <div className={sidebarPosition === "left" ? "hidden lg:flex items-center justify-end" : "hidden lg:flex items-center justify-start"}>
-              <BoardsDropdown slug={slug} subdomain={subdomain} />
+              <BoardsDropdown slug={slug} subdomain={subdomain} initialBoards={initialBoards} />
             </div>
           </div>
           <div className="lg:hidden mb-4">
@@ -89,7 +91,7 @@ export function MainContent({
         </div>
         {sidebarPosition === "right" ? (
           <aside className="hidden lg:block mt-10 lg:mt-0">
-            <DomainSidebar subdomain={subdomain} slug={slug} />
+            <DomainSidebar subdomain={subdomain} slug={slug} initialBoards={initialBoards} />
           </aside>
         ) : null}
       </div>

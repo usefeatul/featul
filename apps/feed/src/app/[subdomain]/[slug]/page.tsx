@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { db, workspace } from "@feedgot/db"
 import { eq } from "drizzle-orm"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
-import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug } from "@/lib/workspace"
+import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, getWorkspaceBoards } from "@/lib/workspace"
 import { MainContent } from "@/components/subdomain/MainContent"
 
 export const dynamic = "force-dynamic"
@@ -47,6 +47,7 @@ export default async function SitePage({
     boardSlugs: boardSlug ? [boardSlug] : undefined,
   })
   const sidebarPosition = await getSidebarPositionBySlug(slug)
+  const initialBoards = await getWorkspaceBoards(slug)
   return (
     <MainContent
       subdomain={subdomain}
@@ -56,6 +57,7 @@ export default async function SitePage({
       page={page}
       pageSize={PAGE_SIZE}
       sidebarPosition={sidebarPosition}
+      initialBoards={initialBoards as any}
     />
   )
 }
