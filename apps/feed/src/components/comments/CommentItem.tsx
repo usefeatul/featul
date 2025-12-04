@@ -7,16 +7,6 @@ import { Textarea } from "@feedgot/ui/components/textarea"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
 import { MessageSquare, Heart, Loader2, ChevronDown, ChevronUp } from "lucide-react"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@feedgot/ui/components/alert-dialog"
 import { cn } from "@feedgot/ui/lib/utils"
 import CommentForm from "./CommentForm"
 import CommentImage from "./CommentImage"
@@ -77,7 +67,6 @@ export default function CommentItem({
   const [hasVoted, setHasVoted] = useState(comment.hasVoted || false)
   const [isPending, startTransition] = useTransition()
   const [isDeleting, setIsDeleting] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const isAuthor = currentUserId && comment.authorId === currentUserId
   const canReply = depth < 3 // Limit nesting to 3 levels
@@ -143,7 +132,6 @@ export default function CommentItem({
 
   const handleDelete = () => {
     setIsDeleting(true)
-    setShowDeleteDialog(false)
     startTransition(async () => {
       try {
         const res = await client.comment.delete.$post({ commentId: comment.id })
@@ -261,7 +249,7 @@ export default function CommentItem({
                 disabled={isPending}
               />
               <div className="flex items-center gap-2">
-                <Button size="sm" onClick={handleEdit} disabled={!editContent.trim() || isPending}>
+                <Button size="xs" variant="nav" onClick={handleEdit} disabled={!editContent.trim() || isPending}>
                   {isPending && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
                   Save
                 </Button>
@@ -310,7 +298,7 @@ export default function CommentItem({
               onClick={handleUpvote}
               disabled={isPending}
               className={cn(
-                "inline-flex items-center gap-1 text-xs transition-colors",
+                "inline-flex items-center gap-1 text-xs transition-colors cursor-pointer",
                 hasVoted ? "text-red-500" : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -321,7 +309,7 @@ export default function CommentItem({
             {canReply && (
               <button
                 onClick={() => setShowReplyForm(!showReplyForm)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
                 Reply
               </button>
@@ -330,34 +318,11 @@ export default function CommentItem({
             <CommentActions
               isAuthor={!!isAuthor}
               onEdit={() => setIsEditing(true)}
-              onDelete={() => setShowDeleteDialog(true)}
+              onDelete={handleDelete}
               onReport={handleReport}
             />
           </div>
         )}
-
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete comment?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this comment? This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                disabled={isPending}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
 
         {showReplyForm && (
           <div className="mt-3 pt-3 border-t border-border">
