@@ -36,11 +36,11 @@ function PostCardBase({ item, onVoteChange }: { item: RequestItemData; onVoteCha
       <div className="mt-3 flex items-center justify-between">
         <div className="inline-flex items-center gap-2">
           <div className="relative">
-            <Avatar className="size-6 bg-card border border-border rounded-full">
+            <Avatar className="size-6 bg-background border border-border rounded-full relative overflow-visible">
               <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
               <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
+              <RoleBadge role={item.role} isOwner={item.isOwner} />
             </Avatar>
-            <RoleBadge role={item.role} isOwner={item.isOwner} />
           </div>
           <span className="text-xs text-accent whitespace-nowrap mt-2  max-w-[180px] truncate">
             {item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")}

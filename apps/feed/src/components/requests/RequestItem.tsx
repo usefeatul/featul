@@ -54,11 +54,11 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
           </div>
           <span>{new Intl.DateTimeFormat(undefined, { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
           <div className="relative">
-            <Avatar className="size-6 bg-muted ring-1 ring-border rounded-md">
+            <Avatar className="size-6 bg-muted ring-1 ring-border rounded-md relative overflow-visible">
               <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
               <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
+              <RoleBadge role={item.role} isOwner={item.isOwner} />
             </Avatar>
-            <RoleBadge role={item.role} isOwner={item.isOwner} />
           </div>
         </div>
       </div>
