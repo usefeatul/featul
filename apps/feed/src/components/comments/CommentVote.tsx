@@ -5,6 +5,7 @@ import { Heart } from "lucide-react"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
 import { cn } from "@feedgot/ui/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface CommentVoteProps {
   commentId: string
@@ -60,7 +61,28 @@ export default function CommentVote({ commentId, initialUpvotes, initialHasVoted
         hasVoted ? "text-red-500" : "text-muted-foreground/70 hover:text-red-500/80"
       )}
     >
-      <Heart className={cn("h-3.5 w-3.5", hasVoted ? "fill-current" : "group-hover/vote:scale-110 transition-transform")} />
+      <span className="relative inline-flex items-center">
+        <motion.span
+          key={hasVoted ? "liked" : "unliked"}
+          animate={{ scale: hasVoted ? [1, 1.18, 1] : [1, 0.94, 1] }}
+          transition={{ duration: 0.25 }}
+        >
+          <Heart className={cn("h-3.5 w-3.5", hasVoted ? "fill-current" : "group-hover/vote:scale-110 transition-transform")} />
+        </motion.span>
+        <AnimatePresence>
+          {hasVoted && (
+            <motion.span
+              key="burst"
+              className="absolute -top-1 -left-1 h-5 w-5 rounded-full bg-red-500/25"
+              initial={{ scale: 0, opacity: 0.9 }}
+              animate={{ scale: 1.8, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              aria-hidden
+            />
+          )}
+        </AnimatePresence>
+      </span>
       {upvotes > 0 && <span className="tabular-nums font-medium">{upvotes}</span>}
     </button>
   )

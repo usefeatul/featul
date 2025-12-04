@@ -107,48 +107,6 @@ export default function CommentItem({
     });
   };
 
-  const handleDelete = () => {
-    setIsDeleting(true);
-    startTransition(async () => {
-      try {
-        const res = await client.comment.delete.$post({
-          commentId: comment.id,
-        });
-        if (res.ok) {
-          toast.success("Comment deleted");
-          onUpdate?.();
-        } else {
-          toast.error("Failed to delete comment");
-          setIsDeleting(false);
-        }
-      } catch (error) {
-        console.error("Failed to delete comment:", error);
-        toast.error("Failed to delete comment");
-        setIsDeleting(false);
-      }
-    });
-  };
-
-  const handleReport = () => {
-    startTransition(async () => {
-      try {
-        const res = await client.comment.report.$post({
-          commentId: comment.id,
-          reason: "spam",
-        });
-        if (res.ok) {
-          toast.success("Comment reported");
-        } else if (res.status === 401) {
-          toast.error("Please sign in to report");
-        } else {
-          toast.error("Failed to report comment");
-        }
-      } catch (error) {
-        console.error("Failed to report comment:", error);
-        toast.error("Failed to report comment");
-      }
-    });
-  };
 
   const relativeTime = (date: string) => {
     const now = new Date();
@@ -174,16 +132,6 @@ export default function CommentItem({
     .join("")
     .toUpperCase()
     .slice(0, 2);
-
-  if (isDeleting) {
-    return (
-      <div className="flex gap-3 opacity-50">
-        <div className="flex-1 text-xs text-muted-foreground">
-          Comment deleted
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={cn("flex gap-3 group", depth > 0 && "mt-2")}>
