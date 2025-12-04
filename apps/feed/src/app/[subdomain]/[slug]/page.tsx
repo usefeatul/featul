@@ -8,6 +8,7 @@ import { readHasVotedForPost } from "@/lib/vote.server"
 import { MainContent } from "@/components/subdomain/MainContent"
 
 export const revalidate = 60
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ board?: string }> }): Promise<Metadata> {
   const { slug } = await params

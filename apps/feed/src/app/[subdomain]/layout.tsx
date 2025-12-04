@@ -9,6 +9,7 @@ import { getBrandingBySlug } from "@/lib/workspace"
 import SubdomainThemeProvider from "@/components/subdomain/SubdomainThemeProvider"
 import { DomainBrandingProvider } from "@/components/subdomain/DomainBrandingProvider"
 import { PoweredBy } from "@/components/subdomain/PoweredBy"
+import { getServerSession } from "@feedgot/auth/session"
 
 
 export default async function Layout({
@@ -28,6 +29,7 @@ export default async function Layout({
   if (!ws) notFound()
 
   const branding = await getBrandingBySlug(subdomain)
+  const session = await getServerSession()
   const [b] = await db
     .select({ id: board.id, isVisible: board.isVisible, isPublic: board.isPublic })
     .from(board)
@@ -50,7 +52,12 @@ export default async function Layout({
           const maxW = branding.layoutStyle === "compact" ? "4xl" : branding.layoutStyle === "spacious" ? "6xl" : "5xl"
           return (
             <Container maxWidth={maxW}>
-              <DomainHeader workspace={ws} subdomain={subdomain} changelogVisible={changelogVisible} />
+              <DomainHeader
+                workspace={ws}
+                subdomain={subdomain}
+                changelogVisible={changelogVisible}
+                initialUser={session?.user ? { name: session.user.name, email: session.user.email, image: session.user.image } : null}
+              />
               <div className="mt-6 pb-16 md:pb-0">{children}</div>
             </Container>
           )

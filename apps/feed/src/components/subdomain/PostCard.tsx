@@ -33,10 +33,10 @@ function PostCardBase({ item }: { item: RequestItemData }) {
               className="text-xs hover:text-red-500/80"
               activeBg
             />
-            <span className="inline-flex items-center gap-1">
-              <CommentsIcon aria-hidden className="w-3 h-3" />
-              <span className="tabular-nums">{item.commentCount}</span>
-            </span>
+          </div>
+          <div className="inline-flex items-center gap-1 bg-muted rounded-md ring-1 ring-border px-2 py-1">
+            <CommentsIcon aria-hidden className="w-3 h-3" />
+            <span className="tabular-nums">{item.commentCount}</span>
           </div>
           <Avatar className="size-6 px-1 py-1 bg-muted ring-1 ring-border rounded-md">
             <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
