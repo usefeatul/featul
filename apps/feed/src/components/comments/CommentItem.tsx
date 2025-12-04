@@ -6,13 +6,7 @@ import { Button } from "@feedgot/ui/components/button"
 import { Textarea } from "@feedgot/ui/components/textarea"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
-import { MessageSquare, Heart, MoreHorizontal, Pencil, Trash2, Flag, Loader2, ChevronDown, ChevronUp } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@feedgot/ui/components/dropdown-menu"
+import { MessageSquare, Heart, Loader2, ChevronDown, ChevronUp } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +20,7 @@ import {
 import { cn } from "@feedgot/ui/lib/utils"
 import CommentForm from "./CommentForm"
 import CommentImage from "./CommentImage"
+import CommentActions from "./CommentActions"
 
 export type CommentData = {
   id: string
@@ -326,33 +321,12 @@ export default function CommentItem({
               </button>
             )}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                  <MoreHorizontal className="h-4 w-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {isAuthor && (
-                  <>
-                    <DropdownMenuItem onClick={() => setIsEditing(true)}>
-                      <Pencil className="mr-2 h-3.5 w-3.5" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-destructive">
-                      <Trash2 className="mr-2 h-3.5 w-3.5" />
-                      Delete
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {!isAuthor && (
-                  <DropdownMenuItem onClick={handleReport}>
-                    <Flag className="mr-2 h-3.5 w-3.5" />
-                    Report
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <CommentActions
+              isAuthor={isAuthor}
+              onEdit={() => setIsEditing(true)}
+              onDelete={() => setShowDeleteDialog(true)}
+              onReport={handleReport}
+            />
           </div>
         )}
 
