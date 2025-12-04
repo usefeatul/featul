@@ -17,10 +17,13 @@ export default function CommentVote({ commentId, initialUpvotes, initialHasVoted
   const [upvotes, setUpvotes] = useState(initialUpvotes)
   const [hasVoted, setHasVoted] = useState(initialHasVoted)
   const [isPending, startTransition] = useTransition()
+  const [burstId, setBurstId] = useState(0)
+  const prevVotedRef = React.useRef<boolean>(initialHasVoted)
 
   React.useEffect(() => {
     setUpvotes(initialUpvotes)
     setHasVoted(initialHasVoted)
+    prevVotedRef.current = initialHasVoted
   }, [initialUpvotes, initialHasVoted])
 
   const handleUpvote = () => {
@@ -31,6 +34,13 @@ export default function CommentVote({ commentId, initialUpvotes, initialHasVoted
 
     setHasVoted(nextHasVoted)
     setUpvotes(nextUpvotes)
+
+    if (nextHasVoted) {
+      setBurstId((id) => id + 1)
+      window.setTimeout(() => setBurstId(0), 600)
+    } else {
+      setBurstId(0)
+    }
 
     startTransition(async () => {
       try {
@@ -64,15 +74,21 @@ export default function CommentVote({ commentId, initialUpvotes, initialHasVoted
       <span className="relative inline-flex items-center">
         <motion.span
           key={hasVoted ? "liked" : "unliked"}
-          animate={{ scale: hasVoted ? [1, 1.18, 1] : [1, 0.94, 1] }}
+          animate={{
+            scale: hasVoted ? [1, 1.2, 1] : [1, 0.95, 1],
+            rotate: hasVoted ? [0, -6, 0] : 0,
+          }}
           transition={{ duration: 0.25 }}
         >
-          <Heart className={cn("h-3.5 w-3.5", hasVoted ? "fill-current" : "group-hover/vote:scale-110 transition-transform")} />
+          <Heart
+            className={cn("h-3.5 w-3.5", !hasVoted && "group-hover/vote:scale-110 transition-transform")}
+            fill={hasVoted ? "currentColor" : "none"}
+          />
         </motion.span>
         <AnimatePresence>
-          {hasVoted && (
+          {burstId > 0 && hasVoted && (
             <motion.span
-              key="burst"
+              key={`burst-${burstId}`}
               className="absolute -top-1 -left-1 h-5 w-5 rounded-full bg-red-500/25"
               initial={{ scale: 0, opacity: 0.9 }}
               animate={{ scale: 1.8, opacity: 0 }}
@@ -81,9 +97,33 @@ export default function CommentVote({ commentId, initialUpvotes, initialHasVoted
               aria-hidden
             />
           )}
+          {burstId > 0 && hasVoted && (
+            <motion.span
+              key={`burst-2-${burstId}`}
+              className="absolute -top-0.5 -left-0.5 h-7 w-7 rounded-full bg-red-500/15"
+              initial={{ scale: 0, opacity: 0.8 }}
+              animate={{ scale: 2.3, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.45 }}
+              aria-hidden
+            />
+          )}
         </AnimatePresence>
       </span>
-      {upvotes > 0 && <span className="tabular-nums font-medium">{upvotes}</span>}
+      <AnimatePresence initial={false} mode="popLayout">
+        {upvotes > 0 && (
+          <motion.span
+            key={upvotes}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2 }}
+            className="tabular-nums font-medium"
+          >
+            {upvotes}
+          </motion.span>
+        )}
+      </AnimatePresence>
     </button>
   )
 }
