@@ -8,6 +8,7 @@ import { CommentsIcon } from "@feedgot/ui/icons/comments"
 import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avatar"
 import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
+import RoleBadge from "@/components/comments/RoleBadge"
 
 export type RequestItemData = {
   id: string
@@ -26,6 +27,8 @@ export type RequestItemData = {
   authorName?: string | null
   isAnonymous?: boolean
   hasVoted?: boolean
+  role?: "admin" | "member" | "viewer" | null
+  isOwner?: boolean
 }
 
 function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemData; workspaceSlug: string; linkBase?: string }) {
@@ -50,10 +53,13 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
             </span>
           </div>
           <span>{new Intl.DateTimeFormat(undefined, { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
-          <Avatar className="size-6 bg-muted ring-1 ring-border rounded-md">
-            <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
-            <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="size-6 bg-muted ring-1 ring-border rounded-md">
+              <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
+              <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
+            </Avatar>
+            <RoleBadge role={item.role} isOwner={item.isOwner} />
+          </div>
         </div>
       </div>
     </div>

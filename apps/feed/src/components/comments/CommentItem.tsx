@@ -12,6 +12,7 @@ import CommentForm from "./CommentForm"
 import CommentImage from "./CommentImage"
 import CommentActions from "./CommentActions"
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
+import RoleBadge from "./RoleBadge"
 
 export type CommentData = {
   id: string
@@ -33,6 +34,8 @@ export type CommentData = {
   updatedAt: string
   editedAt: string | null
   hasVoted?: boolean
+  role?: "admin" | "member" | "viewer" | null
+  isOwner?: boolean
   metadata?: {
     attachments?: { name: string; url: string; type: string }[]
     mentions?: string[]
@@ -208,10 +211,13 @@ export default function CommentItem({
 
   return (
     <div className={cn("flex gap-2.5", depth > 0 && "py-1.5")}>
-      <Avatar className="h-7 w-7 flex-shrink-0 mt-0.5">
-        <AvatarImage src={comment.authorImage} alt={comment.authorName} />
-        <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-      </Avatar>
+      <div className="relative flex-shrink-0 mt-0.5">
+        <Avatar className="h-7 w-7">
+          <AvatarImage src={comment.authorImage} alt={comment.authorName} />
+          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+        </Avatar>
+        <RoleBadge role={comment.role} isOwner={comment.isOwner} />
+      </div>
 
       <div className="flex-1 min-w-0">
         <div className="space-y-1.5">

@@ -1,4 +1,4 @@
-import { eq, and, sql, desc } from "drizzle-orm"
+import { eq, and, sql, desc, or, isNull } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { comment, commentReaction, commentReport, post, board, user, workspace, workspaceMember } from "@feedgot/db"
 import { auth } from "@feedgot/auth"
@@ -21,15 +21,18 @@ export function createCommentRouter() {
       .get(async ({ ctx, input, c }) => {
         const { postId } = input
 
-        // Check if post exists and get board settings
+        // Check if post exists and get board/workspace settings
         const [targetPost] = await ctx.db
           .select({
             postId: post.id,
             boardId: board.id,
             allowComments: board.allowComments,
+            workspaceId: workspace.id,
+            workspaceOwnerId: workspace.ownerId,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
+          .innerJoin(workspace, eq(board.workspaceId, workspace.id))
           .where(eq(post.id, postId))
           .limit(1)
 
@@ -41,7 +44,7 @@ export function createCommentRouter() {
           return c.superjson({ comments: [] })
         }
 
-        // Fetch all comments with author info
+        // Fetch all comments with author info and role
         const comments = await ctx.db
           .select({
             id: comment.id,
@@ -65,9 +68,20 @@ export function createCommentRouter() {
             // Author info from user table
             userName: user.name,
             userImage: user.image,
+            // Role info from workspace member
+            memberRole: workspaceMember.role,
+            workspaceOwnerId: workspace.ownerId,
           })
           .from(comment)
           .leftJoin(user, eq(comment.authorId, user.id))
+          .leftJoin(post, eq(comment.postId, post.id))
+          .leftJoin(board, eq(post.boardId, board.id))
+          .leftJoin(workspace, eq(board.workspaceId, workspace.id))
+          .leftJoin(workspaceMember, and(
+            eq(workspaceMember.workspaceId, workspace.id),
+            eq(workspaceMember.userId, comment.authorId),
+            eq(workspaceMember.isActive, true)
+          ))
           .where(and(eq(comment.postId, postId), eq(comment.status, "published")))
           .orderBy(desc(comment.isPinned), desc(comment.createdAt))
 
@@ -100,13 +114,18 @@ export function createCommentRouter() {
             (seed || "anonymous").trim() || "anonymous"
           )}`
 
-        const formattedComments = comments.map((c: any) => ({
-          ...c,
-          authorImage:
-            c.userImage || toAvatar(c.authorName || c.authorEmail || c.authorId),
-          authorName: c.userName || c.authorName || "Anonymous",
-          hasVoted: userUpvotes.has(c.id),
-        }))
+        const formattedComments = comments.map((c: any) => {
+          const isOwner = c.workspaceOwnerId === c.authorId
+          return {
+            ...c,
+            authorImage:
+              c.userImage || toAvatar(c.authorName || c.authorEmail || c.authorId),
+            authorName: c.userName || c.authorName || "Anonymous",
+            hasVoted: userUpvotes.has(c.id),
+            role: isOwner ? null : (c.memberRole || null), // null means owner (handled separately)
+            isOwner: Boolean(isOwner),
+          }
+        })
 
         return c.superjson({ comments: formattedComments })
       }),

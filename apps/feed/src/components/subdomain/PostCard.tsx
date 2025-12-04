@@ -10,6 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avat
 import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
 import { statusLabel } from "@/lib/roadmap"
+import RoleBadge from "@/components/comments/RoleBadge"
 
 function toPlain(s?: string | null): string {
   if (!s) return ""
@@ -34,10 +35,13 @@ function PostCardBase({ item, onVoteChange }: { item: RequestItemData; onVoteCha
       ) : null}
       <div className="mt-3 flex items-center justify-between">
         <div className="inline-flex items-center gap-2">
-          <Avatar className="size-6 bg-card border border-border rounded-full">
-            <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
-            <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="size-6 bg-card border border-border rounded-full">
+              <AvatarImage src={!item.isAnonymous ? (item.authorImage || randomAvatarUrl(item.id || item.slug)) : randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")} />
+              <AvatarFallback>{getInitials(item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous"))}</AvatarFallback>
+            </Avatar>
+            <RoleBadge role={item.role} isOwner={item.isOwner} />
+          </div>
           <span className="text-xs text-accent whitespace-nowrap mt-2  max-w-[180px] truncate">
             {item.isAnonymous ? "Anonymous" : (item.authorName || "Anonymous")}
           </span>

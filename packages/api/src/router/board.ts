@@ -453,14 +453,24 @@ export function createBoardRouter() {
               content: post.content,
               image: post.image,
               authorImage: post.authorImage,
+              authorId: post.authorId,
               commentCount: post.commentCount,
               upvotes: post.upvotes,
               roadmapStatus: post.roadmapStatus,
               publishedAt: post.publishedAt,
               hasVoted: sql<boolean>`CASE WHEN ${vote.id} IS NOT NULL THEN true ELSE false END`,
+              memberRole: workspaceMember.role,
+              workspaceOwnerId: workspace.ownerId,
             })
             .from(post)
             .leftJoin(vote, and(eq(vote.postId, post.id), eq(vote.userId, userId)))
+            .leftJoin(board, eq(post.boardId, board.id))
+            .leftJoin(workspace, eq(board.workspaceId, workspace.id))
+            .leftJoin(workspaceMember, and(
+              eq(workspaceMember.workspaceId, workspace.id),
+              eq(workspaceMember.userId, post.authorId),
+              eq(workspaceMember.isActive, true)
+            ))
             .where(eq(post.boardId, b.id))
         } else {
           postsList = await ctx.db
@@ -471,21 +481,36 @@ export function createBoardRouter() {
               content: post.content,
               image: post.image,
               authorImage: post.authorImage,
+              authorId: post.authorId,
               commentCount: post.commentCount,
               upvotes: post.upvotes,
               roadmapStatus: post.roadmapStatus,
               publishedAt: post.publishedAt,
               hasVoted: sql<boolean>`false`,
+              memberRole: workspaceMember.role,
+              workspaceOwnerId: workspace.ownerId,
             })
             .from(post)
+            .leftJoin(board, eq(post.boardId, board.id))
+            .leftJoin(workspace, eq(board.workspaceId, workspace.id))
+            .leftJoin(workspaceMember, and(
+              eq(workspaceMember.workspaceId, workspace.id),
+              eq(workspaceMember.userId, post.authorId),
+              eq(workspaceMember.isActive, true)
+            ))
             .where(eq(post.boardId, b.id))
         }
 
         const toAvatar = (seed?: string | null) => `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')}`
-        const withAvatars = postsList.map((p: any) => ({
-          ...p,
-          authorImage: p.authorImage || toAvatar(p.id || p.slug),
-        }))
+        const withAvatars = postsList.map((p: any) => {
+          const isOwner = p.workspaceOwnerId === p.authorId
+          return {
+            ...p,
+            authorImage: p.authorImage || toAvatar(p.id || p.slug),
+            role: isOwner ? null : (p.memberRole || null),
+            isOwner: Boolean(isOwner),
+          }
+        })
         return c.superjson({ posts: withAvatars })
       }),
 
@@ -527,9 +552,18 @@ export function createBoardRouter() {
                 moderationReason: post.moderationReason,
                 duplicateOfId: post.duplicateOfId,
                 hasVoted: sql<boolean>`CASE WHEN ${vote.id} IS NOT NULL THEN true ELSE false END`,
+                memberRole: workspaceMember.role,
+                workspaceOwnerId: workspace.ownerId,
             })
             .from(post)
             .leftJoin(vote, and(eq(vote.postId, post.id), eq(vote.userId, userId)))
+            .leftJoin(board, eq(post.boardId, board.id))
+            .leftJoin(workspace, eq(board.workspaceId, workspace.id))
+            .leftJoin(workspaceMember, and(
+              eq(workspaceMember.workspaceId, workspace.id),
+              eq(workspaceMember.userId, post.authorId),
+              eq(workspaceMember.isActive, true)
+            ))
             .where(eq(post.id, input.postId))
             .limit(1)
             p = res
@@ -565,14 +599,31 @@ export function createBoardRouter() {
                 moderationReason: post.moderationReason,
                 duplicateOfId: post.duplicateOfId,
                 hasVoted: sql<boolean>`false`,
+                memberRole: workspaceMember.role,
+                workspaceOwnerId: workspace.ownerId,
             })
             .from(post)
+            .leftJoin(board, eq(post.boardId, board.id))
+            .leftJoin(workspace, eq(board.workspaceId, workspace.id))
+            .leftJoin(workspaceMember, and(
+              eq(workspaceMember.workspaceId, workspace.id),
+              eq(workspaceMember.userId, post.authorId),
+              eq(workspaceMember.isActive, true)
+            ))
             .where(eq(post.id, input.postId))
             .limit(1)
             p = res
         }
 
         if (!p) return c.superjson({ post: null })
+
+        // Format role and isOwner
+        const isOwner = p.workspaceOwnerId === p.authorId
+        const formattedPost = {
+          ...p,
+          role: isOwner ? null : (p.memberRole || null),
+          isOwner: Boolean(isOwner),
+        }
 
         const [b] = await ctx.db
           .select({
@@ -585,14 +636,14 @@ export function createBoardRouter() {
             roadmapStatuses: board.roadmapStatuses,
           })
           .from(board)
-          .where(eq(board.id, p.boardId))
+          .where(eq(board.id, formattedPost.boardId))
           .limit(1)
 
         const tagsList = await ctx.db
           .select({ id: tag.id, name: tag.name, slug: tag.slug, color: tag.color })
           .from(postTag)
           .innerJoin(tag, eq(postTag.tagId, tag.id))
-          .where(eq(postTag.postId, p.id))
+          .where(eq(postTag.postId, formattedPost.id))
 
         const commentsList = await ctx.db
           .select({
@@ -614,20 +665,20 @@ export function createBoardRouter() {
             metadata: comment.metadata,
           })
           .from(comment)
-          .where(eq(comment.postId, p.id))
+          .where(eq(comment.postId, formattedPost.id))
 
         let author: { id?: string; name?: string; image?: string } | null = null
-        if (p.authorId) {
+        if (formattedPost.authorId) {
           const [au] = await ctx.db
             .select({ id: user.id, name: user.name, image: user.image })
             .from(user)
-            .where(eq(user.id, p.authorId))
+            .where(eq(user.id, formattedPost.authorId))
             .limit(1)
           author = au || null
         }
 
         const toAvatar = (seed?: string | null) => `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')}`
-        const postWithAvatar = { ...p, authorImage: p.authorImage || toAvatar(p.id || p.slug) }
+        const postWithAvatar = { ...formattedPost, authorImage: formattedPost.authorImage || toAvatar(formattedPost.id || formattedPost.slug) }
         return c.superjson({ post: postWithAvatar, board: b || null, tags: tagsList, comments: commentsList, author })
       }),
 
