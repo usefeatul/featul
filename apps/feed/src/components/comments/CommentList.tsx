@@ -10,11 +10,13 @@ import { useSession } from "@feedgot/auth/client";
 interface CommentListProps {
   postId: string;
   initialCount?: number;
+  workspaceSlug?: string;
 }
 
 export default function CommentList({
   postId,
   initialCount = 0,
+  workspaceSlug,
 }: CommentListProps) {
   const queryClient = useQueryClient();
   const { data: session } = useSession() as any;
@@ -84,6 +86,7 @@ export default function CommentList({
               comments={comments}
               currentUserId={currentUserId}
               onUpdate={handleCommentSuccess}
+              workspaceSlug={workspaceSlug}
             />
           )}
         </div>

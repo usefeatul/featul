@@ -56,7 +56,7 @@ export default function RequestDetail({ post, workspaceSlug, readonly = false }:
           ) : null}
           {post.content ? <div className="prose dark:prose-invert text-sm">{post.content}</div> : null}
           <div className="mt-6">
-            <CommentList postId={post.id} initialCount={post.commentCount} />
+            <CommentList postId={post.id} initialCount={post.commentCount} workspaceSlug={workspaceSlug} />
           </div>
         </article>
         <aside className="space-y-4">

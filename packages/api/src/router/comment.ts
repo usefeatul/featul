@@ -1,6 +1,6 @@
 import { eq, and, sql, desc } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { comment, commentReaction, commentReport, post, board, user } from "@feedgot/db"
+import { comment, commentReaction, commentReport, post, board, user, workspace, workspaceMember } from "@feedgot/db"
 import { auth } from "@feedgot/auth"
 import { headers } from "next/headers"
 import {
@@ -248,9 +248,13 @@ export function createCommentRouter() {
         const { commentId } = input
         const userId = ctx.session.user.id
 
-        // Check if comment exists and user is author
+        // Check if comment exists and get post/workspace info
         const [existingComment] = await ctx.db
-          .select()
+          .select({
+            id: comment.id,
+            authorId: comment.authorId,
+            postId: comment.postId,
+          })
           .from(comment)
           .where(eq(comment.id, commentId))
           .limit(1)
@@ -259,8 +263,31 @@ export function createCommentRouter() {
           throw new HTTPException(404, { message: "Comment not found" })
         }
 
-        if (existingComment.authorId !== userId) {
-          throw new HTTPException(403, { message: "You can only delete your own comments" })
+        // Check if user is comment author
+        const isAuthor = existingComment.authorId === userId
+
+        // Check if user is workspace owner
+        let isWorkspaceOwner = false
+        if (!isAuthor) {
+          const [postInfo] = await ctx.db
+            .select({
+              postId: post.id,
+              workspaceId: workspace.id,
+              ownerId: workspace.ownerId,
+            })
+            .from(post)
+            .innerJoin(board, eq(post.boardId, board.id))
+            .innerJoin(workspace, eq(board.workspaceId, workspace.id))
+            .where(eq(post.id, existingComment.postId))
+            .limit(1)
+
+          if (postInfo) {
+            isWorkspaceOwner = postInfo.ownerId === userId
+          }
+        }
+
+        if (!isAuthor && !isWorkspaceOwner) {
+          throw new HTTPException(403, { message: "You can only delete your own comments or be the workspace owner" })
         }
 
         // Soft delete - set status to deleted

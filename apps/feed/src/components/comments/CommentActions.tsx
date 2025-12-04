@@ -12,6 +12,7 @@ import {
 
 interface CommentActionsProps {
   isAuthor: boolean
+  canDelete?: boolean
   onEdit?: () => void
   onDelete?: () => void
   onReport?: () => void
@@ -19,6 +20,7 @@ interface CommentActionsProps {
 
 export default function CommentActions({
   isAuthor,
+  canDelete = false,
   onEdit,
   onDelete,
   onReport,
@@ -45,7 +47,7 @@ export default function CommentActions({
                   <span className="text-sm">Edit</span>
                 </PopoverListItem>
               )}
-              {onDelete && (
+              {canDelete && onDelete && (
                 <PopoverListItem
                   onClick={() => { onDelete(); setOpen(false); }}
                   className="text-destructive"
@@ -56,12 +58,23 @@ export default function CommentActions({
               )}
             </>
           ) : (
-            onReport && (
-              <PopoverListItem onClick={() => { onReport(); setOpen(false); }}>
-                <Flag className="h-3.5 w-3.5 flex-shrink-0" />
-                <span className="text-sm">Report</span>
-              </PopoverListItem>
-            )
+            <>
+              {canDelete && onDelete && (
+                <PopoverListItem
+                  onClick={() => { onDelete(); setOpen(false); }}
+                  className="text-destructive"
+                >
+                  <Trash2 className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="text-sm">Delete</span>
+                </PopoverListItem>
+              )}
+              {onReport && (
+                <PopoverListItem onClick={() => { onReport(); setOpen(false); }}>
+                  <Flag className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="text-sm">Report</span>
+                </PopoverListItem>
+              )}
+            </>
           )}
         </PopoverList>
       </PopoverContent>

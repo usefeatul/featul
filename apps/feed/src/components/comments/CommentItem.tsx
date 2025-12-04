@@ -11,6 +11,7 @@ import { cn } from "@feedgot/ui/lib/utils"
 import CommentForm from "./CommentForm"
 import CommentImage from "./CommentImage"
 import CommentActions from "./CommentActions"
+import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
 
 export type CommentData = {
   id: string
@@ -48,6 +49,7 @@ interface CommentItemProps {
   hasReplies?: boolean
   isCollapsed?: boolean
   onToggleCollapse?: () => void
+  workspaceSlug?: string
 }
 
 export default function CommentItem({
@@ -59,6 +61,7 @@ export default function CommentItem({
   hasReplies = false,
   isCollapsed = false,
   onToggleCollapse,
+  workspaceSlug,
 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -68,7 +71,9 @@ export default function CommentItem({
   const [isPending, startTransition] = useTransition()
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const { isOwner } = useWorkspaceRole(workspaceSlug || "")
   const isAuthor = currentUserId && comment.authorId === currentUserId
+  const canDelete = isAuthor || (workspaceSlug ? isOwner : false)
   const canReply = depth < 3 // Limit nesting to 3 levels
 
   // Sync state with prop changes (e.g., on page refresh)
@@ -317,6 +322,7 @@ export default function CommentItem({
 
             <CommentActions
               isAuthor={!!isAuthor}
+              canDelete={canDelete}
               onEdit={() => setIsEditing(true)}
               onDelete={handleDelete}
               onReport={handleReport}

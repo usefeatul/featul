@@ -7,9 +7,10 @@ interface CommentThreadProps {
   comments: CommentData[]
   currentUserId?: string | null
   onUpdate?: () => void
+  workspaceSlug?: string
 }
 
-export default function CommentThread({ comments, currentUserId, onUpdate }: CommentThreadProps) {
+export default function CommentThread({ comments, currentUserId, onUpdate, workspaceSlug }: CommentThreadProps) {
   const [collapsedComments, setCollapsedComments] = useState<Set<string>>(new Set())
 
   const toggleCollapse = (commentId: string) => {
@@ -88,6 +89,7 @@ export default function CommentThread({ comments, currentUserId, onUpdate }: Com
           hasReplies={hasReplies}
           isCollapsed={isCollapsed}
           onToggleCollapse={() => toggleCollapse(comment.id)}
+          workspaceSlug={workspaceSlug}
         />
         {hasReplies && !isCollapsed && (
           <div className="ml-5 mt-3 space-y-3 pl-4 border-l-2 border-border/60">
