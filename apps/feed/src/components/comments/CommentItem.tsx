@@ -19,6 +19,7 @@ import CommentVote from "./CommentVote";
 import CommentReplyButton from "./actions/CommentReplyAction";
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
 import { relativeTime } from "@/lib/time";
+import { getInitials } from "@/utils/user-utils";
 import RoleBadge from "./RoleBadge";
 
 export type CommentData = {
@@ -107,12 +108,7 @@ export default function CommentItem({
 
   
 
-  const initials = comment.authorName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+  const initials = getInitials(comment.authorName);
 
   return (
     <div className={cn("flex gap-3 group", depth > 0 && "mt-2")}>
