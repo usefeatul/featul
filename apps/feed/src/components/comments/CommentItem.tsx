@@ -18,6 +18,7 @@ import CommentActions from "./actions/CommentActions";
 import CommentVote from "./CommentVote";
 import CommentReplyButton from "./actions/CommentReplyAction";
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
+import { relativeTime } from "@/lib/time";
 import RoleBadge from "./RoleBadge";
 
 export type CommentData = {
@@ -104,23 +105,7 @@ export default function CommentItem({
   };
 
 
-  const relativeTime = (date: string) => {
-    const now = new Date();
-    const past = new Date(date);
-    const diffMs = now.getTime() - past.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return new Intl.DateTimeFormat(undefined, {
-      month: "short",
-      day: "numeric",
-    }).format(past);
-  };
+  
 
   const initials = comment.authorName
     .split(" ")
