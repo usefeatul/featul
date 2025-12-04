@@ -74,6 +74,8 @@ export function DomainHeader({
     ch?.addEventListener("message", async () => {
       try {
         const s = await authClient.getSession();
+        console.log("getSession", s);
+        if (!active) return;
         setUser((s as any)?.data?.user || null);
       } catch {}
     });
