@@ -2,8 +2,8 @@
 
 import React, { useState } from "react"
 import CommentItem, { CommentData } from "./CommentItem"
-
 import { cn } from "@feedgot/ui/lib/utils"
+import AnimatedReplies from "./AnimatedReplies"
 
 interface CommentThreadProps {
   comments: CommentData[]
@@ -93,11 +93,11 @@ export default function CommentThread({ comments, currentUserId, onUpdate, works
           onToggleCollapse={() => toggleCollapse(comment.id)}
           workspaceSlug={workspaceSlug}
         />
-        {hasReplies && !isCollapsed && (
-          <div className="ml-4 pl-4 mt-2 space-y-4 border-l border-border/60">
+        {hasReplies ? (
+          <AnimatedReplies isOpen={!isCollapsed} className="ml-4 pl-4 mt-2 space-y-4 border-l border-border/60">
             {comment.replies.map((reply) => renderComment(reply as CommentData & { replies: CommentData[] }, depth + 1))}
-          </div>
-        )}
+          </AnimatedReplies>
+        ) : null}
       </div>
     )
   }
@@ -110,4 +110,3 @@ export default function CommentThread({ comments, currentUserId, onUpdate, works
     </div>
   )
 }
-

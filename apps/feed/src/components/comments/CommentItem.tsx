@@ -10,7 +10,7 @@ import { Button } from "@feedgot/ui/components/button";
 import { Textarea } from "@feedgot/ui/components/textarea";
 import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
-import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import PinnedBadge from "./PinnedBadge";
 import { cn } from "@feedgot/ui/lib/utils";
 import CommentForm from "./CommentForm";
@@ -22,6 +22,7 @@ import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
 import { relativeTime } from "@/lib/time";
 import { getInitials } from "@/utils/user-utils";
 import RoleBadge from "./RoleBadge";
+import CommentCollapseToggle from "./CommentCollapseToggle";
 
 export type CommentData = {
   id: string;
@@ -137,22 +138,12 @@ export default function CommentItem({
             )}
             {comment.isPinned && <PinnedBadge />}
             {hasReplies && onToggleCollapse && (
-              <button
-                onClick={onToggleCollapse}
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground/60 hover:text-foreground transition-colors ml-auto sm:ml-0"
-                aria-label={isCollapsed ? "Expand replies" : "Collapse replies"}
-              >
-                {isCollapsed ? (
-                  <>
-                    <ChevronDown className="h-3 w-3" />
-                    <span className="font-medium">
-                      {comment.replyCount} replies
-                    </span>
-                  </>
-                ) : (
-                  <ChevronUp className="h-3 w-3" />
-                )}
-              </button>
+              <CommentCollapseToggle
+                isCollapsed={isCollapsed}
+                replyCount={comment.replyCount}
+                onToggle={onToggleCollapse!}
+                className="ml-auto sm:ml-0"
+              />
             )}
           </div>
 
