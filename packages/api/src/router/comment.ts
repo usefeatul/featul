@@ -580,5 +580,15 @@ export function createCommentRouter() {
           .where(and(eq(commentMention.id, id), eq(commentMention.mentionedUserId, userId)))
         return c.superjson({ success: true })
       }),
+
+    // Mark all mention notifications as read for current user
+    mentionsMarkAllRead: privateProcedure.post(async ({ ctx, c }) => {
+      const userId = ctx.session.user.id
+      await ctx.db
+        .update(commentMention)
+        .set({ isRead: true })
+        .where(and(eq(commentMention.mentionedUserId, userId), eq(commentMention.isRead, false)))
+      return c.superjson({ success: true })
+    }),
   })
 }

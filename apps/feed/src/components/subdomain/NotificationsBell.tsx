@@ -50,6 +50,13 @@ export default function NotificationsBell() {
   }, [])
 
   const anchorRef = React.useRef<HTMLButtonElement | null>(null)
+  const markAllRead = React.useCallback(async () => {
+    try {
+      await client.comment.mentionsMarkAllRead.$post()
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
+      setUnread(0)
+    } catch {}
+  }, [])
 
   return (
     <>
@@ -61,7 +68,7 @@ export default function NotificationsBell() {
           </span>
         ) : null}
       </Button>
-      <NotificationsPanel anchorRef={anchorRef as React.RefObject<HTMLElement>} open={open} onOpenChange={onOpenChange} notifications={notifications} markRead={markRead} />
+      <NotificationsPanel anchorRef={anchorRef as React.RefObject<HTMLElement>} open={open} onOpenChange={onOpenChange} notifications={notifications} markRead={markRead} onMarkAllRead={markAllRead} />
     </>
   )
 }
