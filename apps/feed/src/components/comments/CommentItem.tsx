@@ -11,6 +11,7 @@ import { Textarea } from "@feedgot/ui/components/textarea";
 import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { PinIcon } from "@feedgot/ui/icons/pin";
 import { cn } from "@feedgot/ui/lib/utils";
 import CommentForm from "./CommentForm";
 import CommentImage from "./CommentImage";
@@ -111,7 +112,7 @@ export default function CommentItem({
   const initials = getInitials(comment.authorName);
 
   return (
-    <div className={cn("flex gap-3 group", depth > 0 && "mt-2")}>
+    <div className={cn("flex gap-3 group relative", depth > 0 && "mt-2")}>
       <div className="relative flex-shrink-0">
         <Avatar className="size-8 relative overflow-visible">
           <AvatarImage src={comment.authorImage} alt={comment.authorName} />
@@ -134,9 +135,7 @@ export default function CommentItem({
             {comment.isEdited && (
               <span className="text-xs text-muted-foreground/60">(edited)</span>
             )}
-            {comment.isPinned && (
-              <span className="text-xs text-primary font-medium">Pinned</span>
-            )}
+            {null}
             {hasReplies && onToggleCollapse && (
               <button
                 onClick={onToggleCollapse}
@@ -264,6 +263,11 @@ export default function CommentItem({
           </div>
         )}
       </div>
+      {comment.isPinned && (
+        <span className="absolute top-1 right-1 z-10 pointer-events-none">
+          <PinIcon className="h-4 w-4 text-primary opacity-90" aria-hidden />
+        </span>
+      )}
       </div>
 
     
