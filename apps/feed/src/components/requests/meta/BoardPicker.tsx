@@ -41,7 +41,7 @@ export default function BoardPicker({ workspaceSlug, postId, value, onChange }: 
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button type="button" variant="ghost" size="sm" className="h-7 px-2">
-          <span className="rounded-md bg-card px-2 py-0.5">{value?.name || "Board"}</span>
+          <span className="rounded-md  px-2 py-0.5">{value?.name || "Board"}</span>
           <DropdownIcon className="ml-1 opacity-60" size={12} />
         </Button>
       </PopoverTrigger>
