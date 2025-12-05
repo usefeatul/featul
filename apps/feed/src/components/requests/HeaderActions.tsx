@@ -11,7 +11,7 @@ import PostCountBadge from "./PostCountBadge"
 export default function HeaderActions({ className = "" }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <PostCountBadge />
+      {/* <PostCountBadge /> */}
       <SearchAction />
       <BoardsAction />
       <StatusAction />

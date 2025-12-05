@@ -162,12 +162,13 @@ export default function CommentItem({
               <Textarea
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
-                className="min-h-[80px] resize-none text-sm bg-transparent border-muted focus:border-primary transition-colors"
+                className="min-h-[80px] resize-none text-sm bg-card border-border focus:border-primary transition-colors"
                 disabled={isPending}
               />
               <div className="flex items-center gap-2">
                 <Button
                   size="sm"
+                  variant="nav"
                   onClick={handleEdit}
                   disabled={!editContent.trim() || isPending}
                 >

@@ -53,25 +53,15 @@ export default function CommentList({
   const commentCount = comments.length;
 
   const handleCommentSuccess = () => {
-    // Optimistically refetch in background without showing loading state
-    // The query will update with placeholderData keeping old data visible
+
     refetch()
   }
 
   return (
     <div className="space-y-4">
-      {/* <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium">
-          Comments {commentCount > 0 && `(${commentCount})`}
-        </h2>
-      </div> */}
-
-      {/* Comment Form */}
       <div className="rounded-md border bg-card p-3.5">
         <CommentForm postId={postId} onSuccess={handleCommentSuccess} />
       </div>
-
-      {/* Comments List */}
       {commentCount === 0 && !isLoading ? (
         <div className="rounded-md border bg-card p-6 text-center">
           <p className="text-sm text-accent">
