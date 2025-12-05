@@ -5,6 +5,7 @@ import { Button } from "@feedgot/ui/components/button"
 import { Bell } from "lucide-react"
 import { client } from "@feedgot/api/client"
 import NotificationsPanel from "./NotificationsPanel"
+import { Popover, PopoverTrigger, PopoverContent } from "@feedgot/ui/components/popover"
 
 export default function NotificationsBell() {
   const [open, setOpen] = React.useState(false)
@@ -49,7 +50,6 @@ export default function NotificationsBell() {
     } catch {}
   }, [])
 
-  const anchorRef = React.useRef<HTMLButtonElement | null>(null)
   const markAllRead = React.useCallback(async () => {
     try {
       await client.comment.mentionsMarkAllRead.$post()
@@ -59,16 +59,20 @@ export default function NotificationsBell() {
   }, [])
 
   return (
-    <>
-      <Button ref={anchorRef} type="button" size="xs" variant="nav" className="relative" onClick={() => onOpenChange(!open)}>
-        <Bell className="w-[18px] h-[18px] text-foreground opacity-60 group-hover:text-primary transition-colors" />
-        {unread > 0 ? (
-          <span className="absolute -top-1 -right-1 rounded-md bg-muted ring-1 ring-border px-1.5 py-0.5 text-[10px] tabular-nums">
-            {unread}
-          </span>
-        ) : null}
-      </Button>
-      <NotificationsPanel anchorRef={anchorRef as React.RefObject<HTMLElement>} open={open} onOpenChange={onOpenChange} notifications={notifications} markRead={markRead} onMarkAllRead={markAllRead} />
-    </>
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger asChild>
+        <Button type="button" size="xs" variant="nav" className="relative" aria-label="Notifications">
+          <Bell className="w-[18px] h-[18px] text-foreground opacity-60 group-hover:text-primary transition-colors" />
+          {unread > 0 ? (
+            <span className="absolute -top-1 -right-1 rounded-md bg-muted ring-1 ring-border px-1.5 py-0.5 text-[10px] tabular-nums">
+              {unread}
+            </span>
+          ) : null}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent asChild side="bottom" align="end" sideOffset={8} className="bg-transparent p-0 border-none shadow-none w-auto">
+        <NotificationsPanel notifications={notifications} markRead={markRead} onMarkAllRead={markAllRead} />
+      </PopoverContent>
+    </Popover>
   )
 }
