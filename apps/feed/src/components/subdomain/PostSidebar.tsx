@@ -9,24 +9,10 @@ import StatusPicker from "../requests/meta/StatusPicker"
 import FlagsPicker from "../requests/meta/FlagsPicker"
 import StatusIcon from "../requests/StatusIcon"
 import { PoweredBy } from "./PoweredBy"
+import { SubdomainRequestDetailData } from "./request-detail/types"
 
 export type PostSidebarProps = {
-  post: {
-    id: string
-    publishedAt: string | null
-    createdAt: string
-    boardName: string
-    boardSlug: string
-    roadmapStatus: string | null
-    isPinned?: boolean
-    isLocked?: boolean
-    isFeatured?: boolean
-    author?: {
-      name: string | null
-      image: string | null
-      email: string | null
-    } | null
-  }
+  post: SubdomainRequestDetailData
   workspaceSlug: string
   initialCanEdit?: boolean
 }
