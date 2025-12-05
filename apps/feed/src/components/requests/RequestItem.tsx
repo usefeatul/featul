@@ -2,6 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import StatusIcon from "./StatusIcon"
 import { LoveIcon } from "@feedgot/ui/icons/love"
 import { CommentsIcon } from "@feedgot/ui/icons/comments"
@@ -32,8 +33,10 @@ export type RequestItemData = {
 }
 
 function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemData; workspaceSlug: string; linkBase?: string }) {
+  const searchParams = useSearchParams()
+  const queryString = searchParams.toString() ? `?${searchParams.toString()}` : ""
   const base = linkBase || `/workspaces/${workspaceSlug}`
-  const href = `${base}/requests/${item.slug}`
+  const href = `${base}/requests/${item.slug}${queryString}`
   return (
     <div className="rounded-md border bg-card p-2.5">
       <div className="flex items-center bg-card gap-3">

@@ -2,6 +2,8 @@
 
 import React from "react"
 import StatusIcon from "./StatusIcon"
+import RequestNavigation from "./RequestNavigation"
+import { useRequestNavigation } from "@/hooks/useRequestNavigation"
 import { CommentsIcon } from "@feedgot/ui/icons/comments"
 import CommentCounter from "../comments/CommentCounter"
 import StatusPicker from "./meta/StatusPicker"
@@ -29,9 +31,10 @@ export type RequestDetailData = {
   hasVoted?: boolean
 }
 
-export default function RequestDetail({ post, workspaceSlug, readonly = false, initialComments }: { post: RequestDetailData; workspaceSlug: string; readonly?: boolean; initialComments?: CommentData[] }) {
+export default function RequestDetail({ post, workspaceSlug, readonly = false, initialComments, navigation }: { post: RequestDetailData; workspaceSlug: string; readonly?: boolean; initialComments?: CommentData[]; navigation?: { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null } }) {
   const date = new Date(post.publishedAt ?? post.createdAt)
   const formatted = new Intl.DateTimeFormat(undefined, { month: "short", day: "2-digit" }).format(date)
+  const { prevHref, nextHref } = useRequestNavigation(workspaceSlug, navigation)
   const [meta, setMeta] = React.useState({
     roadmapStatus: post.roadmapStatus || undefined,
     isPinned: !!post.isPinned,
@@ -45,6 +48,7 @@ export default function RequestDetail({ post, workspaceSlug, readonly = false, i
         <article className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <h1 className="text-xl font-semibold">{post.title}</h1>
+            <RequestNavigation prev={navigation?.prev} next={navigation?.next} prevHref={prevHref} nextHref={nextHref} />
           </div>
           {post.image ? (
             <img src={post.image} alt="" className="w-48 h-36 rounded-md object-cover border" />

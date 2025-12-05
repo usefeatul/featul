@@ -4,12 +4,14 @@ import { eq, and, sql } from "drizzle-orm"
 import RequestDetail from "@/components/requests/RequestDetail"
 import { client } from "@feedgot/api/client"
 import { readHasVotedForPost } from "@/lib/vote.server"
+import { getPostNavigation, normalizeStatus } from "@/lib/workspace"
+import { parseArrayParam } from "@/utils/request-filters"
 
 export const revalidate = 30
 
-type Props = { params: Promise<{ slug: string; post: string }> }
+type Props = { params: Promise<{ slug: string; post: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }
 
-export default async function RequestDetailPage({ params }: Props) {
+export default async function RequestDetailPage({ params, searchParams }: Props) {
   const { slug, post: postSlug } = await params
   const [ws] = await db
     .select({ id: workspace.id, name: workspace.name })
@@ -46,5 +48,36 @@ export default async function RequestDetailPage({ params }: Props) {
   const commentsJson = await commentsRes.json().catch(() => ({ comments: [] }))
   const initialComments = Array.isArray((commentsJson as any)?.comments) ? (commentsJson as any).comments : []
 
-  return <RequestDetail post={{ ...p, hasVoted } as any} workspaceSlug={slug} initialComments={initialComments as any} />
+  let sp: any = {}
+  if (searchParams) {
+    try {
+      sp = await searchParams
+    } catch {}
+  }
+
+  const statusRaw = parseArrayParam(sp.status)
+  const boardRaw = parseArrayParam(sp.board)
+  const tagRaw = parseArrayParam(sp.tag)
+  const order = typeof sp.order === "string" && sp.order ? sp.order : "newest"
+  const search = typeof sp.search === "string" ? sp.search : ""
+
+  const navigation = await getPostNavigation(slug, p.id, {
+    statuses: statusRaw.map(normalizeStatus),
+    boardSlugs: boardRaw.map((b: string) => b.trim().toLowerCase()).filter(Boolean),
+    tagSlugs: tagRaw.map((t: string) => t.trim().toLowerCase()).filter(Boolean),
+    order: order === "oldest" ? "oldest" : order === "likes" ? "likes" : "newest",
+    search,
+  })
+
+  return (
+    <RequestDetail
+      post={{ ...p, hasVoted } as any}
+      workspaceSlug={slug}
+      initialComments={initialComments as any}
+      navigation={{
+        prev: navigation.prev ? { slug: navigation.prev.slug, title: navigation.prev.title } : null,
+        next: navigation.next ? { slug: navigation.next.slug, title: navigation.next.title } : null,
+      }}
+    />
+  )
 }

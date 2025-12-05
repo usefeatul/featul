@@ -659,3 +659,86 @@ export async function getSettingsInitialData(
     })),
   };
 }
+
+export async function getPostNavigation(
+  slug: string,
+  currentPostId: string,
+  opts?: {
+    statuses?: string[];
+    boardSlugs?: string[];
+    tagSlugs?: string[];
+    order?: "newest" | "oldest" | "likes";
+    search?: string;
+  }
+) {
+  const ws = await getWorkspaceBySlug(slug);
+  if (!ws) return { prev: null, next: null };
+
+  const normalizedStatuses = (opts?.statuses || [])
+    .map(normalizeStatus)
+    .filter(Boolean);
+  const matchStatuses = Array.from(new Set(normalizedStatuses));
+  const boardSlugs = (opts?.boardSlugs || [])
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const tagSlugs = (opts?.tagSlugs || [])
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const orderParam = String(opts?.order || "newest").toLowerCase();
+  const order = orderParam === "oldest" ? asc(post.createdAt) : orderParam === "likes" ? desc(post.upvotes) : desc(post.createdAt);
+  const search = (opts?.search || "").trim();
+
+  let tagPostIds: string[] | null = null;
+  if (tagSlugs.length > 0) {
+    const rows = await db
+      .select({ postId: postTag.postId })
+      .from(postTag)
+      .innerJoin(tag, eq(postTag.tagId, tag.id))
+      .innerJoin(post, eq(postTag.postId, post.id))
+      .innerJoin(board, eq(post.boardId, board.id))
+      .where(
+        and(
+          eq(board.workspaceId, ws.id),
+          eq(board.isSystem, false),
+          inArray(tag.slug, tagSlugs)
+        )
+      );
+    tagPostIds = Array.from(new Set(rows.map((r) => r.postId)));
+    if (tagPostIds.length === 0) {
+      return { prev: null, next: null };
+    }
+  }
+
+  const filters: any[] = [
+    eq(board.workspaceId, ws.id),
+    eq(board.isSystem, false),
+  ];
+  if (matchStatuses.length > 0)
+    filters.push(inArray(post.roadmapStatus, matchStatuses));
+  if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
+  if (tagPostIds) filters.push(inArray(post.id, tagPostIds));
+  if (search) {
+    filters.push(
+      sql`to_tsvector('english', coalesce(${post.title}, '') || ' ' || coalesce(${post.content}, '')) @@ plainto_tsquery('english', ${search})`
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: post.id,
+      title: post.title,
+      slug: post.slug,
+    })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(and(...filters) as any)
+    .orderBy(order);
+
+  const idx = rows.findIndex((p) => p.id === currentPostId);
+  if (idx === -1) return { prev: null, next: null };
+
+  return {
+    prev: idx > 0 ? rows[idx - 1] : null,
+    next: idx < rows.length - 1 ? rows[idx + 1] : null,
+  };
+}
