@@ -543,9 +543,11 @@ export function createCommentRouter() {
             postTitle: post.title,
             workspaceSlug: workspace.slug,
             authorName: comment.authorName,
+            authorImage: user.image,
           })
           .from(commentMention)
           .innerJoin(comment, eq(commentMention.commentId, comment.id))
+          .innerJoin(user, eq(comment.authorId, user.id))
           .innerJoin(post, eq(comment.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
           .innerJoin(workspace, eq(board.workspaceId, workspace.id))
