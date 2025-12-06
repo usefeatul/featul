@@ -94,6 +94,7 @@ function ThreadItem({
         comment={comment}
         currentUserId={currentUserId}
         onUpdate={onUpdate}
+        onReplySuccess={onUpdate}
         depth={depth}
         hasReplies={replies.length > 0}
         isCollapsed={isCollapsed}
