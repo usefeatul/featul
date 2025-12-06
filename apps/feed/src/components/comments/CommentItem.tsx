@@ -285,7 +285,13 @@ export default function CommentItem({
             {canReply && (
               <CommentReplyButton
                 onClick={() => setShowReplyForm(!showReplyForm)}
-                className="rounded-full bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 h-auto"
+                isActive={showReplyForm}
+                className={cn(
+                  "rounded-full px-3 py-1.5 h-auto transition-all duration-200",
+                  showReplyForm
+                    ? "bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive"
+                    : "bg-secondary/10 text-muted-foreground/70 hover:bg-secondary/20 hover:text-foreground"
+                )}
               />
             )}
           </div>
@@ -302,7 +308,6 @@ export default function CommentItem({
                   setShowReplyForm(false);
                   onReplySuccess?.();
                 }}
-                onCancel={() => setShowReplyForm(false)}
                 placeholder="Write a reply..."
                 autoFocus
                 buttonText="Reply"
