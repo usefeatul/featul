@@ -1,5 +1,5 @@
 ## Feedgot
 
 
-## new name is areilla not "feedgot"
+## new name is oreilla not "feedgot"
 
