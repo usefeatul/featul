@@ -11,6 +11,7 @@ import { ImageIcon  } from "@feedgot/ui/icons/image"
 import { getCommentImageUploadUrl } from "@/lib/comment-service"
 import CommentImage from "./CommentImage"
 import { XMarkIcon } from "@feedgot/ui/icons/xmark"
+import { useSession } from "@feedgot/auth/client"
 
 
 interface CommentFormProps {
@@ -45,6 +46,7 @@ export default function CommentForm({
   const [mentionQuery, setMentionQuery] = useState("")
   const [mentionIndex, setMentionIndex] = useState(0)
   const [members, setMembers] = useState<Array<{ id: string; name: string; image?: string | null; email?: string | null }>>([])
+  const { data: session } = useSession() as any
 
   const filteredCandidates = useMemo(() => {
     const q = (mentionQuery || "").trim().toLowerCase()
@@ -204,6 +206,17 @@ export default function CommentForm({
           const upto = next.slice(0, caret)
           const at = upto.lastIndexOf("@")
           if (at >= 0) {
+            // Check if user is logged in
+            if (!session?.user) {
+              // Only show toast if they just typed the @
+              if (next.slice(at).length === 1 && next[at] === "@") {
+                 toast.error("Please sign in to mention users")
+              }
+              // Don't open mention list
+              setMentionOpen(false)
+              return
+            }
+
             const after = next.slice(at + 1, caret)
             const valid = /^[A-Za-z0-9._\-\s]*$/.test(after)
             const beforeChar = upto[at - 1]

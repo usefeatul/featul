@@ -121,9 +121,7 @@ export function createCommentRouter() {
                   eq(commentReaction.type, "like")
                 )
               );
-            upvotes.forEach((v: { commentId: string }) =>
-              userUpvotes.add(v.commentId)
-            );
+            upvotes.forEach((v: { commentId: string }) => userUpvotes.add(v.commentId));
           }
         } catch {
           // Session not available, user is not authenticated
@@ -132,22 +130,14 @@ export function createCommentRouter() {
         // If not authenticated, check for anonymous upvotes
         if (!userId) {
           const forwardedFor = (c as any)?.req?.header("x-forwarded-for");
-          const ipAddress = forwardedFor
-            ? forwardedFor.split(",")[0]
-            : "127.0.0.1";
-
+          const ipAddress = forwardedFor ? forwardedFor.split(",")[0] : "127.0.0.1";
+          
           const conditions = [
             isNull(commentReaction.userId),
-            eq(commentReaction.type, "like"),
+            eq(commentReaction.type, "like")
           ];
 
           if (fingerprint) {
-            // If fingerprint provided, match fingerprint OR (no fingerprint AND ip match)
-            // Actually, the logic in upvote is: check fingerprint first, then IP if not found.
-            // For list, we want to find ANY vote that belongs to this user.
-            // So we get votes where fingerprint matches OR (ip matches and fingerprint is null)
-            // OR just simply: fingerprint matches OR ip matches (if we want to be generous and show votes from same IP)
-            // Let's stick to: fingerprint matches OR (ip matches)
             conditions.push(
               or(
                 eq(commentReaction.fingerprint, fingerprint),
@@ -162,10 +152,8 @@ export function createCommentRouter() {
             .select({ commentId: commentReaction.commentId })
             .from(commentReaction)
             .where(and(...conditions));
-
-          anonymousUpvotes.forEach((v: { commentId: string }) =>
-            userUpvotes.add(v.commentId)
-          );
+            
+          anonymousUpvotes.forEach((v: { commentId: string }) => userUpvotes.add(v.commentId));
         }
 
         // Format comments with avatar and hasVoted

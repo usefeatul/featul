@@ -7,6 +7,8 @@ import CommentForm from "./CommentForm";
 import CommentThread from "./CommentThread";
 import { useSession } from "@feedgot/auth/client";
 import type { CommentData } from "./CommentItem";
+import { getBrowserFingerprint } from "@/utils/fingerprint";
+import { useEffect, useState } from "react";
 
 interface CommentListProps {
   postId: string;
@@ -26,6 +28,11 @@ export default function CommentList({
   // const queryClient = useQueryClient();
   const { data: session } = useSession() as any;
   const currentUserId = session?.user?.id || null;
+  const [fingerprint, setFingerprint] = useState<string | null>(null);
+
+  useEffect(() => {
+    getBrowserFingerprint().then(setFingerprint);
+  }, []);
 
   const queryKey = ["comments", postId];
 
@@ -37,7 +44,10 @@ export default function CommentList({
   } = useQuery({
     queryKey,
     queryFn: async () => {
-      const res = await client.comment.list.$get({ postId });
+      const res = await client.comment.list.$get({ 
+        postId,
+        fingerprint: fingerprint || undefined 
+      });
       if (!res.ok) {
         throw new Error("Failed to fetch comments");
       }
