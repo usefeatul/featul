@@ -105,7 +105,7 @@ export default function CommentThread({ postId, comments, currentUserId, onUpdat
           workspaceSlug={workspaceSlug}
         />
         {hasReplies ? (
-          <AnimatedReplies isOpen={!isCollapsed} className="ml-4 pl-4 mt-2 space-y-4 border-l border-border/60">
+          <AnimatedReplies isOpen={!isCollapsed} className="ml-4 pl-4 pt-2 space-y-4 border-l border-border/60">
             {comment.replies.map((reply) => renderComment(reply as CommentData & { replies: CommentData[] }, depth + 1))}
           </AnimatedReplies>
         ) : null}

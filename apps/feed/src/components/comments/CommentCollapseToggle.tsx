@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { cn } from "@feedgot/ui/lib/utils"
 
 export default function CommentCollapseToggle({
@@ -24,15 +24,13 @@ export default function CommentCollapseToggle({
       )}
       aria-label={isCollapsed ? "Expand replies" : "Collapse replies"}
     >
-      {isCollapsed ? (
-        <>
-          <ChevronDown className="h-3 w-3" />
-          <span className="font-medium">{replyCount} replies</span>
-        </>
-      ) : (
-        <ChevronUp className="h-3 w-3" />
-      )}
+      <ChevronDown
+        className={cn(
+          "h-3 w-3 transition-transform duration-200",
+          !isCollapsed && "rotate-180"
+        )}
+      />
+      {isCollapsed && <span className="font-medium">{replyCount} replies</span>}
     </button>
   )
 }
-
