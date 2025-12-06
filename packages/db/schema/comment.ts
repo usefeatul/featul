@@ -45,6 +45,7 @@ export const comment = pgTable(
       attachments?: { name: string; url: string; type: string }[];
       mentions?: string[];
       editHistory?: { content: string; editedAt: string }[];
+      fingerprint?: string;
     }>(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),

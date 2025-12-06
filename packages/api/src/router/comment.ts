@@ -25,6 +25,7 @@ import {
   mentionsMarkReadInputSchema,
 } from "../validators/comment";
 import { HTTPException } from "hono/http-exception";
+import { createHash } from "crypto";
 
 export function createCommentRouter() {
   return j.router({
@@ -78,6 +79,7 @@ export function createCommentRouter() {
             updatedAt: comment.updatedAt,
             editedAt: comment.editedAt,
             metadata: comment.metadata,
+            ipAddress: comment.ipAddress,
             // Author info from user table
             userName: user.name,
             userImage: user.image,
@@ -164,11 +166,27 @@ export function createCommentRouter() {
 
         const formattedComments = comments.map((c: any) => {
           const isOwner = c.workspaceOwnerId === c.authorId;
+          
+          // Determine avatar seed
+          let avatarSeed = c.authorName || c.authorEmail || c.authorId;
+          
+          if (c.isAnonymous) {
+            if (c.metadata?.fingerprint) {
+              // Use fingerprint if available (already a hash)
+              avatarSeed = c.metadata.fingerprint;
+            } else if (c.ipAddress) {
+              // Fallback to hashed IP
+              avatarSeed = createHash("sha256")
+                .update(c.ipAddress)
+                .digest("hex");
+            }
+          }
+
           return {
             ...c,
             authorImage:
               c.userImage ||
-              toAvatar(c.authorName || c.authorEmail || c.authorId),
+              toAvatar(avatarSeed),
             authorName: c.userName || c.authorName || "Anonymous",
             hasVoted: userUpvotes.has(c.id),
             role: isOwner ? null : c.memberRole || null, // null means owner (handled separately)
@@ -230,6 +248,13 @@ export function createCommentRouter() {
         let authorName: string | null = null;
         let authorEmail: string | null = null;
 
+        // Get IP and User Agent
+        const forwardedFor = (c as any)?.req?.header("x-forwarded-for");
+        const ipAddress = forwardedFor
+          ? forwardedFor.split(",")[0]
+          : "127.0.0.1";
+        const userAgent = (c as any)?.req?.header("user-agent") || null;
+
         if (userId) {
           const [author] = await ctx.db
             .select({ name: user.name, email: user.email })
@@ -280,6 +305,11 @@ export function createCommentRouter() {
         }
 
         // Create comment
+        const commentMetadata = {
+          ...(metadata || {}),
+          fingerprint: fingerprint || undefined,
+        };
+
         const [newComment] = await ctx.db
           .insert(comment)
           .values({
@@ -291,8 +321,10 @@ export function createCommentRouter() {
             authorEmail,
             depth,
             status: "published",
-            metadata: metadata || null,
+            metadata: Object.keys(commentMetadata).length > 0 ? commentMetadata : null,
             isAnonymous: !userId,
+            ipAddress,
+            userAgent,
           })
           .returning();
 
@@ -372,11 +404,6 @@ export function createCommentRouter() {
         } catch {}
 
         // Auto-upvote the comment by the author
-        const forwardedFor = (c as any)?.req?.header("x-forwarded-for");
-        const ipAddress = forwardedFor
-          ? forwardedFor.split(",")[0]
-          : "127.0.0.1";
-
         await ctx.db.insert(commentReaction).values({
           commentId: newComment.id,
           userId: userId || null,
