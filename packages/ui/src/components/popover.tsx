@@ -33,8 +33,8 @@ function PopoverContent({
         data-variant={list ? "list" : undefined}
         className={cn(
           list
-            ? "bg-card text-popover-foreground  z-50 w-fit min-w-0 rounded-md border p-0 shadow-sm outline-hidden"
-            : "bg-card text-popover-foreground z-50 w-80 rounded-md border p-2 shadow-sm outline-hidden",
+            ? "bg-card text-popover-foreground  z-50 w-fit min-w-0 rounded-md border p-0  outline-hidden"
+            : "bg-card text-popover-foreground z-50 w-80 rounded-md border p-2  outline-hidden",
           className
         )}
         {...props}
@@ -58,7 +58,7 @@ function PopoverListItem({ className, accent, children, ...props }: React.Compon
   return (
     <button
       data-slot="popover-list-item"
-      className={cn("relative group w-full text-left px-3 py-2 hover:bg-muted flex items-center gap-3 cursor-pointer", className)}
+      className={cn("relative group w-full text-left px-3 py-2 hover:bg-muted dark:hover:bg-black/40 flex items-center gap-3 cursor-pointer", className)}
       {...props}
     >
       <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[2px] opacity-0 group-hover:opacity-100" style={style} />

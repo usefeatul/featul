@@ -156,7 +156,9 @@ export default function CommentItem({
 
   const renderContent = () => {
     const text = comment.content || ""
-    const mentions = (comment.metadata?.mentions || []).map((m) => (m || "").toLowerCase())
+    const mentions = (comment.metadata?.mentions || [])
+      .map((m) => (m || "").toLowerCase())
+      .sort((a, b) => b.length - a.length)
     if (!text || mentions.length === 0) return text
     const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     const pattern = new RegExp(`@(${mentions.map(esc).join("|")})\\b`, "gi")

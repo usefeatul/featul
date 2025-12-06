@@ -103,7 +103,7 @@ export default function CommentReportDialog({
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start" list>
+              <PopoverContent className="w-fit p-0" align="start" list>
                 <PopoverList>
                   {REPORT_REASONS.map((r) => (
                     <PopoverListItem

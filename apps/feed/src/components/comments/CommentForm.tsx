@@ -205,7 +205,7 @@ export default function CommentForm({
           const at = upto.lastIndexOf("@")
           if (at >= 0) {
             const after = next.slice(at + 1, caret)
-            const valid = /^[A-Za-z0-9._-]*$/.test(after)
+            const valid = /^[A-Za-z0-9._\-\s]*$/.test(after)
             const beforeChar = upto[at - 1]
             const boundary = !beforeChar || /\s|[().,;:!?\[\]{}]/.test(beforeChar)
             if (boundary && valid) {
