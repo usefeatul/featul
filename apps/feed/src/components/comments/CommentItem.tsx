@@ -6,11 +6,9 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@feedgot/ui/components/avatar";
-import { Button } from "@feedgot/ui/components/button";
 import { Textarea } from "@feedgot/ui/components/textarea";
 import { client } from "@feedgot/api/client";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import PinnedBadge from "./PinnedBadge";
 import { cn } from "@feedgot/ui/lib/utils";
 import CommentForm from "./CommentForm";
@@ -80,13 +78,21 @@ export default function CommentItem({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
   const [isPending, startTransition] = useTransition();
+  const isSavingRef = React.useRef(false);
+  const saveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const { isOwner } = useWorkspaceRole(workspaceSlug || "");
   const isAuthor = currentUserId && comment.authorId === currentUserId;
   const canDelete = isAuthor || (workspaceSlug ? isOwner : false);
   const canReply = depth < 3; // Limit nesting to 3 levels
-  const handleEdit = () => {
-    if (!editContent.trim() || isPending) return;
+
+  const executeSave = () => {
+    if (!editContent.trim()) {
+        // If empty, revert changes (cancel) instead of getting stuck in limbo
+        handleCancel();
+        return;
+    }
+    
     startTransition(async () => {
       try {
         const res = await client.comment.update.$post({
@@ -103,8 +109,44 @@ export default function CommentItem({
       } catch (error) {
         console.error("Failed to update comment:", error);
         toast.error("Failed to update comment");
+      } finally {
+        isSavingRef.current = false;
       }
     });
+  };
+
+  const handleSave = () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    isSavingRef.current = true;
+    saveTimerRef.current = setTimeout(() => {
+        executeSave();
+    }, 300);
+  };
+
+  const handleCancel = () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (isSavingRef.current) return;
+    
+    setIsEditing(false);
+    setEditContent(comment.content);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSave();
+    } else if (e.key === "Tab") {
+      // Allow default tab behavior (focus move) but trigger save
+      handleSave();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      handleCancel();
+    }
+  };
+
+  const handleBlur = () => {
+    if (isSavingRef.current) return;
+    handleCancel();
   };
 
 
@@ -171,36 +213,20 @@ export default function CommentItem({
           </div>
 
           {isEditing ? (
-            <div className="space-y-2 mt-2">
+            <div className="mt-2">
               <Textarea
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
                 className="min-h-[80px] resize-none text-sm bg-card border-border focus:border-primary transition-colors"
                 disabled={isPending}
+                autoFocus
+                aria-label="Edit comment"
+                aria-describedby="edit-instructions"
               />
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="nav"
-                  onClick={handleEdit}
-                  disabled={!editContent.trim() || isPending}
-                >
-                  {isPending && (
-                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                  )}
-                  Save
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setEditContent(comment.content);
-                  }}
-                  disabled={isPending}
-                >
-                  Cancel
-                </Button>
+              <div id="edit-instructions" className="text-xs text-accent mt-1">
+                Press Enter/Tab to save • Press Esc to cancel
               </div>
             </div>
           ) : (
