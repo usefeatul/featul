@@ -58,7 +58,7 @@ function PostCardBase({ item, onVoteChange }: { item: RequestItemData; onVoteCha
             />
           </div>
           <Link href={href} aria-label="View comments" className="inline-flex items-center gap-1">
-            <CommentsIcon aria-hidden className="size-4" />
+            <CommentsIcon aria-hidden className="size-3.5" />
             <span className="tabular-nums">{item.commentCount}</span>
           </Link>
         </div>

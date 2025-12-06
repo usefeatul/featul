@@ -6,9 +6,6 @@ import { usePathname } from "next/navigation";
 import { Button } from "@feedgot/ui/components/button";
 import { cn } from "@feedgot/ui/lib/utils";
 import { MobileBoardsMenu } from "./MobileBoardsMenu";
-import { CommentsIcon } from "@feedgot/ui/icons/comments";
-import { RoadmapIcon } from "@feedgot/ui/icons/roadmap";
-import { ChangelogIcon } from "@feedgot/ui/icons/changelog";
 import { HomeIcon } from "@feedgot/ui/icons/home";
 import React from "react";
 import SubdomainUserDropdown from "@/components/subdomain/SubdomainUserDropdown";
@@ -138,16 +135,7 @@ export function DomainHeader({
                 className={itemCls(isFeedback)}
                 aria-current={isFeedback ? "page" : undefined}
               >
-                <span className="inline-flex items-center gap-2">
-                  Feedback
-                  <CommentsIcon
-                    size={16}
-                    className={cn(
-                      "opacity-90 text-accent rounded-sm p-0.5 group-hover:bg-primary group-hover:text-primary-foreground",
-                      isFeedback ? "bg-primary text-primary-foreground" : ""
-                    )}
-                  />
-                </span>
+                Feedback
               </Link>
             </li>
             <li>
@@ -156,16 +144,7 @@ export function DomainHeader({
                 className={itemCls(isRoadmap)}
                 aria-current={isRoadmap ? "page" : undefined}
               >
-                <span className="inline-flex items-center gap-2">
-                  Roadmap
-                  <RoadmapIcon
-                    size={16}
-                    className={cn(
-                      "opacity-90 text-accent rounded-sm p-0.5 group-hover:bg-primary group-hover:text-primary-foreground",
-                      isRoadmap ? "bg-primary text-primary-foreground" : ""
-                    )}
-                  />
-                </span>
+                Roadmap
               </Link>
             </li>
             <li>
@@ -175,16 +154,7 @@ export function DomainHeader({
                   className={itemCls(isChangelog)}
                   aria-current={isChangelog ? "page" : undefined}
                 >
-                  <span className="inline-flex items-center gap-2">
-                    Changelog
-                    <ChangelogIcon
-                      size={16}
-                      className={cn(
-                        "opacity-90 text-accent rounded-sm p-0.5 group-hover:bg-primary group-hover:text-primary-foreground",
-                        isChangelog ? "bg-primary text-primary-foreground" : ""
-                      )}
-                    />
-                  </span>
+                  Changelog
                 </Link>
               ) : null}
             </li>
