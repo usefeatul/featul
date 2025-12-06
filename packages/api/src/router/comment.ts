@@ -183,7 +183,7 @@ export function createCommentRouter() {
     create: publicProcedure
       .input(createCommentInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const { postId, content, parentId, metadata } = input;
+        const { postId, content, parentId, metadata, fingerprint } = input;
 
         let userId: string | null = null;
         try {
@@ -371,6 +371,28 @@ export function createCommentRouter() {
           }
         } catch {}
 
+        // Auto-upvote the comment by the author
+        const forwardedFor = (c as any)?.req?.header("x-forwarded-for");
+        const ipAddress = forwardedFor
+          ? forwardedFor.split(",")[0]
+          : "127.0.0.1";
+
+        await ctx.db.insert(commentReaction).values({
+          commentId: newComment.id,
+          userId: userId || null,
+          ipAddress: userId ? null : ipAddress,
+          fingerprint: userId ? null : fingerprint || null,
+          type: "like",
+        });
+
+        const [finalComment] = await ctx.db
+          .update(comment)
+          .set({
+            upvotes: 1,
+          })
+          .where(eq(comment.id, newComment.id))
+          .returning();
+
         // Update post comment count
         await ctx.db
           .update(post)
@@ -379,7 +401,12 @@ export function createCommentRouter() {
           })
           .where(eq(post.id, postId));
 
-        return c.superjson({ comment: newComment });
+        return c.superjson({ 
+          comment: {
+            ...finalComment,
+            hasVoted: true,
+          } 
+        });
       }),
 
     // Update a comment

@@ -2,6 +2,7 @@ import { useTransition } from "react"
 import { toast } from "sonner"
 import { client } from "@feedgot/api/client"
 import { UploadedImage } from "./useImageUpload"
+import { getBrowserFingerprint } from "@/utils/fingerprint"
 
 interface UseCommentSubmitProps {
   postId: string
@@ -28,6 +29,8 @@ export function useCommentSubmit({
 
     startTransition(async () => {
       try {
+        const fingerprint = await getBrowserFingerprint()
+
         const metadata = uploadedImage
           ? {
               attachments: [
@@ -45,6 +48,7 @@ export function useCommentSubmit({
           content: content.trim() || "",
           ...(parentId ? { parentId } : {}),
           ...(metadata ? { metadata } : {}),
+          fingerprint,
         })
 
         if (res.ok) {

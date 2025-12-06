@@ -17,6 +17,7 @@ export const createCommentInputSchema = z.object({
   content: z.string().max(5000).default(""),
   parentId: z.string().uuid().optional(),
   metadata: metadataSchema.optional(),
+  fingerprint: z.string().optional(),
 }).refine(
   (data) => {
     const hasContent = data.content.trim().length > 0
