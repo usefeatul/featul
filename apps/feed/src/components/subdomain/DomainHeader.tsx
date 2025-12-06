@@ -79,19 +79,21 @@ export function DomainHeader({
           <MobileBoardsMenu slug={workspace.slug} subdomain={subdomain} />
         </div>
         <div className="inline-flex items-center justify-center justify-self-center">
-          {workspace.logo ? (
-            <Image
-              src={workspace.logo}
-              alt={workspace.name}
-              width={32}
-              height={32}
-              className="rounded-sm object-cover"
-            />
-          ) : (
-            <div className="h-9 w-9 rounded-sm bg-muted flex items-center justify-center text-md font-semibold">
-              {workspace.name?.[0]?.toUpperCase()}
-            </div>
-          )}
+          <Link href="/" aria-label="Home">
+            {workspace.logo ? (
+              <Image
+                src={workspace.logo}
+                alt={workspace.name}
+                width={32}
+                height={32}
+                className="rounded-sm object-cover"
+              />
+            ) : (
+              <div className="h-9 w-9 rounded-sm bg-muted flex items-center justify-center text-md font-semibold">
+                {workspace.name?.[0]?.toUpperCase()}
+              </div>
+            )}
+          </Link>
         </div>
         <div className="flex items-center gap-2 justify-self-end">
           <NotificationsBell />
@@ -113,7 +115,7 @@ export function DomainHeader({
       </div>
 
       <div className="hidden md:flex items-center gap-1 w-full">
-        <div className="flex items-center gap-1">
+        <Link href="/" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
           <Image
             src={workspace.logo || ""}
             alt={workspace.name}
@@ -122,7 +124,7 @@ export function DomainHeader({
             className="rounded-sm object-cover"
           />
           <div className="text-md font-medium">{workspace.name}</div>
-        </div>
+        </Link>
         <span className="mx-2 text-accent" aria-hidden>
           |
         </span>
