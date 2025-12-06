@@ -297,8 +297,8 @@ export default function CommentForm({
           <Button
             type="button"
             size="xs"
-            variant="ghost"
-            className="h-8 w-8 p-0 rounded-full"
+            variant="nav"
+            className="h-8 w-8 p-0 rounded-full dark:bg-black/40"
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
