@@ -226,7 +226,7 @@ export default function CommentItem({
                 aria-describedby="edit-instructions"
               />
               <div id="edit-instructions" className="text-xs text-accent mt-1">
-                Press Enter/Tab to save • Press Esc to cancel
+                Press Enter/Tab to save, Press Esc to cancel
               </div>
             </div>
           ) : (

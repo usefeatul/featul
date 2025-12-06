@@ -37,7 +37,7 @@ export function RequestContent({
   );
 
   return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
+    <div className="rounded-lg border bg-card p-6">
       {/* Status */}
       <div className="inline-flex items-center gap-2 mb-4">
         <StatusIcon
@@ -98,7 +98,7 @@ export function RequestContent({
       </div>
 
       {/* Comments */}
-      <div className="mt-6 pt-6 border-t">
+      <div className="mt-6 pt-6">
         <CommentList
           postId={post.id}
           initialCount={post.commentCount}
