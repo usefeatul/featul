@@ -3,6 +3,7 @@ import type { CommentData } from "../comments/types";
 
 import AnimatedReplies from "./AnimatedReplies"
 import CommentItem from "./CommentItem";
+import { getCookie, setCookie } from "@/lib/comments"
 
 interface CommentThreadProps {
   postId: string
@@ -25,6 +26,20 @@ export default function CommentThread({
     new Set(initialCollapsedIds)
   )
 
+  const storageKey = `feedgot_c_col_${postId}`
+
+  React.useEffect(() => {
+    try {
+      const raw = getCookie(storageKey)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed)) {
+          setCollapsedIds(new Set(parsed))
+        }
+      }
+    } catch {}
+  }, [postId])
+
   const toggleCollapse = (commentId: string) => {
     const next = new Set(collapsedIds)
     if (next.has(commentId)) {
@@ -33,6 +48,9 @@ export default function CommentThread({
       next.add(commentId)
     }
     setCollapsedIds(next)
+    try {
+      setCookie(storageKey, JSON.stringify(Array.from(next)), 365)
+    } catch {}
   }
 
   const rootComments = comments.filter((c) => !c.parentId)
