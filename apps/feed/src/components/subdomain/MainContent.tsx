@@ -117,7 +117,7 @@ export function MainContent({
         </div>
         {sidebarPosition === "right" ? (
           <aside className="hidden lg:block mt-10 lg:mt-0">
-            <DomainSidebar subdomain={subdomain} slug={slug} initialBoards={initialBoards} />
+            <DomainSidebar subdomain={subdomain} slug={slug} initialBoards={initialBoards} selectedBoard={selectedBoard} />
           </aside>
         ) : null}
       </div>
