@@ -287,10 +287,10 @@ export default function CommentItem({
                 onClick={() => setShowReplyForm(!showReplyForm)}
                 isActive={showReplyForm}
                 className={cn(
-                  "rounded-full px-3 py-1.5 h-auto transition-all duration-200",
+                  "rounded-full border border-border px-3 py-1 h-auto transition-all duration-200 bg-transparent",
                   showReplyForm
-                    ? "bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive"
-                    : "bg-secondary/10 text-muted-foreground/70 hover:bg-secondary/20 hover:text-foreground"
+                    ? "text-destructive hover:text-destructive"
+                    : "text-muted-foreground/70 hover:text-foreground"
                 )}
               />
             )}

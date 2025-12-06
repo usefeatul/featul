@@ -117,7 +117,7 @@ export default function CommentVote({ commentId, postId, initialUpvotes, initial
       onClick={handleUpvote}
       disabled={isPending}
       className={cn(
-        "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer group/vote",
+        "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer group/vote border border-border rounded-full px-2 py-1",
         hasVoted ? "text-red-500" : "text-muted-foreground/70 hover:text-red-500/80"
       )}
     >
