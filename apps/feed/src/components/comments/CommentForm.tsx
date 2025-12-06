@@ -230,7 +230,7 @@ export default function CommentForm({
           }
         }}
         placeholder={placeholder}
-        className="min-h-[60px] resize-none text-sm shadow-none bg-background  placeholder:text-accent"
+        className="min-h-[60px] resize-none text-sm shadow-none bg-background placeholder:text-accent border-none focus-visible:ring-0"
         autoFocus={autoFocus}
         disabled={isPending || uploadingImage}
         onKeyDown={(e) => {
