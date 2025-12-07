@@ -47,8 +47,6 @@ export const comment = pgTable(
       editHistory?: { content: string; editedAt: string }[];
       fingerprint?: string;
     }>(),
-    ipAddress: text("ip_address"),
-    userAgent: text("user_agent"),
   },
   (table) => ({
     commentParentFk: foreignKey({
@@ -71,7 +69,6 @@ export const commentReaction = pgTable(
     type: text("type", {
       enum: ["like", "love", "laugh", "angry", "sad", "confused"],
     }).notNull(),
-    ipAddress: text("ip_address"),
     fingerprint: text("fingerprint"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },

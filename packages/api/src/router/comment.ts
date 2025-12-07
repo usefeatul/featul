@@ -79,11 +79,8 @@ export function createCommentRouter() {
             updatedAt: comment.updatedAt,
             editedAt: comment.editedAt,
             metadata: comment.metadata,
-            ipAddress: comment.ipAddress,
-            // Author info from user table
             userName: user.name,
             userImage: user.image,
-            // Role info from workspace member
             memberRole: workspaceMember.role,
             workspaceOwnerId: workspace.ownerId,
           })
@@ -126,71 +123,32 @@ export function createCommentRouter() {
             upvotes.forEach((v: { commentId: string }) => userUpvotes.add(v.commentId));
           }
         } catch {
-          // Session not available, user is not authenticated
         }
-
-        // If not authenticated, check for anonymous upvotes
-        if (!userId) {
-          const forwardedFor = (c as any)?.req?.header("x-forwarded-for");
-          const ipAddress = forwardedFor ? forwardedFor.split(",")[0] : "127.0.0.1";
-          
-          const conditions = [
-            isNull(commentReaction.userId),
-            eq(commentReaction.type, "like")
-          ];
-
-          if (fingerprint) {
-            conditions.push(
-              or(
-                eq(commentReaction.fingerprint, fingerprint),
-                eq(commentReaction.ipAddress, ipAddress)
-              ) as any
-            );
-          } else {
-            conditions.push(eq(commentReaction.ipAddress, ipAddress));
-          }
-
+        if (!userId && fingerprint) {
           const anonymousUpvotes = await ctx.db
             .select({ commentId: commentReaction.commentId })
             .from(commentReaction)
-            .where(and(...conditions));
+            .where(
+              and(
+                isNull(commentReaction.userId),
+                eq(commentReaction.type, "like"),
+                eq(commentReaction.fingerprint, fingerprint)
+              )
+            );
             
           anonymousUpvotes.forEach((v: { commentId: string }) => userUpvotes.add(v.commentId));
         }
-
-        // Format comments with avatar and hasVoted
         const toAvatar = (seed?: string | null) =>
           `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
             (seed || "anonymous").trim() || "anonymous"
           )}`;
-
         const formattedComments = comments.map((c: any) => {
           const isOwner = c.workspaceOwnerId === c.authorId;
-          
-          // Determine avatar seed
           let avatarSeed = c.authorName || c.authorEmail || c.authorId;
-          
-          if (c.isAnonymous) {
-            // Generate a composite seed using both IP and fingerprint (if available).
-            // This ensures that:
-            // 1. If IP changes (e.g. VPN), the hash changes -> new avatar.
-            // 2. If IP is same but device/fingerprint changes, the hash changes -> new avatar.
-            // 3. If both are same, the hash is consistent -> same avatar.
-            const parts: string[] = [];
-            
-            if (c.ipAddress) {
-              parts.push(c.ipAddress);
-            }
-            
-            if (c.metadata?.fingerprint) {
-              parts.push(c.metadata.fingerprint);
-            }
-            
-            if (parts.length > 0) {
-              avatarSeed = createHash("sha256")
-                .update(parts.join("|"))
-                .digest("hex");
-            }
+          if (c.isAnonymous && c.metadata?.fingerprint) {
+            avatarSeed = createHash("sha256")
+              .update(c.metadata.fingerprint)
+              .digest("hex");
           }
 
           return {
@@ -258,13 +216,6 @@ export function createCommentRouter() {
         // Get user info if authenticated
         let authorName: string | null = null;
         let authorEmail: string | null = null;
-
-        // Get IP and User Agent
-        const forwardedFor = (c as any)?.req?.header("x-forwarded-for");
-        const ipAddress = forwardedFor
-          ? forwardedFor.split(",")[0]
-          : "127.0.0.1";
-        const userAgent = (c as any)?.req?.header("user-agent") || null;
 
         if (userId) {
           const [author] = await ctx.db
@@ -334,8 +285,6 @@ export function createCommentRouter() {
             status: "published",
             metadata: Object.keys(commentMetadata).length > 0 ? commentMetadata : null,
             isAnonymous: !userId,
-            ipAddress,
-            userAgent,
           })
           .returning();
 
@@ -418,7 +367,6 @@ export function createCommentRouter() {
         await ctx.db.insert(commentReaction).values({
           commentId: newComment.id,
           userId: userId || null,
-          ipAddress: userId ? null : ipAddress,
           fingerprint: userId ? null : fingerprint || null,
           type: "like",
         });
@@ -590,12 +538,6 @@ export function createCommentRouter() {
           // User is not authenticated
         }
 
-        // Get IP address for anonymous tracking
-        const forwardedFor = (c as any)?.req?.header("x-forwarded-for");
-        const ipAddress = forwardedFor
-          ? forwardedFor.split(",")[0]
-          : "127.0.0.1";
-
         // Check if comment exists
         const [targetComment] = await ctx.db
           .select({ id: comment.id })
@@ -622,44 +564,20 @@ export function createCommentRouter() {
               )
             )
             .limit(1);
-        } else {
-          // Check by fingerprint or IP for anonymous users
-          // Prioritize fingerprint if available
-          if (fingerprint) {
-            [existingReaction] = await ctx.db
-              .select()
-              .from(commentReaction)
-              .where(
-                and(
-                  eq(commentReaction.commentId, commentId),
-                  isNull(commentReaction.userId),
-                  eq(commentReaction.fingerprint, fingerprint),
-                  eq(commentReaction.type, "like")
-                )
+        } else if (fingerprint) {
+          // Check by fingerprint for anonymous users
+          [existingReaction] = await ctx.db
+            .select()
+            .from(commentReaction)
+            .where(
+              and(
+                eq(commentReaction.commentId, commentId),
+                isNull(commentReaction.userId),
+                eq(commentReaction.fingerprint, fingerprint),
+                eq(commentReaction.type, "like")
               )
-              .limit(1);
-          }
-
-          // If no fingerprint match (or no fingerprint provided), check IP
-          // But only if we didn't find one by fingerprint already
-          if (!existingReaction) {
-            [existingReaction] = await ctx.db
-              .select()
-              .from(commentReaction)
-              .where(
-                and(
-                  eq(commentReaction.commentId, commentId),
-                  isNull(commentReaction.userId),
-                  eq(commentReaction.ipAddress, ipAddress),
-                  // If we are checking by IP, we should ideally ensure the record DOES NOT have a fingerprint
-                  // to avoid mixing fingerprint users with non-fingerprint users on same IP.
-                  // However, for simplicity and migration, we just check IP matching.
-                  // A stricter check would be: isNull(commentReaction.fingerprint) if the client sends fingerprints now.
-                  eq(commentReaction.type, "like")
-                )
-              )
-              .limit(1);
-          }
+            )
+            .limit(1);
         }
 
         if (existingReaction) {
@@ -685,7 +603,6 @@ export function createCommentRouter() {
           await ctx.db.insert(commentReaction).values({
             commentId,
             userId: userId || null,
-            ipAddress: userId ? null : ipAddress,
             fingerprint: userId ? null : fingerprint || null,
             type: "like",
           });
