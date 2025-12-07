@@ -9,9 +9,11 @@ import { useRouter } from "next/navigation"
 interface UsePostSubmissionProps {
   workspaceSlug: string
   onSuccess: () => void
+  onCreated?: (post: any) => void
+  skipDefaultRedirect?: boolean
 }
 
-export function usePostSubmission({ workspaceSlug, onSuccess }: UsePostSubmissionProps) {
+export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDefaultRedirect }: UsePostSubmissionProps) {
   const [isPending, startTransition] = useTransition()
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -38,7 +40,12 @@ export function usePostSubmission({ workspaceSlug, onSuccess }: UsePostSubmissio
           setTitle("")
           setContent("")
           onSuccess()
-          router.push(`/board/p/${data.post.slug}`)
+          if (onCreated) {
+            onCreated(data.post)
+          }
+          if (!skipDefaultRedirect) {
+            router.push(`/board/p/${data.post.slug}`)
+          }
         } else {
           const err = await res.json()
           if (res.status === 401) {

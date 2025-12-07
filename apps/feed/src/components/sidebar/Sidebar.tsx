@@ -16,6 +16,10 @@ import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
+import { Button } from "@feedgot/ui/components/button";
+import { PlusIcon } from "@feedgot/ui/icons/plus";
+import { CreatePostModal } from "../post/CreatePostModal";
+
 const secondaryNav: NavItem[] = buildBottomNav();
 export default function Sidebar({
   className = "",
@@ -57,6 +61,7 @@ export default function Sidebar({
     initialDomainInfo || null
   );
   const [hotkeysActive, setHotkeysActive] = useState(false);
+  const [createPostOpen, setCreatePostOpen] = useState(false);
   useSidebarHotkeys(hotkeysActive, middleNav, router);
 
   const statusKey = (label: string) => {
@@ -124,6 +129,20 @@ export default function Sidebar({
         ))}
       </SidebarSection>
       <SidebarSection className="mt-auto pb-8">
+        <Button
+          className="w-full mb-2 gap-2 font-medium justify-start text-accent hover:bg-muted group"
+          variant="plain"
+          onClick={() => setCreatePostOpen(true)}
+        >
+          <PlusIcon className="size-5 text-foreground group-hover:text-primary transition-colors opacity-60 group-hover:opacity-100" />
+          <span className="transition-colors">Create Post</span>
+        </Button>
+        <CreatePostModal
+          open={createPostOpen}
+          onOpenChange={setCreatePostOpen}
+          workspaceSlug={slug}
+          user={initialUser}
+        />
         {secondaryNav.map((item) => (
           <SidebarItem
             key={item.label}
