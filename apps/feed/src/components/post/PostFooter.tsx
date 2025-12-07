@@ -11,7 +11,7 @@ export interface PostFooterProps {
   disabled: boolean
   uploadedImage: UploadedImage | null
   uploadingImage: boolean
-  fileInputRef: React.RefObject<HTMLInputElement>
+  fileInputRef: React.RefObject<HTMLInputElement | null>
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
   ALLOWED_IMAGE_TYPES: string[]
 }
