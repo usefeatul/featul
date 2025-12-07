@@ -4,21 +4,60 @@ import React from "react"
 import { Button } from "@feedgot/ui/components/button"
 import { LoaderIcon } from "@feedgot/ui/icons/loader"
 import { ImageIcon } from "lucide-react"
-import { toast } from "sonner"
+import { UploadedImage } from "./PostContent"
 
 export interface PostFooterProps {
   isPending: boolean
   disabled: boolean
+  uploadedImage: UploadedImage | null
+  uploadingImage: boolean
+  fileInputRef: React.RefObject<HTMLInputElement>
+  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+  ALLOWED_IMAGE_TYPES: string[]
 }
 
-export function PostFooter({ isPending, disabled }: PostFooterProps) {
+export function PostFooter({ 
+  isPending, 
+  disabled, 
+  uploadedImage, 
+  uploadingImage, 
+  fileInputRef, 
+  handleFileSelect,
+  ALLOWED_IMAGE_TYPES 
+}: PostFooterProps) {
   return (
-    <div className="flex items-center justify-end p-3 md:p-4 bg-muted dark:bg-black/50">
+    <div className="flex items-center justify-between p-3 md:p-4 bg-muted dark:bg-black/50">
+      <div className="flex items-center gap-2">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={ALLOWED_IMAGE_TYPES.join(",")}
+          onChange={handleFileSelect}
+          className="hidden"
+          disabled={uploadingImage}
+        />
+        <Button
+          type="button"
+          size="xs"
+          variant="nav"
+          className="h-8 w-8 p-0 rounded-full text-accent hover:text-foreground"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploadingImage || !!uploadedImage}
+          aria-label="Add image"
+        >
+          {uploadingImage ? (
+            <LoaderIcon className="h-4 w-4 animate-spin" />
+          ) : (
+            <ImageIcon className="size-5" />
+          )}
+        </Button>
+      </div>
+
       <Button
         type="submit"
         variant="default"
         disabled={disabled}
-        className="bg-primary text-primary-foreground hover:bg-primary/90  px-6"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 px-6"
       >
         {isPending && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
         {isPending ? "Creating..." : "Create"}

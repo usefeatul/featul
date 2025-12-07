@@ -97,12 +97,17 @@ export function CreatePostModal({
             setContent={setContent}
             uploadedImage={uploadedImage}
             uploadingImage={uploadingImage}
+            handleRemoveImage={handleRemoveImage}
+          />
+          <PostFooter 
+            isPending={isPending} 
+            disabled={!title || !content || !selectedBoard || isPending || uploadingImage} 
+            uploadedImage={uploadedImage}
+            uploadingImage={uploadingImage}
             fileInputRef={fileInputRef}
             handleFileSelect={handleFileSelect}
-            handleRemoveImage={handleRemoveImage}
             ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
           />
-          <PostFooter isPending={isPending} disabled={!title || !content || !selectedBoard || isPending || uploadingImage} />
         </form>
       </DialogContent>
     </Dialog>
