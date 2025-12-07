@@ -1,15 +1,29 @@
-import Link from "next/link"
+"use client"
+
+import React, { useState } from "react"
 import { Button } from "@feedgot/ui/components/button"
+import CreatePostModal from "./CreatePostModal"
 
 export function SubmitIdeaCard({ subdomain, slug }: { subdomain: string; slug: string }) {
-  const redirect = `/${subdomain}/${slug}`
+  const [open, setOpen] = useState(false)
+
   return (
-    <div className="rounded-md border bg-card p-4">
-      <div className="mb-3 text-sm font-medium">Got an idea?</div>
-      <Button asChild className="h-9 w-full bg-primary hover:bg-primary/90 ring-ring/60 hover:ring-ring">
-        <Link href={`/auth/sign-in?redirect=${encodeURIComponent(redirect)}`}>Submit a Post</Link>
-      </Button>
-    </div>
+    <>
+      <div className="rounded-md border bg-card p-4">
+        <div className="mb-3 text-sm font-medium">Got an idea?</div>
+        <Button 
+            onClick={() => setOpen(true)}
+            className="h-9 w-full bg-primary hover:bg-primary/90 ring-ring/60 hover:ring-ring"
+        >
+          Submit a Post
+        </Button>
+      </div>
+      <CreatePostModal 
+        open={open} 
+        onOpenChange={setOpen} 
+        workspaceSlug={subdomain} 
+        boardSlug={slug} 
+      />
+    </>
   )
 }
-

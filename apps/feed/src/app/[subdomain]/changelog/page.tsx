@@ -19,7 +19,7 @@ export default async function ChangelogPage({ params }: { params: Promise<{ subd
   const d = await res.json()
   const entries = ((d as any)?.entries || []).map((e: any) => ({ id: e.id, title: e.title, summary: e.summary, date: e.publishedAt, tags: Array.isArray(e.tags) ? e.tags : [] }))
   return (
-    <DomainPageLayout subdomain={subdomain} slug={slug} sidebarPosition={sidebarPosition}>
+    <DomainPageLayout subdomain={subdomain} slug={slug} sidebarPosition={sidebarPosition} hideSubmitButton={true}>
       <div>
         <h1 className="text-lg font-semibold mb-4">Changelog</h1>
         <div className="space-y-4">

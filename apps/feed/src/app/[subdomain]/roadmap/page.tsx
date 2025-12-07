@@ -36,7 +36,7 @@ export default async function RoadmapPage({
   const totalCount = await getWorkspacePostsCount(slug, { statuses: ["planned"] })
   const sidebarPosition = await getSidebarPositionBySlug(slug)
   return (
-    <DomainPageLayout subdomain={subdomain} slug={slug} sidebarPosition={sidebarPosition}>
+    <DomainPageLayout subdomain={subdomain} slug={slug} sidebarPosition={sidebarPosition} hideSubmitButton={true}>
       <div>
         {sidebarPosition === "left" ? (
           <>
@@ -52,9 +52,6 @@ export default async function RoadmapPage({
                 <SearchAction />
               </div>
             </div>
-            <div className="lg:hidden mb-4">
-              <SubmitIdeaCard subdomain={subdomain} slug={slug} />
-            </div>
           </>
         ) : (
           <>
@@ -63,9 +60,6 @@ export default async function RoadmapPage({
                 <SortPopover subdomain={subdomain} slug={slug} />
                 <SearchAction />
               </span>
-            </div>
-            <div className="lg:hidden mb-4">
-              <SubmitIdeaCard subdomain={subdomain} slug={slug} />
             </div>
             <h1 className="text-lg font-semibold mb-5">Roadmap</h1>
           </>

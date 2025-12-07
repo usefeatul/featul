@@ -20,3 +20,11 @@ export const votePostSchema = z.object({
   postId: z.string().uuid(),
   fingerprint: fingerprintSchema,
 })
+
+export const createPostSchema = z.object({
+  title: z.string().min(1).max(128),
+  content: z.string().min(1),
+  workspaceSlug: z.string().min(1),
+  boardSlug: z.string().min(1),
+  fingerprint: fingerprintSchema.optional(),
+})

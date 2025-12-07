@@ -1,13 +1,85 @@
 import { eq, and, sql, isNull } from "drizzle-orm"
 import { j, publicProcedure } from "../jstack"
-import { vote, post } from "@feedgot/db"
-import { votePostSchema } from "../validators/post"
+import { vote, post, workspace, board } from "@feedgot/db"
+import { votePostSchema, createPostSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
 import { auth } from "@feedgot/auth"
 import { headers } from "next/headers"
 
 export function createPostRouter() {
   return j.router({
+    create: publicProcedure
+      .input(createPostSchema)
+      .post(async ({ ctx, input, c }) => {
+        const { title, content, workspaceSlug, boardSlug, fingerprint } = input
+
+        let userId: string | null = null
+        try {
+          const session = await auth.api.getSession({
+            headers: (c as any)?.req?.raw?.headers || (await headers()),
+          })
+          if (session?.user?.id) {
+            userId = session.user.id
+          }
+        } catch {}
+
+        // Resolve Workspace
+        const [ws] = await ctx.db
+          .select({ id: workspace.id })
+          .from(workspace)
+          .where(eq(workspace.slug, workspaceSlug))
+          .limit(1)
+        if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+        // Resolve Board
+        const [b] = await ctx.db
+          .select({ id: board.id, allowAnonymous: board.allowAnonymous })
+          .from(board)
+          .where(and(eq(board.workspaceId, ws.id), eq(board.slug, boardSlug)))
+          .limit(1)
+        if (!b) throw new HTTPException(404, { message: "Board not found" })
+
+        // Check permissions
+        if (!userId) {
+            if (!b.allowAnonymous) {
+                throw new HTTPException(401, { message: "Anonymous posting is not allowed on this board" })
+            }
+            if (!fingerprint) {
+                throw new HTTPException(400, { message: "Fingerprint required for anonymous posting" })
+            }
+        }
+
+        // Generate slug
+        const slugBase = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+        const randomSuffix = Math.random().toString(36).substring(2, 8)
+        const slug = slugBase ? `${slugBase}-${randomSuffix}` : `post-${randomSuffix}`
+
+        // Create Post
+        const [newPost] = await ctx.db.insert(post).values({
+            boardId: b.id,
+            title,
+            content,
+            slug,
+            authorId: userId || null,
+            isAnonymous: !userId,
+            metadata: !userId ? { fingerprint } : undefined,
+            // default status is published
+        }).returning()
+
+        // Auto-upvote
+        await ctx.db.insert(vote).values({
+            postId: newPost.id,
+            userId: userId || null,
+            fingerprint: userId ? null : fingerprint || null,
+            type: 'upvote'
+        })
+        
+        // Update post upvotes
+        await ctx.db.update(post).set({ upvotes: 1 }).where(eq(post.id, newPost.id))
+
+        return c.superjson({ post: newPost })
+      }),
+
     vote: publicProcedure
       .input(votePostSchema)
       .post(async ({ ctx, input, c }) => {
