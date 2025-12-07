@@ -112,7 +112,8 @@ export default function CommentItem({
             commentId={comment.id}
             postId={comment.postId}
             upvotes={comment.upvotes}
-            hasVoted={comment.hasVoted || false}
+            downvotes={comment.downvotes}
+            userVote={comment.userVote}
             canReply={canReply}
             showReplyForm={showReplyForm}
             onToggleReply={() => setShowReplyForm(!showReplyForm)}

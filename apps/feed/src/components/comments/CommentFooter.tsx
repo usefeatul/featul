@@ -7,7 +7,8 @@ interface CommentFooterProps {
   commentId: string
   postId: string
   upvotes: number
-  hasVoted: boolean
+  downvotes: number
+  userVote?: "upvote" | "downvote" | null
   canReply: boolean
   showReplyForm: boolean
   onToggleReply: () => void
@@ -17,7 +18,8 @@ export default function CommentFooter({
   commentId,
   postId,
   upvotes,
-  hasVoted,
+  downvotes,
+  userVote,
   canReply,
   showReplyForm,
   onToggleReply,
@@ -28,7 +30,8 @@ export default function CommentFooter({
         commentId={commentId}
         postId={postId}
         initialUpvotes={upvotes}
-        initialHasVoted={hasVoted}
+        initialDownvotes={downvotes}
+        initialUserVote={userVote}
       />
 
       {canReply && (

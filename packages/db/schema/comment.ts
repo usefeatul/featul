@@ -31,6 +31,7 @@ export const comment = pgTable(
       enum: ["published", "pending", "spam", "deleted", "hidden"],
     }).default("published"),
     upvotes: integer("upvotes").default(0),
+    downvotes: integer("downvotes").default(0),
     replyCount: integer("reply_count").default(0),
     depth: integer("depth").default(0),
     isPinned: boolean("is_pinned").default(false),
@@ -67,7 +68,7 @@ export const commentReaction = pgTable(
       .references(() => comment.id, { onDelete: "cascade" }),
     userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
     type: text("type", {
-      enum: ["like", "love", "laugh", "angry", "sad", "confused"],
+      enum: ["upvote", "downvote"],
     }).notNull(),
     fingerprint: text("fingerprint"),
     createdAt: timestamp("created_at").notNull().defaultNow(),

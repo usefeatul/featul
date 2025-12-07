@@ -43,8 +43,9 @@ export const listCommentsInputSchema = z.object({
   fingerprint: z.string().optional(),
 })
 
-export const upvoteCommentInputSchema = z.object({
+export const voteCommentInputSchema = z.object({
   commentId: z.string().uuid(),
+  voteType: z.enum(["upvote", "downvote"]),
   fingerprint: z.string().optional(),
 })
 
@@ -71,7 +72,7 @@ export type CreateCommentInput = z.infer<typeof createCommentInputSchema>
 export type UpdateCommentInput = z.infer<typeof updateCommentInputSchema>
 export type DeleteCommentInput = z.infer<typeof deleteCommentInputSchema>
 export type ListCommentsInput = z.infer<typeof listCommentsInputSchema>
-export type UpvoteCommentInput = z.infer<typeof upvoteCommentInputSchema>
+export type VoteCommentInput = z.infer<typeof voteCommentInputSchema>
 export type ReportCommentInput = z.infer<typeof reportCommentInputSchema>
 export type PinCommentInput = z.infer<typeof pinCommentInputSchema>
 export type MentionsListInput = z.infer<typeof mentionsListInputSchema>

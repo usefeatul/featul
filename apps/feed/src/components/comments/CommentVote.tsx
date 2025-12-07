@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useTransition } from "react"
-import { Heart } from "lucide-react"
+import { ThumbsUp, ThumbsDown } from "lucide-react"
 import { client } from "@feedgot/api/client"
 import { toast } from "sonner"
 import { cn } from "@feedgot/ui/lib/utils"
@@ -13,15 +13,21 @@ interface CommentVoteProps {
   commentId: string
   postId: string
   initialUpvotes: number
-  initialHasVoted: boolean
+  initialDownvotes: number
+  initialUserVote?: "upvote" | "downvote" | null
 }
 
-export default function CommentVote({ commentId, postId, initialUpvotes, initialHasVoted }: CommentVoteProps) {
+export default function CommentVote({ 
+  commentId, 
+  postId, 
+  initialUpvotes, 
+  initialDownvotes,
+  initialUserVote 
+}: CommentVoteProps) {
   const [upvotes, setUpvotes] = useState(initialUpvotes)
-  const [hasVoted, setHasVoted] = useState(initialHasVoted)
+  const [downvotes, setDownvotes] = useState(initialDownvotes)
+  const [userVote, setUserVote] = useState(initialUserVote)
   const [isPending, startTransition] = useTransition()
-  const [burstId, setBurstId] = useState(0)
-  const prevVotedRef = React.useRef<boolean>(initialHasVoted)
   const [visitorId, setVisitorId] = useState<string | null>(null)
 
   React.useEffect(() => {
@@ -45,15 +51,16 @@ export default function CommentVote({ commentId, postId, initialUpvotes, initial
 
   React.useEffect(() => {
     setUpvotes(initialUpvotes)
-    setHasVoted(initialHasVoted)
-    prevVotedRef.current = initialHasVoted
-  }, [initialUpvotes, initialHasVoted])
+    setDownvotes(initialDownvotes)
+    setUserVote(initialUserVote)
+  }, [initialUpvotes, initialDownvotes, initialUserVote])
 
   React.useEffect(() => {
     const target = commentsData?.comments?.find((c: any) => c.id === commentId)
     if (target) {
       setUpvotes(target.upvotes)
-      setHasVoted(!!target.hasVoted)
+      setDownvotes(target.downvotes)
+      setUserVote(target.userVote)
     }
   }, [commentsData, commentId])
 
@@ -65,7 +72,11 @@ export default function CommentVote({ commentId, postId, initialUpvotes, initial
       if (!res.ok) return null
       const json = await res.json()
       const found = json?.comments?.find((c: any) => c.id === commentId)
-      return found ? { upvotes: found.upvotes, hasVoted: !!found.hasVoted } : null
+      return found ? { 
+        upvotes: found.upvotes, 
+        downvotes: found.downvotes,
+        userVote: found.userVote 
+      } : null
     },
     staleTime: 10_000,
     refetchOnMount: true,
@@ -76,116 +87,113 @@ export default function CommentVote({ commentId, postId, initialUpvotes, initial
   React.useEffect(() => {
     if (statusData) {
       setUpvotes(statusData.upvotes)
-      setHasVoted(statusData.hasVoted)
+      setDownvotes(statusData.downvotes)
+      setUserVote(statusData.userVote)
     }
   }, [statusData])
 
-
-  const handleUpvote = () => {
+  const handleVote = (type: "upvote" | "downvote") => {
     const previousUpvotes = upvotes
-    const previousHasVoted = hasVoted
-    const nextHasVoted = !hasVoted
-    const nextUpvotes = nextHasVoted ? upvotes + 1 : upvotes - 1
+    const previousDownvotes = downvotes
+    const previousUserVote = userVote
 
-    setHasVoted(nextHasVoted)
-    setUpvotes(nextUpvotes)
-
-
-    if (nextHasVoted) {
-      setBurstId((id) => id + 1)
-      window.setTimeout(() => setBurstId(0), 600)
+    // Optimistic update
+    if (userVote === type) {
+      // Toggle off
+      setUserVote(null)
+      if (type === "upvote") setUpvotes(Math.max(0, upvotes - 1))
+      else setDownvotes(Math.max(0, downvotes - 1))
     } else {
-      setBurstId(0)
+      // Switch vote or new vote
+      if (userVote === "upvote") setUpvotes(Math.max(0, upvotes - 1))
+      if (userVote === "downvote") setDownvotes(Math.max(0, downvotes - 1))
+      
+      setUserVote(type)
+      if (type === "upvote") setUpvotes(upvotes + 1)
+      else setDownvotes(downvotes + 1)
     }
 
     startTransition(async () => {
       try {
-        const res = await client.comment.upvote.$post({ 
+        const res = await client.comment.vote.$post({ 
           commentId,
+          voteType: type,
           fingerprint: visitorId || undefined 
         })
         if (res.ok) {
           const data = await res.json()
           setUpvotes(data.upvotes)
-          setHasVoted(data.hasVoted)
+          setDownvotes(data.downvotes)
+          setUserVote(data.userVote)
         } else {
+          // Revert on error
           setUpvotes(previousUpvotes)
-          setHasVoted(previousHasVoted)
+          setDownvotes(previousDownvotes)
+          setUserVote(previousUserVote)
           if (res.status === 401) toast.error("Please sign in to vote")
         }
       } catch (error) {
         setUpvotes(previousUpvotes)
-        setHasVoted(previousHasVoted)
+        setDownvotes(previousDownvotes)
+        setUserVote(previousUserVote)
         console.error("Failed to vote:", error)
       }
     })
   }
 
   return (
-    <button
-      onClick={handleUpvote}
-      disabled={isPending}
-      className={cn(
-        "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer group/vote border border-border rounded-full px-2 py-1",
-        hasVoted ? "text-red-500" : "text-muted-foreground/70 hover:text-red-500/80"
-      )}
-    >
-      <span className="relative inline-flex items-center">
-        <motion.span
-          key={hasVoted ? "liked" : "unliked"}
-          animate={{
-            scale: hasVoted ? [1, 1.2, 1] : [1, 0.95, 1],
-            rotate: hasVoted ? [0, -6, 0] : 0,
-          }}
-          transition={{ duration: 0.25 }}
-        >
-          <Heart
-            className={cn(
-              "h-3.5 w-3.5",
-              hasVoted ? "fill-current" : "group-hover/vote:scale-110 transition-transform"
-            )}
-            fill={hasVoted ? "currentColor" : "none"}
-          />
-        </motion.span>
-        <AnimatePresence>
-          {burstId > 0 && hasVoted && (
+    <div className="flex items-center gap-1 bg-muted/30 rounded-full p-1 border border-border/50">
+      <button
+        onClick={() => handleVote("upvote")}
+        disabled={isPending}
+        className={cn(
+          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-full hover:bg-muted",
+          userVote === "upvote" ? "text-green-600" : "text-muted-foreground"
+        )}
+        title="Upvote"
+      >
+        <ThumbsUp className={cn("h-3.5 w-3.5", userVote === "upvote" && "fill-current")} />
+        <AnimatePresence initial={false} mode="popLayout">
+          {upvotes > 0 && (
             <motion.span
-              key={`burst-${burstId}`}
-              className="absolute -top-1 -left-1 h-5 w-5 rounded-full bg-red-500/25"
-              initial={{ scale: 0, opacity: 0.9 }}
-              animate={{ scale: 1.8, opacity: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.35 }}
-              aria-hidden
-            />
-          )}
-          {burstId > 0 && hasVoted && (
-            <motion.span
-              key={`burst-2-${burstId}`}
-              className="absolute -top-0.5 -left-0.5 h-7 w-7 rounded-full bg-red-500/15"
-              initial={{ scale: 0, opacity: 0.8 }}
-              animate={{ scale: 2.3, opacity: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.45 }}
-              aria-hidden
-            />
+              key={upvotes}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="font-medium tabular-nums pr-1"
+            >
+              {upvotes}
+            </motion.span>
           )}
         </AnimatePresence>
-      </span>
-      <AnimatePresence initial={false} mode="popLayout">
-        {upvotes > 0 && (
-          <motion.span
-            key={upvotes}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="tabular-nums font-medium"
-          >
-            {upvotes}
-          </motion.span>
+      </button>
+
+      <div className="w-px h-3 bg-border/50" />
+
+      <button
+        onClick={() => handleVote("downvote")}
+        disabled={isPending}
+        className={cn(
+          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-full hover:bg-muted",
+          userVote === "downvote" ? "text-red-600" : "text-muted-foreground"
         )}
-      </AnimatePresence>
-    </button>
+        title="Downvote"
+      >
+        <ThumbsDown className={cn("h-3.5 w-3.5", userVote === "downvote" && "fill-current")} />
+        <AnimatePresence initial={false} mode="popLayout">
+          {downvotes > 0 && (
+            <motion.span
+              key={downvotes}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="font-medium tabular-nums pr-1"
+            >
+              {downvotes}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </button>
+    </div>
   )
 }

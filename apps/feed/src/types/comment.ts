@@ -10,6 +10,7 @@ export type CommentData = {
   isAnonymous: boolean | null
   status: string
   upvotes: number
+  downvotes: number
   replyCount: number
   depth: number
   isPinned: boolean | null
@@ -17,7 +18,7 @@ export type CommentData = {
   createdAt: string
   updatedAt: string
   editedAt: string | null
-  hasVoted?: boolean
+  userVote?: "upvote" | "downvote" | null
   role?: "admin" | "member" | "viewer" | null
   isOwner?: boolean
   metadata?: {

@@ -18,7 +18,7 @@ import {
   updateCommentInputSchema,
   deleteCommentInputSchema,
   listCommentsInputSchema,
-  upvoteCommentInputSchema,
+  voteCommentInputSchema,
   reportCommentInputSchema,
   pinCommentInputSchema,
   mentionsListInputSchema,
@@ -71,6 +71,7 @@ export function createCommentRouter() {
             isAnonymous: comment.isAnonymous,
             status: comment.status,
             upvotes: comment.upvotes,
+            downvotes: comment.downvotes,
             replyCount: comment.replyCount,
             depth: comment.depth,
             isPinned: comment.isPinned,
@@ -102,8 +103,8 @@ export function createCommentRouter() {
           )
           .orderBy(desc(comment.isPinned), desc(comment.createdAt));
 
-        // Get user's upvoted comments if authenticated
-        let userUpvotes: Set<string> = new Set();
+        // Get user's votes if authenticated
+        let userVotes = new Map<string, "upvote" | "downvote">();
         let userId: string | null = null;
         try {
           const session = await auth.api.getSession({
@@ -111,33 +112,27 @@ export function createCommentRouter() {
           });
           if (session?.user?.id) {
             userId = session.user.id;
-            const upvotes = await ctx.db
-              .select({ commentId: commentReaction.commentId })
+            const votes = await ctx.db
+              .select({ commentId: commentReaction.commentId, type: commentReaction.type })
               .from(commentReaction)
-              .where(
-                and(
-                  eq(commentReaction.userId, userId),
-                  eq(commentReaction.type, "like")
-                )
-              );
-            upvotes.forEach((v: { commentId: string }) => userUpvotes.add(v.commentId));
-          }
-        } catch {
-        }
-        if (!userId && fingerprint) {
-          const anonymousUpvotes = await ctx.db
-            .select({ commentId: commentReaction.commentId })
-            .from(commentReaction)
-            .where(
-              and(
-                isNull(commentReaction.userId),
-                eq(commentReaction.type, "like"),
-                eq(commentReaction.fingerprint, fingerprint)
-              )
-            );
-            
-          anonymousUpvotes.forEach((v: { commentId: string }) => userUpvotes.add(v.commentId));
-        }
+              .where(eq(commentReaction.userId, userId));
+            votes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
+           }
+         } catch {
+         }
+         if (!userId && fingerprint) {
+           const anonymousVotes = await ctx.db
+             .select({ commentId: commentReaction.commentId, type: commentReaction.type })
+             .from(commentReaction)
+             .where(
+               and(
+                 isNull(commentReaction.userId),
+                 eq(commentReaction.fingerprint, fingerprint)
+               )
+             );
+             
+           anonymousVotes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
+         }
         const toAvatar = (seed?: string | null) =>
           `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
             (seed || "anonymous").trim() || "anonymous"
@@ -157,7 +152,7 @@ export function createCommentRouter() {
               c.userImage ||
               toAvatar(avatarSeed),
             authorName: c.userName || c.authorName || "Anonymous",
-            hasVoted: userUpvotes.has(c.id),
+            userVote: userVotes.get(c.id) || null,
             role: isOwner ? null : c.memberRole || null, // null means owner (handled separately)
             isOwner: Boolean(isOwner),
           };
@@ -368,7 +363,7 @@ export function createCommentRouter() {
           commentId: newComment.id,
           userId: userId || null,
           fingerprint: userId ? null : fingerprint || null,
-          type: "like",
+          type: "upvote",
         });
 
         const [finalComment] = await ctx.db
@@ -520,11 +515,11 @@ export function createCommentRouter() {
         return c.superjson({ success: true });
       }),
 
-    // Upvote/unvote a comment
-    upvote: publicProcedure
-      .input(upvoteCommentInputSchema)
+    // Vote on a comment
+    vote: publicProcedure
+      .input(voteCommentInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const { commentId, fingerprint } = input;
+        const { commentId, voteType, fingerprint } = input;
 
         let userId: string | null = null;
         try {
@@ -549,7 +544,7 @@ export function createCommentRouter() {
           throw new HTTPException(404, { message: "Comment not found" });
         }
 
-        // Check if user already upvoted
+        // Check if user already voted
         let existingReaction;
 
         if (userId) {
@@ -559,8 +554,7 @@ export function createCommentRouter() {
             .where(
               and(
                 eq(commentReaction.commentId, commentId),
-                eq(commentReaction.userId, userId),
-                eq(commentReaction.type, "like")
+                eq(commentReaction.userId, userId)
               )
             )
             .limit(1);
@@ -573,51 +567,83 @@ export function createCommentRouter() {
               and(
                 eq(commentReaction.commentId, commentId),
                 isNull(commentReaction.userId),
-                eq(commentReaction.fingerprint, fingerprint),
-                eq(commentReaction.type, "like")
+                eq(commentReaction.fingerprint, fingerprint)
               )
             )
             .limit(1);
         }
 
         if (existingReaction) {
-          // Remove upvote
-          await ctx.db
-            .delete(commentReaction)
-            .where(eq(commentReaction.id, existingReaction.id));
+          if (existingReaction.type === voteType) {
+            // Remove vote (toggle off)
+            await ctx.db
+              .delete(commentReaction)
+              .where(eq(commentReaction.id, existingReaction.id));
 
-          const [updatedComment] = await ctx.db
-            .update(comment)
-            .set({
-              upvotes: sql`greatest(0, ${comment.upvotes} - 1)`,
-            })
-            .where(eq(comment.id, commentId))
-            .returning({ upvotes: comment.upvotes });
+            const [updatedComment] = await ctx.db
+              .update(comment)
+              .set({
+                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${
+                  voteType === "upvote" ? comment.upvotes : comment.downvotes
+                } - 1)`,
+              })
+              .where(eq(comment.id, commentId))
+              .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
 
-          return c.superjson({
-            upvotes: updatedComment?.upvotes || 0,
-            hasVoted: false,
-          });
+            return c.superjson({
+              upvotes: updatedComment?.upvotes || 0,
+              downvotes: updatedComment?.downvotes || 0,
+              userVote: null,
+            });
+          } else {
+            // Change vote type
+            await ctx.db
+              .update(commentReaction)
+              .set({ type: voteType })
+              .where(eq(commentReaction.id, existingReaction.id));
+
+            const [updatedComment] = await ctx.db
+              .update(comment)
+              .set({
+                [existingReaction.type === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${
+                  existingReaction.type === "upvote" ? comment.upvotes : comment.downvotes
+                } - 1)`,
+                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
+                  voteType === "upvote" ? comment.upvotes : comment.downvotes
+                } + 1`,
+              })
+              .where(eq(comment.id, commentId))
+              .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
+
+            return c.superjson({
+              upvotes: updatedComment?.upvotes || 0,
+              downvotes: updatedComment?.downvotes || 0,
+              userVote: voteType,
+            });
+          }
         } else {
-          // Add upvote
+          // Add vote
           await ctx.db.insert(commentReaction).values({
             commentId,
             userId: userId || null,
             fingerprint: userId ? null : fingerprint || null,
-            type: "like",
+            type: voteType,
           });
 
           const [updatedComment] = await ctx.db
             .update(comment)
             .set({
-              upvotes: sql`${comment.upvotes} + 1`,
+              [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
+                voteType === "upvote" ? comment.upvotes : comment.downvotes
+              } + 1`,
             })
             .where(eq(comment.id, commentId))
-            .returning({ upvotes: comment.upvotes });
+            .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
 
           return c.superjson({
             upvotes: updatedComment?.upvotes || 0,
-            hasVoted: true,
+            downvotes: updatedComment?.downvotes || 0,
+            userVote: voteType,
           });
         }
       }),
