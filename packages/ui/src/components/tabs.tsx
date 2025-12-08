@@ -50,11 +50,8 @@ function TabsList({
     if (!el || !root) return null;
     const navRect = root.getBoundingClientRect();
     const rect = el.getBoundingClientRect();
-    const styles = getComputedStyle(el);
-    const padL = parseFloat(styles.paddingLeft || "0") || 0;
-    const padR = parseFloat(styles.paddingRight || "0") || 0;
-    const x = rect.left - navRect.left - padL / 2;
-    const width = rect.width + (padL + padR) / 2;
+    const x = rect.left - navRect.left;
+    const width = rect.width;
     return { x, width };
   }, []);
 
@@ -105,14 +102,14 @@ function TabsList({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-0  left-0 right-0 h-px bg-border z-0"
+        className="pointer-events-none absolute bottom-0 bg-border left-0 right-0 h-px z-0"
       />
       {!isMobile && (
         <AnimatePresence>
           {hover.visible && (
             <motion.div
               key="hover"
-              className={cn("pointer-events-none absolute top-0 bottom-1 left-0 mb-1 rounded-md bg-accent/10 z-0")}
+              className={cn("pointer-events-none absolute top-0 bottom-1 left-0 mb-1 rounded-sm bg-accent/10 z-0")}
               initial={{ opacity: 0, x: hover.x, width: hover.width }}
               animate={{ opacity: 1, x: hover.x, width: hover.width }}
               exit={{ opacity: 0, x: hover.x, width: hover.width }}
@@ -140,7 +137,7 @@ function TabsList({
               key="selected"
               aria-hidden
               className={cn(
-                "pointer-events-none absolute bottom-0  left-0 h-[2.5px] rounded-md bg-primary z-10"
+                "pointer-events-none absolute bottom-0 left-0 h-[2px] rounded-sm bg-primary z-10"
               )}
               initial={false}
               animate={{ x: indicator.x, width: indicator.width, opacity: 1 }}
@@ -164,7 +161,7 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       data-value={(props as any).value}
       className={cn(
-        "inline-flex items-center justify-center gap-3 px-2 py-2 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground snap-center data-[state=active]:border-primary md:data-[state=active]:border-transparent",
+        "inline-flex items-center justify-center gap-3 px-1 py-1 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground snap-center data-[state=active]:border-primary md:data-[state=active]:border-transparent",
         className
       )}
       {...props}

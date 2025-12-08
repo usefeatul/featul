@@ -16,7 +16,7 @@ export default function SettingsTabsHeader({ slug, selected }: { slug: string; s
     <Tabs value={selected} onValueChange={onValueChange} className="space-y-4">
       <TabsList className="w-full">
         {SECTIONS.map((item) => (
-          <TabsTrigger key={item.value} value={item.value} className="min-h-[36px] px-3 text-accent">{item.label}</TabsTrigger>
+          <TabsTrigger key={item.value} value={item.value} className=" px-3 text-accent">{item.label}</TabsTrigger>
         ))}
       </TabsList>
     </Tabs>
