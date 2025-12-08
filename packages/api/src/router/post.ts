@@ -1,10 +1,11 @@
 import { eq, and, sql, isNull } from "drizzle-orm"
 import { j, publicProcedure } from "../jstack"
-import { vote, post, workspace, board, postTag } from "@feedgot/db"
+import { vote, post, workspace, board, postTag, workspaceMember } from "@feedgot/db"
 import { votePostSchema, createPostSchema, updatePostSchema, byIdSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
 import { auth } from "@feedgot/auth"
 import { headers } from "next/headers"
+import { mapPermissions } from "../shared/permissions"
 
 export function createPostRouter() {
   return j.router({
@@ -121,9 +122,45 @@ export function createPostRouter() {
           throw new HTTPException(404, { message: "Post not found" })
         }
 
-        // Check ownership (simple check for now)
-        if (existingPost.authorId !== userId) {
-          // TODO: Check if admin/member of workspace
+        // Check ownership and permissions
+        let allowed = existingPost.authorId === userId
+        if (!allowed) {
+            // Fetch workspace and check if user is admin/owner
+            const [b] = await ctx.db
+                .select({ workspaceId: board.workspaceId })
+                .from(board)
+                .where(eq(board.id, existingPost.boardId))
+                .limit(1)
+            
+            if (b) {
+                const [ws] = await ctx.db
+                    .select({ ownerId: workspace.ownerId })
+                    .from(workspace)
+                    .where(eq(workspace.id, b.workspaceId))
+                    .limit(1)
+                
+                if (ws) {
+                    if (ws.ownerId === userId) {
+                        allowed = true
+                    } else {
+                        const [member] = await ctx.db
+                            .select({ role: workspaceMember.role })
+                            .from(workspaceMember)
+                            .where(and(eq(workspaceMember.workspaceId, b.workspaceId), eq(workspaceMember.userId, userId)))
+                            .limit(1)
+                        
+                        if (member) {
+                            const perms = mapPermissions(member.role)
+                            if (perms.canModerateAllBoards) {
+                                allowed = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!allowed) {
            throw new HTTPException(403, { message: "You don't have permission to edit this post" })
         }
 
@@ -213,9 +250,45 @@ export function createPostRouter() {
           throw new HTTPException(404, { message: "Post not found" })
         }
 
-        // Check ownership (simple check for now)
-        if (existingPost.authorId !== userId) {
-          // TODO: Check if admin/member of workspace
+        // Check ownership and permissions
+        let allowed = existingPost.authorId === userId
+        if (!allowed) {
+            // Fetch workspace and check if user is admin/owner
+            const [b] = await ctx.db
+                .select({ workspaceId: board.workspaceId })
+                .from(board)
+                .where(eq(board.id, existingPost.boardId))
+                .limit(1)
+            
+            if (b) {
+                const [ws] = await ctx.db
+                    .select({ ownerId: workspace.ownerId })
+                    .from(workspace)
+                    .where(eq(workspace.id, b.workspaceId))
+                    .limit(1)
+                
+                if (ws) {
+                    if (ws.ownerId === userId) {
+                        allowed = true
+                    } else {
+                        const [member] = await ctx.db
+                            .select({ role: workspaceMember.role })
+                            .from(workspaceMember)
+                            .where(and(eq(workspaceMember.workspaceId, b.workspaceId), eq(workspaceMember.userId, userId)))
+                            .limit(1)
+                        
+                        if (member) {
+                            const perms = mapPermissions(member.role)
+                            if (perms.canModerateAllBoards) {
+                                allowed = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!allowed) {
            throw new HTTPException(403, { message: "You don't have permission to delete this post" })
         }
 

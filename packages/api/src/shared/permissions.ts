@@ -36,6 +36,9 @@ const ROLE_PERMISSIONS: Record<Role, Permissions> = {
   },
 }
 
-export function mapPermissions(role: Role): Permissions {
-  return ROLE_PERMISSIONS[role]
+export function mapPermissions(role: Role | "owner" | null | undefined): Permissions {
+  if (role === "owner") {
+    return ROLE_PERMISSIONS.admin
+  }
+  return ROLE_PERMISSIONS[(role as Role) || "viewer"]
 }
