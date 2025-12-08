@@ -1,6 +1,6 @@
 import { eq, and, sql, isNull } from "drizzle-orm"
 import { j, publicProcedure } from "../jstack"
-import { vote, post, workspace, board } from "@feedgot/db"
+import { vote, post, workspace, board, postTag } from "@feedgot/db"
 import { votePostSchema, createPostSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
 import { auth } from "@feedgot/auth"
@@ -11,7 +11,7 @@ export function createPostRouter() {
     create: publicProcedure
       .input(createPostSchema)
       .post(async ({ ctx, input, c }) => {
-        const { title, content, image, workspaceSlug, boardSlug, fingerprint } = input
+        const { title, content, image, workspaceSlug, boardSlug, fingerprint, roadmapStatus, tags } = input
 
         let userId: string | null = null
         try {
@@ -64,8 +64,18 @@ export function createPostRouter() {
             authorId: userId || null,
             isAnonymous: !userId,
             metadata: !userId ? { fingerprint } : undefined,
-            // default status is published
+            roadmapStatus: roadmapStatus || null,
         }).returning()
+
+        // Insert tags
+        if (tags && tags.length > 0) {
+            await ctx.db.insert(postTag).values(
+                tags.map((tagId) => ({
+                    postId: newPost.id,
+                    tagId,
+                }))
+            )
+        }
 
         // Auto-upvote
         await ctx.db.insert(vote).values({

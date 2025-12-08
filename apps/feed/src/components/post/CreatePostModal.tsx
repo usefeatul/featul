@@ -25,6 +25,11 @@ export function CreatePostModal({
   const router = useRouter()
   const [boards, setBoards] = useState<any[]>([])
   const [selectedBoard, setSelectedBoard] = useState<any>(null)
+  
+  // New State for Status and Tags
+  const [status, setStatus] = useState("pending")
+  const [availableTags, setAvailableTags] = useState<any[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   const {
     uploadedImage,
@@ -48,6 +53,9 @@ export function CreatePostModal({
     onSuccess: () => {
       onOpenChange(false)
       setUploadedImage(null)
+      // Reset fields
+      setStatus("pending")
+      setSelectedTags([])
     },
     onCreated: (post) => {
         router.push(`/workspaces/${workspaceSlug}/requests/${post.slug}`)
@@ -57,6 +65,7 @@ export function CreatePostModal({
 
   useEffect(() => {
     if (open) {
+      // Fetch Boards
       client.board.byWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res) => {
         if (res.ok) {
            const data = await res.json()
@@ -67,12 +76,31 @@ export function CreatePostModal({
            }
         }
       })
+
+      // Fetch Tags
+      client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res) => {
+        if (res.ok) {
+          const data = await res.json()
+          const tags = (data?.tags || []).map((t: any) => ({ id: t.id, name: t.name, slug: t.slug, color: t.color }))
+          setAvailableTags(tags)
+        }
+      })
     }
   }, [open, workspaceSlug])
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
-    submitPost(selectedBoard, user, uploadedImage?.url)
+    // Find tag IDs from selected slugs/ids
+    const tagIds = availableTags.filter(t => selectedTags.includes(t.id)).map(t => t.id)
+    submitPost(selectedBoard, user, uploadedImage?.url, status, tagIds)
+  }
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tagId) 
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    )
   }
 
   return (
@@ -89,6 +117,11 @@ export function CreatePostModal({
             selectedBoard={selectedBoard}
             onSelectBoard={setSelectedBoard}
             onClose={() => onOpenChange(false)}
+            status={status}
+            onStatusChange={setStatus}
+            availableTags={availableTags}
+            selectedTags={selectedTags}
+            onToggleTag={toggleTag}
           />
           <PostContent
             title={title}
@@ -99,6 +132,7 @@ export function CreatePostModal({
             uploadingImage={uploadingImage}
             handleRemoveImage={handleRemoveImage}
           />
+          
           <PostFooter 
             isPending={isPending} 
             disabled={!title || !content || !selectedBoard || isPending || uploadingImage} 

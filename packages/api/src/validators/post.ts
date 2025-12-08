@@ -28,4 +28,6 @@ export const createPostSchema = z.object({
   workspaceSlug: z.string().min(1),
   boardSlug: z.string().min(1),
   fingerprint: fingerprintSchema.optional(),
+  roadmapStatus: z.string().min(1).max(64).optional(),
+  tags: z.array(z.string().uuid()).optional(),
 })

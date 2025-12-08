@@ -19,7 +19,7 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
   const [content, setContent] = useState("")
   const router = useRouter()
 
-  const submitPost = async (selectedBoard: { slug: string } | null, user: any, image?: string | null) => {
+  const submitPost = async (selectedBoard: { slug: string } | null, user: any, image?: string | null, roadmapStatus?: string, tags?: string[]) => {
     if (!title || !content || !selectedBoard) return
 
     const fingerprint = await getBrowserFingerprint()
@@ -33,6 +33,8 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
           workspaceSlug,
           boardSlug: selectedBoard.slug,
           fingerprint: user ? undefined : fingerprint,
+          roadmapStatus: roadmapStatus || undefined,
+          tags: tags || undefined,
         })
 
         if (res.ok) {
