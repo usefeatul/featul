@@ -51,10 +51,10 @@ export default function RequestDetail({ post, workspaceSlug, readonly = false, i
             <h1 className="text-xl font-semibold">{post.title}</h1>
             <RequestNavigation prev={navigation?.prev} next={navigation?.next} prevHref={prevHref} nextHref={nextHref} />
           </div>
+          {post.content ? <div className="prose dark:prose-invert text-sm text-accent">{post.content}</div> : null}
           {post.image ? (
             <ContentImage url={post.image} alt={post.title} className="w-48 h-36" />
           ) : null}
-          {post.content ? <div className="prose dark:prose-invert text-sm text-accent">{post.content}</div> : null}
           <div className="flex items-center justify-end gap-3 text-xs text-accent">
             <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" activeBg />
             <CommentCounter postId={post.id} initialCount={post.commentCount} />
