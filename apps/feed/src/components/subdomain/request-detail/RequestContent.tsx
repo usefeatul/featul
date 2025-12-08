@@ -14,6 +14,7 @@ import { getInitials, getDisplayUser } from "@/utils/user-utils";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { SubdomainRequestDetailData } from "./types";
 import ContentImage from "@/components/global/ContentImage";
+import { RequestActions } from "./RequestActions";
 
 interface RequestContentProps {
   post: SubdomainRequestDetailData;
@@ -40,15 +41,18 @@ export function RequestContent({
 
   return (
     <div className="rounded-lg border bg-card p-6">
-      {/* Status */}
-      <div className="inline-flex items-center gap-2 mb-4">
-        <StatusIcon
-          status={post.roadmapStatus || undefined}
-          className="size-5 text-foreground/80"
-        />
-        <span className="text-sm text-accent">
-          {statusLabel(String(post.roadmapStatus || "pending"))}
-        </span>
+      {/* Status & Actions */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="inline-flex items-center gap-2">
+          <StatusIcon
+            status={post.roadmapStatus || undefined}
+            className="size-5 text-foreground/80"
+          />
+          <span className="text-sm text-accent">
+            {statusLabel(String(post.roadmapStatus || "pending"))}
+          </span>
+        </div>
+        <RequestActions />
       </div>
 
       {/* Post Title */}
