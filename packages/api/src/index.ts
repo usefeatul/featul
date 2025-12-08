@@ -17,7 +17,7 @@ const api = j
   .basePath("/api")
   .use(j.defaults.cors)
   .onError(j.defaults.errorHandler)
-
+  
 const appRouter = j.mergeRouters(api, {
   workspace: routerImports.workspace,
   board: routerImports.board,

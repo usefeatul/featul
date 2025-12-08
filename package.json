@@ -29,6 +29,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@radix-ui/react-visually-hidden": "^1.2.4"
+    "@radix-ui/react-visually-hidden": "^1.2.4",
+    "mitata": "^1.0.34"
   }
 }

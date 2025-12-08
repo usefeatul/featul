@@ -10,6 +10,9 @@ import { normalizePlan } from "../shared/plan"
 
 export function createWorkspaceRouter() {
   return j.router({
+    ping: publicProcedure.get(({ c }) => {
+      return c.json({ message: "pong" })
+    }),
     bySlug: publicProcedure
       .input(checkSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
