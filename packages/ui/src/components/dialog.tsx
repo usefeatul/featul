@@ -22,7 +22,7 @@ const DialogOverlay = React.forwardRef<
     <motion.div
       ref={ref as any}
       className={cn(
-        "fixed inset-0 z-50 bg-black/30",
+        "fixed inset-0 z-50 bg-black/30 backdrop-blur-sm",
         className
       )}
       initial={{ opacity: 0 }}
@@ -44,13 +44,13 @@ const DialogContent = React.forwardRef<
       <motion.div
         ref={ref as any}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-4 border ring-1 ring-border shadow-sm sm:rounded-md",
+          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-6 bg-card p-8 border ring-1 ring-border shadow-2xl sm:rounded-2xl",
           className
         )}
-        initial={{ opacity: 0, scale: 0.98, y: -12 }}
+        initial={{ opacity: 0, scale: 0.95, y: -12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.98, y: -12 }}
-        transition={{ type: "spring", stiffness: 520, damping: 34, mass: 0.6 }}
+        exit={{ opacity: 0, scale: 0.95, y: -12 }}
+        transition={{ type: "spring", stiffness: 350, damping: 25, mass: 0.6 }}
       >
         {children}
       </motion.div>
@@ -65,7 +65,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col space-y-1.5 text-center sm:text-left",
+      "flex flex-col space-y-2 text-center sm:text-left",
       className
     )}
     {...props}
@@ -94,7 +94,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
+      "text-2xl font-semibold leading-none tracking-tight",
       className
     )}
     {...props}
