@@ -15,6 +15,7 @@ import { randomAvatarUrl } from "@/utils/avatar";
 import { SubdomainRequestDetailData } from "../../../types/subdomain";
 import ContentImage from "@/components/global/ContentImage";
 import { RequestActions } from "./RequestActions";
+import RoleBadge from "../../comments/RoleBadge";
 
 interface RequestContentProps {
   post: SubdomainRequestDetailData;
@@ -87,6 +88,7 @@ export function RequestContent({
             <AvatarFallback>
               {getInitials(displayAuthor.name)}
             </AvatarFallback>
+            <RoleBadge role={post.role} isOwner={post.isOwner} />
           </Avatar>
           <span className="text-xs text-accent whitespace-nowrap mt-2 max-w-[180px] truncate">
             {displayAuthor.name}

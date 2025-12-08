@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { db, workspace, board, post, user } from "@feedgot/db";
+import { db, workspace, board, post, user, workspaceMember } from "@feedgot/db";
 import { eq, and, sql } from "drizzle-orm";
 import SubdomainRequestDetail from "@/components/subdomain/SubdomainRequestDetail";
 import { client } from "@feedgot/api/client";
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PublicBoardRequestDetailPage({ params }: Props) {
   const { subdomain, slug: postSlug } = await params;
   const [ws] = await db
-    .select({ id: workspace.id, name: workspace.name })
+    .select({ id: workspace.id, name: workspace.name, ownerId: workspace.ownerId })
     .from(workspace)
     .where(eq(workspace.slug, subdomain))
     .limit(1);
@@ -45,6 +45,8 @@ export default async function PublicBoardRequestDetailPage({ params }: Props) {
       boardName: board.name,
       boardSlug: board.slug,
       metadata: post.metadata,
+      role: workspaceMember.role,
+      authorId: post.authorId,
       author: {
         name: user.name,
         image: user.image,
@@ -54,6 +56,7 @@ export default async function PublicBoardRequestDetailPage({ params }: Props) {
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
     .leftJoin(user, eq(post.authorId, user.id))
+    .leftJoin(workspaceMember, and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, ws.id)))
     .where(
       and(
         eq(board.workspaceId, ws.id),
@@ -85,7 +88,7 @@ export default async function PublicBoardRequestDetailPage({ params }: Props) {
 
   return (
     <SubdomainRequestDetail
-      post={{ ...p, hasVoted } as any}
+      post={{ ...p, hasVoted, isOwner: p.authorId === ws.ownerId } as any}
       workspaceSlug={subdomain}
       initialComments={initialComments as any}
       initialCollapsedIds={initialCollapsedIds}

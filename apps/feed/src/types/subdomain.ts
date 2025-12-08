@@ -14,6 +14,8 @@ export type SubdomainRequestDetailData = {
   boardName: string;
   boardSlug: string;
   hasVoted?: boolean;
+  role?: "admin" | "member" | "viewer" | null;
+  isOwner?: boolean;
   author?: {
     name: string | null;
     image: string | null;

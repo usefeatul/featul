@@ -131,6 +131,7 @@ export async function getWorkspaceBySlug(
   id: string;
   name: string;
   slug: string;
+  ownerId: string;
   logo?: string | null;
   domain?: string | null;
   customDomain?: string | null;
@@ -140,6 +141,7 @@ export async function getWorkspaceBySlug(
       id: workspace.id,
       name: workspace.name,
       slug: workspace.slug,
+      ownerId: workspace.ownerId,
       logo: workspace.logo,
       domain: workspace.domain,
       customDomain: workspace.customDomain,
@@ -303,10 +305,12 @@ export async function getWorkspacePosts(
       isAnonymous: post.isAnonymous,
       authorId: post.authorId,
       metadata: post.metadata,
+      role: workspaceMember.role,
     })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
     .leftJoin(user, eq(post.authorId, user.id))
+    .leftJoin(workspaceMember, and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, ws.id)))
     .where(and(...filters) as any)
     .orderBy(order)
     .limit(lim)
@@ -320,6 +324,7 @@ export async function getWorkspacePosts(
 
     return {
       ...r,
+      isOwner: r.authorId === ws.ownerId,
       authorImage: !r.isAnonymous
         ? r.authorImage || randomAvatarUrl(r.id || r.slug)
         : randomAvatarUrl(avatarSeed),
