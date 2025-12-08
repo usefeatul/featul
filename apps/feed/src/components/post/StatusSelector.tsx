@@ -31,7 +31,7 @@ export function StatusSelector({ status, onStatusChange }: StatusSelectorProps) 
           <span className="capitalize">{status}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit p-1" align="start" list>
+      <PopoverContent className="w-fit" align="start" list>
         <PopoverList>
           {STATUSES.map((s) => (
             <PopoverListItem

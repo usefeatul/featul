@@ -38,7 +38,7 @@ export function TagSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit p-1" align="start" list>
+      <PopoverContent className="w-fit" align="start" list>
         {availableTags.length === 0 ? (
           <div className="p-2 text-xs text-muted-foreground">No tags available</div>
         ) : (
