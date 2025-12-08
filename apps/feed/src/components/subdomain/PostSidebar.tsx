@@ -67,13 +67,16 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
         <div className="flex items-center justify-between">
           <span className="text-xs text-accent">Author</span>
           <div className="flex items-center gap-2">
-            <Avatar className="size-5">
-              {displayAuthor.image ? (
-                <AvatarImage src={displayAuthor.image} alt={displayAuthor.name} />
-              ) : (
-                <AvatarFallback className="text-[10px]">{authorInitials}</AvatarFallback>
-              )}
-            </Avatar>
+            <div className="relative">
+              <Avatar className="size-6 relative overflow-visible">
+                {displayAuthor.image ? (
+                  <AvatarImage src={displayAuthor.image} alt={displayAuthor.name} />
+                ) : (
+                  <AvatarFallback className="text-xs bg-muted text-muted-foreground">{authorInitials}</AvatarFallback>
+                )}
+                <RoleBadge role={post.role} isOwner={post.isOwner} />
+              </Avatar>
+            </div>
             <span className="text-xs font-medium">{displayAuthor.name}</span>
           </div>
         </div>
