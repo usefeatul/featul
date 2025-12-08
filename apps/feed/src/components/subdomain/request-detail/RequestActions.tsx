@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverList,
+  PopoverSeparator,
 } from "@feedgot/ui/components/popover";
 import { Button } from "@feedgot/ui/components/button";
 import { RequestEditAction } from "./actions/RequestEditAction";
@@ -14,7 +15,8 @@ import { RequestShareAction } from "./actions/RequestShareAction";
 import { RequestReportAction } from "./actions/RequestReportAction";
 import { RequestDeleteAction } from "./actions/RequestDeleteAction";
 import EditPostModal from "./EditPostModal";
-import { SubdomainRequestDetailData } from "./types";
+import ReportPostDialog from "./ReportPostDialog";
+import { SubdomainRequestDetailData } from "../../../types/subdomain";
 
 interface RequestActionsProps {
   post: SubdomainRequestDetailData;
@@ -23,6 +25,7 @@ interface RequestActionsProps {
 
 export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
   const [editOpen, setEditOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   return (
     <>
@@ -33,12 +36,13 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
             <span className="sr-only">More options</span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-40">
+        <PopoverContent align="end" className="w-fit">
           <PopoverList>
             <RequestEditAction onClick={() => setEditOpen(true)} />
             <RequestShareAction postId={post.id} />
-            <RequestReportAction postId={post.id} />
-            <RequestDeleteAction postId={post.id} />
+            <RequestReportAction onClick={() => setReportOpen(true)} />
+            <PopoverSeparator />
+            <RequestDeleteAction postId={post.id} workspaceSlug={workspaceSlug} />
           </PopoverList>
         </PopoverContent>
       </Popover>
@@ -48,6 +52,12 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
         onOpenChange={setEditOpen}
         workspaceSlug={workspaceSlug}
         post={post}
+      />
+
+      <ReportPostDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        postId={post.id}
       />
     </>
   );

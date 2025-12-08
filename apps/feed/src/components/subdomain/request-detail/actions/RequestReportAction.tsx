@@ -1,18 +1,18 @@
 "use client";
 
 import React from "react";
-import { Flag } from "lucide-react";
+import { FlagIcon } from "@feedgot/ui/icons/flag";
 import { PopoverListItem } from "@feedgot/ui/components/popover";
 
 interface RequestReportActionProps {
-  postId: string;
+  onClick: () => void;
 }
 
-export function RequestReportAction({ postId }: RequestReportActionProps) {
+export function RequestReportAction({ onClick }: RequestReportActionProps) {
   return (
-    <PopoverListItem onClick={() => {}}>
+    <PopoverListItem onClick={onClick}>
       <span className="text-sm">Report</span>
-      <Flag className="ml-auto size-4 text-muted-foreground" />
+      <FlagIcon className="ml-auto size-4 text-muted-foreground" />
     </PopoverListItem>
   );
 }

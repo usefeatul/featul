@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { TrashIcon } from "@feedgot/ui/icons/trash";
 import { PopoverListItem } from "@feedgot/ui/components/popover";
 import {
   AlertDialog,
@@ -19,9 +19,13 @@ import { useRouter } from "next/navigation";
 
 interface RequestDeleteActionProps {
   postId: string;
+  workspaceSlug?: string;
 }
 
-export function RequestDeleteAction({ postId }: RequestDeleteActionProps) {
+export function RequestDeleteAction({
+  postId,
+  workspaceSlug,
+}: RequestDeleteActionProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -32,11 +36,22 @@ export function RequestDeleteAction({ postId }: RequestDeleteActionProps) {
         const res = await client.post.delete.$post({ postId });
         if (res.ok) {
           toast.success("Post deleted successfully");
-          // Navigate back to the board or home
-          // We need to know the workspace/board context ideally, but for now router.back() or similar
-          // Better to redirect to the parent board if possible, but since we don't have the slug here easily without prop drilling
-          // Let's try to parse it from URL or just go back
-          router.back(); 
+          // Dispatch global event for optimistic UI updates in parent lists
+          try {
+            window.dispatchEvent(
+              new CustomEvent("post:deleted", { detail: { postId } })
+            );
+          } catch {}
+
+          if (workspaceSlug) {
+            // Force navigation to the home/list page instead of back()
+            // This avoids stale state from browser back-forward cache
+            router.push(`/`);
+            router.refresh();
+          } else {
+            router.back();
+            router.refresh();
+          }
         } else {
           const err = await res.json();
           toast.error((err as any)?.message || "Failed to delete post");
@@ -57,7 +72,7 @@ export function RequestDeleteAction({ postId }: RequestDeleteActionProps) {
         className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
       >
         <span className="text-sm">Delete</span>
-        <Trash2 className="ml-auto size-4" />
+        <TrashIcon className="ml-auto size-4" />
       </PopoverListItem>
 
       <AlertDialog open={open} onOpenChange={setOpen}>

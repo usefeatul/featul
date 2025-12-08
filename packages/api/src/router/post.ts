@@ -1,7 +1,7 @@
 import { eq, and, sql, isNull } from "drizzle-orm"
 import { j, publicProcedure } from "../jstack"
-import { vote, post, workspace, board, postTag, workspaceMember } from "@feedgot/db"
-import { votePostSchema, createPostSchema, updatePostSchema, byIdSchema } from "../validators/post"
+import { vote, post, workspace, board, postTag, workspaceMember, postReport } from "@feedgot/db"
+import { votePostSchema, createPostSchema, updatePostSchema, byIdSchema, reportPostSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
 import { auth } from "@feedgot/auth"
 import { headers } from "next/headers"
@@ -293,6 +293,48 @@ export function createPostRouter() {
         }
 
         await ctx.db.delete(post).where(eq(post.id, postId))
+
+        return c.superjson({ success: true })
+      }),
+
+    report: publicProcedure
+      .input(reportPostSchema)
+      .post(async ({ ctx, input, c }) => {
+        const { postId, reason, description } = input
+
+        let userId: string | null = null
+        try {
+          const session = await auth.api.getSession({
+            headers: (c as any)?.req?.raw?.headers || (await headers()),
+          })
+          if (session?.user?.id) {
+            userId = session.user.id
+          }
+        } catch {}
+
+        if (!userId) {
+          throw new HTTPException(401, { message: "Unauthorized" })
+        }
+
+        // Check if post exists
+        const [existingPost] = await ctx.db
+          .select({ id: post.id })
+          .from(post)
+          .where(eq(post.id, postId))
+          .limit(1)
+
+        if (!existingPost) {
+          throw new HTTPException(404, { message: "Post not found" })
+        }
+
+        // Create report
+        await ctx.db.insert(postReport).values({
+          postId,
+          reportedBy: userId,
+          reason,
+          description: description || null,
+          status: "pending",
+        })
 
         return c.superjson({ success: true })
       }),

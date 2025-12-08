@@ -13,7 +13,8 @@ import { PostFooter } from "../../post/PostFooter"
 import { useCreatePostData } from "@/hooks/useCreatePostData"
 import { usePostUpdate } from "@/hooks/usePostUpdate"
 import { usePostImageUpload } from "@/hooks/usePostImageUpload"
-import { SubdomainRequestDetailData } from "./types"
+import { SubdomainRequestDetailData } from "../../../types/subdomain";
+
 
 interface EditPostModalProps {
   open: boolean

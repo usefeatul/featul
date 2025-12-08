@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Share2 } from "lucide-react";
+import { ShareIcon } from "@feedgot/ui/icons/share";
 import { PopoverListItem } from "@feedgot/ui/components/popover";
 import { toast } from "sonner";
 
@@ -37,7 +37,7 @@ export function RequestShareAction({ postId }: RequestShareActionProps) {
   return (
     <PopoverListItem onClick={handleShare}>
       <span className="text-sm">Share</span>
-      <Share2 className="ml-auto size-4 text-muted-foreground" />
+      <ShareIcon className="ml-auto size-4 text-muted-foreground" />
     </PopoverListItem>
   );
 }

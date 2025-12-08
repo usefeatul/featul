@@ -41,3 +41,9 @@ export const updatePostSchema = z.object({
   roadmapStatus: z.string().min(1).max(64).optional(),
   tags: z.array(z.string().uuid()).optional(),
 })
+
+export const reportPostSchema = z.object({
+  postId: z.string().uuid(),
+  reason: z.enum(["spam", "harassment", "inappropriate", "off_topic", "other"]),
+  description: z.string().max(500).optional(),
+})

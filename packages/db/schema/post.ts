@@ -111,7 +111,33 @@ export const postUpdate = pgTable('post_update', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 
+export const postReport = pgTable("post_report", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id")
+    .notNull()
+    .references(() => post.id, { onDelete: "cascade" }),
+  reportedBy: text("reported_by").references(() => user.id, {
+    onDelete: "set null",
+  }),
+
+  reason: text("reason", {
+    enum: ["spam", "harassment", "inappropriate", "off_topic", "other"],
+  }).notNull(),
+  description: text("description"),
+
+  status: text("status", {
+    enum: ["pending", "reviewed", "resolved", "dismissed"],
+  }).default("pending"),
+
+  reviewedBy: text("reviewed_by").references(() => user.id),
+  reviewedAt: timestamp("reviewed_at"),
+  resolution: text("resolution"),
+
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type Post = typeof post.$inferSelect
 export type PostTag = typeof postTag.$inferSelect
 export type Tag = typeof tag.$inferSelect
 export type PostUpdate = typeof postUpdate.$inferSelect
+export type PostReport = typeof postReport.$inferSelect

@@ -52,6 +52,22 @@ export function MainContent({
       return next;
     });
   }, [orderParam]);
+
+  // Optimistic UI for deletions
+  React.useEffect(() => {
+    const handlePostDeleted = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (detail?.postId) {
+        setListItems((prev) => prev.filter((p) => p.id !== detail.postId));
+      }
+    };
+
+    window.addEventListener("post:deleted", handlePostDeleted);
+    return () => {
+      window.removeEventListener("post:deleted", handlePostDeleted);
+    };
+  }, []);
+
   return (
     <section>
       <div

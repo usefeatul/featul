@@ -61,6 +61,7 @@
     "@feedgot/auth": "workspace:*",
     "@feedgot/db": "workspace:*",
     "@feedgot/ui": "workspace:*",
+    "@feedgot/api": "workspace:*",
     "@types/node": "^22.19.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

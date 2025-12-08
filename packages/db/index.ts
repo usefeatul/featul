@@ -22,6 +22,7 @@ export const {
   tag,
   postTag,
   postUpdate,
+  postReport,
   comment,
   commentReaction,
   commentMention,
