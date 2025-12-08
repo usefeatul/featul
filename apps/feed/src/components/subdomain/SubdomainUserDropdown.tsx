@@ -102,14 +102,14 @@ export default function SubdomainUserDropdown({
   return (
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger className="w-full cursor-pointer">
-          <div className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted">
+        <DropdownMenuTrigger asChild className="w-full cursor-pointer">
+          <button suppressHydrationWarning type="button" className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted">
             <div className="rounded-md border ring-1 ring-border overflow-hidden">
               <Avatar className="size-5.5">
                 {d.image ? <AvatarImage src={d.image} alt={d.name} loading="eager" /> : <AvatarFallback>{initials}</AvatarFallback>}
               </Avatar>
             </div>
-          </div>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40 max-w-[95vw] p-2" side="bottom" align="center" sideOffset={8}>
           <DropdownMenuItem onSelect={onSubmitPost} className="px-2 py-2 rounded-sm flex items-center gap-2 group">

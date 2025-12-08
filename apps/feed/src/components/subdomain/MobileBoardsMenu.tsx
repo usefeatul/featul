@@ -38,6 +38,7 @@ export function MobileBoardsMenu({ slug, subdomain }: { slug: string; subdomain:
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
+          suppressHydrationWarning
           type="button"
           aria-label="Open boards"
           className="inline-flex items-center justify-center rounded-md p-2 bg-muted/70 disabled:opacity-50"
