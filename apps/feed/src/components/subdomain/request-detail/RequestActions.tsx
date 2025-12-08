@@ -1,23 +1,24 @@
 "use client";
 
 import React from "react";
-import {
-  MoreVertical,
-  Edit2,
-  Share2,
-  Flag,
-  Trash2,
-} from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverList,
-  PopoverListItem,
 } from "@feedgot/ui/components/popover";
 import { Button } from "@feedgot/ui/components/button";
+import { RequestEditAction } from "./actions/RequestEditAction";
+import { RequestShareAction } from "./actions/RequestShareAction";
+import { RequestReportAction } from "./actions/RequestReportAction";
+import { RequestDeleteAction } from "./actions/RequestDeleteAction";
 
-export function RequestActions() {
+interface RequestActionsProps {
+  postId: string;
+}
+
+export function RequestActions({ postId }: RequestActionsProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -28,22 +29,10 @@ export function RequestActions() {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-40">
         <PopoverList>
-          <PopoverListItem onClick={() => {}}>
-            <span className="text-sm">Edit</span>
-            <Edit2 className="ml-auto size-4 text-muted-foreground" />
-          </PopoverListItem>
-          <PopoverListItem onClick={() => {}}>
-            <span className="text-sm">Share</span>
-            <Share2 className="ml-auto size-4 text-muted-foreground" />
-          </PopoverListItem>
-          <PopoverListItem onClick={() => {}}>
-            <span className="text-sm">Report</span>
-            <Flag className="ml-auto size-4 text-muted-foreground" />
-          </PopoverListItem>
-          <PopoverListItem onClick={() => {}} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
-            <span className="text-sm">Delete</span>
-            <Trash2 className="ml-auto size-4" />
-          </PopoverListItem>
+          <RequestEditAction postId={postId} />
+          <RequestShareAction postId={postId} />
+          <RequestReportAction postId={postId} />
+          <RequestDeleteAction postId={postId} />
         </PopoverList>
       </PopoverContent>
     </Popover>

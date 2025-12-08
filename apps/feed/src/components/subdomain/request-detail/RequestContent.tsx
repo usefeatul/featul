@@ -52,7 +52,7 @@ export function RequestContent({
             {statusLabel(String(post.roadmapStatus || "pending"))}
           </span>
         </div>
-        <RequestActions />
+        <RequestActions postId={post.id} />
       </div>
 
       {/* Post Title */}
