@@ -130,7 +130,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                       meta.isLocked ? "Locked" : null,
                       meta.isFeatured ? "Featured" : null,
                     ].filter(Boolean).map(f => (
-                       <span key={f} className="text-xs bg-muted px-1.5 py-0.5 rounded-sm  border text-muted-foreground border">{f}</span>
+                       <span key={f} className="text-xs bg-muted px-1.5 py-0.5 rounded-sm  border text-muted-foreground ">{f}</span>
                     ))}
                   </div>
                 )}

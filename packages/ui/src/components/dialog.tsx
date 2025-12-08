@@ -44,7 +44,7 @@ const DialogContent = React.forwardRef<
       <motion.div
         ref={ref as any}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-6 bg-card p-8 border ring-1 ring-border shadow-2xl sm:rounded-2xl",
+          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-6 bg-card p-8 border ring-1 ring-border shadow-2xl rounded-sm",
           className
         )}
         initial={{ opacity: 0, scale: 0.95, y: -12 }}
