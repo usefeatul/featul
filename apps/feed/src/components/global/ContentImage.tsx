@@ -10,17 +10,17 @@ import {
 } from "@feedgot/ui/components/dialog";
 import { cn } from "@feedgot/ui/lib/utils";
 
-interface CommentImageProps {
+interface ContentImageProps {
   url: string;
   alt: string;
   className?: string;
 }
 
-export default function CommentImage({
+export default function ContentImage({
   url,
   alt,
   className,
-}: CommentImageProps) {
+}: ContentImageProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

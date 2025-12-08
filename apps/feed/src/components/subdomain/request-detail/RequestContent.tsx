@@ -13,7 +13,7 @@ import {
 import { getInitials, getDisplayUser } from "@/utils/user-utils";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { SubdomainRequestDetailData } from "./types";
-import CommentImage from "@/components/comments/CommentImage";
+import ContentImage from "@/components/global/ContentImage";
 
 interface RequestContentProps {
   post: SubdomainRequestDetailData;
@@ -58,7 +58,7 @@ export function RequestContent({
 
       {/* Image */}
       {post.image ? (
-        <CommentImage
+        <ContentImage
           url={post.image}
           alt={post.title}
           className="w-48 h-36 mb-4"

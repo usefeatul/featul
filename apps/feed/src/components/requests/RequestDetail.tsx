@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import CommentImage from "@/components/comments/CommentImage"
+import ContentImage from "@/components/global/ContentImage"
 import StatusIcon from "./StatusIcon"
 import RequestNavigation from "./RequestNavigation"
 import { useRequestNavigation } from "@/hooks/useRequestNavigation"
@@ -52,7 +52,7 @@ export default function RequestDetail({ post, workspaceSlug, readonly = false, i
             <RequestNavigation prev={navigation?.prev} next={navigation?.next} prevHref={prevHref} nextHref={nextHref} />
           </div>
           {post.image ? (
-            <CommentImage url={post.image} alt={post.title} className="w-48 h-36" />
+            <ContentImage url={post.image} alt={post.title} className="w-48 h-36" />
           ) : null}
           {post.content ? <div className="prose dark:prose-invert text-sm text-accent">{post.content}</div> : null}
           <div className="flex items-center justify-end gap-3 text-xs text-accent">

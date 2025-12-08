@@ -6,7 +6,7 @@ import { Textarea } from "@feedgot/ui/components/textarea"
 import { Button } from "@feedgot/ui/components/button"
 import { LoaderIcon } from "@feedgot/ui/icons/loader"
 import { ImageIcon } from "@feedgot/ui/icons/image"
-import CommentImage from "./CommentImage"
+import ContentImage from "@/components/global/ContentImage"
 import { XMarkIcon } from "@feedgot/ui/icons/xmark"
 import { useImageUpload } from "../../hooks/useImageUpload"
 import { useMentions } from "../../hooks/useMentions"
@@ -103,7 +103,7 @@ export default function CommentForm({
       {uploadedImage && (
         <div className="relative inline-block">
           <div className="relative">
-            <CommentImage
+            <ContentImage
               url={uploadedImage.url}
               alt={uploadedImage.name}
               className="max-w-[120px] max-h-20"

@@ -1,5 +1,5 @@
 import React from "react"
-import CommentImage from "./CommentImage"
+import ContentImage from "@/components/global/ContentImage"
 import { CommentData } from "../../types/comment"
 
 interface CommentContentProps {
@@ -49,7 +49,7 @@ export default function CommentContent({ content, metadata }: CommentContentProp
           {metadata.attachments
             .filter((att) => att.type.startsWith("image/"))
             .map((att, idx) => (
-              <CommentImage
+              <ContentImage
                 key={idx}
                 url={att.url}
                 alt={att.name}
