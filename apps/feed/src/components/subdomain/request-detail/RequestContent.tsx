@@ -80,12 +80,12 @@ export function RequestContent({
       {/* Footer: Author & Upvotes */}
       <div className="flex items-center justify-between pt-2">
         <div className="inline-flex items-center gap-2">
-          <Avatar className="size-6 bg-background border border-border rounded-full relative overflow-visible">
+          <Avatar className="size-8 relative overflow-visible">
             <AvatarImage
               src={displayAuthor.image || randomAvatarUrl(post.id)}
               alt={displayAuthor.name}
             />
-            <AvatarFallback>
+            <AvatarFallback className="text-xs bg-muted text-muted-foreground">
               {getInitials(displayAuthor.name)}
             </AvatarFallback>
             <RoleBadge role={post.role} isOwner={post.isOwner} />

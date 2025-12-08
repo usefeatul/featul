@@ -36,9 +36,9 @@ function PostCardBase({ item, onVoteChange, linkPrefix = "/p" }: { item: Request
       <div className="mt-3 flex items-center justify-between">
         <div className="inline-flex items-center gap-2">
           <div className="relative">
-            <Avatar className="size-6 bg-background border border-border rounded-full relative overflow-visible">
+            <Avatar className="size-8 relative overflow-visible">
               <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Guest" : (item.authorName || "Guest")} />
-              <AvatarFallback>{getInitials(item.isAnonymous ? "Guest" : (item.authorName || "Guest"))}</AvatarFallback>
+              <AvatarFallback className="text-xs bg-muted text-muted-foreground">{getInitials(item.isAnonymous ? "Guest" : (item.authorName || "Guest"))}</AvatarFallback>
               <RoleBadge role={item.role} isOwner={item.isOwner} />
             </Avatar>
           </div>

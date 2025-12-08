@@ -9,6 +9,7 @@ import StatusPicker from "../requests/meta/StatusPicker"
 import FlagsPicker from "../requests/meta/FlagsPicker"
 import StatusIcon from "../requests/StatusIcon"
 import { PoweredBy } from "./PoweredBy"
+import RoleBadge from "../comments/RoleBadge"
 
 export type PostSidebarProps = {
   post: {
@@ -21,6 +22,8 @@ export type PostSidebarProps = {
     isPinned?: boolean
     isLocked?: boolean
     isFeatured?: boolean
+    role?: "admin" | "member" | "viewer" | null
+    isOwner?: boolean
     author?: {
       name: string | null
       image: string | null
