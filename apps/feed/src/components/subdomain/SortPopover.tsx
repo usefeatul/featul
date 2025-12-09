@@ -4,7 +4,9 @@ import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@feedgot/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
-import { ChevronDown, ArrowDownAZ } from "lucide-react"
+import { ChevronDownIcon } from "@feedgot/ui/icons/chevron-down"
+import { ListFilterIcon } from "@feedgot/ui/icons/list-filter"
+import ArrowUpDownIcon from "@feedgot/ui/icons/arrow-up-down"
 
 export function SortPopover({ slug, subdomain }: { slug: string; subdomain: string }) {
   const router = useRouter()
@@ -32,9 +34,9 @@ export function SortPopover({ slug, subdomain }: { slug: string; subdomain: stri
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button type="button" variant="nav" className="h-8 justify-start gap-2" aria-label="Sort" >
-          <ArrowDownAZ className="size-4" />
+          <ArrowUpDownIcon className="size-4" />
           <span className="truncate">{label}</span>
-          <ChevronDown className="size-4 ml-auto" />
+          <ChevronDownIcon className="size-4 ml-auto" />
         </Button>
       </PopoverTrigger>
       <PopoverContent id={`popover-${subdomain}-${slug}-sort`} align="end" list className="w-fit">
