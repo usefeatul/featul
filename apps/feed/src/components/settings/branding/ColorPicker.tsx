@@ -20,7 +20,7 @@ export default function ColorPicker({ valueHex, onSelect, disabled }: { valueHex
       <PopoverContent list>
         <PopoverList>
           {BRANDING_COLORS.map((c) => (
-            <PopoverListItem key={c.key} accent={c.primary} onClick={() => !disabled && onSelect(c)}>
+            <PopoverListItem key={c.key} accent={c.accent} onClick={() => !disabled && onSelect(c)}>
               <span className="w-4 h-4 rounded-md border" style={{ background: c.primary }} />
               <span className="text-sm">{c.name}</span>
             </PopoverListItem>
