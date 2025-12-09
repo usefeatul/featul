@@ -9,6 +9,7 @@ import { CommentsIcon } from "@feedgot/ui/icons/comments"
 import { RoadmapIcon } from "@feedgot/ui/icons/roadmap"
 import { ChangelogIcon } from "@feedgot/ui/icons/changelog"
 import { cn } from "@feedgot/ui/lib/utils"
+import { Button } from "@feedgot/ui/components/button"
 
 
 export function MobileBoardsMenu({ slug, subdomain }: { slug: string; subdomain: string }) {
@@ -37,15 +38,16 @@ export function MobileBoardsMenu({ slug, subdomain }: { slug: string; subdomain:
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
+        <Button
           suppressHydrationWarning
           type="button"
+          variant="nav"
           aria-label="Open boards"
-          className="inline-flex items-center justify-center rounded-md p-2 bg-muted/70 disabled:opacity-50"
+          className="inline-flex items-center justify-center rounded-md p-2 bg-card dark:bg-black/40 disabled:opacity-50"
           disabled={false}
         >
           <MenuIcon width={20} height={20} className="text-accent" />
-        </button>
+        </Button>
       </PopoverTrigger>
       <PopoverContent id={`popover-${subdomain}-${slug}-mobile-menu`} align="start" list className="min-w-9rem] w-fit">
         <div className="px-3 py-2 text-xs font-medium text-accent">Boards</div>

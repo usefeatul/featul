@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@feedgot/ui/lib/utils"
 
 const textareaVariants = cva(
-  "placeholder:text-muted-foreground flex field-sizing-content min-h-16 w-full rounded-md px-3 py-2 text-base transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+  "placeholder:text-accent  flex field-sizing-content min-h-16 w-full rounded-sm px-3 py-2 text-base transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm  border-border ",
   {
     variants: {
       variant: {
-        default: "border-input bg-muted border focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px] dark:bg-input shadow-xs aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-        plain: "bg-transparent border-none shadow-none focus-visible:ring-0 px-0",
+        default: "border-input bg-muted border focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px] dark:bg-black/40 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        plain: "bg-transparent border-none shadow-none focus-visible:ring-0 px-0 dark:bg-black/40",
       },
     },
     defaultVariants: {

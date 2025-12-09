@@ -42,7 +42,7 @@ export default function NotificationsPanel({ notifications, markRead, onMarkAllR
       exit={{ opacity: 0, y: -6, scale: 0.98 }}
       transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
     >
-      <div className="px-2.5 py-2.5 text-sm font-medium flex items-center justify-between">
+      <div className="px-1 py-1 text-sm font-medium flex items-center justify-between space-x-4">
         <span>Notifications</span>
         {onMarkAllRead ? (
           <button type="button" className="text-xs rounded-md bg-muted ring-1 ring-border px-2 py-1 cursor-pointer" onClick={onMarkAllRead}>
@@ -51,7 +51,7 @@ export default function NotificationsPanel({ notifications, markRead, onMarkAllR
         ) : null}
       </div>
       {notifications.length === 0 ? (
-        <div className="px-3 py-3 text-sm text-accent">No notifications</div>
+        <div className="px-5 py-5 text-sm text-accent justify-center flex">No notifications</div>
       ) : (
         <ul className="list-none">
           {notifications.map((n) => (
