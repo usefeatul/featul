@@ -24,7 +24,8 @@ export function SimilarPosts({ posts }: SimilarPostsProps) {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="bg-muted/50 dark:bg-black/50 overflow-hidden"
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="bg-muted/70 dark:bg-black/50 overflow-hidden"
         >
           <div className="px-4 py-2 flex items-center justify-between border-t border-border dark:border-border/50">  
             <div className="text-xs font-extralight text-accent uppercase tracking-wide">
@@ -38,7 +39,7 @@ export function SimilarPosts({ posts }: SimilarPostsProps) {
                 key={post.id} 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.15, duration: 0.4 }}
                 className="relative group p-4 hover:bg-muted/30 dark:hover:bg-black/30 transition-colors"
               >
                 <Link 

@@ -136,7 +136,7 @@ export default function CreatePostModal({
             ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
           />
           
-          <SimilarPosts posts={similarPosts} isLoading={isSearchingSimilar} />
+          <SimilarPosts posts={similarPosts} />
         </form>
       </DialogContent>
     </Dialog>
