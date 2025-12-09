@@ -36,7 +36,7 @@ export function SortPopover({ slug, subdomain }: { slug: string; subdomain: stri
         <Button type="button" variant="nav" className="h-8 justify-start gap-2" aria-label="Sort" >
           <ArrowUpDownIcon className="size-4" />
           <span className="truncate">{label}</span>
-          <ChevronDownIcon className="size-4 ml-auto" />
+          <ChevronDownIcon className="size-3 ml-auto" />
         </Button>
       </PopoverTrigger>
       <PopoverContent id={`popover-${subdomain}-${slug}-sort`} align="end" list className="w-fit">

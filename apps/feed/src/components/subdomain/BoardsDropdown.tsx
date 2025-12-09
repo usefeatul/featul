@@ -77,7 +77,7 @@ export function BoardsDropdown({ slug, subdomain, initialBoards, selectedBoard }
           <ListIcon className="size-4" />
           <span className="truncate">{label}</span>
           <span className="ml-auto" />
-          <ChevronDownIcon className="size-4" />
+          <ChevronDownIcon className="size-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent id={`popover-${subdomain}-${slug}-boards`} align="start" list className="min-w-[9rem] w-fit">
