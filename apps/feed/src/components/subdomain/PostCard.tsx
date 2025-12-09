@@ -21,15 +21,18 @@ function toPlain(s?: string | null): string {
 function PostCardBase({ item, onVoteChange, linkPrefix = "/p" }: { item: RequestItemData; onVoteChange?: (id: string, upvotes: number, hasVoted: boolean) => void; linkPrefix?: string }) {
   const href = `${linkPrefix}/${item.slug}`
   return (
-    <div className="py-6 px-6">
+    <div className="py-6 px-6 relative group">
+      <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
+        <span className="sr-only">View post</span>
+      </Link>
       <div className="inline-flex items-center gap-2">
         <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
         <span className="text-sm text-accent">{statusLabel(String(item.roadmapStatus || "pending"))}</span>
       </div>
       <div className="mt-2">
-        <Link href={href} className="text-lg font-semibold text-foreground hover:text-primary">
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
           {item.title}
-        </Link>
+        </h3>
       </div>
       {item.content ? (
         <p className="mt-3 text-sm text-accent  whitespace-normal line-clamp-2">{toPlain(item.content)}</p>
@@ -53,7 +56,7 @@ function PostCardBase({ item, onVoteChange, linkPrefix = "/p" }: { item: Request
           </div>
         </div>
         <div className="flex items-center gap-3 text-xs text-accent">
-          <div className="inline-flex items-center gap-2 ">
+          <div className="inline-flex items-center gap-2 relative z-10">
             <UpvoteButton
               postId={item.id}
               upvotes={item.upvotes}
@@ -63,10 +66,10 @@ function PostCardBase({ item, onVoteChange, linkPrefix = "/p" }: { item: Request
               onChange={(v) => onVoteChange?.(item.id, v.upvotes, v.hasVoted)}
             />
           </div>
-          <Link href={href} aria-label="View comments" className="inline-flex items-center gap-1">
+          <div className="inline-flex items-center gap-1">
             <CommentsIcon aria-hidden className="size-3.5" />
             <span className="tabular-nums">{item.commentCount}</span>
-          </Link>
+          </div>
         </div>
       </div>
     </div>
