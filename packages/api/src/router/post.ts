@@ -65,7 +65,7 @@ export function createPostRouter() {
             authorId: userId || null,
             isAnonymous: !userId,
             metadata: !userId ? { fingerprint } : undefined,
-            roadmapStatus: roadmapStatus || null,
+            roadmapStatus: roadmapStatus || "pending",
         }).returning()
 
         // Insert tags

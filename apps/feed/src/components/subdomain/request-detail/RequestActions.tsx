@@ -31,7 +31,7 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
     <>
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="plain" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+          <Button variant="plain" size="icon" className="h-8 w-8 bg-card">
             <MoreVertical className="size-4" />
             <span className="sr-only">More options</span>
           </Button>
