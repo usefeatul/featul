@@ -5,6 +5,8 @@ import { getAllCategorySlugs, getAllToolParams } from "@/types/tools"
 import { getAllDefinitionSlugs } from "@/types/definitions"
 import { SITE_URL } from "@/config/seo"
 
+export const revalidate = 86400
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
 
@@ -64,7 +66,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
     }
   } catch {
-    // silently ignore if Marble isn't configured
   }
 
   return [
