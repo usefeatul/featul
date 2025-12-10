@@ -100,8 +100,8 @@ export function SinglePost({ post }: SinglePostProps) {
               <Image
                 src={post.coverImage}
                 alt={post.title}
-                width={20}
-                height={20}
+                width={1200}
+                height={1200}
                 className="w-full object-cover"
               />
             </div>

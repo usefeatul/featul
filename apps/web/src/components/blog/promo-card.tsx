@@ -16,7 +16,7 @@ export function PromoCard({
   className,
   title = "oreilla, Simplified",
   description = "Stop guessing. Get actionable feedback understand what users need, iterate faster, and ship with confidence.",
-  ctaHref = "/signup",
+  ctaHref = "https://app.oreilla.com",
   ctaLabel = "Sign up for oreilla",
   subtext = "free to start, no cc required",
 }: PromoCardProps) {
