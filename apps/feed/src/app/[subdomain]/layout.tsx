@@ -8,8 +8,6 @@ import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import { getBrandingBySlug } from "@/lib/workspace";
 import SubdomainThemeProvider from "@/components/subdomain/SubdomainThemeProvider";
 import { DomainBrandingProvider } from "@/components/subdomain/DomainBrandingProvider";
-import { PoweredBy } from "@/components/subdomain/PoweredBy";
-import { getServerSession } from "@oreilla/auth/session";
 
 export default async function Layout({
   children,
@@ -34,7 +32,6 @@ export default async function Layout({
   if (!ws) notFound();
 
   const branding = await getBrandingBySlug(subdomain);
-  const session = await getServerSession();
   const [b] = await db
     .select({
       id: board.id,
@@ -83,16 +80,6 @@ export default async function Layout({
               </Container>
             );
           })()}
-          {/* <div className="fixed bottom-0 left-0 right-0 z-30">
-          {(() => {
-            const maxW = branding.layoutStyle === "compact" ? "4xl" : branding.layoutStyle === "spacious" ? "6xl" : "5xl"
-            return (
-              <Container maxWidth={maxW} className="flex  justify-end items-end">
-                <PoweredBy />
-              </Container>
-            )
-          })()}
-        </div> */}
         </DomainBrandingProvider>
       </SubdomainThemeProvider>
     </>
