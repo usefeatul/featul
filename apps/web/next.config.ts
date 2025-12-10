@@ -11,6 +11,15 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.marblecms.com',
+        pathname: '/**',
+      },
+    ],
+  },
 }
 
 export default nextConfig

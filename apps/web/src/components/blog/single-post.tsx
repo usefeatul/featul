@@ -73,6 +73,8 @@ export function SinglePost({ post }: SinglePostProps) {
                   <Image
                     src={author?.image ?? ""}
                     alt={author?.name ?? "Author"}
+                     width={20}
+                     height={20}
                     className="h-5 w-5 rounded-md object-cover translate-y-[0.5px]"
                   />
                 ) : null}
@@ -98,7 +100,9 @@ export function SinglePost({ post }: SinglePostProps) {
               <Image
                 src={post.coverImage}
                 alt={post.title}
-                className="aspect-video w-full object-cover"
+                width={20}
+                height={20}
+                className="w-full object-cover"
               />
             </div>
           ) : null}

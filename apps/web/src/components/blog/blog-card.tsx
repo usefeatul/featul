@@ -37,6 +37,8 @@ export function BlogCard({ post }: BlogCardProps) {
             <Image
               src={post.coverImage ?? ""}
               alt={post.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
@@ -65,6 +67,8 @@ export function BlogCard({ post }: BlogCardProps) {
               <Image
                 src={avatarSrc}
                 alt={author?.name ?? "Author"}
+                width={20}
+                height={20}
                 className="h-5 w-5 rounded-md object-cover translate-y-[0.5px]"
               />
             ) : null}
