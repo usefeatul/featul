@@ -11,8 +11,6 @@
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
         "NEXT_PUBLIC_API_URL",
-        "GITHUB_ID",
-        "GITHUB_SECRET",
         "BETTER_AUTH_SECRET",
         "BETTER_AUTH_URL",
         "NEXT_PUBLIC_APP_URL",
@@ -23,7 +21,11 @@
         "R2_PUBLIC_BASE_URL",
         "RESEND_API_KEY",
         "AUTH_COOKIE_DOMAIN",
-        "AUTH_TRUSTED_ORIGINS"
+        "AUTH_TRUSTED_ORIGINS",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN"
       ]
     },
     "lint": {
