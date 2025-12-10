@@ -29,7 +29,7 @@ export function generateToc(html?: string | null): { html: string; items: TocIte
 
     // find existing id
     const idMatch = /\bid\s*=\s*"([^"]+)"/i.exec(attrs)
-    let id = idMatch ? idMatch[1] : slugify(text)
+    const id = idMatch ? idMatch[1] : slugify(text)
 
     // ensure uniqueness
     let unique = id
