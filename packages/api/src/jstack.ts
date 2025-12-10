@@ -13,9 +13,8 @@ const databaseMiddleware = j.middleware(async ({ next }) => {
 })
 
 const authMiddleware = j.middleware(async ({ next, c }) => {
-  const session = await auth.api.getSession({
-    headers: (c as any)?.req?.raw?.headers || (await headers()),
-  })
+  const req: Request = (c as any)?.req?.raw || (c as any)?.request
+  const session = await auth.api.getSession({ headers: req?.headers || (await headers()) })
   if (!session || !session.user) {
     throw new HTTPException(401, { message: "Unauthorized" })
   }
@@ -35,6 +34,7 @@ function createRateLimitMiddleware(limitFn: (req: Request, c: any) => Promise<{ 
     }
     c.header("X-RateLimit-Limit", String(res.limit))
     c.header("X-RateLimit-Remaining", String(res.remaining))
+    c.header("X-RateLimit-Reset", String(Math.max(0, Math.ceil((res.reset - Date.now()) / 1000))))
     return await next()
   })
 }
@@ -45,12 +45,9 @@ const rateLimitMiddlewarePublic = createRateLimitMiddleware(async (req) => {
 
 const rateLimitMiddlewarePrivate = createRateLimitMiddleware(async (req, c) => {
   const userId = String(((c as any)?.ctx?.session?.user?.id) || "")
-  if (userId) return await limitPrivate(req, userId)
-  const session = await auth.api.getSession({
-    headers: (c as any)?.req?.raw?.headers || (await headers()),
-  })
-  return await limitPrivate(req, String(session?.user?.id || ""))
+  return await limitPrivate(req, userId)
 })
 
-export const publicProcedure = j.procedure.use(databaseMiddleware).use(rateLimitMiddlewarePublic)
-export const privateProcedure = publicProcedure.use(authMiddleware).use(rateLimitMiddlewarePrivate)
+const baseProcedure = j.procedure.use(databaseMiddleware)
+export const publicProcedure = baseProcedure.use(rateLimitMiddlewarePublic)
+export const privateProcedure = baseProcedure.use(authMiddleware).use(rateLimitMiddlewarePrivate)
