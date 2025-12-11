@@ -5,7 +5,7 @@ import { colorForStatus } from "../../types/status"
 
 
 export function StatusIndicator({
-  status = "major-outage",
+  status = "operational",
   pulse = true,
   className,
   srLabel,

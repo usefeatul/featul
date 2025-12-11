@@ -55,7 +55,7 @@ export function HotkeyLink({
   }, [hotkey, DASHBOARD_URL]);
 
   return (
-    <Button asChild variant="default" size="lg" className={className}>
+    <Button asChild variant="quiet" size="sm" className={className}>
       <Link
         href={DASHBOARD_URL ?? "#"}
         onKeyDown={handleKeyDown}
