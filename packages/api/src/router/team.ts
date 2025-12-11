@@ -16,6 +16,41 @@ import {
 import { getPlanLimits } from "../shared/plan"
 import { mapPermissions } from "../shared/permissions"
 
+async function getWorkspaceMemberEmails(
+  ctx: any,
+  workspaceId: string,
+  ownerId: string
+): Promise<Set<string>> {
+  // Get emails of existing active members
+  const existingMemberEmails = await ctx.db
+    .select({ email: user.email })
+    .from(workspaceMember)
+    .innerJoin(user, eq(workspaceMember.userId, user.id))
+    .where(
+      and(
+        eq(workspaceMember.workspaceId, workspaceId),
+        eq(workspaceMember.isActive, true)
+      )
+    )
+
+  const memberEmails = new Set(
+    existingMemberEmails
+      .map((m: { email: string | null }) => m.email?.toLowerCase())
+      .filter(Boolean) as string[]
+  )
+
+  // Also include owner email (owner might not be in workspaceMember table)
+  const [owner] = await ctx.db
+    .select({ email: user.email })
+    .from(user)
+    .where(eq(user.id, ownerId))
+    .limit(1)
+  if (owner?.email) {
+    memberEmails.add(owner.email.toLowerCase())
+  }
+
+  return memberEmails
+}
 
 export function createTeamRouter() {
   return j.router({
@@ -84,23 +119,7 @@ export function createTeamRouter() {
         }
 
         const now = new Date()
-        // Get emails of existing active members
-        const existingMemberEmails = await ctx.db
-          .select({ email: user.email })
-          .from(workspaceMember)
-          .innerJoin(user, eq(workspaceMember.userId, user.id))
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.isActive, true)))
-        const memberEmails = new Set(existingMemberEmails.map((m: { email: string | null }) => m.email?.toLowerCase()).filter(Boolean) as string[])
-        
-        // Also include owner email (owner might not be in workspaceMember table)
-        const [owner] = await ctx.db
-          .select({ email: user.email })
-          .from(user)
-          .where(eq(user.id, ws.ownerId))
-          .limit(1)
-        if (owner?.email) {
-          memberEmails.add(owner.email.toLowerCase())
-        }
+        const memberEmails = await getWorkspaceMemberEmails(ctx, ws.id, ws.ownerId)
 
         const invites = await ctx.db
           .select({
@@ -228,23 +247,7 @@ export function createTeamRouter() {
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
         const now = new Date()
-        // Get emails of existing active members
-        const existingMemberEmails = await ctx.db
-          .select({ email: user.email })
-          .from(workspaceMember)
-          .innerJoin(user, eq(workspaceMember.userId, user.id))
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.isActive, true)))
-        const memberEmails = new Set(existingMemberEmails.map((m: { email: string | null }) => m.email?.toLowerCase()).filter(Boolean) as string[])
-        
-        // Also include owner email (owner might not be in workspaceMember table)
-        const [owner] = await ctx.db
-          .select({ email: user.email })
-          .from(user)
-          .where(eq(user.id, ws.ownerId))
-          .limit(1)
-        if (owner?.email) {
-          memberEmails.add(owner.email.toLowerCase())
-        }
+        const memberEmails = await getWorkspaceMemberEmails(ctx, ws.id, ws.ownerId)
 
         const invites = await ctx.db
           .select({
