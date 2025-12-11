@@ -230,6 +230,10 @@ export async function getWorkspacePosts(
     search?: string;
     limit?: number;
     offset?: number;
+    // When true, only include posts from public boards.
+    // Used for public-facing subdomain pages so that
+    // posts in private boards are fully hidden.
+    publicOnly?: boolean;
   }
 ) {
   const ws = await getWorkspaceBySlug(slug);
@@ -250,6 +254,7 @@ export async function getWorkspacePosts(
   const search = (opts?.search || "").trim();
   const lim = Math.min(Math.max(Number(opts?.limit ?? 50), 1), 5000);
   const off = Math.max(Number(opts?.offset ?? 0), 0);
+   const publicOnly = Boolean(opts?.publicOnly);
 
   let tagPostIds: string[] | null = null;
   if (tagSlugs.length > 0) {
@@ -263,6 +268,7 @@ export async function getWorkspacePosts(
         and(
           eq(board.workspaceId, ws.id),
           eq(board.isSystem, false),
+          ...(publicOnly ? [eq(board.isPublic, true)] : []),
           inArray(tag.slug, tagSlugs)
         )
       );
@@ -276,6 +282,7 @@ export async function getWorkspacePosts(
     eq(board.workspaceId, ws.id),
     eq(board.isSystem, false),
   ];
+  if (publicOnly) filters.push(eq(board.isPublic, true));
   if (matchStatuses.length > 0)
     filters.push(inArray(post.roadmapStatus, matchStatuses));
   if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
@@ -341,6 +348,10 @@ export async function getWorkspacePostsCount(
     boardSlugs?: string[];
     tagSlugs?: string[];
     search?: string;
+    // When true, only count posts from public boards.
+    // Used for public-facing subdomain pages so that
+    // counts match the visible (public) posts.
+    publicOnly?: boolean;
   }
 ) {
   const ws = await getWorkspaceBySlug(slug);
@@ -357,6 +368,7 @@ export async function getWorkspacePostsCount(
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
   const search = (opts?.search || "").trim();
+  const publicOnly = Boolean(opts?.publicOnly);
 
   let tagPostIds: string[] | null = null;
   if (tagSlugs.length > 0) {
@@ -370,6 +382,7 @@ export async function getWorkspacePostsCount(
         and(
           eq(board.workspaceId, ws.id),
           eq(board.isSystem, false),
+          ...(publicOnly ? [eq(board.isPublic, true)] : []),
           inArray(tag.slug, tagSlugs)
         )
       );
@@ -383,6 +396,7 @@ export async function getWorkspacePostsCount(
     eq(board.workspaceId, ws.id),
     eq(board.isSystem, false),
   ];
+  if (publicOnly) filters.push(eq(board.isPublic, true));
   if (matchStatuses.length > 0)
     filters.push(inArray(post.roadmapStatus, matchStatuses));
   if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
@@ -449,7 +463,16 @@ export async function getWorkspaceBoards(
     })
     .from(board)
     .leftJoin(post, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        // Only include public boards in the public workspace feed.
+        // Private boards should never appear on the public sidebar,
+        // even briefly on initial page load.
+        eq(board.isPublic, true)
+      )
+    )
     .orderBy(asc(board.name))
     .groupBy(board.id);
   return (rows as any[]).map((r) => ({
@@ -491,6 +514,7 @@ export async function getPlannedRoadmapPosts(
     limit,
     offset,
     order,
+    publicOnly: true,
   });
 }
 export async function getBoardByWorkspaceSlug(

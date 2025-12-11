@@ -42,6 +42,7 @@ export default async function BoardPage({
     limit: PAGE_SIZE,
     offset,
     boardSlugs: [boardSlug],
+    publicOnly: true,
   })
 
   const items = await Promise.all(
@@ -50,6 +51,7 @@ export default async function BoardPage({
 
   const totalCount = await getWorkspacePostsCount(subdomain, {
     boardSlugs: [boardSlug],
+    publicOnly: true,
   })
   const sidebarPosition = await getSidebarPositionBySlug(subdomain)
   const initialBoards = await getWorkspaceBoards(subdomain)

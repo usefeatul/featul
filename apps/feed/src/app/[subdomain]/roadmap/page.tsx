@@ -33,7 +33,7 @@ export default async function RoadmapPage({
   const order = sp.order === "oldest" ? "oldest" : "newest"
 
   const items = await getPlannedRoadmapPosts(slug, { limit: PAGE_SIZE, offset, order })
-  const totalCount = await getWorkspacePostsCount(slug, { statuses: ["planned"] })
+  const totalCount = await getWorkspacePostsCount(slug, { statuses: ["planned"], publicOnly: true })
   const sidebarPosition = await getSidebarPositionBySlug(slug)
   return (
     <DomainPageLayout subdomain={subdomain} slug={slug} sidebarPosition={sidebarPosition}>
