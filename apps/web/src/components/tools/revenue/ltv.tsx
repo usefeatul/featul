@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react"
 import BackLink from "@/components/tools/global/backlink"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@feedgot/ui/components/card"
-import { Label } from "@feedgot/ui/components/label"
-import { Input } from "@feedgot/ui/components/input"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@oreilla/ui/components/card"
+import { Label } from "@oreilla/ui/components/label"
+import { Input } from "@oreilla/ui/components/input"
 
 export default function LtvTool() {
   const [arpu, setArpu] = useState<string>("20.7")

@@ -1,8 +1,8 @@
 import { Container } from "../global/container";
-import { ChartIcon } from "@feedgot/ui/icons/chart";
-import { LoveIcon } from "@feedgot/ui/icons/love";
-import { SetupIcon } from "@feedgot/ui/icons/setup";
-import { AccentBar } from "@feedgot/ui/components/cardElements";
+import { ChartIcon } from "@oreilla/ui/icons/chart";
+import { LoveIcon } from "@oreilla/ui/icons/love";
+import { SetupIcon } from "@oreilla/ui/icons/setup";
+import { AccentBar } from "@oreilla/ui/components/cardElements";
 
 export default function Listening() {
   return (
@@ -16,7 +16,7 @@ export default function Listening() {
           <div className="mt-10 flex items-stretch gap-3">
             <AccentBar width={8} />
             <p className="text-accent text-md leading-6 text-balance sm:max-w-4xl">
-              Feedgot gives every request a single homecaptured, organized, and
+              oreilla gives every request a single homecaptured, organized, and
               ready to ship. No more buried DMs, scattered emails, or forgotten
               ideas.
             </p>

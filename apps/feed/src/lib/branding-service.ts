@@ -1,4 +1,4 @@
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import type { BrandingConfig, BrandingResponse } from "../types/branding"
 
 export async function loadBrandingBySlug(slug: string): Promise<BrandingConfig | null> {

@@ -3,16 +3,17 @@ import React from 'react'
 interface BoardIconProps {
   className?: string
   size?: number
+  opacity?: number
 }
 
-export const BoardIcon: React.FC<BoardIconProps> = ({ className = '', size = 18 }) => {
+export const BoardIcon: React.FC<BoardIconProps> = ({ className = '', size = 18, opacity = 0.6 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       viewBox="0 0 18 18"
-      opacity={0.6}
+      opacity={opacity}
       className={className}
     >
       <title>window-pointer</title>

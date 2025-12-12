@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
-import { ArrowUpDownIcon } from "@feedgot/ui/icons/arrow-up-down"
-import { cn } from "@feedgot/ui/lib/utils"
+import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
+import { ArrowUpDownIcon } from "@oreilla/ui/icons/arrow-up-down"
+import { cn } from "@oreilla/ui/lib/utils"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { buildRequestsUrl } from "@/utils/request-filters"
 

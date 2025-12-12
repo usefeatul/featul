@@ -2,7 +2,7 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Feedgot",
+    name: "oreilla",
     url: siteUrl,
     applicationCategory: "Project planning and delivery",
     operatingSystem: "Web",

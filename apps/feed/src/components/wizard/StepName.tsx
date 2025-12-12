@@ -1,6 +1,6 @@
 "use client"
 
-import { Input } from "@feedgot/ui/components/input"
+import { Input } from "@oreilla/ui/components/input"
 
 export default function StepName({ name, onChange, isValid }: { name: string; onChange: (v: string) => void; isValid: boolean }) {
   return (

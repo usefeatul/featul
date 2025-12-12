@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { authClient } from "@feedgot/auth/client";
-import { Button } from "@feedgot/ui/components/button";
-import { Input } from "@feedgot/ui/components/input";
-import { Label } from "@feedgot/ui/components/label";
-import { GoogleIcon } from "@feedgot/ui/icons/google";
-import GitHubIcon from "@feedgot/ui/icons/github";
+import { authClient } from "@oreilla/auth/client";
+import { Button } from "@oreilla/ui/components/button";
+import { Input } from "@oreilla/ui/components/input";
+import { Label } from "@oreilla/ui/components/label";
+import { GoogleIcon } from "@oreilla/ui/icons/google";
+import GitHubIcon from "@oreilla/ui/icons/github";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
   strongPasswordPattern,
   getPasswordError,
-} from "@feedgot/auth/password";
+} from "@oreilla/auth/password";
 import { LoadingButton } from "@/components/global/loading-button";
 
 export default function SignUp() {
@@ -98,7 +98,7 @@ export default function SignUp() {
         <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-6 sm:p-8 pb-5 sm:pb-6">
           <div className="text-left">
             <h1 className="mb-2 mt-4 text-xl sm:text-2xl font-semibold text-left">
-              Sign up to Feedgot
+              Sign up to oreilla
             </h1>
             <p className="text-xs sm:text-sm text-accent mb-2 text-left">
               Sign up with social or email

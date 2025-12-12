@@ -2,11 +2,11 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { cn } from "@feedgot/ui/lib/utils";
-import { client } from "@feedgot/api/client";
+import { cn } from "@oreilla/ui/lib/utils";
+import { client } from "@oreilla/api/client";
 import { getSlugFromPath } from "../../config/nav";
 import { formatTime12h } from "@/lib/time";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@feedgot/ui/components/tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@oreilla/ui/components/tooltip";
 
 type Props = {
   className?: string;

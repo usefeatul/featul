@@ -1,6 +1,6 @@
 import { useTransition } from "react"
 import { toast } from "sonner"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { UploadedImage } from "./useImageUpload"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 

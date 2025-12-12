@@ -1,6 +1,6 @@
 'use client'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@feedgot/ui/components/accordion'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@oreilla/ui/components/accordion'
 import { Container } from '../global/container'
 import { faqItems } from '@/data/faqs'
 import { ChevronDownIcon } from 'lucide-react'
@@ -17,7 +17,7 @@ export default function FAQsFour() {
 
                 <div className="mt-4 max-w-xl">
                     <p className="text-accent text-sm">
-                        Get the essentials of feedback management and see how Feedgot helps you ship better products.
+                        Get the essentials of feedback management and see how oreilla helps you ship better products.
                     </p>
                     <Accordion
                         type="single"

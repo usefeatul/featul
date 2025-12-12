@@ -1,6 +1,6 @@
 "use client";
 
-import { client } from "@feedgot/api/client";
+import { client } from "@oreilla/api/client";
 import type { DomainInfo } from "../types/domain";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -104,7 +104,7 @@ export function useDomainActions({ slug, info, canUse, canEditDomain, onCreated 
             id: String(prev?.info?.id || ""),
             host: String(result.host || prev?.info?.host || ""),
             cnameName: String(result.records?.cname?.name || prev?.info?.cnameName || ""),
-            cnameTarget: String(result.records?.cname?.value || prev?.info?.cnameTarget || "origin.feedgot.com"),
+            cnameTarget: String(result.records?.cname?.value || prev?.info?.cnameTarget || "origin.oreilla.com"),
             txtName: String(result.records?.txt?.name || prev?.info?.txtName || ""),
             txtValue: String(result.records?.txt?.value || prev?.info?.txtValue || ""),
             status: "pending" as const,

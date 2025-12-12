@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import SignIn from "@/components/auth/SignIn"
 import { createPageMetadata } from "@/lib/seo"
-import { getServerSession } from "@feedgot/auth/session"
+import { getServerSession } from "@oreilla/auth/session"
 import { redirect } from "next/navigation"
 import { findFirstAccessibleWorkspaceSlug } from "@/lib/workspace"
 
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = createPageMetadata({
   title: "Sign In",
-  description: "Access your Feedgot account.",
+  description: "Access your oreilla account.",
   path: "/auth/sign-in",
   indexable: false,
 })

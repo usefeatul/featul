@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { token } = await params
   return createPageMetadata({
     title: "Invite",
-    description: "Join your Feedgot workspace.",
+    description: "Join your oreilla workspace.",
     path: `/invite/${token}`,
     indexable: false,
   })

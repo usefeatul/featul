@@ -22,10 +22,9 @@ export function VerifyEmail({ otp, type, brand }: { otp: string; type: VerifyTyp
   ]
   const outro = "This code will expire in five minutes."
   const ctaText = type === "forget-password" ? "Reset Password" : "Open Dashboard"
-  const ctaUrl = type === "forget-password" ? "https://feedgot.com/reset" : "https://feedgot.com/dashboard"
+  const ctaUrl = type === "forget-password" ? "https://oreilla.com/reset" : "https://oreilla.com/dashboard"
   const psText = "If you require assistance, please reply to this message and our support team will respond promptly."
-  const signatureName = "Feedgot Support"
-  const addressLines = ["267 Kentlands Boulevard PMB #5123", "Gaithersburg, MD 20878, United States"]
+  const signatureName = "oreilla Support"
   return (
     <BrandedEmail
       eyebrow={eyebrow}
@@ -39,7 +38,6 @@ export function VerifyEmail({ otp, type, brand }: { otp: string; type: VerifyTyp
       ctaUrl={ctaUrl}
       psText={psText}
       signatureName={signatureName}
-      addressLines={addressLines}
       brand={brand}
     />
   )

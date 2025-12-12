@@ -3,7 +3,7 @@
 import React from "react"
 import { useRouter } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { useWorkspaceLogo } from "@/lib/branding-store"
 
 export type Ws = {

@@ -1,15 +1,17 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogTitle } from "@feedgot/ui/components/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@oreilla/ui/components/dialog"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { PostHeader } from "./PostHeader"
 import { PostContent } from "./PostContent"
 import { PostFooter } from "./PostFooter"
 import { usePostSubmission } from "@/hooks/usePostSubmission"
 import { usePostImageUpload } from "@/hooks/usePostImageUpload"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { useRouter } from "next/navigation"
+import { useDebounce } from "@/hooks/useDebounce"
+import { SimilarPosts } from "./SimilarPosts"
 
 export function CreatePostModal({
   open,
@@ -97,6 +99,39 @@ export function CreatePostModal({
     submitPost(selectedBoard, user, uploadedImage?.url, status, tagIds)
   }
 
+  const [similarPosts, setSimilarPosts] = useState<any[]>([])
+  const [isSearchingSimilar, setIsSearchingSimilar] = useState(false)
+  
+  const debouncedTitle = useDebounce(title, 1000)
+
+  useEffect(() => {
+    async function fetchSimilar() {
+      if (debouncedTitle.length < 3 || !selectedBoard) {
+        setSimilarPosts([])
+        return
+      }
+      
+      setIsSearchingSimilar(true)
+      try {
+        const res = await client.post.getSimilar.$get({
+          title: debouncedTitle,
+          boardSlug: selectedBoard.slug,
+          workspaceSlug,
+        })
+        if (res.ok) {
+           const data = await res.json()
+           setSimilarPosts(data.posts)
+        }
+      } catch (e) {
+        console.error("Failed to fetch similar posts", e)
+      } finally {
+        setIsSearchingSimilar(false)
+      }
+    }
+
+    fetchSimilar()
+  }, [debouncedTitle, selectedBoard])
+
   const toggleTag = (tagId: string) => {
     setSelectedTags(prev => 
       prev.includes(tagId) 
@@ -134,7 +169,7 @@ export function CreatePostModal({
             uploadingImage={uploadingImage}
             handleRemoveImage={handleRemoveImage}
           />
-          
+
           <PostFooter 
             isPending={isPending} 
             disabled={!title || !content || !selectedBoard || isPending || uploadingImage} 
@@ -144,6 +179,8 @@ export function CreatePostModal({
             handleFileSelect={handleFileSelect}
             ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
           />
+
+          <SimilarPosts posts={similarPosts} isLoading={isSearchingSimilar} />
         </form>
       </DialogContent>
     </Dialog>

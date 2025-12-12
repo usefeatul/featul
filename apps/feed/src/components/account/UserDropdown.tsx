@@ -2,17 +2,17 @@
 
 import React from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { cn } from "@feedgot/ui/lib/utils"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@feedgot/ui/components/dropdown-menu"
-import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avatar"
-import { authClient } from "@feedgot/auth/client"
+import { cn } from "@oreilla/ui/lib/utils"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@oreilla/ui/components/dropdown-menu"
+import { Avatar, AvatarImage, AvatarFallback } from "@oreilla/ui/components/avatar"
+import { authClient } from "@oreilla/auth/client"
 import { toast } from "sonner"
 import { getInitials, getDisplayUser } from "@/utils/user-utils"
 import { getSlugFromPath } from "@/config/nav"
-import { client } from "@feedgot/api/client"
-import { LogoutIcon } from "@feedgot/ui/icons/logout"
-import { SettingIcon } from "@feedgot/ui/icons/setting"
-import { AccountIcon } from "@feedgot/ui/icons/account"
+import { client } from "@oreilla/api/client"
+import { LogoutIcon } from "@oreilla/ui/icons/logout"
+import { SettingIcon } from "@oreilla/ui/icons/setting"
+import { AccountIcon } from "@oreilla/ui/icons/account"
 
 export default function UserDropdown({ className = "", initialUser }: { className?: string; initialUser?: { name?: string; email?: string; image?: string | null } }) {
   const router = useRouter()

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { useCallback, useEffect } from "react";
-import { Button } from "@feedgot/ui/components/button";
+import { Button } from "@oreilla/ui/components/button";
 
 type HotkeyLinkProps = {
   hotkey?: string;
@@ -55,7 +55,7 @@ export function HotkeyLink({
   }, [hotkey, DASHBOARD_URL]);
 
   return (
-    <Button asChild variant="default" size="lg" className={className}>
+    <Button asChild variant="quiet" size="sm" className={className}>
       <Link
         href={DASHBOARD_URL ?? "#"}
         onKeyDown={handleKeyDown}
@@ -73,7 +73,7 @@ export function HotkeyLink({
         </span>
         <kbd
           aria-hidden
-          className=" rounded-md font-light bg-white/20 px-2 py-0.5 text-xs leading-4"
+          className=" rounded-sm font-light bg-white/20 px-1.5 py-0.5 text-xs leading-4"
         >
           {hotkey.toUpperCase()}
         </kbd>

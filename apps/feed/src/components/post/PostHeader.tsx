@@ -5,10 +5,10 @@ import {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from "@feedgot/ui/components/avatar";
-import { Button } from "@feedgot/ui/components/button";
-import { XMarkIcon } from "@feedgot/ui/icons/xmark";
-import { ChevronRightIcon } from "@feedgot/ui/icons/chevron-right";
+} from "@oreilla/ui/components/avatar";
+import { Button } from "@oreilla/ui/components/button";
+import { XMarkIcon } from "@oreilla/ui/icons/xmark";
+import { ChevronRightIcon } from "@oreilla/ui/icons/chevron-right";
 import { BoardSelector } from "./BoardSelector";
 import { StatusSelector } from "./StatusSelector";
 import { TagSelector } from "./TagSelector";

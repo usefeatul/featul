@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
-import { db, workspace } from "@feedgot/db"
+import { db, workspace } from "@oreilla/db"
 import { eq } from "drizzle-orm"
 
 async function findWorkspaceSlugForFeedbackHost(hostNoPort: string) {

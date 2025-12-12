@@ -2,8 +2,8 @@
 
 import React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { XMarkIcon } from "@feedgot/ui/icons/xmark"
-import { cn } from "@feedgot/ui/lib/utils"
+import { XMarkIcon } from "@oreilla/ui/icons/xmark"
+import { cn } from "@oreilla/ui/lib/utils"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import { parseArrayParam } from "@/utils/request-filters"
 

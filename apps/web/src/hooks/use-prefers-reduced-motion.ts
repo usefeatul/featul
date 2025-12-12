@@ -4,20 +4,18 @@ export function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = () => setReduced(media.matches);
-    onChange();
+    const init = () => setReduced(media.matches);
+    init();
+    const listener = (e: MediaQueryListEvent) => setReduced(e.matches);
     if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", onChange);
-      return () => media.removeEventListener("change", onChange);
+      media.addEventListener("change", listener);
+      return () => media.removeEventListener("change", listener);
     }
-    if ("onchange" in media) {
-      const prev: any = (media as any).onchange;
-      (media as any).onchange = onChange as any;
-      return () => {
-        (media as any).onchange = prev ?? null;
-      };
+    if (typeof media.addListener === "function") {
+      media.addListener(listener);
+      return () => media.removeListener(listener);
     }
-    return () => {};
+    return undefined;
   }, []);
   return reduced;
 }

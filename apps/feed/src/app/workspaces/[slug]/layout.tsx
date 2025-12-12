@@ -4,7 +4,7 @@ import Sidebar from "@/components/sidebar/Sidebar"
 import MobileSidebar from "@/components/sidebar/MobileSidebar"
 import { getBrandingColorsBySlug, getWorkspaceStatusCounts, getWorkspaceTimezoneBySlug, getWorkspaceBySlug, listUserWorkspaces, getWorkspaceDomainInfoBySlug } from "@/lib/workspace"
 import WorkspaceHeader from "@/components/global/WorkspaceHeader"
-import { getServerSession } from "@feedgot/auth/session"
+import { getServerSession } from "@oreilla/auth/session"
 import { redirect } from "next/navigation"
 import UnauthorizedWorkspace from "@/components/global/Unauthorized"
 

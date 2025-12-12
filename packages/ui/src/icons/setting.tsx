@@ -3,9 +3,10 @@ import React from 'react'
 interface SettingIconProps {
   className?: string
   size?: number
+  opacity?: number
 }
 
-export const SettingIcon: React.FC<SettingIconProps> = ({ className = '', size = 18 }) => {
+export const SettingIcon: React.FC<SettingIconProps> = ({ className = '', size = 18, opacity = 0.4 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -13,7 +14,7 @@ export const SettingIcon: React.FC<SettingIconProps> = ({ className = '', size =
       height={size}
       viewBox="0 0 18 18"
       className={className}
-       opacity={0.4}
+      opacity={opacity}
     >
       <title>gear-2</title>
       <g fill="currentColor" stroke="currentColor">

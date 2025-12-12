@@ -2,8 +2,8 @@
 
 import React from "react"
 import { useDroppable } from "@dnd-kit/core"
-import { MoveVerticalIcon } from "@feedgot/ui/icons/vertical"
-import { MoveHorizontalIcon } from "@feedgot/ui/icons/horizontal"
+import { MoveVerticalIcon } from "@oreilla/ui/icons/vertical"
+import { MoveHorizontalIcon } from "@oreilla/ui/icons/horizontal"
 import StatusIcon from "@/components/requests/StatusIcon"
 import { motion, AnimatePresence } from "framer-motion"
 

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { Button } from "@feedgot/ui/components/button";
-import { cn } from "@feedgot/ui/lib/utils";
+import { Button } from "@oreilla/ui/components/button";
+import { cn } from "@oreilla/ui/lib/utils";
 
 type PromoCardProps = {
   className?: string;
@@ -14,10 +14,10 @@ type PromoCardProps = {
 
 export function PromoCard({
   className,
-  title = "Feedgot, Simplified",
+  title = "oreilla, Simplified",
   description = "Stop guessing. Get actionable feedback understand what users need, iterate faster, and ship with confidence.",
-  ctaHref = "/signup",
-  ctaLabel = "Sign up for Feedgot",
+  ctaHref = "https://app.oreilla.com",
+  ctaLabel = "Sign up for oreilla",
   subtext = "free to start, no cc required",
 }: PromoCardProps) {
   return (

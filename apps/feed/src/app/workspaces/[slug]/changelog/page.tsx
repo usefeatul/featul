@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { createPageMetadata } from "@/lib/seo"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 
 export const revalidate = 30
 

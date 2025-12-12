@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Badge } from "@feedgot/ui/components/badge";
+import { Badge } from "@oreilla/ui/components/badge";
 
 type Status = "Low" | "Moderate" | "Strong";
 

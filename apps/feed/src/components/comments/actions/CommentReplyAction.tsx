@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface CommentReplyButtonProps {

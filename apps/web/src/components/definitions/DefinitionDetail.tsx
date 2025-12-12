@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { Container } from "@/components/global/container";
 import type { Definition } from "@/types/definitions";
 import { getDefinitionContent } from "@/types/definitions";
-import { useIsMobile } from "@feedgot/ui/hooks/use-mobile";
+import { useIsMobile } from "@oreilla/ui/hooks/use-mobile";
 
 export default function DefinitionDetail({ def }: { def: Definition }) {
   const overview = def.overview ?? `${def.practical} ${def.expert}`;

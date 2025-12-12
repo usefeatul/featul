@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation"
-import { db, workspace, board, post } from "@feedgot/db"
+import { db, workspace, board, post, user, workspaceMember, postTag, tag } from "@oreilla/db"
 import { eq, and, sql } from "drizzle-orm"
 import RequestDetail from "@/components/requests/RequestDetail"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { readHasVotedForPost } from "@/lib/vote.server"
 import { getPostNavigation, normalizeStatus } from "@/lib/workspace"
 import { readInitialCollapsedCommentIds } from "@/lib/comments.server"
 import { parseArrayParam } from "@/utils/request-filters"
+import { createHash } from "crypto"
+import { randomAvatarUrl } from "@/utils/avatar"
 
 export const revalidate = 0
 
@@ -15,7 +17,7 @@ type Props = { params: Promise<{ slug: string; post: string }>; searchParams?: P
 export default async function RequestDetailPage({ params, searchParams }: Props) {
   const { slug, post: postSlug } = await params
   const [ws] = await db
-    .select({ id: workspace.id, name: workspace.name })
+    .select({ id: workspace.id, name: workspace.name, ownerId: workspace.ownerId })
     .from(workspace)
     .where(eq(workspace.slug, slug))
     .limit(1)
@@ -24,6 +26,7 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
   const [p] = await db
     .select({
       id: post.id,
+      authorId: post.authorId,
       title: post.title,
       content: post.content,
       image: post.image,
@@ -37,12 +40,61 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
       createdAt: post.createdAt,
       boardName: board.name,
       boardSlug: board.slug,
+      metadata: post.metadata,
+      author: {
+        name: user.name,
+        image: user.image,
+        email: user.email,
+      },
     })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`, eq(post.slug, postSlug)))
+    .leftJoin(user, eq(post.authorId, user.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
+        eq(post.slug, postSlug)
+      )
+    )
     .limit(1)
   if (!p) return notFound()
+
+  if ((!p.author || !p.author.name) && (p.metadata as any)?.fingerprint) {
+    const avatarSeed = createHash("sha256").update((p.metadata as any).fingerprint).digest("hex")
+    if (!p.author) {
+      // @ts-ignore
+      p.author = { name: "Guest", image: null, email: null }
+    }
+    // @ts-ignore
+    p.author!.image = randomAvatarUrl(avatarSeed)
+    // @ts-ignore
+    p.author!.name = "Guest"
+  }
+
+  // Map author's workspace role / ownership for RoleBadge
+  let role: "admin" | "member" | "viewer" | null = null
+  let isOwner = false
+  if (p.authorId) {
+    isOwner = p.authorId === ws.ownerId
+    if (isOwner) {
+      role = "admin"
+    } else {
+      const [member] = await db
+        .select({ role: workspaceMember.role })
+        .from(workspaceMember)
+        .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, p.authorId)))
+        .limit(1)
+      role = (member?.role as "admin" | "member" | "viewer") || null
+    }
+  }
+
+  // Load tags for this post
+  const tags = await db
+    .select({ id: tag.id, name: tag.name, slug: tag.slug, color: tag.color })
+    .from(postTag)
+    .innerJoin(tag, eq(postTag.tagId, tag.id))
+    .where(eq(postTag.postId, p.id))
 
   const hasVoted = await readHasVotedForPost(p.id)
   const commentsRes = await client.comment.list.$get({ postId: p.id })
@@ -73,7 +125,7 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
 
   return (
     <RequestDetail
-      post={{ ...p, hasVoted } as any}
+      post={{ ...p, role, isOwner, tags, hasVoted } as any}
       workspaceSlug={slug}
       initialComments={initialComments as any}
       initialCollapsedIds={initialCollapsedIds}

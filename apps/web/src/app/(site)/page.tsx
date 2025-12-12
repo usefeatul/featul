@@ -12,7 +12,7 @@ import { ConversionHero } from "@/components/home/conversion-hero";
 import Benefits from "@/components/home/benefits";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Privacy‑first product feedback, roadmaps, and changelogs - Feedgot",
+  title: "Privacy‑first product feedback, roadmaps, and changelogs - oreilla",
   description: DEFAULT_DESCRIPTION,
   path: "/",
   absoluteTitle: true,

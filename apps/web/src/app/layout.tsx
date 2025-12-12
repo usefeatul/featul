@@ -1,13 +1,27 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { ReactScan } from "@feedgot/ui/global/react-scan";
-import { DebugTools } from "@feedgot/ui/global/debug-tools";
+import { Manrope, Sora } from "next/font/google";
+import { DebugTools } from "@oreilla/ui/global/debug-tools";
 import "./globals.css";
 import { SITE_URL, DEFAULT_TITLE, TITLE_TEMPLATE, DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS } from "@/config/seo";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 import { buildSiteNavigationSchema, buildSoftwareApplicationSchema } from "@/lib/structured-data";
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-jakarta",
+});
+
+const sora = Sora({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--font-playfair",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -20,8 +34,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: SITE_URL,
-    siteName: "Feedgot",
-    title: "Feedgot",
+    siteName: "oreilla",
+    title: "oreilla",
     description:
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
     images: [
@@ -29,13 +43,13 @@ export const metadata: Metadata = {
         url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "Feedgot",
+        alt: "oreilla",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Feedgot",
+    title: "oreilla",
     description:
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
     images: ["/logo.png"],
@@ -73,11 +87,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
         <Script
           src="https://cdn.seline.com/seline.js"
           data-token={process.env.NEXT_PUBLIC_SELINE_TOKEN}

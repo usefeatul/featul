@@ -116,7 +116,7 @@ export function buildBlogPostingSchema({ siteUrl, slug, post }: BuildBlogPosting
     author: authors.length ? authors : undefined,
     publisher: {
       "@type": "Organization",
-      name: "Feedgot",
+      name: "oreilla",
       logo: {
         "@type": "ImageObject",
         url: `${siteUrl}/logo.png`,
@@ -174,7 +174,7 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Feedgot",
+    name: "oreilla",
     url: siteUrl,
     applicationCategory: "Product feedback, public roadmap, changelog",
     operatingSystem: "Web",

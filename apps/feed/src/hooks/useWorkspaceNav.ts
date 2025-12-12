@@ -1,6 +1,6 @@
 import React from "react"
 import { useQuery } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { buildTopNav, buildMiddleNav } from "@/config/nav"
 
 export function useWorkspaceNav(

@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { db, workspace, board, post, user, workspaceMember } from "@feedgot/db";
+import { db, workspace, board, post, user, workspaceMember } from "@oreilla/db";
 import { eq, and, sql } from "drizzle-orm";
 import SubdomainRequestDetail from "@/components/subdomain/SubdomainRequestDetail";
-import { client } from "@feedgot/api/client";
+import { client } from "@oreilla/api/client";
 import { readHasVotedForPost } from "@/lib/vote.server";
 import { readInitialCollapsedCommentIds } from "@/lib/comments.server";
 import { createPostMetadata } from "@/lib/seo";

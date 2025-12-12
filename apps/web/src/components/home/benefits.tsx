@@ -1,13 +1,13 @@
 import { Container } from "../global/container";
-import { UsersIcon } from "@feedgot/ui/icons/users";
-import { FreeIcon } from "@feedgot/ui/icons/free";
-import { SetupIcon } from "@feedgot/ui/icons/setup";
-import { FeatherIcon } from "@feedgot/ui/icons/feather";
-import { ShieldIcon } from "@feedgot/ui/icons/shield";
-import { SettingIcon } from "@feedgot/ui/icons/setting";
-import { BoardIcon } from "@feedgot/ui/icons/board";
-import { RoadmapIcon } from "@feedgot/ui/icons/roadmap";
-import { ChangelogIcon } from "@feedgot/ui/icons/changelog";
+import { UsersIcon } from "@oreilla/ui/icons/users";
+import { FreeIcon } from "@oreilla/ui/icons/free";
+import { SetupIcon } from "@oreilla/ui/icons/setup";
+import { FeatherIcon } from "@oreilla/ui/icons/feather";
+import { ShieldIcon } from "@oreilla/ui/icons/shield";
+import { SettingIcon } from "@oreilla/ui/icons/setting";
+import { BoardIcon } from "@oreilla/ui/icons/board";
+import { RoadmapIcon } from "@oreilla/ui/icons/roadmap";
+import { ChangelogIcon } from "@oreilla/ui/icons/changelog";
 
 export default function Benefits() {
   return (
@@ -49,7 +49,7 @@ export default function Benefits() {
                 <div className="text-accent mt-2 text-sm sm:text-sm  leading-7">
                   <p>
                     Start free, stay free. Boards, roadmap, changelog no limits.
-                    No trials, no paywalls. Upgrade when you're ready, not
+                    No trials, no paywalls. Upgrade when you’re ready, not
                     before.
                   </p>
                 </div>
@@ -110,7 +110,7 @@ export default function Benefits() {
               <div className="flex h-full flex-col">
                 <div className="flex items-start gap-3">
                   <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1.5">
-                    <SettingIcon aria-hidden className="size-4" />
+                    <SettingIcon aria-hidden className="size-4" opacity={1} />
                   </span>
                   <h3 className="text-foreground text-base sm:text-lg font-medium">
                     Privacy‑first
@@ -119,7 +119,7 @@ export default function Benefits() {
                 <div className="text-accent mt-2 text-sm sm:text-sm  leading-7">
                   <p>
                     Zero trackers, zero cookies. We collect only what matters.
-                    Your data is yours forever we don't sell, share, or snoop.
+                    Your data is yours forever we don’t sell, share, or snoop.
                   </p>
                 </div>
               </div>
@@ -127,7 +127,7 @@ export default function Benefits() {
               <div className="flex h-full flex-col">
                 <div className="flex items-start gap-3">
                   <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1.5">
-                    <BoardIcon aria-hidden className="size-4" />
+                    <BoardIcon aria-hidden className="size-4" opacity={1} />
                   </span>
                   <h3 className="text-foreground text-base sm:text-lg font-medium">
                     Feedback boards
@@ -144,7 +144,7 @@ export default function Benefits() {
               <div className="flex h-full flex-col">
                 <div className="flex items-start gap-3">
                   <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1.5">
-                    <RoadmapIcon aria-hidden className="size-4" />
+                    <RoadmapIcon aria-hidden className="size-4" opacity={1} />
                   </span>
                   <h3 className="text-foreground text-base sm:text-lg font-medium">
                     Public roadmap
@@ -161,7 +161,7 @@ export default function Benefits() {
               <div className="flex h-full flex-col">
                 <div className="flex items-start gap-3">
                   <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1.5">
-                    <ChangelogIcon aria-hidden className="size-4" />
+                    <ChangelogIcon aria-hidden className="size-4" opacity={1} />
                   </span>
                   <h3 className="text-foreground text-base sm:text-lg font-medium">
                     Changelogs

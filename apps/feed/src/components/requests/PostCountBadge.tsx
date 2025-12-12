@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react"
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { parseArrayParam } from "@/utils/request-filters"
 import { getSlugFromPath } from "@/config/nav"
 

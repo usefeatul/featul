@@ -1,8 +1,8 @@
 import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
 import { StatusIcon } from "./status-icon";
-import { SquareIcon } from "@feedgot/ui/icons/square";
-// import { AccentBar } from "@feedgot/ui/components/cardElements";
+import { SquareIcon } from "@oreilla/ui/icons/square";
+// import { AccentBar } from "@oreilla/ui/components/cardElements";
 
 
 export default function Compare({ alt }: { alt: Alternative }) {
@@ -16,7 +16,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
           </h2>
           <p className="text-accent mt-3">
             Quick comparison of essential capabilities across {alt.name} and
-            Feedgot.
+            oreilla.
           </p>
 
           <div className="mt-12 sm:mt-14">
@@ -28,7 +28,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
                 {alt.name}
               </div>
               <div className="px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-lg font-semibold text-foreground text-right">
-                Feedgot
+                oreilla
               </div>
             </div>
 
@@ -57,11 +57,11 @@ export default function Compare({ alt }: { alt: Alternative }) {
                       {alt.name}: {String(f.competitor)}
                     </span>
                   </div>
-                  {/* Feedgot column (mobile & desktop) */}
+                  {/* oreilla column (mobile & desktop) */}
                   <div className="px-0 sm:px-4 py-2 sm:py-3 min-w-[56px] flex items-center justify-center sm:justify-end gap-2 text-right">
-                    <StatusIcon value={f.feedgot} />
+                    <StatusIcon value={f.oreilla} />
                     <span className="sr-only">
-                      Feedgot: {String(f.feedgot)}
+                      oreilla: {String(f.oreilla)}
                     </span>
                   </div>
                 </li>

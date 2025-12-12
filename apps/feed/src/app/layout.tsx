@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Providers } from "../components/providers/providers";
 import "./styles/globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
-import { DebugTools } from "@feedgot/ui/global/debug-tools";
+import { DebugTools } from "@oreilla/ui/global/debug-tools";
 //
 import {
   SITE_URL,
@@ -26,14 +26,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: SITE_URL,
-    siteName: "Feedgot",
-    title: "Feedgot",
+    siteName: "oreilla",
+    title: "oreilla",
     description: DEFAULT_DESCRIPTION,
-    images: [{ url: "/logo.png", width: 1200, height: 630, alt: "Feedgot" }],
+    images: [{ url: "/logo.png", width: 1200, height: 630, alt: "oreilla" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Feedgot",
+    title: "oreilla",
     description: DEFAULT_DESCRIPTION,
     images: ["/logo.png"],
   },

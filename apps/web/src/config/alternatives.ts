@@ -4,7 +4,7 @@ export interface ComparisonFeature {
   key: string
   label: string
   description?: string
-  feedgot: FeatureSupport
+  oreilla: FeatureSupport
   competitor: FeatureSupport
 }
 
@@ -23,16 +23,16 @@ export interface Alternative {
 
 // Base features we commonly compare across tools
 const baseFeatures: Omit<ComparisonFeature, 'competitor'>[] = [
-  { key: 'eu_hosting', label: 'EU Hosting', description: 'Default EU data hosting and residency options. Keeps user data regional by default for compliance and performance.', feedgot: true },
-  { key: 'gdpr', label: 'GDPR Compliance', description: 'Built-in consent and data controls aligned with GDPR. Reduce legal overhead with sensible defaults and auditability.', feedgot: true },
-  { key: 'feedback_boards', label: 'Feedback Boards', description: 'Collect and organize user feedback in dedicated boards. Prioritize themes and requests with tags and status.', feedgot: true },
-  { key: 'feature_voting', label: 'Feature Voting', description: 'Let users upvote ideas to surface priorities. Balance qualitative comments with quantitative signals.', feedgot: true },
-  { key: 'public_roadmap', label: 'Public Roadmap', description: 'Share progress publicly with transparent planning. Keep stakeholders aligned with statuses and timelines.', feedgot: true },
-  { key: 'changelog', label: 'Changelog', description: 'Publish releases and updates with clean release notes. Auto-link roadmap items to close the loop.', feedgot: true },
-  { key: 'embeddable_widget', label: 'Embeddable Widget', description: 'Embed feedback capture directly in your app. Gather context without forcing users to switch surfaces.', feedgot: true },
-  { key: 'api', label: 'API Access', description: 'Integrate via API to automate and customize workflows. Sync issues, tags, and statuses with your tools.', feedgot: true },
-  { key: 'sso', label: 'SSO', description: 'Single sign-on support for secure, centralized authentication. Works with common identity providers.', feedgot: 'partial' },
-  { key: 'slack', label: 'Slack Integration', description: 'Receive notifications and triage feedback in Slack. Respond quickly and keep the team in the loop.', feedgot: true },
+  { key: 'eu_hosting', label: 'EU Hosting', description: 'Default EU data hosting and residency options. Keeps user data regional by default for compliance and performance.', oreilla: true },
+  { key: 'gdpr', label: 'GDPR Compliance', description: 'Built-in consent and data controls aligned with GDPR. Reduce legal overhead with sensible defaults and auditability.', oreilla: true },
+  { key: 'feedback_boards', label: 'Feedback Boards', description: 'Collect and organize user feedback in dedicated boards. Prioritize themes and requests with tags and status.', oreilla: true },
+  { key: 'feature_voting', label: 'Feature Voting', description: 'Let users upvote ideas to surface priorities. Balance qualitative comments with quantitative signals.', oreilla: true },
+  { key: 'public_roadmap', label: 'Public Roadmap', description: 'Share progress publicly with transparent planning. Keep stakeholders aligned with statuses and timelines.', oreilla: true },
+  { key: 'changelog', label: 'Changelog', description: 'Publish releases and updates with clean release notes. Auto-link roadmap items to close the loop.', oreilla: true },
+  { key: 'embeddable_widget', label: 'Embeddable Widget', description: 'Embed feedback capture directly in your app. Gather context without forcing users to switch surfaces.', oreilla: true },
+  { key: 'api', label: 'API Access', description: 'Integrate via API to automate and customize workflows. Sync issues, tags, and statuses with your tools.', oreilla: true },
+  { key: 'sso', label: 'SSO', description: 'Single sign-on support for secure, centralized authentication. Works with common identity providers.', oreilla: 'partial' },
+  { key: 'slack', label: 'Slack Integration', description: 'Receive notifications and triage feedback in Slack. Respond quickly and keep the team in the loop.', oreilla: true },
 ]
 
 function withCompetitor(
@@ -50,7 +50,7 @@ export const alternatives: Alternative[] = [
     name: 'UserJot',
     website: 'https://userjot.com',
     summary:
-      'UserJot focuses on lightweight feedback collection. Feedgot offers end‑to‑end feedback, roadmap, and changelog in one.',
+      'UserJot focuses on lightweight feedback collection. oreilla offers end‑to‑end feedback, roadmap, and changelog in one.',
     tags: ['feedback', 'roadmap', 'voting'],
     image: '/image/image.jpeg',
     pros: ['Simple feedback capture', 'Clean UI'],
@@ -73,7 +73,7 @@ export const alternatives: Alternative[] = [
     name: 'Featurebase',
     website: 'https://featurebase.app',
     summary:
-      'Featurebase is a strong feedback tool. Feedgot emphasizes EU hosting and privacy with a unified suite.',
+      'Featurebase is a strong feedback tool. oreilla emphasizes EU hosting and privacy with a unified suite.',
     tags: ['feedback', 'voting'],
     image: '/image/image.jpeg',
     pros: ['Active community', 'Rich voting'],
@@ -96,7 +96,7 @@ export const alternatives: Alternative[] = [
     name: 'Nolt',
     website: 'https://nolt.io',
     summary:
-      'Nolt provides boards and voting. Feedgot adds changelog and privacy‑first EU hosting by default.',
+      'Nolt provides boards and voting. oreilla adds changelog and privacy‑first EU hosting by default.',
     tags: ['feedback', 'boards'],
     image: '/image/image.jpeg',
     pros: ['Popular boards', 'Good UX'],
@@ -119,7 +119,7 @@ export const alternatives: Alternative[] = [
     name: 'Canny',
     website: 'https://canny.io',
     summary:
-      'Canny is a robust feedback platform. Feedgot differentiates with EU hosting and streamlined privacy.',
+      'Canny is a robust feedback platform. oreilla differentiates with EU hosting and streamlined privacy.',
     tags: ['feedback', 'roadmap', 'voting'],
     image: '/image/image.jpeg',
     pros: ['Enterprise features'],
@@ -142,7 +142,7 @@ export const alternatives: Alternative[] = [
     name: 'Upvoty',
     website: 'https://upvoty.com',
     summary:
-      'Upvoty emphasizes boards and voting. Feedgot aims for an all‑in‑one privacy‑aware suite.',
+      'Upvoty emphasizes boards and voting. oreilla aims for an all‑in‑one privacy‑aware suite.',
     tags: ['feedback', 'voting'],
     image: '/image/image.jpeg',
     pros: ['Simple voting flows'],

@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { Switch } from "@feedgot/ui/components/switch"
+import { Switch } from "@oreilla/ui/components/switch"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 
 export default function RoadmapVisibility({ slug }: { slug: string }) {

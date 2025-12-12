@@ -2,13 +2,13 @@
 
 import React from "react";
 import type { Role } from "@/types/team";
-import { cn } from "@feedgot/ui/lib/utils";
+import { cn } from "@oreilla/ui/lib/utils";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "@feedgot/ui/components/tooltip";
-import { StarIcon } from "@feedgot/ui/icons/star";
+} from "@oreilla/ui/components/tooltip";
+import { StarIcon } from "@oreilla/ui/icons/star";
 
 
 interface RoleBadgeProps {

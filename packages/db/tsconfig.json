@@ -1,5 +1,5 @@
 {
-  "extends": "@feedgot/tsconfig/base.json",
+  "extends": "@oreilla/tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
     "incremental": true,

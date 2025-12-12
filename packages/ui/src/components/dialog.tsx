@@ -4,7 +4,7 @@ import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { motion } from "framer-motion"
 
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 
 const Dialog = DialogPrimitive.Root
 
@@ -44,7 +44,7 @@ const DialogContent = React.forwardRef<
       <motion.div
         ref={ref as any}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-6 bg-card p-8 border ring-1 ring-border shadow-2xl rounded-sm",
+          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-5 border ring-1 ring-border shadow-2xl rounded-sm",
           className
         )}
         initial={{ opacity: 0, scale: 0.95, y: -12 }}
@@ -108,7 +108,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-sm text-accent", className)}
     {...props}
   />
 ))

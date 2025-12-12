@@ -5,7 +5,7 @@ import { Container } from "@/components/global/container"
 import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools"
 import ToolList from "@/components/tools/global/tool-list"
 import { createPageMetadata } from "@/lib/seo"
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@feedgot/ui/components/breadcrumb"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@oreilla/ui/components/breadcrumb"
 
 type Props = { params: Promise<{ category: string }> }
 

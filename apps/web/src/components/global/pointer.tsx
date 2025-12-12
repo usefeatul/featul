@@ -1,7 +1,7 @@
 "use client"
 
-import { cn } from "@feedgot/ui/lib/utils"
-import { PointerDownIcon } from "@feedgot/ui/icons/pointer-down"
+import { cn } from "@oreilla/ui/lib/utils"
+import { PointerDownIcon } from "@oreilla/ui/icons/pointer-down"
 import { motion } from "framer-motion"
 
 interface PointerProps {

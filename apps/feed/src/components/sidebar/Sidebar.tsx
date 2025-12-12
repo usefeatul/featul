@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@feedgot/ui/lib/utils";
+import { cn } from "@oreilla/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
 import { buildBottomNav, getSlugFromPath } from "../../config/nav";
 import {
@@ -16,8 +16,8 @@ import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
-import { Button } from "@feedgot/ui/components/button";
-import { PlusIcon } from "@feedgot/ui/icons/plus";
+import { Button } from "@oreilla/ui/components/button";
+import { PlusIcon } from "@oreilla/ui/icons/plus";
 import { CreatePostModal } from "../post/CreatePostModal";
 
 const secondaryNav: NavItem[] = buildBottomNav();
@@ -91,7 +91,7 @@ export default function Sidebar({
             className="h-6 w-6"
             priority
           />
-          <div className="text-md font-semibold">feedgot</div>
+          <div className="text-md font-semibold">oreilla</div>
         </div>
         <WorkspaceSwitcher
           className="mt-5.5"

@@ -1,10 +1,10 @@
 import React from "react"
 import SectionCard from "../global/SectionCard"
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@feedgot/ui/components/card"
-import { Button } from "@feedgot/ui/components/button"
-import { SlackIcon } from "@feedgot/ui/icons/slack"
-import { CommentsIcon } from "@feedgot/ui/icons/comments"
-import { ShieldIcon } from "@feedgot/ui/icons/shield"
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@oreilla/ui/components/card"
+import { Button } from "@oreilla/ui/components/button"
+import { SlackIcon } from "@oreilla/ui/icons/slack"
+import { CommentsIcon } from "@oreilla/ui/icons/comments"
+import { ShieldIcon } from "@oreilla/ui/icons/shield"
 
 export default function IntegrationsSection() {
   return (

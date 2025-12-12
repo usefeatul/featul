@@ -556,7 +556,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'origin.feedgot.com'"
+          "default": "'origin.oreilla.com'"
         },
         "txt_name": {
           "name": "txt_name",

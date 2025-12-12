@@ -1,5 +1,5 @@
 import React from "react"
-import { Textarea } from "@feedgot/ui/components/textarea"
+import { Textarea } from "@oreilla/ui/components/textarea"
 
 interface CommentEditorProps {
   value: string

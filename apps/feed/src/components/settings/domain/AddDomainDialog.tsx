@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@feedgot/ui/components/dialog";
-import { Input } from "@feedgot/ui/components/input";
-import { Button } from "@feedgot/ui/components/button";
+} from "@oreilla/ui/components/dialog";
+import { Input } from "@oreilla/ui/components/input";
+import { Button } from "@oreilla/ui/components/button";
 
 export default function AddDomainDialog({
   open,

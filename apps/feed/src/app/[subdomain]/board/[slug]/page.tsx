@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { db, workspace } from "@feedgot/db"
+import { db, workspace } from "@oreilla/db"
 import { eq } from "drizzle-orm"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, getWorkspaceBoards } from "@/lib/workspace"
@@ -42,6 +42,7 @@ export default async function BoardPage({
     limit: PAGE_SIZE,
     offset,
     boardSlugs: [boardSlug],
+    publicOnly: true,
   })
 
   const items = await Promise.all(
@@ -50,6 +51,7 @@ export default async function BoardPage({
 
   const totalCount = await getWorkspacePostsCount(subdomain, {
     boardSlugs: [boardSlug],
+    publicOnly: true,
   })
   const sidebarPosition = await getSidebarPositionBySlug(subdomain)
   const initialBoards = await getWorkspaceBoards(subdomain)

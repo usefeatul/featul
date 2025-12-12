@@ -1,9 +1,9 @@
 "use client"
 
-import { Input } from "@feedgot/ui/components/input"
+import { Input } from "@oreilla/ui/components/input"
 import { Link2, Loader2 } from "lucide-react"
-import  CompletedIcon  from "@feedgot/ui/icons/completed"
-import ClosedIcon from "@feedgot/ui/icons/closed"
+import  CompletedIcon  from "@oreilla/ui/icons/completed"
+import ClosedIcon from "@oreilla/ui/icons/closed"
 import { isSlugValid } from "../../lib/validators"
 
 export default function StepSlug({ slug, onChange, checking, available, disabled = false }: { slug: string; onChange: (v: string) => void; checking: boolean; available: boolean | null; disabled?: boolean }) {
@@ -26,7 +26,7 @@ export default function StepSlug({ slug, onChange, checking, available, disabled
               aria-invalid={available === false || (!!slug && !isSlugValid(slug))}
               disabled={disabled}
             />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-accent select-none pointer-events-none">.feedgot.com</span>
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-accent select-none pointer-events-none">.oreilla.com</span>
           </div>
           <div className="flex items-center gap-2">
             {checking ? (

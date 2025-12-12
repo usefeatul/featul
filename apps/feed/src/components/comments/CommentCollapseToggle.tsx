@@ -2,7 +2,7 @@
 
 import React from "react"
 import { ChevronDown } from "lucide-react"
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 
 export default function CommentCollapseToggle({
   isCollapsed,

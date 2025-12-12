@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@feedgot/ui/components/card";
-import { Input } from "@feedgot/ui/components/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@oreilla/ui/components/card";
+import { Input } from "@oreilla/ui/components/input";
 import BackLink from "../global/backlink";
 
 function parseNumber(value: string): number {

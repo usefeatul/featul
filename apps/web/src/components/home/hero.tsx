@@ -1,11 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Container } from "../global/container";
 import Image from "next/image";
 import { HeroContent } from "./hero-content";
 import { PreviewSwitchPill } from "@/components/home/preview-switch";
 import { usePreviewHint } from "../../hooks/usePreviewHint";
-import Pointer from "../global/pointer";
 
 export function Hero() {
   const [active, setActive] = useState<"dashboard" | "roadmap" | "changelog">(
@@ -32,7 +31,7 @@ export function Hero() {
               <div className="relative z-0 aspect-[16/9] w-full overflow-hidden bg-muted rounded-md shadow-2xl shadow-zinc-950/50 translate-y-[3px] outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background">
                 <Image
                   src={imageSrc}
-                  alt={`Feedgot ${active} preview`}
+                  alt={`oreilla ${active} preview`}
                   fill
                   priority
                   className="object-cover"

@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useEffect, useRef } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@feedgot/ui/components/avatar"
-import { cn } from "@feedgot/ui/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@oreilla/ui/components/avatar"
+import { cn } from "@oreilla/ui/lib/utils"
 import { getInitials } from "@/utils/user-utils"
-import { PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
+import { PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
 
 export interface MentionCandidate {
   id: string

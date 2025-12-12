@@ -1,6 +1,6 @@
 "use client"
 
-import { Input } from "@feedgot/ui/components/input"
+import { Input } from "@oreilla/ui/components/input"
 import { AlertCircle } from "lucide-react"
 import { suggestDomainFix } from "../../lib/validators"
 

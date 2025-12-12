@@ -1,6 +1,6 @@
 import { Container } from "../global/container";
-import { Card } from "@feedgot/ui/components/card";
-import { Button } from "@feedgot/ui/components/button";
+import { Card } from "@oreilla/ui/components/card";
+import { Button } from "@oreilla/ui/components/button";
 import {
   Bold,
   Calendar1,
@@ -9,12 +9,12 @@ import {
   Strikethrough,
   Underline,
 } from "lucide-react";
-import { ToggleGroup, ToggleGroupItem } from "@feedgot/ui/components/toggle-group";
-import { cn } from "@feedgot/ui/lib/utils";
-import { CardAccent, CardTag, AccentBar } from "@feedgot/ui/components/cardElements";
-import { ChartIcon } from "@feedgot/ui/icons/chart";
-import { UsersIcon } from "@feedgot/ui/icons/users";
-import { SetupIcon } from "@feedgot/ui/icons/setup";
+import { ToggleGroup, ToggleGroupItem } from "@oreilla/ui/components/toggle-group";
+import { cn } from "@oreilla/ui/lib/utils";
+import { CardAccent, CardTag, AccentBar } from "@oreilla/ui/components/cardElements";
+import { ChartIcon } from "@oreilla/ui/icons/chart";
+import { UsersIcon } from "@oreilla/ui/icons/users";
+import { SetupIcon } from "@oreilla/ui/icons/setup";
 import FeatureCard from "./featureCard";
 
 

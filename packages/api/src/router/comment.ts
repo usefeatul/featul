@@ -10,8 +10,8 @@ import {
   user,
   workspace,
   workspaceMember,
-} from "@feedgot/db";
-import { auth } from "@feedgot/auth";
+} from "@oreilla/db";
+import { auth } from "@oreilla/auth";
 import { headers } from "next/headers";
 import {
   createCommentInputSchema,

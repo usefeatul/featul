@@ -2,12 +2,12 @@
 
 import React from "react"
 import PlanNotice from "../global/PlanNotice"
-import { Button } from "@feedgot/ui/components/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@feedgot/ui/components/table"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
+import { Button } from "@oreilla/ui/components/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@oreilla/ui/components/table"
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
 import { MoreVertical } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import ModalTags from "./ModalTags"
 import { toast } from "sonner"
 

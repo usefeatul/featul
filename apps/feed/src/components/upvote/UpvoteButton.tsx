@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { cn } from "@feedgot/ui/lib/utils";
+import { cn } from "@oreilla/ui/lib/utils";
 import { useUpvote } from "../../hooks/useUpvote";
 import { VoteIcon } from "./VoteIcon";
 import { VoteCount } from "./VoteCount";

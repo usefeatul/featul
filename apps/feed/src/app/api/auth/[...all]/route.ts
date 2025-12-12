@@ -1,6 +1,6 @@
-import { auth } from "@feedgot/auth/auth";
+import { auth } from "@oreilla/auth/auth";
 import { toNextJsHandler } from "better-auth/next-js";
-import { handlePreflight, withCors } from "@feedgot/auth/trust";
+import { handlePreflight, withCors } from "@oreilla/auth/trust";
 const handler = toNextJsHandler(auth);
 
 export const OPTIONS = handlePreflight;

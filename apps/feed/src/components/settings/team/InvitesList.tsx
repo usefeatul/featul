@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "@feedgot/ui/components/table";
+import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "@oreilla/ui/components/table";
 import type { Invite } from "../../../types/team";
 import InviteRow from "./InviteRow";
 

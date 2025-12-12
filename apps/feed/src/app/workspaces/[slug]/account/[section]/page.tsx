@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import AccountServer from "@/components/account/AccountServer"
 import { createPageMetadata } from "@/lib/seo"
 import { getAccountSectionMeta } from "@/config/account-sections"
-import { getServerSession, listServerSessions } from "@feedgot/auth/session"
+import { getServerSession, listServerSessions } from "@oreilla/auth/session"
 import { redirect } from "next/navigation"
 
 export const revalidate = 30

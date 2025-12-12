@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { SITE_URL, DEFAULT_OG_IMAGE, DEFAULT_TITLE } from '@/config/seo'
 import { getWorkspaceBySlug, getBoardByWorkspaceSlug } from '@/lib/workspace'
-import { db, workspace, board, post } from "@feedgot/db"
+import { db, workspace, board, post } from "@oreilla/db"
 import { eq, and } from "drizzle-orm"
 
 function normalizePath(path?: string) {
@@ -28,7 +28,7 @@ type BaseMetaArgs = {
 export function createPageMetadata({ title, description, path, image, absoluteTitle, indexable, baseUrl, includeBrand }: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonical = normalizePath(path || '/')
-  const brand = DEFAULT_TITLE || 'Feedgot'
+  const brand = DEFAULT_TITLE || 'oreilla'
   const hasBrand = typeof title === 'string' && title.includes(brand)
   const withBrand = includeBrand ?? true
   const finalTitle = withBrand ? (hasBrand ? title : `${title} - ${brand}`) : title
@@ -61,7 +61,7 @@ export function createPageMetadata({ title, description, path, image, absoluteTi
 export async function createWorkspaceMetadata(slug: string): Promise<Metadata> {
   const ws = await getWorkspaceBySlug(slug)
   const title = ws?.name || 'Workspace'
-  const baseUrl = ws?.customDomain ? `https://${ws.customDomain}` : `https://${slug}.feedgot.com`
+  const baseUrl = ws?.customDomain ? `https://${ws.customDomain}` : `https://${slug}.oreilla.com`
   const meta = createPageMetadata({
     title,
     description: ws?.domain ? `Feedback for ${ws.domain}` : title,
@@ -94,7 +94,7 @@ export async function createPostMetadata(subdomain: string, postSlug: string, pa
   // Simple strip tags
   const plainText = p.content ? p.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : ''
   const description = plainText.slice(0, 160) || title
-  const baseUrl = ws.customDomain ? `https://${ws.customDomain}` : `https://${subdomain}.feedgot.com`
+  const baseUrl = ws.customDomain ? `https://${ws.customDomain}` : `https://${subdomain}.oreilla.com`
   const path = `${pathPrefix}/${postSlug}`
 
   const meta = createPageMetadata({
@@ -116,7 +116,7 @@ export async function createPostMetadata(subdomain: string, postSlug: string, pa
 export async function createWorkspaceSectionMetadata(slug: string, section: 'feedback' | 'roadmap' | 'changelog', opts?: { boardSlug?: string }): Promise<Metadata> {
   const ws = await getWorkspaceBySlug(slug)
   const name = ws?.name || slug
-  const baseUrl = ws?.customDomain ? `https://${ws.customDomain}` : `https://${slug}.feedgot.com`
+  const baseUrl = ws?.customDomain ? `https://${ws.customDomain}` : `https://${slug}.oreilla.com`
   const path = section === 'feedback'
     ? (opts?.boardSlug ? `/board/${opts.boardSlug}` : '/')
     : section === 'roadmap'

@@ -1,4 +1,4 @@
-import { Html, Head, Preview, Body, Container, Section, Text, Heading, Button, Hr } from "@react-email/components"
+import { Html, Head, Preview, Body, Container, Section, Text, Heading, Button, Img } from "@react-email/components"
 
 export type Brand = {
   name?: string
@@ -26,7 +26,7 @@ type Props = {
 
 function resolveBrand(brand?: Brand): Required<Brand> {
   return {
-    name: brand?.name || "Feedgot",
+    name: brand?.name || "oreilla",
     logoUrl: brand?.logoUrl || "",
     primaryColor: brand?.primaryColor || "#111111",
     backgroundColor: brand?.backgroundColor || "#ffffff",
@@ -40,61 +40,92 @@ export function BrandedEmail(props: Props) {
     <Html>
       <Head />
       <Preview>{props.title || b.name}</Preview>
-      <Body style={{ margin: 0, padding: 0, backgroundColor: b.backgroundColor }}>
-        <Container style={{ maxWidth: 600, margin: "0 auto", padding: 32 }}>
-          <Section style={{ backgroundColor: "#ffffff", borderRadius: 16 }}>
-            <Section style={{ padding: "28px 28px 10px 28px" }}>
-              {props.eyebrow && (
-                <Text style={{ color: "#6b7280", fontSize: 12, letterSpacing: 6, textTransform: "uppercase", margin: 0 }}>{props.eyebrow}</Text>
-              )}
-              <Heading style={{ fontSize: 32, lineHeight: "40px", margin: "10px 0 0 0", color: b.textColor }}>{b.name}</Heading>
-            </Section>
-            <Section style={{ padding: "10px 28px 28px 28px" }}>
-              {props.intro && <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "28px" }}>{props.intro}</Text>}
-              {props.title && <Heading as="h2" style={{ fontSize: 18, fontWeight: 600, margin: "16px 0", color: b.textColor }}>{props.title}</Heading>}
-              {props.paragraphs?.map((p, i) => (
-                <Text key={i} style={{ color: b.textColor, fontSize: 16, lineHeight: "28px" }}>{p}</Text>
-              ))}
-              {!props.paragraphs && props.body && <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "28px" }}>{props.body}</Text>}
-              {props.highlight && <Text style={{ fontSize: 20, fontWeight: 700, letterSpacing: 4, color: b.textColor }}>{props.highlight}</Text>}
-              {props.outro && <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "28px" }}>{props.outro}</Text>}
-              {props.ctaText && props.ctaUrl && (
-                <Button href={props.ctaUrl} style={{ display: "inline-block", backgroundColor: b.primaryColor, color: "#ffffff", textDecoration: "none", fontWeight: 600, padding: "14px 20px", borderRadius: 9999, marginTop: 20 }}>
-                  {props.ctaText}
-                </Button>
-              )}
-              {props.psText && <Text style={{ color: "#6b7280", fontSize: 14, lineHeight: "24px", marginTop: 20 }}>{props.psText}</Text>}
-              {props.signatureName && (
-                <>
-                  <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "28px", marginTop: 16 }}>Best regards,</Text>
-                  <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "28px" }}>{props.signatureName}</Text>
-                </>
-              )}
-            </Section>
-            <Hr style={{ borderColor: "#e5e7eb", margin: 0 }} />
-            <Section style={{ padding: 16 }}>
-              <table width="100%" role="presentation" style={{ width: "100%", borderSpacing: 0 }}>
-                <tbody>
-                  <tr>
-                    <td style={{ width: "50%", verticalAlign: "top", textAlign: "left" }}>
-                      {props.addressLines && props.addressLines.length > 0 ? (
-                        <>
-                          {props.addressLines.map((line, i) => (
-                            <Text key={i} style={{ color: "#9ca3af", fontSize: 12, margin: 0 }}>{line}</Text>
-                          ))}
-                        </>
-                      ) : (
-                        <Text style={{ color: "#6b7280", fontSize: 12, margin: 0 }}>© {new Date().getFullYear()} {b.name}</Text>
-                      )}
-                    </td>
-                    <td style={{ width: "50%", verticalAlign: "top", textAlign: "right" }}>
-                      <Text style={{ color: "#6b7280", fontSize: 12, margin: 0 }}>{b.name}</Text>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </Section>
+      <Body style={{ margin: 0, padding: 0, backgroundColor: b.backgroundColor, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+        <Container style={{ maxWidth: 600, margin: "0 auto", padding: "40px 20px" }}>
+          <Section>
+            {props.eyebrow && (
+              <Text style={{ color: "#8898aa", fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", margin: "0 0 16px 0" }}>
+                {props.eyebrow}
+              </Text>
+            )}
+            
+            {props.title && (
+              <Heading style={{ fontSize: 24, fontWeight: 600, margin: "0 0 24px 0", color: b.textColor }}>
+                {props.title}
+              </Heading>
+            )}
+            
+            {props.intro && (
+              <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "26px", margin: "0 0 16px 0" }}>
+                {props.intro}
+              </Text>
+            )}
+            
+            {props.paragraphs?.map((p, i) => (
+              <Text key={i} style={{ color: b.textColor, fontSize: 16, lineHeight: "26px", margin: "0 0 16px 0" }}>
+                {p}
+              </Text>
+            ))}
+            
+            {!props.paragraphs && props.body && (
+              <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "26px", margin: "0 0 16px 0" }}>
+                {props.body}
+              </Text>
+            )}
+            
+            {props.highlight && (
+              <Section style={{ padding: "16px", backgroundColor: "rgba(0,0,0,0.03)", borderRadius: 8, margin: "24px 0" }}>
+                 <Text style={{ fontSize: 18, fontWeight: 500, margin: 0, color: b.textColor }}>{props.highlight}</Text>
+              </Section>
+            )}
+            
+            {props.ctaText && props.ctaUrl && (
+              <Button 
+                href={props.ctaUrl} 
+                style={{ 
+                  display: "inline-block", 
+                  backgroundColor: b.primaryColor, 
+                  color: "#ffffff", 
+                  textDecoration: "none", 
+                  fontWeight: 600, 
+                  fontSize: 16,
+                  padding: "12px 24px", 
+                  borderRadius: 6, 
+                  marginTop: 24,
+                  textAlign: "center" 
+                }}
+              >
+                {props.ctaText}
+              </Button>
+            )}
+            
+            {props.outro && (
+              <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "26px", marginTop: 32 }}>
+                {props.outro}
+              </Text>
+            )}
+            
+            {props.psText && (
+              <Text style={{ color: "#6b7280", fontSize: 14, lineHeight: "24px", marginTop: 24, fontStyle: "italic" }}>
+                {props.psText}
+              </Text>
+            )}
+            
+            {props.signatureName && (
+              <Text style={{ color: b.textColor, fontSize: 16, lineHeight: "26px", marginTop: 32 }}>
+                Best regards,<br />
+                {props.signatureName}
+              </Text>
+            )}
           </Section>
+
+          {/* Minimal Footer */}
+          <Section style={{ marginTop: 48, borderTop: "1px solid #eaeaea", paddingTop: 24 }}>
+             <Text style={{ color: "#8898aa", fontSize: 12, margin: 0, textAlign: "center" }}>
+               © {new Date().getFullYear()} {"Oreilla"}
+             </Text>
+          </Section>
+
         </Container>
       </Body>
     </Html>

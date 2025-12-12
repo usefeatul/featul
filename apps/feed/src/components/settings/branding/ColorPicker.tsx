@@ -1,8 +1,8 @@
 "use client"
 
-import { Button } from "@feedgot/ui/components/button"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
-import { DropdownIcon } from "@feedgot/ui/icons/dropdown"
+import { Button } from "@oreilla/ui/components/button"
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
+import { DropdownIcon } from "@oreilla/ui/icons/dropdown"
 import { BRANDING_COLORS } from "../../../types/colors"
 import type { ColorOption } from "../../../types/colors"
 
@@ -20,7 +20,7 @@ export default function ColorPicker({ valueHex, onSelect, disabled }: { valueHex
       <PopoverContent list>
         <PopoverList>
           {BRANDING_COLORS.map((c) => (
-            <PopoverListItem key={c.key} accent={c.primary} onClick={() => !disabled && onSelect(c)}>
+            <PopoverListItem key={c.key} accent={c.accent} onClick={() => !disabled && onSelect(c)}>
               <span className="w-4 h-4 rounded-md border" style={{ background: c.primary }} />
               <span className="text-sm">{c.name}</span>
             </PopoverListItem>

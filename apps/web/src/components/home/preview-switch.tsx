@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@feedgot/ui/components/button";
+import { Button } from "@oreilla/ui/components/button";
 import type { PreviewKey } from "../../hooks/usePreviewHint";
 
 type Props = {

@@ -2,7 +2,7 @@
 
 import React from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 
 export type ToggleKey = "allowAnonymous" | "allowComments" | "hidePublicMemberIdentity"

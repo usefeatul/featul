@@ -27,7 +27,7 @@ export const navigationConfig: NavigationConfig = {
   auth: [
     {
       name: 'Sign in',
-      href: '/signin',
+      href: 'https://app.oreilla.com/auth/signin',
     },
   ],
 }

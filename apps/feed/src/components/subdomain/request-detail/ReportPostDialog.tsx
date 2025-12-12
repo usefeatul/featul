@@ -8,19 +8,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@feedgot/ui/components/dialog"
-import { Button } from "@feedgot/ui/components/button"
-import { Label } from "@feedgot/ui/components/label"
+} from "@oreilla/ui/components/dialog"
+import { Button } from "@oreilla/ui/components/button"
+import { Label } from "@oreilla/ui/components/label"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@feedgot/ui/components/select"
-import { Textarea } from "@feedgot/ui/components/textarea"
-import { client } from "@feedgot/api/client"
+  Popover,
+  PopoverContent,
+  PopoverList,
+  PopoverListItem,
+  PopoverTrigger,
+} from "@oreilla/ui/components/popover"
+import { Textarea } from "@oreilla/ui/components/textarea"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
+import { Check, ChevronsUpDown } from "lucide-react"
 
 interface ReportPostDialogProps {
   open: boolean
@@ -42,6 +43,7 @@ export default function ReportPostDialog({
   postId,
 }: ReportPostDialogProps) {
   const [reason, setReason] = useState<string>("spam")
+  const [reasonOpen, setReasonOpen] = useState(false)
   const [description, setDescription] = useState("")
   const [isPending, startTransition] = useTransition()
 
@@ -82,18 +84,39 @@ export default function ReportPostDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Reason</Label>
-            <Select value={reason} onValueChange={setReason}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a reason" />
-              </SelectTrigger>
-              <SelectContent>
-                {REASONS.map((r) => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover open={reasonOpen} onOpenChange={setReasonOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={reasonOpen}
+                  className="w-full justify-between"
+                >
+                  {reason
+                    ? REASONS.find((r) => r.value === reason)?.label
+                    : "Select a reason"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0" list>
+                <PopoverList>
+                  {REASONS.map((r) => (
+                    <PopoverListItem
+                      key={r.value}
+                      onClick={() => {
+                        setReason(r.value)
+                        setReasonOpen(false)
+                      }}
+                    >
+                      {r.label}
+                      {reason === r.value && (
+                        <Check className="ml-auto h-4 w-4" />
+                      )}
+                    </PopoverListItem>
+                  ))}
+                </PopoverList>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-2">

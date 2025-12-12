@@ -2,10 +2,11 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@feedgot/ui/components/button"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
-import { ChevronDown, ListTree } from "lucide-react"
-import { client } from "@feedgot/api/client"
+import { Button } from "@oreilla/ui/components/button"
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
+import { ChevronDownIcon } from "@oreilla/ui/icons/chevron-down"
+import { ListIcon } from "@oreilla/ui/icons/list"
+import { client } from "@oreilla/api/client"
 
 type Board = { id: string; name: string; slug: string; type?: string | null }
 
@@ -73,10 +74,10 @@ export function BoardsDropdown({ slug, subdomain, initialBoards, selectedBoard }
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button type="button" variant="nav" className="justify-start gap-2 dark:bg-black/40" disabled={loading}>
-          <ListTree className="size-4" />
+          <ListIcon className="size-4" />
           <span className="truncate">{label}</span>
           <span className="ml-auto" />
-          <ChevronDown className="size-4" />
+          <ChevronDownIcon className="size-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent id={`popover-${subdomain}-${slug}-boards`} align="start" list className="min-w-[9rem] w-fit">

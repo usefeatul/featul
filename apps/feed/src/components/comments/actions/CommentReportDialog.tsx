@@ -8,21 +8,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@feedgot/ui/components/dialog"
+} from "@oreilla/ui/components/dialog"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   PopoverList,
   PopoverListItem,
-} from "@feedgot/ui/components/popover"
-import { Button } from "@feedgot/ui/components/button"
-import { Label } from "@feedgot/ui/components/label"
-import { Textarea } from "@feedgot/ui/components/textarea"
-import { client } from "@feedgot/api/client"
+} from "@oreilla/ui/components/popover"
+import { Button } from "@oreilla/ui/components/button"
+import { Label } from "@oreilla/ui/components/label"
+import { Textarea } from "@oreilla/ui/components/textarea"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 import { ChevronsUpDown } from "lucide-react"
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 
 interface CommentReportDialogProps {
   open: boolean

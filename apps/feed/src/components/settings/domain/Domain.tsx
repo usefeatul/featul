@@ -4,14 +4,14 @@ import React from "react";
 //
 import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
-import { Button } from "@feedgot/ui/components/button";
+import { Button } from "@oreilla/ui/components/button";
 import RecordsTable from "./RecordsTable";
 import { useDomain, useDomainActions } from "../../../lib/domain-service";
 import type { DomainInfo } from "../../../types/domain";
-import { Label } from "@feedgot/ui/components/label";
+import { Label } from "@oreilla/ui/components/label";
 import DomainActions from "./DomainActions";
 import AddDomainDialog from "./AddDomainDialog";
-import { ArrowIcon } from "@feedgot/ui/icons/arrow";
+import { ArrowIcon } from "@oreilla/ui/icons/arrow";
 import { normalizePlan } from "@/lib/plan";
 import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
 export default function DomainSection({ slug, initialPlan, initialInfo, initialDefaultDomain }: { slug: string; initialPlan?: string; initialInfo?: DomainInfo; initialDefaultDomain?: string }) {
@@ -54,7 +54,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
             </div>
           ) : (
             <div className="flex items-center justify-between rounded-md border p-3 mt-2 mb-3">
-              <span className="text-sm">{`https://${slug}.feedgot.com`}</span>
+              <span className="text-sm">{`https://${slug}.oreilla.com`}</span>
               <Button
                 type="button"
                 variant="quiet"
@@ -71,7 +71,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
               href={
                 info?.host
                   ? `https://${info.host}`
-                  : `https://${slug}.feedgot.com`
+                  : `https://${slug}.oreilla.com`
               }
               target="_blank"
               rel="noopener noreferrer"

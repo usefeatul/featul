@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@feedgot/ui/components/card";
-import { Input } from "@feedgot/ui/components/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@oreilla/ui/components/card";
+import { Input } from "@oreilla/ui/components/input";
 import  BackLink  from "../global/backlink";
 
 
@@ -24,8 +24,6 @@ export default function SaasValuationTool() {
 
   const ARR = parseNumber(arr);
   const baseMultiple = parseNumber(multiple);
-  const growth = parseNumber(growthPct);
-  const margin = parseNumber(marginPct);
 
   const enterpriseValue = ARR * baseMultiple;
   const sensitivityMinus = ARR * Math.max(baseMultiple - 1, 0);

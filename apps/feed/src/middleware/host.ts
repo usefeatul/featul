@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
-export const reservedSubdomains = new Set(["www", "app"])
+export const reservedSubdomains = new Set(["www", "app", "oreilla", "feedgot" ,"staging"])
 
 export function getHostInfo(req: NextRequest) {
   const pathname = req.nextUrl.pathname
@@ -9,7 +9,7 @@ export function getHostInfo(req: NextRequest) {
   const hostNoPort = host.replace(/:\d+$/, "")
   const parts = hostNoPort.split(".")
   const isLocal = parts[parts.length - 1] === "localhost"
-  const isMainDomain = hostNoPort.endsWith(".feedgot.com")
+  const isMainDomain = hostNoPort.endsWith(".oreilla.com")
   const hasSub = (isLocal && parts.length >= 2) || (isMainDomain && parts.length >= 3)
   const subdomain = hasSub ? parts[0] : ""
   return { pathname, hostNoPort, isLocal, isMainDomain, subdomain }

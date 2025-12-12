@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverList,
   PopoverListItem,
-} from "@feedgot/ui/components/popover"
+} from "@oreilla/ui/components/popover"
 import CommentDeleteAction from "./CommentDeleteAction"
 import CommentReportAction from "./CommentReportAction"
 import CommentEditAction from "./CommentEditAction"

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+import React from "react";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/global/container";
 import {
@@ -55,16 +55,14 @@ export default async function ToolPage({ params }: Props) {
         <section className="py-12 sm:py-16" data-component="ToolDetail">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             {/* JSON-LD for SEO: FAQ and Breadcrumbs */}
-            <Script
+            <script
               id="tool-faq-jsonld"
               type="application/ld+json"
-              strategy="afterInteractive"
               dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Script
+            <script
               id="tool-breadcrumb-jsonld"
               type="application/ld+json"
-              strategy="afterInteractive"
               dangerouslySetInnerHTML={{
                 __html: JSON.stringify(breadcrumbSchema),
               }}

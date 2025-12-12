@@ -11,7 +11,7 @@ export default function AlternativesList({ items = defaultAlternatives }: { item
           className="block rounded-md border border-border p-4 hover:border-foreground transition-colors"
         >
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold">{alt.name} vs Feedgot</span>
+            <span className="text-sm font-semibold">{alt.name} vs oreilla</span>
             <span className="text-xs text-muted-foreground">Compare</span>
           </div>
           {alt.summary && (

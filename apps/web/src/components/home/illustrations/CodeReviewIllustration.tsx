@@ -1,5 +1,6 @@
-import { Card } from '@feedgot/ui/components/card'
+import { Card } from '@oreilla/ui/components/card'
 import { Signature, Play } from 'lucide-react'
+import Image from 'next/image'
 
 const MESCHAC_AVATAR = 'https://avatars.githubusercontent.com/u/47919550?v=4'
 
@@ -9,7 +10,7 @@ export function CodeReviewIllustration() {
       <Card className="aspect-video w-4/5 translate-y-2 p-3">
         <div className="mb-3 grid grid-cols-[auto_1fr] gap-2">
           <div className="bg-background size-6 rounded-md border p-0.5 shadow shadow-zinc-950/5">
-            <img
+            <Image
               className="aspect-square rounded-md object-cover"
               src={MESCHAC_AVATAR}
               alt="M Irung"

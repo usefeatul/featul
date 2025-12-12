@@ -1,14 +1,14 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Button } from "@feedgot/ui/components/button"
+import { Button } from "@oreilla/ui/components/button"
 import Progress from "./Progress"
 import StepName from "./StepName"
 import StepDomain from "./StepDomain"
 import StepSlug from "./StepSlug"
 import TimezonePicker from "./TimezonePicker"
 import RightInfo from "./RightInfo"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
  
 import { useRouter, useSearchParams } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
@@ -163,7 +163,7 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
                   {slugLocked ? (
                     <div className="mt-5">
                       <div className="rounded-sm bg-muted/50 px-2 py-2 text-xs">
-                        <span className="text-accent">Reserved:</span> <span className="">{slugLocked}.feedgot.com</span>
+                        <span className="text-accent">Reserved:</span> <span className="">{slugLocked}.oreilla.com</span>
                       </div>
                     </div>
                   ) : null}

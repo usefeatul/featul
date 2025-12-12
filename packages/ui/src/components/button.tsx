@@ -2,7 +2,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 
   const buttonVariants = cva(
     "inline-flex items-center  dark:text-white justify-center gap-2 whitespace-now rap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer",
@@ -21,7 +21,7 @@ import { cn } from "@feedgot/ui/lib/utils"
           link: "text-primary underline-offset-4 hover:underline bg-transparent",
           quiet: cn("bg-primary text-primary-foreground hover:bg-primary/70"),
           nav: cn("border bg-card text-foreground border-muted hover:bg-muted hover:text-accent-foreground hover:border-accent/20 dark:bg-black/40 dark:hover:bg-black/50"),
-          plain: cn("bg-background text-foreground hover:bg-muted hover:text-accent-foreground"),
+          plain: cn("bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50"),
         },
         size: {
           default: "h-8 px-2 py-2 rounded-sm has-[>svg]:px-3",

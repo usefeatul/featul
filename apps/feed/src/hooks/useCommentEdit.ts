@@ -1,6 +1,6 @@
 import { useState, useRef, useTransition, useEffect } from "react"
 import { toast } from "sonner"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 
 interface UseCommentEditProps {
   commentId: string

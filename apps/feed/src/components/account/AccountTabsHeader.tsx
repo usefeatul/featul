@@ -2,7 +2,7 @@
 
 import React from "react"
 import { useRouter } from "next/navigation"
-import { Tabs, TabsList, TabsTrigger } from "@feedgot/ui/components/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@oreilla/ui/components/tabs"
 import { ACCOUNT_SECTIONS } from "@/config/account-sections"
 
 export default function AccountTabsHeader({ slug, selected }: { slug: string; selected: string }) {

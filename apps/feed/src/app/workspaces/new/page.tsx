@@ -2,12 +2,12 @@ import type { Metadata } from "next"
 import WorkspaceWizard from "@/components/wizard/Wizard"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
-import { getServerSession } from "@feedgot/auth/session"
+import { getServerSession } from "@oreilla/auth/session"
 
 export const revalidate = 30
 export const metadata: Metadata = createPageMetadata({
   title: "New Project",
-  description: "Create a new project in Feedgot.",
+  description: "Create a new project in oreilla.",
   path: "/workspaces/new",
   indexable: false,
 })

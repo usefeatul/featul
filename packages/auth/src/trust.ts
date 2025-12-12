@@ -1,4 +1,4 @@
-import { db, workspace, workspaceDomain } from "@feedgot/db"
+import { db, workspace, workspaceDomain } from "@oreilla/db"
 import { eq, and } from "drizzle-orm"
 
 function toRegex(originPattern: string): RegExp | null {

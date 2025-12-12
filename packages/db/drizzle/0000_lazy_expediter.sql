@@ -83,7 +83,7 @@ CREATE TABLE "workspace_domain" (
 	"workspace_id" uuid NOT NULL,
 	"host" text NOT NULL,
 	"cname_name" text DEFAULT 'feedback' NOT NULL,
-	"cname_target" text DEFAULT 'origin.feedgot.com' NOT NULL,
+	"cname_target" text DEFAULT 'origin.oreilla.com' NOT NULL,
 	"txt_name" text NOT NULL,
 	"txt_value" text NOT NULL,
 	"status" text DEFAULT 'pending' NOT NULL,

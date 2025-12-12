@@ -1,15 +1,15 @@
-import PlannedIcon from "@feedgot/ui/icons/planned"
-import ProgressIcon from "@feedgot/ui/icons/progress"
-import ReviewIcon from "@feedgot/ui/icons/review"
-import CompletedIcon from "@feedgot/ui/icons/completed"
-import PendingIcon from "@feedgot/ui/icons/pending"
-import ClosedIcon from "@feedgot/ui/icons/closed"
-import { RoadmapIcon } from "@feedgot/ui/icons/roadmap"
-import { ChangelogIcon } from "@feedgot/ui/icons/changelog"
-import { BoardIcon } from "@feedgot/ui/icons/board"
-import { SettingIcon } from "@feedgot/ui/icons/setting"
-import { AiIcon } from "@feedgot/ui/icons/ai"
-import { DocIcon } from "@feedgot/ui/icons/doc"
+import PlannedIcon from "@oreilla/ui/icons/planned"
+import ProgressIcon from "@oreilla/ui/icons/progress"
+import ReviewIcon from "@oreilla/ui/icons/review"
+import CompletedIcon from "@oreilla/ui/icons/completed"
+import PendingIcon from "@oreilla/ui/icons/pending"
+import ClosedIcon from "@oreilla/ui/icons/closed"
+import { RoadmapIcon } from "@oreilla/ui/icons/roadmap"
+import { ChangelogIcon } from "@oreilla/ui/icons/changelog"
+import { BoardIcon } from "@oreilla/ui/icons/board"
+import { SettingIcon } from "@oreilla/ui/icons/setting"
+import { AiIcon } from "@oreilla/ui/icons/ai"
+import { DocIcon } from "@oreilla/ui/icons/doc"
 import type { NavItem } from "../types/nav"
 
 function w(slug: string, p: string) {
@@ -19,7 +19,7 @@ function w(slug: string, p: string) {
 function publicBoardUrlForWorkspace(slug: string, customDomain?: string | null) {
   const s = (slug || "").trim()
   if (customDomain && customDomain.trim()) return `https://${customDomain.trim()}`
-  return `https://${s}.feedgot.com`
+  return `https://${s}.oreilla.com`
 }
 
 export function getSlugFromPath(pathname: string) {

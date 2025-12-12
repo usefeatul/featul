@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy
-description: How feedgot collects, uses, and protects personal data in line with GDPR.
+description: How oreilla collects, uses, and protects personal data in line with GDPR.
 path: /privacy
 lastUpdated: 31 October 2025
 ---
@@ -9,13 +9,13 @@ lastUpdated: 31 October 2025
 
 **Last updated:** 31 October 2025
 
-This Privacy Policy explains how **feedgot** ("feedgot", "we", "us", "our") collects, uses, discloses, and protects Personal Data when you visit our websites or use our services (the "Service"). We process Personal Data in accordance with applicable data protection laws, including the EU General Data Protection Regulation (GDPR).
+This Privacy Policy explains how **oreilla** ("oreilla", "we", "us", "our") collects, uses, discloses, and protects Personal Data when you visit our websites or use our services (the "Service"). We process Personal Data in accordance with applicable data protection laws, including the EU General Data Protection Regulation (GDPR).
 
-For questions or to exercise your rights, contact us at [contact@feedgot.com](mailto:contact@feedgot.com).
+For questions or to exercise your rights, contact us at [contact@oreilla.com](mailto:contact@oreilla.com).
 
 ## Data Controller
 
-When we determine the purposes and means of processing, feedgot acts as the data controller. When we process Customer Data on behalf of our customers, we act as a data processor under the terms of our DPA.
+When we determine the purposes and means of processing, oreilla acts as the data controller. When we process Customer Data on behalf of our customers, we act as a data processor under the terms of our DPA.
 
 ## Personal Data We Collect
 
@@ -122,7 +122,7 @@ You have the following rights under GDPR, subject to conditions and exceptions:
 - Withdraw consent at any time (where processing is based on consent).
 - Lodge a complaint with a supervisory authority in your country of residence or work.
 
-To exercise your rights, contact [contact@feedgot.com](mailto:contact@feedgot.com). We will respond within one month or as otherwise required by law.
+To exercise your rights, contact [contact@oreilla.com](mailto:contact@oreilla.com). We will respond within one month or as otherwise required by law.
 
 ## Children
 
@@ -134,4 +134,4 @@ We may update this Privacy Policy from time to time. We will post changes with a
 
 ## Contact
 
-For privacy inquiries, contact [contact@feedgot.com](mailto:contact@feedgot.com).
+For privacy inquiries, contact [contact@oreilla.com](mailto:contact@oreilla.com).

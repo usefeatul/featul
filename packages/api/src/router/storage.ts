@@ -4,7 +4,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { HTTPException } from "hono/http-exception"
 import { and, eq } from "drizzle-orm"
-import { workspace, workspaceMember, post, board } from "@feedgot/db"
+import { workspace, workspaceMember, post, board } from "@oreilla/db"
 
 function getEnv(name: string): string {
   const v = process.env[name]

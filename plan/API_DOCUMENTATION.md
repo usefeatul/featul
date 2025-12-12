@@ -1,10 +1,10 @@
-# FeedGot API Documentation
+# oreilla API Documentation
 
 ## Overview
 
-The FeedGot API is a RESTful API that allows you to integrate feedback management into your applications. It provides endpoints for managing feedback, users, organizations, and more.
+The oreilla API is a RESTful API that allows you to integrate feedback management into your applications. It provides endpoints for managing feedback, users, organizations, and more.
 
-**Base URL**: `https://api.feedgot.com/v1`
+**Base URL**: `https://api.oreilla.com/v1`
 
 **API Version**: v1
 
@@ -20,7 +20,7 @@ Authorization: Bearer YOUR_API_KEY
 
 ### Getting an API Key
 
-1. Log in to your FeedGot dashboard
+1. Log in to your oreilla dashboard
 2. Navigate to Settings → API Keys
 3. Click "Generate New API Key"
 4. Copy and securely store your API key
@@ -271,7 +271,7 @@ Retrieve a specific feedback item.
         "id": "att_123",
         "filename": "mockup.png",
         "file_size": 1024000,
-        "file_url": "https://cdn.feedgot.com/files/mockup.png"
+        "file_url": "https://cdn.oreilla.com/files/mockup.png"
       }
     ],
     "created_at": "2024-01-01T00:00:00Z",
@@ -655,19 +655,19 @@ POST /webhooks/{webhook_id}/test
 ### JavaScript/Node.js
 
 ```bash
-npm install @feedgot/js-sdk
+npm install @oreilla/js-sdk
 ```
 
 ```javascript
-import { FeedGot } from '@feedgot/js-sdk';
+import { oreilla } from '@oreilla/js-sdk';
 
-const feedgot = new FeedGot({
+const oreilla = new oreilla({
   apiKey: 'your_api_key',
-  baseUrl: 'https://api.feedgot.com/v1'
+  baseUrl: 'https://api.oreilla.com/v1'
 });
 
 // Create feedback
-const feedback = await feedgot.feedback.create({
+const feedback = await oreilla.feedback.create({
   title: 'New feature request',
   description: 'Description here',
   author: {
@@ -677,7 +677,7 @@ const feedback = await feedgot.feedback.create({
 });
 
 // List feedback
-const feedbackList = await feedgot.feedback.list({
+const feedbackList = await oreilla.feedback.list({
   status: 'open',
   limit: 10
 });
@@ -686,13 +686,13 @@ const feedbackList = await feedgot.feedback.list({
 ### Python
 
 ```bash
-pip install feedgot-python
+pip install oreilla-python
 ```
 
 ```python
-from feedgot import FeedGot
+from oreilla import oreilla
 
-client = FeedGot(api_key='your_api_key')
+client = oreilla(api_key='your_api_key')
 
 # Create feedback
 feedback = client.feedback.create(
@@ -714,11 +714,11 @@ feedback_list = client.feedback.list(
 ### PHP
 
 ```bash
-composer require feedgot/php-sdk
+composer require oreilla/php-sdk
 ```
 
 ```php
-use FeedGot\Client;
+use oreilla\Client;
 
 $client = new Client('your_api_key');
 
@@ -739,11 +739,11 @@ $feedback = $client->feedback()->create([
 
 ```html
 <!-- Add to your HTML head -->
-<script src="https://widget.feedgot.com/widget.js"></script>
+<script src="https://widget.oreilla.com/widget.js"></script>
 
 <!-- Initialize the widget -->
 <script>
-  FeedGot.init({
+  oreilla.init({
     organizationId: 'your_org_id',
     apiKey: 'your_public_api_key',
     position: 'bottom-right', // 'bottom-left', 'bottom-right', 'top-left', 'top-right'
@@ -756,7 +756,7 @@ $feedback = $client->feedback()->create([
 ### Advanced Configuration
 
 ```javascript
-FeedGot.init({
+oreilla.init({
   organizationId: 'your_org_id',
   apiKey: 'your_public_api_key',
   
@@ -844,4 +844,4 @@ FeedGot.init({
 4. **Batch operations** when possible
 5. **Monitor API usage** to optimize performance
 
-This API documentation provides comprehensive coverage of all FeedGot API endpoints and features, enabling developers to integrate feedback management seamlessly into their applications.
+This API documentation provides comprehensive coverage of all oreilla API endpoints and features, enabling developers to integrate feedback management seamlessly into their applications.

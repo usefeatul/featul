@@ -1,3 +1,3 @@
-# `@feedgot/typescript-config`
+# `@oreilla/typescript-config`
 
 Shared typescript configuration for the workspace.

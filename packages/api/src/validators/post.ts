@@ -47,3 +47,9 @@ export const reportPostSchema = z.object({
   reason: z.enum(["spam", "harassment", "inappropriate", "off_topic", "other"]),
   description: z.string().max(500).optional(),
 })
+
+export const getSimilarSchema = z.object({
+  title: z.string().min(1),
+  boardSlug: z.string().min(1),
+  workspaceSlug: z.string().min(1),
+})

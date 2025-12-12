@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query"
 import { HTTPException } from "hono/http-exception"
 import { PropsWithChildren, useState } from "react"
-import { Toaster } from "@feedgot/ui/components/sonner"
+import { Toaster } from "@oreilla/ui/components/sonner"
 
 export const Providers = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(

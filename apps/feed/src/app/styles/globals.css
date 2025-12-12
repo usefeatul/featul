@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@feedgot/ui/globals.css";
+@import "@oreilla/ui/globals.css";
 
 
 @layer base {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
-import { getServerSession } from "@feedgot/auth/session"
+import { getServerSession } from "@oreilla/auth/session"
 import { findFirstAccessibleWorkspaceSlug } from "@/lib/workspace"
 
 export const revalidate = 30

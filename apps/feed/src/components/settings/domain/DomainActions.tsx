@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { Button } from "@feedgot/ui/components/button";
+import { Button } from "@oreilla/ui/components/button";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverList,
   PopoverListItem,
-} from "@feedgot/ui/components/popover";
+} from "@oreilla/ui/components/popover";
 import { MoreVertical } from "lucide-react";
 
 export default function DomainActions({

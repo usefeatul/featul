@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm"
 import { HTTPException } from "hono/http-exception"
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { workspace, brandingConfig, workspaceMember } from "@feedgot/db"
+import { workspace, brandingConfig, workspaceMember } from "@oreilla/db"
 import { checkSlugInputSchema } from "../validators/workspace"
 import { updateBrandingInputSchema } from "../validators/branding"
 import { getPlanLimits } from "../shared/plan"

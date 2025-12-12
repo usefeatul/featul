@@ -31,7 +31,7 @@ export function AlternativeHeroContent({
       <p className="mt-6 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-xs sm:text-sm md:text-base leading-relaxed text-accent text-balance">
         {clientDescription ?? description ?? (
           <>
-            Compare {name} and Feedgot — transparent by design, focused on
+            Compare {name} and oreilla — transparent by design, focused on
             simplicity and user first UX. Organized feedback boards,
             auto-syncing roadmaps, and self-writing changelogs.
           </>

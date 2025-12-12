@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { authClient } from "@feedgot/auth/client";
-import { Button } from "@feedgot/ui/components/button";
-import { Input } from "@feedgot/ui/components/input";
-import { Label } from "@feedgot/ui/components/label";
+import { authClient } from "@oreilla/auth/client";
+import { Button } from "@oreilla/ui/components/button";
+import { Input } from "@oreilla/ui/components/input";
+import { Label } from "@oreilla/ui/components/label";
 import Link from "next/link";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";

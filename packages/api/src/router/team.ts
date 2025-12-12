@@ -1,8 +1,8 @@
 import { HTTPException } from "hono/http-exception"
 import { and, eq, gt, isNull, sql } from "drizzle-orm"
 import { j, privateProcedure } from "../jstack"
-import { workspace, workspaceMember, workspaceInvite, user, brandingConfig } from "@feedgot/db"
-import { sendWorkspaceInvite } from "@feedgot/auth/email"
+import { workspace, workspaceMember, workspaceInvite, user, brandingConfig } from "@oreilla/db"
+import { sendWorkspaceInvite } from "@oreilla/auth/email"
 import {
   byWorkspaceInputSchema,
   inviteMemberInputSchema,
@@ -16,6 +16,41 @@ import {
 import { getPlanLimits } from "../shared/plan"
 import { mapPermissions } from "../shared/permissions"
 
+async function getWorkspaceMemberEmails(
+  ctx: any,
+  workspaceId: string,
+  ownerId: string
+): Promise<Set<string>> {
+  // Get emails of existing active members
+  const existingMemberEmails = await ctx.db
+    .select({ email: user.email })
+    .from(workspaceMember)
+    .innerJoin(user, eq(workspaceMember.userId, user.id))
+    .where(
+      and(
+        eq(workspaceMember.workspaceId, workspaceId),
+        eq(workspaceMember.isActive, true)
+      )
+    )
+
+  const memberEmails = new Set(
+    existingMemberEmails
+      .map((m: { email: string | null }) => m.email?.toLowerCase())
+      .filter(Boolean) as string[]
+  )
+
+  // Also include owner email (owner might not be in workspaceMember table)
+  const [owner] = await ctx.db
+    .select({ email: user.email })
+    .from(user)
+    .where(eq(user.id, ownerId))
+    .limit(1)
+  if (owner?.email) {
+    memberEmails.add(owner.email.toLowerCase())
+  }
+
+  return memberEmails
+}
 
 export function createTeamRouter() {
   return j.router({
@@ -84,6 +119,8 @@ export function createTeamRouter() {
         }
 
         const now = new Date()
+        const memberEmails = await getWorkspaceMemberEmails(ctx, ws.id, ws.ownerId)
+
         const invites = await ctx.db
           .select({
             id: workspaceInvite.id,
@@ -95,10 +132,17 @@ export function createTeamRouter() {
             createdAt: workspaceInvite.createdAt,
           })
           .from(workspaceInvite)
-          .where(and(eq(workspaceInvite.workspaceId, ws.id), gt(workspaceInvite.expiresAt, now), isNull(workspaceInvite.acceptedAt)))
+          .where(and(
+            eq(workspaceInvite.workspaceId, ws.id),
+            gt(workspaceInvite.expiresAt, now),
+            isNull(workspaceInvite.acceptedAt)
+          ))
+        
+        // Filter out invites for emails that are already members
+        const filteredInvites = invites.filter((inv: { email: string }) => !memberEmails.has(inv.email.toLowerCase()))
 
         c.header("Cache-Control", "private, max-age=120, stale-while-revalidate=600")
-        return c.superjson({ members, invites, meId })
+        return c.superjson({ members, invites: filteredInvites, meId })
       }),
 
     invite: privateProcedure
@@ -119,6 +163,29 @@ export function createTeamRouter() {
           .limit(1)
         const allowed = me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+        
+        // Check if email already belongs to an active member
+        const inviteEmail = input.email.trim().toLowerCase()
+        const [existingMember] = await ctx.db
+          .select({ id: workspaceMember.id })
+          .from(workspaceMember)
+          .innerJoin(user, eq(workspaceMember.userId, user.id))
+          .where(and(
+            eq(workspaceMember.workspaceId, ws.id),
+            eq(workspaceMember.isActive, true),
+            eq(user.email, inviteEmail)
+          ))
+          .limit(1)
+        if (existingMember) throw new HTTPException(400, { message: "User is already a member of this workspace" })
+        
+        // Check if email belongs to the workspace owner
+        const [owner] = await ctx.db
+          .select({ email: user.email })
+          .from(user)
+          .where(eq(user.id, ws.ownerId))
+          .limit(1)
+        if (owner?.email?.toLowerCase() === inviteEmail) throw new HTTPException(400, { message: "User is already a member of this workspace" })
+        
         const limits = getPlanLimits(ws.plan as "free" | "pro" | "enterprise")
         const [mc] = await ctx.db
           .select({ count: sql<number>`count(*)` })
@@ -148,7 +215,7 @@ export function createTeamRouter() {
             .where(eq(brandingConfig.workspaceId, ws.id))
             .limit(1)
           const brand = {
-            name: ws.name || "Feedgot",
+            name: ws.name || "oreilla",
             logoUrl: undefined,
             primaryColor: branding?.primaryColor || undefined,
             backgroundColor: undefined,
@@ -180,6 +247,8 @@ export function createTeamRouter() {
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
         const now = new Date()
+        const memberEmails = await getWorkspaceMemberEmails(ctx, ws.id, ws.ownerId)
+
         const invites = await ctx.db
           .select({
             id: workspaceInvite.id,
@@ -191,9 +260,16 @@ export function createTeamRouter() {
             createdAt: workspaceInvite.createdAt,
           })
           .from(workspaceInvite)
-          .where(and(eq(workspaceInvite.workspaceId, ws.id), gt(workspaceInvite.expiresAt, now), isNull(workspaceInvite.acceptedAt)))
+          .where(and(
+            eq(workspaceInvite.workspaceId, ws.id),
+            gt(workspaceInvite.expiresAt, now),
+            isNull(workspaceInvite.acceptedAt)
+          ))
+        
+        // Filter out invites for emails that are already members
+        const filteredInvites = invites.filter((inv: { email: string }) => !memberEmails.has(inv.email.toLowerCase()))
 
-        return c.superjson({ invites })
+        return c.superjson({ invites: filteredInvites })
       }),
 
     revokeInvite: privateProcedure
@@ -334,10 +410,14 @@ export function createTeamRouter() {
           })
         }
 
+        // Delete all pending invites for this email (not just the one with the token)
         await ctx.db
-          .update(workspaceInvite)
-          .set({ acceptedAt: new Date() })
-          .where(eq(workspaceInvite.id, inv.id))
+          .delete(workspaceInvite)
+          .where(and(
+            eq(workspaceInvite.workspaceId, inv.workspaceId),
+            eq(workspaceInvite.email, inv.email),
+            isNull(workspaceInvite.acceptedAt)
+          ))
 
         return c.json({ ok: true })
       }),
@@ -426,6 +506,14 @@ export function createTeamRouter() {
               permissions: mapPermissions(input.role),
               joinedAt: new Date(),
             })
+            // Delete any pending invites for this email since they're now a member
+            await ctx.db
+              .delete(workspaceInvite)
+              .where(and(
+                eq(workspaceInvite.workspaceId, ws.id),
+                eq(workspaceInvite.email, input.email.trim().toLowerCase()),
+                isNull(workspaceInvite.acceptedAt)
+              ))
           }
           return c.json({ ok: true, invited: false })
         }

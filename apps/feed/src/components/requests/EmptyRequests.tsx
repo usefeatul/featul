@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react"
-import { Button } from "@feedgot/ui/components/button"
+import { Button } from "@oreilla/ui/components/button"
 
 export default function EmptyRequests({ workspaceSlug, className = "" }: { workspaceSlug: string; className?: string }) {
-  const href = `https://${workspaceSlug}.feedgot.com`
+  const href = `https://${workspaceSlug}.oreilla.com`
   return (
     <div className={`flex flex-col items-center justify-center text-center min-h-[60vh] md:min-h-[70vh] py-14 ${className}`}>
       <div className="inline-flex items-center justify-center size-10 rounded-md bg-muted border ring-1 ring-border/60 text-foreground font-mono tabular-nums">0</div>

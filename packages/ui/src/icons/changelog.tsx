@@ -3,16 +3,17 @@ import React from 'react'
 interface ChangelogIconProps {
   className?: string
   size?: number
+  opacity?: number
 }
 
-export const ChangelogIcon: React.FC<ChangelogIconProps> = ({ className = '', size = 18 }) => {
+export const ChangelogIcon: React.FC<ChangelogIconProps> = ({ className = '', size = 18, opacity = 0.6 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       viewBox="0 0 18 18"
-       opacity={0.6}
+      opacity={opacity}
       className={className}
     >
       <title>folder</title>

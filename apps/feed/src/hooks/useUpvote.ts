@@ -1,5 +1,5 @@
 import { useState, useTransition, useEffect } from "react";
-import { client } from "@feedgot/api/client";
+import { client } from "@oreilla/api/client";
 import { toast } from "sonner";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import { useQuery } from "@tanstack/react-query";

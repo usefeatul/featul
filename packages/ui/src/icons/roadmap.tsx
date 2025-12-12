@@ -3,16 +3,17 @@ import React from 'react'
 interface RoadmapIconProps {
   className?: string
   size?: number
+  opacity?: number
 }
 
-export const RoadmapIcon: React.FC<RoadmapIconProps> = ({ className = '', size = 18 }) => {
+export const RoadmapIcon: React.FC<RoadmapIconProps> = ({ className = '', size = 18, opacity = 1 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       viewBox="0 0 18 18"
-       opacity={1}
+      opacity={opacity}
       className={className}
     >
       <title>align-3-left</title>

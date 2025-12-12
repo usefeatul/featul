@@ -1,11 +1,11 @@
 "use client"
 
 import React from "react"
-import { Button } from "@feedgot/ui/components/button"
+import { Button } from "@oreilla/ui/components/button"
 import { Bell } from "lucide-react"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import NotificationsPanel from "./NotificationsPanel"
-import { Popover, PopoverTrigger, PopoverContent } from "@feedgot/ui/components/popover"
+import { Popover, PopoverTrigger, PopoverContent } from "@oreilla/ui/components/popover"
 
 export default function NotificationsBell() {
   const [open, setOpen] = React.useState(false)

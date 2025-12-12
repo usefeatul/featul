@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react"
-import { Button } from "@feedgot/ui/components/button"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
-import { DropdownIcon } from "@feedgot/ui/icons/dropdown"
-import { client } from "@feedgot/api/client"
+import { Button } from "@oreilla/ui/components/button"
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
+import { DropdownIcon } from "@oreilla/ui/icons/dropdown"
+import { client } from "@oreilla/api/client"
 
 type Flags = { isPinned?: boolean; isLocked?: boolean; isFeatured?: boolean }
 
@@ -31,7 +31,7 @@ export default function FlagsPicker({ postId, value, onChange }: { postId: strin
       <PopoverTrigger asChild>
         <Button type="button" variant="nav" size="sm" className="h-7 px-2">
           <span className="rounded-md  px-2 py-0.5 capitalize">{label}</span>
-          <DropdownIcon className="ml-1 opacity-60" size={12} />
+          <DropdownIcon className="ml-1  size-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">

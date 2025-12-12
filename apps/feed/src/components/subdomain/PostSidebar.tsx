@@ -2,7 +2,7 @@
 
 import React from "react"
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
-import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avatar"
+import { Avatar, AvatarImage, AvatarFallback } from "@oreilla/ui/components/avatar"
 import { getDisplayUser, getInitials } from "@/utils/user-utils"
 import { relativeTime } from "@/lib/time"
 import BoardPicker from "../requests/meta/BoardPicker"
@@ -62,7 +62,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
 
   return (
-    <aside className="space-y-4">
+    <aside className="hidden md:block space-y-4">
       <div className="rounded-xl bg-card p-4 border">
         {/* Header: User & Time */}
         <div className="flex items-center gap-3 mb-6">

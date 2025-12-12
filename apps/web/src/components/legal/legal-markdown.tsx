@@ -1,20 +1,16 @@
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import rehypeSanitize from "rehype-sanitize"
+import Image from "next/image"
 
 type Props = {
   markdown: string
 }
 
 export default function LegalMarkdown({ markdown }: Props) {
-  // Cast plugin lists to avoid TS generics mismatch from unified/remark types across dependencies.
-  const remarkPlugins = [remarkGfm] as unknown as any[]
-  const rehypePlugins = [rehypeSanitize] as unknown as any[]
+
   return (
     <ReactMarkdown
-      remarkPlugins={remarkPlugins}
-      rehypePlugins={rehypePlugins}
+
       components={{
         a: ({ href, children }) => {
           const url = typeof href === "string" ? href : ""
@@ -33,7 +29,7 @@ export default function LegalMarkdown({ markdown }: Props) {
         img: ({ src, alt }) => {
           const url = typeof src === "string" ? src : ""
           return (
-            <img
+            <Image
               src={url}
               alt={(typeof alt === "string" ? alt : undefined) ?? ""}
               loading="lazy"

@@ -8,7 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@feedgot/ui/components/table";
+} from "@oreilla/ui/components/table";
 
 import { Copy } from "lucide-react";
 import { toast } from "sonner";

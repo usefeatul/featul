@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
-import { ListFilterIcon } from "@feedgot/ui/icons/list-filter"
-import { cn } from "@feedgot/ui/lib/utils"
+import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
+import { ListFilterIcon } from "@oreilla/ui/icons/list-filter"
+import { cn } from "@oreilla/ui/lib/utils"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"

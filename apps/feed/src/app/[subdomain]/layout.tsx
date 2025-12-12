@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { db, workspace, board } from "@feedgot/db";
+import { db, workspace, board } from "@oreilla/db";
 import { eq, and } from "drizzle-orm";
 import { Container } from "@/components/global/container";
 import { DomainHeader } from "@/components/subdomain/DomainHeader";
@@ -8,8 +8,6 @@ import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import { getBrandingBySlug } from "@/lib/workspace";
 import SubdomainThemeProvider from "@/components/subdomain/SubdomainThemeProvider";
 import { DomainBrandingProvider } from "@/components/subdomain/DomainBrandingProvider";
-import { PoweredBy } from "@/components/subdomain/PoweredBy";
-import { getServerSession } from "@feedgot/auth/session";
 
 export default async function Layout({
   children,
@@ -34,7 +32,6 @@ export default async function Layout({
   if (!ws) notFound();
 
   const branding = await getBrandingBySlug(subdomain);
-  const session = await getServerSession();
   const [b] = await db
     .select({
       id: board.id,
@@ -50,6 +47,22 @@ export default async function Layout({
     )
     .limit(1);
   const changelogVisible = Boolean(b?.isVisible) && Boolean(b?.isPublic);
+
+  const [rb] = await db
+    .select({
+      id: board.id,
+      isVisible: board.isVisible,
+      isPublic: board.isPublic,
+    })
+    .from(board)
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.systemType, "roadmap" as any)
+      )
+    )
+    .limit(1);
+  const roadmapVisible = Boolean(rb?.isVisible) && Boolean(rb?.isPublic);
   const hidePoweredBy = Boolean(branding.hidePoweredBy);
   const p = branding.primary;
   return (
@@ -78,21 +91,12 @@ export default async function Layout({
                   workspace={ws}
                   subdomain={subdomain}
                   changelogVisible={changelogVisible}
+                  roadmapVisible={roadmapVisible}
                 />
                 <div className="mt-6 pb-16 md:pb-0">{children}</div>
               </Container>
             );
           })()}
-          {/* <div className="fixed bottom-0 left-0 right-0 z-30">
-          {(() => {
-            const maxW = branding.layoutStyle === "compact" ? "4xl" : branding.layoutStyle === "spacious" ? "6xl" : "5xl"
-            return (
-              <Container maxWidth={maxW} className="flex  justify-end items-end">
-                <PoweredBy />
-              </Container>
-            )
-          })()}
-        </div> */}
         </DomainBrandingProvider>
       </SubdomainThemeProvider>
     </>

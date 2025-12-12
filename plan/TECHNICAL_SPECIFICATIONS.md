@@ -1,8 +1,8 @@
-# FeedGot Technical Specifications
+# oreilla Technical Specifications
 
 ## Project Overview
 
-FeedGot is an open-source user feedback platform designed to be the "Linear of feedback management" - beautiful, fast, and developer-loved. It aims to disrupt the market dominated by expensive closed-source solutions like FeatureBase ($60-250/month) and UserJot ($29-59/month).
+oreilla is an open-source user feedback platform designed to be the "Linear of feedback management" - beautiful, fast, and developer-loved. It aims to disrupt the market dominated by expensive closed-source solutions like FeatureBase ($60-250/month) and UserJot ($29-59/month).
 
 ## Architecture Overview
 
@@ -253,7 +253,7 @@ comments {
 
 ### Code Organization
 ```
-feedgot/
+oreilla/
 ├── apps/
 │   ├── web/          # Landing web application
 │   └── feed/         # Main application
@@ -322,4 +322,4 @@ feedgot/
 - Performance audits
 - Security assessments
 
-This technical specification serves as the foundation for the FeedGot platform development and will be updated as the project evolves.
+This technical specification serves as the foundation for the oreilla platform development and will be updated as the project evolves.

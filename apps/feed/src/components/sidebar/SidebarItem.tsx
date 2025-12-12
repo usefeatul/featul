@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { cn } from "@feedgot/ui/lib/utils";
+import { cn } from "@oreilla/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
 
 function SidebarItem({

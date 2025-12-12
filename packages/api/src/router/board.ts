@@ -1,8 +1,8 @@
 // biome-ignore assist/source/organizeImports: <>
-import { eq, and, sql, inArray, type SQLWrapper } from "drizzle-orm"
+import { eq, and, sql, inArray, asc, type SQLWrapper } from "drizzle-orm"
 import { z } from "zod"
 import { j, publicProcedure, privateProcedure } from "../jstack"
-import { workspace, board, post, postTag, tag, comment, user, workspaceMember, vote } from "@feedgot/db"
+import { workspace, board, post, postTag, tag, comment, user, workspaceMember, vote } from "@oreilla/db"
 import { byIdSchema, updatePostMetaSchema, updatePostBoardSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
 import { byBoardInputSchema, boardSlugSchema } from "../validators/board"
@@ -39,6 +39,7 @@ export function createBoardRouter() {
           })
           .from(board)
           .where(eq(board.workspaceId, ws.id))
+          .orderBy(asc(board.sortOrder), asc(board.createdAt))
 
         const withCounts = await Promise.all(
           rows.map(async (b: any) => {
@@ -378,6 +379,7 @@ export function createBoardRouter() {
           })
           .from(board)
           .where(and(eq(board.workspaceId, ws.id), eq(board.isPublic, true)))
+          .orderBy(asc(board.sortOrder), asc(board.createdAt))
 
         const withCounts = await Promise.all(
           boardsList.map(async (b: typeof board.$inferSelect) => {

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 
 type Role = "admin" | "member" | "viewer"
 

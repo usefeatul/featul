@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { EditIcon } from "@feedgot/ui/icons/edit";
-import { PopoverListItem } from "@feedgot/ui/components/popover";
+import { EditIcon } from "@oreilla/ui/icons/edit";
+import { PopoverListItem } from "@oreilla/ui/components/popover";
 
 interface RequestEditActionProps {
   onClick: () => void;

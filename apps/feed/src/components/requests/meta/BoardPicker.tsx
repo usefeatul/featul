@@ -1,11 +1,11 @@
 "use client"
 
 import React from "react"
-import { Button } from "@feedgot/ui/components/button"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
-import { DropdownIcon } from "@feedgot/ui/icons/dropdown"
-import { client } from "@feedgot/api/client"
-import { cn } from "@feedgot/ui/lib/utils"
+import { Button } from "@oreilla/ui/components/button"
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
+import { DropdownIcon } from "@oreilla/ui/icons/dropdown"
+import { client } from "@oreilla/api/client"
+import { cn } from "@oreilla/ui/lib/utils"
 
 type Board = { id: string; name: string; slug: string }
 
@@ -16,10 +16,12 @@ export default function BoardPicker({ workspaceSlug, postId, value, onChange, cl
 
   React.useEffect(() => {
     let mounted = true
-    client.board.byWorkspaceSlug.$get({ slug: workspaceSlug }).then((res: any) => {
+    client.board.settingsByWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res: Response) => {
       if (!mounted) return
-      const rows = (res?.boards || []).map((b: any) => ({ id: b.id, name: b.name, slug: b.slug }))
-      setBoards(rows)
+      const data = await res.json().catch(() => null)
+      const rows = (((data as any)?.boards) || []).map((b: any) => ({ id: b.id, name: b.name, slug: b.slug }))
+      const filtered = rows.filter((b: any) => b.slug !== "roadmap" && b.slug !== "changelog")
+      setBoards(filtered)
     })
     return () => {
       mounted = false
@@ -51,10 +53,10 @@ export default function BoardPicker({ workspaceSlug, postId, value, onChange, cl
           )}
         >
           <span className="">{value?.name || "Board"}</span>
-          <DropdownIcon className="ml-1.5 opacity-60" size={12} />
+          <DropdownIcon className="ml-1.5  size-3" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent list className="min-w-0 w-fit">
+      <PopoverContent list className="w-fit">
         <PopoverList>
           {boards.map((b) => (
             <PopoverListItem key={b.slug} role="menuitemradio" aria-checked={value?.slug === b.slug} onClick={() => select(b.slug, b.name)}>

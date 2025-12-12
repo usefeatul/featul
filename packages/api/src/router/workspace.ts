@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception"
 import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation } from "@feedgot/db"
+import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation } from "@oreilla/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema } from "../validators/workspace"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
@@ -346,7 +346,7 @@ export function createWorkspaceRouter() {
           if (parts.length < 2) throw new HTTPException(400, { message: "Invalid domain host" })
           const cnameName = parts[0]
 
-          const DEFAULT_CNAME_TARGET = process.env.CUSTOM_DOMAIN_CNAME_TARGET || 'origin.feedgot.com'
+          const DEFAULT_CNAME_TARGET = process.env.CUSTOM_DOMAIN_CNAME_TARGET || 'origin.oreilla.com'
           const txtName = `_acme-challenge.${host}`
           const token = crypto.randomUUID()
 

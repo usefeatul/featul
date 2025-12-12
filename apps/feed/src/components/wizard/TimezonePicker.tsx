@@ -1,9 +1,9 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Button } from "@feedgot/ui/components/button"
-import { Input } from "@feedgot/ui/components/input"
-import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover"
+import { Button } from "@oreilla/ui/components/button"
+import { Input } from "@oreilla/ui/components/input"
+import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
 import { Globe2, ChevronDown } from "lucide-react"
 
 export default function TimezonePicker({ value, onChange, now }: { value: string; onChange: (v: string) => void; now: Date }) {

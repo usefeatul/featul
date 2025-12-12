@@ -1,9 +1,9 @@
 "use client"
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 import type { TocItem } from "@/lib/toc"
 import { useRef, useState } from "react"
 import { usePrefersReducedMotion } from "../../hooks/use-prefers-reduced-motion"
-import { ScrollArea } from "@feedgot/ui/components/scroll-area"
+import { ScrollArea } from "@oreilla/ui/components/scroll-area"
 import { useActiveHeading } from "@/hooks/use-active-heading"
 import { useAutoScrollActiveLink } from "@/hooks/use-auto-scroll-active-link"
 import { scrollToHeading, updateUrlHash } from "@/lib/toc-utils"
@@ -15,12 +15,12 @@ type TableOfContentsProps = {
 }
 
 export function TableOfContents({ items, className, title = "Table of content" }: TableOfContentsProps) {
-  if (!items?.length) return null
   const activeId = useActiveHeading(items)
   const prefersReducedMotion = usePrefersReducedMotion()
   const [expanded, setExpanded] = useState(false)
   const navRef = useRef<HTMLDivElement | null>(null)
   useAutoScrollActiveLink(activeId, expanded, navRef as React.RefObject<HTMLElement>)
+  if (!items?.length) return null
 
   function onAnchorClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     e.preventDefault()

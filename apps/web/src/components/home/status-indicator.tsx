@@ -1,5 +1,5 @@
 "use client"
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 import type { StatusIndicatorProps } from "../../types/status"
 import { colorForStatus } from "../../types/status"
 
@@ -18,7 +18,7 @@ export function StatusIndicator({
       : `Status: ${status.replace("-", " ")}`)
 
   return (
-    <span className={cn("relative inline-block size-2 top-[1px] align-middle", className)}>
+    <span className={cn("relative inline-block size-2 align-middle", className)}>
       {pulse && (
         <span
           aria-hidden

@@ -7,8 +7,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@feedgot/ui/components/dialog";
-import { cn } from "@feedgot/ui/lib/utils";
+} from "@oreilla/ui/components/dialog";
+import { cn } from "@oreilla/ui/lib/utils";
 
 interface ContentImageProps {
   url: string;

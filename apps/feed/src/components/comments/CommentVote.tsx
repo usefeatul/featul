@@ -2,9 +2,9 @@
 
 import React, { useState, useTransition } from "react"
 import { ThumbsUp, ThumbsDown } from "lucide-react"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { useQuery } from "@tanstack/react-query"
 import { getBrowserFingerprint } from "@/utils/fingerprint"

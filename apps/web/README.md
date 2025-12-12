@@ -1,4 +1,4 @@
-# Feedgot Web Platform
+# oreilla Web Platform
 
 A modern business tools platform built with Next.js, featuring calculators, blog integration, and comprehensive business resources.
 
@@ -51,4 +51,4 @@ npm run dev
 
 ---
 
-**Feedgot** - Built for modern business teams 🚀
+**oreilla** - Built for modern business teams 🚀

@@ -4,7 +4,7 @@ import { user } from './auth'
 export const workspace = pgTable('workspace', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
-  slug: text('slug').notNull().unique(), // for subdomain like mantlz.feedgot.com
+  slug: text('slug').notNull().unique(), // for subdomain like mantlz.oreilla.com
   domain: text('domain').notNull(),
   ownerId: text('owner_id')
     .notNull()
@@ -18,7 +18,7 @@ export const workspace = pgTable('workspace', {
   logo: text('logo'), // URL to logo image
   primaryColor: text('primary_color').default('#3b82f6'), // hex color
   theme: text('theme', { enum: ['light', 'dark', 'system'] }).default('system'),
-  hideBranding: boolean('hide_branding').default(false), // "Powered by FeedGot"
+  hideBranding: boolean('hide_branding').default(false), // "Powered by oreilla"
   customDomain: text('custom_domain'), // for custom domains
   timezone: text('timezone').notNull().default('UTC'),
   stripeCustomerId: text('stripe_customer_id'),
@@ -41,8 +41,8 @@ export const workspaceDomain = pgTable(
     host: text('host').notNull().unique(),
     // Subdomain label, e.g., "feedback"
     cnameName: text('cname_name').notNull().default('feedback'),
-    // Target to point CNAME to, e.g., "origin.feedgot.com"
-    cnameTarget: text('cname_target').notNull().default('origin.feedgot.com'),
+    // Target to point CNAME to, e.g., "origin.oreilla.com"
+    cnameTarget: text('cname_target').notNull().default('origin.oreilla.com'),
     // TXT verification record name, e.g., "_acme-challenge.feedback.mantlz.com"
     txtName: text('txt_name').notNull(),
     // TXT verification token/value

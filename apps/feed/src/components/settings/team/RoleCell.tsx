@@ -1,8 +1,8 @@
 import React from "react";
-import { TableCell } from "@feedgot/ui/components/table";
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@feedgot/ui/components/popover";
-import { Button } from "@feedgot/ui/components/button";
-import { cn } from "@feedgot/ui/lib/utils";
+import { TableCell } from "@oreilla/ui/components/table";
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover";
+import { Button } from "@oreilla/ui/components/button";
+import { cn } from "@oreilla/ui/lib/utils";
 import { MoreVertical } from "lucide-react";
 import type { Member } from "../../../types/team";
 import { roleBadgeClass } from "./role-badge";

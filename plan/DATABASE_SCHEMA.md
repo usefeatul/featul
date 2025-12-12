@@ -1,8 +1,8 @@
-# FeedGot Database Schema
+# oreilla Database Schema
 
 ## Overview
 
-This document defines the complete database schema for FeedGot, a user feedback management platform. The schema is designed for PostgreSQL and uses Drizzle ORM for type-safe database operations.
+This document defines the complete database schema for oreilla, a user feedback management platform. The schema is designed for PostgreSQL and uses Drizzle ORM for type-safe database operations.
 
 ## Schema Design Principles
 
@@ -502,4 +502,4 @@ webhooks (1) ──── (n) webhook_deliveries
 - Use materialized views for complex analytics queries
 - Regular VACUUM and ANALYZE operations
 
-This schema provides a solid foundation for the FeedGot platform while maintaining flexibility for future enhancements and scalability requirements.
+This schema provides a solid foundation for the oreilla platform while maintaining flexibility for future enhancements and scalability requirements.

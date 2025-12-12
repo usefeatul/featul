@@ -51,8 +51,8 @@
   - `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS user_plan_plan_slug_fk;`
   - `ALTER TABLE "workspace" DROP CONSTRAINT IF EXISTS workspace_plan_plan_slug_fk;`
 - Rebuild DB artifacts and push schema:
-  - `pnpm --filter @feedgot/db db:generate`
-  - `pnpm --filter @feedgot/db db:push`
+  - `pnpm --filter @oreilla/db db:generate`
+  - `pnpm --filter @oreilla/db db:push`
 
 ## Optional: Reintroduce `plan` Metadata
 - If you later want centralized pricing/features:

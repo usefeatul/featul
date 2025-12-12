@@ -1,6 +1,6 @@
 ---
 title: Terms of Service
-description: feedgot terms and conditions for using our services.
+description: oreilla terms and conditions for using our services.
 path: /terms
 lastUpdated: 31 October 2025
 ---
@@ -9,16 +9,16 @@ lastUpdated: 31 October 2025
 
 **Last updated:** 31 October 2025
 
-These Terms of Service ("Terms") govern your access to and use of the websites, products, and services provided by **feedgot** ("feedgot", "we", "us", "our"). By creating an account, purchasing a subscription, or otherwise using the Service, you agree to these Terms.
+These Terms of Service ("Terms") govern your access to and use of the websites, products, and services provided by **oreilla** ("oreilla", "we", "us", "our"). By creating an account, purchasing a subscription, or otherwise using the Service, you agree to these Terms.
 
-If you have any questions, contact us at [contact@feedgot.com](mailto:contact@feedgot.com).
+If you have any questions, contact us at [contact@oreilla.com](mailto:contact@oreilla.com).
 
 ## Definitions
 
 ### Service-Related Terms
-- **Service**: The comprehensive suite of software applications, websites, mobile applications, APIs, dashboards, tools, and related services operated by feedgot, including all associated features, functionality, and content.
+- **Service**: The comprehensive suite of software applications, websites, mobile applications, APIs, dashboards, tools, and related services operated by oreilla, including all associated features, functionality, and content.
 - **Platform**: The underlying technology infrastructure, systems, databases, and networks that support the Service.
-- **Documentation**: User guides, help articles, API documentation, tutorials, training materials, and other instructional content provided by feedgot.
+- **Documentation**: User guides, help articles, API documentation, tutorials, training materials, and other instructional content provided by oreilla.
 
 ### User-Related Terms
 - **Customer/User**: Any individual, organization, or entity that accesses, uses, or subscribes to the Service, whether on their own behalf or on behalf of an organization.
@@ -53,7 +53,7 @@ You must be at least 18 years old and have the legal capacity to enter into cont
 When creating an Account, you agree to:
 - **Accurate Information**: Provide true, accurate, current, and complete information during registration and maintain such information throughout your use of the Service
 - **Legal Capacity**: Represent and warrant that you have the legal capacity to enter into these Terms and are not barred from using the Service under applicable law
-- **Single Account**: Maintain only one Account per individual unless expressly permitted by feedgot
+- **Single Account**: Maintain only one Account per individual unless expressly permitted by oreilla
 - **Verification**: Cooperate with identity verification procedures, including providing government-issued identification when requested
 
 ### Account Security Obligations
@@ -79,7 +79,7 @@ We may suspend or terminate your Account if:
 - **Service Protection**: Your use poses a risk to the Service or other users
 
 ### Notification Requirements
-You must notify feedgot immediately if:
+You must notify oreilla immediately if:
 - **Unauthorized Access**: You suspect unauthorized access to your Account
 - **Security Breach**: You experience a security incident that may affect the Service
 - **Contact Changes**: Your contact information changes and needs to be updated
@@ -88,7 +88,7 @@ You must notify feedgot immediately if:
 ## Subscriptions, Fees, and Billing
 
 - Paid plans are billed in advance on a recurring basis unless otherwise stated. Your Subscription auto-renews unless you cancel before the renewal date.
-- Trials, promotions, and discounts may be offered at feedgot’s discretion and are subject to change.
+- Trials, promotions, and discounts may be offered at oreilla’s discretion and are subject to change.
 - You authorize us (and our payment processors) to charge applicable fees, taxes, and currency conversion costs.
 - Price changes will be communicated in advance and take effect on the next billing cycle.
 - Refunds are generally not provided except where required by law. Certain EEA consumer rights may apply.
@@ -108,12 +108,12 @@ You agree not to, and not to allow others to:
 ## Customer Data and Content
 
 - You retain ownership of Customer Data.
-- You grant feedgot a limited, non-exclusive license to host, process, and display Customer Data solely to provide and improve the Service.
+- You grant oreilla a limited, non-exclusive license to host, process, and display Customer Data solely to provide and improve the Service.
 - You are responsible for the legality, accuracy, and permissions related to Customer Data.
 
 ## Intellectual Property
 
-The Service, including all software, interfaces, and content, is owned by or licensed to feedgot and protected by law. Subject to these Terms and any applicable plan limits, we grant you a limited, non-transferable, revocable license to use the Service for your business purposes. No other rights are granted.
+The Service, including all software, interfaces, and content, is owned by or licensed to oreilla and protected by law. Subject to these Terms and any applicable plan limits, we grant you a limited, non-transferable, revocable license to use the Service for your business purposes. No other rights are granted.
 
 ## Confidentiality
 
@@ -121,11 +121,11 @@ Each party agrees to protect the other’s Confidential Information and use it o
 
 ## Privacy and Data Protection (GDPR)
 
-When we process Personal Data as a controller, our processing is described in our [Privacy Policy](/privacy). Where feedgot acts as a processor for your data, our Data Processing Addendum (DPA) applies and incorporates the EU Standard Contractual Clauses where relevant. To request a signed DPA, email [contact@feedgot.com](mailto:contact@feedgot.com).
+When we process Personal Data as a controller, our processing is described in our [Privacy Policy](/privacy). Where oreilla acts as a processor for your data, our Data Processing Addendum (DPA) applies and incorporates the EU Standard Contractual Clauses where relevant. To request a signed DPA, email [contact@oreilla.com](mailto:contact@oreilla.com).
 
 ## Third-Party Services
 
-The Service may integrate with third-party services. Your use of those services is subject to their terms. feedgot is not responsible for third-party services.
+The Service may integrate with third-party services. Your use of those services is subject to their terms. oreilla is not responsible for third-party services.
 
 ## Beta Features
 
@@ -143,11 +143,11 @@ The Service is provided on an "as is" and "as available" basis. To the fullest e
 
 ## Limitation of Liability
 
-To the maximum extent permitted by law, feedgot is not liable for indirect, incidental, special, consequential, or punitive damages, or any loss of profits, data, or goodwill. Our aggregate liability under these Terms is limited to the amounts paid by you to feedgot for the Service in the twelve (12) months preceding the event giving rise to the claim. Nothing in these Terms limits liability for fraud, willful misconduct, or where liability cannot be limited under applicable law.
+To the maximum extent permitted by law, oreilla is not liable for indirect, incidental, special, consequential, or punitive damages, or any loss of profits, data, or goodwill. Our aggregate liability under these Terms is limited to the amounts paid by you to oreilla for the Service in the twelve (12) months preceding the event giving rise to the claim. Nothing in these Terms limits liability for fraud, willful misconduct, or where liability cannot be limited under applicable law.
 
 ## Indemnity
 
-You agree to indemnify and hold harmless feedgot, its affiliates, and personnel from any claims, liabilities, damages, and expenses arising from your misuse of the Service or violation of these Terms.
+You agree to indemnify and hold harmless oreilla, its affiliates, and personnel from any claims, liabilities, damages, and expenses arising from your misuse of the Service or violation of these Terms.
 
 ## Export and Sanctions
 
@@ -163,4 +163,4 @@ We may update these Terms from time to time. We will post the updated Terms with
 
 ## Contact
 
-For questions about these Terms or the Service, contact [contact@feedgot.com](mailto:contact@feedgot.com).
+For questions about these Terms or the Service, contact [contact@oreilla.com](mailto:contact@oreilla.com).

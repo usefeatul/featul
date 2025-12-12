@@ -1,9 +1,9 @@
-import { eq, and, sql, isNull } from "drizzle-orm"
+import { eq, and, sql, isNull, ilike, or } from "drizzle-orm"
 import { j, publicProcedure } from "../jstack"
-import { vote, post, workspace, board, postTag, workspaceMember, postReport } from "@feedgot/db"
-import { votePostSchema, createPostSchema, updatePostSchema, byIdSchema, reportPostSchema } from "../validators/post"
+import { vote, post, workspace, board, postTag, workspaceMember, postReport } from "@oreilla/db"
+import { votePostSchema, createPostSchema, updatePostSchema, byIdSchema, reportPostSchema, getSimilarSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
-import { auth } from "@feedgot/auth"
+import { auth } from "@oreilla/auth"
 import { headers } from "next/headers"
 import { mapPermissions } from "../shared/permissions"
 
@@ -65,7 +65,7 @@ export function createPostRouter() {
             authorId: userId || null,
             isAnonymous: !userId,
             metadata: !userId ? { fingerprint } : undefined,
-            roadmapStatus: roadmapStatus || null,
+            roadmapStatus: roadmapStatus || "pending",
         }).returning()
 
         // Insert tags
@@ -417,6 +417,69 @@ export function createPostRouter() {
 
           return c.superjson({ upvotes: updatedPost?.upvotes || 0, hasVoted: true })
         }
+      }),
+
+    getSimilar: publicProcedure
+      .input(getSimilarSchema)
+      .get(async ({ ctx, input, c }) => {
+        const { title, boardSlug, workspaceSlug } = input
+        
+        // Resolve Workspace first
+        const [ws] = await ctx.db
+          .select({ id: workspace.id })
+          .from(workspace)
+          .where(eq(workspace.slug, workspaceSlug))
+          .limit(1)
+
+        if (!ws) {
+             return c.superjson({ posts: [] })
+        }
+
+        // Resolve Board within Workspace
+        const [b] = await ctx.db
+          .select({ id: board.id })
+          .from(board)
+          .where(and(
+            eq(board.workspaceId, ws.id),
+            eq(board.slug, boardSlug)
+          ))
+          .limit(1)
+
+        if (!b) {
+             return c.superjson({ posts: [] })
+        }
+        
+        // Split title into words for better matching
+        const words = title.trim().split(/\s+/).filter(w => w.length > 2)
+        
+        let searchCondition = ilike(post.title, `%${title}%`)
+        
+        if (words.length > 0) {
+            // If we have words, try to match ANY of them, but rank by relevance?
+            // For now, let's just find posts that contain ANY of the significant words
+            // This is broader than "phrase match"
+            searchCondition = or(
+                ilike(post.title, `%${title}%`), // Exact phrase match
+                ...words.map(w => ilike(post.title, `%${w}%`)) // Or any word match
+            ) as any
+        }
+
+        const similarPosts = await ctx.db
+          .select({
+            id: post.id,
+            title: post.title,
+            slug: post.slug,
+            upvotes: post.upvotes,
+            commentCount: post.commentCount,
+          })
+          .from(post)
+          .where(and(
+            eq(post.boardId, b.id),
+            searchCondition
+          ))
+          .limit(3)
+          
+        return c.superjson({ posts: similarPosts })
       }),
 
     getVoteStatus: publicProcedure

@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { cn } from "@feedgot/ui/lib/utils"
-import { Tooltip, TooltipTrigger, TooltipContent } from "@feedgot/ui/components/tooltip"
-import { PinIcon } from "@feedgot/ui/icons/pin"
+import { cn } from "@oreilla/ui/lib/utils"
+import { Tooltip, TooltipTrigger, TooltipContent } from "@oreilla/ui/components/tooltip"
+import { PinIcon } from "@oreilla/ui/icons/pin"
 
 export default function PinnedBadge({ className, size = 12 }: { className?: string; size?: number }) {
   return (

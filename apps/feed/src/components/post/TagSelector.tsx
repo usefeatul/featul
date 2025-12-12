@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@feedgot/ui/components/button";
-import { TagIcon } from "@feedgot/ui/icons/tag";
+import { Button } from "@oreilla/ui/components/button";
+import { TagIcon } from "@oreilla/ui/icons/tag";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   PopoverList,
   PopoverListItem,
-} from "@feedgot/ui/components/popover";
+} from "@oreilla/ui/components/popover";
 
 interface TagSelectorProps {
   availableTags: any[];

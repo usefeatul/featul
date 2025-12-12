@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@feedgot/ui/lib/utils"
+import { cn } from "@oreilla/ui/lib/utils"
 import BoardsAction from "./actions/BoardsAction"
 import StatusAction from "./actions/StatusAction"
 import TagsAction from "./actions/TagsAction"

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { cn } from "@feedgot/ui/lib/utils";
-import { UpIcon } from "@feedgot/ui/icons/up";
+import { cn } from "@oreilla/ui/lib/utils";
+import { UpIcon } from "@oreilla/ui/icons/up";
 import type { ScrollBehaviorOption } from "../../types/reading";
 
 type ReadingProgressButtonProps = {

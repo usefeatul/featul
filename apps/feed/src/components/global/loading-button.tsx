@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@feedgot/ui/components/button"
+import { Button } from "@oreilla/ui/components/button"
 import { Loader2 } from "lucide-react"
 import * as React from "react"
 

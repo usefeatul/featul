@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { TOOL_CATEGORIES } from '@/types/tools'
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@feedgot/ui/components/card'
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@oreilla/ui/components/card'
 import { CornerUpRight } from 'lucide-react'
 import { getCategoryIcon } from './category-icons'
 

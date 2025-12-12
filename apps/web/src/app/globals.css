@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@feedgot/ui/globals.css";
+@import "@oreilla/ui/globals.css";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 

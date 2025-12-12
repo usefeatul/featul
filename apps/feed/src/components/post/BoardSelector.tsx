@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@feedgot/ui/components/button";
+import { Button } from "@oreilla/ui/components/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   PopoverList,
   PopoverListItem,
-} from "@feedgot/ui/components/popover";
-import { cn } from "@feedgot/ui/lib/utils";
+} from "@oreilla/ui/components/popover";
+import { cn } from "@oreilla/ui/lib/utils";
 
 interface BoardSelectorProps {
   boards: any[];

@@ -2,8 +2,8 @@
 
 import React from "react"
 import Link from "next/link"
-import { Button } from "@feedgot/ui/components/button"
-import { cn } from "@feedgot/ui/lib/utils"
+import { Button } from "@oreilla/ui/components/button"
+import { cn } from "@oreilla/ui/lib/utils"
 
 type NavItem = {
   slug: string

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getServerSession } from "@feedgot/auth/session"
+import { getServerSession } from "@oreilla/auth/session"
 import { notFound } from "next/navigation"
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normalizeStatus } from "@/lib/workspace"
 import { parseArrayParam } from "@/utils/request-filters"

@@ -1,12 +1,12 @@
 import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
-import { AccentBar } from "@feedgot/ui/components/cardElements";
-import { ShieldIcon } from "@feedgot/ui/icons/shield";
-import { SetupIcon } from "@feedgot/ui/icons/setup";
-import { FeatherIcon } from "@feedgot/ui/icons/feather";
-import { ChartIcon } from "@feedgot/ui/icons/chart";
-import { UsersIcon } from "@feedgot/ui/icons/users";
-import { BookmarkIcon } from "@feedgot/ui/icons/bookmark";
+import { AccentBar } from "@oreilla/ui/components/cardElements";
+import { ShieldIcon } from "@oreilla/ui/icons/shield";
+import { SetupIcon } from "@oreilla/ui/icons/setup";
+import { FeatherIcon } from "@oreilla/ui/icons/feather";
+import { ChartIcon } from "@oreilla/ui/icons/chart";
+import { UsersIcon } from "@oreilla/ui/icons/users";
+import { BookmarkIcon } from "@oreilla/ui/icons/bookmark";
 
 export default function WhyBetter({ alt }: { alt: Alternative }) {
   return (
@@ -14,13 +14,13 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
-            Why organizations choose Feedgot over {alt.name}
+            Why organizations choose oreilla over {alt.name}
           </h2>
 
           <div className="mt-10 flex items-start gap-2">
             <AccentBar width={8} />
             <p className="text-accent text-sm sm:text-base">
-              While {alt.name} provides feedback collection, Feedgot offers a fundamentally different approach prioritizing data sovereignty, rapid implementation, and workflows that adapt to your processes rather than forcing you to adapt to rigid systems.
+              While {alt.name} provides feedback collection, oreilla offers a fundamentally different approach prioritizing data sovereignty, rapid implementation, and workflows that adapt to your processes rather than forcing you to adapt to rigid systems.
             </p>
           </div>
 
@@ -34,7 +34,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  Maintain complete control over your feedback data with EU hosting and built-in GDPR compliance. Feedgot ensures your data remains portable migrate, self-host, or integrate without losing valuable insights.
+                  Maintain complete control over your feedback data with EU hosting and built-in GDPR compliance. oreilla ensures your data remains portable migrate, self-host, or integrate without losing valuable insights.
                 </p>
                 <p>
                   Unlike platforms that lock you into proprietary formats, our open export standards protect your investment and give you the freedom to evolve your tech stack without starting from zero.
@@ -54,7 +54,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
                   Deploy a branded feedback portal with a single line of code. Pre-configured workflows and tagging eliminate setup complexity start collecting feedback immediately without infrastructure changes.
                 </p>
                 <p>
-                  Traditional enterprise systems require weeks of implementation. Feedgot reverses this paradigm, letting you share hosted spaces instantly while maintaining your existing user experience flow.
+                  Traditional enterprise systems require weeks of implementation. oreilla reverses this paradigm, letting you share hosted spaces instantly while maintaining your existing user experience flow.
                 </p>
               </div>
             </div>
@@ -68,7 +68,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
               </div>
               <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
                 <p>
-                  Our lightweight widget loads fast with lazy-loading and intelligent caching. Collect comprehensive feedback without impacting your site's performance or user experience.
+                  Our lightweight widget loads fast with lazy-loading and intelligent caching. Collect comprehensive feedback without impacting your site&apos;s performance or user experience.
                 </p>
                 <p>
                   Every millisecond matters for conversion rates. Our performance-first approach ensures you gather insights while maintaining the speed that keeps users engaged and satisfied.
@@ -88,7 +88,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
                   Avoid feature bloat with a focused approach. Our unified workflow connects feedback collection, prioritization, and roadmapping in one coherent system no maze of unused configuration options.
                 </p>
                 <p>
-                  Enterprise software should solve problems, not create them. We focus on capabilities that directly improve your team's ability to act on customer feedback efficiently.
+                  Enterprise software should solve problems, not create them. We focus on capabilities that directly improve your team&apos;s ability to act on customer feedback efficiently.
                 </p>
               </div>
             </div>
@@ -105,7 +105,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
                   Skip generic support responses. Communicate directly with our engineering team for actionable solutions based on deep technical understanding, not scripted replies.
                 </p>
                 <p>
-                  Get expert guidance from the team who built the platform. We help you maximize value quickly, whether you're cloud-hosted or self-hosted.
+                  Get expert guidance from the team who built the platform. We help you maximize value quickly, whether you’re cloud-hosted or self-hosted.
                 </p>
               </div>
             </div>

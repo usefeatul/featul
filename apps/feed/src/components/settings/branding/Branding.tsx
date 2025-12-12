@@ -10,7 +10,7 @@ import {
   updateWorkspaceName,
 } from "../../../lib/branding-service";
 import { toast } from "sonner";
-import { Switch } from "@feedgot/ui/components/switch";
+import { Switch } from "@oreilla/ui/components/switch";
 import {
   BRANDING_COLORS,
   findColorByPrimary,
@@ -22,9 +22,9 @@ import LogoUploader from "./LogoUploader";
 import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
 import { setWorkspaceLogo } from "@/lib/branding-store";
-import { Input } from "@feedgot/ui/components/input";
+import { Input } from "@oreilla/ui/components/input";
 import { useQueryClient } from "@tanstack/react-query";
-import { client } from "@feedgot/api/client";
+import { client } from "@oreilla/api/client";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import {  getPlanLimits } from "@/lib/plan";
 

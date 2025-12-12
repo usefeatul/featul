@@ -5,7 +5,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@feedgot/ui/components/accordion";
+} from "@oreilla/ui/components/accordion";
 import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
 import { getAlternativeFaq } from "@/data/alt-faqs";
@@ -21,7 +21,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
         <div className="max-w-5xl px-0 sm:px-6">
           <div className="max-w-xl text-left">
             <h2 className="text-balance text-3xl font-semibold">
-              Questions about {alt.name} vs Feedgot
+              Questions about {alt.name} vs oreilla
             </h2>
           </div>
 

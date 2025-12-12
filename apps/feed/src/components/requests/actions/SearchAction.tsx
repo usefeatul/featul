@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { SearchIcon } from "@feedgot/ui/icons/search"
-import { cn } from "@feedgot/ui/lib/utils"
+import { SearchIcon } from "@oreilla/ui/icons/search"
+import { cn } from "@oreilla/ui/lib/utils"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { buildRequestsUrl } from "@/utils/request-filters"
 import { getSlugFromPath } from "@/config/nav"
@@ -13,9 +13,9 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from "@feedgot/ui/components/command"
+} from "@oreilla/ui/components/command"
 import { useQuery } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 
 export default function SearchAction({ className = "" }: { className?: string }) {
   const router = useRouter()

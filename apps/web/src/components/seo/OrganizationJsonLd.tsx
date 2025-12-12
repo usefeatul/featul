@@ -1,10 +1,8 @@
-import Script from 'next/script'
+import React from 'react'
 import { getOrganizationJsonLd } from '@/config/seo'
 
 export default function OrganizationJsonLd() {
   return (
-    <Script id="schema-org" type="application/ld+json" strategy="beforeInteractive">
-      {JSON.stringify(getOrganizationJsonLd())}
-    </Script>
+    <script id="schema-org" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(getOrganizationJsonLd()) }} />
   )
 }

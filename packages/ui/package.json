@@ -1,5 +1,5 @@
 {
-  "name": "@feedgot/ui",
+  "name": "@oreilla/ui",
   "version": "0.0.0",
   "type": "module",
   "private": true,
@@ -40,7 +40,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@feedgot/tsconfig": "workspace:*",
+    "@oreilla/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "^4.1.11",
     "@turbo/gen": "^2.5.5",
     "@types/node": "^20.19.9",

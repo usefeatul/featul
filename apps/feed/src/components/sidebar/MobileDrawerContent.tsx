@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { ScrollArea } from "@feedgot/ui/components/scroll-area";
-import { DrawerContent, DrawerTitle } from "@feedgot/ui/components/drawer";
+import { ScrollArea } from "@oreilla/ui/components/scroll-area";
+import { DrawerContent, DrawerTitle } from "@oreilla/ui/components/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";

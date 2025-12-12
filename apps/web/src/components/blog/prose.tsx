@@ -1,4 +1,4 @@
-import { cn } from "@feedgot/ui/lib/utils";
+import { cn } from "@oreilla/ui/lib/utils";
 import type { HTMLAttributes } from "react";
 
 type ProseProps = HTMLAttributes<HTMLElement> & {

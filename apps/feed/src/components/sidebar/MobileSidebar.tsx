@@ -2,8 +2,8 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { cn } from "@feedgot/ui/lib/utils";
-import { Drawer } from "@feedgot/ui/components/drawer";
+import { cn } from "@oreilla/ui/lib/utils";
+import { Drawer } from "@oreilla/ui/components/drawer";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { buildBottomNav, getSlugFromPath } from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";

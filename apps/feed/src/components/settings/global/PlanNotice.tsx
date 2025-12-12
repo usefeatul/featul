@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react"
-import { AccentBar } from "@feedgot/ui/components/cardElements"
-import { cn } from "@feedgot/ui/lib/utils"
+import { AccentBar } from "@oreilla/ui/components/cardElements"
+import { cn } from "@oreilla/ui/lib/utils"
 import { useQuery } from "@tanstack/react-query"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { normalizePlan, getPlanLimits, type PlanKey, type PlanLimits } from "@/lib/plan"
 
 type Feature = "branding" | "team" | "domain" | "tags" | "changelog_tags" | "boards"

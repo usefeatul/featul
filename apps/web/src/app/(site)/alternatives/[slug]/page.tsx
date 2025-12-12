@@ -25,7 +25,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const alt = getAlternativeBySlug(slug);
   if (!alt) return {};
-  const title = `${alt.name} vs Feedgot`;
+  const title = `${alt.name} vs oreilla`;
   const rawDescription = getAltDescription(slug, 'first');
   const description = rawDescription.length > 160 ? `${rawDescription.slice(0, 157)}…` : rawDescription;
   return createArticleMetadata({

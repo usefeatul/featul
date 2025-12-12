@@ -1,5 +1,5 @@
-/Users/dalyjean/Desktop/feedgot/docs/seo-playbook.md
-# Feedgot SEO Playbook
+/Users/dalyjean/Desktop/oreilla/docs/seo-playbook.md
+# oreilla SEO Playbook
 
 A practical, engineering-friendly plan to grow organic rankings and traffic across product feedback, roadmaps, changelogs, and SaaS metrics tools.
 
@@ -27,7 +27,7 @@ Create interlinked clusters to signal topical authority.
   - Definition: “Customer Feedback” (you have `/definitions`)
   - Guide: “How to Collect and Prioritize Feedback”
   - Tool: “Feedback Categorization” or “NPS Calculator”
-  - Alternatives: “Top X Alternatives” + “X vs Feedgot”
+  - Alternatives: “Top X Alternatives” + “X vs oreilla”
   - Blog: case studies, frameworks
 
 - Public Roadmap
@@ -69,7 +69,7 @@ You already emit strong schema for tools and definitions. Extend coverage:
 - Global (`apps/web/src/app/layout.tsx`)
   - Keep `Organization` JSON‑LD (`components/seo/OrganizationJsonLd.tsx`)
   - Add `SiteNavigationElement` with key nav labels/URLs
-  - Add `SoftwareApplication` or `WebApplication` describing Feedgot:
+  - Add `SoftwareApplication` or `WebApplication` describing oreilla:
     - `name`, `url`, `applicationCategory`, `operatingSystem="Web"`, `offers` (free), `logo`
 
 Validate with:

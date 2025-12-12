@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Container } from "../global/container";
 import { Logo } from "@/components/global/logo";
 import { footerNavigationConfig } from "@/config/footerNav";
-import { GitHubIcon } from "@feedgot/ui/icons/github";
-import { TwitterIcon } from "@feedgot/ui/icons/twitter";
+import { GitHubIcon } from "@oreilla/ui/icons/github";
+import { TwitterIcon } from "@oreilla/ui/icons/twitter";
 import { StatusButton } from "@/components/home/status";
 
 export default function FooterSection() {
@@ -20,7 +20,7 @@ export default function FooterSection() {
                 className="inline-flex items-center gap-2 hover:text-primary"
               >
                 <Logo />
-                <span className="text-sm font-medium">Feedgot</span>
+                <span className="text-sm font-medium">oreilla</span>
               </Link>
               <p className="text-accent mt-1 text-sm">Made and hosted in EU.</p>
               <p className="text-accent mt-1 text-sm">

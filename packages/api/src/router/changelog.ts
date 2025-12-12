@@ -1,7 +1,7 @@
 import { and, eq, sql } from "drizzle-orm"
 import { z } from "zod"
 import { j, publicProcedure, privateProcedure } from "../jstack"
-import { workspace, board, workspaceMember } from "@feedgot/db"
+import { workspace, board, workspaceMember } from "@oreilla/db"
 import { HTTPException } from "hono/http-exception"
 import { normalizePlan, getPlanLimits } from "../shared/plan"
 

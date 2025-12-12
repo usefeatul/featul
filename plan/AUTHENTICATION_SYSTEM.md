@@ -2,7 +2,7 @@
 
 ## Overview
 
-FeedGot implements a comprehensive authentication and authorization system using Better-Auth with role-based access control (RBAC) to ensure secure access to feedback management features.
+oreilla implements a comprehensive authentication and authorization system using Better-Auth with role-based access control (RBAC) to ensure secure access to feedback management features.
 
 ## Authentication Strategy
 

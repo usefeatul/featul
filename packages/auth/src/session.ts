@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "./auth";
-import { db, session as sessionTable } from "@feedgot/db";
+import { db, session as sessionTable } from "@oreilla/db";
 import { eq, desc } from "drizzle-orm";
 
 export async function getServerSession() {

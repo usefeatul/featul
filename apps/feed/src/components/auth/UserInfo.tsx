@@ -2,9 +2,9 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { authClient } from "@feedgot/auth/client"
-import { Button } from "@feedgot/ui/components/button"
-import { Avatar, AvatarImage, AvatarFallback } from "@feedgot/ui/components/avatar"
+import { authClient } from "@oreilla/auth/client"
+import { Button } from "@oreilla/ui/components/button"
+import { Avatar, AvatarImage, AvatarFallback } from "@oreilla/ui/components/avatar"
 import { getDisplayUser, getInitials } from "@/utils/user-utils"
 
 export default function UserInfo({ user: userProp }: { user?: any }) {

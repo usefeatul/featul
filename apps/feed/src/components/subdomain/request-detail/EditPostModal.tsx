@@ -5,7 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from "@feedgot/ui/components/dialog"
+} from "@oreilla/ui/components/dialog"
 import { getInitials } from "@/utils/user-utils"
 import { PostHeader } from "../../post/PostHeader"
 import { PostContent } from "../../post/PostContent"

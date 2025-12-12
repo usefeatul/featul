@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { Container } from "../global/container";
 import { HotkeyLink } from "../global/hotkey-link";
-import { Button } from "@feedgot/ui/components/button";
-import { BoardIcon } from "@feedgot/ui/icons/board";
-import { RoadmapIcon } from "@feedgot/ui/icons/roadmap";
-import { ChangelogIcon } from "@feedgot/ui/icons/changelog";
-import { ArrowIcon } from "@feedgot/ui/icons/arrow";
-import { useIsMobile } from "@feedgot/ui/hooks/use-mobile";
+import { Button } from "@oreilla/ui/components/button";
+import { BoardIcon } from "@oreilla/ui/icons/board";
+import { RoadmapIcon } from "@oreilla/ui/icons/roadmap";
+import { ChangelogIcon } from "@oreilla/ui/icons/changelog";
+import { ArrowIcon } from "@oreilla/ui/icons/arrow";
+import { useIsMobile } from "@oreilla/ui/hooks/use-mobile";
 
 export function ConversionHero() {
   const isMobile = useIsMobile();
@@ -41,7 +41,7 @@ export function ConversionHero() {
             <p className="mt-3 text-accent/90 text-xs sm:text-sm md:text-sm leading-relaxed max-w-lg sm:max-w-xl">
               Set up your complete customer feedback system in under 5 minutes.
               Engage your users, prioritize what matters, and ship features
-              they'll love. No complex setup, no privacy concerns just results.
+              they’ll love. No complex setup, no privacy concerns just results.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <HotkeyLink

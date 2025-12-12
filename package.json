@@ -1,5 +1,5 @@
 {
-  "name": "feedgot",
+  "name": "oreilla",
   "version": "0.0.1",
   "private": true,
   "packageManager": "bun@1.2.21",
@@ -12,15 +12,15 @@
     "dev": "turbo dev",
     "feed:dev": "turbo run dev --filter=feed",
     "web:dev": "turbo run dev --filter=web",
-    "db:generate": "turbo run db:generate --filter=@feedgot/db",
-    "db:migrate": "turbo run db:migrate --filter=@feedgot/db",
-    "db:push": "turbo run db:push --filter=@feedgot/db",
-    "db:studio": "turbo run db:studio --filter=@feedgot/db",
+    "db:generate": "turbo run db:generate --filter=@oreilla/db",
+    "db:migrate": "turbo run db:migrate --filter=@oreilla/db",
+    "db:push": "turbo run db:push --filter=@oreilla/db",
+    "db:studio": "turbo run db:studio --filter=@oreilla/db",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "@feedgot/tsconfig": "workspace:*",
+    "@oreilla/tsconfig": "workspace:*",
     "prettier": "^3.6.2",
     "turbo": "^2.5.5",
     "typescript": "5.7.3"

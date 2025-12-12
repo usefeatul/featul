@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { MarblePost } from "@/types/marble";
-import { Card, CardContent } from "@feedgot/ui/components/card";
+import { Card, CardContent } from "@oreilla/ui/components/card";
+import Image from "next/image";
 
 type BlogCardProps = {
   post: MarblePost;
@@ -21,8 +22,8 @@ export function BlogCard({ post }: BlogCardProps) {
     ? Math.max(1, Math.round(words.length / 200))
     : null;
   const tagNames = (post.tags ?? [])
-    .map((t: any) => (typeof t === "string" ? t : t?.name))
-    .filter(Boolean) as string[];
+    .map((t) => t.name)
+    .filter(Boolean);
   const categoryName = post.category?.name ?? null;
   return (
     <Link
@@ -32,10 +33,12 @@ export function BlogCard({ post }: BlogCardProps) {
     >
       <Card className="h-full overflow-hidden border flex flex-col transition-colors hover:bg-muted/20">
         {post.coverImage ? (
-          <div className="aspect-[16/9] w-full relative">
-            <img
+          <div className="aspect-video w-full relative">
+            <Image
               src={post.coverImage ?? ""}
               alt={post.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
@@ -61,9 +64,11 @@ export function BlogCard({ post }: BlogCardProps) {
 
           <div className="mt-3 flex items-center gap-2">
             {avatarSrc ? (
-              <img
+              <Image
                 src={avatarSrc}
                 alt={author?.name ?? "Author"}
+                width={20}
+                height={20}
                 className="h-5 w-5 rounded-md object-cover translate-y-[0.5px]"
               />
             ) : null}

@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@feedgot/ui/components/dialog"
-import { Input } from "@feedgot/ui/components/input"
-import { Button } from "@feedgot/ui/components/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@oreilla/ui/components/dialog"
+import { Input } from "@oreilla/ui/components/input"
+import { Button } from "@oreilla/ui/components/button"
 
 export default function ModalCreateTag({ open, onOpenChange, onSave, saving }: { open: boolean; onOpenChange: (v: boolean) => void; onSave: (name: string) => void; saving?: boolean }) {
   const [name, setName] = React.useState("")

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers the complete deployment and infrastructure setup for FeedGot, including development, staging, and production environments across multiple hosting providers.
+This guide covers the complete deployment and infrastructure setup for oreilla, including development, staging, and production environments across multiple hosting providers.
 
 ## Architecture Overview
 
@@ -37,8 +37,8 @@ This guide covers the complete deployment and infrastructure setup for FeedGot, 
 #### Local Setup
 ```bash
 # Clone repository
-git clone https://github.com/your-org/feedgot.git
-cd feedgot
+git clone https://github.com/your-org/oreilla.git
+cd oreilla
 
 # Install dependencies
 pnpm install
@@ -64,8 +64,8 @@ NEXTAUTH_SECRET=your-secret-key
 NEXTAUTH_URL=http://localhost:3000
 
 # Database
-DATABASE_URL=postgresql://user:password@localhost:5432/feedgot_dev
-DIRECT_URL=postgresql://user:password@localhost:5432/feedgot_dev
+DATABASE_URL=postgresql://user:password@localhost:5432/oreilla_dev
+DIRECT_URL=postgresql://user:password@localhost:5432/oreilla_dev
 
 # Authentication Providers
 GOOGLE_CLIENT_ID=your-google-client-id
@@ -173,10 +173,10 @@ const pooledSql = neon(process.env.DATABASE_URL!, {
 #!/bin/bash
 # backup.sh
 DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_FILE="feedgot_backup_$DATE.sql"
+BACKUP_FILE="oreilla_backup_$DATE.sql"
 
 pg_dump $DATABASE_URL > $BACKUP_FILE
-aws s3 cp $BACKUP_FILE s3://feedgot-backups/
+aws s3 cp $BACKUP_FILE s3://oreilla-backups/
 rm $BACKUP_FILE
 ```
 
@@ -249,7 +249,7 @@ pnpm dev
 # Core
 NODE_ENV=production
 NEXTAUTH_SECRET=<strong-secret-key>
-NEXTAUTH_URL=https://feedgot.com
+NEXTAUTH_URL=https://oreilla.com
 
 # Database
 DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
@@ -292,8 +292,8 @@ export { r2 };
 ```
 
 ### Bucket Configuration
-- **Public bucket**: `feedgot-public` (avatars, logos)
-- **Private bucket**: `feedgot-private` (attachments, exports)
+- **Public bucket**: `oreilla-public` (avatars, logos)
+- **Private bucket**: `oreilla-private` (attachments, exports)
 - **CDN**: Cloudflare CDN for public assets
 - **Lifecycle**: Auto-delete temporary files after 7 days
 
@@ -310,7 +310,7 @@ export const sendEmail = async ({
   to,
   subject,
   html,
-  from = 'FeedGot <noreply@feedgot.com>'
+  from = 'oreilla <noreply@oreilla.com>'
 }) => {
   return await resend.emails.send({
     from,
@@ -402,7 +402,7 @@ export async function GET() {
 // next.config.js
 module.exports = {
   images: {
-    domains: ['feedgot.com', 'r2.cloudflarestorage.com'],
+    domains: ['oreilla.com', 'r2.cloudflarestorage.com'],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 86400,
   },
@@ -551,4 +551,4 @@ jobs:
 - Storage usage tracking
 - Third-party service costs
 
-This deployment guide ensures a robust, scalable, and maintainable infrastructure for FeedGot across all environments.
+This deployment guide ensures a robust, scalable, and maintainable infrastructure for oreilla across all environments.

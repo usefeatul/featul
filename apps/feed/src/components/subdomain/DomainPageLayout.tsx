@@ -2,7 +2,7 @@ import React from "react"
 import { DomainSidebar } from "./DomainSidebar"
 
 export default function DomainPageLayout({ subdomain, slug, sidebarPosition = "right", children, hideSubmitButton }: { subdomain: string; slug: string; sidebarPosition?: "left" | "right"; children: React.ReactNode; hideSubmitButton?: boolean }) {
-  const grid = sidebarPosition === "left" ? "lg:grid lg:grid-cols-[250px_minmax(0,1.5fr)] lg:gap-6" : "lg:grid lg:grid-cols-[minmax(0,1.5fr)_250px] lg:gap-6"
+  const grid = sidebarPosition === "left" ? "lg:grid lg:grid-cols-[0.3fr_0.7fr] lg:gap-6" : "lg:grid lg:grid-cols-[0.7fr_0.3fr] lg:gap-6"
   return (
     <section>
       <div className={grid}>

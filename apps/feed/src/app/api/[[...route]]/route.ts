@@ -1,5 +1,5 @@
-import { app } from "@feedgot/api/elysia";
-import { withCors, handlePreflight } from "@feedgot/auth/trust";
+import { app } from "@oreilla/api/elysia";
+import { withCors, handlePreflight } from "@oreilla/auth/trust";
 const handler = (req: Request) => app.handle(req);
 
 export const OPTIONS = handlePreflight;

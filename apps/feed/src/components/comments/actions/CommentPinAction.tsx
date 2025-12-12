@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useTransition } from "react"
-import { PopoverListItem } from "@feedgot/ui/components/popover"
-import { PinIcon } from "@feedgot/ui/icons/pin"
-import { client } from "@feedgot/api/client"
+import { PopoverListItem } from "@oreilla/ui/components/popover"
+import { PinIcon } from "@oreilla/ui/icons/pin"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 
 interface CommentPinActionProps {

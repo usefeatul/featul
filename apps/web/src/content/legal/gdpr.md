@@ -1,6 +1,6 @@
 ---
 title: GDPR Compliance
-description: feedgot’s approach to GDPR and data protection obligations.
+description: oreilla’s approach to GDPR and data protection obligations.
 path: /gdpr
 lastUpdated: 31 October 2025
 ---
@@ -9,12 +9,12 @@ lastUpdated: 31 October 2025
 
 **Last updated:** 31 October 2025
 
-**feedgot** is committed to protecting Personal Data and complying with the EU General Data Protection Regulation (GDPR). This page summarizes our practices as controller and processor, our lawful bases, your rights, and key safeguards.
+**oreilla** is committed to protecting Personal Data and complying with the EU General Data Protection Regulation (GDPR). This page summarizes our practices as controller and processor, our lawful bases, your rights, and key safeguards.
 
 ## Roles and Responsibilities
 
 ### Data Controller
-**feedgot** acts as the data controller for Personal Data that we collect and process for our own purposes, including:
+**oreilla** acts as the data controller for Personal Data that we collect and process for our own purposes, including:
 
 - **Account Management**: User registration, authentication, profile management, and account settings
 - **Billing and Payments**: Subscription management, payment processing, invoicing, and financial records
@@ -24,7 +24,7 @@ lastUpdated: 31 October 2025
 - **Security and Fraud Prevention**: Authentication, access control, threat detection, and abuse prevention
 
 ### Data Processor
-**feedgot** acts as a data processor when handling Customer Data that you submit to or generate within our Service. In this capacity, we process data solely on your instructions and in accordance with our Data Processing Addendum (DPA), which incorporates:
+**oreilla** acts as a data processor when handling Customer Data that you submit to or generate within our Service. In this capacity, we process data solely on your instructions and in accordance with our Data Processing Addendum (DPA), which incorporates:
 
 - **Processing Instructions**: Specific purposes and methods for data processing as directed by you
 - **Data Subject Rights**: Mechanisms to facilitate access, correction, deletion, and portability requests
@@ -131,7 +131,7 @@ You have the right not to be subject to decisions based solely on automated proc
 Where processing is based on consent, you have the right to withdraw consent at any time. Withdrawal does not affect the lawfulness of processing based on consent before its withdrawal.
 
 ### Exercising Your Rights
-To exercise any of these rights, contact us at [contact@feedgot.com](mailto:contact@feedgot.com). We will:
+To exercise any of these rights, contact us at [contact@oreilla.com](mailto:contact@oreilla.com). We will:
 - **Verify your identity** using reasonable means to prevent unauthorized access
 - **Respond within one month** of receiving your request (extendable by two months for complex requests)
 - **Provide information** in a concise, transparent, intelligible, and easily accessible form
@@ -140,7 +140,7 @@ To exercise any of these rights, contact us at [contact@feedgot.com](mailto:cont
 
 ## Sub-processors
 
-We engage carefully selected sub-processors to provide hosting, storage, analytics, email delivery, and related services. Examples may include infrastructure and hosting providers, email delivery platforms, analytics services, and managed databases. We maintain appropriate agreements and conduct due diligence. A current list is available on request via [contact@feedgot.com](mailto:contact@feedgot.com).
+We engage carefully selected sub-processors to provide hosting, storage, analytics, email delivery, and related services. Examples may include infrastructure and hosting providers, email delivery platforms, analytics services, and managed databases. We maintain appropriate agreements and conduct due diligence. A current list is available on request via [contact@oreilla.com](mailto:contact@oreilla.com).
 
 ## International Transfers
 
@@ -160,8 +160,8 @@ In the event of a Personal Data breach, we will notify the competent supervisory
 
 ## Data Processing Addendum (DPA)
 
-For customers who require a signed DPA, contact [contact@feedgot.com](mailto:contact@feedgot.com).
+For customers who require a signed DPA, contact [contact@oreilla.com](mailto:contact@oreilla.com).
 
 ## Contact
 
-For GDPR-related inquiries, email [contact@feedgot.com](mailto:contact@feedgot.com).
+For GDPR-related inquiries, email [contact@oreilla.com](mailto:contact@oreilla.com).

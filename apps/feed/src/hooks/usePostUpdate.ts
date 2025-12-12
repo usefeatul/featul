@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 

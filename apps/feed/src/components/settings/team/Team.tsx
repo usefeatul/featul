@@ -3,10 +3,10 @@
 import React from "react";
 import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
-import { Button } from "@feedgot/ui/components/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@feedgot/ui/components/table";
-import { Label } from "@feedgot/ui/components/label";
-import { client } from "@feedgot/api/client";
+import { Button } from "@oreilla/ui/components/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@oreilla/ui/components/table";
+import { Label } from "@oreilla/ui/components/label";
+import { client } from "@oreilla/api/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import InviteMemberModal from "./InviteMemberModal";
@@ -35,14 +35,12 @@ export default function TeamSection({
       return { members: d?.members || [], invites: d?.invites || [], meId: (d as { meId?: string })?.meId ?? null };
     },
     initialData: (initialMembers || initialInvites || initialMeId) ? { members: initialMembers || [], invites: initialInvites || [], meId: initialMeId ?? null } : undefined,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
+    staleTime: 30000,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMount: true,
   });
   const { loading: inviteAccessLoading, canInvite } = useCanInvite(slug);
-
-
 
   const refresh = async () => {
     await refetch();

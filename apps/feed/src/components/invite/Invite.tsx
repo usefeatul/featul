@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import { Button } from "@feedgot/ui/components/button";
+import { Button } from "@oreilla/ui/components/button";
 import {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from "@feedgot/ui/components/avatar";
+} from "@oreilla/ui/components/avatar";
 import { getInitials } from "@/utils/user-utils";
 import { useRouter, useParams } from "next/navigation";
-import { authClient } from "@feedgot/auth/client";
-import { client } from "@feedgot/api/client";
+import { authClient } from "@oreilla/auth/client";
+import { client } from "@oreilla/api/client";
 import { toast } from "sonner";
 
 type InviteProps = {

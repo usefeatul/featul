@@ -3,7 +3,7 @@ import SettingsServer from "@/components/settings/global/SettingsServer"
 import { createPageMetadata } from "@/lib/seo"
 import { getSectionMeta } from "@/config/sections"
 import { getSettingsInitialData } from "@/lib/workspace"
-import { getServerSession } from "@feedgot/auth/session"
+import { getServerSession } from "@oreilla/auth/session"
 
 export const revalidate = 30
 

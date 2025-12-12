@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react"
 import BackLink from "@/components/tools/global/backlink"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@feedgot/ui/components/card"
-import { Label } from "@feedgot/ui/components/label"
-import { Input } from "@feedgot/ui/components/input"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@oreilla/ui/components/card"
+import { Label } from "@oreilla/ui/components/label"
+import { Input } from "@oreilla/ui/components/input"
 
 export default function ArrTool() {
   const [mrr, setMrr] = useState<string>("5800")
@@ -14,7 +14,6 @@ export default function ArrTool() {
     return Number.isFinite(n) ? n * 12 : 0
   }, [mrr])
 
-  const formatCurrency = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
   const formatCurrencyExact = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" })
 
   return (

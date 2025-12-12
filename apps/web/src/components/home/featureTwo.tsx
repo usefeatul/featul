@@ -1,9 +1,9 @@
 "use client";
-import { cn } from "@feedgot/ui/lib/utils"; 
+import { cn } from "@oreilla/ui/lib/utils"; 
 import {
   ToggleGroup,
   ToggleGroupItem,
-} from "@feedgot/ui/components/toggle-group";
+} from "@oreilla/ui/components/toggle-group";
 import {
   Bold,
   Calendar1,
@@ -12,14 +12,14 @@ import {
   Strikethrough,
   Underline,
 } from "lucide-react";
-import { Button } from "@feedgot/ui/components/button";
-import { Card } from "@feedgot/ui/components/card";
+import { Button } from "@oreilla/ui/components/button";
+import { Card } from "@oreilla/ui/components/card";
 import { Container } from "../global/container";
-import { ChartIcon } from "@feedgot/ui/icons/chart";
-import { UsersIcon } from "@feedgot/ui/icons/users";
-import { SetupIcon } from "@feedgot/ui/icons/setup";
-import { AiIcon } from "@feedgot/ui/icons/ai";
-import { CardAccent, CardTag, AccentBar } from "@feedgot/ui/components/cardElements";
+import { ChartIcon } from "@oreilla/ui/icons/chart";
+import { UsersIcon } from "@oreilla/ui/icons/users";
+import { SetupIcon } from "@oreilla/ui/icons/setup";
+import { AiIcon } from "@oreilla/ui/icons/ai";
+import { CardAccent, CardTag, AccentBar } from "@oreilla/ui/components/cardElements";
 
 export default function FeaturesSection() {
   return (
@@ -36,7 +36,7 @@ export default function FeaturesSection() {
                 <p className="text-accent text-sm sm:text-base">
                   Quick AI jean lives a single hotkey away - ready to quickly
                   appear as a floating window above your other apps. Get instant
-                  assistance whether you're browsing, coding, or writing
+                  assistance whether you’re browsing, coding, or writing
                   documents.
                 </p>
               </div>

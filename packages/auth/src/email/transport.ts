@@ -7,7 +7,7 @@ export type EmailPayload = {
 
 export async function sendEmail({ to, subject, html, text }: EmailPayload) {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.RESEND_FROM || "Feedgot <no-reply@feedgot.com>"
+  const from = process.env.RESEND_FROM || "oreilla <no-reply@oreilla.com>"
 
   if (!apiKey) {
     console.log(`[email:dev] to=${to} subject=${subject}`)

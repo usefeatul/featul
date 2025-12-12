@@ -1,6 +1,6 @@
-import { db, vote } from "@feedgot/db"
+import { db, vote } from "@oreilla/db"
 import { eq, and } from "drizzle-orm"
-import { getServerSession } from "@feedgot/auth"
+import { getServerSession } from "@oreilla/auth"
 
 export async function readHasVotedForPost(postId: string): Promise<boolean> {
   const session = await getServerSession()

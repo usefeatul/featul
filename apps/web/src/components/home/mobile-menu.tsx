@@ -3,10 +3,10 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { Container } from "../global/container";
 import { Logo } from "../global/logo";
-import { Button } from "@feedgot/ui/components/button";
-import { MenuIcon } from "@feedgot/ui/icons/menu";
+import { Button } from "@oreilla/ui/components/button";
+import { MenuIcon } from "@oreilla/ui/icons/menu";
 import { navigationConfig } from "@/config/homeNav";
-import { useIsMobile } from "@feedgot/ui/hooks/use-mobile";
+import { useIsMobile } from "@oreilla/ui/hooks/use-mobile";
 
 type MobileMenuProps = {
   open: boolean;
@@ -28,21 +28,22 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   if (!open || !isMobile) return null;
 
   return (
-    <div className="md:hidden fixed inset-0 z-[60] bg-background" data-component="MobileMenu">
+    <div className="md:hidden fixed inset-0 z-60 bg-background" data-component="MobileMenu">
       {/* Sheet header */}
       <div className="flex items-center justify-between h-14  px-4 sm:px-12 lg:px-16 xl:px-18">
         <span className="inline-flex items-center gap-2">
           <Logo />
-          <span className="text-md font-medium">Feedgot</span>
+          <span className="text-md font-medium">oreilla</span>
         </span>
-        <button
+        <Button
           type="button"
+          variant="nav"
           aria-label="Close menu"
-          className="inline-flex items-center justify-center rounded-md p-2 bg-muted/70"
+          className="inline-flex items-center justify-center rounded-md bg-muted"
           onClick={onClose}
         >
-          <MenuIcon width={20} height={20} className="text-accent" />
-        </button>
+          <MenuIcon className="text-accent size-5" />
+        </Button>
       </div>
       <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <nav className="py-4 grid gap-2">

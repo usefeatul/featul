@@ -2,9 +2,9 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { cn } from "@feedgot/ui/lib/utils";
-import { LogoutIcon } from "@feedgot/ui/icons/logout";
-import { authClient } from "@feedgot/auth/client";
+import { cn } from "@oreilla/ui/lib/utils";
+import { LogoutIcon } from "@oreilla/ui/icons/logout";
+import { authClient } from "@oreilla/auth/client";
 import { toast } from "sonner";
 
 type Props = {

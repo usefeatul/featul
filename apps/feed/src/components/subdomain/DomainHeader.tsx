@@ -3,13 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Button } from "@feedgot/ui/components/button";
-import { cn } from "@feedgot/ui/lib/utils";
+import { Button } from "@oreilla/ui/components/button";
+import { cn } from "@oreilla/ui/lib/utils";
 import { MobileBoardsMenu } from "./MobileBoardsMenu";
-import { HomeIcon } from "@feedgot/ui/icons/home";
+import { HomeIcon } from "@oreilla/ui/icons/home";
 import React from "react";
 import SubdomainUserDropdown from "@/components/subdomain/SubdomainUserDropdown";
-import { client } from "@feedgot/api/client";
+import { client } from "@oreilla/api/client";
 import NotificationsBell from "./NotificationsBell";
 
 type WorkspaceInfo = {
@@ -24,11 +24,13 @@ export function DomainHeader({
   workspace,
   subdomain,
   changelogVisible: initialChangelogVisible = true,
+  roadmapVisible: initialRoadmapVisible = true,
   initialUser,
 }: {
   workspace: WorkspaceInfo;
   subdomain: string;
   changelogVisible?: boolean;
+  roadmapVisible?: boolean;
   initialUser?: { name?: string; email?: string; image?: string | null } | null;
 }) {
   const pathname = usePathname() || "";
@@ -43,6 +45,7 @@ export function DomainHeader({
     email?: string;
     image?: string | null;
   } | null>(initialUser ?? null);
+  const roadmapVisible = Boolean(initialRoadmapVisible);
   const [changelogVisible, setChangelogVisible] = React.useState(
     Boolean(initialChangelogVisible)
   );
@@ -71,7 +74,12 @@ export function DomainHeader({
     <header className={cn("py-3 sm:py-5")}>
       <div className="md:hidden grid grid-cols-[1fr_auto_1fr] items-center w-full">
         <div className="justify-self-start">
-          <MobileBoardsMenu slug={workspace.slug} subdomain={subdomain} />
+          <MobileBoardsMenu
+            slug={workspace.slug}
+            subdomain={subdomain}
+            roadmapVisible={roadmapVisible}
+            changelogVisible={changelogVisible}
+          />
         </div>
         <div className="inline-flex items-center justify-center justify-self-center">
           <Link href="/" aria-label="Home">
@@ -136,13 +144,15 @@ export function DomainHeader({
               </Link>
             </li>
             <li>
-              <Link
-                href={roadmapBase}
-                className={itemCls(isRoadmap)}
-                aria-current={isRoadmap ? "page" : undefined}
-              >
-                Roadmap
-              </Link>
+              {roadmapVisible ? (
+                <Link
+                  href={roadmapBase}
+                  className={itemCls(isRoadmap)}
+                  aria-current={isRoadmap ? "page" : undefined}
+                >
+                  Roadmap
+                </Link>
+              ) : null}
             </li>
             <li>
               {changelogVisible ? (

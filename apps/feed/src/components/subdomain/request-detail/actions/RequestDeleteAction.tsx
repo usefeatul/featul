@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { TrashIcon } from "@feedgot/ui/icons/trash";
-import { PopoverListItem } from "@feedgot/ui/components/popover";
+import { TrashIcon } from "@oreilla/ui/icons/trash";
+import { PopoverListItem } from "@oreilla/ui/components/popover";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,8 +12,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@feedgot/ui/components/alert-dialog";
-import { client } from "@feedgot/api/client";
+} from "@oreilla/ui/components/alert-dialog";
+import { client } from "@oreilla/api/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

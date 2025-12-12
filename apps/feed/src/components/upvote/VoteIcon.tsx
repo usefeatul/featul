@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";
-import { cn } from "@feedgot/ui/lib/utils";
+import { cn } from "@oreilla/ui/lib/utils";
 
 interface VoteIconProps {
   hasVoted: boolean;

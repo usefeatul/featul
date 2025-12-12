@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useState, useTransition } from "react"
-import { TrashIcon } from "@feedgot/ui/icons/trash"
-import { client } from "@feedgot/api/client"
+import { TrashIcon } from "@oreilla/ui/icons/trash"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
-import { PopoverListItem } from "@feedgot/ui/components/popover"
+import { PopoverListItem } from "@oreilla/ui/components/popover"
 
 interface CommentDeleteActionProps {
   commentId: string

@@ -5,6 +5,7 @@ import { TableOfContents } from "@/components/blog/table-of-contents";
 import { PromoCard } from "@/components/blog/promo-card";
 import type { MarblePost } from "@/types/marble";
 import { ReadingProgress } from "@/components/blog/reading-progress";
+import Image from "next/image";
 
 type SinglePostProps = {
   post: MarblePost;
@@ -23,7 +24,9 @@ export function SinglePost({ post }: SinglePostProps) {
   const date = post.publishedAt ? new Date(post.publishedAt) : null;
   const reading = estimateReadingTime(post.content);
   const { html, items } = generateToc(post.content);
-  const author = post.author ?? (post.authors && post.authors.length > 0 ? post.authors[0] : null);
+  const author =
+    post.author ??
+    (post.authors && post.authors.length > 0 ? post.authors[0] : null);
   const authorName = author?.name ?? null;
 
   return (
@@ -35,18 +38,21 @@ export function SinglePost({ post }: SinglePostProps) {
             aria-label="Breadcrumb"
             className="mb-3 text-sm text-muted-foreground"
           >
-            <Link href="/blog" className="inline-flex items-center h-8 px-2 -mx-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 hover:text-primary">
+            <Link
+              href="/blog"
+              className="inline-flex items-center h-8 px-2 -mx-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 hover:text-primary"
+            >
               Blog
             </Link>
             <span aria-hidden className="mx-1">
               ›
             </span>
-            <span className="text-accent break-words">{post.title}</span>
+            <span className="text-accent wrap-break-word">{post.title}</span>
           </nav>
 
           {/* Title/meta constrained to left column width */}
           <header className="mb-6 text-left">
-            <h1 className="text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-tight break-words text-balance">
+            <h1 className="text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-tight wrap-break-words text-balance">
               {post.title}
             </h1>
             {post.excerpt ? (
@@ -68,10 +74,12 @@ export function SinglePost({ post }: SinglePostProps) {
                 {authorName || reading ? (
                   <span className="mx-2 text-zinc-300">•</span>
                 ) : null}
-                {(author?.image) ? (
-                  <img
+                {author?.image ? (
+                  <Image
                     src={author?.image ?? ""}
                     alt={author?.name ?? "Author"}
+                    width={20}
+                    height={20}
                     className="h-5 w-5 rounded-md object-cover translate-y-[0.5px]"
                   />
                 ) : null}
@@ -94,10 +102,12 @@ export function SinglePost({ post }: SinglePostProps) {
 
           {post.coverImage ? (
             <div className="mb-8 overflow-hidden rounded-md border w-full">
-              <img
+              <Image
                 src={post.coverImage}
                 alt={post.title}
-                className="aspect-[16/9] w-full object-cover"
+                width={1200}
+                height={1200}
+                className="w-full object-cover"
               />
             </div>
           ) : null}

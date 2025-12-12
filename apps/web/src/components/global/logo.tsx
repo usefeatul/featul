@@ -4,7 +4,7 @@ export function Logo({ className = '', size = 24 }: { className?: string; size?:
   return (
     <Image
       src="/logo1.png"
-      alt="Feedgot"
+      alt="oreilla"
       width={size}
       height={size}
       priority

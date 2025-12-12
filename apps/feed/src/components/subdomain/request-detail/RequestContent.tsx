@@ -9,7 +9,7 @@ import {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from "@feedgot/ui/components/avatar";
+} from "@oreilla/ui/components/avatar";
 import { getInitials, getDisplayUser } from "@/utils/user-utils";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { SubdomainRequestDetailData } from "../../../types/subdomain";
@@ -62,6 +62,14 @@ export function RequestContent({
       </h1>
 
       {/* Image */}
+
+      {post.content ? (
+        <div className="prose dark:prose-invert text-sm text-accent mb-6">
+          {post.content}
+        </div>
+      ) : null}
+
+      {/* Content */}
       {post.image ? (
         <ContentImage
           url={post.image}
@@ -69,14 +77,6 @@ export function RequestContent({
           className="w-48 h-36 mb-4"
         />
       ) : null}
-
-      {/* Content */}
-      {post.content ? (
-        <div className="prose dark:prose-invert text-sm text-accent mb-6">
-          {post.content}
-        </div>
-      ) : null}
-
       {/* Footer: Author & Upvotes */}
       <div className="flex items-center justify-between pt-2">
         <div className="inline-flex items-center gap-2">

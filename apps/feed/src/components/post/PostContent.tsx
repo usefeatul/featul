@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import { Input } from "@feedgot/ui/components/input"
-import { Textarea } from "@feedgot/ui/components/textarea"
-import { XMarkIcon } from "@feedgot/ui/icons/xmark"
+import { Input } from "@oreilla/ui/components/input"
+import { Textarea } from "@oreilla/ui/components/textarea"
+import { XMarkIcon } from "@oreilla/ui/icons/xmark"
 import ContentImage from "@/components/global/ContentImage"
 
 export interface UploadedImage {

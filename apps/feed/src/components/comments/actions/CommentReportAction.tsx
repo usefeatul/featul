@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { FlagIcon } from "@feedgot/ui/icons/flag"
-import { PopoverListItem } from "@feedgot/ui/components/popover"
+import { FlagIcon } from "@oreilla/ui/icons/flag"
+import { PopoverListItem } from "@oreilla/ui/components/popover"
 
 interface CommentReportActionProps {
   onClick: () => void

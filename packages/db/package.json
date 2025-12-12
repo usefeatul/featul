@@ -1,5 +1,5 @@
 {
-  "name": "@feedgot/db",
+  "name": "@oreilla/db",
   "version": "0.0.0",
   "exports": {
     ".": "./index.ts"
@@ -18,7 +18,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@feedgot/tsconfig": "workspace:*",
+    "@oreilla/tsconfig": "workspace:*",
     "@types/node": "22.9.0",
     "@types/ws": "^8.5.13",
     "drizzle-kit": "^0.30.1",

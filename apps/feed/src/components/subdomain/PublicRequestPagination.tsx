@@ -3,7 +3,7 @@
 import React, { useMemo } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@feedgot/ui/components/button"
+import { Button } from "@oreilla/ui/components/button"
 import PaginationHotkeys from "@/components/pagination/PaginationHotkeys"
 
 export function PublicRequestPagination({

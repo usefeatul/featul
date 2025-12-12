@@ -3,7 +3,7 @@
 import React from "react"
 import { DndContext, useSensor, useSensors, PointerSensor, DragOverlay } from "@dnd-kit/core"
 import { motion, AnimatePresence } from "framer-motion"
-import { client } from "@feedgot/api/client"
+import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem"
 import { useQueryClient } from "@tanstack/react-query"

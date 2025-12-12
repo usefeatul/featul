@@ -1,7 +1,7 @@
 import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
 import { getAltDescription } from "@/types/descriptions";
-import { BookmarkIcon } from "@feedgot/ui/icons/bookmark";
+import { BookmarkIcon } from "@oreilla/ui/icons/bookmark";
 
 export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");
@@ -29,7 +29,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
               <div className="flex items-start gap-3">
                 <div>
                   <p className="text-accent mt-1 text-sm sm:text-base leading-7 text-balance sm:max-w-[60ch]">
-                    Feedgot is a modern,
+                    oreilla is a modern,
                     <span className="inline rounded-md bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
                       privacy‑first
                     </span>
