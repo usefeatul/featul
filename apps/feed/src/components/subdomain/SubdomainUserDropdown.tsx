@@ -2,30 +2,25 @@
 
 import React from "react"
 import { useRouter } from "next/navigation"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@oreilla/ui/components/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@oreilla/ui/components/dropdown-menu"
 import { Avatar, AvatarImage, AvatarFallback } from "@oreilla/ui/components/avatar"
 import { cn } from "@oreilla/ui/lib/utils"
 import { authClient } from "@oreilla/auth/client"
 import { toast } from "sonner"
 import { getInitials, getDisplayUser } from "@/utils/user-utils"
-import { CommentsIcon } from "@oreilla/ui/icons/comments"
-import { SettingIcon } from "@oreilla/ui/icons/setting"
-import { PlusIcon } from "@oreilla/ui/icons/plus"
-import { LogoutIcon } from "@oreilla/ui/icons/logout"
 import { useTheme } from "next-themes"
 import CreatePostModal from "./CreatePostModal"
+import { SubdomainUserMenu } from "./SubdomainUserMenu"
 //
 
 type User = { name?: string; email?: string; image?: string | null } | null
 
 export default function SubdomainUserDropdown({
   className = "",
-  workspace,
   subdomain,
   initialUser,
 }: {
   className?: string
-  workspace: { slug: string; name?: string; logo?: string | null }
   subdomain: string
   initialUser?: User
 }) {
@@ -52,7 +47,6 @@ export default function SubdomainUserDropdown({
 
   const d = getDisplayUser(user || undefined)
   const initials = getInitials(d.name || "U")
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || ""
   const themeLabel = theme === "light" ? "Light" : theme === "dark" ? "Dark" : "System"
 
   const onSubmitPost = React.useCallback(() => {
@@ -68,15 +62,15 @@ export default function SubdomainUserDropdown({
 
   const onDashboard = React.useCallback(() => {
     setOpen(false)
-    const target = `${appUrl}/start`
+    const target = `${process.env.NEXT_PUBLIC_APP_URL || ""}/start`
     window.location.href = target
-  }, [appUrl])
+  }, [])
 
   const onCreateProject = React.useCallback(() => {
     setOpen(false)
-    const target = `${appUrl}/workspaces/new`
+    const target = `${process.env.NEXT_PUBLIC_APP_URL || ""}/workspaces/new`
     window.location.href = target
-  }, [appUrl])
+  }, [])
 
   const onSignOut = React.useCallback(async () => {
     if (loading) return
@@ -116,63 +110,16 @@ export default function SubdomainUserDropdown({
           align="center"
           sideOffset={8}
         >
-          <div className="space-y-1 text-xs">
-            <div className="border-b border-border/70 pb-1">
-              <DropdownMenuItem
-                onClick={onSubmitPost}
-                className="flex items-center justify-between px-2 py-1.5 text-xs group"
-              >
-                <span className="transition-colors group-hover:text-foreground">
-                  Submit post
-                </span>
-                <CommentsIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
-              </DropdownMenuItem>
-            </div>
-
-            <div className="border-b border-border/70 pb-1">
-              <DropdownMenuItem
-                onClick={onDashboard}
-                className="mt-1 flex items-center justify-between px-2 py-1.5 text-xs group"
-              >
-                <span className="transition-colors group-hover:text-foreground">
-                  Dashboard
-                </span>
-                <SettingIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={onCreateProject}
-                className="mt-0.5 flex items-center justify-between px-2 py-1.5 text-xs group"
-              >
-                <span className="transition-colors group-hover:text-foreground">
-                  Create project
-                </span>
-                <PlusIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
-              </DropdownMenuItem>
-            </div>
-
-            <div className="pt-1">
-              <DropdownMenuItem
-                onClick={onTheme}
-                className="flex items-center justify-between px-2 py-1.5 text-xs group"
-              >
-                <span className="transition-colors group-hover:text-foreground">
-                  Theme: {themeLabel}
-                </span>
-                <SettingIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
-              </DropdownMenuItem>
-              {user ? (
-                <DropdownMenuItem
-                  onClick={onSignOut}
-                  className="mt-0.5 flex items-center justify-between px-2 py-1.5 text-xs group"
-                  aria-disabled={loading}
-                  variant="destructive"
-                >
-                  <span>Sign out</span>
-                  <LogoutIcon className="size-4 text-foreground/80 opacity-100 transition-colors group-hover:text-red-500" />
-                </DropdownMenuItem>
-              ) : null}
-            </div>
-          </div>
+          <SubdomainUserMenu
+            themeLabel={themeLabel}
+            loading={loading}
+            showSignOut={Boolean(user)}
+            onSubmitPost={onSubmitPost}
+            onDashboard={onDashboard}
+            onCreateProject={onCreateProject}
+            onTheme={onTheme}
+            onSignOut={onSignOut}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
       <CreatePostModal

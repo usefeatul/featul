@@ -109,11 +109,7 @@ export function DomainHeader({
               />
             </Link>
           </Button>
-          <SubdomainUserDropdown
-            workspace={workspace}
-            subdomain={subdomain}
-            initialUser={user || null}
-          />
+          <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
         </div>
       </div>
 
@@ -173,11 +169,7 @@ export function DomainHeader({
           <Button asChild size="xs" variant="nav">
             <Link href={dashboardUrl}>Dashboard</Link>
           </Button>
-          <SubdomainUserDropdown
-            workspace={workspace}
-            subdomain={subdomain}
-            initialUser={user || null}
-          />
+          <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
         </div>
       </div>
     </header>
