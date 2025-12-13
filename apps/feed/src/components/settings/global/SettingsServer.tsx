@@ -165,7 +165,12 @@ function SectionRenderer({
     case "sso":
       return <SSOSection />;
     case "data":
-      return <DataSection />;
+      return (
+        <DataSection
+          slug={slug}
+          workspaceName={initialWorkspaceName}
+        />
+      );
     default:
       return (
         <div className="bg-card rounded-md border p-4">Unknown section</div>

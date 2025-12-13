@@ -2,7 +2,7 @@ import { HTTPException } from "hono/http-exception"
 import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation } from "@oreilla/db"
-import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema } from "../validators/workspace"
+import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema } from "../validators/workspace"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
@@ -485,6 +485,39 @@ export function createWorkspaceRouter() {
           const name = input.name.trim()
           await ctx.db.update(workspace).set({ name, updatedAt: new Date() }).where(eq(workspace.id, ws.id))
           return c.superjson({ ok: true, name })
+        }),
+
+      delete: privateProcedure
+        .input(deleteWorkspaceInputSchema)
+        .post(async ({ ctx, input, c }) => {
+          const [ws] = await ctx.db
+            .select({ id: workspace.id, ownerId: workspace.ownerId, name: workspace.name })
+            .from(workspace)
+            .where(eq(workspace.slug, input.slug))
+            .limit(1)
+          if (!ws) return c.json({ ok: false, message: "Workspace not found" })
+
+          const meId = ctx.session.user.id
+          let allowed = ws.ownerId === meId
+          if (!allowed) {
+            const [me] = await ctx.db
+              .select({ id: workspaceMember.id, role: workspaceMember.role, permissions: workspaceMember.permissions })
+              .from(workspaceMember)
+              .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
+              .limit(1)
+            const perms = (me?.permissions || {}) as Record<string, boolean>
+            if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
+          }
+          if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+
+          const expectedName = String(ws.name || "").trim().toLowerCase()
+          const provided = String(input.confirmName || "").trim().toLowerCase()
+          if (!expectedName || provided !== expectedName) {
+            throw new HTTPException(400, { message: "Workspace name does not match" })
+          }
+
+          await ctx.db.delete(workspace).where(eq(workspace.id, ws.id))
+          return c.superjson({ ok: true })
         }),
   })
 }

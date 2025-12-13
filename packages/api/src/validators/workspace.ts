@@ -45,3 +45,9 @@ export const updateWorkspaceNameInputSchema = z.object({
   slug: slugSchema,
   name: z.string().trim().min(1).max(64),
 })
+
+export const deleteWorkspaceInputSchema = z.object({
+  slug: slugSchema,
+  // Name must be provided and will be validated server-side against the actual workspace name
+  confirmName: z.string().trim().min(1),
+})
