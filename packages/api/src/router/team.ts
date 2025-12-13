@@ -52,6 +52,51 @@ async function getWorkspaceMemberEmails(
   return memberEmails
 }
 
+async function getWorkspaceBySlugOrThrow(ctx: any, slug: string) {
+  const [ws] = await ctx.db
+    .select({ id: workspace.id, ownerId: workspace.ownerId, name: workspace.name, slug: workspace.slug, plan: workspace.plan })
+    .from(workspace)
+    .where(eq(workspace.slug, slug))
+    .limit(1)
+
+  if (!ws) {
+    throw new HTTPException(404, { message: "Workspace not found" })
+  }
+
+  return ws
+}
+
+async function requireCanManageMembers(ctx: any, ws: { id: string; ownerId: string }) {
+  const meId = ctx.session.user.id
+  const [me] = await ctx.db
+    .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+    .from(workspaceMember)
+    .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
+    .limit(1)
+
+  const allowed = me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
+  if (!allowed) {
+    throw new HTTPException(403, { message: "Forbidden" })
+  }
+
+  return { meId, me }
+}
+
+async function assertMemberLimitNotReached(ctx: any, wsId: string, plan: string) {
+  const limits = getPlanLimits(plan as "free" | "pro" | "enterprise")
+  if (typeof limits.maxMembers !== "number") return
+
+  const [mc] = await ctx.db
+    .select({ count: sql<number>`count(*)` })
+    .from(workspaceMember)
+    .where(and(eq(workspaceMember.workspaceId, wsId), eq(workspaceMember.isActive, true)))
+    .limit(1)
+
+  if (Number(mc?.count || 0) >= limits.maxMembers) {
+    throw new HTTPException(403, { message: "Member limit reached for current plan" })
+  }
+}
+
 export function createTeamRouter() {
   return j.router({
     membersByWorkspaceSlug: privateProcedure
@@ -148,22 +193,9 @@ export function createTeamRouter() {
     invite: privateProcedure
       .input(inviteMemberInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId, name: workspace.name, plan: workspace.plan })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.json({ ok: false })
+        const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
+        const { meId } = await requireCanManageMembers(ctx, ws)
 
-        const meId = ctx.session.user.id
-        const [me] = await ctx.db
-          .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
-          .limit(1)
-        const allowed = me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
-        
         // Check if email already belongs to an active member
         const inviteEmail = input.email.trim().toLowerCase()
         const [existingMember] = await ctx.db
@@ -186,13 +218,7 @@ export function createTeamRouter() {
           .limit(1)
         if (owner?.email?.toLowerCase() === inviteEmail) throw new HTTPException(400, { message: "User is already a member of this workspace" })
         
-        const limits = getPlanLimits(ws.plan as "free" | "pro" | "enterprise")
-        const [mc] = await ctx.db
-          .select({ count: sql<number>`count(*)` })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.isActive, true)))
-          .limit(1)
-        if (typeof limits.maxMembers === "number" && Number(mc?.count || 0) >= limits.maxMembers) throw new HTTPException(403, { message: "Member limit reached for current plan" })
+        await assertMemberLimitNotReached(ctx, ws.id, ws.plan as "free" | "pro" | "enterprise")
 
         const token = crypto.randomUUID()
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -275,28 +301,9 @@ export function createTeamRouter() {
     revokeInvite: privateProcedure
       .input(revokeInviteInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId, plan: workspace.plan })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.json({ ok: false })
-
-        const meId = ctx.session.user.id
-        const [me] = await ctx.db
-          .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
-          .limit(1)
-        const allowed = me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
-        const limits = getPlanLimits(ws.plan as "free" | "pro" | "enterprise")
-        const [mc] = await ctx.db
-          .select({ count: sql<number>`count(*)` })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.isActive, true)))
-          .limit(1)
-        if (typeof limits.maxMembers === "number" && Number(mc?.count || 0) >= limits.maxMembers) throw new HTTPException(403, { message: "Member limit reached for current plan" })
+        const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
+        await requireCanManageMembers(ctx, ws)
+        await assertMemberLimitNotReached(ctx, ws.id, ws.plan as "free" | "pro" | "enterprise")
 
         await ctx.db.delete(workspaceInvite).where(eq(workspaceInvite.id, input.inviteId))
         return c.json({ ok: true })
@@ -305,21 +312,8 @@ export function createTeamRouter() {
     updateRole: privateProcedure
       .input(updateMemberRoleInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.json({ ok: false })
-
-        const meId = ctx.session.user.id
-        const [me] = await ctx.db
-          .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
-          .limit(1)
-        const allowed = me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+        const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
+        await requireCanManageMembers(ctx, ws)
 
         if (input.userId === ws.ownerId) throw new HTTPException(403, { message: "Cannot modify owner" })
         await ctx.db
@@ -333,19 +327,8 @@ export function createTeamRouter() {
     removeMember: privateProcedure
       .input(removeMemberInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.json({ ok: false })
-
-        const meId = ctx.session.user.id
-        const [me] = await ctx.db
-          .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
-          .limit(1)
+        const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
+        const { meId, me } = await requireCanManageMembers(ctx, ws)
         const isSelf = input.userId === meId
         const allowed = isSelf || me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
@@ -470,21 +453,8 @@ export function createTeamRouter() {
     addExisting: privateProcedure
       .input(addExistingMemberInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.json({ ok: false })
-
-        const meId = ctx.session.user.id
-        const [me] = await ctx.db
-          .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
-          .limit(1)
-        const allowed = me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+        const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
+        const { meId } = await requireCanManageMembers(ctx, ws)
 
         const [u] = await ctx.db
           .select({ id: user.id })
@@ -499,6 +469,7 @@ export function createTeamRouter() {
             .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, u.id)))
             .limit(1)
           if (!existing) {
+            await assertMemberLimitNotReached(ctx, ws.id, ws.plan as "free" | "pro" | "enterprise")
             await ctx.db.insert(workspaceMember).values({
               workspaceId: ws.id,
               userId: u.id,
@@ -518,6 +489,7 @@ export function createTeamRouter() {
           return c.json({ ok: true, invited: false })
         }
 
+        await assertMemberLimitNotReached(ctx, ws.id, ws.plan as "free" | "pro" | "enterprise")
         const token = crypto.randomUUID()
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         await ctx.db.insert(workspaceInvite).values({
