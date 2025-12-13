@@ -4,8 +4,19 @@ import React from "react"
 import { Switch } from "@oreilla/ui/components/switch"
 import { useGlobalBoardToggle } from "@/hooks/useGlobalBoardToggle"
 
-export default function AllowCommentsToggle({ slug }: { slug: string }) {
-  const { value, onToggle } = useGlobalBoardToggle(slug, "allowComments", "Comments setting updated")
+export default function AllowCommentsToggle({
+  slug,
+  initialBoards,
+}: {
+  slug: string
+  initialBoards?: any[]
+}) {
+  const { value, onToggle } = useGlobalBoardToggle(
+    slug,
+    "allowComments",
+    "Comments setting updated",
+    initialBoards
+  )
 
   return (
     <div className="space-y-2">

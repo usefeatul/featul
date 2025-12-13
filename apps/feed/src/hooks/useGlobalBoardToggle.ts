@@ -7,7 +7,12 @@ import { toast } from "sonner"
 
 export type ToggleKey = "allowAnonymous" | "allowComments" | "hidePublicMemberIdentity"
 
-export function useGlobalBoardToggle(slug: string, key: ToggleKey, successMessage?: string) {
+export function useGlobalBoardToggle(
+  slug: string,
+  key: ToggleKey,
+  successMessage?: string,
+  initialBoards?: any[]
+) {
   const queryClient = useQueryClient()
   const { data: boards = [], refetch } = useQuery({
     queryKey: ["feedback-boards", slug],
@@ -16,6 +21,7 @@ export function useGlobalBoardToggle(slug: string, key: ToggleKey, successMessag
       const d = await res.json()
       return (d as any)?.boards || []
     },
+    initialData: Array.isArray(initialBoards) ? initialBoards : undefined,
     staleTime: 300000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

@@ -133,7 +133,13 @@ function SectionRenderer({
         />
       );
     case "board":
-      return <BoardSettings slug={slug} />;
+      return (
+        <BoardSettings
+          slug={slug}
+          plan={initialPlan}
+          initialBoards={initialFeedbackBoards}
+        />
+      );
     case "changelog":
       return (
         <ChangelogSection

@@ -11,7 +11,15 @@ import PlanNotice from "../global/PlanNotice"
 import ModalCreateBoard from "../feedback/ModalCreateBoard"
 import { MoreVertical } from "lucide-react"
 
-export default function ManageBoards({ slug, plan }: { slug: string; plan?: string }) {
+export default function ManageBoards({
+  slug,
+  plan,
+  initialBoards,
+}: {
+  slug: string
+  plan?: string
+  initialBoards?: any[]
+}) {
   const queryClient = useQueryClient()
   const { data: boards = [], isLoading, refetch } = useQuery({
     queryKey: ["feedback-boards", slug],
@@ -20,6 +28,7 @@ export default function ManageBoards({ slug, plan }: { slug: string; plan?: stri
       const d = await res.json()
       return (d as any)?.boards || []
     },
+    initialData: Array.isArray(initialBoards) ? initialBoards : undefined,
     staleTime: 300000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

@@ -4,8 +4,19 @@ import React from "react"
 import { Switch } from "@oreilla/ui/components/switch"
 import { useGlobalBoardToggle } from "@/hooks/useGlobalBoardToggle"
 
-export default function AllowAnonymousToggle({ slug }: { slug: string }) {
-  const { value, onToggle } = useGlobalBoardToggle(slug, "allowAnonymous", "Anonymous submissions setting updated")
+export default function AllowAnonymousToggle({
+  slug,
+  initialBoards,
+}: {
+  slug: string
+  initialBoards?: any[]
+}) {
+  const { value, onToggle } = useGlobalBoardToggle(
+    slug,
+    "allowAnonymous",
+    "Anonymous submissions setting updated",
+    initialBoards
+  )
 
   return (
     <div className="space-y-2">
