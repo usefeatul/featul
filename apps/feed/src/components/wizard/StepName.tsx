@@ -6,11 +6,20 @@ export default function StepName({ name, onChange, isValid }: { name: string; on
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg sm:text-xl font-semibold">Name your workspace.</h2>
-        <p className="text-xs sm:text-sm text-accent">A clear name helps your team identify it faster.</p>
+        <h2 className="text-lg sm:text-xl font-semibold">What product or project is this for?</h2>
+        <p className="text-xs sm:text-sm text-accent">
+          We&apos;ll use this name across your feedback boards, roadmap and emails.
+        </p>
       </div>
       <div className="space-y-2">
-        <Input id="name" value={name} onChange={(e) => onChange(e.target.value)} placeholder="Mywebsite" className="placeholder:text-accent/70" aria-invalid={!isValid && name.length > 0} />
+        <Input
+          id="name"
+          value={name}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Acme Analytics"
+          className="placeholder:text-accent/70"
+          aria-invalid={!isValid && name.length > 0}
+        />
         {!isValid && name.length > 0 ? (
           <p className="text-xs text-destructive">Name is required.</p>
         ) : null}

@@ -2,10 +2,10 @@
 
 export default function RightInfo() {
   const blocks = [
-    { label: "Gather", color: "bg-red-400" },
-    { label: "Connect", color: "bg-purple-500" },
-    { label: "Build", color: "bg-emerald-500" },
-    { label: "Launch", color: "bg-blue-500" },
+    { label: "Collect", color: "bg-red-400" },
+    { label: "Prioritize", color: "bg-purple-500" },
+    { label: "Ship", color: "bg-emerald-500" },
+    { label: "Announce", color: "bg-blue-500" },
   ]
   return (
     <div className="w-full">

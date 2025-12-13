@@ -10,8 +10,10 @@ export default function StepSlug({ slug, onChange, checking, available, disabled
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg sm:text-xl font-semibold">Choose a subdomain.</h2>
-        <p className="text-xs sm:text-sm text-accent">This will be used for your workspace URL.</p>
+        <h2 className="text-lg sm:text-xl font-semibold">Choose your workspace URL.</h2>
+        <p className="text-xs sm:text-sm text-accent">
+          Share this link with customers to collect feedback and show what&apos;s coming next.
+        </p>
       </div>
       <div className="space-y-2">
         <div className="flex items-center gap-3">
@@ -21,7 +23,7 @@ export default function StepSlug({ slug, onChange, checking, available, disabled
               id="slug"
               value={slug}
               onChange={(e) => onChange(e.target.value)}
-              placeholder="mywebsite"
+              placeholder="acmeapp"
               className="w-full placeholder:text-accent/70 pl-9 sm:pl-10 pr-16 sm:pr-24"
               aria-invalid={available === false || (!!slug && !isSlugValid(slug))}
               disabled={disabled}

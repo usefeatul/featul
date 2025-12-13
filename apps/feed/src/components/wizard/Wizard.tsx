@@ -1,181 +1,228 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
-import { Button } from "@oreilla/ui/components/button"
-import Progress from "./Progress"
-import StepName from "./StepName"
-import StepDomain from "./StepDomain"
-import StepSlug from "./StepSlug"
-import TimezonePicker from "./TimezonePicker"
-import RightInfo from "./RightInfo"
-import { client } from "@oreilla/api/client"
- 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { workspaceSchema, isNameValid, isDomainValid, isSlugValid, isTimezoneValid, cleanSlug, slugifyFromName } from "../../lib/validators"
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@oreilla/ui/components/button";
+import Progress from "./Progress";
+import StepName from "./StepName";
+import StepDomain from "./StepDomain";
+import StepSlug from "./StepSlug";
+import TimezonePicker from "./TimezonePicker";
+import RightInfo from "./RightInfo";
+import { client } from "@oreilla/api/client";
 
-export default function WorkspaceWizard({ className = "" }: { className?: string }) {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const [step, setStep] = useState(0)
-  const total = 4
+import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  workspaceSchema,
+  isNameValid,
+  isDomainValid,
+  isSlugValid,
+  isTimezoneValid,
+  cleanSlug,
+  slugifyFromName,
+} from "../../lib/validators";
 
-  const [name, setName] = useState("")
-  const [domain, setDomain] = useState("")
-  const [slug, setSlug] = useState("")
-  const [slugDirty, setSlugDirty] = useState(false)
-  const [slugChecking, setSlugChecking] = useState(false)
-  const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
-  const [slugLocked, setSlugLocked] = useState<string | null>(null)
+export default function WorkspaceWizard({
+  className = "",
+}: {
+  className?: string;
+}) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [step, setStep] = useState(0);
+  const total = 4;
+
+  const [name, setName] = useState("");
+  const [domain, setDomain] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugDirty, setSlugDirty] = useState(false);
+  const [slugChecking, setSlugChecking] = useState(false);
+  const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
+  const [slugLocked, setSlugLocked] = useState<string | null>(null);
 
   const [timezone, setTimezone] = useState<string>(
-    typeof Intl !== "undefined" && Intl.DateTimeFormat().resolvedOptions().timeZone
+    typeof Intl !== "undefined" &&
+      Intl.DateTimeFormat().resolvedOptions().timeZone
       ? Intl.DateTimeFormat().resolvedOptions().timeZone
       : "UTC"
-  )
-  const [now, setNow] = useState<Date>(new Date())
-  const [isCreating, setIsCreating] = useState(false)
+  );
+  const [now, setNow] = useState<Date>(new Date());
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60000)
-    return () => clearInterval(id)
-  }, [])
+    const id = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
-    if (slugDirty) return
-    const s = slugifyFromName(name)
-    setSlug(s)
-  }, [name, slugDirty])
+    if (slugDirty) return;
+    const s = slugifyFromName(name);
+    setSlug(s);
+  }, [name, slugDirty]);
 
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   useEffect(() => {
-    const initialLocked = (searchParams?.get("slug") || "").trim().toLowerCase()
-    let mounted = true
-    ;(async () => {
+    const initialLocked = (searchParams?.get("slug") || "")
+      .trim()
+      .toLowerCase();
+    let mounted = true;
+    (async () => {
       try {
-        const res = await client.reservation.claimOnSignup.$get()
-        const data = await res.json()
-        const locked = String(data?.slugLocked || initialLocked || "").trim().toLowerCase()
+        const res = await client.reservation.claimOnSignup.$get();
+        const data = await res.json();
+        const locked = String(data?.slugLocked || initialLocked || "")
+          .trim()
+          .toLowerCase();
         if (locked && mounted) {
-          setSlugLocked(locked)
-          setSlugDirty(true)
-          setSlug(locked)
-          setSlugAvailable(true)
-          setSlugChecking(false)
+          setSlugLocked(locked);
+          setSlugDirty(true);
+          setSlug(locked);
+          setSlugAvailable(true);
+          setSlugChecking(false);
         }
       } catch {}
-    })()
-    return () => { mounted = false }
-  }, [searchParams])
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [searchParams]);
 
   useEffect(() => {
     if (!slug || slug.length < 5) {
-      setSlugAvailable(null)
-      return
+      setSlugAvailable(null);
+      return;
     }
     if (slugLocked) {
-      setSlugAvailable(true)
-      return
+      setSlugAvailable(true);
+      return;
     }
-    setSlugChecking(true)
-    setSlugAvailable(null)
+    setSlugChecking(true);
+    setSlugAvailable(null);
     const id = setTimeout(async () => {
       try {
-        const res = await client.workspace.checkSlug.$post({ slug })
-        const data = await res.json()
-        setSlugAvailable(Boolean(data?.available))
+        const res = await client.workspace.checkSlug.$post({ slug });
+        const data = await res.json();
+        setSlugAvailable(Boolean(data?.available));
       } catch {
-        setSlugAvailable(null)
+        setSlugAvailable(null);
       } finally {
-        setSlugChecking(false)
+        setSlugChecking(false);
       }
-    }, 500)
-    return () => clearTimeout(id)
-  }, [slug])
+    }, 500);
+    return () => clearTimeout(id);
+  }, [slug]);
 
-  const domainValid = useMemo(() => isDomainValid(domain), [domain])
+  const domainValid = useMemo(() => isDomainValid(domain), [domain]);
 
   const canNext = useMemo(() => {
-    if (step === 0) return isNameValid(name)
-    if (step === 1) return domainValid
-    if (step === 2) return isSlugValid(slug) && slugAvailable === true
-    if (step === 3) return isTimezoneValid(timezone)
-    return false
-  }, [step, name, domainValid, slug, slugAvailable, timezone])
+    if (step === 0) return isNameValid(name);
+    if (step === 1) return domainValid;
+    if (step === 2) return isSlugValid(slug) && slugAvailable === true;
+    if (step === 3) return isTimezoneValid(timezone);
+    return false;
+  }, [step, name, domainValid, slug, slugAvailable, timezone]);
 
-  const next = () => setStep((s) => Math.min(s + 1, total - 1))
-  const prev = () => setStep((s) => Math.max(s - 1, 0))
+  const next = () => setStep((s) => Math.min(s + 1, total - 1));
+  const prev = () => setStep((s) => Math.max(s - 1, 0));
 
   const create = async () => {
-    setIsCreating(true)
+    setIsCreating(true);
     try {
       const parsed = workspaceSchema.safeParse({
         name: name.trim(),
         domain: domain.trim(),
         slug: slug.trim(),
         timezone,
-      })
+      });
       if (!parsed.success) {
-        toast.error("Invalid workspace details")
-        return
+        toast.error("Invalid workspace details");
+        return;
       }
-      const res = await client.workspace.create.$post(parsed.data)
+      const res = await client.workspace.create.$post(parsed.data);
       if (!res.ok) {
-        await res.json()
-        toast.error("Failed to create workspace")
-        return
+        await res.json();
+        toast.error("Failed to create workspace");
+        return;
       }
-      const data = await res.json()
-      toast.success("Workspace created")
-      const createdSlug = data?.workspace?.slug || slug
+      const data = await res.json();
+      toast.success("Workspace created");
+      const createdSlug = data?.workspace?.slug || slug;
       try {
         queryClient.setQueryData(["workspaces"], (prev: any) => {
-          const list = Array.isArray(prev) ? prev : prev?.workspaces || []
-          const next = [...list, data?.workspace].filter(Boolean)
-          return prev && prev.workspaces ? { ...prev, workspaces: next } : next
-        })
+          const list = Array.isArray(prev) ? prev : prev?.workspaces || [];
+          const next = [...list, data?.workspace].filter(Boolean);
+          return prev && prev.workspaces ? { ...prev, workspaces: next } : next;
+        });
         if (data?.workspace) {
-          queryClient.setQueryData(["workspace", createdSlug], data.workspace)
+          queryClient.setQueryData(["workspace", createdSlug], data.workspace);
         }
       } catch {}
-      router.push(`/workspaces/${createdSlug}`)
+      router.push(`/workspaces/${createdSlug}`);
     } catch (e: unknown) {
-      toast.error((e as { message?: string })?.message || "Failed to create workspace")
+      toast.error(
+        (e as { message?: string })?.message || "Failed to create workspace"
+      );
     } finally {
-      setIsCreating(false)
+      setIsCreating(false);
     }
-  }
+  };
 
   return (
     <section className="flex min-h-screen items-center justify-center bg-background px-4 sm:px-6 md:px-10 lg:px-16">
-      <div className={`w-full max-w-3xl mx-auto ${className}`}>
+      <div className={`w-full max-w-4xl mx-auto ${className}`}>
         <div className="bg-card rounded-md border ring-1 ring-border overflow-hidden">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-2/5 p-4 sm:p-6 md:border-r border-b md:border-b-0 flex flex-col">
-              <div className="mb-6 sm:mb-10">
+              <div className="mb-3 sm:mb-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-accent">
+                  Welcome to Oreilla
+                </p>
+                <h1 className="mt-1 text-lg sm:text-xl font-semibold">
+                  Let&apos;s set up your first workspace.
+                </h1>
+                <p className="mt-1 text-xs sm:text-sm text-accent">
+                  A quick, guided setup to create a home for your product
+                  feedback.
+                </p>
+              </div>
+              <div className="mb-6 sm:mb-10 flex items-center justify-between">
                 <Progress step={step} total={total} />
+                <p className="text-[11px] sm:text-xs text-accent">
+                  Step {step + 1} of {total}
+                </p>
               </div>
 
               {step === 0 && (
                 <>
-                  <StepName name={name} onChange={setName} isValid={isNameValid(name)} />
+                  <StepName
+                    name={name}
+                    onChange={setName}
+                    isValid={isNameValid(name)}
+                  />
                   {slugLocked ? (
                     <div className="mt-5">
                       <div className="rounded-sm bg-muted/50 px-2 py-2 text-xs">
-                        <span className="text-accent">Reserved:</span> <span className="">{slugLocked}.oreilla.com</span>
+                        <span className="text-accent">Reserved:</span>{" "}
+                        <span className="">{slugLocked}.oreilla.com</span>
                       </div>
                     </div>
                   ) : null}
                 </>
               )}
-              {step === 1 && <StepDomain domain={domain} onChange={setDomain} isValid={domainValid} />}
+              {step === 1 && (
+                <StepDomain
+                  domain={domain}
+                  onChange={setDomain}
+                  isValid={domainValid}
+                />
+              )}
               {step === 2 && (
-              <StepSlug
+                <StepSlug
                   slug={slug}
                   onChange={(v) => {
-                    setSlugDirty(true)
-                    setSlug(cleanSlug(v))
+                    setSlugDirty(true);
+                    setSlug(cleanSlug(v));
                   }}
                   checking={slugChecking}
                   available={slugAvailable}
@@ -185,27 +232,56 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
               {step === 3 && (
                 <div className="space-y-4">
                   <div>
-                    <h2 className="text-lg sm:text-xl font-semibold">Select your timezone.</h2>
-                    <p className="text-xs sm:text-sm text-accent">We’ll use this to align dates and charts.</p>
+                    <h2 className="text-lg sm:text-xl font-semibold">
+                      Choose your team&apos;s timezone.
+                    </h2>
+                    <p className="text-xs sm:text-sm text-accent">
+                      We&apos;ll use this for your feedback, roadmap and
+                      changelog dates.
+                    </p>
                   </div>
-                  <TimezonePicker value={timezone} onChange={setTimezone} now={now} />
+                  <TimezonePicker
+                    value={timezone}
+                    onChange={setTimezone}
+                    now={now}
+                  />
                   {!isTimezoneValid(timezone) ? (
-                    <p className="text-xs text-destructive">Please select a valid timezone.</p>
+                    <p className="text-xs text-destructive">
+                      Please select a valid timezone.
+                    </p>
                   ) : null}
-                  <p className="text-[12px] text-accent">All project graphs, ranges and timestamps will be matched to this timezone. Can be updated later.</p>
+                  <p className="text-xs text-accent/90">
+                    All feedback, graphs and roadmap timestamps will follow this
+                    timezone. You can change this later in settings.
+                  </p>
                 </div>
               )}
 
               <div className="mt-auto pt-6 flex items-center gap-3">
-                <Button type="button" variant="quiet" onClick={prev} disabled={step === 0}>
+                <Button
+                  type="button"
+                  variant="quiet"
+                  onClick={prev}
+                  disabled={step === 0}
+                >
                   ←
                 </Button>
                 {step < total - 1 ? (
-                  <Button type="button" variant="quiet" onClick={next} disabled={!canNext}>
+                  <Button
+                    type="button"
+                    variant="quiet"
+                    onClick={next}
+                    disabled={!canNext}
+                  >
                     Next →
                   </Button>
                 ) : (
-                  <Button type="button" variant="quiet" onClick={create} disabled={!canNext || isCreating}>
+                  <Button
+                    type="button"
+                    variant="quiet"
+                    onClick={create}
+                    disabled={!canNext || isCreating}
+                  >
                     {isCreating ? "Creating..." : "Create project →"}
                   </Button>
                 )}
@@ -219,5 +295,5 @@ export default function WorkspaceWizard({ className = "" }: { className?: string
         </div>
       </div>
     </section>
-  )
+  );
 }
