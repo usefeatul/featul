@@ -7,7 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@oreilla/ui/lib/utils"
 
 const trackVariants = cva(
-  "peer inline-flex items-center rounded-md border shadow-xs transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#22c55e] data-[state=checked]:border-[#22c55e] data-[state=checked]:ring-2 data-[state=checked]:ring-[#22c55e]/40 data-[state=unchecked]:bg-muted data-[state=unchecked]:border-input data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-foreground/10 focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+  "peer inline-flex items-center rounded-md border shadow-xs transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 bg-muted border-input ring-1 ring-foreground/10 data-[checked]:bg-[#22c55e] data-[checked]:border-[#22c55e] data-[checked]:ring-2 data-[checked]:ring-[#22c55e]/40 focus-visible:ring-ring/50 focus-visible:ring-[3px]",
   {
     variants: {
       size: {
@@ -23,7 +23,7 @@ const trackVariants = cva(
 )
 
 const thumbVariants = cva(
-  "pointer-events-none block rounded-md ring-0 transition-transform bg-accent/30 shadow-xs data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0",
+  "pointer-events-none block rounded-md ring-0 transition-transform bg-accent/30 shadow-xs translate-x-0 data-[checked]:translate-x-[calc(100%-2px)]",
   {
     variants: {
       size: {
