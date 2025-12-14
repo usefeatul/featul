@@ -5,20 +5,30 @@ import { Popover as BasePopover } from "@base-ui/react/popover"
 
 import { cn } from "@oreilla/ui/lib/utils"
 
-function Popover({
-  ...props
-}: React.ComponentProps<typeof BasePopover.Root>) {
+// Root -----------------------------------------------------------------------
+
+function Popover(
+  props: React.ComponentProps<typeof BasePopover.Root>,
+) {
   return <BasePopover.Root data-slot="popover" {...props} />
 }
 
-type BaseTriggerProps = React.ComponentPropsWithoutRef<typeof BasePopover.Trigger>
+// Trigger --------------------------------------------------------------------
 
-type PopoverTriggerProps = BaseTriggerProps & {
+type BaseTriggerProps = React.ComponentPropsWithoutRef<
+  typeof BasePopover.Trigger
+>
+
+type PopoverTriggerProps = Omit<BaseTriggerProps, "children" | "render"> & {
   asChild?: boolean
   children?: React.ReactNode
 }
 
-function PopoverTrigger({ asChild, children, render: _render, ...props }: PopoverTriggerProps) {
+function PopoverTrigger({
+  asChild,
+  children,
+  ...props
+}: PopoverTriggerProps) {
   if (asChild) {
     return (
       <BasePopover.Trigger
@@ -26,12 +36,11 @@ function PopoverTrigger({ asChild, children, render: _render, ...props }: Popove
         {...props}
         // Map Radix-style `asChild` to Base UI's `render` prop.
         render={(triggerProps) => {
-          const child = React.Children.only(children) as React.ReactElement
-          const triggerAttrs = triggerProps as Record<string, unknown>
-          return React.cloneElement(
-            child,
-            Object.assign({}, triggerAttrs, child.props),
-          )
+          const child = React.Children.only(
+            children,
+          ) as React.ReactElement
+          const mergedProps = Object.assign({}, triggerProps, child.props)
+          return React.cloneElement(child, mergedProps)
         }}
       />
     )
@@ -44,34 +53,67 @@ function PopoverTrigger({ asChild, children, render: _render, ...props }: Popove
   )
 }
 
-type PopoverContentProps =
-  React.ComponentPropsWithoutRef<typeof BasePopover.Popup> & {
-    list?: boolean
-    align?: React.ComponentPropsWithoutRef<typeof BasePopover.Positioner>["align"]
-    sideOffset?: React.ComponentPropsWithoutRef<typeof BasePopover.Positioner>["sideOffset"]
-  }
+// Content --------------------------------------------------------------------
+
+type BasePopupProps = React.ComponentPropsWithoutRef<typeof BasePopover.Popup>
+
+type PopoverContentProps = Omit<BasePopupProps, "children" | "style"> & {
+  children?: React.ReactNode
+  style?: React.CSSProperties
+  list?: boolean
+  align?: React.ComponentPropsWithoutRef<
+    typeof BasePopover.Positioner
+  >["align"]
+  sideOffset?: React.ComponentPropsWithoutRef<
+    typeof BasePopover.Positioner
+  >["sideOffset"]
+}
 
 function PopoverContent({
   className,
   align = "center",
   sideOffset = 4,
   list = false,
-  ...props
+  style,
+  children,
+  ...rest
 }: PopoverContentProps) {
+  const [container, setContainer] =
+    React.useState<HTMLElement | null>(null)
+
+  React.useEffect(() => {
+    // If we're inside one or more dialogs, attach the popover
+    // portal to the top-most dialog content so it renders above it.
+    const nodes =
+      document.querySelectorAll<HTMLElement>(
+        '[data-slot="dialog-content"]',
+      )
+    const last = nodes.length
+      ? (nodes[nodes.length - 1] as HTMLElement)
+      : null
+    setContainer(last)
+  }, [])
+
   return (
-    <BasePopover.Portal>
+    <BasePopover.Portal container={container ?? undefined}>
       <BasePopover.Positioner align={align} sideOffset={sideOffset}>
         <BasePopover.Popup
           data-slot="popover-content"
           data-variant={list ? "list" : undefined}
           className={cn(
             list
-              ? "bg-card text-popover-foreground z-[60] w-fit min-w-0 rounded-md border p-0 outline-hidden"
-              : "bg-card text-popover-foreground z-[60] w-80 rounded-md border p-2 outline-hidden",
-            className
+              ? "bg-card text-popover-foreground z-60 w-fit min-w-0 rounded-md border p-0 outline-hidden"
+              : "bg-card text-popover-foreground z-60 w-80 rounded-md border p-2 outline-hidden",
+            className,
           )}
-          {...props}
-        />
+          style={{
+            zIndex: 9999,
+            ...style,
+          }}
+          {...rest}
+        >
+          {children}
+        </BasePopover.Popup>
       </BasePopover.Positioner>
     </BasePopover.Portal>
   )

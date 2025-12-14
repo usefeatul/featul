@@ -22,7 +22,7 @@ const DialogOverlay = React.forwardRef<
     ref={ref as any}
     data-slot="dialog-overlay"
     className={cn(
-      "fixed inset-0 z-50 bg-black/30 backdrop-blur-sm",
+      "fixed inset-0 z-40 bg-black/30 backdrop-blur-sm",
       className
     )}
     {...props}
@@ -46,7 +46,7 @@ const DialogContent = React.forwardRef<
     <BaseDialog.Popup
       data-slot="dialog-content"
       {...props}
-      className="fixed left-1/2 top-1/2 z-50"
+      className="fixed left-1/2 top-1/2 z-40"
     >
       <motion.div
         ref={ref as any}
