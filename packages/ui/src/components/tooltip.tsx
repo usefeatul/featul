@@ -1,59 +1,122 @@
 "use client"
 
 import * as React from "react"
-import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip"
 
 import { cn } from "@oreilla/ui/lib/utils"
 
+type TooltipProviderProps = React.PropsWithChildren<
+  {
+    delayDuration?: number
+  } & Omit<
+    React.ComponentProps<typeof BaseTooltip.Provider>,
+    "delay"
+  >
+>
+
 function TooltipProvider({
   delayDuration = 0,
+  children,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
+}: TooltipProviderProps) {
   return (
-    <TooltipPrimitive.Provider
+    <BaseTooltip.Provider
       data-slot="tooltip-provider"
-      delayDuration={delayDuration}
+      delay={delayDuration}
       {...props}
-    />
+    >
+      {children}
+    </BaseTooltip.Provider>
   )
 }
 
 function Tooltip({
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+}: React.ComponentProps<typeof BaseTooltip.Root>) {
   return (
     <TooltipProvider>
-      <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+      <BaseTooltip.Root data-slot="tooltip" {...props} />
     </TooltipProvider>
   )
 }
 
-function TooltipTrigger({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+type BaseTriggerProps = React.ComponentPropsWithoutRef<
+  typeof BaseTooltip.Trigger
+>
+
+type TooltipTriggerProps = BaseTriggerProps & {
+  asChild?: boolean
+  children?: React.ReactNode
 }
+
+function TooltipTrigger({
+  asChild,
+  children,
+  render: _render,
+  ...props
+}: TooltipTriggerProps) {
+  if (asChild) {
+    return (
+      <BaseTooltip.Trigger
+        data-slot="tooltip-trigger"
+        {...props}
+        render={(triggerProps) => {
+          const child = React.Children.only(children) as React.ReactElement<any>
+          const triggerAttrs = triggerProps as Record<string, unknown>
+          return React.cloneElement(
+            child,
+            Object.assign({}, triggerAttrs, child.props),
+          )
+        }}
+      />
+    )
+  }
+
+  return (
+    <BaseTooltip.Trigger data-slot="tooltip-trigger" {...props}>
+      {children}
+    </BaseTooltip.Trigger>
+  )
+}
+
+type TooltipContentProps =
+  React.ComponentPropsWithoutRef<typeof BaseTooltip.Popup> & {
+    sideOffset?: number
+    side?: React.ComponentPropsWithoutRef<
+      typeof BaseTooltip.Positioner
+    >["side"]
+    align?: React.ComponentPropsWithoutRef<
+      typeof BaseTooltip.Positioner
+    >["align"]
+  }
 
 function TooltipContent({
   className,
   sideOffset = 0,
+  side,
+  align,
   children,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+}: TooltipContentProps) {
   return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
-        data-slot="tooltip-content"
+    <BaseTooltip.Portal>
+      <BaseTooltip.Positioner
         sideOffset={sideOffset}
-        className={cn(
-          "bg-background text-accent border shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-[16rem] whitespace-normal break-words text-balance leading-relaxed origin-(--radix-tooltip-content-transform-origin) rounded-md px-3 py-2 text-sm",
-          className
-        )}
-        {...props}
+        side={side}
+        align={align}
       >
-        {children}
-      </TooltipPrimitive.Content>
-    </TooltipPrimitive.Portal>
+        <BaseTooltip.Popup
+          data-slot="tooltip-content"
+          className={cn(
+            "bg-background text-accent border shadow-md animate-in fade-in-0 zoom-in-95 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 z-50 w-[16rem] whitespace-normal break-words text-balance leading-relaxed rounded-md px-3 py-2 text-sm",
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </BaseTooltip.Popup>
+      </BaseTooltip.Positioner>
+    </BaseTooltip.Portal>
   )
 }
 

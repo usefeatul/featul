@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Input as BaseInput } from "@base-ui/react/input"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@oreilla/ui/lib/utils"
@@ -18,9 +19,12 @@ const inputVariants = cva(
   }
 )
 
-function Input({ className, type, variant, ...props }: React.ComponentProps<"input"> & VariantProps<typeof inputVariants>) {
+type InputProps = React.ComponentProps<typeof BaseInput> &
+  VariantProps<typeof inputVariants>
+
+function Input({ className, type, variant, ...props }: InputProps) {
   return (
-    <input
+    <BaseInput
       type={type}
       data-slot="input"
       className={cn(inputVariants({ variant, className }))}

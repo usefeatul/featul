@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import * as SwitchPrimitive from "@radix-ui/react-switch"
+import { Switch as BaseSwitch } from "@base-ui/react/switch"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@oreilla/ui/lib/utils"
@@ -38,11 +38,21 @@ const thumbVariants = cva(
   }
 )
 
-function Switch({ className, size = "default", ...props }: React.ComponentProps<typeof SwitchPrimitive.Root> & VariantProps<typeof trackVariants>) {
+type SwitchProps = React.ComponentProps<typeof BaseSwitch.Root> &
+  VariantProps<typeof trackVariants>
+
+function Switch({ className, size = "default", ...props }: SwitchProps) {
   return (
-    <SwitchPrimitive.Root data-slot="switch" className={cn(trackVariants({ size, className }))} {...props}>
-      <SwitchPrimitive.Thumb data-slot="switch-thumb" className={cn(thumbVariants({ size }))} />
-    </SwitchPrimitive.Root>
+    <BaseSwitch.Root
+      data-slot="switch"
+      className={cn(trackVariants({ size, className }))}
+      {...props}
+    >
+      <BaseSwitch.Thumb
+        data-slot="switch-thumb"
+        className={cn(thumbVariants({ size }))}
+      />
+    </BaseSwitch.Root>
   )
 }
 

@@ -1,50 +1,57 @@
 "use client"
 
 import * as React from "react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { Dialog as BaseDialog } from "@base-ui/react/dialog"
 import { motion } from "framer-motion"
 
 import { cn } from "@oreilla/ui/lib/utils"
 
-const Dialog = DialogPrimitive.Root
+const Dialog = BaseDialog.Root
 
-const DialogTrigger = DialogPrimitive.Trigger
+const DialogTrigger = BaseDialog.Trigger
 
-const DialogPortal = DialogPrimitive.Portal
+const DialogPortal = BaseDialog.Portal
 
-const DialogClose = DialogPrimitive.Close
+const DialogClose = BaseDialog.Close
 
 const DialogOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+  React.ElementRef<typeof BaseDialog.Backdrop>,
+  React.ComponentPropsWithoutRef<typeof BaseDialog.Backdrop>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay asChild>
-    <motion.div
-      ref={ref as any}
-      className={cn(
-        "fixed inset-0 z-50 bg-black/30 backdrop-blur-sm",
-        className
-      )}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      {...props as any}
-    />
-  </DialogPrimitive.Overlay>
+  <BaseDialog.Backdrop
+    ref={ref as any}
+    data-slot="dialog-overlay"
+    className={cn(
+      "fixed inset-0 z-50 bg-black/30 backdrop-blur-sm",
+      className
+    )}
+    {...props}
+  />
 ))
-DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+DialogOverlay.displayName = "DialogOverlay"
+
+type DialogContentProps = Omit<
+  React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>,
+  "children"
+> & {
+  children?: React.ReactNode
+}
 
 const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+  React.ElementRef<typeof BaseDialog.Popup>,
+  DialogContentProps
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
-    <DialogPrimitive.Content asChild {...props}>
+    <BaseDialog.Popup
+      data-slot="dialog-content"
+      {...props}
+      className="fixed left-1/2 top-1/2 z-50"
+    >
       <motion.div
         ref={ref as any}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-5 border ring-1 ring-border shadow-2xl rounded-sm",
+          "grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-5 border ring-1 ring-border shadow-2xl rounded-sm",
           className
         )}
         initial={{ opacity: 0, scale: 0.95, y: -12 }}
@@ -54,10 +61,10 @@ const DialogContent = React.forwardRef<
       >
         {children}
       </motion.div>
-    </DialogPrimitive.Content>
+    </BaseDialog.Popup>
   </DialogPortal>
 ))
-DialogContent.displayName = DialogPrimitive.Content.displayName
+DialogContent.displayName = "DialogContent"
 
 const DialogHeader = ({
   className,
@@ -88,10 +95,10 @@ const DialogFooter = ({
 DialogFooter.displayName = "DialogFooter"
 
 const DialogTitle = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+  React.ElementRef<typeof BaseDialog.Title>,
+  React.ComponentPropsWithoutRef<typeof BaseDialog.Title>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
+  <BaseDialog.Title
     ref={ref}
     className={cn(
       "text-2xl font-semibold leading-none tracking-tight",
@@ -100,19 +107,19 @@ const DialogTitle = React.forwardRef<
     {...props}
   />
 ))
-DialogTitle.displayName = DialogPrimitive.Title.displayName
+DialogTitle.displayName = "DialogTitle"
 
 const DialogDescription = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+  React.ElementRef<typeof BaseDialog.Description>,
+  React.ComponentPropsWithoutRef<typeof BaseDialog.Description>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description
+  <BaseDialog.Description
     ref={ref}
     className={cn("text-sm text-accent", className)}
     {...props}
   />
 ))
-DialogDescription.displayName = DialogPrimitive.Description.displayName
+DialogDescription.displayName = "DialogDescription"
 
 export {
   Dialog,

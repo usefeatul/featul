@@ -26,17 +26,23 @@ function Command({
   )
 }
 
+type CommandDialogProps = Omit<
+  React.ComponentProps<typeof Dialog>,
+  "children"
+> & {
+  title?: string
+  description?: string
+  className?: string
+  children?: React.ReactNode
+}
+
 function CommandDialog({
   title = "Command Palette",
   description = "Search for a command to run...",
   children,
   className,
   ...props
-}: React.ComponentProps<typeof Dialog> & {
-  title?: string
-  description?: string
-  className?: string
-}) {
+}: CommandDialogProps) {
   return (
     <Dialog {...props}>
       <DialogHeader className="sr-only">

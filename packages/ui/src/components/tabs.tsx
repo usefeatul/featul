@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { Tabs as BaseTabs } from "@base-ui/react/tabs";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@oreilla/ui/lib/utils";
 import { useIsMobile } from "@oreilla/ui/hooks/use-mobile";
@@ -11,17 +11,31 @@ const GliderContext = React.createContext<{
   onActive?: (el: HTMLElement) => void;
 } | null>(null);
 
+type TabsRootProps = React.ComponentProps<typeof BaseTabs.Root>;
+
 function Tabs({
   className,
+  onValueChange,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  const value = (props as any).value as string | undefined;
+}: TabsRootProps) {
+  const [internalValue, setInternalValue] = React.useState<string | undefined>(
+    () => (props as any).value ?? (props as any).defaultValue
+  );
+
+  const handleValueChange: TabsRootProps["onValueChange"] = (value, eventDetails) => {
+    setInternalValue(value as string | undefined);
+    onValueChange?.(value, eventDetails);
+  };
+
+  const value = ((props as any).value as string | undefined) ?? internalValue;
+
   return (
     <GliderContext.Provider value={{ value }}>
-      <TabsPrimitive.Root
+      <BaseTabs.Root
         data-slot="tabs"
         className={cn("flex flex-col gap-2", className)}
         {...props}
+        onValueChange={handleValueChange}
       />
     </GliderContext.Provider>
   );
@@ -30,7 +44,7 @@ function Tabs({
 function TabsList({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+}: React.ComponentProps<typeof BaseTabs.List>) {
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const ctx = React.useContext(GliderContext);
   const isMobile = useIsMobile();
@@ -90,7 +104,7 @@ function TabsList({
   }, [ctx?.value, measure, isMobile]);
 
   return (
-    <TabsPrimitive.List
+    <BaseTabs.List
       ref={listRef}
       data-slot="tabs-list"
       className={cn(
@@ -147,17 +161,17 @@ function TabsList({
           )}
         </AnimatePresence>
       )}
-    </TabsPrimitive.List>
+    </BaseTabs.List>
   )
 }
 
 function TabsTrigger({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+}: React.ComponentProps<typeof BaseTabs.Tab>) {
   const ctx = React.useContext(GliderContext);
   return (
-    <TabsPrimitive.Trigger
+    <BaseTabs.Tab
       data-slot="tabs-trigger"
       data-value={(props as any).value}
       className={cn(
@@ -184,9 +198,9 @@ function TabsTrigger({
 function TabsContent({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Content>) {
+}: React.ComponentProps<typeof BaseTabs.Panel>) {
   return (
-    <TabsPrimitive.Content
+    <BaseTabs.Panel
       data-slot="tabs-content"
       className={cn("flex-1 outline-none", className)}
       {...props}

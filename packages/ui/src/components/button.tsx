@@ -1,10 +1,9 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@oreilla/ui/lib/utils"
 
-  const buttonVariants = cva(
+const buttonVariants = cva(
     "inline-flex items-center  dark:text-white justify-center gap-2 whitespace-now rap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer",
     {
       variants: {
@@ -40,24 +39,38 @@ import { cn } from "@oreilla/ui/lib/utils"
     }
   )
 
+type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }
+
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  children,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
-  const Comp = asChild ? Slot : "button"
+}: ButtonProps) {
+  const baseClass = cn(buttonVariants({ variant, size, className }))
+
+  if (asChild) {
+    const child = React.Children.only(children) as React.ReactElement<any>
+    return React.cloneElement(child, {
+      ...(props as any),
+      "data-slot": "button",
+      className: cn(baseClass, (child.props as any)?.className),
+    } as any)
+  }
 
   return (
-    <Comp
+    <button
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={baseClass}
       {...props}
-    />
+    >
+      {children}
+    </button>
   )
 }
 
