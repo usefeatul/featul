@@ -53,17 +53,26 @@ function PopoverList({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function PopoverListItem({ className, accent, children, ...props }: React.ComponentProps<"button"> & { accent?: string }) {
+function PopoverListItem({ 
+  className, 
+  accent, 
+  children, 
+  as: Component = "button",
+  ...props 
+}: (React.ComponentProps<"button"> | React.ComponentProps<"div">) & { 
+  accent?: string;
+  as?: "button" | "div";
+}) {
   const style = accent ? { background: accent } : { background: "var(--primary)" }
   return (
-    <button
+    <Component
       data-slot="popover-list-item"
-      className={cn("relative group w-full text-left px-3 py-2 hover:bg-muted dark:hover:bg-black/40 flex items-center gap-3 cursor-pointer", className)}
-      {...props}
+      className={cn("relative group w-full text-left px-3 py-2 hover:bg-muted dark:hover:bg-black/40 flex items-center gap-3 cursor-pointer rounded-none", className)}
+      {...(props as any)}
     >
       <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[2px] opacity-0 group-hover:opacity-100" style={style} />
       {children}
-    </button>
+    </Component>
   )
 }
 

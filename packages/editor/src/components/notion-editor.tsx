@@ -65,7 +65,7 @@ export interface NotionEditorProps {
  */
 export const NotionEditor = forwardRef<NotionEditorRef, NotionEditorProps>(
   function NotionEditor(
-    { initialContent, placeholder = "Start typing...", className, onUpdate, editable = true },
+    { initialContent, placeholder = 'start typing or press "/" for command', className, onUpdate, editable = true },
     ref: ForwardedRef<NotionEditorRef>
   ) {
     const editor = useMarbleEditor({

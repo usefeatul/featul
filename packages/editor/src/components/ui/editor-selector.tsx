@@ -55,7 +55,7 @@ export const EditorSelector = ({
   }
 
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
+    <Popover open={open} onOpenChange={onOpenChange} modal={false}>
       <PopoverTrigger asChild>
         <Button
           className={cn(
@@ -63,12 +63,17 @@ export const EditorSelector = ({
             open && "bg-primary/10 text-primary hover:bg-primary/20"
           )}
           size="sm"
+          type="button"
           variant="ghost"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenChange(!open);
+          }}
         >
           <span className="whitespace-nowrap text-xs font-medium">{title}</span>
           <ChevronDownIcon 
             className={cn(
-              "shrink-0 transition-transform",
+              "shrink-0 transition-transform text-muted-foreground",
               open && "rotate-180"
             )}
             size={12} 
@@ -77,24 +82,47 @@ export const EditorSelector = ({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className={cn("w-56 p-1", className)}
-        side="top"
+        className={cn("w-56 p-0 z-[100]", className)}
+        list={true}
+        side="bottom"
         sideOffset={8}
+        onInteractOutside={(e) => {
+          // Don't close if clicking on bubble menu
+          const bubbleMenu = (e.target as Element).closest('[data-bubble-menu]');
+          if (bubbleMenu) {
+            e.preventDefault();
+          }
+        }}
         {...props}
       >
-        <div className="flex flex-col gap-0.5">
+        <PopoverList>
           {Array.isArray(children)
             ? children.map((child, index) => (
-                <div key={index} onClick={() => onOpenChange(false)}>
+                <PopoverListItem
+                  key={index}
+                  as="div"
+                  className="flex items-center gap-3 px-3 py-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenChange(false);
+                  }}
+                >
                   {child}
-                </div>
+                </PopoverListItem>
               ))
             : children && (
-                <div onClick={() => onOpenChange(false)}>
+                <PopoverListItem
+                  as="div"
+                  className="flex items-center gap-3 px-3 py-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenChange(false);
+                  }}
+                >
                   {children}
-                </div>
+                </PopoverListItem>
               )}
-        </div>
+        </PopoverList>
       </PopoverContent>
     </Popover>
   );

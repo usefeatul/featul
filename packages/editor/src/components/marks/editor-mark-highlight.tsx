@@ -2,12 +2,14 @@ import { Button } from "@oreilla/ui/components/button";
 import {
   Popover,
   PopoverContent,
+  PopoverList,
+  PopoverListItem,
   PopoverTrigger,
 } from "@oreilla/ui/components/popover";
 import { cn } from "@oreilla/ui/lib/utils";
 import { useCurrentEditor, useEditorState } from "@tiptap/react";
-import { Highlighter } from "lucide-react";
-import { useCallback } from "react";
+import { ChevronDownIcon, Highlighter } from "lucide-react";
+import { useCallback, useState } from "react";
 import type { EditorButtonProps } from "../../types";
 import { ColorPicker } from "../color-picker";
 
@@ -19,6 +21,7 @@ export type EditorMarkHighlightProps = Pick<EditorButtonProps, "hideName">;
  * Button that opens a color picker to highlight the selected text.
  * Uses a Popover to display the ColorPicker component.
  * Active when the selection has a highlight color applied.
+ * Shows "Highlight" text with chevron when hideName is false (for submenu display).
  *
  * @example
  * ```tsx
@@ -30,6 +33,7 @@ export const EditorMarkHighlight = ({
   hideName = true,
 }: EditorMarkHighlightProps) => {
   const { editor } = useCurrentEditor();
+  const [open, setOpen] = useState(false);
 
   const currentHighlight = useEditorState({
     editor,
@@ -67,40 +71,116 @@ export const EditorMarkHighlight = ({
     return null;
   }
 
+  // If hideName is true, show icon-only button (for main bubble menu)
+  if (hideName) {
+    return (
+      <Popover open={open} onOpenChange={setOpen} modal={false}>
+        <PopoverTrigger asChild>
+          <Button
+            className={cn(
+              "flex items-center justify-center h-8 w-8 px-2 rounded-md",
+              isActive &&
+                "bg-primary/10 text-primary hover:bg-primary/20"
+            )}
+            size="sm"
+            type="button"
+            variant="ghost"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(!open);
+            }}
+          >
+            <Highlighter
+              className={cn(
+                "shrink-0",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}
+              size={14}
+            />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-80 p-0 z-[100]"
+          onOpenAutoFocus={(event) => event.preventDefault()}
+          side="bottom"
+          sideOffset={8}
+          onInteractOutside={(e) => {
+            const bubbleMenu = (e.target as Element).closest('[data-bubble-menu]');
+            if (bubbleMenu) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <ColorPicker
+            color={currentHighlight}
+            onChange={handleColorChange}
+            onClear={handleClearHighlight}
+          />
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
+  // If hideName is false, show "Highlight" text with chevron (for submenu display)
   return (
-    <Popover modal>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button
           className={cn(
-            hideName ? "" : "w-full",
+            "flex items-center justify-between gap-1.5 h-8 px-2 w-full rounded-md",
             isActive &&
-              "bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary"
+              "bg-primary/10 text-primary hover:bg-primary/20"
           )}
           size="sm"
           type="button"
           variant="ghost"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(!open);
+          }}
         >
-          <Highlighter
+          <div className="flex items-center gap-1">
+            <Highlighter
+              className={cn(
+                "shrink-0",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}
+              size={14}
+            />
+            <span className="whitespace-nowrap text-xs font-medium">Highlight</span>
+          </div>
+          <ChevronDownIcon
             className={cn(
-              "shrink-0",
-              isActive ? "text-primary" : "text-muted-foreground"
+              "shrink-0 transition-transform text-muted-foreground",
+              open && "rotate-180"
             )}
             size={12}
           />
-          {!hideName && <span className="flex-1 text-left">Highlight</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-80 p-0"
+        className="w-80 p-0 z-[100]"
         onOpenAutoFocus={(event) => event.preventDefault()}
-        side="top"
+        side="bottom"
+        sideOffset={8}
+        onInteractOutside={(e) => {
+          const bubbleMenu = (e.target as Element).closest('[data-bubble-menu]');
+          if (bubbleMenu) {
+            e.preventDefault();
+          }
+        }}
       >
-        <ColorPicker
-          color={currentHighlight}
-          onChange={handleColorChange}
-          onClear={handleClearHighlight}
-        />
+        <PopoverList className="p-0">
+          <PopoverListItem className="p-0">
+            <ColorPicker
+              color={currentHighlight}
+              onChange={handleColorChange}
+              onClear={handleClearHighlight}
+            />
+          </PopoverListItem>
+        </PopoverList>
       </PopoverContent>
     </Popover>
   );

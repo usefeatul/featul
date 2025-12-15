@@ -54,7 +54,7 @@ export const ColorPicker = ({
   );
 
   return (
-    <div className="color-picker flex flex-col gap-3 p-3">
+    <div className="color-picker flex flex-col gap-3 px-3 py-2">
       {/* Color Picker */}
       <div className="w-full rounded-md overflow-hidden">
         <HexColorPicker
@@ -64,7 +64,7 @@ export const ColorPicker = ({
       </div>
 
       {/* Hex Input */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <Input
           className="h-9 font-mono text-xs flex-1"
           onChange={handleHexInputChange}
@@ -84,7 +84,7 @@ export const ColorPicker = ({
       </div>
 
       {/* Preset Colors */}
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-1 flex-wrap">
         {PRESET_COLORS.map((presetColor) => (
           <button
             className={cn(

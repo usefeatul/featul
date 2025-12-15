@@ -79,6 +79,7 @@ export const EditorBubbleMenu = ({
       )}
       editor={editor ?? undefined}
       shouldShow={shouldShow}
+      data-bubble-menu="true"
       {...props}
     >
       {children && Array.isArray(children)
