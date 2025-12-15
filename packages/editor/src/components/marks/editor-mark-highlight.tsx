@@ -92,7 +92,7 @@ export const EditorMarkHighlight = ({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-auto p-0"
+        className="w-80 p-0"
         onOpenAutoFocus={(event) => event.preventDefault()}
         side="top"
       >

@@ -1,5 +1,6 @@
 import { Button } from "@oreilla/ui/components/button";
 import { Input } from "@oreilla/ui/components/input";
+import { cn } from "@oreilla/ui/lib/utils";
 import { Undo2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { HexColorPicker } from "react-colorful";
@@ -12,6 +13,8 @@ const PRESET_COLORS = [
   "#a7f3d0", // Emerald
   "#a5f3fc", // Cyan
   "#a5b4fc", // Indigo
+  "#fbbf24", // Amber
+  "#f472b6", // Pink
 ];
 
 export const ColorPicker = ({
@@ -51,36 +54,25 @@ export const ColorPicker = ({
   );
 
   return (
-    <div className="color-picker flex flex-col gap-3 p-2">
-      <div className="w-full">
+    <div className="color-picker flex flex-col gap-3 p-3">
+      {/* Color Picker */}
+      <div className="w-full rounded-md overflow-hidden">
         <HexColorPicker
           color={color || "#000000"}
           onChange={handleColorChange}
         />
       </div>
 
+      {/* Hex Input */}
       <div className="flex items-center gap-2">
         <Input
-          className="h-8 font-mono text-xs"
+          className="h-9 font-mono text-xs flex-1"
           onChange={handleHexInputChange}
           placeholder="#000000"
           value={hexInput}
         />
-      </div>
-
-      <div className="flex items-center gap-2">
-        {PRESET_COLORS.map((presetColor) => (
-          <button
-            className="size-6 rounded border border-border transition-transform hover:scale-110"
-            key={presetColor}
-            onClick={() => handleColorChange(presetColor)}
-            style={{ backgroundColor: presetColor }}
-            title={presetColor}
-            type="button"
-          />
-        ))}
         <Button
-          className="size-8 shrink-0"
+          className="h-9 shrink-0"
           onClick={onClear}
           size="icon"
           title="Reset color"
@@ -89,6 +81,25 @@ export const ColorPicker = ({
         >
           <Undo2 className="size-4" />
         </Button>
+      </div>
+
+      {/* Preset Colors */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {PRESET_COLORS.map((presetColor) => (
+          <button
+            className={cn(
+              "size-8 rounded-md border-2 transition-all hover:scale-110 hover:shadow-sm",
+              color === presetColor
+                ? "border-primary ring-2 ring-primary/20"
+                : "border-border hover:border-primary/50"
+            )}
+            key={presetColor}
+            onClick={() => handleColorChange(presetColor)}
+            style={{ backgroundColor: presetColor }}
+            title={presetColor}
+            type="button"
+          />
+        ))}
       </div>
     </div>
   );
