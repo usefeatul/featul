@@ -1,4 +1,4 @@
-import { Card } from "@feedgot/ui/components/card";
+import { Card } from "@oreilla/ui/components/card";
 import { Container } from "../global/container";
 import { LoveIcon } from "@oreilla/ui/icons/love";
 import FaceIcon from "@oreilla/ui/icons/face";
