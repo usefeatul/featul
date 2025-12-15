@@ -1,0 +1,307 @@
+/* Tiptap Editor Styles */
+
+.tiptap-editor {
+  @apply min-h-[400px] w-full outline-none;
+}
+
+.tiptap-editor:focus {
+  @apply outline-none;
+}
+
+/* Prose styling */
+.tiptap-editor .ProseMirror {
+  @apply min-h-[400px] outline-none;
+}
+
+.tiptap-editor .ProseMirror > * + * {
+  @apply mt-4;
+}
+
+/* Headings */
+.tiptap-editor h1 {
+  @apply text-3xl font-bold tracking-tight text-foreground;
+}
+
+.tiptap-editor h2 {
+  @apply text-2xl font-semibold tracking-tight text-foreground;
+}
+
+.tiptap-editor h3 {
+  @apply text-xl font-semibold text-foreground;
+}
+
+/* Paragraphs */
+.tiptap-editor p {
+  @apply text-base leading-7 text-foreground/90;
+}
+
+/* Lists */
+.tiptap-editor ul {
+  @apply list-disc pl-6 space-y-1;
+}
+
+.tiptap-editor ol {
+  @apply list-decimal pl-6 space-y-1;
+}
+
+.tiptap-editor li {
+  @apply text-foreground/90;
+}
+
+.tiptap-editor li p {
+  @apply m-0;
+}
+
+/* Task lists */
+.tiptap-editor ul[data-type="taskList"] {
+  @apply list-none pl-0;
+}
+
+.tiptap-editor ul[data-type="taskList"] li {
+  @apply flex items-start gap-2;
+}
+
+.tiptap-editor ul[data-type="taskList"] li > label {
+  @apply flex items-center;
+}
+
+.tiptap-editor ul[data-type="taskList"] li > label input[type="checkbox"] {
+  @apply h-4 w-4 rounded border-border;
+}
+
+.tiptap-editor ul[data-type="taskList"] li > div {
+  @apply flex-1;
+}
+
+/* Blockquote */
+.tiptap-editor blockquote {
+  @apply border-l-4 border-primary/50 pl-4 italic text-foreground/80;
+}
+
+/* Code */
+.tiptap-editor code {
+  @apply rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground;
+}
+
+.tiptap-editor pre {
+  @apply rounded-lg bg-[#1e1e2e] p-4 overflow-x-auto;
+}
+
+.tiptap-editor pre code {
+  @apply bg-transparent p-0 text-[#cdd6f4];
+}
+
+/* Syntax highlighting - Catppuccin Mocha theme */
+.tiptap-editor pre .hljs-keyword {
+  @apply text-[#cba6f7];
+}
+
+.tiptap-editor pre .hljs-string {
+  @apply text-[#a6e3a1];
+}
+
+.tiptap-editor pre .hljs-number {
+  @apply text-[#fab387];
+}
+
+.tiptap-editor pre .hljs-function {
+  @apply text-[#89b4fa];
+}
+
+.tiptap-editor pre .hljs-comment {
+  @apply text-[#6c7086] italic;
+}
+
+.tiptap-editor pre .hljs-variable {
+  @apply text-[#f38ba8];
+}
+
+.tiptap-editor pre .hljs-attr {
+  @apply text-[#f9e2af];
+}
+
+.tiptap-editor pre .hljs-tag {
+  @apply text-[#89dceb];
+}
+
+/* Links */
+.tiptap-editor a {
+  @apply text-primary underline underline-offset-4 hover:text-primary/80;
+}
+
+/* Images */
+.tiptap-editor img {
+  @apply max-w-full rounded-lg;
+}
+
+.tiptap-editor img.ProseMirror-selectednode {
+  @apply ring-2 ring-primary ring-offset-2;
+}
+
+/* Horizontal rule */
+.tiptap-editor hr {
+  @apply my-8 border-border;
+}
+
+/* Placeholder */
+.tiptap-editor .is-editor-empty:first-child::before {
+  @apply text-muted-foreground pointer-events-none float-left h-0;
+  content: attr(data-placeholder);
+}
+
+.tiptap-editor .is-empty::before {
+  @apply text-muted-foreground pointer-events-none float-left h-0;
+  content: attr(data-placeholder);
+}
+
+/* Callout block */
+.tiptap-editor .callout {
+  @apply flex gap-3 rounded-lg border p-4 my-4;
+}
+
+.tiptap-editor .callout.info {
+  @apply bg-blue-500/10 border-blue-500/30;
+}
+
+.tiptap-editor .callout.warning {
+  @apply bg-amber-500/10 border-amber-500/30;
+}
+
+.tiptap-editor .callout.success {
+  @apply bg-emerald-500/10 border-emerald-500/30;
+}
+
+.tiptap-editor .callout.error {
+  @apply bg-red-500/10 border-red-500/30;
+}
+
+.tiptap-editor .callout-icon {
+  @apply flex-shrink-0 text-lg;
+}
+
+.tiptap-editor .callout-content {
+  @apply flex-1 min-w-0;
+}
+
+/* Selection */
+.tiptap-editor ::selection {
+  @apply bg-primary/20;
+}
+
+/* Slash menu */
+.slash-menu {
+  @apply bg-popover border border-border rounded-lg shadow-lg overflow-hidden min-w-[280px] max-h-[320px] overflow-y-auto;
+}
+
+.slash-menu-item {
+  @apply flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors;
+}
+
+.slash-menu-item:hover,
+.slash-menu-item.is-selected {
+  @apply bg-accent;
+}
+
+.slash-menu-item-icon {
+  @apply flex items-center justify-center w-10 h-10 rounded-md bg-muted text-muted-foreground;
+}
+
+.slash-menu-item-content {
+  @apply flex flex-col;
+}
+
+.slash-menu-item-title {
+  @apply text-sm font-medium text-foreground;
+}
+
+.slash-menu-item-description {
+  @apply text-xs text-muted-foreground;
+}
+
+/* Bubble menu */
+.bubble-menu {
+  @apply flex items-center gap-0.5 bg-popover border border-border rounded-lg shadow-lg p-1;
+}
+
+.bubble-menu-button {
+  @apply flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors;
+}
+
+.bubble-menu-button.is-active {
+  @apply bg-accent text-foreground;
+}
+
+.bubble-menu-divider {
+  @apply w-px h-6 bg-border mx-1;
+}
+
+/* Renderer styles */
+.changelog-renderer {
+  @apply prose prose-neutral dark:prose-invert max-w-none;
+}
+
+.changelog-renderer h1 {
+  @apply text-3xl font-bold tracking-tight;
+}
+
+.changelog-renderer h2 {
+  @apply text-2xl font-semibold tracking-tight mt-8 mb-4;
+}
+
+.changelog-renderer h3 {
+  @apply text-xl font-semibold mt-6 mb-3;
+}
+
+.changelog-renderer p {
+  @apply leading-7 mb-4;
+}
+
+.changelog-renderer ul,
+.changelog-renderer ol {
+  @apply my-4;
+}
+
+.changelog-renderer pre {
+  @apply rounded-lg bg-[#1e1e2e] p-4 overflow-x-auto my-4;
+}
+
+.changelog-renderer pre code {
+  @apply bg-transparent p-0 text-[#cdd6f4] text-sm;
+}
+
+.changelog-renderer blockquote {
+  @apply border-l-4 border-primary/50 pl-4 italic my-4;
+}
+
+.changelog-renderer img {
+  @apply rounded-lg my-6;
+}
+
+.changelog-renderer hr {
+  @apply my-8;
+}
+
+.changelog-renderer a {
+  @apply text-primary underline underline-offset-4;
+}
+
+.changelog-renderer .callout {
+  @apply flex gap-3 rounded-lg border p-4 my-4;
+}
+
+.changelog-renderer .callout.info {
+  @apply bg-blue-500/10 border-blue-500/30;
+}
+
+.changelog-renderer .callout.warning {
+  @apply bg-amber-500/10 border-amber-500/30;
+}
+
+.changelog-renderer .callout.success {
+  @apply bg-emerald-500/10 border-emerald-500/30;
+}
+
+.changelog-renderer .callout.error {
+  @apply bg-red-500/10 border-red-500/30;
+}
+

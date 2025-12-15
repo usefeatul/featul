@@ -11,6 +11,7 @@ export type PlanLimits = {
   allowAttachments: boolean
   maxTags: number | null
   maxChangelogTags: number | null
+  maxChangelogEntries: number | null
 }
 
 const LIMITS: Record<PlanKey, PlanLimits> = {
@@ -23,6 +24,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     allowAttachments: true,
     maxTags: 5,
     maxChangelogTags: 5,
+    maxChangelogEntries: 10,
   },
   starter: {
     maxMembers: 15,
@@ -33,6 +35,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     allowAttachments: true,
     maxTags: 10,
     maxChangelogTags: 10,
+    maxChangelogEntries: 50,
   },
   professional: {
     maxMembers: null,
@@ -43,6 +46,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     allowAttachments: true,
     maxTags: 20,
     maxChangelogTags: 20,
+    maxChangelogEntries: null,
   },
 }
 

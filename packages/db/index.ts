@@ -32,4 +32,5 @@ export const {
   userVoteHistory,
   brandingConfig,
   workspaceSlugReservation,
+  changelogEntry,
 } = schema
