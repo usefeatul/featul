@@ -24,10 +24,8 @@ export type EditorBubbleMenuProps = Omit<TiptapBubbleMenuProps, "editor">;
  * @example
  * ```tsx
  * <EditorBubbleMenu>
- *   <EditorSelector title="Text">
- *     <EditorNodeHeading1 />
- *   </EditorSelector>
  *   <EditorMarkBold />
+ *   <EditorMarkItalic />
  * </EditorBubbleMenu>
  * ```
  */
@@ -74,9 +72,9 @@ export const EditorBubbleMenu = ({
   return (
     <TiptapBubbleMenu
       className={cn(
-        "flex rounded-xl border bg-background p-1 shadow",
-        "[&>*:first-child]:rounded-l-[9px]",
-        "[&>*:last-child]:rounded-r-[9px]",
+        "flex items-center rounded-lg border bg-card shadow-lg p-1 gap-0",
+        "[&>*:first-child]:rounded-l-md",
+        "[&>*:last-child]:rounded-r-md",
         className
       )}
       editor={editor ?? undefined}
@@ -90,7 +88,11 @@ export const EditorBubbleMenu = ({
             }
 
             acc.push(
-              <Separator key={`separator-${index}`} orientation="vertical" />
+              <Separator
+                key={`separator-${index}`}
+                orientation="vertical"
+                className="h-6 mx-0.5"
+              />
             );
             acc.push(child);
             return acc;

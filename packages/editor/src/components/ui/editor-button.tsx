@@ -16,16 +16,28 @@ export const BubbleMenuButton = ({
   hideName,
 }: EditorButtonProps) => (
   <Button
-    className={cn("flex gap-4", hideName ? "" : "w-full")}
+    className={cn(
+      "flex items-center justify-center gap-2 h-8 px-2",
+      hideName ? "w-8" : "w-auto min-w-[80px]",
+      isActive() && "bg-primary/10 text-primary hover:bg-primary/20"
+    )}
     onClick={() => command()}
     size="sm"
     variant="ghost"
   >
-    <Icon className="shrink-0 text-muted-foreground" size={12} />
-    {!hideName && <span className="flex-1 text-left">{name}</span>}
-    {isActive() ? (
-      <CheckIcon className="shrink-0 text-muted-foreground" size={12} />
-    ) : null}
+    <Icon
+      className={cn(
+        "shrink-0",
+        isActive() ? "text-primary" : "text-muted-foreground"
+      )}
+      size={14}
+    />
+    {!hideName && (
+      <span className="text-xs whitespace-nowrap">{name}</span>
+    )}
+    {isActive() && (
+      <CheckIcon className="shrink-0 text-primary" size={12} />
+    )}
   </Button>
 );
 
