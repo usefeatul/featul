@@ -32,8 +32,4 @@ export const {
   userVoteHistory,
   brandingConfig,
   workspaceSlugReservation,
-  changelog,
 } = schema
-
-// Export types
-export type * from "./schema"
