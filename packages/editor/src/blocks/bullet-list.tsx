@@ -25,6 +25,7 @@ export const bulletListCommand: CommandItem = {
     </svg>
   ),
   command: ({ editor, range }) => {
+    // Remove the slash command text, then turn the current block into a bullet list item
     editor.chain().focus().deleteRange(range).toggleBulletList().run()
   },
 }

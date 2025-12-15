@@ -7,6 +7,7 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@oreilla/ui": "workspace:*",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-code-block-lowlight": "^2.11.5",
     "@tiptap/extension-image": "^2.11.5",

@@ -21,7 +21,7 @@ export const codeBlockCommand: CommandItem = {
     </svg>
   ),
   command: ({ editor, range }) => {
-    editor.chain().focus().deleteRange(range).toggleCodeBlock().run()
+    editor.chain().focus().deleteRange(range).setCodeBlock().run()
   },
 }
 

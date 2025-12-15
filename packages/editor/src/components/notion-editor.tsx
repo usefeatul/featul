@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react"
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react"
 import { useEditor, EditorContent, type Editor, type JSONContent, ReactRenderer } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Placeholder from "@tiptap/extension-placeholder"
@@ -17,6 +17,7 @@ import { cn } from "../lib/utils"
 import tippy, { type Instance as TippyInstance } from "tippy.js"
 import { allCommands, type CommandItem } from "../blocks"
 import styles from "../styles/notion-editor.module.css"
+import { ScrollArea } from "@oreilla/ui/components/scroll-area"
 
 const lowlight = createLowlight(common)
 
@@ -37,7 +38,9 @@ const CommandList = forwardRef<CommandListRef, CommandListProps>(({ items, comma
 
   const selectItem = (index: number) => {
     const item = items[index]
-    if (item) command(item)
+    if (item) {
+      command(item)
+    }
   }
 
   useEffect(() => {
@@ -155,7 +158,12 @@ const SlashCommands = Extension.create({
           }
         },
         command: ({ editor, range, props }) => {
-          props.command({ editor, range })
+          console.log("Slash command triggered:", { props, range })
+          if (props && typeof props.command === "function") {
+            props.command({ editor, range })
+          } else {
+            console.error("Invalid command props:", props)
+          }
         },
       }),
     ]

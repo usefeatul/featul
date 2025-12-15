@@ -115,7 +115,7 @@ export default function EditChangelogEntryPage() {
           slug,
           entryId,
           title: title.trim(),
-          content,
+          content: { type: content.type || "doc", content: content.content },
           summary: summary || null,
           coverImage: coverImage || null,
           status: newStatus || status,
