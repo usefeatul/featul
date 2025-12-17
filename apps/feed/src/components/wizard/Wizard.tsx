@@ -1,26 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { Button } from "@oreilla/ui/components/button";
 import Progress from "./Progress";
 import StepName from "./StepName";
 import StepDomain from "./StepDomain";
 import StepSlug from "./StepSlug";
 import TimezonePicker from "./TimezonePicker";
-import { client } from "@oreilla/api/client";
 import { ArrowRight } from "lucide-react";
-
-import { useRouter, useSearchParams } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useWizardLogic } from "./useWizardLogic";
 import {
-  workspaceSchema,
   isNameValid,
   isDomainValid,
   isSlugValid,
   isTimezoneValid,
-  cleanSlug,
-  slugifyFromName,
 } from "../../lib/validators";
 
 export default function WorkspaceWizard({
@@ -28,154 +20,29 @@ export default function WorkspaceWizard({
 }: {
   className?: string;
 }) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const [step, setStep] = useState(0);
-  const total = 4;
-
-  const [name, setName] = useState("");
-  const [domain, setDomain] = useState("");
-  const [slug, setSlug] = useState("");
-  const [slugDirty, setSlugDirty] = useState(false);
-  const [slugChecking, setSlugChecking] = useState(false);
-  const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
-  const [slugLocked, setSlugLocked] = useState<string | null>(null);
-
-  const [timezone, setTimezone] = useState<string>(
-    typeof Intl !== "undefined" &&
-      Intl.DateTimeFormat().resolvedOptions().timeZone
-      ? Intl.DateTimeFormat().resolvedOptions().timeZone
-      : "UTC"
-  );
-  const [now, setNow] = useState<Date>(new Date());
-  const [isCreating, setIsCreating] = useState(false);
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60000);
-    return () => clearInterval(id);
-  }, []);
-
-  useEffect(() => {
-    if (slugDirty) return;
-    const s = slugifyFromName(name);
-    setSlug(s);
-  }, [name, slugDirty]);
-
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    const initialLocked = (searchParams?.get("slug") || "")
-      .trim()
-      .toLowerCase();
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await client.reservation.claimOnSignup.$get();
-        const data = await res.json();
-        const locked = String(data?.slugLocked || initialLocked || "")
-          .trim()
-          .toLowerCase();
-        if (locked && mounted) {
-          setSlugLocked(locked);
-          setSlugDirty(true);
-          setSlug(locked);
-          setSlugAvailable(true);
-          setSlugChecking(false);
-        }
-      } catch {}
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (!slug || slug.length < 5) {
-      setSlugAvailable(null);
-      return;
-    }
-    if (slugLocked) {
-      setSlugAvailable(true);
-      return;
-    }
-    setSlugChecking(true);
-    setSlugAvailable(null);
-    const id = setTimeout(async () => {
-      try {
-        const res = await client.workspace.checkSlug.$post({ slug });
-        const data = await res.json();
-        setSlugAvailable(Boolean(data?.available));
-      } catch {
-        setSlugAvailable(null);
-      } finally {
-        setSlugChecking(false);
-      }
-    }, 500);
-    return () => clearTimeout(id);
-  }, [slug]);
-
-  const domainValid = useMemo(() => isDomainValid(domain), [domain]);
-
-  const domainFavicon = useMemo(() => {
-    if (!domainValid) return null;
-    const host = domain.trim().toLowerCase();
-    if (!host) return null;
-    return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(
-      host
-    )}&sz=64`;
-  }, [domain, domainValid]);
-
-  const canNext = useMemo(() => {
-    if (step === 0) return isNameValid(name);
-    if (step === 1) return domainValid;
-    if (step === 2) return isSlugValid(slug) && slugAvailable === true;
-    if (step === 3) return isTimezoneValid(timezone);
-    return false;
-  }, [step, name, domainValid, slug, slugAvailable, timezone]);
-
-  const next = () => setStep((s) => Math.min(s + 1, total - 1));
-  const prev = () => setStep((s) => Math.max(s - 1, 0));
-
-  const create = async () => {
-    setIsCreating(true);
-    try {
-      const parsed = workspaceSchema.safeParse({
-        name: name.trim(),
-        domain: domain.trim(),
-        slug: slug.trim(),
-        timezone,
-      });
-      if (!parsed.success) {
-        toast.error("Invalid workspace details");
-        return;
-      }
-      const res = await client.workspace.create.$post(parsed.data);
-      if (!res.ok) {
-        await res.json();
-        toast.error("Failed to create workspace");
-        return;
-      }
-      const data = await res.json();
-      toast.success("Workspace created");
-      const createdSlug = data?.workspace?.slug || slug;
-      try {
-        queryClient.setQueryData(["workspaces"], (prev: any) => {
-          const list = Array.isArray(prev) ? prev : prev?.workspaces || [];
-          const next = [...list, data?.workspace].filter(Boolean);
-          return prev && prev.workspaces ? { ...prev, workspaces: next } : next;
-        });
-        if (data?.workspace) {
-          queryClient.setQueryData(["workspace", createdSlug], data.workspace);
-        }
-      } catch {}
-      router.push(`/workspaces/${createdSlug}`);
-    } catch (e: unknown) {
-      toast.error(
-        (e as { message?: string })?.message || "Failed to create workspace"
-      );
-    } finally {
-      setIsCreating(false);
-    }
-  };
+  const {
+    step,
+    total,
+    name,
+    setName,
+    domain,
+    setDomain,
+    slug,
+    handleSlugChange,
+    slugChecking,
+    slugAvailable,
+    slugLocked,
+    timezone,
+    setTimezone,
+    now,
+    isCreating,
+    domainValid,
+    domainFavicon,
+    canNext,
+    next,
+    prev,
+    create,
+  } = useWizardLogic();
 
   return (
     <section className="flex min-h-screen items-center justify-center bg-background p-4 sm:p-8">
@@ -231,10 +98,7 @@ export default function WorkspaceWizard({
               {step === 2 && (
                 <StepSlug
                   slug={slug}
-                  onChange={(v) => {
-                    setSlugDirty(true);
-                    setSlug(cleanSlug(v));
-                  }}
+                  onChange={handleSlugChange}
                   checking={slugChecking}
                   available={slugAvailable}
                   disabled={!!slugLocked}
