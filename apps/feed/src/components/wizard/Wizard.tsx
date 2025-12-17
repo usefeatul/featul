@@ -190,7 +190,7 @@ export default function WorkspaceWizard({
         </div>
 
         {/* Card */}
-        <div className="bg-card rounded-xl border ring-1 ring-border p-6 sm:p-10 shadow-sm">
+        <div className="bg-card rounded-xl border ring-1 ring-border p-6 sm:p-10">
           {/* Progress */}
           <div className="mb-8 flex items-center justify-between gap-4">
             <Progress step={step} total={total} />
@@ -261,7 +261,7 @@ export default function WorkspaceWizard({
           </div>
 
           {/* Footer Actions */}
-          <div className="mt-8 pt-6 border-t flex items-center justify-between gap-3">
+          <div className="mt-8 flex items-center justify-between gap-3">
             <Button
               type="button"
               variant="ghost"
