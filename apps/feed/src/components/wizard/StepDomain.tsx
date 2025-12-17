@@ -8,9 +8,9 @@ export default function StepDomain({ domain, onChange, isValid }: { domain: stri
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg sm:text-xl font-semibold">Where do your users visit you?</h2>
-        <p className="text-xs sm:text-sm text-accent">
-          We&apos;ll connect feedback to this website so requests stay tied to the right product.
+        <h2 className="text-lg font-semibold">Website domain</h2>
+        <p className="text-sm text-accent">
+          We&apos;ll use this to match feedback with your users.
         </p>
       </div>
       <div className="space-y-2">
@@ -24,6 +24,7 @@ export default function StepDomain({ domain, onChange, isValid }: { domain: stri
             placeholder="acmeanalytics.com"
             className="h-9 flex-1 rounded-l-none border-l-0 placeholder:text-accent/70"
             aria-invalid={!isValid && domain.length > 0}
+            autoFocus
           />
           {!isValid && domain.length > 0 ? (
             <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive size-4" />
