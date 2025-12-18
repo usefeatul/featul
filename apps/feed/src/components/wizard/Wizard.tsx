@@ -46,7 +46,7 @@ export default function WorkspaceWizard({
 
   return (
     <section className="flex min-h-screen items-center justify-center bg-background p-4 sm:p-8">
-      <div className={`w-full max-w-[520px] mx-auto ${className}`}>
+      <div className={`w-full max-w-[420px] mx-auto ${className}`}>
         {/* Header */}
         <div className="mb-8 text-center space-y-2">
           <p className="text-[11px] uppercase tracking-[0.2em] text-accent font-medium">
