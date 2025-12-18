@@ -54,16 +54,14 @@ export default function WorkspaceWizard({
     isTimezoneValid(timezone);
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-background p-4 sm:p-8">
-      <div className={`w-full max-w-[480px] mx-auto ${className}`}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Create new project</CardTitle>
-            <CardDescription>
-              Tell us a bit about the website you want to track.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+    <Card className={`w-full max-w-[480px] mx-auto ${className}`}>
+      <CardHeader>
+        <CardTitle className="text-xl">Create new project</CardTitle>
+        <CardDescription>
+          Tell us a bit about the website you want to track.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
             {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
@@ -197,8 +195,6 @@ export default function WorkspaceWizard({
               {!isCreating && <ArrowRight className="ml-2 size-4 opacity-50" />}
             </Button>
           </CardFooter>
-        </Card>
-      </div>
-    </section>
+    </Card>
   );
 }
