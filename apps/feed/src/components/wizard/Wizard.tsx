@@ -57,8 +57,8 @@ export default function WorkspaceWizard({
     <Card className={`w-full max-w-[420px] mx-auto ${className}`}>
       <CardHeader>
         <CardTitle className="text-xl">Create new project</CardTitle>
-        <CardDescription>
-          Tell us a bit about the website you want to track.
+        <CardDescription className="text-accent">
+          Tell us a bit about the website you need feedback for.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -70,7 +70,7 @@ export default function WorkspaceWizard({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="My Project"
-                className="h-10 bg-muted/50"
+                className="h-10 bg-muted/50 placeholder:text-accent"
                 autoFocus
               />
             </div>
@@ -88,7 +88,7 @@ export default function WorkspaceWizard({
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   placeholder="example.com"
-                  className="h-10 flex-1 rounded-l-none bg-muted/50"
+                  className="h-10 flex-1 rounded-l-none bg-muted/50 placeholder:text-accent"
                 />
               </div>
               {!domainValid && domain.length > 0 && (
@@ -134,7 +134,7 @@ export default function WorkspaceWizard({
                   value={slug}
                   onChange={(e) => handleSlugChange(e.target.value)}
                   placeholder="project-slug"
-                  className="h-10 pl-9 pr-24 bg-muted/50"
+                  className="h-10 pl-9 pr-24 bg-muted/50 placeholder:text-accent"
                   disabled={!!slugLocked}
                 />
                 <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -169,7 +169,7 @@ export default function WorkspaceWizard({
             <div className="space-y-2">
               <Label>Timezone</Label>
               <TimezonePicker value={timezone} onChange={setTimezone} now={now} />
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-accent">
                 All project graphs, ranges and timestamps will be matched to this
                 timezone. Can be updated later.
               </p>
