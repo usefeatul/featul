@@ -8,7 +8,7 @@ import {
   isDomainValid,
   cleanSlug,
   slugifyFromName,
-} from "../../lib/validators";
+} from "../lib/validators";
 
 export function useWizardLogic() {
   const router = useRouter();
