@@ -17,6 +17,7 @@ import CompletedIcon from "@oreilla/ui/icons/completed";
 import ClosedIcon from "@oreilla/ui/icons/closed";
 import { useWizardLogic } from "./useWizardLogic";
 import { motion } from "framer-motion";
+import LeftSideImage from "./LeftSideImage";
 import {
   isNameValid,
   isDomainValid,
@@ -55,10 +56,12 @@ export default function WorkspaceWizard({
     isTimezoneValid(timezone);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
-      <Card className={`w-full max-w-[420px] mx-auto ${className}`}>
+    <div className={`w-full max-w-[1080px] mx-auto md:grid md:grid-cols-2 items-center ${className}`}>
+      <LeftSideImage />
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
+      <Card className={`w-full max-w-[380px] mx-auto`}>
         <CardHeader>
-          <CardTitle className="text-xl">Create new project</CardTitle>
+          <CardTitle className="text-lg">Create new project</CardTitle>
           <CardDescription className="text-accent">
             Tell us a bit about the website you need feedback for.
           </CardDescription>
@@ -72,7 +75,7 @@ export default function WorkspaceWizard({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="My Project"
-                className="h-10 bg-muted/50 placeholder:text-accent"
+                className="h-9 bg-muted/50 placeholder:text-accent"
                 autoFocus
               />
             </div>
@@ -81,7 +84,7 @@ export default function WorkspaceWizard({
             <div className="space-y-2">
               <Label htmlFor="domain">Domain</Label>
               <div className="relative flex items-center">
-                <span className="inline-flex items-center h-10 px-3 bg-muted border rounded-l-md text-accent select-none text-sm border-r-0">
+                <span className="inline-flex items-center h-9 px-3 bg-muted border rounded-l-md text-accent select-none text-sm border-r-0">
                   https://
                 </span>
                 <Input
@@ -90,7 +93,7 @@ export default function WorkspaceWizard({
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   placeholder="example.com"
-                  className="h-10 flex-1 rounded-l-none bg-muted/50 placeholder:text-accent"
+                  className="h-9 flex-1 rounded-l-none bg-muted/50 placeholder:text-accent"
                 />
               </div>
               {!domainValid && domain.length > 0 && (
@@ -136,7 +139,7 @@ export default function WorkspaceWizard({
                   value={slug}
                   onChange={(e) => handleSlugChange(e.target.value)}
                   placeholder="project-slug"
-                  className="h-10 pl-9 pr-24 bg-muted/50 placeholder:text-accent"
+                  className="h-9 pl-9 pr-24 bg-muted/50 placeholder:text-accent"
                   disabled={!!slugLocked}
                 />
                 <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -182,7 +185,7 @@ export default function WorkspaceWizard({
             <Button
               type="button"
               className="w-full"
-              size="lg"
+              size="sm"
               onClick={create}
               disabled={!isFormValid || isCreating}
             >
@@ -198,6 +201,7 @@ export default function WorkspaceWizard({
             </Button>
           </CardFooter>
       </Card>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
