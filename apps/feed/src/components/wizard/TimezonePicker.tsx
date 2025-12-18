@@ -59,8 +59,8 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
       </PopoverTrigger>
       <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[450px] p-0" align="center">
         <div className="p-2 border-b">
-           <div className="bg-muted/50 rounded-md px-2 py-1 mb-2">
-               <span className="text-xs font-medium text-muted-foreground">Your local time - {formatTimeWithDate(Intl.DateTimeFormat().resolvedOptions().timeZone, now)}</span>
+           <div className="w-fit bg-muted/50 rounded-md px-1.5 py-1 mb-1.5">
+               <span className="text-xs font-light text-accent">Your local time - {formatTimeWithDate(Intl.DateTimeFormat().resolvedOptions().timeZone, now)}</span>
            </div>
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
