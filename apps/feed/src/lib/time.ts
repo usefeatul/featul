@@ -15,6 +15,21 @@ export function formatTime12h(tz: string, d: Date = new Date()): string {
   }
 }
 
+export function formatTimeWithDate(tz: string, now: Date): string {
+  const t = new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: tz,
+  }).format(now);
+  const d = new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    timeZone: tz,
+  }).format(now);
+  return `${t}, ${d}`;
+}
+
 export function relativeTime(date: string): string {
   const past = new Date(date)
   const ts = past.getTime()

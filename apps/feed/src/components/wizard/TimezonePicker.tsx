@@ -6,6 +6,7 @@ import { Input } from "@oreilla/ui/components/input"
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
 import { Globe2, ChevronDown, Search } from "lucide-react"
 import ct from "countries-and-timezones"
+import { formatTimeWithDate } from "../../lib/time"
 
 export default function TimezonePicker({ value, onChange, now }: { value: string; onChange: (v: string) => void; now: Date }) {
   const [open, setOpen] = useState(false)
@@ -33,12 +34,6 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
       const country = ct.getCountryForTimezone(tz)?.name
       return country ? `${city}, ${country}` : city
   }
-  
-  const formatTimeWithDate = (tz: string) => {
-    const t = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: tz }).format(now)
-    const d = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", timeZone: tz }).format(now)
-    return `${t}, ${d}`
-  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -65,7 +60,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
       <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[450px] p-0" align="center">
         <div className="p-2 border-b">
            <div className="bg-muted/50 rounded-md px-2 py-1 mb-2">
-               <span className="text-xs font-medium text-muted-foreground">Your local time - {formatTimeWithDate(Intl.DateTimeFormat().resolvedOptions().timeZone)}</span>
+               <span className="text-xs font-medium text-muted-foreground">Your local time - {formatTimeWithDate(Intl.DateTimeFormat().resolvedOptions().timeZone, now)}</span>
            </div>
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -88,7 +83,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
               }}
               className={`flex items-center gap-1.5 px-3 py-2.5 cursor-pointer text-sm hover:bg-muted/50 ${value === tz ? "bg-accent text-accent-foreground" : ""}`}
             >
-              <span className="font-medium">{formatTimeWithDate(tz)}.</span>
+              <span className="font-medium">{formatTimeWithDate(tz, now)}.</span>
               <span className="text-accent truncate">{friendlyTZ(tz)}</span>
             </PopoverListItem>
           ))}
