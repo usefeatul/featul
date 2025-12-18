@@ -73,7 +73,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-[300px] p-0" align="start">
+      <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[450px] p-0" align="center">
         <div className="p-2 border-b">
            <div className="bg-muted/50 rounded-md px-2 py-1 mb-2">
                <span className="text-xs font-medium text-muted-foreground">Your local time - {formatTimeWithDate(Intl.DateTimeFormat().resolvedOptions().timeZone)}</span>
@@ -100,7 +100,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
               className={`flex items-center gap-1.5 px-3 py-2.5 cursor-pointer text-sm hover:bg-muted/50 ${value === tz ? "bg-accent text-accent-foreground" : ""}`}
             >
               <span className="font-medium">{formatTimeWithDate(tz)}.</span>
-              <span className="text-muted-foreground truncate">{friendlyTZ(tz)}</span>
+              <span className="text-accent truncate">{friendlyTZ(tz)}</span>
             </PopoverListItem>
           ))}
         </PopoverList>
