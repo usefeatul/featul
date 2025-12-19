@@ -7,7 +7,6 @@ import { client } from "@oreilla/api/client"
 import { Button } from "@oreilla/ui/components/button"
 import { toast } from "sonner"
 import { cn } from "@oreilla/ui/lib/utils"
-import { type JSONContent } from "@tiptap/react"
 import { ChangelogEditor, type ChangelogEditorRef } from "@/components/changelog/changelog-editor"
 import { TextareaAutosize } from "@/components/editor/TextareaAutosize"
 
@@ -61,7 +60,7 @@ export default function NewChangelogEntryPage() {
         const res = await client.changelog.entriesCreate.$post({
           slug,
           title: title.trim(),
-          content,
+          content: { type: content.type || "doc", content: content.content },
           summary: summary || undefined,
           coverImage: coverImage || undefined,
           status,
