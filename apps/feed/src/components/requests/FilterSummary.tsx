@@ -124,12 +124,12 @@ export default function FilterSummary({ className = "" }: { className?: string }
   return (
     <div
       className={cn(
-        "fixed top-0 left-1/2 -translate-x-1/2 z-40 max-w-[90vw]",
+        "fixed top-0 inset-x-0 z-40 flex justify-center px-3 pointer-events-none",
         className
       )}
       aria-label="Active filters"
     >
-      <div className="bg-card shadow-sm border-t-transparent overflow-hidden rounded-xs border flex items-center pl-1 pr-1">
+      <div className="bg-card pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-1   border-t-transparent overflow-hidden rounded-xs  px-2 py-1 shadow-sm backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="flex items-center gap-1 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
           {status.map((s) => (
             <Button
@@ -141,7 +141,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
               aria-label={`Remove status ${statusLabel(s)}`}
             >
               <span className="truncate">{statusLabel(s)}</span>
-              <XMarkIcon className="ml-1 size-3" />
+              <XMarkIcon className="ml-1 size-3 opacity-60" />
             </Button>
           ))}
           {boards.map((b) => (
@@ -154,7 +154,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
               aria-label={`Remove board ${boardsBySlug[b] || b}`}
             >
               <span className="truncate">{boardsBySlug[b] || b}</span>
-              <XMarkIcon className="ml-1 size-3" />
+              <XMarkIcon className="ml-1 size-3 opacity-60" />
             </Button>
           ))}
           {tags.map((t) => (
@@ -167,7 +167,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
               aria-label={`Remove tag ${tagsBySlug[t] || t}`}
             >
               <span className="truncate">{tagsBySlug[t] || t}</span>
-              <XMarkIcon className="ml-1 size-3" />
+              <XMarkIcon className="ml-1 size-3 opacity-60" />
             </Button>
           ))}
           {order === "oldest" ? (
@@ -183,19 +183,19 @@ export default function FilterSummary({ className = "" }: { className?: string }
             </Button>
           ) : null}
         </div>
-        
-        <div className="flex items-center shrink-0 pl-2">
-            <div className="h-4 w-px bg-border mx-1" />
-            <Button
-                type="button"
-                onClick={clearAll}
-                variant="ghost"
-                size="default"
-                className="size-7 text-muted-foreground hover:text-destructive transition-colors"
-                aria-label="Clear all filters"
-            >
-                <TrashIcon className="size-4" />
-            </Button>
+
+        <div className="flex items-center shrink-0 gap-1">
+          <div className="h-5 w-px bg-border/70" />
+          <Button
+            type="button"
+            onClick={clearAll}
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-destructive transition-colors"
+            aria-label="Clear all filters"
+          >
+            <TrashIcon className="size-4 opacity-70" />
+          </Button>
         </div>
       </div>
     </div>
