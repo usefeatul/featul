@@ -6,6 +6,7 @@ import { XMarkIcon } from "@oreilla/ui/icons/xmark"
 import { cn } from "@oreilla/ui/lib/utils"
 import { useQuery } from "@tanstack/react-query"
 import { client } from "@oreilla/api/client"
+import { Button } from "@oreilla/ui/components/button"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import { parseArrayParam, buildRequestsUrl } from "@/utils/request-filters"
 
@@ -121,67 +122,74 @@ export default function FilterSummary({ className = "" }: { className?: string }
   return (
     <div
       className={cn(
-        "fixed top-0 left-1/2 -translate-x-1/2 z-40 max-w-[min(100vw-24px,900px)] px-3",
+        "fixed top-0 left-1/2 -translate-x-1/2 z-40 max-w-[min(100vw-24px,900px)]  px-3",
         className
       )}
       aria-label="Active filters"
     >
-      <div className="flex items-center gap-1 overflow-x-auto rounded-b-md border-x border-b bg-card px-2 py-1 shadow-sm">
-        {status.map((s) => (
-          <button
-            key={`status-${s}`}
+      <div className="rounded-b-lg border-x border-b bg-card shadow-sm overflow-hidden">
+        <div className="flex items-center gap-1 overflow-x-auto px-1 py-0.5">
+          {status.map((s) => (
+            <Button
+              key={`status-${s}`}
+              type="button"
+              onClick={() => removeStatus(s)}
+              variant="nav"
+              size="xs"
+              aria-label={`Remove status ${statusLabel(s)}`}
+            >
+              <span className="truncate">{statusLabel(s)}</span>
+              <XMarkIcon className="ml-1 size-3" />
+            </Button>
+          ))}
+          {boards.map((b) => (
+            <Button
+              key={`board-${b}`}
+              type="button"
+              onClick={() => removeBoard(b)}
+              variant="nav"
+              size="xs"
+              aria-label={`Remove board ${boardsBySlug[b] || b}`}
+            >
+              <span className="truncate">{boardsBySlug[b] || b}</span>
+              <XMarkIcon className="ml-1 size-3" />
+            </Button>
+          ))}
+          {tags.map((t) => (
+            <Button
+              key={`tag-${t}`}
+              type="button"
+              onClick={() => removeTag(t)}
+              variant="nav"
+              size="xs"
+              aria-label={`Remove tag ${tagsBySlug[t] || t}`}
+            >
+              <span className="truncate">{tagsBySlug[t] || t}</span>
+              <XMarkIcon className="ml-1 size-3" />
+            </Button>
+          ))}
+          {order === "oldest" ? (
+            <Button
+              type="button"
+              onClick={removeOrder}
+              variant="nav"
+              size="xs"
+              aria-label="Remove sort oldest"
+            >
+              <span className="truncate">Oldest first</span>
+              <XMarkIcon className="ml-1 size-3" />
+            </Button>
+          ) : null}
+          <Button
             type="button"
-            onClick={() => removeStatus(s)}
-            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground cursor-pointer"
-            aria-label={`Remove status ${statusLabel(s)}`}
+            onClick={clearAll}
+            variant="nav"
+            size="icon-sm"
+            aria-label="Clear all filters"
           >
-            <span className="truncate">{statusLabel(s)}</span>
-            <XMarkIcon className="ml-1 size-3" />
-          </button>
-        ))}
-        {boards.map((b) => (
-          <button
-            key={`board-${b}`}
-            type="button"
-            onClick={() => removeBoard(b)}
-            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground cursor-pointer"
-            aria-label={`Remove board ${boardsBySlug[b] || b}`}
-          >
-            <span className="truncate">{boardsBySlug[b] || b}</span>
-            <XMarkIcon className="ml-1 size-3" />
-          </button>
-        ))}
-        {tags.map((t) => (
-          <button
-            key={`tag-${t}`}
-            type="button"
-            onClick={() => removeTag(t)}
-            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground cursor-pointer"
-            aria-label={`Remove tag ${tagsBySlug[t] || t}`}
-          >
-            <span className="truncate">{tagsBySlug[t] || t}</span>
-            <XMarkIcon className="ml-1 size-3" />
-          </button>
-        ))}
-        {order === "oldest" ? (
-          <button
-            type="button"
-            onClick={removeOrder}
-            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground cursor-pointer"
-            aria-label="Remove sort oldest"
-          >
-            <span className="truncate">Oldest first</span>
-            <XMarkIcon className="ml-1 size-3" />
-          </button>
-        ) : null}
-        <button
-          type="button"
-          onClick={clearAll}
-          className="ml-1 inline-flex items-center justify-center h-7 w-7 rounded-md bg-card text-xs border cursor-pointer"
-          aria-label="Clear all filters"
-        >
-          <XMarkIcon className="size-3" />
-        </button>
+            <XMarkIcon className="size-3" />
+          </Button>
+        </div>
       </div>
     </div>
   )
