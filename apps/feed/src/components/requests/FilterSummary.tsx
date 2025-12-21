@@ -182,15 +182,20 @@ export default function FilterSummary({ className = "" }: { className?: string }
               <XMarkIcon className="ml-1 size-3" />
             </Button>
           ) : null}
-          <Button
-            type="button"
-            onClick={clearAll}
-            variant="nav"
-            size="icon-sm"
-            aria-label="Clear all filters"
-          >
-            <XMarkIcon className="size-3" />
-          </Button>
+        </div>
+        
+        <div className="flex items-center shrink-0 pl-2">
+            <div className="h-4 w-px bg-border mx-1" />
+            <Button
+                type="button"
+                onClick={clearAll}
+                variant="ghost"
+                size="default"
+                className="size-7 text-muted-foreground hover:text-destructive transition-colors"
+                aria-label="Clear all filters"
+            >
+                <TrashIcon className="size-4" />
+            </Button>
         </div>
       </div>
     </div>
