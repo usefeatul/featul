@@ -47,7 +47,7 @@ export default function ManageTags({
     <div className="space-y-2">
       <div className="text-md font-medium">Manage Tags</div>
       <div className="text-sm text-accent">Tags are additional labels that can be added to feedback. They are useful for categorizing feedback.</div>
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-md  border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

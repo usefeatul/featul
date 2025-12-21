@@ -31,12 +31,12 @@ export default function RequestNavigation({ prev, next, prevHref, nextHref, clas
         {prevHref ? (
           <Link href={prevHref} title={prev?.title ? `Previous: ${prev.title} (Z)` : "Previous (Z)"} aria-label="Previous post" aria-keyshortcuts="z">
             <span className="text-xs font-medium">Prev</span>
-            <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground h-5">Z</span>
+            <span className="hidden sm:inline-flex items-center justify-center rounded-mdborder bg-muted px-1.5 text-[10px] font-medium text-muted-foreground h-5">Z</span>
           </Link>
         ) : (
           <span aria-hidden="true" className="flex items-center gap-2">
             <span className="text-xs font-medium opacity-50">Prev</span>
-            <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground/50 h-5">Z</span>
+            <span className="hidden sm:inline-flex items-center justify-center rounded-mdborder bg-muted px-1.5 text-[10px] font-medium text-muted-foreground/50 h-5">Z</span>
           </span>
         )}
       </Button>
@@ -50,12 +50,12 @@ export default function RequestNavigation({ prev, next, prevHref, nextHref, clas
       >
         {nextHref ? (
           <Link href={nextHref} title={next?.title ? `Next: ${next.title} (X)` : "Next (X)"} aria-label="Next post" aria-keyshortcuts="x">
-             <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground h-5">X</span>
+             <span className="hidden sm:inline-flex items-center justify-center rounded-mdborder bg-muted px-1.5 text-[10px] font-medium text-muted-foreground h-5">X</span>
             <span className="text-xs font-medium">Next</span>
           </Link>
         ) : (
           <span aria-hidden="true" className="flex items-center gap-2">
-             <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground/50 h-5">X</span>
+             <span className="hidden sm:inline-flex items-center justify-center rounded-mdborder bg-muted px-1.5 text-[10px] font-medium text-muted-foreground/50 h-5">X</span>
             <span className="text-xs font-medium opacity-50">Next</span>
           </span>
         )}

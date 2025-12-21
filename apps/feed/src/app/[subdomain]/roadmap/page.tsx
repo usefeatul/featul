@@ -67,7 +67,7 @@ export default async function RoadmapPage({
         <div className="lg:hidden mb-4">
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
-        <div className="rounded-md border bg-card mt-4">
+        <div className="rounded-md  border bg-card mt-4">
           {(items || []).length === 0 ? (
             <EmptyDomainPosts subdomain={subdomain} slug={slug} />
           ) : (

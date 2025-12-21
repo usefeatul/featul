@@ -35,6 +35,6 @@ function SectionRenderer({ section, initialUser, initialMeSession, initialSessio
     case "notifications":
       return <NotificationsSection />
     default:
-      return <div className="bg-card rounded-md border p-4">Unknown section</div>
+      return <div className="bg-card rounded-md  border p-4">Unknown section</div>
   }
 }

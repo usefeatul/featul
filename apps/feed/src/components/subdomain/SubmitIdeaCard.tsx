@@ -10,7 +10,7 @@ export function SubmitIdeaCard({ subdomain, slug }: { subdomain: string; slug: s
 
   return (
     <>
-      <div className="rounded-md border bg-card p-4">
+      <div className="rounded-md  border bg-card p-4">
         <div className="mb-3 text-sm font-medium flex items-center gap-2">
           <IdeaIcon className="size-5"/>
           Got an idea?

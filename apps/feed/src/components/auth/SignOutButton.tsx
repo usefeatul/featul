@@ -36,7 +36,7 @@ export default function SignOutButton({ className = "", label = "Sign out" }: Pr
       onClick={onSignOut}
       disabled={loading}
       className={cn(
-        "group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm text-accent hover:bg-muted",
+        "group flex items-center gap-2 rounded-md  px-3 py-2 text-xs md:text-sm text-accent hover:bg-muted",
         className
       )}
       aria-label="Sign out"

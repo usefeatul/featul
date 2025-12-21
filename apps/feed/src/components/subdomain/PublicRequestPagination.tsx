@@ -59,12 +59,12 @@ export function PublicRequestPagination({
         <div className="flex items-center gap-2">
           <Button asChild variant="nav" size="sm" disabled={page <= 1}>
             <Link prefetch={false} href={prevHref} rel="prev" aria-label="Previous page" aria-keyshortcuts="z" title="Prev (Z)" className="group">
-              Prev <span className="ml-1 rounded-sm border px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">Z</span>
+              Prev <span className="ml-1 rounded-md border px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">Z</span>
             </Link>
           </Button>
           <Button asChild variant="nav" size="sm" disabled={page >= totalPages || totalCount === 0}>
             <Link prefetch={false} href={nextHref} rel="next" aria-label="Next page" aria-keyshortcuts="x" title="Next (X)" className="group">
-              Next <span className="ml-1 rounded-sm border px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">X</span>
+              Next <span className="ml-1 rounded-md border px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">X</span>
             </Link>
           </Button>
         </div>

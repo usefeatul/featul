@@ -100,7 +100,7 @@ export default function Security({ initialMeSession, initialSessions }: { initia
           {isFetching ? (
             <div className="text-sm text-accent">Loading sessions…</div>
           ) : Array.isArray(sessions) && sessions.length > 0 ? (
-            <div className="rounded-md border overflow-hidden">
+            <div className="rounded-md  border overflow-hidden">
               <Table className="table-fixed">
                 <TableHeader>
                   <TableRow>
@@ -121,7 +121,7 @@ export default function Security({ initialMeSession, initialSessions }: { initia
                         <TableCell className="px-3">
                           <div className="flex items-center gap-2 min-w-0">
                             <span className="truncate block">{ua || "Unknown"}</span>
-                            {isCurrent ? <span className="ml-2 text-xs rounded-md bg-muted px-2 py-0.5">This device</span> : null}
+                            {isCurrent ? <span className="ml-2 text-xs rounded-md  bg-muted px-2 py-0.5">This device</span> : null}
                           </div>
                         </TableCell>
                         <TableCell className="px-3 text-center">{ip}</TableCell>

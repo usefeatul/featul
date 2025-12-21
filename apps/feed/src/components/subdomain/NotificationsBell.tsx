@@ -64,7 +64,7 @@ export default function NotificationsBell() {
         <Button suppressHydrationWarning type="button" size="xs" variant="nav" className="relative" aria-label="Notifications">
           <Bell className="size-4 text-foreground opacity-100 group-hover:text-primary transition-colors" />
           {unread > 0 ? (
-            <span className="absolute -top-1 -right-1 rounded-md bg-muted ring-1 ring-border px-1.5 py-0.5 text-[10px] tabular-nums">
+            <span className="absolute -top-1 -right-1 rounded-md  bg-muted ring-1 ring-border px-1.5 py-0.5 text-[10px] tabular-nums">
               {unread}
             </span>
           ) : null}

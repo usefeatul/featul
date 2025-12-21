@@ -80,7 +80,7 @@ export function SinglePost({ post }: SinglePostProps) {
                     alt={author?.name ?? "Author"}
                     width={20}
                     height={20}
-                    className="h-5 w-5 rounded-md object-cover translate-y-[0.5px]"
+                    className="h-5 w-5 rounded-md  object-cover translate-y-[0.5px]"
                   />
                 ) : null}
                 {authorName ? (
@@ -101,7 +101,7 @@ export function SinglePost({ post }: SinglePostProps) {
           </header>
 
           {post.coverImage ? (
-            <div className="mb-8 overflow-hidden rounded-md border w-full">
+            <div className="mb-8 overflow-hidden rounded-md  border w-full">
               <Image
                 src={post.coverImage}
                 alt={post.title}

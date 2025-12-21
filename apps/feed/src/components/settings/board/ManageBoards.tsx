@@ -66,7 +66,7 @@ export default function ManageBoards({
     <div className="space-y-2">
       <div className="text-md font-medium">Manage Boards</div>
       <div className="text-sm text-accent">Boards are the main way to organize your feedback. They are buckets that contain all of the feedback for a specific product or feature.</div>
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-md  border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

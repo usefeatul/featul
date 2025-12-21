@@ -38,7 +38,7 @@ export default function MentionList({ candidates, selectedIndex, onSelect, class
     <div
       ref={listRef}
       className={cn(
-        "absolute z-50 w-auto min-w-[10rem] max-h-60 overflow-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 whitespace-nowrap",
+        "absolute z-50 w-auto min-w-[10rem] max-h-60 overflow-auto rounded-md  border bg-popover p-1 text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 whitespace-nowrap",
         className
       )}
       role="listbox"

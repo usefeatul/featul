@@ -63,7 +63,7 @@ export const ImageUploadView = ({
   if (!options.upload) {
     return (
       <NodeViewWrapper className="my-5">
-        <div className="flex items-center justify-center rounded-md border border-muted bg-muted/50 p-8">
+        <div className="flex items-center justify-center rounded-md  border border-muted bg-muted/50 p-8">
           <p className="text-muted-foreground text-sm">
             Image upload is not configured. Please configure the ImageUpload
             extension with an upload handler.

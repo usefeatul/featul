@@ -7,7 +7,7 @@ Transform the current filter summary into a top‑center anchored chips bar that
 
 ## Changes
 1. Replace the summary UI with a fixed, top‑center anchored container:
-   - `fixed top-2 left-1/2 -translate-x-1/2 z-40` with `bg-card border rounded-md px-2 py-1`.
+   - `fixed top-2 left-1/2 -translate-x-1/2 z-40` with `bg-card border rounded-md  px-2 py-1`.
    - Horizontal list of chips; wraps on small screens; `overflow-x-auto` with gap.
 2. Render one chip per active filter:
    - Status chips use labels from `StatusAction` options (e.g., Pending, Review, ...).

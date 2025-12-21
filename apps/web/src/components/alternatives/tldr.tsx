@@ -15,7 +15,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
             TL;DR comparison summary
           </h2>
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="group relative rounded-md border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow">
+            <div className="group relative rounded-md  border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow">
               <div className="flex items-start gap-3">
                 <div>
                   <p className="text-accent mt-1 text-sm sm:text-base leading-7 text-balance sm:max-w-[60ch]">
@@ -25,16 +25,16 @@ export default function TLDR({ alt }: { alt: Alternative }) {
               </div>
             </div>
 
-            <div className="group relative rounded-md border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow">
+            <div className="group relative rounded-md  border border-foreground/10 bg-white p-5 sm:p-6 transition-shadow">
               <div className="flex items-start gap-3">
                 <div>
                   <p className="text-accent mt-1 text-sm sm:text-base leading-7 text-balance sm:max-w-[60ch]">
                     oreilla is a modern,
-                    <span className="inline rounded-md bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
+                    <span className="inline rounded-md  bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
                       privacy‑first
                     </span>
                     alternative designed to be simple to set up and pleasant to use. With EU hosting by default and an
-                    <span className="inline rounded-md bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
+                    <span className="inline rounded-md  bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
                       end‑to‑end workflow
                     </span>
                     —feedback boards, public roadmap, and changelog—you can get essential analytics and product signals without heavy configuration.

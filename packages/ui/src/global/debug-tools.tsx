@@ -290,7 +290,7 @@ export function DebugTools() {
         ) : null
       )}
 
-      <div className="rounded-md border bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-2 py-1 shadow-sm">
+      <div className="rounded-md  border bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-2 py-1 shadow-sm">
         <div className="flex items-center gap-1">
           <Button
             size="xs"
@@ -320,9 +320,9 @@ export function DebugTools() {
           </Button>
           {showAnalysis && (
             <div className="ml-2 flex items-center gap-3">
-              <span className="px-2 py-1 rounded-md border text-[11px] bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
-              <span className="px-2 py-1 rounded-md border text-[11px] bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
-              <span className="px-2 py-1 rounded-md border text-[11px] bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
+              <span className="px-2 py-1 rounded-md  border text-[11px] bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
+              <span className="px-2 py-1 rounded-md  border text-[11px] bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
+              <span className="px-2 py-1 rounded-md  border text-[11px] bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
             </div>
           )}
         </div>

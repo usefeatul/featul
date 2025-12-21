@@ -27,7 +27,7 @@ export function RequestHeader({ sidebarPosition, backLink = "/" }: RequestHeader
       >
         <Link
           href={backLink}
-          className="inline-flex items-center justify-center rounded-md border bg-card text-foreground border-muted hover:bg-muted hover:text-accent-foreground hover:border-accent/20 dark:bg-black/40 dark:hover:bg-black/50 p-2 transition-colors"
+          className="inline-flex items-center justify-center rounded-md  border bg-card text-foreground border-muted hover:bg-muted hover:text-accent-foreground hover:border-accent/20 dark:bg-black/40 dark:hover:bg-black/50 p-2 transition-colors"
           aria-label="Back to board"
         >
           <ChevronLeft className="size-4" />

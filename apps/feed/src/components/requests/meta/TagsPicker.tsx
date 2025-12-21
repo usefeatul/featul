@@ -128,7 +128,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
           {selectedTags.map((t) => (
             <span
               key={t.id}
-              className="text-xs rounded-md bg-green-100 px-2 py-0.5 text-green-500"
+              className="text-xs rounded-md  bg-green-100 px-2 py-0.5 text-green-500"
             >
               {t.name}
             </span>

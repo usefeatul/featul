@@ -368,7 +368,7 @@ export const ImageUploadComp = ({
                           onClick={() => handleMediaSelect(item.url)}
                           type="button"
                         >
-                          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-md border border-border">
+                          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-md  border border-border">
                             {/* biome-ignore lint: Preview image in dialog */}
                             <img
                               alt={item.name}

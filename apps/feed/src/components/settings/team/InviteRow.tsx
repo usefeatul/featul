@@ -87,7 +87,7 @@ export default function InviteRow({
       </TableCell>
       <TableCell className="px-4 w-48">
         <div className="relative h-6">
-          <span className={cn("text-xs px-2 py-0.5 rounded-md capitalize absolute left-1/2 -translate-x-1/2", roleBadgeClass(i.role))}>{i.role}</span>
+          <span className={cn("text-xs px-2 py-0.5 rounded-md  capitalize absolute left-1/2 -translate-x-1/2", roleBadgeClass(i.role))}>{i.role}</span>
           <div className="absolute right-0 top-1/2 -translate-y-1/2">
             <Popover open={menuFor === i.id} onOpenChange={(v) => setMenuFor(v ? i.id : null)}>
               <PopoverTrigger asChild>

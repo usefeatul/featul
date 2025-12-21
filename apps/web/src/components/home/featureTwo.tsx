@@ -180,7 +180,7 @@ export default function FeaturesSection() {
                   <CardAccent>Search and summarize from your docs.</CardAccent>
                 </div>
                 <div className="flex aspect-video items-center justify-center">
-                  <div className="flex items-center gap-2 rounded-md border-foreground/10 border p-2">
+                  <div className="flex items-center gap-2 rounded-md  border-foreground/10 border p-2">
                     <ToggleGroup
                       type="multiple"
                       size="sm"
@@ -242,7 +242,7 @@ export const ScheduleIllustation = ({
     <div className={cn("relative", className)}>
       <div
         className={cn(
-          "bg-background absolute left-1/2 top-6 -translate-x-1/2 flex items-center gap-2 rounded-md p-1",
+          "bg-background absolute left-1/2 top-6 -translate-x-1/2 flex items-center gap-2 rounded-md  p-1",
           {
             "shadow-black-950/10 shadow-lg": variant === "elevated",
             "border-foreground/10 border": variant === "outlined",

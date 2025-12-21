@@ -95,8 +95,8 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild className="w-full cursor-pointer">
-          <button suppressHydrationWarning type="button" className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted">
-            <div className="rounded-md border ring-1 ring-border overflow-hidden">
+          <button suppressHydrationWarning type="button" className="group flex items-center gap-2 rounded-md  px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted">
+            <div className="rounded-md  border ring-1 ring-border overflow-hidden">
               <Avatar className="size-5.5">
                 {d.image ? <AvatarImage src={d.image} alt={d.name} /> : null}
                 <AvatarFallback>{initials}</AvatarFallback>
@@ -106,15 +106,15 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-30 max-w-[40vw] p-2" side="bottom" align="center" sideOffset={8}>
-          <DropdownMenuItem onSelect={onAccount} className="px-2 py-2 rounded-sm flex items-center gap-2 group">
+          <DropdownMenuItem onSelect={onAccount} className="px-2 py-2 rounded-mdflex items-center gap-2 group">
             <AccountIcon className="w-[18px] h-[18px] text-foreground/80 transition-colors group-hover:text-primary" />
             <span className="transition-colors group-hover:text-foreground">Account</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={onSettings} className="px-2 py-2 rounded-sm flex items-center gap-2 group">
+          <DropdownMenuItem onSelect={onSettings} className="px-2 py-2 rounded-mdflex items-center gap-2 group">
             <SettingIcon className="w-[18px] h-[18px] text-foreground/80 transition-colors group-hover:text-primary" />
             <span className="transition-colors group-hover:text-foreground">Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={onSignOut} className="px-2 py-2 rounded-sm flex items-center gap-2 group" aria-disabled={loading}>
+          <DropdownMenuItem onSelect={onSignOut} className="px-2 py-2 rounded-mdflex items-center gap-2 group" aria-disabled={loading}>
             <LogoutIcon className="w-[18px] h-[18px] text-foreground/80 group-hover:text-red-500 transition-colors" />
             <span>Sign out</span>
           </DropdownMenuItem>

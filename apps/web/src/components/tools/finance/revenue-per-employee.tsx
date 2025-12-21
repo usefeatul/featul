@@ -64,15 +64,15 @@ export default function RevenuePerEmployeeTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">RPE</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(rpe)}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Revenue</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(parseNumber(revenue))}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Employees</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{employees.toLocaleString()}</div>
               </div>

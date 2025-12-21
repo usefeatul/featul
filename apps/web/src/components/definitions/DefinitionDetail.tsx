@@ -102,7 +102,7 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
                       ) : null}
                     </div>
                     {def.formula.code ? (
-                      <pre className="mt-4 rounded-md bg-foreground/5 p-4 text-sm text-foreground whitespace-pre-wrap">
+                      <pre className="mt-4 rounded-md  bg-foreground/5 p-4 text-sm text-foreground whitespace-pre-wrap">
                         {def.formula.code}
                       </pre>
                     ) : null}

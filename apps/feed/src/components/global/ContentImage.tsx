@@ -27,7 +27,7 @@ export default function ContentImage({
     <>
       <div
         className={cn(
-          "relative rounded-md border overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity",
+          "relative rounded-md  border overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity",
           className
         )}
         onClick={() => setIsOpen(true)}

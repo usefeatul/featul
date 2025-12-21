@@ -24,7 +24,7 @@ export default async function ChangelogPage({ params }: { params: Promise<{ subd
         <h1 className="text-lg font-semibold mb-4">Changelog</h1>
         <div className="space-y-4">
           {entries.map((e: any) => (
-            <article key={e.id} className="rounded-md border bg-card p-4">
+            <article key={e.id} className="rounded-md  border bg-card p-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-medium">{e.title}</h2>
                 {e.date ? (
@@ -35,7 +35,7 @@ export default async function ChangelogPage({ params }: { params: Promise<{ subd
               {e.tags?.length ? (
                 <div className="mt-3 flex flex-wrap gap-1">
                   {e.tags.map((t: any) => (
-                    <span key={t.id} className="text-[11px] rounded-md bg-muted px-2 py-0.5 text-accent">{t.name}</span>
+                    <span key={t.id} className="text-[11px] rounded-md  bg-muted px-2 py-0.5 text-accent">{t.name}</span>
                   ))}
                 </div>
               ) : null}

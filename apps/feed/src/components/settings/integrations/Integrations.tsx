@@ -13,7 +13,7 @@ export default function IntegrationsSection() {
         <Card className="">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
+              <span className="inline-flex size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
                 <SlackIcon className="size-5" />
               </span>
               <CardTitle className="text-left">Slack</CardTitle>
@@ -28,7 +28,7 @@ export default function IntegrationsSection() {
         <Card >
           <CardHeader>
             <div className="flex items-center gap-3">
-              <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
+              <span className="inline-flex size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
                 <CommentsIcon className="size-5" />
               </span>
               <CardTitle className="text-left">Discord</CardTitle>
@@ -43,7 +43,7 @@ export default function IntegrationsSection() {
         <Card className="md:col-span-1">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
+              <span className="inline-flex size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
                 <ShieldIcon className="size-5" />
               </span>
               <CardTitle className="text-left">Integrations?</CardTitle>
@@ -57,7 +57,7 @@ export default function IntegrationsSection() {
       </div>
 
       <CardFooter className="mt-2">
-        <div className="w-full rounded-md border bg-green-50 text-green-700 text-sm px-3 py-2 flex items-center gap-2">
+        <div className="w-full rounded-md  border bg-green-50 text-green-700 text-sm px-3 py-2 flex items-center gap-2">
           <ShieldIcon className="size-4 text-green-600" />
           <span>Integrations are only available on our paid plans.</span>
         </div>

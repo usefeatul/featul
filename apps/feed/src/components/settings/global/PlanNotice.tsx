@@ -68,7 +68,7 @@ export default function PlanNotice({ slug, feature, className, plan: rawPlan, me
   const limits = getPlanLimits(plan)
   const msg = buildMessage(feature, plan, limits, { members: membersCount, tags: tagsCount, changelogTags: changelogTagsCount, boards: boardsCount })
   return (
-    <div className={cn("rounded-sm border bg-muted/50 text-foreground text-xs sm:text-sm px-2 py-2 flex items-center gap-2", className)}>
+    <div className={cn("rounded-mdborder bg-muted/50 text-foreground text-xs sm:text-sm px-2 py-2 flex items-center gap-2", className)}>
       <AccentBar width={6} height={30} className="shrink-0" />
       <div className="leading-tight">
         <div className="font-medium">{msg.title}</div>

@@ -49,7 +49,7 @@ export default function RoadmapVisibility({ slug, initialBoards }: { slug: strin
     <div className="space-y-2">
       <div className="text-md font-medium">Roadmap Visibility</div>
       <div className="text-sm text-accent">Show or hide your roadmap on the public site.</div>
-      <div className="rounded-md border bg-card p-3 flex items-center  justify-between">
+      <div className="rounded-md  border bg-card p-3 flex items-center  justify-between">
         <div className="text-sm">Enable Roadmap </div>
         <Switch
           checked={Boolean(roadmap?.isVisible)}

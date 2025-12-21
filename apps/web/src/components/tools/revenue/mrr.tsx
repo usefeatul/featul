@@ -114,19 +114,19 @@ export default function MrrTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">MRR</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(totals.mrr)}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">ARPU</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(totals.arpu)}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Customers</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{totals.customers.toLocaleString()}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Plans</div>
                 <div className="mt-1 text-base leading-tight">{plans.length}</div>
               </div>

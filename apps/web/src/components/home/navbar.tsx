@@ -58,7 +58,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center rounded-md h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className="inline-flex items-center rounded-md  h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
               >
                 {item.name}
               </Link>
@@ -67,7 +67,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center rounded-md h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className="inline-flex items-center rounded-md  h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
               >
                 {item.name}
                 {item.name === "Docs" && (
@@ -90,7 +90,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="text-sm font-medium inline-flex items-center rounded-md h-8 px-3 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className="text-sm font-medium inline-flex items-center rounded-md  h-8 px-3 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
               >
                 {item.name}
               </Link>
@@ -109,7 +109,7 @@ export default function Navbar() {
             type="button"
             variant="nav"
             aria-label="Toggle menu"
-            className="md:hidden inline-flex items-center justify-center rounded-md bg-muted"
+            className="md:hidden inline-flex items-center justify-center rounded-md  bg-muted"
             onClick={() => setMobileOpen((o) => !o)}
           >
             <MenuIcon className="text-accent size-5" />

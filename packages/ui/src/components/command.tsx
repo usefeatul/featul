@@ -20,7 +20,7 @@ function Command({
   return (
     <CommandPrimitive
       data-slot="command"
-      className={cn("bg-card text-foreground flex h-full w-full flex-col overflow-hidden rounded-md ", className)}
+      className={cn("bg-card text-foreground flex h-full w-full flex-col overflow-hidden rounded-md", className)}
       {...props}
     />
   )
@@ -77,7 +77,7 @@ function CommandInput({
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          "placeholder:text-accent flex h-12 w-full rounded-md bg-transparent px-3 py-3 text-md outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+          "placeholder:text-accent flex h-12 w-full rounded-md  bg-transparent px-3 py-3 text-md outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         {...props}
@@ -144,7 +144,7 @@ function CommandItem({
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
-      className={cn("bg-card text-muted-foreground hover:bg-primary/20 hover:text-black aria-[selected=true]:bg-primary/20 aria-[selected=true]:text-primary [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-3 rounded-md px-4 py-3 my-1 text-sm outline-hidden select-none transition-colors duration-150 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4", className)}
+      className={cn("bg-card text-muted-foreground hover:bg-primary/20 hover:text-black aria-[selected=true]:bg-primary/20 aria-[selected=true]:text-primary [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-3 rounded-md  px-4 py-3 my-1 text-sm outline-hidden select-none transition-colors duration-150 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4", className)}
       {...props}
     />
   )

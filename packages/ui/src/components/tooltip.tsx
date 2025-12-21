@@ -108,7 +108,7 @@ function TooltipContent({
         <BaseTooltip.Popup
           data-slot="tooltip-content"
           className={cn(
-            "bg-background text-accent border shadow-md animate-in fade-in-0 zoom-in-95 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 z-50 w-[16rem] whitespace-normal break-words text-balance leading-relaxed rounded-md px-3 py-2 text-sm",
+            "bg-background text-accent border shadow-md animate-in fade-in-0 zoom-in-95 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 z-50 w-[16rem] whitespace-normal break-words text-balance leading-relaxed rounded-md  px-3 py-2 text-sm",
             className
           )}
           {...props}

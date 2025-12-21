@@ -52,7 +52,7 @@ const DialogContent = React.forwardRef<
         className={cn(
           // Match the original Radix positioning: centered by default,
           // but allow callers to override with their own top/translate classes.
-          "fixed left-1/2 top-1/2 z-40 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-5 border ring-1 ring-border shadow-2xl rounded-sm",
+          "fixed left-1/2 top-1/2 z-40 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-5 border ring-1 ring-border shadow-2xl rounded-md  ",
           className
         )}
         initial={{ opacity: 0, scale: 0.95, y: -12 }}

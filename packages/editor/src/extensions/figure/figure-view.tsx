@@ -240,7 +240,7 @@ export const FigureView = ({
             {/* biome-ignore lint: Tiptap NodeView requires standard img element */}
             <img
               alt={altValue}
-              className="h-auto w-full rounded-md border border-muted"
+              className="h-auto w-full rounded-md  border border-muted"
               src={src}
             />
 
@@ -249,14 +249,14 @@ export const FigureView = ({
               <>
                 {/* Left handle */}
                 <button
-                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-0 z-20 h-16 w-2 cursor-ew-resize rounded-sm bg-primary opacity-0 transition-opacity hover:opacity-100"
+                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-0 z-20 h-16 w-2 cursor-ew-resize rounded-mdbg-primary opacity-0 transition-opacity hover:opacity-100"
                   onMouseDown={handleResizeStart}
                   title="Drag to resize"
                   type="button"
                 />
                 {/* Right handle */}
                 <button
-                  className="-translate-y-1/2 absolute top-1/2 right-0 z-20 h-16 w-2 translate-x-1/2 cursor-ew-resize rounded-sm bg-primary opacity-0 transition-opacity hover:opacity-100"
+                  className="-translate-y-1/2 absolute top-1/2 right-0 z-20 h-16 w-2 translate-x-1/2 cursor-ew-resize rounded-mdbg-primary opacity-0 transition-opacity hover:opacity-100"
                   onMouseDown={handleResizeStart}
                   title="Drag to resize"
                   type="button"
@@ -302,7 +302,7 @@ export const FigureView = ({
             <Label className="font-medium text-xs">Alignment</Label>
             <div className="grid grid-cols-3 gap-1.5">
               <Button
-                className="!rounded-sm w-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
+                className="!rounded-mdw-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
                 data-active={alignValue === "left"}
                 onClick={() => handleAlignChange("left")}
                 type="button"
@@ -312,7 +312,7 @@ export const FigureView = ({
                 Left
               </Button>
               <Button
-                className="!rounded-sm w-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
+                className="!rounded-mdw-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
                 data-active={alignValue === "center"}
                 onClick={() => handleAlignChange("center")}
                 type="button"
@@ -322,7 +322,7 @@ export const FigureView = ({
                 Center
               </Button>
               <Button
-                className="!rounded-sm w-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
+                className="!rounded-mdw-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
                 data-active={alignValue === "right"}
                 onClick={() => handleAlignChange("right")}
                 type="button"

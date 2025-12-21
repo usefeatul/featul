@@ -112,7 +112,7 @@ export function MainContent({
           <div className="lg:hidden mb-4">
             <SubmitIdeaCard subdomain={subdomain} slug={slug} />
           </div>
-          <div className="rounded-md border bg-card mt-4">
+          <div className="rounded-md  border bg-card mt-4">
             {(items as any[]).length === 0 ? (
               <EmptyDomainPosts subdomain={subdomain} slug={slug} />
             ) : (

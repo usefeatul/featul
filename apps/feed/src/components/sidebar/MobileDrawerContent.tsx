@@ -43,7 +43,7 @@ export default function MobileDrawerContent({
       </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-md px-2 py-2">
+          <div className="group flex items-center gap-2 rounded-md  px-2 py-2">
             <Image src="/logo.svg" alt="feedback" width={24} height={24} />
             <div className="text-sm font-semibold">feedback</div>
           </div>

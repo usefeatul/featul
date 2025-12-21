@@ -2,7 +2,9 @@
 
 import React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { TrashIcon } from "@oreilla/ui/icons/trash"
 import { XMarkIcon } from "@oreilla/ui/icons/xmark"
+
 import { cn } from "@oreilla/ui/lib/utils"
 import { useQuery } from "@tanstack/react-query"
 import { client } from "@oreilla/api/client"
@@ -122,13 +124,13 @@ export default function FilterSummary({ className = "" }: { className?: string }
   return (
     <div
       className={cn(
-        "fixed top-0 left-1/2 -translate-x-1/2 z-40",
+        "fixed top-0 left-1/2 -translate-x-1/2 z-40 max-w-[90vw]",
         className
       )}
       aria-label="Active filters"
     >
-      <div className="bg-card shadow-sm border-t-transparent  overflow-hidden">
-        <div className="flex items-center gap-1 overflow-x-auto px-1 py-0.5">
+      <div className="bg-card shadow-sm border-t-transparent overflow-hidden rounded-xs border flex items-center pl-1 pr-1">
+        <div className="flex items-center gap-1 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
           {status.map((s) => (
             <Button
               key={`status-${s}`}
@@ -180,15 +182,20 @@ export default function FilterSummary({ className = "" }: { className?: string }
               <XMarkIcon className="ml-1 size-3" />
             </Button>
           ) : null}
-          <Button
-            type="button"
-            onClick={clearAll}
-            variant="nav"
-            size="icon-sm"
-            aria-label="Clear all filters"
-          >
-            <XMarkIcon className="size-3" />
-          </Button>
+        </div>
+        
+        <div className="flex items-center shrink-0 pl-2">
+            <div className="h-4 w-px bg-border mx-1" />
+            <Button
+                type="button"
+                onClick={clearAll}
+                variant="ghost"
+                size="default"
+                className="size-7 text-muted-foreground hover:text-destructive transition-colors"
+                aria-label="Clear all filters"
+            >
+                <TrashIcon width={14} height={14} />
+            </Button>
         </div>
       </div>
     </div>

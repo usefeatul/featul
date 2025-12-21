@@ -46,7 +46,7 @@ export default function PostCountBadge({ className = "" }: { className?: string 
   if (count <= 0) return null
 
   return (
-    <span className={cn("inline-flex items-center gap-1 bg-muted rounded-md ring-1 ring-border px-2 py-2 text-xs tabular-nums text-accent", className)} aria-live="polite">
+    <span className={cn("inline-flex items-center gap-1 bg-muted rounded-md  ring-1 ring-border px-2 py-2 text-xs tabular-nums text-accent", className)} aria-live="polite">
       {count} {count === 1 ? "Post" : "Posts"}
     </span>
   )

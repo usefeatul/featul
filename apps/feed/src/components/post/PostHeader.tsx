@@ -69,7 +69,7 @@ export function PostHeader({
       <Button
         variant="ghost"
         size="icon"
-        className="ml-auto h-6 w-6 rounded-sm text-muted-foreground hover:text-foreground"
+        className="ml-auto h-6 w-6 rounded-md text-muted-foreground hover:text-foreground"
         onClick={onClose}
       >
         <XMarkIcon size={12} />

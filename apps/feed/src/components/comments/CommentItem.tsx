@@ -123,7 +123,7 @@ export default function CommentItem({
         {showReplyForm && (
           <div className="mt-3 pt-2">
             <div className="pl-1">
-              <div className="rounded-md border bg-card p-3.5">
+              <div className="rounded-md  border bg-card p-3.5">
                 <CommentForm
                   postId={comment.postId}
                   parentId={comment.id}

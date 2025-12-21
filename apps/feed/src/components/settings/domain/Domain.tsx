@@ -38,7 +38,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
 
         <div className="space-y-2">
           {info?.host ? (
-            <div className="flex items-center justify-between rounded-md border p-3">
+            <div className="flex items-center justify-between rounded-md  border p-3">
               <div className="flex items-center gap-2">
                 <span className="text-sm">{info.host}</span>
               </div>
@@ -53,7 +53,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-between rounded-md border p-3 mt-2 mb-3">
+            <div className="flex items-center justify-between rounded-md  border p-3 mt-2 mb-3">
               <span className="text-sm">{`https://${slug}.oreilla.com`}</span>
               <Button
                 type="button"
@@ -75,7 +75,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
               }
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-1 py-1 rounded-md bg-muted/70 ring-1 ring-border text-xs hover:bg-muted/80"
+              className="inline-flex items-center gap-1 px-1 py-1 rounded-md  bg-muted/70 ring-1 ring-border text-xs hover:bg-muted/80"
             >
               <span>Visit</span>
               <ArrowIcon width={14} height={14} />
@@ -86,7 +86,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
         {info?.host ? (
           <div className="space-y-2 mb-3">
             <Label>DNS Records</Label>
-            <div className="rounded-md border overflow-hidden">
+            <div className="rounded-md  border overflow-hidden">
               <RecordsTable info={info} />
             </div>
           </div>

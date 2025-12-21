@@ -16,7 +16,7 @@ export default function InvitesList({
 }) {
   if (invites.length === 0 && !loading) {
     return (
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-md  border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -34,7 +34,7 @@ export default function InvitesList({
     );
   }
   return (
-    <div className="rounded-md border overflow-hidden">
+    <div className="rounded-md  border overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>

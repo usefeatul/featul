@@ -44,7 +44,7 @@ export default function CommentActions({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
-            className="h-6 w-6 flex items-center justify-center rounded-md text-xs text-muted-foreground/60 hover:text-foreground transition-colors hover:bg-muted cursor-pointer"
+            className="h-6 w-6 flex items-center justify-center rounded-md  text-xs text-muted-foreground/60 hover:text-foreground transition-colors hover:bg-muted cursor-pointer"
             aria-label="More options"
           >
             <MoreVertical className="h-3.5 w-3.5" />

@@ -39,14 +39,14 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
   const base = linkBase || `/workspaces/${workspaceSlug}`
   const href = `${base}/requests/${item.slug}${queryString}`
   return (
-    <div className="rounded-md border bg-card p-2.5">
+    <div className="rounded-md  border bg-card p-2.5">
       <div className="flex items-center bg-card gap-3">
         <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
         <Link href={href} className="text-sm font-medium text-foreground hover:text-primary truncate flex-1">
           {item.title}
         </Link>
         <div className="ml-auto flex items-center gap-3 text-xs text-accent">
-          <div className="inline-flex items-center gap-2 bg-muted rounded-md ring-1 ring-border px-2 py-1">
+          <div className="inline-flex items-center gap-2 bg-muted rounded-md  ring-1 ring-border px-2 py-1">
             <span className="inline-flex items-center gap-1">
               {/* <LoveIcon  className="size-1" /> */}
               <HeartIcon className="size-3" />
@@ -59,7 +59,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
           </div>
           <span>{new Intl.DateTimeFormat(undefined, { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
           <div className="relative">
-            <Avatar className="size-6 bg-muted ring-1 ring-border rounded-md relative overflow-visible">
+            <Avatar className="size-6 bg-muted ring-1 ring-border rounded-md  relative overflow-visible">
               <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Guest" : (item.authorName || "Guest")} />
               <AvatarFallback>{getInitials(item.isAnonymous ? "Guest" : (item.authorName || "Guest"))}</AvatarFallback>
               <RoleBadge role={item.role} isOwner={item.isOwner} />

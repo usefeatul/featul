@@ -165,7 +165,7 @@ export default function Invite({
               </p>
             )}
             <div className="mt-4 flex items-center justify-start gap-3">
-              <div className="rounded-md overflow-hidden">
+              <div className="rounded-md  overflow-hidden">
                 <Avatar className="size-8">
                   {workspaceLogo ? (
                     <AvatarImage

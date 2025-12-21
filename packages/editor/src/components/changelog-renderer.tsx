@@ -27,7 +27,7 @@ const renderExtensions = [
   StarterKit.configure({
     codeBlock: {
       HTMLAttributes: {
-        class: "rounded-md bg-muted p-4 font-mono text-sm overflow-x-auto",
+        class: "rounded-md  bg-muted p-4 font-mono text-sm overflow-x-auto",
       },
     },
     bulletList: {
@@ -52,7 +52,7 @@ const renderExtensions = [
     },
     code: {
       HTMLAttributes: {
-        class: "rounded-md bg-muted px-1.5 py-1 font-medium font-mono text-sm",
+        class: "rounded-md  bg-muted px-1.5 py-1 font-medium font-mono text-sm",
       },
     },
     horizontalRule: {

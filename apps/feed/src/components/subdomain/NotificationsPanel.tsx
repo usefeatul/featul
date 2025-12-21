@@ -19,7 +19,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
       <motion.div
         ref={ref}
         {...props}
-        className={`z-50 max-w-[90vw] max-h-[36rem] bg-popover overflow-y-auto rounded-sm border  p-2 text-popover-foreground shadow-md  ""}`}
+        className={`z-50 max-w-[90vw] max-h-[36rem] bg-popover overflow-y-auto rounded-mdborder  p-2 text-popover-foreground shadow-md  ""}`}
         role="dialog"
         aria-label="Notifications"
         initial={{ opacity: 0, y: -6, scale: 0.98 }}
@@ -33,7 +33,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
           {onMarkAllRead && (
             <button
               type="button"
-              className="text-xs rounded-md bg-muted ring-1 ring-border px-2 py-1.5 cursor-pointer"
+              className="text-xs rounded-md  bg-muted ring-1 ring-border px-2 py-1.5 cursor-pointer"
               onClick={onMarkAllRead}
             >
               Mark all as read
@@ -51,7 +51,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
               <li key={n.id} className="px-2">
                 <Link
                   href={`/board/p/${n.postSlug}`}
-                  className="px-2 py-1.5 flex items-center gap-2 rounded-md hover:bg-muted dark:hover:bg-black/40"
+                  className="px-2 py-1.5 flex items-center gap-2 rounded-md  hover:bg-muted dark:hover:bg-black/40"
                   onClick={() => markRead(n.id)}
                 >
                   <div className="relative">

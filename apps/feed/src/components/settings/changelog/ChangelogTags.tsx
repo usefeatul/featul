@@ -34,7 +34,7 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
     <div className="space-y-2">
       <div className="text-md font-medium">Changelog Tags</div>
       <div className="text-sm text-accent max-w-[500px]">Create and manage tags to categorize your changelog updates.</div>
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-md  border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

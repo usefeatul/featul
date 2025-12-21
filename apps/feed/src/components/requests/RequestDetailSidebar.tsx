@@ -46,7 +46,7 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
 
   return (
     <aside className="hidden md:block space-y-4">
-      <div className="rounded-sm bg-card p-4 border">
+      <div className="rounded-mdbg-card p-4 border">
         {/* Header: User & Time */}
         <div className="flex items-center gap-3 mb-6 ">
           <div className="relative ">
@@ -73,7 +73,7 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
             {canEdit ? (
               <BoardPicker workspaceSlug={workspaceSlug} postId={post.id} value={board} onChange={setBoard} />
             ) : (
-              <div className="h-6 px-2.5 rounded-sm border text-xs font-medium flex items-center">
+              <div className="h-6 px-2.5 rounded-mdborder text-xs font-medium flex items-center">
                 {board.name}
               </div>
             )}
@@ -89,7 +89,7 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
                 onChange={(v) => setMeta((m) => ({ ...m, roadmapStatus: v }))}
               />
             ) : (
-              <div className="h-8 px-2 pl-1.5 rounded-md text-xs border font-medium flex items-center capitalize">
+              <div className="h-8 px-2 pl-1.5 rounded-md  text-xs border font-medium flex items-center capitalize">
                 <StatusIcon status={meta.roadmapStatus || "pending"} className="size-4 mr-2" />
                 {meta.roadmapStatus || "Open"}
               </div>
@@ -117,7 +117,7 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
                     .map((f) => (
                       <span
                         key={f as string}
-                        className="text-xs bg-muted px-1.5 py-0.5 rounded-sm  border text-muted-foreground "
+                        className="text-xs bg-muted px-1.5 py-0.5 rounded-md  border text-muted-foreground "
                       >
                         {f}
                       </span>
@@ -139,7 +139,7 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
                     {post.tags.map((t) => (
                       <span
                         key={t.id}
-                        className="text-[11px] rounded-md bg-green-100 px-2 py-0.5 text-green-500"
+                        className="text-[11px] rounded-md  bg-green-100 px-2 py-0.5 text-green-500"
                       >
                         {t.name}
                       </span>

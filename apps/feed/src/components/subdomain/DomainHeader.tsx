@@ -51,7 +51,7 @@ export function DomainHeader({
   );
   const itemCls = (active: boolean) =>
     cn(
-      "rounded-md border px-3 py-2 group",
+      "rounded-md  border px-3 py-2 group",
       active
         ? "bg-background/50 border-accent/20"
         : "border-transparent hover:bg-muted"
@@ -89,10 +89,10 @@ export function DomainHeader({
                 alt={workspace.name}
                 width={32}
                 height={32}
-                className="rounded-sm object-cover"
+                className="rounded-mdobject-cover"
               />
             ) : (
-              <div className="h-9 w-9 rounded-sm bg-muted flex items-center justify-center text-md font-semibold">
+              <div className="h-9 w-9 rounded-mdbg-muted flex items-center justify-center text-md font-semibold">
                 {workspace.name?.[0]?.toUpperCase()}
               </div>
             )}
@@ -104,7 +104,7 @@ export function DomainHeader({
             <Link href={dashboardUrl} className="group inline-flex items-center">
               <HomeIcon
                 className={cn(
-                  "opacity-90 text-accent rounded-sm size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
+                  "opacity-90 text-accent rounded-mdsize-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
                 )}
               />
             </Link>
@@ -120,7 +120,7 @@ export function DomainHeader({
             alt={workspace.name}
             width={32}
             height={32}
-            className="rounded-sm object-cover"
+            className="rounded-mdobject-cover"
           />
           <div className="text-md font-medium">{workspace.name}</div>
         </Link>

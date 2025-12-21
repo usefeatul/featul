@@ -93,7 +93,7 @@ export default function SubdomainUserDropdown({
           <button
             suppressHydrationWarning
             type="button"
-            className="group flex items-center gap-2 rounded-sm bg-background/60 px-1.5 py-1 text-xs md:text-sm text-foreground shadow-xs hover:bg-muted/80"
+            className="group flex items-center gap-2 rounded-mdbg-background/60 px-1.5 py-1 text-xs md:text-sm text-foreground shadow-xs hover:bg-muted/80"
           >
               <Avatar className="size-5.5">
                 {d.image ? (

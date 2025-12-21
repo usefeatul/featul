@@ -51,8 +51,8 @@ export default function WorkspaceSwitcher({
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer">
-          <div className="group flex items-center gap-2 rounded-sm px-1.5 py-1.5 text-md text-accent hover:bg-muted cursor-pointer">
-            <div className={cn("relative size-6 rounded-sm border ring-1 ring-border overflow-hidden", currentLogo ? "bg-transparent" : "bg-muted")}>
+          <div className="group flex items-center gap-2 rounded-mdpx-1.5 py-1.5 text-md text-accent hover:bg-muted cursor-pointer">
+            <div className={cn("relative size-6 rounded-mdborder ring-1 ring-border overflow-hidden", currentLogo ? "bg-transparent" : "bg-muted")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}
@@ -91,7 +91,7 @@ export default function WorkspaceSwitcher({
                     )}
                   >
                     {logoUrl ? (
-                      <div className="relative w-6 h-6 rounded-sm bg-muted border ring-1 ring-border overflow-hidden">
+                      <div className="relative w-6 h-6 rounded-mdbg-muted border ring-1 ring-border overflow-hidden">
                         <Image
                           src={logoUrl}
                           alt={w.name}
@@ -101,7 +101,7 @@ export default function WorkspaceSwitcher({
                         />
                       </div>
                     ) : (
-                      <div className="w-6 h-6 rounded-sm bg-muted border ring-1 ring-border" />
+                      <div className="w-6 h-6 rounded-mdbg-muted border ring-1 ring-border" />
                     )}
                     <span className="truncate text-md">{w.name}</span>
                   </DropdownMenuItem>
@@ -109,7 +109,7 @@ export default function WorkspaceSwitcher({
               })}
               <DropdownMenuItem
                 onSelect={onCreateNew}
-                className="text-sm flex items-center gap-2 px-2 py-2 rounded-sm hover:bg-muted"
+                className="text-sm flex items-center gap-2 px-2 py-2 rounded-mdhover:bg-muted"
               >
                 <PlusIcon className="size-4" />
                 Add workspace

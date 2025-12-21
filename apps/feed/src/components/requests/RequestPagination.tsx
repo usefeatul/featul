@@ -39,13 +39,13 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
             <Link prefetch={false} href={prevHref} rel="prev" aria-label="Previous page" aria-keyshortcuts="z" title="Prev (Z)" className="group">
               <ArrowLeft className="w-4 h-4" />
               <span>Prev</span>
-              <span className="ml-1 rounded-sm border px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">Z</span>
+              <span className="ml-1 rounded-mdborder px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">Z</span>
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm" disabled={page >= totalPages || totalCount === 0} className="gap-2 pl-4 pr-2.5">
             <Link prefetch={false} href={nextHref} rel="next" aria-label="Next page" aria-keyshortcuts="x" title="Next (X)" className="group">
               <span>Next</span>
-              <span className="ml-1 rounded-sm border px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">X</span>
+              <span className="ml-1 rounded-mdborder px-1 py-0.5 text-[10px] leading-none text-accent transition-colors group-hover:bg-card">X</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </Button>

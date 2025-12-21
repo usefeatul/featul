@@ -54,14 +54,14 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
                 </span>
             </div>
           <div className="flex items-center gap-2 shrink-0">
-             <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-sm border">{timeString}</span>
+             <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-mdborder">{timeString}</span>
              <ChevronDown className="size-4 text-muted-foreground opacity-50" />
           </div>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[450px] p-0" align="center">
         <div className="p-2 border-b">
-           <div className="w-fit bg-muted/50 rounded-md px-1.5 py-1 mb-1.5">
+           <div className="w-fit bg-muted/50 rounded-md  px-1.5 py-1 mb-1.5">
                <span className="text-xs font-light text-accent" suppressHydrationWarning>
                  Your local time - {formatTimeWithDate((typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC"), now)}
                </span>

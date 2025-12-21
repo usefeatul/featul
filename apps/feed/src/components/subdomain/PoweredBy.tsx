@@ -12,7 +12,7 @@ export function PoweredBy() {
         href="https://oreilla.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block rounded-sm bg-muted px-2 py-1 text-xs text-accent hover:bg-muted/80 transition-colors cursor-pointer"
+        className="inline-block rounded-mdbg-muted px-2 py-1 text-xs text-accent hover:bg-muted/80 transition-colors cursor-pointer"
       >
         Powered by oreilla
       </a>

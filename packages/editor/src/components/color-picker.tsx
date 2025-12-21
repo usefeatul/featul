@@ -56,7 +56,7 @@ export const ColorPicker = ({
   return (
     <div className="color-picker flex flex-col gap-3 px-3 py-2">
       {/* Color Picker */}
-      <div className="w-full rounded-md overflow-hidden">
+      <div className="w-full rounded-md  overflow-hidden">
         <HexColorPicker
           color={color || "#000000"}
           onChange={handleColorChange}
@@ -88,7 +88,7 @@ export const ColorPicker = ({
         {PRESET_COLORS.map((presetColor) => (
           <button
             className={cn(
-              "size-8 rounded-md border-2 transition-all hover:scale-110 hover:shadow-sm",
+              "size-8 rounded-md  border-2 transition-all hover:scale-110 hover:shadow-sm",
               color === presetColor
                 ? "border-primary ring-2 ring-primary/20"
                 : "border-border hover:border-primary/50"

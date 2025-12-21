@@ -117,7 +117,7 @@ export const ScheduleIllustation = ({
     <div className={cn("relative", className)}>
       <div
         className={cn(
-          "bg-background absolute left-1/2 top-6 -translate-x-1/2 flex items-center gap-2 rounded-md p-1",
+          "bg-background absolute left-1/2 top-6 -translate-x-1/2 flex items-center gap-2 rounded-md  p-1",
           {
             "shadow-black-950/10 shadow-lg": variant === "elevated",
             "border-foreground/10 border": variant === "outlined",

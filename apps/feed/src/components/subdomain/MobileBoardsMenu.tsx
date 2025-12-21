@@ -56,7 +56,7 @@ export function MobileBoardsMenu({
           type="button"
           variant="nav"
           aria-label="Open boards"
-          className="inline-flex items-center justify-center rounded-md p-2 bg-card dark:bg-black/40 disabled:opacity-50"
+          className="inline-flex items-center justify-center rounded-md  p-2 bg-card dark:bg-black/40 disabled:opacity-50"
           disabled={false}
         >
           <MenuIcon width={20} height={20} className="text-accent" />

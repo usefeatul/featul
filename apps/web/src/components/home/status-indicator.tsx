@@ -23,7 +23,7 @@ export function StatusIndicator({
         <span
           aria-hidden
           className={cn(
-            "absolute inset-0 rounded-md opacity-75 animate-ping",
+            "absolute inset-0 rounded-md  opacity-75 animate-ping",
             color
           )}
         />

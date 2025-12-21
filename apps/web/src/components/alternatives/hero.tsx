@@ -25,7 +25,7 @@ export function AlternativeHero({ alt }: { alt: Alternative }) {
             <div className="order-last">
               <Card className="relative p-2 sm:p-2">
                 <div className="flex aspect-video items-center justify-center">
-                  <div className="relative z-0 aspect-[4/3] w-full overflow-hidden rounded-md bg-muted ring-1 ring-border/60">
+                  <div className="relative z-0 aspect-[4/3] w-full overflow-hidden rounded-md  bg-muted ring-1 ring-border/60">
                     <Image
                       src={imageSrc}
                       alt={`${alt.name} vs oreilla preview screenshot`}

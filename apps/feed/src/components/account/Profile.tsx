@@ -62,7 +62,7 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
         <div className="flex items-center justify-between p-4">
           <div className="text-sm">Avatar</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <div className="rounded-md border ring-1 ring-border overflow-hidden">
+            <div className="rounded-md  border ring-1 ring-border overflow-hidden">
               <Avatar className="size-8">
                 {d.image ? <AvatarImage src={d.image} alt={d.name} /> : null}
                 <AvatarFallback className="text-lg">{initials}</AvatarFallback>

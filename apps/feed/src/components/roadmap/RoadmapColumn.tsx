@@ -29,7 +29,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`rounded-md border overflow-hidden transition-all duration-300 ease-out ${isOver ? "border-green-300 ring-1 ring-green-200" : "bg-card"}`}
+      className={`rounded-md  border overflow-hidden transition-all duration-300 ease-out ${isOver ? "border-green-300 ring-1 ring-green-200" : "bg-card"}`}
       layout
       initial={false}
       transition={{ type: "tween", ease: "easeOut", duration: disableMotion ? 0 : 0.28 }}
@@ -48,14 +48,14 @@ export default function RoadmapColumn({
           <>
             <MoveVerticalIcon className="size-3 block mx-auto text-accent" />
             <StatusIcon status={id} className="size-6 text-foreground/80 block mx-auto" />
-            <div className="text-[10px] font-mono tabular-nums rounded-md bg-muted px-2 py-0.5 text-accent ring-1 ring-border block mx-auto">{count}</div>
+            <div className="text-[10px] font-mono tabular-nums rounded-md  bg-muted px-2 py-0.5 text-accent ring-1 ring-border block mx-auto">{count}</div>
           </>
         ) : (
           <>
             <div className="flex items-center gap-2 min-w-0">
               <StatusIcon status={id} className="size-4 text-foreground/80 shrink-0" />
               <div className="text-sm font-medium truncate flex-1">{label}</div>
-              <div className="text-[10px] font-mono tabular-nums rounded-md bg-muted px-1 py-0.5 text-accent shrink-0">{count}</div>
+              <div className="text-[10px] font-mono tabular-nums rounded-md  bg-muted px-1 py-0.5 text-accent shrink-0">{count}</div>
             </div>
             <div className="flex items-center gap-2">
               <MoveHorizontalIcon className="size-3 text-accent" />

@@ -164,7 +164,7 @@ export const EditorLinkSelector = ({
                 <CheckIcon size={12} />
               </Button>
               <Button
-                className="flex h-8 items-center rounded-sm p-1 text-destructive transition-all hover:bg-destructive-foreground dark:hover:bg-destructive"
+                className="flex h-8 items-center rounded-mdp-1 text-destructive transition-all hover:bg-destructive-foreground dark:hover:bg-destructive"
                 onClick={() => {
                   editor.chain().focus().unsetLink().run();
                   onOpenChange?.(false);
@@ -208,7 +208,7 @@ export const EditorLinkSelector = ({
             <TooltipTrigger asChild>
               <Button
                 className={cn(
-                  "h-8 rounded-sm",
+                  "h-8 rounded-md  ",
                   openInNewTab &&
                     "bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary"
                 )}
@@ -227,7 +227,7 @@ export const EditorLinkSelector = ({
           <Tooltip >
             <TooltipTrigger asChild>
               <Button
-                className="h-8 rounded-sm"
+                className="h-8 rounded-md  "
                 disabled={!url || !getUrlFromString(url)}
                 onClick={() => {
                   const href =

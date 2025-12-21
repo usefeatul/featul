@@ -170,25 +170,25 @@ export default function CohortAnalysisTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">Avg M1</div>
                 <div className="mt-1 font-mono text-base tabular-nums">
                   {Math.round(avgRetention.m1)}%
                 </div>
               </div>
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">Avg M2</div>
                 <div className="mt-1 font-mono text-base tabular-nums">
                   {Math.round(avgRetention.m2)}%
                 </div>
               </div>
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">Avg M3</div>
                 <div className="mt-1 font-mono text-base tabular-nums">
                   {Math.round(avgRetention.m3)}%
                 </div>
               </div>
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">Cohorts</div>
                 <div className="mt-1 font-mono text-base tabular-nums">
                   {cohorts.length}

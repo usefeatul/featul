@@ -117,19 +117,19 @@ export default function FeatureAdoptionTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Adoption rate</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatPct(totals.rate)}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Status</div>
                 <div className="mt-1 text-base leading-tight">{totals.status}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Adopters</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{totals.adopted.toLocaleString()}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Eligible users</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{totals.size.toLocaleString()}</div>
               </div>

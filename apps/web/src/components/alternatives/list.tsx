@@ -8,7 +8,7 @@ export default function AlternativesList({ items = defaultAlternatives }: { item
         <Link
           key={alt.slug}
           href={`/alternatives/${alt.slug}`}
-          className="block rounded-md border border-border p-4 hover:border-foreground transition-colors"
+          className="block rounded-md  border border-border p-4 hover:border-foreground transition-colors"
         >
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold">{alt.name} vs oreilla</span>

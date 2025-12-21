@@ -16,7 +16,7 @@ export function StatusButton({ href = "https://status.oreilla.com", label = "sta
       href={href}
       aria-label="View status page"
       className={cn(
-        "inline-flex items-center align-middle gap-2 h-7 px-2.5 rounded-md text-xs",
+        "inline-flex items-center align-middle gap-2 h-7 px-2.5 rounded-md  text-xs",
         "border border-border/60 bg-card text-accent hover:bg-muted hover:text-foreground transition-colors",
         className
       )}

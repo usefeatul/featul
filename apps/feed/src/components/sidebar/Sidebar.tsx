@@ -82,7 +82,7 @@ export default function Sidebar({
       )}
     >
       <div className="p-2">
-        <div className="group flex items-center gap-2 rounded-md px-1  py-1">
+        <div className="group flex items-center gap-2 rounded-md  px-1  py-1">
           <Image
             src="/logo.svg"
             alt="feedback"

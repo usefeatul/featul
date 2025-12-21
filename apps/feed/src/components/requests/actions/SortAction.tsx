@@ -29,7 +29,7 @@ export default function SortAction({ className = "" }: { className?: string }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" className={cn("rounded-md border bg-card px-2 py-2 cursor-pointer", className)} aria-label="Sort">
+        <button type="button" className={cn("rounded-md  border bg-card px-2 py-2 cursor-pointer", className)} aria-label="Sort">
           <ArrowUpDownIcon className="w-4 h-4" size={16} />
         </button>
       </PopoverTrigger>

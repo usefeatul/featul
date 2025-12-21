@@ -51,13 +51,13 @@ export function BoardsList({ slug, subdomain, initialBoards, selectedBoard }: { 
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-sm px-3 py-2 text-left text-sm cursor-pointer ${
+      className={`flex w-full items-center justify-between rounded-mdpx-3 py-2 text-left text-sm cursor-pointer ${
         active ? "bg-muted dark:bg-black/40" : "hover:bg-muted dark:hover:bg-black/60"
       }`}
       disabled={loading}
     >
       <span className="flex items-center gap-2">
-        <span className="inline-block h-2 w-2 rounded-sm bg-primary" />
+        <span className="inline-block h-2 w-2 rounded-mdbg-primary" />
         {label}
       </span>
       <span className="text-xs text-accent w-10 text-right tabular-nums font-mono">{Number(count) || 0}</span>
@@ -65,7 +65,7 @@ export function BoardsList({ slug, subdomain, initialBoards, selectedBoard }: { 
   )
 
   return (
-    <div className="rounded-md border bg-card p-4 min-h-[160px]">
+    <div className="rounded-md  border bg-card p-4 min-h-[160px]">
       <div className="mb-2 text-sm font-medium">Boards</div>
       <div className="space-y-1">
         <Item active={current === "__all__"} label="All Feedback" count={total} onClick={() => go("__all__")} />

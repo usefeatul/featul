@@ -90,19 +90,19 @@ export default function TtfvCalculator() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">TTFV rate</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{fmtPct(metrics.rate)}</div>
               </div>
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">Status</div>
                 <div className="mt-1 text-base leading-tight">{metrics.status}</div>
               </div>
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">Signups</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{isFinite(signups) ? signups.toLocaleString() : 0}</div>
               </div>
-              <div className="rounded-md border p-3 text-center">
+              <div className="rounded-md  border p-3 text-center">
                 <div className="text-xs text-accent">Reached value</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{isFinite(firstValueUsers) ? firstValueUsers.toLocaleString() : 0}</div>
               </div>

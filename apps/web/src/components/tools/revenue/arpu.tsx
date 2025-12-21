@@ -59,15 +59,15 @@ export default function ArpuTool() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">ARPU</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(arpu)}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">MRR</div>
                 <div className="mt-1 font-mono text-base leading-tight text-foreground">{formatCurrencyExact(Number(mrr))}</div>
               </div>
-              <div className="rounded-md border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
+              <div className="rounded-md  border p-3 text-center flex flex-col items-center justify-center min-h-[72px]">
                 <div className="text-xs text-accent">Customers</div>
                 <div className="mt-1 font-mono text-base leading-tight tabular-nums">{customers.toLocaleString()}</div>
               </div>

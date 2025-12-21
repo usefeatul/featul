@@ -47,14 +47,14 @@ export function BlogCard({ post }: BlogCardProps) {
           {(categoryName || tagNames.length > 0) ? (
             <div className="flex flex-wrap items-center gap-2">
               {categoryName && (
-                <span className="inline-flex w-fit items-center rounded-md border border-border bg-primary/70 px-2 py-[2px] text-xs text-black">
+                <span className="inline-flex w-fit items-center rounded-md  border border-border bg-primary/70 px-2 py-[2px] text-xs text-black">
                   {categoryName}
                 </span>
               )}
               {tagNames.map((t, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex w-fit items-center rounded-md border border-border/60 bg-muted px-2 py-[2px] text-xs text-black"
+                  className="inline-flex w-fit items-center rounded-md  border border-border/60 bg-muted px-2 py-[2px] text-xs text-black"
                 >
                   {t}
                 </span>
@@ -69,7 +69,7 @@ export function BlogCard({ post }: BlogCardProps) {
                 alt={author?.name ?? "Author"}
                 width={20}
                 height={20}
-                className="h-5 w-5 rounded-md object-cover translate-y-[0.5px]"
+                className="h-5 w-5 rounded-md  object-cover translate-y-[0.5px]"
               />
             ) : null}
             {author?.name ? (

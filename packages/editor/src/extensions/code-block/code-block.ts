@@ -10,7 +10,7 @@ export const CodeBlock = CodeBlockLowlight.configure({
   lowlight,
   HTMLAttributes: {
     class: cn(
-      "rounded-md border p-4 text-sm",
+      "rounded-md  border p-4 text-sm",
       "bg-background text-foreground",
       // Syntax highlighting styles
       "[&_.hljs-doctag]:text-[#d73a49] [&_.hljs-keyword]:text-[#d73a49] [&_.hljs-meta_.hljs-keyword]:text-[#d73a49] [&_.hljs-template-tag]:text-[#d73a49] [&_.hljs-template-variable]:text-[#d73a49] [&_.hljs-type]:text-[#d73a49] [&_.hljs-variable.language_]:text-[#d73a49]",
