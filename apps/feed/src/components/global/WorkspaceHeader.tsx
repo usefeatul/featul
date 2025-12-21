@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation"
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections"
 import HeaderActions from "@/components/requests/HeaderActions"
-import FilterSummary from "@/components/requests/FilterSummary"
 
 function resolveTitle(segment: string): string {
   const s = segment.toLowerCase()
@@ -33,7 +32,7 @@ export default function WorkspaceHeader() {
         {title ? (
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold">{title}</h1>
-            {show ? <FilterSummary /> : null}
+            {/* FilterSummary mounted globally in layout */}
           </div>
         ) : (
           <div />

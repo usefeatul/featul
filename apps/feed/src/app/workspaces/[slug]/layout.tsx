@@ -4,6 +4,7 @@ import Sidebar from "@/components/sidebar/Sidebar"
 import MobileSidebar from "@/components/sidebar/MobileSidebar"
 import { getBrandingColorsBySlug, getWorkspaceStatusCounts, getWorkspaceTimezoneBySlug, getWorkspaceBySlug, listUserWorkspaces, getWorkspaceDomainInfoBySlug } from "@/lib/workspace"
 import WorkspaceHeader from "@/components/global/WorkspaceHeader"
+import FilterSummary from "@/components/requests/FilterSummary"
 import { getServerSession } from "@oreilla/auth/session"
 import { redirect } from "next/navigation"
 import UnauthorizedWorkspace from "@/components/global/Unauthorized"
@@ -39,6 +40,7 @@ export default async function WorkspaceLayout({ children, params }: { children: 
       <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialDomainInfo={domainInfo || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
       <main className="w-full md:flex-1 px-3 sm:px-0 pb-10 md:pb-0">
         <WorkspaceHeader />
+        <FilterSummary />
         {children}
       </main>
       <MobileSidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialDomainInfo={domainInfo || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
