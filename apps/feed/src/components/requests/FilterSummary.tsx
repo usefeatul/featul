@@ -132,7 +132,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
             key={`status-${s}`}
             type="button"
             onClick={() => removeStatus(s)}
-            className="inline-flex items-center h-7 rounded-md bg-muted px-2 text-xs text-foreground"
+            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground"
             aria-label={`Remove status ${statusLabel(s)}`}
           >
             <span className="truncate">{statusLabel(s)}</span>
@@ -144,7 +144,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
             key={`board-${b}`}
             type="button"
             onClick={() => removeBoard(b)}
-            className="inline-flex items-center h-7 rounded-md bg-muted px-2 text-xs text-foreground"
+            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground"
             aria-label={`Remove board ${boardsBySlug[b] || b}`}
           >
             <span className="truncate">{boardsBySlug[b] || b}</span>
@@ -156,7 +156,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
             key={`tag-${t}`}
             type="button"
             onClick={() => removeTag(t)}
-            className="inline-flex items-center h-7 rounded-md bg-muted px-2 text-xs text-foreground"
+            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground"
             aria-label={`Remove tag ${tagsBySlug[t] || t}`}
           >
             <span className="truncate">{tagsBySlug[t] || t}</span>
@@ -167,7 +167,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
           <button
             type="button"
             onClick={removeOrder}
-            className="inline-flex items-center h-7 rounded-md bg-muted px-2 text-xs text-foreground"
+            className="inline-flex items-center h-7 rounded-md bg-card border px-2 text-xs text-foreground"
             aria-label="Remove sort oldest"
           >
             <span className="truncate">Oldest first</span>
@@ -177,11 +177,10 @@ export default function FilterSummary({ className = "" }: { className?: string }
         <button
           type="button"
           onClick={clearAll}
-          className="ml-1 inline-flex items-center h-7 rounded-md bg-card px-2 text-xs border"
+          className="ml-1 inline-flex items-center justify-center h-7 w-7 rounded-md bg-card text-xs border"
           aria-label="Clear all filters"
         >
-          <span className="truncate">Clear</span>
-          <XMarkIcon className="ml-1 size-3" />
+          <XMarkIcon className="size-3" />
         </button>
       </div>
     </div>
