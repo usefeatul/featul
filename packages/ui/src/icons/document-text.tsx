@@ -1,12 +1,14 @@
-import React from "react"
+import React from "react";
 
 interface DocumentTextIconProps {
-  className?: string
-  size?: number
-  opacity?: number
+  className?: string;
+  size?: number;
 }
 
-export const DocumentTextIcon: React.FC<DocumentTextIconProps> = ({ className = "", size = 18, opacity = 0.6 }) => {
+export const DocumentTextIcon: React.FC<DocumentTextIconProps> = ({
+  className = "",
+  size = 18,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -15,7 +17,6 @@ export const DocumentTextIcon: React.FC<DocumentTextIconProps> = ({ className = 
       width={size}
       height={size}
       viewBox="0 0 18 18"
-      opacity={opacity}
       className={className}
     >
       <path
@@ -23,7 +24,7 @@ export const DocumentTextIcon: React.FC<DocumentTextIconProps> = ({ className = 
         fill="currentColor"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default DocumentTextIcon
+export default DocumentTextIcon;
