@@ -18,7 +18,7 @@ export default function MobileBottomBar({ items }: { items: NavItem[] }) {
               key={item.label}
               href={item.href}
               className={cn(
-                "group flex flex-col items-center justify-center gap-1 px-3 py-2 text-[10px] sm:text-xs text-accent hover:bg-muted"
+                "group flex flex-col items-center justify-center gap-1 px-3 py-2 text-[10px] sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40"
               )}
             >
               <Icon className="w-[18px] h-[18px] text-foreground opacity-60 hover:text-primary hover:opacity-100 transition-colors" />
@@ -27,7 +27,7 @@ export default function MobileBottomBar({ items }: { items: NavItem[] }) {
           );
         })}
         <DrawerTrigger asChild>
-          <button className="group flex flex-col items-center justify-center gap-1 px-3 py-2 text-[10px] sm:text-xs text-accent hover:bg-muted">
+          <button className="group flex flex-col items-center justify-center gap-1 px-3 py-2 text-[10px] sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40">
             <MoreIcon className="w-[18px] h-[18px] text-foreground opacity-60 hover:text-primary hover:opacity-100 transition-colors" />
             <span>More</span>
           </button>

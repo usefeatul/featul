@@ -51,7 +51,7 @@ export default function WorkspaceSwitcher({
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer">
-          <div className="group flex items-center gap-2 rounded-mdpx-1.5 py-1.5 text-md text-accent hover:bg-muted cursor-pointer">
+          <div className="group flex items-center gap-2 rounded-md px-1.5 py-1.5 text-md text-accent hover:bg-muted dark:hover:bg-black/40 cursor-pointer">
             <div className={cn("relative size-6 rounded-mdborder ring-1 ring-border overflow-hidden", currentLogo ? "bg-transparent" : "bg-muted")}>
               {currentLogo ? (
                 <Image
@@ -87,7 +87,7 @@ export default function WorkspaceSwitcher({
                     onSelect={() => onSelectWorkspace(w.slug)}
                     className={cn(
                       "flex items-center gap-2 px-2 py-2 rounde-sm",
-                      isCurrent ? "bg-muted" : "hover:bg-muted"
+                      isCurrent ? "bg-muted" : "hover:bg-muted dark:hover:bg-black/40"
                     )}
                   >
                     {logoUrl ? (
@@ -109,7 +109,7 @@ export default function WorkspaceSwitcher({
               })}
               <DropdownMenuItem
                 onSelect={onCreateNew}
-                className="text-sm flex items-center gap-2 px-2 py-2 rounded-mdhover:bg-muted"
+                className="text-sm flex items-center gap-2 px-2 py-2 rounded-md hover:bg-muted dark:hover:bg-black/40"
               >
                 <PlusIcon className="size-4" />
                 Add workspace
