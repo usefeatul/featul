@@ -95,7 +95,7 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild className="w-full cursor-pointer">
-          <button suppressHydrationWarning type="button" className="group flex items-center gap-2 rounded-md  px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted">
+          <button suppressHydrationWarning type="button" className="group flex items-center gap-2 rounded-md  px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40">
             <div className="rounded-md  border ring-1 ring-border overflow-hidden">
               <Avatar className="size-5.5">
                 {d.image ? <AvatarImage src={d.image} alt={d.name} /> : null}
