@@ -1,35 +1,46 @@
-"use client"
+"use client";
 
-import React from "react"
-import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
-import { Avatar, AvatarImage, AvatarFallback } from "@oreilla/ui/components/avatar"
-import { getDisplayUser, getInitials } from "@/utils/user-utils"
-import { relativeTime } from "@/lib/time"
-import BoardPicker from "./meta/BoardPicker"
-import StatusPicker from "./meta/StatusPicker"
-import FlagsPicker from "./meta/FlagsPicker"
-import TagsPicker from "./meta/TagsPicker"
-import StatusIcon from "./StatusIcon"
-import RoleBadge from "../comments/RoleBadge"
-import type { RequestDetailData } from "./RequestDetail"
+import React from "react";
+import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@oreilla/ui/components/avatar";
+import { getDisplayUser, getInitials } from "@/utils/user-utils";
+import { relativeTime } from "@/lib/time";
+import BoardPicker from "./meta/BoardPicker";
+import StatusPicker from "./meta/StatusPicker";
+import FlagsPicker from "./meta/FlagsPicker";
+import TagsPicker from "./meta/TagsPicker";
+import StatusIcon from "./StatusIcon";
+import RoleBadge from "../comments/RoleBadge";
+import type { RequestDetailData } from "./RequestDetail";
 
 export type RequestDetailSidebarProps = {
-  post: RequestDetailData
-  workspaceSlug: string
-  readonly?: boolean
-}
+  post: RequestDetailData;
+  workspaceSlug: string;
+  readonly?: boolean;
+};
 
-export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: RequestDetailSidebarProps) {
-  const { isOwner } = useWorkspaceRole(workspaceSlug)
-  const canEdit = isOwner && !readonly
+export default function RequestDetailSidebar({
+  post,
+  workspaceSlug,
+  readonly,
+}: RequestDetailSidebarProps) {
+  const { isOwner } = useWorkspaceRole(workspaceSlug);
+  const canEdit = isOwner && !readonly;
 
   const [meta, setMeta] = React.useState({
     roadmapStatus: post.roadmapStatus || undefined,
     isPinned: !!post.isPinned,
     isLocked: !!post.isLocked,
     isFeatured: !!post.isFeatured,
-  })
-  const [board, setBoard] = React.useState({ name: post.boardName, slug: post.boardSlug })
+  });
+  const [board, setBoard] = React.useState({
+    name: post.boardName,
+    slug: post.boardSlug,
+  });
 
   const displayAuthor = getDisplayUser(
     post.author
@@ -39,28 +50,39 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
           email: post.author.email ?? undefined,
         }
       : undefined
-  )
-  const authorInitials = getInitials(displayAuthor.name)
+  );
+  const authorInitials = getInitials(displayAuthor.name);
 
-  const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
+  const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
   return (
     <aside className="hidden md:block space-y-4">
-      <div className="rounded-mdbg-card p-4 border">
+      <div className="rounded-md bg-card p-4 border">
         {/* Header: User & Time */}
         <div className="flex items-center gap-3 mb-6 ">
           <div className="relative ">
             <Avatar className="size-10 relative overflow-visible ">
               {displayAuthor.image ? (
-                <AvatarImage src={displayAuthor.image} alt={displayAuthor.name} />
+                <AvatarImage
+                  src={displayAuthor.image}
+                  alt={displayAuthor.name}
+                />
               ) : (
-                <AvatarFallback className="text-xs bg-muted text-muted-foreground">{authorInitials}</AvatarFallback>
+                <AvatarFallback className="text-xs bg-muted text-muted-foreground">
+                  {authorInitials}
+                </AvatarFallback>
               )}
-              <RoleBadge role={post.role} isOwner={post.isOwner} className="-bottom-1 -right-1 bg-card" />
+              <RoleBadge
+                role={post.role}
+                isOwner={post.isOwner}
+                className="-bottom-1 -right-1 bg-card"
+              />
             </Avatar>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">{displayAuthor.name}</span>
+            <span className="text-sm font-semibold text-foreground">
+              {displayAuthor.name}
+            </span>
             <span className="text-xs text-muted-foreground">{timeLabel}</span>
           </div>
         </div>
@@ -69,11 +91,18 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
         <div className="space-y-5">
           {/* Board */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground font-medium">Board</span>
+            <span className="text-sm text-muted-foreground font-medium">
+              Board
+            </span>
             {canEdit ? (
-              <BoardPicker workspaceSlug={workspaceSlug} postId={post.id} value={board} onChange={setBoard} />
+              <BoardPicker
+                workspaceSlug={workspaceSlug}
+                postId={post.id}
+                value={board}
+                onChange={setBoard}
+              />
             ) : (
-              <div className="h-6 px-2.5 rounded-mdborder text-xs font-medium flex items-center">
+              <div className="h-6 px-2.5 rounded-md border text-xs font-medium flex items-center">
                 {board.name}
               </div>
             )}
@@ -81,7 +110,9 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
 
           {/* Status */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground font-medium">Status</span>
+            <span className="text-sm text-muted-foreground font-medium">
+              Status
+            </span>
             {canEdit ? (
               <StatusPicker
                 postId={post.id}
@@ -89,8 +120,11 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
                 onChange={(v) => setMeta((m) => ({ ...m, roadmapStatus: v }))}
               />
             ) : (
-              <div className="h-8 px-2 pl-1.5 rounded-md  text-xs border font-medium flex items-center capitalize">
-                <StatusIcon status={meta.roadmapStatus || "pending"} className="size-4 mr-2" />
+              <div className="h-8 px-2 pl-1.5 rounded-md text-xs border font-medium flex items-center capitalize">
+                <StatusIcon
+                  status={meta.roadmapStatus || "pending"}
+                  className="size-4 mr-2"
+                />
                 {meta.roadmapStatus || "Open"}
               </div>
             )}
@@ -99,7 +133,9 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
           {/* Flags */}
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
             <div className="flex items-center justify-between pb-3 border-b border-border">
-              <span className="text-sm text-muted-foreground font-medium">Flags</span>
+              <span className="text-sm text-muted-foreground font-medium">
+                Flags
+              </span>
               {canEdit ? (
                 <FlagsPicker
                   postId={post.id}
@@ -131,9 +167,15 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
           {(post.tags && post.tags.length > 0) || canEdit ? (
             <div className="pt-1">
               <div className="flex items-start justify-between gap-1">
-                <span className="text-sm text-muted-foreground font-medium">Tags</span>
+                <span className="text-sm text-muted-foreground font-medium">
+                  Tags
+                </span>
                 {canEdit ? (
-                  <TagsPicker workspaceSlug={workspaceSlug} postId={post.id} value={post.tags || []} />
+                  <TagsPicker
+                    workspaceSlug={workspaceSlug}
+                    postId={post.id}
+                    value={post.tags || []}
+                  />
                 ) : post.tags && post.tags.length > 0 ? (
                   <div className="flex flex-wrap gap-1 justify-start ">
                     {post.tags.map((t) => (
@@ -152,6 +194,5 @@ export default function RequestDetailSidebar({ post, workspaceSlug, readonly }: 
         </div>
       </div>
     </aside>
-  )
+  );
 }
-
