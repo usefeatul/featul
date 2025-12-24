@@ -1,4 +1,4 @@
-import { db, workspace, board, post, user, workspaceMember, postTag, tag } from "@oreilla/db"
+import { db, workspace, board, post, user, workspaceMember, postTag, tag, postMerge } from "@oreilla/db"
 import { and, eq, sql } from "drizzle-orm"
 import { client } from "@oreilla/api/client"
 import { readHasVotedForPost } from "@/lib/vote.server"
@@ -119,6 +119,7 @@ async function loadPostWithAuthorAndBoard(workspaceId: string, postSlug: string)
       createdAt: post.createdAt,
       boardName: board.name,
       boardSlug: board.slug,
+      duplicateOfId: post.duplicateOfId,
       metadata: post.metadata,
       author: {
         name: user.name,
@@ -138,7 +139,56 @@ async function loadPostWithAuthorAndBoard(workspaceId: string, postSlug: string)
     )
     .limit(1)
 
-  return (p as RawPostRecord | undefined) ?? null
+  if (!p) return null
+
+  const mergedCountRow = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(postMerge)
+    .where(eq(postMerge.targetPostId, p.id))
+    .limit(1)
+
+  const mergedCount = Number(mergedCountRow?.[0]?.count || 0)
+  let mergedInto: { id: string; slug: string; title: string; roadmapStatus?: string | null; mergedAt?: string | null } | null = null
+
+  if (p.duplicateOfId) {
+    const [target] = await db
+      .select({ id: post.id, slug: post.slug, title: post.title, roadmapStatus: post.roadmapStatus })
+      .from(post)
+      .innerJoin(board, eq(post.boardId, board.id))
+      .where(and(eq(board.workspaceId, workspaceId), eq(post.id, p.duplicateOfId)))
+      .limit(1)
+    const [mergeRow] = await db
+      .select({ createdAt: postMerge.createdAt })
+      .from(postMerge)
+      .where(and(eq(postMerge.sourcePostId, p.id), eq(postMerge.targetPostId, p.duplicateOfId)))
+      .limit(1)
+    if (target) {
+      mergedInto = { id: target.id, slug: target.slug, title: target.title, roadmapStatus: (target as any).roadmapStatus, mergedAt: mergeRow?.createdAt ? new Date(mergeRow.createdAt as any).toISOString() : null }
+    }
+  }
+
+  const mergedSourcesRows = await db
+    .select({
+      id: post.id,
+      slug: post.slug,
+      title: post.title,
+      roadmapStatus: post.roadmapStatus,
+      mergedAt: postMerge.createdAt,
+    })
+    .from(postMerge)
+    .innerJoin(post, eq(post.id, postMerge.sourcePostId))
+    .where(eq(postMerge.targetPostId, p.id))
+    .orderBy(sql`${postMerge.createdAt} desc`)
+    .limit(3)
+  const mergedSources = mergedSourcesRows.map((r: any) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    roadmapStatus: r.roadmapStatus ?? null,
+    mergedAt: r.mergedAt ? new Date(r.mergedAt as any).toISOString() : null,
+  }))
+
+  return { ...(p as any), mergedCount, mergedInto, mergedSources } as RawPostRecord
 }
 
 function ensureAuthorAvatar(postRecord: RawPostRecord): RawPostRecord {
@@ -242,5 +292,3 @@ async function loadNavigation({
     next: navigation.next ? { slug: navigation.next.slug, title: navigation.next.title } : null,
   }
 }
-
-

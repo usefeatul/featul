@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
 import {
   Avatar,
@@ -185,6 +186,50 @@ export default function RequestDetailSidebar({
                   </div>
                 ) : null}
               </div>
+            </div>
+          ) : null}
+
+          {(post.duplicateOfId || (post.mergedSources && post.mergedSources.length > 0)) ? (
+            <div className="space-y-3">
+              <div className="h-px w-full bg-border/50" />
+              <div>
+                <span className="text-sm font-medium text-muted-foreground">Merge submission</span>
+              </div>
+              {post.duplicateOfId ? (
+                <div className="rounded-md border bg-muted/30 p-3">
+                  <Link
+                    href={post.mergedInto ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}` : "#"}
+                    className="text-sm underline"
+                  >
+                    {post.mergedInto?.title || "Merged request"}
+                  </Link>
+                  <div className="mt-1 inline-flex items-center gap-2 text-xs">
+                    <StatusIcon status={post.mergedInto?.roadmapStatus || "pending"} className="size-4" />
+                    <span className="capitalize">{post.mergedInto?.roadmapStatus || "Open"}</span>
+                    <span className="text-muted-foreground">
+                      • {relativeTime(post.mergedInto?.mergedAt || post.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              ) : null}
+              {post.mergedSources && post.mergedSources.length > 0 ? (
+                <div className="rounded-md border bg-muted/30 p-3">
+                  <div className="space-y-3">
+                    {post.mergedSources.map((src) => (
+                      <div key={src.id} className="space-y-1">
+                        <Link href={`/workspaces/${workspaceSlug}/requests/${src.slug}`} className="text-sm underline">
+                          {src.title}
+                        </Link>
+                        <div className="inline-flex items-center gap-2 text-xs">
+                          <StatusIcon status={src.roadmapStatus || "pending"} className="size-4" />
+                          <span className="capitalize">{src.roadmapStatus || "Open"}</span>
+                          <span className="text-muted-foreground">• {relativeTime(src.mergedAt || post.createdAt)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>

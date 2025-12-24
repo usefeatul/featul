@@ -28,6 +28,16 @@ export type RequestDetailData = {
   hasVoted?: boolean
   role?: "admin" | "member" | "viewer" | null
   isOwner?: boolean
+  duplicateOfId?: string | null
+  mergedInto?: { id: string; slug: string; title: string; roadmapStatus?: string | null; mergedAt?: string | null } | null
+  mergedCount?: number
+  mergedSources?: Array<{
+    id: string
+    slug: string
+    title: string
+    roadmapStatus?: string | null
+    mergedAt?: string | null
+  }>
   tags?: Array<{
     id: string
     name: string
