@@ -52,7 +52,7 @@ export default function WorkspaceSwitcher({
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer">
           <div className="group flex items-center gap-2 rounded-md px-1.5 py-1.5 text-md text-accent hover:bg-muted dark:hover:bg-black/40 cursor-pointer">
-            <div className={cn("relative size-6 rounded-mdborder ring-1 ring-border overflow-hidden", currentLogo ? "bg-transparent" : "bg-muted")}>
+            <div className={cn("relative size-6 rounded-md border ring-1 ring-border overflow-hidden", currentLogo ? "bg-transparent" : "bg-muted")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}
@@ -91,7 +91,7 @@ export default function WorkspaceSwitcher({
                     )}
                   >
                     {logoUrl ? (
-                      <div className="relative w-6 h-6 rounded-mdbg-muted border ring-1 ring-border overflow-hidden">
+                      <div className="relative w-6 h-6 rounded-md bg-muted border ring-1 ring-border overflow-hidden">
                         <Image
                           src={logoUrl}
                           alt={w.name}
@@ -101,7 +101,7 @@ export default function WorkspaceSwitcher({
                         />
                       </div>
                     ) : (
-                      <div className="w-6 h-6 rounded-mdbg-muted border ring-1 ring-border" />
+                      <div className="w-6 h-6 rounded-md bg-muted border ring-1 ring-border" />
                     )}
                     <span className="truncate text-md">{w.name}</span>
                   </DropdownMenuItem>
