@@ -74,7 +74,7 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           asChild 
           variant="nav" 
           size="sm" 
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card "
           disabled={!nextHref}
         >
           {nextHref ? (
@@ -97,9 +97,9 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           <div className="h-5 w-px bg-border" />
           <Button
             type="button"
-            variant="ghost"
+            variant="nav"
             size="icon-sm"
-            className="rounded-none border-none shadow-none hover:text-destructive hover:bg-destructive/5 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="rounded-none border-none shadow-none hover:text-destructive dark:hover:text-destructive/50 hover:bg-destructive/5 focus-visible:ring-0 focus-visible:ring-offset-0"
             aria-label="Delete"
             onClick={onDeleteClick}
           >

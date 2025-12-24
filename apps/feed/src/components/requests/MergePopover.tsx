@@ -61,7 +61,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
         <PopoverTrigger asChild>
           <Button
             type="button"
-            variant="ghost"
+            variant="nav"
             size="icon-sm"
             className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-destructive/5"
             aria-label="Merge"
