@@ -196,40 +196,40 @@ export default function RequestDetailSidebar({
                 <span className="text-sm font-medium text-muted-foreground">Merge submission</span>
               </div>
               {post.duplicateOfId ? (
-                <div className="rounded-md border bg-card  border-border p-3">
-                  <Link
-                    href={post.mergedInto ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}` : "#"}
-                    className="text-sm font-medium"
-                  >
-                    {post.mergedInto?.title || "Merged request"}
-                  </Link>
-                  <div className="mt-1 inline-flex items-center gap-2 text-xs">
-                    {post.mergedInto?.boardName ? (
-                      <span className="text-muted-foreground">{post.mergedInto.boardName}</span>
-                    ) : null}
-                    <span className="text-muted-foreground">•</span>
-                    <StatusIcon status={post.mergedInto?.roadmapStatus || "pending"} className="size-4" />
-                    <span className="capitalize">{post.mergedInto?.roadmapStatus || "Open"}</span>
-                    <span className="text-muted-foreground">
-                      • {relativeTime(post.mergedInto?.mergedAt || post.createdAt)}
-                    </span>
+                <div className="rounded-md bg-card border border-border/50 p-3">
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href={post.mergedInto ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}` : "#"}
+                      className="text-sm font-medium"
+                    >
+                      {post.mergedInto?.title || "Merged request"}
+                    </Link>
+                    <div className="flex items-center gap-2 text-xs font-light">
+                      <StatusIcon status={post.mergedInto?.roadmapStatus || "pending"} className="size-4" />
+                      <span className="capitalize">{post.mergedInto?.roadmapStatus || "Open"}</span>
+                      {post.mergedInto?.boardName ? (
+                        <span className="text-accent">{post.mergedInto.boardName}</span>
+                      ) : null}
+                      <span className="text-accent">
+                        {relativeTime(post.mergedInto?.mergedAt || post.createdAt)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               ) : null}
               {post.mergedSources && post.mergedSources.length > 0 ? (
-                <div className="rounded-md border bg-card border-border p-3">
+                <div className="rounded-md bg-card border border-border/50 p-3">
                   <div className="space-y-3">
                     {post.mergedSources.map((src) => (
-                      <div key={src.id} className="space-y-1">
+                      <div key={src.id} className="flex flex-col gap-2">
                         <Link href={`/workspaces/${workspaceSlug}/requests/${src.slug}`} className="text-sm font-medium block">
                           {src.title}
                         </Link>
-                        <div className="inline-flex items-center gap-2 text-xs">
-                          {src.boardName ? <span className="text-muted-foreground">{src.boardName}</span> : null}
-                          <span className="text-muted-foreground">•</span>
+                        <div className="flex items-center gap-2 text-xs font-light">
                           <StatusIcon status={src.roadmapStatus || "pending"} className="size-4" />
                           <span className="capitalize">{src.roadmapStatus || "Open"}</span>
-                          <span className="text-muted-foreground">• {relativeTime(src.mergedAt || post.createdAt)}</span>
+                          {src.boardName ? <span className="text-accent">{src.boardName}</span> : null}
+                          <span className="text-accent">{relativeTime(src.mergedAt || post.createdAt)}</span>
                         </div>
                       </div>
                     ))}
