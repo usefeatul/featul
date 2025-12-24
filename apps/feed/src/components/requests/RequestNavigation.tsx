@@ -1,11 +1,11 @@
 "use client"
 
-import React from "react"
 import Link from "next/link"
 import { Button } from "@oreilla/ui/components/button"
 import { cn } from "@oreilla/ui/lib/utils"
 import { TrashIcon } from "@oreilla/ui/icons/trash"
 import { GitMerge } from "lucide-react"
+import { ChevronLeftIcon } from "@oreilla/ui/icons/chevron-left"
 
 type NavItem = {
   slug: string
@@ -17,16 +17,37 @@ export interface RequestNavigationProps {
   next?: NavItem | null
   prevHref?: string
   nextHref?: string
+  backHref?: string
   className?: string
   showActions?: boolean
   onMergeClick?: () => void
   onDeleteClick?: () => void
 }
 
-export default function RequestNavigation({ prev, next, prevHref, nextHref, className, showActions, onMergeClick, onDeleteClick }: RequestNavigationProps) {
+export default function RequestNavigation({ prev, next, prevHref, nextHref, backHref, className, showActions, onMergeClick, onDeleteClick }: RequestNavigationProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <div className="inline-flex items-center rounded-sm border bg-card overflow-hidden">
+        <Button 
+          asChild 
+          variant="nav" 
+          size="sm" 
+          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+          disabled={!backHref}
+        >
+          {backHref ? (
+            <Link href={backHref} aria-label="Back to requests">
+              <ChevronLeftIcon className="size-3" />
+              <span className="text-xs font-medium">Back</span>
+            </Link>
+          ) : (
+            <span aria-hidden="true" className="flex items-center gap-2">
+              <ChevronLeftIcon className="size-3.5 opacity-50" />
+              <span className="text-xs font-medium opacity-50">Back</span>
+            </span>
+          )}
+        </Button>
+        <div className="mx-0.5 h-5 w-px bg-border" />
         <Button 
           asChild 
           variant="nav" 

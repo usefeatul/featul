@@ -1,12 +1,9 @@
 "use client"
 
-import React from "react"
-import { GitMerge } from "lucide-react"
-import { Button } from "@oreilla/ui/components/button"
-import { TrashIcon } from "@oreilla/ui/icons/trash"
 import ContentImage from "@/components/global/ContentImage"
 import RequestNavigation from "./RequestNavigation"
 import { useRequestNavigation } from "@/hooks/useRequestNavigation"
+import { buildRequestsUrl } from "@/utils/request-filters"
 import CommentCounter from "../comments/CommentCounter"
 import { UpvoteButton } from "../upvote/UpvoteButton"
 import CommentList from "../comments/CommentList"
@@ -62,7 +59,8 @@ export default function RequestDetail({
   initialCollapsedIds?: string[]
   navigation?: { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null }
 }) {
-  const { prevHref, nextHref } = useRequestNavigation(workspaceSlug, navigation)
+  const { prevHref, nextHref, searchParams } = useRequestNavigation(workspaceSlug, navigation)
+  const backHref = buildRequestsUrl(workspaceSlug, searchParams, {})
 
   return (
     <section className="mt-4 md:mt-6">
@@ -81,6 +79,7 @@ export default function RequestDetail({
                     next={navigation?.next}
                     prevHref={prevHref}
                     nextHref={nextHref}
+                    backHref={backHref}
                     className="shrink-0"
                     showActions
                   />
