@@ -76,27 +76,14 @@ export default function RequestDetail({
                   <div className="space-y-1">
                     <h1 className="text-lg font-semibold leading-snug text-foreground md:text-xl">{post.title}</h1>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <RequestNavigation
-                      prev={navigation?.prev}
-                      next={navigation?.next}
-                      prevHref={prevHref}
-                      nextHref={nextHref}
-                      className="shrink-0"
-                    />
-                    <Button type="button" variant="ghost" size="icon-sm" aria-label="Merge">
-                      <GitMerge className="size-3.5" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      className="text-destructive hover:bg-destructive/5"
-                      aria-label="Delete"
-                    >
-                      <TrashIcon className="size-3.5" />
-                    </Button>
-                  </div>
+                  <RequestNavigation
+                    prev={navigation?.prev}
+                    next={navigation?.next}
+                    prevHref={prevHref}
+                    nextHref={nextHref}
+                    className="shrink-0"
+                    showActions
+                  />
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3 text-xs text-accent">
