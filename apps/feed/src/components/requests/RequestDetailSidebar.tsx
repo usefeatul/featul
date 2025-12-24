@@ -56,19 +56,18 @@ export default function RequestDetailSidebar({
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
   return (
-    <aside className="hidden md:block space-y-4">
-      <div className="rounded-md bg-card p-4 border">
-        {/* Header: User & Time */}
-        <div className="flex items-center gap-3 mb-6 ">
-          <div className="relative ">
-            <Avatar className="size-10 relative overflow-visible ">
+    <aside className="hidden h-full md:block">
+      <div className="h-full border-t border-border/70 px-4 py-4 md:border-t-0 md:px-6 md:py-5">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="relative">
+            <Avatar className="relative size-10 overflow-visible">
               {displayAuthor.image ? (
                 <AvatarImage
                   src={displayAuthor.image}
                   alt={displayAuthor.name}
                 />
               ) : (
-                <AvatarFallback className="text-xs bg-muted text-muted-foreground">
+                <AvatarFallback className="bg-muted text-xs text-muted-foreground">
                   {authorInitials}
                 </AvatarFallback>
               )}
@@ -83,15 +82,15 @@ export default function RequestDetailSidebar({
             <span className="text-sm font-semibold text-foreground">
               {displayAuthor.name}
             </span>
-            <span className="text-xs text-muted-foreground">{timeLabel}</span>
+            <span className="text-xs text-muted-foreground">
+              {timeLabel}
+            </span>
           </div>
         </div>
 
-        {/* Properties */}
         <div className="space-y-5">
-          {/* Board */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground font-medium">
+            <span className="text-sm font-medium text-muted-foreground">
               Board
             </span>
             {canEdit ? (
@@ -102,15 +101,14 @@ export default function RequestDetailSidebar({
                 onChange={setBoard}
               />
             ) : (
-              <div className="h-6 px-2.5 rounded-md border text-xs font-medium flex items-center">
+              <div className="flex h-6 items-center rounded-md border px-2.5 text-xs font-medium">
                 {board.name}
               </div>
             )}
           </div>
 
-          {/* Status */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground font-medium">
+            <span className="text-sm font-medium text-muted-foreground">
               Status
             </span>
             {canEdit ? (
@@ -120,20 +118,19 @@ export default function RequestDetailSidebar({
                 onChange={(v) => setMeta((m) => ({ ...m, roadmapStatus: v }))}
               />
             ) : (
-              <div className="h-8 px-2 pl-1.5 rounded-md text-xs border font-medium flex items-center capitalize">
+              <div className="flex h-8 items-center rounded-md border px-2 pl-1.5 text-xs font-medium capitalize">
                 <StatusIcon
                   status={meta.roadmapStatus || "pending"}
-                  className="size-4 mr-2"
+                  className="mr-2 size-4"
                 />
                 {meta.roadmapStatus || "Open"}
               </div>
             )}
           </div>
 
-          {/* Flags */}
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <span className="text-sm text-muted-foreground font-medium">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <span className="text-sm font-medium text-muted-foreground">
                 Flags
               </span>
               {canEdit ? (
@@ -143,7 +140,7 @@ export default function RequestDetailSidebar({
                   onChange={(v) => setMeta((m) => ({ ...m, ...v }))}
                 />
               ) : (
-                <div className="flex gap-1 ">
+                <div className="flex gap-1">
                   {[
                     meta.isPinned ? "Pinned" : null,
                     meta.isLocked ? "Locked" : null,
@@ -153,7 +150,7 @@ export default function RequestDetailSidebar({
                     .map((f) => (
                       <span
                         key={f as string}
-                        className="text-xs bg-muted px-1.5 py-0.5 rounded-md  border text-muted-foreground "
+                        className="rounded-md border bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
                       >
                         {f}
                       </span>
@@ -163,11 +160,10 @@ export default function RequestDetailSidebar({
             </div>
           )}
 
-          {/* Tags */}
           {(post.tags && post.tags.length > 0) || canEdit ? (
             <div className="pt-1">
               <div className="flex items-start justify-between gap-1">
-                <span className="text-sm text-muted-foreground font-medium">
+                <span className="text-sm font-medium text-muted-foreground">
                   Tags
                 </span>
                 {canEdit ? (
@@ -177,11 +173,11 @@ export default function RequestDetailSidebar({
                     value={post.tags || []}
                   />
                 ) : post.tags && post.tags.length > 0 ? (
-                  <div className="flex flex-wrap gap-1 justify-start ">
+                  <div className="flex flex-wrap justify-start gap-1">
                     {post.tags.map((t) => (
                       <span
                         key={t.id}
-                        className="text-[11px] rounded-md  bg-green-100 px-2 py-0.5 text-green-500"
+                        className="rounded-md bg-green-100 px-2 py-0.5 text-[11px] text-green-500"
                       >
                         {t.name}
                       </span>

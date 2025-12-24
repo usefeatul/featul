@@ -66,72 +66,74 @@ export default function RequestDetail({
 
   return (
     <section className="mt-4 md:mt-6">
-      <div className="grid items-start gap-6 md:grid-cols-[0.7fr_0.3fr]">
-        <article className="overflow-hidden rounded-md border bg-card shadow-sm">
-          <header className="border-b border-border/70 px-4 py-4 md:px-6 md:py-5">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <h1 className="text-lg font-semibold leading-snug text-foreground md:text-xl">{post.title}</h1>
-                  {post.boardName ? (
-                    <p className="text-xs font-medium text-accent">
-                      {post.boardName}
-                      {post.roadmapStatus ? ` • ${post.roadmapStatus.charAt(0).toUpperCase()}${post.roadmapStatus.slice(1)}` : null}
-                    </p>
-                  ) : null}
+      <div className="overflow-hidden rounded-md border bg-card">
+        <div className="grid items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
+          <article className="border-b border-border/70 px-4 py-4 md:border-b-0 md:border-r md:px-6 md:py-5">
+            <header className="border-b border-border/70 pb-4">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <h1 className="text-lg font-semibold leading-snug text-foreground md:text-xl">{post.title}</h1>
+                    {post.boardName ? (
+                      <p className="text-xs font-medium text-accent">
+                        {post.boardName}
+                        {post.roadmapStatus ? ` • ${post.roadmapStatus.charAt(0).toUpperCase()}${post.roadmapStatus.slice(1)}` : null}
+                      </p>
+                    ) : null}
+                  </div>
+                  <RequestNavigation
+                    prev={navigation?.prev}
+                    next={navigation?.next}
+                    prevHref={prevHref}
+                    nextHref={nextHref}
+                    className="shrink-0"
+                  />
                 </div>
-                <RequestNavigation
-                  prev={navigation?.prev}
-                  next={navigation?.next}
-                  prevHref={prevHref}
-                  nextHref={nextHref}
-                  className="shrink-0"
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 text-xs text-accent">
+                    <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" activeBg />
+                    <CommentCounter postId={post.id} initialCount={post.commentCount} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" className="h-8 gap-2">
+                      <GitMerge className="size-3.5" />
+                      <span className="text-xs font-medium">Merge</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-2 border border-transparent text-destructive hover:border-destructive/40 hover:bg-destructive/5"
+                    >
+                      <TrashIcon className="size-3.5" />
+                      <span className="text-xs font-medium">Delete</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div className="space-y-5 pt-4">
+              {post.content ? <div className="prose text-sm text-accent dark:prose-invert">{post.content}</div> : null}
+              {post.image ? (
+                <div className="flex justify-start">
+                  <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
+                </div>
+              ) : null}
+              <div className="mt-2 border-t border-border/60 pt-4">
+                <CommentList
+                  postId={post.id}
+                  initialCount={post.commentCount}
+                  workspaceSlug={workspaceSlug}
+                  initialComments={initialComments}
+                  initialCollapsedIds={initialCollapsedIds}
                 />
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3 text-xs text-accent">
-                  <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" activeBg />
-                  <CommentCounter postId={post.id} initialCount={post.commentCount} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button type="button" variant="outline" size="sm" className="h-8 gap-2">
-                    <GitMerge className="size-3.5" />
-                    <span className="text-xs font-medium">Merge</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 gap-2 border border-transparent text-destructive hover:border-destructive/40 hover:bg-destructive/5"
-                  >
-                    <TrashIcon className="size-3.5" />
-                    <span className="text-xs font-medium">Delete</span>
-                  </Button>
-                </div>
-              </div>
             </div>
-          </header>
+          </article>
 
-          <div className="space-y-5 px-4 py-4 md:px-6 md:py-5">
-            {post.content ? <div className="prose text-sm text-accent dark:prose-invert">{post.content}</div> : null}
-            {post.image ? (
-              <div className="flex justify-start">
-                <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
-              </div>
-            ) : null}
-            <div className="mt-2 border-t border-border/60 pt-4">
-              <CommentList
-                postId={post.id}
-                initialCount={post.commentCount}
-                workspaceSlug={workspaceSlug}
-                initialComments={initialComments}
-                initialCollapsedIds={initialCollapsedIds}
-              />
-            </div>
-          </div>
-        </article>
-
-        <RequestDetailSidebar post={post} workspaceSlug={workspaceSlug} readonly={readonly} />
+          <RequestDetailSidebar post={post} workspaceSlug={workspaceSlug} readonly={readonly} />
+        </div>
       </div>
     </section>
   )
