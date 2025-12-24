@@ -3,9 +3,9 @@
 import Link from "next/link"
 import { Button } from "@oreilla/ui/components/button"
 import { cn } from "@oreilla/ui/lib/utils"
-import { TrashIcon } from "@oreilla/ui/icons/trash"
 import { ChevronLeftIcon } from "@oreilla/ui/icons/chevron-left"
 import { MergePopover } from "./MergePopover"
+import { DeletePostButton } from "./DeletePostButton"
 
 type NavItem = {
   slug: string
@@ -23,10 +23,9 @@ export interface RequestNavigationProps {
   className?: string
   showActions?: boolean
   onMergeClick?: () => void
-  onDeleteClick?: () => void
 }
 
-export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions, onMergeClick, onDeleteClick }: RequestNavigationProps) {
+export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions, onMergeClick }: RequestNavigationProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <div className="inline-flex items-center rounded-sm border bg-card overflow-hidden">
@@ -95,16 +94,7 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
         <div className="inline-flex items-center rounded-sm border bg-card overflow-hidden">
           <MergePopover postId={postId} workspaceSlug={workspaceSlug} />
           <div className="h-5 w-px bg-border" />
-          <Button
-            type="button"
-            variant="nav"
-            size="icon-sm"
-            className="rounded-none border-none shadow-none hover:text-destructive dark:hover:text-destructive/50 hover:bg-destructive/5 focus-visible:ring-0 focus-visible:ring-offset-0"
-            aria-label="Delete"
-            onClick={onDeleteClick}
-          >
-            <TrashIcon className="size-3.5" />
-          </Button>
+          <DeletePostButton postId={postId} workspaceSlug={workspaceSlug} backHref={backHref} />
         </div>
       ) : null}
     </div>
