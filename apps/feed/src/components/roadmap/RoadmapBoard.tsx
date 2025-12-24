@@ -135,7 +135,7 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
                             <div className="flex-1 min-w-0">
                               <RoadmapRequestItem item={{ id: it.id, title: it.title, slug: it.slug, roadmapStatus: it.roadmapStatus, content: it.content }} workspaceSlug={workspaceSlug} />
                             </div>
-                            {isSaving ? <span className="ml-2 text-[11px] text-accent">Saving…</span> : null}
+                            {isSaving ? <span className="ml-2 text-xs text-accent">Saving…</span> : null}
                           </div>
                         </RoadmapDraggable>
                       )
@@ -162,7 +162,7 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
                     <div className="flex-1 min-w-0">
                       <RoadmapRequestItem item={{ id: it.id, title: it.title, slug: it.slug, roadmapStatus: it.roadmapStatus, content: it.content }} workspaceSlug={workspaceSlug} />
                     </div>
-                    {savingId === it.id ? <span className="ml-2 text-[11px] text-accent">Saving…</span> : null}
+                    {savingId === it.id ? <span className="ml-2 text-xs text-accent">Saving…</span> : null}
                   </div>
                 )
               })()}

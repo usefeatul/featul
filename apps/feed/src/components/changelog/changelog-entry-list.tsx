@@ -107,7 +107,7 @@ function EntryCard({
           {entry.tags.map((tag) => (
             <span
               key={tag.id}
-              className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+              className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary"
               style={
                 tag.color
                   ? { backgroundColor: `${tag.color}15`, color: tag.color }

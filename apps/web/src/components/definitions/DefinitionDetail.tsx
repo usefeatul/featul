@@ -50,7 +50,7 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
                 <ChevronLeft className="size-4" />
                 Back
               </Link>
-              <span className="flex-1 min-w-0 truncate text-[11px] sm:text-xs mt-0.5 uppercase tracking-wide text-accent">
+              <span className="flex-1 min-w-0 truncate text-xs sm:text-xs mt-0.5 uppercase tracking-wide text-accent">
                 {def.eli5}
               </span>
             </div>

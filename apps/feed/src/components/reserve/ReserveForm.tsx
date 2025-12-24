@@ -108,7 +108,7 @@ export default function ReserveForm() {
                 ) : (
                   <div className="mt-1 text-xs text-accent">Only lowercase letters, 5–32 characters</div>
                 )}
-                <div className="ml-auto text-[11px] text-accent">{slug ? `${slug}.oreilla.com` : `yourname.oreilla.com`}</div>
+                <div className="ml-auto text-xs text-accent">{slug ? `${slug}.oreilla.com` : `yourname.oreilla.com`}</div>
               </div>
             </div>
             <div className="space-y-2">

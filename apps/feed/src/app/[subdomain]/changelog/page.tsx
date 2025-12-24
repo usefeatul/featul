@@ -35,7 +35,7 @@ export default async function ChangelogPage({ params }: { params: Promise<{ subd
               {e.tags?.length ? (
                 <div className="mt-3 flex flex-wrap gap-1">
                   {e.tags.map((t: any) => (
-                    <span key={t.id} className="text-[11px] rounded-md  bg-muted px-2 py-0.5 text-accent">{t.name}</span>
+                    <span key={t.id} className="text-xs rounded-md  bg-muted px-2 py-0.5 text-accent">{t.name}</span>
                   ))}
                 </div>
               ) : null}

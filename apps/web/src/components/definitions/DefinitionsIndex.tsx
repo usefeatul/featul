@@ -22,7 +22,7 @@ export default function DefinitionsIndex({ items }: { items: Definition[] }) {
                     className="group flex items-start justify-between gap-4 py-2.5 sm:py-3 px-2.5 sm:px-3 rounded-md  transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-ring"
                   >
                     <div className="min-w-0">
-                      <h3 className="text-[15px] md:text-base font-medium text-foreground truncate">{d.name}</h3>
+                      <h3 className="text-sm md:text-base font-medium text-foreground truncate">{d.name}</h3>
                       <p className="mt-1 text-sm text-accent line-clamp-2">{d.short}</p>
                     </div>
                     <ChevronRight className="mt-0.5 size-4 shrink-0 text-zinc-400 group-hover:text-primary transition-colors" />

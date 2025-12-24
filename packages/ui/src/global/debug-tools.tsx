@@ -320,15 +320,15 @@ export function DebugTools() {
           </Button>
           {showAnalysis && (
             <div className="ml-2 flex items-center gap-3">
-              <span className="px-2 py-1 rounded-md  border text-[11px] bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
-              <span className="px-2 py-1 rounded-md  border text-[11px] bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
-              <span className="px-2 py-1 rounded-md  border text-[11px] bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
+              <span className="px-2 py-1 rounded-md  border text-xs bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
+              <span className="px-2 py-1 rounded-md  border text-xs bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
+              <span className="px-2 py-1 rounded-md  border text-xs bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
             </div>
           )}
         </div>
 
         {showAnalysis && (
-          <div className="mt-1 text-[11px] text-accent">
+          <div className="mt-1 text-xs text-accent">
             <ul className="max-h-28 overflow-auto space-y-0.5 pr-1">
               {results.slice(0, 8).map((r) => (
                 <li key={r.id}>

@@ -50,7 +50,7 @@ function PostCardBase({ item, onVoteChange, linkPrefix = "/p" }: { item: Request
             <span className="text-xs font-medium text-foreground whitespace-nowrap max-w-[180px] truncate">
               {item.isAnonymous ? "Guest" : (item.authorName || "Guest")}
             </span>
-            <span className="text-[11px] text-muted-foreground leading-tight">
+            <span className="text-xs text-muted-foreground leading-tight">
               {relativeTime(item.publishedAt ?? item.createdAt)}
             </span>
           </div>
