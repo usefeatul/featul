@@ -136,7 +136,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
         {isVisible ? (
           <motion.div
             key="filter-summary-bar"
-            className="bg-card pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-1   border-t-transparent overflow-hidden rounded-xs  px-2 py-1 shadow-sm backdrop-blur supports-backdrop-filter:bg-background/60"
+            className="bg-card pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-1 border border-border  border-t-transparent overflow-hidden rounded-xs  px-1.5 py-0.5 shadow-sm  backdrop-blur supports-backdrop-filter:bg-background"
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
