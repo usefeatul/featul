@@ -17,6 +17,8 @@ import TagsPicker from "./meta/TagsPicker";
 import StatusIcon from "./StatusIcon";
 import RoleBadge from "../comments/RoleBadge";
 import type { RequestDetailData } from "./RequestDetail";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@oreilla/ui/components/tooltip";
+import { CircleQuestionMarkIcon } from "@oreilla/ui/icons/circle-question-mark";
 
 export type RequestDetailSidebarProps = {
   post: RequestDetailData;
@@ -164,9 +166,23 @@ export default function RequestDetailSidebar({
           {(post.tags && post.tags.length > 0) || canEdit ? (
             <div className="pt-1">
               <div className="flex items-start justify-between gap-1">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Tags
-                </span>
+                <div className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                  <span>Tags</span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label="About tags"
+                        className="inline-flex items-center rounded-sm text-accent hover:text-foreground"
+                      >
+                        <CircleQuestionMarkIcon className="size-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={6}>
+                      Tags categorize requests for filtering and reporting.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
                 {canEdit ? (
                   <TagsPicker
                     workspaceSlug={workspaceSlug}
@@ -193,7 +209,23 @@ export default function RequestDetailSidebar({
             <div className="space-y-3">
               <div className="h-px w-full bg-border/50" />
               <div>
-                <span className="text-sm font-medium text-muted-foreground">Merge submission</span>
+                <div className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                  <span>Merge submission</span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label="About merges"
+                        className="inline-flex items-center rounded-sm text-accent hover:text-foreground"
+                      >
+                        <CircleQuestionMarkIcon className="size-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={6}>
+                      Shows when requests are merged to consolidate duplicates.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               </div>
               {post.duplicateOfId ? (
                 <div className="rounded-md bg-card border border-border/50 p-3">
