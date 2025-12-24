@@ -85,12 +85,6 @@ export default function RequestDetail({
                     showActions
                   />
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 text-xs text-accent">
-                    <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" activeBg />
-                    <CommentCounter postId={post.id} initialCount={post.commentCount} />
-                  </div>
-                </div>
               </div>
             </header>
 
@@ -101,6 +95,10 @@ export default function RequestDetail({
                   <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
                 </div>
               ) : null}
+              <div className="flex items-center justify-end gap-3 text-xs text-accent">
+                <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" activeBg />
+                <CommentCounter postId={post.id} initialCount={post.commentCount} />
+              </div>
               <div className="mt-2 pt-4">
                 <CommentList
                   postId={post.id}
