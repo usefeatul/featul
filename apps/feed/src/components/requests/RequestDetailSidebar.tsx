@@ -57,7 +57,7 @@ export default function RequestDetailSidebar({
 
   return (
     <aside className="hidden h-full md:block">
-      <div className="h-full border-t border-border/70 px-4 py-4 md:border-t-0 md:px-6 md:py-5">
+      <div className="h-full px-4 py-4 md:px-6 md:py-5">
         <div className="mb-6 flex items-center gap-3">
           <div className="relative">
             <Avatar className="relative size-10 overflow-visible">
@@ -118,7 +118,7 @@ export default function RequestDetailSidebar({
                 onChange={(v) => setMeta((m) => ({ ...m, roadmapStatus: v }))}
               />
             ) : (
-              <div className="flex h-8 items-center rounded-md border px-2 pl-1.5 text-xs font-medium capitalize">
+              <div className="flex h-8 items-center rounded-md border  px-2 pl-1.5 text-xs font-medium capitalize">
                 <StatusIcon
                   status={meta.roadmapStatus || "pending"}
                   className="mr-2 size-4"
@@ -129,7 +129,7 @@ export default function RequestDetailSidebar({
           </div>
 
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b border-border/50 pb-3">
               <span className="text-sm font-medium text-muted-foreground">
                 Flags
               </span>

@@ -66,20 +66,15 @@ export default function RequestDetail({
 
   return (
     <section className="mt-4 md:mt-6">
-      <div className="overflow-hidden rounded-md border bg-card">
+      <div className="overflow-hidden rounded-sm bg-card border border-border/50">
         <div className="grid items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
-          <article className="border-b border-border/70 px-4 py-4 md:border-b-0 md:border-r md:px-6 md:py-5">
-            <header className="border-b border-border/70 pb-4">
+          <article className="relative  px-4 py-4 md:px-6 md:py-5">
+            <div aria-hidden className="absolute right-0 top-0 hidden h-full w-px bg-border/50 md:block" />
+            <header className="pb-4">
               <div className="flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
                     <h1 className="text-lg font-semibold leading-snug text-foreground md:text-xl">{post.title}</h1>
-                    {post.boardName ? (
-                      <p className="text-xs font-medium text-accent">
-                        {post.boardName}
-                        {post.roadmapStatus ? ` • ${post.roadmapStatus.charAt(0).toUpperCase()}${post.roadmapStatus.slice(1)}` : null}
-                      </p>
-                    ) : null}
                   </div>
                   <RequestNavigation
                     prev={navigation?.prev}
@@ -120,7 +115,7 @@ export default function RequestDetail({
                   <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
                 </div>
               ) : null}
-              <div className="mt-2 border-t border-border/60 pt-4">
+              <div className="mt-2 pt-4">
                 <CommentList
                   postId={post.id}
                   initialCount={post.commentCount}
