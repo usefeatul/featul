@@ -28,11 +28,11 @@ export function SettingsDialogShell({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`top-1/2 -translate-y-1/2 ${widthClasses} m-4`}>
+      <DialogContent className={widthClasses}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? (
-            <DialogDescription className="text-accent">
+            <DialogDescription>
               {description}
             </DialogDescription>
           ) : null}
@@ -42,5 +42,4 @@ export function SettingsDialogShell({
     </Dialog>
   )
 }
-
 

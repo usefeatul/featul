@@ -22,7 +22,7 @@ const DialogOverlay = React.forwardRef<
     ref={ref as any}
     data-slot="dialog-overlay"
     className={cn(
-      "fixed inset-0 z-40 bg-black/30 backdrop-blur-sm",
+      "fixed inset-0 z-50 bg-black/30 backdrop-blur-sm",
       className
     )}
     {...props}
@@ -50,9 +50,7 @@ const DialogContent = React.forwardRef<
       <motion.div
         ref={ref as any}
         className={cn(
-          // Match the original Radix positioning: centered by default,
-          // but allow callers to override with their own top/translate classes.
-          "fixed left-1/2 top-1/2 z-40 grid w-[min(92vw,600px)] translate-x-[-50%] translate-y-[-50%] gap-4 bg-card p-5 border ring-1 ring-border shadow-2xl rounded-md  ",
+          "fixed left-1/2 top-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border-2 p-6 shadow-lg bg-background sm:max-w-sm",
           className
         )}
         initial={{ opacity: 0, scale: 0.95, y: -12 }}
@@ -73,7 +71,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col space-y-2 text-center sm:text-left",
+      "flex flex-col gap-2 text-center sm:text-left",
       className
     )}
     {...props}
@@ -87,7 +85,7 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex  bg-muted/50 flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
       className
     )}
     {...props}
@@ -102,7 +100,7 @@ const DialogTitle = React.forwardRef<
   <BaseDialog.Title
     ref={ref}
     className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
+      "text-lg font-semibold",
       className
     )}
     {...props}
@@ -116,7 +114,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <BaseDialog.Description
     ref={ref}
-    className={cn("text-sm text-accent", className)}
+    className={cn("text-muted-foreground text-sm", className)}
     {...props}
   />
 ))
