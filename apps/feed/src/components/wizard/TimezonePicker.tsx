@@ -1,6 +1,6 @@
-"use client"
-
-import { useMemo, useState } from "react"
+ "use client"
+ 
+ import { useEffect, useMemo, useState } from "react"
 import { Button } from "@oreilla/ui/components/button"
 import { Input } from "@oreilla/ui/components/input"
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
@@ -11,25 +11,31 @@ import { formatTimeWithDate } from "../../lib/time"
 export default function TimezonePicker({ value, onChange, now }: { value: string; onChange: (v: string) => void; now: Date }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
-  const isServer = typeof window === "undefined"
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   const timezones = useMemo(() => {
+    const base = ["UTC", "Europe/London", "Europe/Paris", "America/New_York", "America/Los_Angeles", "Asia/Tokyo"]
+    if (!mounted) {
+      const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
+      if (detected && !base.includes(detected)) return [detected, ...base]
+      return base
+    }
     const sup = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : []
     if (sup && sup.length) return sup
     const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const base = ["UTC", "Europe/London", "Europe/Paris", "America/New_York", "America/Los_Angeles", "Asia/Tokyo"]
     if (detected && !base.includes(detected)) return [detected, ...base]
     return base
-  }, [])
+  }, [mounted])
 
   const timeString = useMemo(() => {
-    if (isServer) return "--:--"
+    if (!mounted) return "--:--"
     try {
       return new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: value }).format(now)
     } catch {
       return new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: true }).format(now)
     }
-  }, [value, now])
+  }, [mounted, value, now])
 
   const friendlyTZ = (tz: string) => {
       const city = tz.split("/").slice(-1)[0]?.replace(/_/g, " ") ?? tz
@@ -54,7 +60,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
                 </span>
             </div>
           <div className="flex items-center gap-2 shrink-0">
-             <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-mdborder">{timeString}</span>
+             <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md border" suppressHydrationWarning>{timeString}</span>
              <ChevronDown className="size-4 text-muted-foreground opacity-50" />
           </div>
         </Button>
@@ -87,7 +93,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
               }}
               className={`flex items-center gap-1.5 px-3 py-2.5 cursor-pointer text-sm hover:bg-muted/50 ${value === tz ? "bg-accent text-accent-foreground" : ""}`}
             >
-              <span className="font-medium">{formatTimeWithDate(tz, now)}.</span>
+              <span className="font-medium" suppressHydrationWarning>{mounted ? formatTimeWithDate(tz, now) : "--:--"}.</span>
               <span className="text-accent truncate">{friendlyTZ(tz)}</span>
             </PopoverListItem>
           ))}

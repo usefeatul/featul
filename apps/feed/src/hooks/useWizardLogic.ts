@@ -19,12 +19,7 @@ export function useWizardLogic() {
   const [name, setName] = useState("");
   const [domain, setDomain] = useState("");
   const [slug, setSlug] = useState("");
-  const [timezone, setTimezone] = useState<string>(
-    typeof Intl !== "undefined" &&
-      Intl.DateTimeFormat().resolvedOptions().timeZone
-      ? Intl.DateTimeFormat().resolvedOptions().timeZone
-      : "UTC"
-  );
+  const [timezone, setTimezone] = useState<string>("UTC");
 
   // Slug State
   const [slugDirty, setSlugDirty] = useState(false);
@@ -40,6 +35,12 @@ export function useWizardLogic() {
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (typeof Intl === "undefined") return;
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (detected) setTimezone(detected);
   }, []);
 
   // Auto-generate slug from name
