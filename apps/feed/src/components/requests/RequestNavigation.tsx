@@ -26,12 +26,12 @@ export interface RequestNavigationProps {
 export default function RequestNavigation({ prev, next, prevHref, nextHref, className, showActions, onMergeClick, onDeleteClick }: RequestNavigationProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <div className="inline-flex items-center rounded-md border bg-card overflow-hidden">
+      <div className="inline-flex items-center rounded-sm border bg-card overflow-hidden">
         <Button 
           asChild 
-          variant="ghost" 
+          variant="nav" 
           size="sm" 
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
           disabled={!prevHref}
         >
           {prevHref ? (
@@ -46,12 +46,12 @@ export default function RequestNavigation({ prev, next, prevHref, nextHref, clas
             </span>
           )}
         </Button>
-        <div className="mx-0.5 hidden h-5 w-px bg-border sm:block" />
+        <div className="mx-0.5 h-5 w-px bg-border" />
         <Button 
           asChild 
-          variant="ghost" 
+          variant="nav" 
           size="sm" 
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
           disabled={!nextHref}
         >
           {nextHref ? (
@@ -69,7 +69,7 @@ export default function RequestNavigation({ prev, next, prevHref, nextHref, clas
       </div>
 
       {showActions ? (
-        <div className="inline-flex items-center rounded-md border bg-card overflow-hidden">
+        <div className="inline-flex items-center rounded-sm border bg-card overflow-hidden">
           <Button
             type="button"
             variant="ghost"
