@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { TrashIcon } from "@oreilla/ui/icons/trash"
 import { XMarkIcon } from "@oreilla/ui/icons/xmark"
@@ -132,57 +132,100 @@ export default function FilterSummary({ className = "" }: { className?: string }
     >
       <div className="bg-card pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-1   border-t-transparent overflow-hidden rounded-xs  px-2 py-1 shadow-sm backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="flex items-center gap-1 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
-          {status.map((s) => (
-            <Button
-              key={`status-${s}`}
-              type="button"
-              onClick={() => removeStatus(s)}
-              variant="nav"
-              size="xs"
-              aria-label={`Remove status ${statusLabel(s)}`}
-            >
-              <span className="truncate">{statusLabel(s)}</span>
-              <XMarkIcon className="ml-1 size-3 opacity-60" />
-            </Button>
-          ))}
-          {boards.map((b) => (
-            <Button
-              key={`board-${b}`}
-              type="button"
-              onClick={() => removeBoard(b)}
-              variant="nav"
-              size="xs"
-              aria-label={`Remove board ${boardsBySlug[b] || b}`}
-            >
-              <span className="truncate">{boardsBySlug[b] || b}</span>
-              <XMarkIcon className="ml-1 size-3 opacity-60" />
-            </Button>
-          ))}
-          {tags.map((t) => (
-            <Button
-              key={`tag-${t}`}
-              type="button"
-              onClick={() => removeTag(t)}
-              variant="nav"
-              size="xs"
-              aria-label={`Remove tag ${tagsBySlug[t] || t}`}
-            >
-              <span className="truncate">{tagsBySlug[t] || t}</span>
-              <XMarkIcon className="ml-1 size-3 opacity-60" />
-            </Button>
-          ))}
-          {order === "oldest" ? (
-            <Button
-              type="button"
-              onClick={removeOrder}
-              variant="nav"
-              size="xs"
-              aria-label="Remove sort oldest"
-            >
-              <span className="truncate">Oldest first</span>
-              <XMarkIcon className="ml-1 size-3" />
-            </Button>
-          ) : null}
+          <AnimatePresence initial={false}>
+            {status.map((s) => (
+              <motion.div
+                key={`status-${s}`}
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 2 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -2 }}
+                transition={{ duration: 0.16 }}
+                whileHover={{ y: -1, scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Button
+                  type="button"
+                  onClick={() => removeStatus(s)}
+                  variant="nav"
+                  size="xs"
+                  aria-label={`Remove status ${statusLabel(s)}`}
+                >
+                  <span className="truncate">{statusLabel(s)}</span>
+                  <XMarkIcon className="ml-1 size-3 opacity-60" />
+                </Button>
+              </motion.div>
+            ))}
+            {boards.map((b) => (
+              <motion.div
+                key={`board-${b}`}
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 2 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -2 }}
+                transition={{ duration: 0.16 }}
+                whileHover={{ y: -1, scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Button
+                  type="button"
+                  onClick={() => removeBoard(b)}
+                  variant="nav"
+                  size="xs"
+                  aria-label={`Remove board ${boardsBySlug[b] || b}`}
+                >
+                  <span className="truncate">{boardsBySlug[b] || b}</span>
+                  <XMarkIcon className="ml-1 size-3 opacity-60" />
+                </Button>
+              </motion.div>
+            ))}
+            {tags.map((t) => (
+              <motion.div
+                key={`tag-${t}`}
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 2 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -2 }}
+                transition={{ duration: 0.16 }}
+                whileHover={{ y: -1, scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Button
+                  type="button"
+                  onClick={() => removeTag(t)}
+                  variant="nav"
+                  size="xs"
+                  aria-label={`Remove tag ${tagsBySlug[t] || t}`}
+                >
+                  <span className="truncate">{tagsBySlug[t] || t}</span>
+                  <XMarkIcon className="ml-1 size-3 opacity-60" />
+                </Button>
+              </motion.div>
+            ))}
+            {order === "oldest" ? (
+              <motion.div
+                key="order-oldest"
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 2 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -2 }}
+                transition={{ duration: 0.16 }}
+                whileHover={{ y: -1, scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Button
+                  type="button"
+                  onClick={removeOrder}
+                  variant="nav"
+                  size="xs"
+                  aria-label="Remove sort oldest"
+                >
+                  <span className="truncate">Oldest first</span>
+                  <XMarkIcon className="ml-1 size-3" />
+                </Button>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
         </div>
 
         <div className="flex items-center shrink-0 gap-1">
