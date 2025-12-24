@@ -38,7 +38,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
   const base = linkBase || `/workspaces/${workspaceSlug}`
   const href = `${base}/requests/${item.slug}${queryString}`
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card last:border-b-0">
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0">
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <Link href={href} className="text-sm font-medium text-foreground hover:text-primary truncate flex-1">
         {item.title}

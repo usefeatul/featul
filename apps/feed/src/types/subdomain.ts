@@ -16,6 +16,28 @@ export type SubdomainRequestDetailData = {
   hasVoted?: boolean;
   role?: "admin" | "member" | "viewer" | null;
   isOwner?: boolean;
+  duplicateOfId?: string | null;
+  mergedInto?:
+    | {
+        id: string;
+        slug: string;
+        title: string;
+        roadmapStatus?: string | null;
+        mergedAt?: string | null;
+        boardName?: string;
+        boardSlug?: string;
+      }
+    | null;
+  mergedCount?: number;
+  mergedSources?: Array<{
+    id: string;
+    slug: string;
+    title: string;
+    roadmapStatus?: string | null;
+    mergedAt?: string | null;
+    boardName?: string;
+    boardSlug?: string;
+  }>;
   author?: {
     name: string | null;
     image: string | null;

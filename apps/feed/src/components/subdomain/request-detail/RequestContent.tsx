@@ -1,4 +1,5 @@
- import React from "react";
+import React from "react";
+import Link from "next/link";
 import { UpvoteButton } from "../../upvote/UpvoteButton";
 import CommentList from "../../comments/CommentList";
 import CommentCounter from "../../comments/CommentCounter";
@@ -71,11 +72,48 @@ export function RequestContent({
 
       {/* Content */}
       {post.image ? (
-        <ContentImage
-          url={post.image}
-          alt={post.title}
-          className="w-48 h-36 mb-4"
-        />
+        <>
+          <ContentImage
+            url={post.image}
+            alt={post.title}
+            className="w-48 h-36 mb-4 mx-auto"
+          />
+          {post.duplicateOfId && post.mergedInto ? (
+            <div className="mt-2 flex justify-center">
+              <div className="inline-flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs">
+                <StatusIcon status={post.mergedInto.roadmapStatus || "pending"} className="size-4" />
+                <span className="text-accent">Merged into</span>
+                <Link
+                  href={`/board/p/${post.mergedInto.slug}`}
+                  className="font-medium text-foreground hover:underline"
+                >
+                  {post.mergedInto.title}
+                </Link>
+                {post.mergedInto.boardName ? (
+                  <span className="text-accent">({post.mergedInto.boardName})</span>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+        </>
+      ) : null}
+      {/* Fallback: show merged banner centered even without image */}
+      {!post.image && post.duplicateOfId && post.mergedInto ? (
+        <div className="mt-2 flex justify-center">
+          <div className="inline-flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs">
+            <StatusIcon status={post.mergedInto.roadmapStatus || "pending"} className="size-4" />
+            <span className="text-accent">Merged into</span>
+            <Link
+              href={`/board/p/${post.mergedInto.slug}`}
+              className="font-medium text-foreground hover:underline"
+            >
+              {post.mergedInto.title}
+            </Link>
+            {post.mergedInto.boardName ? (
+              <span className="text-accent">({post.mergedInto.boardName})</span>
+            ) : null}
+          </div>
+        </div>
       ) : null}
       {/* Footer: Author & Upvotes */}
       <div className="flex items-center justify-between pt-2">

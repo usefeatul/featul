@@ -1,4 +1,4 @@
-import { db, workspace, board, post, user, workspaceMember } from "@oreilla/db";
+import { db, workspace, board, post, user, workspaceMember, postMerge } from "@oreilla/db";
 import { and, eq, sql } from "drizzle-orm";
 import { client } from "@oreilla/api/client";
 import { readHasVotedForPost } from "@/lib/vote.server";
@@ -99,6 +99,7 @@ async function loadPostWithAuthorAndBoard(
       createdAt: post.createdAt,
       boardName: board.name,
       boardSlug: board.slug,
+      duplicateOfId: post.duplicateOfId,
       metadata: post.metadata,
       role: workspaceMember.role,
       authorId: post.authorId,
@@ -124,7 +125,60 @@ async function loadPostWithAuthorAndBoard(
     )
     .limit(1);
 
-  return (p as RawPostRow | undefined) ?? null;
+  if (!p) return null;
+
+  const mergedCountRow = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(postMerge)
+    .where(eq(postMerge.targetPostId, p.id))
+    .limit(1);
+
+  const mergedCount = Number(mergedCountRow?.[0]?.count || 0);
+  let mergedInto:
+    | {
+        id: string;
+        slug: string;
+        title: string;
+        roadmapStatus?: string | null;
+        mergedAt?: string | null;
+        boardName?: string;
+        boardSlug?: string;
+      }
+    | null = null;
+
+  if (p.duplicateOfId) {
+    const [target] = await db
+      .select({
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        roadmapStatus: post.roadmapStatus,
+        boardName: board.name,
+        boardSlug: board.slug,
+      })
+      .from(post)
+      .innerJoin(board, eq(post.boardId, board.id))
+      .where(and(eq(board.workspaceId, workspaceId), eq(post.id, p.duplicateOfId)))
+      .limit(1);
+    const [mergeRow] = await db
+      .select({ createdAt: postMerge.createdAt })
+      .from(postMerge)
+      .where(and(eq(postMerge.sourcePostId, p.id), eq(postMerge.targetPostId, p.duplicateOfId)))
+      .limit(1);
+    if (target) {
+      mergedInto = {
+        id: target.id,
+        slug: target.slug,
+        title: target.title,
+        roadmapStatus: (target as any).roadmapStatus,
+        mergedAt: mergeRow?.createdAt ? new Date(mergeRow.createdAt as any).toISOString() : null,
+        boardName: (target as any).boardName,
+        boardSlug: (target as any).boardSlug,
+      };
+    }
+  }
+
+  return { ...(p as any), mergedCount, mergedInto } as RawPostRow;
 }
 
 function ensureAuthorAvatar(postRecord: RawPostRow): RawPostRow {
@@ -156,5 +210,4 @@ async function loadComments(
 
   return { initialComments, initialCollapsedIds };
 }
-
 

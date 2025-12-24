@@ -9,7 +9,7 @@ function RequestListBase({ items, workspaceSlug, linkBase }: { items: RequestIte
     return <EmptyRequests workspaceSlug={workspaceSlug} />
   }
   return (
-    <div className="mt-4 rounded-md border bg-card overflow-hidden">
+    <div className="mt-4 rounded-md border bg-card dark:bg-black/40 overflow-hidden">
       <ul>
         {items.map((p) => (
           <RequestItem key={p.id} item={p} workspaceSlug={workspaceSlug} linkBase={linkBase} />
