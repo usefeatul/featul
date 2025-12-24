@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { motion } from "framer-motion"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { TrashIcon } from "@oreilla/ui/icons/trash"
 import { XMarkIcon } from "@oreilla/ui/icons/xmark"
@@ -194,7 +195,12 @@ export default function FilterSummary({ className = "" }: { className?: string }
             className="text-muted-foreground hover:text-destructive transition-colors"
             aria-label="Clear all filters"
           >
-            <TrashIcon className="size-4 opacity-70" />
+            <motion.span
+              whileHover={{ rotate: [0, -10, 10, -10, 10, 0] }}
+              transition={{ duration: 0.35 }}
+            >
+              <TrashIcon className="size-4 opacity-70" />
+            </motion.span>
           </Button>
         </div>
       </div>
