@@ -30,10 +30,10 @@ const blocks = [
 export default function WizardKeyBlocks({ className }: WizardKeyBlocksProps) {
   return (
     <div
-      className={cn("hidden md:flex pr-10 max-w-[520px]", className)}
+      className={cn("hidden md:flex pr-10 max-w-[520px] h-full", className)}
     >
-      <div className="flex flex-col gap-6 w-full">
-        <div className="space-y-2">
+      <div className="flex flex-col justify-between gap-6 w-full h-full pt-6 pb-6">
+        <div className="space-y-2 max-w-sm">
           <p className="text-xs font-medium tracking-[0.24em] uppercase text-accent">
             Feedback blocks
           </p>
@@ -62,7 +62,7 @@ export default function WizardKeyBlocks({ className }: WizardKeyBlocksProps) {
             <div
               className={cn(
                 "relative",
-                "rounded-2xl px-8 py-9 h-36 flex items-center justify-center",
+                "rounded-2xl px-8 py-10 h-40 flex items-center justify-center",
                 "shadow-[0_18px_40px_rgba(15,23,42,0.9)] transition-transform duration-300",
                 "group-hover:-translate-y-2 group-hover:shadow-[0_24px_55px_rgba(15,23,42,1)]",
                 "border border-white/12 bg-gradient-to-br",
