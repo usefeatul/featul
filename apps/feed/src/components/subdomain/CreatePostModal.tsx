@@ -1,11 +1,8 @@
 "use client"
 
 import React from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@oreilla/ui/components/dialog"
+import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
+import DocumentTextIcon from "@oreilla/ui/icons/document-text"
 import { getInitials } from "@/utils/user-utils"
 import { PostHeader } from "../post/PostHeader"
 import { PostContent } from "../post/PostContent"
@@ -103,41 +100,45 @@ export default function CreatePostModal({
   const initials = user?.name ? getInitials(user.name) : "?"
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] p-0 gap-0 overflow-hidden border-none shadow-2xl top-[20%] translate-y-[-20%]">
-        <DialogTitle className="sr-only">Create a Post</DialogTitle>
-        <form onSubmit={handleSubmit} className="flex flex-col h-full">
-          <PostHeader
-            user={user}
-            initials={initials}
-            boards={boards}
+    <SettingsDialogShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Create post"
+      // description="Share an idea or request"
+      width="widest"
+      icon={<DocumentTextIcon className="size-3.5" />}
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col h-full">
+        <PostHeader
+          user={user}
+          initials={initials}
+          boards={boards}
           selectedBoard={selectedBoard}
           onSelectBoard={setSelectedBoard}
         />
-          
-          <PostContent
-            title={title}
-            setTitle={setTitle}
-            content={content}
-            setContent={setContent}
-            uploadedImage={uploadedImage}
-            uploadingImage={uploadingImage}
-            handleRemoveImage={handleRemoveImage}
-          />
-
-          <PostFooter
-            isPending={isPending}
-            disabled={!title || !content || !selectedBoard || isPending || uploadingImage}
-            uploadedImage={uploadedImage}
-            uploadingImage={uploadingImage}
-            fileInputRef={fileInputRef}
-            handleFileSelect={handleFileSelect}
-            ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
-          />
-          
-          <SimilarPosts posts={similarPosts} />
-        </form>
-      </DialogContent>
-    </Dialog>
+        
+        <PostContent
+          title={title}
+          setTitle={setTitle}
+          content={content}
+          setContent={setContent}
+          uploadedImage={uploadedImage}
+          uploadingImage={uploadingImage}
+          handleRemoveImage={handleRemoveImage}
+        />
+ 
+        <PostFooter
+          isPending={isPending}
+          disabled={!title || !content || !selectedBoard || isPending || uploadingImage}
+          uploadedImage={uploadedImage}
+          uploadingImage={uploadingImage}
+          fileInputRef={fileInputRef}
+          handleFileSelect={handleFileSelect}
+          ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
+        />
+        
+        <SimilarPosts posts={similarPosts} />
+      </form>
+    </SettingsDialogShell>
   )
 }

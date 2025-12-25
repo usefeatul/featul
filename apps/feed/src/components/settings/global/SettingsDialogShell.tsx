@@ -8,8 +8,8 @@ type SettingsDialogShellProps = {
   onOpenChange: (v: boolean) => void
   title: string
   description?: string
-  /** "default" matches 450/380, "wide" matches 520/420, "widest" matches 680/800, "xl" matches 900/960 */
-  width?: "default" | "wide" | "widest" | "xl"
+  /** "default" matches 450/380, "wide" matches 520/420, "widest" matches 680/800, "xl" matches 900/960, "xxl" matches 1040/1120 */
+  width?: "default" | "wide" | "widest" | "xl" | "xxl"
   icon?: React.ReactNode
   children: React.ReactNode
 }
@@ -24,10 +24,12 @@ export function SettingsDialogShell({
   children,
 }: SettingsDialogShellProps) {
   const styleWidth =
-    width === "xl"
-      ? { width: "min(92vw, 860px)", maxWidth: "none" as const }
+    width === "xxl"
+      ? { width: "min(92vw, 1120px)", maxWidth: "none" as const }
+      : width === "xl"
+      ? { width: "min(92vw, 780px)", maxWidth: "none" as const }
       : width === "widest"
-      ? { width: "min(92vw, 600px)", maxWidth: "none" as const }
+      ? { width: "min(92vw, 680px)", maxWidth: "none" as const }
       : width === "wide"
       ? { width: "min(92vw, 520px)", maxWidth: "none" as const }
       : { width: "min(92vw, 450px)", maxWidth: "none" as const }

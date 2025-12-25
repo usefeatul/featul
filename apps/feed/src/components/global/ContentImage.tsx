@@ -1,13 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@oreilla/ui/components/dialog";
+import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 import { cn } from "@oreilla/ui/lib/utils";
 
 interface ContentImageProps {
@@ -53,20 +48,20 @@ export default function ContentImage({
         </div>
       </div>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-fit max-w-[75vw] p-0 bg-transparent border-none shadow-none ring-0 outline-none">
-          <DialogHeader className="sr-only">
-            <DialogTitle>{alt}</DialogTitle>
-          </DialogHeader>
-          <div className="relative flex items-center justify-center">
-            <img
-              src={url}
-              alt={alt}
-              className="max-w-[75vw] max-h-[75vh] w-auto h-auto object-contain rounded-md"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SettingsDialogShell
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title={alt}
+        width="xxl"
+      >
+        <div className="relative flex items-center justify-center overflow-auto max-h-[85vh]">
+          <img
+            src={url}
+            alt={alt}
+            className="w-full max-w-full h-auto max-h-[83vh] object-contain rounded-md"
+          />
+        </div>
+      </SettingsDialogShell>
     </>
   );
 }
