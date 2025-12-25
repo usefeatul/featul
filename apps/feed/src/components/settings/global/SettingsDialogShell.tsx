@@ -10,6 +10,7 @@ type SettingsDialogShellProps = {
   description?: string
   /** "default" matches 450/380, "wide" matches 520/420, "widest" matches 680/800, "xl" matches 900/960, "xxl" matches 1040/1120 */
   width?: "default" | "wide" | "widest" | "xl" | "xxl"
+  offsetY?: string | number
   icon?: React.ReactNode
   children: React.ReactNode
 }
@@ -20,6 +21,7 @@ export function SettingsDialogShell({
   title,
   description,
   width = "default",
+  offsetY = "50%",
   icon,
   children,
 }: SettingsDialogShellProps) {
@@ -34,9 +36,12 @@ export function SettingsDialogShell({
       ? { width: "min(92vw, 520px)", maxWidth: "none" as const }
       : { width: "min(92vw, 450px)", maxWidth: "none" as const }
 
+  const topValue = typeof offsetY === "number" ? `${offsetY}%` : offsetY
+  const positionStyle = { top: topValue, ["--tw-translate-y" as any]: `-${topValue}` }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent fluid style={styleWidth} className={`max-w-none sm:max-w-none p-1 bg-muted rounded-xl gap-2`}>
+      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className={`max-w-none sm:max-w-none p-1 bg-muted rounded-xl gap-2`}>
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
           <DialogTitle className="flex items-center gap-2 px-2 mt-1 py-1 text-sm font-normal">
             {icon}
