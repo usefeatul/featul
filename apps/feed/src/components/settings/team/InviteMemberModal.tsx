@@ -1,12 +1,12 @@
 "use client"
 
 import React from "react"
-import { Dialog, DialogDescription } from "@oreilla/ui/components/dialog"
 import { Label } from "@oreilla/ui/components/label"
 import { Input } from "@oreilla/ui/components/input"
 import { Button } from "@oreilla/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@oreilla/ui/components/popover"
 import { DropdownIcon } from "@oreilla/ui/icons/dropdown"
+import MemberIcon from "@oreilla/ui/icons/member"
 import { LoadingButton } from "@/components/global/loading-button"
 import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
@@ -49,36 +49,39 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
       onOpenChange={onOpenChange}
       title="Invite member"
       description="Send an invite by email"
+      icon={<MemberIcon className="size-3.5" />}
     >
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="invite-email" className="sr-only">Email</Label>
-          <Input id="invite-email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 h-8 placeholder:text-accent" />
-
-          <Popover open={roleOpen} onOpenChange={setRoleOpen}>
-            <PopoverTrigger asChild>
-              <Button type="button" variant="nav">
-                <span className="rounded-md   px-2 py-0.5 capitalize">{role}</span>
-                <DropdownIcon className="ml-1 size-3 opacity-100" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent list className="min-w-0 w-fit">
-              <PopoverList>
-                {ROLES.map((r) => (
-                  <PopoverListItem key={r} role="menuitemradio" aria-checked={role === r} onClick={() => { setRole(r); setRoleOpen(false) }}>
-                    <span className="text-sm capitalize">{r}</span>
-                    {role === r ? <span className="ml-auto text-xs">✓</span> : null}
-                  </PopoverListItem>
-                ))}
-              </PopoverList>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="flex items-center justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <LoadingButton type="button" onClick={onSubmit} loading={loading} disabled={!email.trim()}>Send Invite</LoadingButton>
-        </div>
+      <div className="flex items-center gap-2">
+        <Label htmlFor="invite-email" className="sr-only">Email</Label>
+        <Input id="invite-email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 h-10 placeholder:text-accent" />
+ 
+        <Popover open={roleOpen} onOpenChange={setRoleOpen}>
+          <PopoverTrigger asChild>
+            <Button type="button" variant="nav">
+              <span className="rounded-md px-2 py-0.5 capitalize">{role}</span>
+              <DropdownIcon className="ml-1 size-3 opacity-100" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent list className="min-w-0 w-fit">
+            <PopoverList>
+              {ROLES.map((r) => (
+                <PopoverListItem key={r} role="menuitemradio" aria-checked={role === r} onClick={() => { setRole(r); setRoleOpen(false) }}>
+                  <span className="text-sm capitalize">{r}</span>
+                  {role === r ? <span className="ml-auto text-xs">✓</span> : null}
+                </PopoverListItem>
+              ))}
+            </PopoverList>
+          </PopoverContent>
+        </Popover>
+      </div>
+ 
+      <div className="flex justify-end gap-2 mt-4">
+        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="h-8 px-3 text-sm">
+          Cancel
+        </Button>
+        <LoadingButton type="button" onClick={onSubmit} loading={loading} disabled={!email.trim()} className="h-8 px-4 text-sm">
+          Send Invite
+        </LoadingButton>
       </div>
     </SettingsDialogShell>
   )
