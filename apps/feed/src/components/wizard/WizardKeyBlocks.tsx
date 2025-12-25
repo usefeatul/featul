@@ -62,7 +62,7 @@ export default function WizardKeyBlocks({ className }: WizardKeyBlocksProps) {
             <div
               className={cn(
                 "relative",
-                "rounded-2xl px-8 py-11 h-44 flex items-center justify-center",
+                "rounded-2xl px-9 py-12 h-48 flex items-center justify-center",
                 "shadow-[0_18px_40px_rgba(15,23,42,0.9)] transition-transform duration-300",
                 "group-hover:-translate-y-2 group-hover:shadow-[0_24px_55px_rgba(15,23,42,1)]",
                 "border border-white/12 bg-gradient-to-br",
