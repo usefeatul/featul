@@ -81,7 +81,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
         </PopoverContent>
       </Popover>
 
-      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen} title="Merge" description="Search a post to merge">
+      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen} title="Merge"  width="wide">
         <CommandInput
           value={query}
           onValueChange={(v) => setQuery(v)}

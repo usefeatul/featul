@@ -65,7 +65,14 @@ export default function SearchAction({ className = "" }: { className?: string })
         <SearchIcon className="w-4 h-4" size={16} />
       </button>
 
-      <CommandDialog open={open} onOpenChange={setOpen} title="Search" description="Find requests">
+      <CommandDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Search"
+        // description="Find requests"
+        width="wide"
+        icon={<SearchIcon className="size-3.5 opacity-80" />}
+      >
         <CommandInput
           value={value}
           onValueChange={(v) => setValue(v)}

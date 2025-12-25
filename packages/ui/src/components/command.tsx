@@ -7,11 +7,8 @@ import { SearchIcon } from "lucide-react"
 import { cn } from "@oreilla/ui/lib/utils"
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from "@oreilla/ui/components/dialog"
+import { DialogShell } from "@oreilla/ui/components/dialog-shell"
 
 function Command({
   className,
@@ -20,7 +17,7 @@ function Command({
   return (
     <CommandPrimitive
       data-slot="command"
-      className={cn("bg-card text-foreground flex h-full w-full flex-col overflow-hidden rounded-md", className)}
+      className={cn("text-foreground flex h-full w-full flex-col overflow-hidden", className)}
       {...props}
     />
   )
@@ -31,36 +28,36 @@ type CommandDialogProps = Omit<
   "children"
 > & {
   title?: string
-  description?: string
-  className?: string
+  // description?: string
   children?: React.ReactNode
+  width?: "default" | "wide" | "widest" | "xl" | "xxl"
+  offsetY?: string | number
+  icon?: React.ReactNode
 }
 
 function CommandDialog({
   title = "Command Palette",
-  description = "Search for a command to run...",
+  // description = "Search for a command to run...",
   children,
-  className,
+  width = "default",
+  offsetY = "10%",
+  icon,
   ...props
 }: CommandDialogProps) {
   return (
-    <Dialog {...props}>
-      <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-      </DialogHeader>
-      <DialogContent
-        className={cn(
-          "overflow-hidden w-[min(92vw,600px)] top-26 sm:top-46 min-h-[100px] max-h-[80vh] translate-y-0 bg-card",
-          className
-        )}
-        style={{ ["--tw-translate-y" as any]: "0" }}
-      >
-        <Command className="">
-          {children}
-        </Command>
-      </DialogContent>
-    </Dialog>
+    <DialogShell
+      open={props.open ?? false}
+      onOpenChange={props.onOpenChange as (v: boolean) => void}
+      title={title}
+      // description={description}
+      width={width}
+      offsetY={offsetY}
+      icon={icon ?? <SearchIcon className="size-3.5 opacity-80" />}
+    >
+      <Command className="">
+        {children}
+      </Command>
+    </DialogShell>
   )
 }
 
@@ -71,7 +68,7 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="bg-card flex h-12 items-center gap-3 border-b px-6"
+      className="bg-card flex h-8 items-center gap-3  px-6"
     >
       <SearchIcon className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input
@@ -93,7 +90,7 @@ function CommandList({
   return (
     <CommandPrimitive.List
       data-slot="command-list"
-      className={cn("bg-card max-h-[520px] scroll-py-1 overflow-x-hidden overflow-y-auto", className)}
+      className={cn("max-h-[520px] scroll-py-1 overflow-x-hidden overflow-y-auto", className)}
       {...props}
     />
   )
@@ -118,7 +115,7 @@ function CommandGroup({
   return (
     <CommandPrimitive.Group
       data-slot="command-group"
-      className={cn("bg-card text-foreground overflow-hidden", className)}
+      className={cn("text-foreground overflow-hidden", className)}
       {...props}
     />
   )
@@ -144,7 +141,7 @@ function CommandItem({
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
-      className={cn("bg-card text-muted-foreground hover:bg-primary/20 hover:text-black aria-[selected=true]:bg-primary/20 aria-[selected=true]:text-primary [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-3 rounded-md  px-4 py-3 my-1 text-sm outline-hidden select-none transition-colors duration-150 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4", className)}
+      className={cn("bg-transparent text-muted-foreground hover:bg-primary/20 hover:text-black aria-selected:bg-primary/20 aria-selected:text-primary [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-3 rounded-md px-4 py-3 my-1 text-sm outline-hidden select-none transition-colors duration-150 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4", className)}
       {...props}
     />
   )
