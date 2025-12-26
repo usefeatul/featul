@@ -11,6 +11,7 @@ import { format } from "date-fns"
 import { roleBadgeClass } from "@/components/settings/team/role-badge"
 import { cn } from "@oreilla/ui/lib/utils"
 import { getInitials } from "@/utils/user-utils"
+import RoleBadge from "@/components/global/RoleBadge"
 
 interface Props {
   slug: string
@@ -56,10 +57,13 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
                 <TableRow key={m.userId} className="cursor-pointer">
                   <TableCell className="px-4">
                     <Link href={`/workspaces/${slug}/members/${m.userId}`} className="flex items-center gap-3 min-w-0">
-                      <Avatar>
-                        <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
-                        <AvatarFallback>{getInitials(m.name || m.email || "")}</AvatarFallback>
-                      </Avatar>
+                      <div className="relative">
+                        <Avatar className="size-8">
+                          <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
+                          <AvatarFallback>{getInitials(m.name || m.email || "")}</AvatarFallback>
+                        </Avatar>
+                        <RoleBadge role={m.role} isOwner={m.isOwner} />
+                      </div>
                       <div className="min-w-0">
                         <div className="font-medium truncate">{m.name || m.email || m.userId}</div>
                         <div className="text-xs text-accent truncate">{m.email}</div>

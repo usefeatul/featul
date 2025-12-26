@@ -11,6 +11,7 @@ import { roleBadgeClass } from "@/components/settings/team/role-badge"
 import { cn } from "@oreilla/ui/lib/utils"
 import Link from "next/link"
 import StatusIcon from "@/components/requests/StatusIcon"
+import RoleBadge from "@/components/global/RoleBadge"
 
 interface Props {
   slug: string
@@ -86,10 +87,13 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
     <div className="rounded-md border bg-card dark:bg-black/40 p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 space-y-4">
         <div className="flex items-center gap-4">
-          <Avatar className="size-12">
-            <AvatarImage src={member?.image || ""} alt={member?.name || member?.email || ""} />
-            <AvatarFallback>{getInitials(member?.name || member?.email || "")}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="size-12">
+              <AvatarImage src={member?.image || ""} alt={member?.name || member?.email || ""} />
+              <AvatarFallback>{getInitials(member?.name || member?.email || "")}</AvatarFallback>
+            </Avatar>
+            <RoleBadge role={member?.role} isOwner={member?.isOwner} />
+          </div>
           <div className="min-w-0">
             <div className="font-semibold truncate">{member?.name || member?.email || userId}</div>
             <div className="text-xs text-accent truncate">{member?.email}</div>
