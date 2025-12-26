@@ -49,7 +49,7 @@ export default async function RoadmapPage({
               </div>
               <div className="mt-2 inline-flex items-center gap-1">
                 <SortPopover subdomain={subdomain} slug={slug} />
-                <SearchAction />
+                <SearchAction slug={slug} />
               </div>
             </div>
           </>
@@ -58,7 +58,7 @@ export default async function RoadmapPage({
             <div className="lg:hidden flex items-center justify-between gap-2">
               <span className="inline-flex items-center gap-2">
                 <SortPopover subdomain={subdomain} slug={slug} />
-                <SearchAction />
+                <SearchAction slug={slug} />
               </span>
             </div>
             <h1 className="text-lg font-semibold mb-5">Roadmap</h1>

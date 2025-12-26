@@ -14,7 +14,7 @@ export function DomainSidebar({ subdomain, slug, initialBoards, selectedBoard, h
     <aside className="space-y-4">
       <div className={`flex items-center ${alignClass} gap-2`}>
         <SortPopover subdomain={subdomain} slug={slug} />
-        <SearchAction />
+        <SearchAction slug={slug} />
       </div>
       {!hideSubmitButton && <SubmitIdeaCard subdomain={subdomain} slug={slug} />}
       <BoardsList subdomain={subdomain} slug={slug} initialBoards={initialBoards} selectedBoard={selectedBoard} />

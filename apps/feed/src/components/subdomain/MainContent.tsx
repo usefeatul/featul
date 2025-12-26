@@ -92,7 +92,7 @@ export function MainContent({
               <div className="lg:hidden flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-2">
                   <SortPopover subdomain={subdomain} slug={slug} />
-                  <SearchAction />
+                  <SearchAction slug={slug} />
                 </span>
                 <BoardsDropdown slug={slug} subdomain={subdomain} initialBoards={initialBoards} selectedBoard={selectedBoard} />
               </div>
@@ -101,7 +101,7 @@ export function MainContent({
                 <BoardsDropdown slug={slug} subdomain={subdomain} initialBoards={initialBoards} selectedBoard={selectedBoard} />
                 <span className="inline-flex items-center gap-2">
                   <SortPopover subdomain={subdomain} slug={slug} />
-                  <SearchAction />
+                  <SearchAction slug={slug} />
                 </span>
               </div>
             )}

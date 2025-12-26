@@ -2,8 +2,8 @@
 
 import React from "react"
 import { SearchIcon } from "@oreilla/ui/icons/search"
-import { cn } from "@oreilla/ui/lib/utils"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { Button } from "@oreilla/ui/components/button"
 import { buildRequestsUrl } from "@/utils/request-filters"
 import { getSlugFromPath } from "@/config/nav"
 import {
@@ -56,14 +56,16 @@ export default function SearchAction({ className = "" }: { className?: string })
 
   return (
     <>
-      <button
+      <Button
         type="button"
-        className={cn("rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-background border bg-card dark:bg-black/40 px-2 py-2 cursor-pointer", className)}
+        variant="nav"
+        size="icon-sm"
         aria-label="Search"
+        className={className}
         onClick={() => setOpen(true)}
       >
         <SearchIcon className="w-4 h-4" size={16} />
-      </button>
+      </Button>
 
       <CommandDialog
         open={open}
