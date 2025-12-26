@@ -138,21 +138,25 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
             ) : (
               items.map((it: any) => (
                 <li key={`${it.type}-${it.id}-${String(it.createdAt)}`} className="py-3">
-                  <div className="text-xs text-accent">
-                    <span className="font-medium">{format(new Date(it.createdAt), "LLL d")}</span>{" "}
+                  <div className="text-xs text-accent flex items-center gap-2 min-w-0">
+                    <span className="font-medium">
+                      {format(new Date(it.createdAt), "LLL d")}
+                    </span>
                     <span>{it.type.replace("_", " ")}</span>
-                    {it.title ? (
+                    {it.entity === "post" && it.status ? (
                       <>
-                        <span className="mx-1">·</span>
-                        <span className="text-foreground font-medium">{it.title}</span>
+                        <span>·</span>
+                        <StatusIcon status={String(it.status)} className="size-3.5 shrink-0" />
                       </>
                     ) : null}
-                  </div>
-                  <div className="mt-1 text-sm flex items-center gap-2 min-w-0">
-                    {it.entity === "post" && it.status ? <StatusIcon status={String(it.status)} className="size-4 shrink-0" /> : null}
-                    <div className="min-w-0">
-                      <span className="font-medium wrap-break-word">{it.title}</span>
-                    </div>
+                    {it.title ? (
+                      <>
+                        <span>·</span>
+                        <span className="text-foreground font-medium truncate">
+                          {it.title}
+                        </span>
+                      </>
+                    ) : null}
                   </div>
                 </li>
               ))
