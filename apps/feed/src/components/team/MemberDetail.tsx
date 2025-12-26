@@ -24,7 +24,7 @@ interface Props {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border p-3">
+    <div className="rounded-md bg-muted/40 p-3">
       <div className="text-sm text-accent">{label}</div>
       <div className="text-2xl font-semibold">{value}</div>
     </div>
@@ -84,8 +84,8 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
   }, [activityData?.pages])
 
   return (
-    <div className="rounded-md border bg-card dark:bg-black/40 p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div className="lg:col-span-2 space-y-4">
+    <div className="space-y-4">
+      <div className="rounded-md border bg-card dark:bg-black/40 p-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className="size-12">
@@ -94,76 +94,82 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
             </Avatar>
             <RoleBadge role={member?.role} isOwner={member?.isOwner} />
           </div>
-          <div className="min-w-0">
-            <div className="font-semibold truncate">{member?.name || member?.email || userId}</div>
+          <div className="min-w-0 space-y-1">
+            <div className="text-base font-semibold truncate">{member?.name || member?.email || userId}</div>
             <div className="text-xs text-accent truncate">{member?.email}</div>
-            <div className={cn("text-xs mt-1", roleBadgeClass(member?.role || "member", member?.isOwner))}>
-              {member?.isOwner ? "owner" : member?.role}
-            </div>
-            <div className="text-xs text-accent mt-1">
-              {member?.joinedAt ? `Joined ${format(new Date(member.joinedAt), "LLL d")}` : ""}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className={cn("px-2 py-0.5 rounded-full border", roleBadgeClass(member?.role || "member", member?.isOwner))}>
+                {member?.isOwner ? "owner" : member?.role}
+              </span>
+              {member?.joinedAt ? (
+                <span className="text-accent">Joined {format(new Date(member.joinedAt), "LLL d, yyyy")}</span>
+              ) : null}
             </div>
           </div>
         </div>
-
-        <div className="space-y-3">
-          <div className="font-semibold">Activity</div>
-          <div className="rounded-md border bg-card dark:bg-black/20">
-            <ul className="divide-y">
-              {items.length === 0 ? (
-                <li className="p-4 text-accent text-sm">No activity</li>
-              ) : (
-                items.map((it: any) => (
-                  <li key={`${it.type}-${it.id}-${String(it.createdAt)}`} className="p-4">
-                    <div className="text-sm">
-                      <span className="font-medium">{format(new Date(it.createdAt), "LLL d")}</span>{" "}
-                      <span className="text-accent">{it.type.replace("_", " ")}</span>
-                    </div>
-                    <div className="text-sm flex items-center gap-2 min-w-0">
-                      {it.entity === "post" && it.status ? <StatusIcon status={String(it.status)} className="size-4 shrink-0" /> : null}
-                      <div className="min-w-0">
-                        <span className="font-semibold wrap-break-word">{it.title}</span>
-                      </div>
-                    </div>
-                  </li>
-                ))
-              )}
-            </ul>
-            {hasNextPage ? (
-              <div className="p-3 border-t">
-                <button
-                  className="text-sm text-primary"
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                >
-                  {isFetchingNextPage ? "Loading..." : "Load more"}
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="font-semibold">Stats</div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
           <StatCard label="Posts" value={Number(statsData?.stats?.posts || 0)} />
           <StatCard label="Comments" value={Number(statsData?.stats?.comments || 0)} />
           <StatCard label="Upvotes" value={Number(statsData?.stats?.upvotes || 0)} />
         </div>
+      </div>
 
-        <div className="space-y-3">
-          <div className="font-semibold">Top Posts</div>
-          <div className="rounded-md border divide-y">
-            {(statsData?.topPosts || []).length === 0 ? (
-              <div className="p-4 text-sm text-accent">No posts</div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="rounded-md border bg-card dark:bg-black/40 p-4 lg:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <div className="font-semibold">Activity</div>
+          </div>
+          <ul className="divide-y">
+            {items.length === 0 ? (
+              <li className="py-6 text-accent text-sm text-center">No activity yet</li>
             ) : (
-              (statsData?.topPosts || []).map((p) => (
-                <Link key={p.id} href={`/workspaces/${slug}/requests/${p.id}`} className="flex items-center justify-between p-3 hover:bg-muted">
-                  <div className="text-sm truncate">{p.title}</div>
-                  <div className="text-xs text-accent">{p.upvotes} ↑</div>
-                </Link>
+              items.map((it: any) => (
+                <li key={`${it.type}-${it.id}-${String(it.createdAt)}`} className="py-3">
+                  <div className="text-xs text-accent">
+                    <span className="font-medium">{format(new Date(it.createdAt), "LLL d")}</span>{" "}
+                    <span>{it.type.replace("_", " ")}</span>
+                  </div>
+                  <div className="mt-1 text-sm flex items-center gap-2 min-w-0">
+                    {it.entity === "post" && it.status ? <StatusIcon status={String(it.status)} className="size-4 shrink-0" /> : null}
+                    <div className="min-w-0">
+                      <span className="font-medium wrap-break-word">{it.title}</span>
+                    </div>
+                  </div>
+                </li>
               ))
+            )}
+          </ul>
+          {hasNextPage ? (
+            <div className="pt-3 mt-1 border-t flex justify-center">
+              <button
+                className="text-sm text-primary"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage ? "Loading..." : "Load more"}
+              </button>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="space-y-4">
+          <div className="rounded-md border bg-card dark:bg-black/40 p-4">
+            <div className="font-semibold mb-3">Top posts</div>
+            {(statsData?.topPosts || []).length === 0 ? (
+              <div className="text-sm text-accent">No posts yet</div>
+            ) : (
+              <div className="space-y-2">
+                {(statsData?.topPosts || []).map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/workspaces/${slug}/requests/${p.id}`}
+                    className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-sm"
+                  >
+                    <div className="truncate">{p.title}</div>
+                    <div className="text-xs text-accent">{p.upvotes} ↑</div>
+                  </Link>
+                ))}
+              </div>
             )}
           </div>
         </div>
