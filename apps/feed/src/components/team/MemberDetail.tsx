@@ -141,6 +141,12 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
                   <div className="text-xs text-accent">
                     <span className="font-medium">{format(new Date(it.createdAt), "LLL d")}</span>{" "}
                     <span>{it.type.replace("_", " ")}</span>
+                    {it.title ? (
+                      <>
+                        <span className="mx-1">·</span>
+                        <span className="text-foreground font-medium">{it.title}</span>
+                      </>
+                    ) : null}
                   </div>
                   <div className="mt-1 text-sm flex items-center gap-2 min-w-0">
                     {it.entity === "post" && it.status ? <StatusIcon status={String(it.status)} className="size-4 shrink-0" /> : null}
