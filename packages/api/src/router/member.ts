@@ -77,7 +77,7 @@ export function createMemberRouter() {
           .limit(1)
 
         const topPosts = await ctx.db
-          .select({ id: post.id, title: post.title, slug: post.slug, upvotes: post.upvotes })
+          .select({ id: post.id, title: post.title, slug: post.slug, upvotes: post.upvotes, status: post.roadmapStatus })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
           .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(post.authorId, input.userId)))

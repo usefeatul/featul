@@ -19,7 +19,7 @@ interface Props {
   userId: string
   initialMember?: Member
   initialStats?: { posts: number; comments: number; upvotes: number }
-  initialTopPosts?: Array<{ id: string; title: string; slug: string; upvotes: number }>
+  initialTopPosts?: Array<{ id: string; title: string; slug: string; upvotes: number; status?: string | null }>
   initialActivity: { items: any[]; nextCursor: string | null }
 }
 
@@ -52,7 +52,10 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
     queryFn: async () => {
       const res = await client.member.statsByWorkspaceSlug.$get({ slug, userId })
       const d = await res.json() as { stats?: { posts: number; comments: number; upvotes: number }; topPosts?: any[] }
-      return { stats: d?.stats || { posts: 0, comments: 0, upvotes: 0 }, topPosts: (d?.topPosts || []) as Array<{ id: string; title: string; slug: string; upvotes: number }> }
+      return {
+        stats: d?.stats || { posts: 0, comments: 0, upvotes: 0 },
+        topPosts: (d?.topPosts || []) as Array<{ id: string; title: string; slug: string; upvotes: number; status?: string | null }>,
+      }
     },
     placeholderData: { stats: initialStats || { posts: 0, comments: 0, upvotes: 0 }, topPosts: initialTopPosts },
     staleTime: 0,
@@ -163,14 +166,17 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
                 {(statsData?.topPosts || []).map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-sm"
+                    className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-sm gap-3"
                   >
-                    <Link
-                      href={`/workspaces/${slug}/requests/${p.id}`}
-                      className="truncate text-foreground hover:text-primary"
-                    >
-                      {p.title}
-                    </Link>
+                    <div className="flex items-center gap-2 min-w-0">
+                      {p.status ? <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" /> : null}
+                      <Link
+                        href={`/workspaces/${slug}/requests/${p.id}`}
+                        className="truncate text-foreground hover:text-primary"
+                      >
+                        {p.title}
+                      </Link>
+                    </div>
                     <UpvoteButton
                       postId={p.id}
                       upvotes={Number(p.upvotes || 0)}
