@@ -19,7 +19,7 @@ export const BoxIcon: React.FC<BoxIconProps> = ({
     >
       <path
         d="M14.75 6.25V13.25C14.75 14.355 13.855 15.25 12.75 15.25H5.25C4.145 15.25 3.25 14.355 3.25 13.25V6.25"
-        fill="currentColor"
+        fill="#1c1f21"
         fillOpacity="0.3"
         data-color="color-2"
         data-stroke="none"
