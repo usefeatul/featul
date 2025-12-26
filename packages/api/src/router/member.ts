@@ -48,7 +48,7 @@ export function createMemberRouter() {
           .select({ count: sql<number>`count(*)` })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(post.authorId, input.userId)))
+          .where(and(eq(board.workspaceId, ws.id), eq(post.authorId, input.userId)))
           .limit(1)
 
         const [commentsCountRow] = await ctx.db
@@ -56,7 +56,7 @@ export function createMemberRouter() {
           .from(comment)
           .innerJoin(post, eq(comment.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(comment.authorId, input.userId)))
+          .where(and(eq(board.workspaceId, ws.id), eq(comment.authorId, input.userId)))
           .limit(1)
 
         const [postVotesCountRow] = await ctx.db
@@ -64,7 +64,7 @@ export function createMemberRouter() {
           .from(vote)
           .innerJoin(post, eq(vote.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(vote.userId, input.userId)))
+          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId)))
           .limit(1)
 
         const [commentVotesCountRow] = await ctx.db
@@ -73,14 +73,14 @@ export function createMemberRouter() {
           .innerJoin(comment, eq(vote.commentId, comment.id))
           .innerJoin(post, eq(comment.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(vote.userId, input.userId)))
+          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId)))
           .limit(1)
 
         const topPosts = await ctx.db
           .select({ id: post.id, title: post.title, slug: post.slug, upvotes: post.upvotes, status: post.roadmapStatus })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(post.authorId, input.userId)))
+          .where(and(eq(board.workspaceId, ws.id), eq(post.authorId, input.userId)))
           .orderBy(sql`coalesce(${post.upvotes}, 0) desc`, sql`coalesce(${post.createdAt}, now()) desc`)
           .limit(5)
 
@@ -116,7 +116,7 @@ export function createMemberRouter() {
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(post.authorId, input.userId), ...(cursorDate ? [lt(post.createdAt, cursorDate)] : [])))
+          .where(and(eq(board.workspaceId, ws.id), eq(post.authorId, input.userId), ...(cursorDate ? [lt(post.createdAt, cursorDate)] : [])))
           .limit(limit)
 
         const postUpdated = await ctx.db
@@ -132,7 +132,7 @@ export function createMemberRouter() {
           .from(postUpdate)
           .innerJoin(post, eq(postUpdate.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(postUpdate.authorId, input.userId), ...(cursorDate ? [lt(postUpdate.createdAt, cursorDate)] : [])))
+          .where(and(eq(board.workspaceId, ws.id), eq(postUpdate.authorId, input.userId), ...(cursorDate ? [lt(postUpdate.createdAt, cursorDate)] : [])))
           .limit(limit)
 
         const postMerged = await ctx.db
@@ -148,7 +148,7 @@ export function createMemberRouter() {
           .from(postMerge)
           .innerJoin(post, eq(postMerge.targetPostId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(postMerge.mergedBy, input.userId), ...(cursorDate ? [lt(postMerge.createdAt, cursorDate)] : [])))
+          .where(and(eq(board.workspaceId, ws.id), eq(postMerge.mergedBy, input.userId), ...(cursorDate ? [lt(postMerge.createdAt, cursorDate)] : [])))
           .limit(limit)
 
         const commentCreated = await ctx.db
@@ -164,7 +164,7 @@ export function createMemberRouter() {
           .from(comment)
           .innerJoin(post, eq(comment.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(comment.authorId, input.userId), ...(cursorDate ? [lt(comment.createdAt, cursorDate)] : [])))
+          .where(and(eq(board.workspaceId, ws.id), eq(comment.authorId, input.userId), ...(cursorDate ? [lt(comment.createdAt, cursorDate)] : [])))
           .limit(limit)
 
         const commentEdited = await ctx.db
@@ -180,7 +180,7 @@ export function createMemberRouter() {
           .from(comment)
           .innerJoin(post, eq(comment.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(comment.authorId, input.userId), ...(cursorDate ? [lt(comment.editedAt as any, cursorDate)] : [])))
+          .where(and(eq(board.workspaceId, ws.id), eq(comment.authorId, input.userId), ...(cursorDate ? [lt(comment.editedAt as any, cursorDate)] : [])))
           .limit(limit)
 
         const votePosts = await ctx.db
@@ -196,7 +196,7 @@ export function createMemberRouter() {
           .from(vote)
           .innerJoin(post, eq(vote.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(vote.userId, input.userId), ...(cursorDate ? [lt(vote.createdAt, cursorDate)] : [])))
+          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId), ...(cursorDate ? [lt(vote.createdAt, cursorDate)] : [])))
           .limit(limit)
 
         const voteComments = await ctx.db
@@ -213,7 +213,7 @@ export function createMemberRouter() {
           .innerJoin(comment, eq(vote.commentId, comment.id))
           .innerJoin(post, eq(comment.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(vote.userId, input.userId), ...(cursorDate ? [lt(vote.createdAt, cursorDate)] : [])))
+          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId), ...(cursorDate ? [lt(vote.createdAt, cursorDate)] : [])))
           .limit(limit)
 
         const all = [
