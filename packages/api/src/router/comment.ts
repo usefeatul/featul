@@ -178,10 +178,11 @@ export function createCommentRouter() {
           // User is not authenticated
         }
 
-        // Check if post exists and comments are allowed
         const [targetPost] = await ctx.db
           .select({
             postId: post.id,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
             isLocked: post.isLocked,
             boardId: board.id,
             allowComments: board.allowComments,
@@ -260,7 +261,6 @@ export function createCommentRouter() {
             .where(eq(comment.id, parentId));
         }
 
-        // Create comment
         const commentMetadata = {
           ...(metadata || {}),
           fingerprint: fingerprint || undefined,
@@ -290,9 +290,11 @@ export function createCommentRouter() {
             actionType: "create",
             entity: "comment",
             entityId: String(newComment.id),
-            title: null,
+            title: targetPost.postTitle,
             metadata: {
               postId: newComment.postId,
+              postTitle: targetPost.postTitle,
+              roadmapStatus: targetPost.roadmapStatus,
               parentId: newComment.parentId,
               isAnonymous: !userId,
             },
@@ -444,6 +446,8 @@ export function createCommentRouter() {
         const [postInfo] = await ctx.db
           .select({
             workspaceId: workspace.id,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
@@ -459,9 +463,11 @@ export function createCommentRouter() {
             actionType: "update",
             entity: "comment",
             entityId: String(commentId),
-            title: null,
+            title: postInfo.postTitle,
             metadata: {
               postId: existingComment.postId,
+              postTitle: postInfo.postTitle,
+              roadmapStatus: postInfo.roadmapStatus,
             },
           });
         }
@@ -496,6 +502,8 @@ export function createCommentRouter() {
             postId: post.id,
             workspaceId: workspace.id,
             ownerId: workspace.ownerId,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
@@ -559,9 +567,11 @@ export function createCommentRouter() {
           actionType: "delete",
           entity: "comment",
           entityId: String(commentId),
-          title: null,
+          title: postInfo.postTitle,
           metadata: {
             postId: existingComment.postId,
+            postTitle: postInfo.postTitle,
+            roadmapStatus: postInfo.roadmapStatus,
           },
         });
 
@@ -602,6 +612,8 @@ export function createCommentRouter() {
         const [postInfo] = await ctx.db
           .select({
             workspaceId: workspace.id,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
@@ -667,8 +679,11 @@ export function createCommentRouter() {
                 actionType: "delete",
                 entity: "comment",
                 entityId: String(commentId),
-                title: null,
+                title: postInfo.postTitle,
                 metadata: {
+                  postId: targetComment.postId,
+                  postTitle: postInfo.postTitle,
+                  roadmapStatus: postInfo.roadmapStatus,
                   voteType,
                   fingerprint: userId ? null : fingerprint || null,
                 },
@@ -708,8 +723,11 @@ export function createCommentRouter() {
                 actionType: "update",
                 entity: "comment",
                 entityId: String(commentId),
-                title: null,
+                title: postInfo.postTitle,
                 metadata: {
+                  postId: targetComment.postId,
+                  postTitle: postInfo.postTitle,
+                  roadmapStatus: postInfo.roadmapStatus,
                   from: existingReaction.type,
                   to: voteType,
                   fingerprint: userId ? null : fingerprint || null,
@@ -750,8 +768,11 @@ export function createCommentRouter() {
               actionType: "create",
               entity: "comment",
               entityId: String(commentId),
-              title: null,
+              title: postInfo.postTitle,
               metadata: {
+                postId: targetComment.postId,
+                postTitle: postInfo.postTitle,
+                roadmapStatus: postInfo.roadmapStatus,
                 voteType,
                 fingerprint: userId ? null : fingerprint || null,
               },
@@ -789,6 +810,8 @@ export function createCommentRouter() {
         const [postInfo] = await ctx.db
           .select({
             workspaceId: workspace.id,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
@@ -816,8 +839,11 @@ export function createCommentRouter() {
           actionType: "create",
           entity: "comment",
           entityId: String(commentId),
-          title: null,
+          title: postInfo.postTitle,
           metadata: {
+            postId: targetComment.postId,
+            postTitle: postInfo.postTitle,
+            roadmapStatus: postInfo.roadmapStatus,
             reason,
             hasDescription: Boolean(description),
           },
@@ -837,6 +863,8 @@ export function createCommentRouter() {
           .select({
             id: comment.id,
             postId: post.id,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
             workspaceOwnerId: workspace.ownerId,
             workspaceId: workspace.id,
           })
@@ -876,9 +904,12 @@ export function createCommentRouter() {
           actionType: "update",
           entity: "comment",
           entityId: String(commentId),
-          title: null,
+          title: target.postTitle,
           metadata: {
             postId: target.postId,
+            postTitle: target.postTitle,
+            roadmapStatus: target.roadmapStatus,
+            isPinned,
           },
         });
 

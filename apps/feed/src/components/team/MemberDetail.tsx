@@ -242,28 +242,108 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
 
     if (it.entity === "comment") {
       if (it.type === "comment_created") {
-        return <span>added a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>added a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
       if (it.type === "comment_updated") {
-        return <span>updated a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>updated a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
       if (it.type === "comment_deleted") {
-        return <span>deleted a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>deleted a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
       if (it.type === "comment_voted") {
-        return <span>voted on a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>voted on a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
       if (it.type === "comment_vote_removed") {
-        return <span>removed vote from a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>removed vote from a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
       if (it.type === "comment_reported") {
-        return <span>reported a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>reported a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
       if (it.type === "comment_pinned") {
-        return <span>pinned a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>pinned a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
       if (it.type === "comment_unpinned") {
-        return <span>unpinned a comment</span>
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>unpinned a comment on</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
       }
     }
 
