@@ -35,7 +35,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading }: MemberTopPostsProp
                 <div className="flex items-center gap-2 min-w-0">
                   {p.status ? <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" /> : null}
                   <Link
-                    href={`/workspaces/${slug}/requests/${p.id}`}
+                    href={`/workspaces/${slug}/requests/${p.slug}`}
                     className="truncate text-foreground hover:text-primary"
                   >
                     {p.title}
