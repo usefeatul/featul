@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { Loader2 } from "lucide-react"
 import { cn } from "@oreilla/ui/lib/utils"
+import LoaderIcon from "@oreilla/ui/icons/loader"
 
 interface LoadingSpinnerProps {
   label?: string
@@ -12,9 +12,8 @@ interface LoadingSpinnerProps {
 export function LoadingSpinner({ label = "Loading...", className }: LoadingSpinnerProps) {
   return (
     <div className={cn("flex items-center justify-center gap-2 py-6 text-sm text-accent", className)}>
-      <Loader2 className="size-4 animate-spin" />
+      <LoaderIcon className="size-4 animate-spin" />
       <span>{label}</span>
     </div>
   )
 }
-

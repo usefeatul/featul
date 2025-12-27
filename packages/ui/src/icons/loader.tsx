@@ -16,73 +16,80 @@ export const LoaderIcon: React.FC<LoaderIconProps> = ({
       y="0px"
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 18 18"
       className={className}
     >
-      {" "}
       <path
-        opacity="0.6"
-        d="M12 19V22"
+        d="M9 1.75V4.25"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
       <path
-        d="M12 2V5"
+        d="M14.127 3.873L12.359 5.641"
+        opacity="0.88"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
       <path
-        opacity="0.4"
-        d="M5.005 11.995L2.005 11.995"
+        d="M16.25 9H13.75"
+        opacity="0.75"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
       <path
-        opacity="0.8"
-        d="M22.005 11.995L19.005 11.995"
+        d="M14.127 14.127L12.359 12.359"
+        opacity="0.63"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
       <path
+        d="M9 16.25V13.75"
         opacity="0.5"
-        d="M7.0517 16.9462L4.93038 19.0675"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
       <path
-        opacity="0.9"
-        d="M19.0725 4.92539L16.9512 7.04671"
+        d="M3.87299 14.127L5.64099 12.359"
+        opacity="0.38"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
       <path
-        opacity="0.3"
-        d="M7.05878 7.04672L4.93746 4.9254"
+        d="M1.75 9H4.25"
+        opacity="0.25"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
       <path
-        opacity="0.7"
-        d="M19.0796 19.0675L16.9583 16.9462"
+        d="M3.87299 3.873L5.64099 5.641"
+        opacity="0.13"
         stroke="#1c1f21"
-        strokeWidth="2"
-        strokeLinecap="square"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
-      ></path>{" "}
+      />
     </svg>
   );
 };
