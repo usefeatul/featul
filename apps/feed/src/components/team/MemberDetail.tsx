@@ -96,6 +96,231 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
     return pages.flatMap((p: any) => p?.items || [])
   }, [activityData?.pages, initialActivity])
 
+  function renderActivityDescription(it: any) {
+    const status = it.status || it.metadata?.status || it.metadata?.roadmapStatus || it.metadata?.toStatus
+
+    if (it.entity === "post") {
+      if (it.type === "post_meta_updated") {
+        const fromStatus = it.metadata?.fromStatus
+        const toStatus = it.metadata?.toStatus || status
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>changed status</span>
+            {fromStatus && (
+              <>
+                <span>from</span>
+                <StatusIcon status={String(fromStatus)} className="size-3.5 shrink-0" />
+              </>
+            )}
+            {toStatus && (
+              <>
+                <span>to</span>
+                <StatusIcon status={String(toStatus)} className="size-3.5 shrink-0" />
+              </>
+            )}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_updated") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>updated post</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_created") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>created post</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_deleted") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>deleted post</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_voted") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>voted for</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_vote_removed") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>removed vote from</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_board_updated") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>moved post</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_merged") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>merged post into</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+
+      if (it.type === "post_reported") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>reported post</span>
+            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+    }
+
+    if (it.entity === "comment") {
+      if (it.type === "comment_created") {
+        return <span>added a comment</span>
+      }
+      if (it.type === "comment_updated") {
+        return <span>updated a comment</span>
+      }
+      if (it.type === "comment_deleted") {
+        return <span>deleted a comment</span>
+      }
+      if (it.type === "comment_voted") {
+        return <span>voted on a comment</span>
+      }
+      if (it.type === "comment_vote_removed") {
+        return <span>removed vote from a comment</span>
+      }
+      if (it.type === "comment_reported") {
+        return <span>reported a comment</span>
+      }
+      if (it.type === "comment_pinned") {
+        return <span>pinned a comment</span>
+      }
+      if (it.type === "comment_unpinned") {
+        return <span>unpinned a comment</span>
+      }
+    }
+
+    if (it.entity === "changelog_entry") {
+      if (it.type === "changelog_entry_created") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>created changelog entry</span>
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+      if (it.type === "changelog_entry_updated") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>updated changelog entry</span>
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+      if (it.type === "changelog_entry_deleted") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>deleted changelog entry</span>
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+      if (it.type === "changelog_entry_published") {
+        return (
+          <span className="flex items-center gap-2 min-w-0">
+            <span>published changelog entry</span>
+            {it.title ? (
+              <span className="text-foreground font-medium truncate">
+                {it.title}
+              </span>
+            ) : null}
+          </span>
+        )
+      }
+    }
+
+    return <span>{it.type.replace("_", " ")}</span>
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-sm border bg-card dark:bg-black/40 p-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between ring-1 ring-border/60 ring-offset-1 ring-offset-background">
@@ -142,21 +367,7 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
                     <span className="font-medium">
                       {format(new Date(it.createdAt), "LLL d")}
                     </span>
-                    <span>{it.type.replace("_", " ")}</span>
-                    {it.entity === "post" && it.status ? (
-                      <>
-                        <span>·</span>
-                        <StatusIcon status={String(it.status)} className="size-3.5 shrink-0" />
-                      </>
-                    ) : null}
-                    {it.title ? (
-                      <>
-                        <span>·</span>
-                        <span className="text-foreground font-medium truncate">
-                          {it.title}
-                        </span>
-                      </>
-                    ) : null}
+                    {renderActivityDescription(it)}
                   </div>
                 </li>
               ))

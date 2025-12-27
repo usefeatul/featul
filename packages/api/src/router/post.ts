@@ -205,17 +205,17 @@ export function createPostRouter() {
 
         // Update Post
         const [updatedPost] = await ctx.db
-            .update(post)
-            .set({
-                title: title ?? existingPost.title,
-                content: content ?? existingPost.content,
-                image: image !== undefined ? image : existingPost.image,
-                boardId,
-                roadmapStatus: roadmapStatus ?? existingPost.roadmapStatus,
-                updatedAt: new Date() // Manual update since defaultNow() is only for insert usually
-            })
-            .where(eq(post.id, postId))
-            .returning()
+          .update(post)
+          .set({
+            title: title ?? existingPost.title,
+            content: content ?? existingPost.content,
+            image: image !== undefined ? image : existingPost.image,
+            boardId,
+            roadmapStatus: roadmapStatus ?? existingPost.roadmapStatus,
+            updatedAt: new Date(),
+          })
+          .where(eq(post.id, postId))
+          .returning()
 
         // Update tags if provided
         if (tags) {
@@ -240,6 +240,9 @@ export function createPostRouter() {
           .limit(1)
 
         if (boardRow) {
+          const fromStatus = roadmapStatus !== undefined ? existingPost.roadmapStatus : null
+          const toStatus = roadmapStatus !== undefined ? roadmapStatus : updatedPost.roadmapStatus
+
           await ctx.db.insert(activityLog).values({
             workspaceId: boardRow.workspaceId,
             userId,
@@ -250,7 +253,9 @@ export function createPostRouter() {
             title: updatedPost.title,
             metadata: {
               boardId,
-              roadmapStatus: updatedPost.roadmapStatus,
+              roadmapStatus: toStatus,
+              fromStatus,
+              toStatus,
               hasTitleChange: title !== undefined && title !== existingPost.title,
               hasContentChange: content !== undefined && content !== existingPost.content,
               hasTagsChange: Array.isArray(tags),
@@ -833,6 +838,7 @@ export function createPostRouter() {
             sourcePostId: sourcePost.id,
             mergeType,
             reason: reason || null,
+            roadmapStatus: targetPost.roadmapStatus,
           },
         })
 

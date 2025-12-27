@@ -747,7 +747,7 @@ export function createBoardRouter() {
       .input(updatePostMetaSchema)
       .post(async ({ ctx, input, c }) => {
         const [p] = await ctx.db
-          .select({ id: post.id, boardId: post.boardId, title: post.title, slug: post.slug })
+          .select({ id: post.id, boardId: post.boardId, title: post.title, slug: post.slug, roadmapStatus: post.roadmapStatus })
           .from(post)
           .where(eq(post.id, input.postId))
           .limit(1)
@@ -789,6 +789,9 @@ export function createBoardRouter() {
 
         await ctx.db.update(post).set(patch).where(eq(post.id, input.postId))
 
+        const fromStatus = input.roadmapStatus !== undefined ? p.roadmapStatus : null
+        const toStatus = input.roadmapStatus !== undefined ? input.roadmapStatus : p.roadmapStatus
+
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
@@ -798,7 +801,9 @@ export function createBoardRouter() {
           entityId: String(input.postId),
           title: p.title,
           metadata: {
-            roadmapStatus: input.roadmapStatus,
+            roadmapStatus: toStatus,
+            fromStatus,
+            toStatus,
             isPinned: input.isPinned,
             isLocked: input.isLocked,
             isFeatured: input.isFeatured,
@@ -814,7 +819,7 @@ export function createBoardRouter() {
       .input(updatePostBoardSchema)
       .post(async ({ ctx, input, c }) => {
         const [p] = await ctx.db
-          .select({ id: post.id, boardId: post.boardId, title: post.title, slug: post.slug })
+          .select({ id: post.id, boardId: post.boardId, title: post.title, slug: post.slug, roadmapStatus: post.roadmapStatus })
           .from(post)
           .where(eq(post.id, input.postId))
           .limit(1)
@@ -864,6 +869,7 @@ export function createBoardRouter() {
           entityId: String(input.postId),
           title: p.title,
           metadata: {
+            roadmapStatus: p.roadmapStatus,
             fromBoardId: p.boardId,
             toBoardId: targetBoard.id,
             slug: p.slug,
