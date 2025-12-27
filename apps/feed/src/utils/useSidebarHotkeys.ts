@@ -15,13 +15,15 @@ export function useSidebarHotkeys(active: boolean, middleNav: NavItem[], router:
       if (role === "textbox") return
       if (tag === "INPUT" || tag === "TEXTAREA" || (t && (t as any).isContentEditable)) return
       const key = e.key.toLowerCase()
-      if (key === "r" || key === "c" || key === "b") {
+      if (key === "r" || key === "c" || key === "b" || key === "m") {
         const target =
           key === "r"
             ? middleNav.find((i) => i.label.toLowerCase() === "roadmap")
             : key === "c"
             ? middleNav.find((i) => i.label.toLowerCase() === "changelog")
-            : middleNav.find((i) => i.label.toLowerCase() === "my board")
+            : key === "b"
+            ? middleNav.find((i) => i.label.toLowerCase() === "my board")
+            : middleNav.find((i) => i.label.toLowerCase() === "members")
         if (target) {
           if (target.external) {
             window.open(target.href, "_blank")
@@ -40,7 +42,7 @@ export function getShortcutForLabel(label: string) {
   const l = label.toLowerCase()
   if (l === "roadmap") return "R"
   if (l === "changelog") return "C"
+  if (l === "members") return "M"
   if (l === "my board") return "B"
   return ""
 }
-
