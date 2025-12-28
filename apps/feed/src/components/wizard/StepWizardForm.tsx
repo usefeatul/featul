@@ -7,8 +7,8 @@ import { Label } from "@oreilla/ui/components/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@oreilla/ui/components/card"
 import TimezonePicker from "./TimezonePicker"
 import { ArrowRight, Loader2, AlertCircle, Link2 } from "lucide-react"
-import CompletedIcon from "@oreilla/ui/icons/completed"
-import ClosedIcon from "@oreilla/ui/icons/closed"
+import CheckIcon from "@oreilla/ui/icons/check"
+import XMarkIcon from "@oreilla/ui/icons/xmark"
 import {
   isNameValid,
   isDomainValid,
@@ -201,10 +201,10 @@ export default function StepWizardForm({
                 {slugChecking ? (
                   <Loader2 className="size-4 text-muted-foreground animate-spin" />
                 ) : !slugLocked && slug && slugAvailable === true ? (
-                  <CompletedIcon size={16} className="text-emerald-600" />
+                  <CheckIcon  className=" size-3 bg-emerald-600 rounded-full p-2" />
                 ) : !slugLocked &&
                   (slugAvailable === false || (slug && !isSlugValid(slug))) ? (
-                  <ClosedIcon size={16} className="text-destructive" />
+                  <XMarkIcon className=" size-3 bg-destructive rounded-full" />
                 ) : null}
               </div>
             </div>
