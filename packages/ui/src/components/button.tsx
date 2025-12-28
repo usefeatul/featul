@@ -23,10 +23,10 @@ const buttonVariants = cva(
           plain: cn("bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50 ring-1 ring-border/60 ring-offset-1 ring-offset-background"),
         },
         size: {
-          default: "h-8 px-2 py-2 rounded-mdhas-[>svg]:px-3",
+          default: "h-8 px-2 py-2 rounded-md has-[>svg]:px-3",
           xs: "h-8 rounded-md  gap-1 px-2 has-[>svg]:px-2 text-xs",
           sm: "h-9 rounded-md  gap-1 px-3 has-[>svg]:px-2.5",
-          lg: "h-10 rounded-mdpx-4 has-[>svg]:px-3",
+          lg: "h-10 rounded-md px-4 has-[>svg]:px-3",
           icon: "size-9",
           "icon-sm": "size-8",
           "icon-lg": "size-10",
