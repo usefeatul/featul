@@ -65,7 +65,12 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[450px] p-0" align="center">
+      <PopoverContent
+        className="z-60 w-[calc(100vw-2rem)] sm:w-[450px] p-0"
+        align="center"
+        list
+        container={typeof document !== "undefined" ? (document.querySelector('[data-slot="dialog-content"]') as HTMLElement | null) : undefined}
+      >
         <div className="p-2 border-b">
            <div className="w-fit bg-muted/50 dark:bg-black rounded-sm  px-1.5 py-1 mb-1.5">
                <span className="text-xs font-light text-accent" suppressHydrationWarning>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import WorkspaceWizard from "@/components/wizard/Wizard"
+import { CreateWorkspaceDialog } from "@/components/workspaces/CreateWorkspaceDialog"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@oreilla/auth/session"
@@ -18,8 +18,8 @@ export default async function NewWorkspacePage() {
     redirect("/auth/sign-in?redirect=/workspaces/new")
   }
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4 sm:p-8">
-      <WorkspaceWizard />
+    <div className="min-h-screen bg-background">
+      <CreateWorkspaceDialog open />
     </div>
   )
 }
