@@ -2,14 +2,20 @@ import * as React from "react"
 
 import { cn } from "@oreilla/ui/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+interface CardProps extends React.ComponentProps<"div"> {
+  variant?: "default" | "plain"
+}
+
+function Card({ className, variant = "default", ...props }: CardProps) {
+  const baseClass =
+    variant === "plain"
+      ? "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md py-6 outline-none"
+      : "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md border py-6 outline-none ring-1 ring-border/60 ring-offset-1 ring-offset-background"
+
   return (
     <div
       data-slot="card"
-      className={cn(
-        "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md  border py-6  outline-none ring-1 ring-border/60 ring-offset-1 ring-offset-background",
-        className
-      )}
+      className={cn(baseClass, className)}
       {...props}
     />
   )

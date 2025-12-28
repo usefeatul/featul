@@ -98,7 +98,7 @@ export default function StepWizardForm({
   }, [step])
 
   return (
-    <Card className="w-full max-w-[520px] mx-auto ring-0 ring-offset-0">
+    <Card variant="plain" className="w-full max-w-[520px] mx-auto">
       <CardHeader>
         <div className="flex items-center gap-1 mb-2">
           {steps.map((_, i) => (
