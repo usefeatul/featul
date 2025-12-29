@@ -1,13 +1,15 @@
 import React from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@oreilla/api/client"
 import { buildTopNav, buildMiddleNav } from "@/config/nav"
+import type { PostDeletedEventDetail } from "@/types/events"
 
 export function useWorkspaceNav(
   slug: string,
   initialCounts?: Record<string, number> | null,
   initialDomainInfo?: { domain: { status: string; host?: string } | null } | null,
 ) {
+  const queryClient = useQueryClient()
   const primaryNav = React.useMemo(() => buildTopNav(slug), [slug])
   const { data: wsInfo } = useQuery<{ id: string; name: string; slug: string; logo?: string | null; domain?: string | null; customDomain?: string | null } | null>({
     queryKey: ["workspace", slug],
@@ -58,6 +60,57 @@ export function useWorkspaceNav(
     refetchOnWindowFocus: false,
     initialData: initialCounts,
   })
+
+  const normalizeStatus = React.useCallback((value: string | null | undefined): string | null => {
+    const raw = (value || "").trim().toLowerCase()
+    if (!raw) return null
+    const t = raw.replace(/-/g, "")
+    const map: Record<string, string> = {
+      pending: "pending",
+      review: "review",
+      planned: "planned",
+      progress: "progress",
+      completed: "completed",
+      closed: "closed",
+    }
+    return map[t] || raw
+  }, [])
+
+  React.useEffect(() => {
+    if (!slug) return
+    if (typeof window === "undefined") return
+    const handlePostDeleted = (event: Event) => {
+      const detail = (event as CustomEvent<PostDeletedEventDetail>).detail
+      if (!detail) {
+        queryClient.invalidateQueries({ queryKey: ["status-counts", slug] })
+        return
+      }
+      if (detail.workspaceSlug && detail.workspaceSlug !== slug) return
+      const key = normalizeStatus(detail.status || null)
+      if (!key) {
+        queryClient.invalidateQueries({ queryKey: ["status-counts", slug] })
+        return
+      }
+      try {
+        queryClient.setQueryData<Record<string, number> | null>(["status-counts", slug], (prev) => {
+          if (!prev) return prev
+          const next: Record<string, number> = { ...prev }
+          const current = next[key]
+          if (typeof current === "number" && current > 0) {
+            next[key] = current - 1
+          }
+          return next
+        })
+      } catch {}
+      try {
+        queryClient.invalidateQueries({ queryKey: ["status-counts", slug] })
+      } catch {}
+    }
+    window.addEventListener("post:deleted", handlePostDeleted)
+    return () => {
+      window.removeEventListener("post:deleted", handlePostDeleted)
+    }
+  }, [slug, queryClient, normalizeStatus])
 
   return { primaryNav, middleNav, statusCounts, wsInfo, domainInfo, verifiedCustomDomain }
 }

@@ -16,6 +16,7 @@ import {
 import { client } from "@oreilla/api/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import type { PostDeletedEventDetail } from "@/types/events";
 
 interface RequestDeleteActionProps {
   postId: string;
@@ -36,10 +37,10 @@ export function RequestDeleteAction({
         const res = await client.post.delete.$post({ postId });
         if (res.ok) {
           toast.success("Post deleted successfully");
-          // Dispatch global event for optimistic UI updates in parent lists
           try {
+            const detail: PostDeletedEventDetail = { postId, workspaceSlug };
             window.dispatchEvent(
-              new CustomEvent("post:deleted", { detail: { postId } })
+              new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail })
             );
           } catch {}
 

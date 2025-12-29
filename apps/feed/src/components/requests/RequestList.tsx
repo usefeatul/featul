@@ -19,6 +19,7 @@ import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { useSelection, setSelecting, toggleSelectionId, selectAllForKey, getSelectedIds, removeSelectedIds } from "@/lib/selection-store"
+import type { PostDeletedEventDetail } from "../../types/events"
 
 interface RequestListProps {
   items: RequestItemData[]
@@ -129,7 +130,13 @@ function RequestListBase({ items, workspaceSlug, linkBase }: RequestListProps) {
         if (okIds.length > 0) {
           try {
             okIds.forEach((postId) => {
-              window.dispatchEvent(new CustomEvent("post:deleted", { detail: { postId } }))
+              const item = listItems.find((p) => p.id === postId)
+              const detail: PostDeletedEventDetail = {
+                postId,
+                workspaceSlug,
+                status: item?.roadmapStatus ?? null,
+              }
+              window.dispatchEvent(new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail }))
             })
           } catch {}
           try {
