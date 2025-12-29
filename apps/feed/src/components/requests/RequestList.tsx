@@ -38,18 +38,23 @@ function SelectionToolbar({ allSelected, selectedCount, isPending, onToggleAll, 
         className="cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
       />
       <span className="text-xs text-accent">Selected {selectedCount}</span>
-      <Button type="button" variant="secondary" size="sm" className="h-7 px-3" onClick={onToggleAll}>
+      <Button type="button" variant="ghost" size="sm" className="h-7 px-3" onClick={onToggleAll}>
         {allSelected ? "Clear" : "Select All"}
       </Button>
       <Button
         type="button"
         variant="destructive"
         size="sm"
-        className="h-7 px-3 ml-auto"
+        className="h-7 px-3 ml-auto group"
         disabled={selectedCount === 0 || isPending}
         onClick={onConfirmDelete}
       >
-        {isPending ? "Deleting…" : "Delete Selected"}
+        <span>{isPending ? "Deleting…" : "Delete"}</span>
+        {!isPending && selectedCount > 0 ? (
+          <span className="ml-1 rounded-sm border px-1 py-0.5 text-xs leading-none text-accent bg-card dark:bg-black transition-colors group-hover:bg-card">
+            D
+          </span>
+        ) : null}
       </Button>
     </div>
   )
@@ -196,15 +201,34 @@ function RequestListBase({ items, workspaceSlug, linkBase, initialTotalCount }: 
   }, [items])
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "d") {
-        e.preventDefault()
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      if (target) {
+        const tagName = target.tagName
+        if (tagName === "INPUT" || tagName === "TEXTAREA" || target.isContentEditable) {
+          return
+        }
+      }
+
+      const key = event.key.toLowerCase()
+
+      if ((event.metaKey || event.ctrlKey) && key === "d") {
+        event.preventDefault()
         setSelecting(listKey, !selectingRef.current)
+        return
+      }
+
+      if (!event.metaKey && !event.ctrlKey && key === "d") {
+        if (!isSelecting) return
+        if (isPending) return
+        if (selection.selectedIds.length === 0) return
+        event.preventDefault()
+        setConfirmOpen(true)
       }
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [])
+  }, [listKey, isSelecting, isPending, selection.selectedIds.length])
 
   const allSelected = useMemo(() => listItems.length > 0 && listItems.every((i) => selection.selectedIds.includes(i.id)), [selection, listItems])
   const selectedCount = selection.selectedIds.length
