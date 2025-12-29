@@ -10,7 +10,7 @@ import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { useSelection, setSelecting, toggleSelectionId, selectAllForKey, getSelectedIds, removeSelectedIds } from "@/lib/selection-store"
-import type { PostDeletedEventDetail, RequestsPageRefreshingDetail } from "../../types/events"
+import type { PostDeletedEventDetail, RequestsPageRefreshingDetail } from "@/types/events"
 import { BulkDeleteConfirmDialog } from "./BulkDeleteConfirmDialog"
 
 interface RequestListProps {
@@ -116,10 +116,11 @@ function useBulkDeleteRequests({
           try {
             okIds.forEach((postId) => {
               const item = listItems.find((p) => p.id === postId)
+              if (!item) return
               const detail: PostDeletedEventDetail = {
                 postId,
                 workspaceSlug,
-                status: item?.roadmapStatus ?? null,
+                status: item.roadmapStatus ?? null,
               }
               window.dispatchEvent(new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail }))
             })

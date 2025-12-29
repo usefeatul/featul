@@ -17,7 +17,7 @@ import {
 import { client } from "@oreilla/api/client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import type { PostDeletedEventDetail } from "../../types/events"
+import type { PostDeletedEventDetail } from "@/types/events"
 
 export interface DeletePostButtonProps {
   postId: string
@@ -39,8 +39,10 @@ export function DeletePostButton({ postId, workspaceSlug, backHref, className }:
         if (res.ok) {
           toast.success("Post deleted successfully")
           try {
-            const detail: PostDeletedEventDetail = { postId, workspaceSlug }
-            window.dispatchEvent(new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail }))
+            if (workspaceSlug) {
+              const detail: PostDeletedEventDetail = { postId, workspaceSlug, status: null }
+              window.dispatchEvent(new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail }))
+            }
           } catch {}
 
           try {

@@ -1,7 +1,7 @@
 export interface PostDeletedEventDetail {
   postId: string
-  workspaceSlug?: string
-  status?: string | null
+  workspaceSlug: string
+  status: string | null
 }
 
 export interface RequestsPageRefreshingDetail {

@@ -25,25 +25,25 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
   useEffect(() => {
     if (!workspaceSlug) return
     if (typeof window === "undefined") return
-    const handlePostDeleted = (event: Event) => {
-      const detail = (event as CustomEvent<PostDeletedEventDetail>).detail
-      if (detail && detail.workspaceSlug && detail.workspaceSlug !== workspaceSlug) return
+    const handlePostDeleted = (event: CustomEvent<PostDeletedEventDetail>) => {
+      const detail = event.detail
+      if (detail.workspaceSlug !== workspaceSlug) return
       setDeletedCount((prev) => prev + 1)
     }
-    window.addEventListener("post:deleted", handlePostDeleted)
-    return () => window.removeEventListener("post:deleted", handlePostDeleted)
+    window.addEventListener("post:deleted", handlePostDeleted as EventListener)
+    return () => window.removeEventListener("post:deleted", handlePostDeleted as EventListener)
   }, [workspaceSlug])
 
   useEffect(() => {
     if (!workspaceSlug) return
     if (typeof window === "undefined") return
-    const handlePageRefreshing = (event: Event) => {
-      const detail = (event as CustomEvent<RequestsPageRefreshingDetail>).detail
-      if (!detail || detail.workspaceSlug !== workspaceSlug) return
+    const handlePageRefreshing = (event: CustomEvent<RequestsPageRefreshingDetail>) => {
+      const detail = event.detail
+      if (detail.workspaceSlug !== workspaceSlug) return
       setIsPageRefreshing(true)
     }
-    window.addEventListener("requests:page-refreshing", handlePageRefreshing)
-    return () => window.removeEventListener("requests:page-refreshing", handlePageRefreshing)
+    window.addEventListener("requests:page-refreshing", handlePageRefreshing as EventListener)
+    return () => window.removeEventListener("requests:page-refreshing", handlePageRefreshing as EventListener)
   }, [workspaceSlug])
 
   const { totalPages, prevHref, nextHref } = useMemo(() => {

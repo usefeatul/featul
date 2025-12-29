@@ -55,4 +55,3 @@ export function BulkDeleteConfirmDialog({ open, selectedCount, isPending, onOpen
     </AlertDialog>
   )
 }
-
