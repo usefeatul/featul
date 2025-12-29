@@ -1,18 +1,39 @@
 "use client"
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@oreilla/ui/components/button"
 import { buildRequestsUrl, buildWorkspaceUrl } from "@/utils/request-filters"
 import PaginationHotkeys from "@/components/pagination/PaginationHotkeys"
 import type { RequestPaginationProps as Props } from "@/types/pagination"
+import type { PostDeletedEventDetail } from "@/types/events"
 
 export default function RequestPagination({ workspaceSlug, page, pageSize, totalCount, variant = "requests" }: Props) {
   const router = useRouter()
   const params = useSearchParams()
+  const [deletedCount, setDeletedCount] = useState(0)
   const mk = variant === "workspace" ? buildWorkspaceUrl : buildRequestsUrl
+
+  const effectiveTotal = Math.max(totalCount - deletedCount, 0)
+
+  useEffect(() => {
+    setDeletedCount(0)
+  }, [workspaceSlug, totalCount])
+
+  useEffect(() => {
+    if (!workspaceSlug) return
+    if (typeof window === "undefined") return
+    const handlePostDeleted = (event: Event) => {
+      const detail = (event as CustomEvent<PostDeletedEventDetail>).detail
+      if (detail && detail.workspaceSlug && detail.workspaceSlug !== workspaceSlug) return
+      setDeletedCount((prev) => prev + 1)
+    }
+    window.addEventListener("post:deleted", handlePostDeleted)
+    return () => window.removeEventListener("post:deleted", handlePostDeleted)
+  }, [workspaceSlug])
+
   const { totalPages, prevHref, nextHref } = useMemo(() => {
-    const tp = Math.max(1, Math.ceil(Math.max(totalCount, 0) / Math.max(pageSize, 1)))
+    const tp = Math.max(1, Math.ceil(Math.max(effectiveTotal, 0) / Math.max(pageSize, 1)))
     const pPrev = Math.max(page - 1, 1)
     const pNext = Math.min(page + 1, tp)
     return {
@@ -20,9 +41,9 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
       prevHref: mk(workspaceSlug, params as URLSearchParams, { page: pPrev }),
       nextHref: mk(workspaceSlug, params as URLSearchParams, { page: pNext }),
     }
-  }, [workspaceSlug, page, pageSize, totalCount, params, mk])
+  }, [workspaceSlug, page, pageSize, effectiveTotal, params, mk])
 
-  if (totalCount <= pageSize) return null
+  if (effectiveTotal <= pageSize) return null
 
   return (
     <div className="mt-2 mb-2 flex w-full flex-col items-stretch justify-center gap-2 sm:mb-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">

@@ -157,7 +157,7 @@ function RequestListBase({ items, workspaceSlug, linkBase }: RequestListProps) {
         setSelecting(listKey, false)
       }
     })
-  }, [listKey, queryClient, allSelected])
+  }, [listKey, listItems, queryClient, workspaceSlug])
 
   if (listItems.length === 0) {
     return <EmptyRequests workspaceSlug={workspaceSlug} />
