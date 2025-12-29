@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import RequestItem, { type RequestItemData } from "./RequestItem"
 import EmptyRequests from "./EmptyRequests"
 import { Button } from "@oreilla/ui/components/button"
@@ -25,6 +26,7 @@ interface RequestListProps {
   items: RequestItemData[]
   workspaceSlug: string
   linkBase?: string
+  initialTotalCount?: number
 }
 
 interface SelectionToolbarProps {
@@ -62,10 +64,13 @@ function SelectionToolbar({ allSelected, selectedCount, isPending, onToggleAll, 
   )
 }
 
-function RequestListBase({ items, workspaceSlug, linkBase }: RequestListProps) {
+function RequestListBase({ items, workspaceSlug, linkBase, initialTotalCount }: RequestListProps) {
+  const router = useRouter()
   const [listItems, setListItems] = useState<RequestItemData[]>(items)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [isRefetching, setIsRefetching] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [totalCount, setTotalCount] = useState<number | null>(typeof initialTotalCount === "number" ? initialTotalCount : null)
   const queryClient = useQueryClient()
   const listKey = workspaceSlug
   const selection = useSelection(listKey)
@@ -77,7 +82,14 @@ function RequestListBase({ items, workspaceSlug, linkBase }: RequestListProps) {
 
   useEffect(() => {
     setListItems(items)
+    setIsRefetching(false)
   }, [items])
+
+  useEffect(() => {
+    if (typeof initialTotalCount === "number") {
+      setTotalCount(initialTotalCount)
+    }
+  }, [initialTotalCount])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -143,8 +155,20 @@ function RequestListBase({ items, workspaceSlug, linkBase }: RequestListProps) {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
           } catch {}
+          const nextLength = listItems.filter((i) => !okIds.includes(i.id)).length
+          const prevTotal = totalCount
+          const nextTotal = typeof prevTotal === "number" ? Math.max(prevTotal - okIds.length, 0) : prevTotal
+          if (typeof nextTotal === "number") {
+            setTotalCount(nextTotal)
+          }
           setListItems((prev) => prev.filter((i) => !okIds.includes(i.id)))
           removeSelectedIds(listKey, okIds)
+          if (nextLength === 0 && typeof nextTotal === "number" && nextTotal > 0) {
+            setIsRefetching(true)
+            try {
+              router.refresh()
+            } catch {}
+          }
           toast.success(`Deleted ${okIds.length} ${okIds.length === 1 ? "post" : "posts"}`)
         }
         if (failed > 0) {
@@ -157,9 +181,12 @@ function RequestListBase({ items, workspaceSlug, linkBase }: RequestListProps) {
         setSelecting(listKey, false)
       }
     })
-  }, [listKey, listItems, queryClient, workspaceSlug])
+  }, [listKey, listItems, queryClient, workspaceSlug, totalCount, router])
 
   if (listItems.length === 0) {
+    if (isRefetching) {
+      return null
+    }
     return <EmptyRequests workspaceSlug={workspaceSlug} />
   }
 

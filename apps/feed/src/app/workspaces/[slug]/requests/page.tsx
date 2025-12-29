@@ -48,7 +48,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
         search={data.search}
         count={data.totalCount}
       />
-      <RequestList items={data.rows as any} workspaceSlug={slug} />
+      <RequestList items={data.rows as any} workspaceSlug={slug} initialTotalCount={data.totalCount} />
       <RequestPagination
         workspaceSlug={slug}
         page={data.page}

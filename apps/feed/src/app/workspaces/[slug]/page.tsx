@@ -29,7 +29,7 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
 
   return (
     <section className="space-y-4">
-      <RequestList items={rows as any} workspaceSlug={slug} />
+      <RequestList items={rows as any} workspaceSlug={slug} initialTotalCount={totalCount} />
       <RequestPagination workspaceSlug={slug} page={page} pageSize={pageSize} totalCount={totalCount} variant="workspace" />
     </section>
   );
