@@ -93,7 +93,9 @@ export default function SearchAction({ className = "" }: { className?: string })
                   key={r.id}
                   onSelect={() => {
                     setOpen(false)
-                    router.push(`/workspaces/${slug}/requests/${r.slug}`)
+                    setTimeout(() => {
+                      router.push(`/workspaces/${slug}/requests/${r.slug}`)
+                    }, 0)
                   }}
                 >
                   {r.title}
