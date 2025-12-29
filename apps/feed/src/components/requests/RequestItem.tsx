@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation"
 import StatusIcon from "./StatusIcon"
 import { CommentsIcon } from "@oreilla/ui/icons/comments"
 import { Avatar, AvatarImage, AvatarFallback } from "@oreilla/ui/components/avatar"
+import { Checkbox } from "@oreilla/ui/components/checkbox"
 import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
 import RoleBadge from "@/components/global/RoleBadge"
@@ -32,7 +33,23 @@ export type RequestItemData = {
   isOwner?: boolean
 }
 
-function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemData; workspaceSlug: string; linkBase?: string }) {
+function RequestItemBase({
+  item,
+  workspaceSlug,
+  linkBase,
+  isSelecting,
+  isSelected,
+  onToggle,
+  disableLink,
+}: {
+  item: RequestItemData
+  workspaceSlug: string
+  linkBase?: string
+  isSelecting?: boolean
+  isSelected?: boolean
+  onToggle?: (checked: boolean) => void
+  disableLink?: boolean
+}) {
   const searchParams = useSearchParams()
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : ""
   const base = linkBase || `/workspaces/${workspaceSlug}`
@@ -41,8 +58,24 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
   const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
   return (
     <div className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0">
+      {isSelecting ? (
+        <Checkbox
+          checked={!!isSelected}
+          onCheckedChange={(v) => onToggle?.(!!v)}
+          aria-label="Select post"
+          className="mr-1 cursor-pointer"
+        />
+      ) : null}
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
-      <Link href={href} className="flex-1 min-w-0 truncate text-sm font-medium text-foreground hover:text-primary">
+      <Link
+        href={href}
+        className={`flex-1 min-w-0 truncate text-sm font-medium ${disableLink ? "text-foreground/60 cursor-default" : "text-foreground hover:text-primary"}`}
+        onClick={(e) => {
+          if (disableLink) e.preventDefault()
+        }}
+        tabIndex={disableLink ? -1 : 0}
+        aria-disabled={disableLink ? true : undefined}
+      >
         {displayTitle}
       </Link>
       <div className="ml-auto flex items-center gap-3 text-xs text-accent">
