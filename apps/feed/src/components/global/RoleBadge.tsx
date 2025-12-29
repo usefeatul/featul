@@ -42,14 +42,14 @@ export default function RoleBadge({
   return (
     <div
       className={cn(
-        "absolute -bottom-1 -right-1 rounded-full bg-background dark:bg-black p-0.5 z-10 pointer-events-auto",
+        "absolute -bottom-1.5 -right-1 rounded-full bg-background dark:bg-black p-0.5 z-10 pointer-events-auto",
         className
       )}
     >
       <Tooltip>
         <TooltipTrigger asChild>
           <StarIcon
-            className={cn("h-3 w-3", getRoleColor(role, isOwner))}
+            className={cn("size-2.5", getRoleColor(role, isOwner))}
             aria-label={
               isOwner
                 ? "Owner"
