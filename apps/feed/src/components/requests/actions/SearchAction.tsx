@@ -22,6 +22,7 @@ export default function SearchAction({ className = "" }: { className?: string })
   const pathname = usePathname() || "/"
   const sp = useSearchParams()
   const [open, setOpen] = React.useState(false)
+  const [pendingHref, setPendingHref] = React.useState<string | null>(null)
 
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
   const [value, setValue] = React.useState(sp.get("search") || "")
@@ -32,16 +33,17 @@ export default function SearchAction({ className = "" }: { className?: string })
 
   const runSearch = () => {
     const href = buildRequestsUrl(slug, sp, { search: value })
-    router.push(href)
     setOpen(false)
+    setPendingHref(href)
   }
 
-  const clearSearch = () => {
-    setValue("")
-    const href = buildRequestsUrl(slug, sp, { search: "" })
-    router.push(href)
-    setOpen(false)
-  }
+
+
+  React.useEffect(() => {
+    if (!pendingHref) return
+    router.push(pendingHref)
+    setPendingHref(null)
+  }, [pendingHref, router])
 
   const { data: results = [], isLoading } = useQuery({
     queryKey: ["search", slug, value],
@@ -93,9 +95,7 @@ export default function SearchAction({ className = "" }: { className?: string })
                   key={r.id}
                   onSelect={() => {
                     setOpen(false)
-                    setTimeout(() => {
-                      router.push(`/workspaces/${slug}/requests/${r.slug}`)
-                    }, 0)
+                    setPendingHref(`/workspaces/${slug}/requests/${r.slug}`)
                   }}
                 >
                   {r.title}
