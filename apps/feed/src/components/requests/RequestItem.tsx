@@ -37,11 +37,13 @@ function RequestItemBase({ item, workspaceSlug, linkBase }: { item: RequestItemD
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : ""
   const base = linkBase || `/workspaces/${workspaceSlug}`
   const href = `${base}/requests/${item.slug}${queryString}`
+  const title = item.title || ""
+  const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
   return (
     <div className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0">
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
-      <Link href={href} className="text-sm font-medium text-foreground hover:text-primary truncate flex-1">
-        {item.title}
+      <Link href={href} className="flex-1 min-w-0 truncate text-sm font-medium text-foreground hover:text-primary">
+        {displayTitle}
       </Link>
       <div className="ml-auto flex items-center gap-3 text-xs text-accent">
         <div className="inline-flex items-center gap-2 relative z-10">
