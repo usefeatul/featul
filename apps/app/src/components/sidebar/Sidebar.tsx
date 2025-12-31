@@ -82,13 +82,13 @@ export default function Sidebar({
       )}
     >
       <div className="p-2">
-        <div className="group flex items-center gap-2 rounded-md  px-1  py-1">
+        <div className="group flex items-center gap-2 rounded-md px-1 py-1">
           <Image
             src="/logo.svg"
             alt="feedback"
             width={24}
             height={24}
-            className="h-6 w-6"
+            className="h-6 w-6 rounded-md"
             priority
           />
           <div className="text-md font-semibold ">Featul</div>
