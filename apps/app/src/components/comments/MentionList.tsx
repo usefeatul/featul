@@ -38,8 +38,8 @@ export default function MentionList({ candidates, selectedIndex, onSelect, class
     <div
       ref={listRef}
       className={cn(
-        "absolute z-50 w-auto min-w-[10rem] max-h-60 overflow-auto rounded-md  border bg-popover p-1 text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 whitespace-nowrap",
-        className
+        "absolute z-50 min-w-40 max-h-60 overflow-auto rounded-sm border bg-card p-0 text-popover-foreground shadow-md outline-hidden animate-in fade-in-0 zoom-in-95 whitespace-nowrap",
+        className,
       )}
       role="listbox"
     >
@@ -48,8 +48,10 @@ export default function MentionList({ candidates, selectedIndex, onSelect, class
           <PopoverListItem
             key={user.id}
             onClick={() => onSelect(user)}
-            onMouseDown={(e) => e.preventDefault()}
-            className={cn(index === selectedIndex ? "bg-muted/50 text-accent-foreground" : "")}
+            onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => e.preventDefault()}
+            role="option"
+            aria-selected={index === selectedIndex}
+            className={cn(index === selectedIndex ? "bg-muted/50" : "")}
           >
             <Avatar className="h-6 w-6">
               <AvatarImage src={user.image || undefined} />
