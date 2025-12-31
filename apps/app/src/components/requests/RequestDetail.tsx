@@ -163,7 +163,11 @@ export default function RequestDetail({
                   <EditIcon className="h-3 w-3 text-accent" />
                 </Button>
               ) : null}
-              {post.content ? <div className="prose text-sm text-accent dark:prose-invert">{post.content}</div> : null}
+              {post.content ? (
+                <div className="prose text-sm text-accent dark:prose-invert break-all md:break-words whitespace-normal min-w-0">
+                  {post.content}
+                </div>
+              ) : null}
               {post.image ? (
                 <div className="flex justify-start">
                   <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
