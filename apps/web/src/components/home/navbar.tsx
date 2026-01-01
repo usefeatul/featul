@@ -8,7 +8,7 @@ import { cn } from "@featul/ui/lib/utils";
 import { Separator } from "@featul/ui/components/separator";
 import { useEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
-import { Logo } from "../global/logo";
+import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./mobile-menu";
 import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
@@ -50,7 +50,7 @@ export default function Navbar() {
             aria-label="Go home"
             className="inline-flex items-center gap-2"
           >
-            <Logo size={26} />
+            <FeatulLogoIcon size={26} />
             {/* <span className="text-lg font-medium">featul</span> */}
           </Link>
           <nav className="hidden md:flex items-center font-medium text-sm gap-6 md:ml-auto">
