@@ -71,10 +71,13 @@ function AccordionContent({
   return (
     <BaseAccordion.Panel
       data-slot="accordion-content"
-      className="overflow-hidden text-sm"
+      className={cn(
+        "overflow-hidden text-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        className
+      )}
       {...props}
     >
-      <div className={cn("pt-0 pb-4", className)}>{children}</div>
+      <div className="pt-0 pb-4">{children}</div>
     </BaseAccordion.Panel>
   )
 }

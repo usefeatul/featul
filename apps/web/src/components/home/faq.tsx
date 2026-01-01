@@ -16,7 +16,7 @@ export default function FAQsFour() {
                 </div>
 
                 <div className="mt-4 max-w-xl">
-                    <p className="text-accent text-sm">
+                    <p className="text-accent text-md">
                         Get the essentials of feedback management and see how featul helps you ship better products.
                     </p>
                     <Accordion

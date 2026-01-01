@@ -26,7 +26,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
           </div>
 
           <div className="mt-4 max-w-xl">
-            <p className="text-accent text-sm">{description}</p>
+            <p className="text-accent text-md">{description}</p>
             <Accordion type="single" collapsible className="w-full">
               {limitedItems.map((item) => (
                 <div className="group" key={item.id}>
