@@ -71,7 +71,7 @@ export default function BoardsAction({ className = "" }: { className?: string })
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" className={cn("rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-background dark:bg-black/40 border bg-card px-2 py-2 cursor-pointer", className)} aria-label="Boards">
+        <button type="button" className={cn("rounded-sm dark:bg-black/40 border bg-card px-2 py-2 cursor-pointer", className)} aria-label="Boards">
           <LayersIcon className="w-4 h-4" size={16} />
         </button>
       </PopoverTrigger>
