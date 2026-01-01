@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { client } from "@featul/api/client"
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from "@/hooks/usePostImageUpload"
+import { Button } from "@featul/ui/components/button"
 
 export default function Profile({ initialUser }: { initialUser?: { name?: string; email?: string; image?: string | null } | null }) {
   const queryClient = useQueryClient()
@@ -48,11 +49,6 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
 
   const d = getDisplayUser(user || undefined)
   const initials = getInitials(d.name || "U")
-
-  const pickImage = React.useCallback(() => {
-    if (uploadingImage) return
-    fileInputRef.current?.click()
-  }, [uploadingImage])
 
   const onAvatarFile = React.useCallback(async (file: File) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -118,6 +114,25 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
     }
   }, [user, queryClient])
 
+  const pickImage = React.useCallback(() => {
+    if (uploadingImage) return
+    fileInputRef.current?.click()
+  }, [uploadingImage])
+
+  const onAvatarDrop: React.DragEventHandler<HTMLButtonElement> = React.useCallback(
+    (e) => {
+      e.preventDefault()
+      if (uploadingImage) return
+      const file = e.dataTransfer.files?.[0]
+      if (file) void onAvatarFile(file)
+    },
+    [uploadingImage, onAvatarFile],
+  )
+
+  const onAvatarDragOver: React.DragEventHandler<HTMLButtonElement> = React.useCallback((e) => {
+    e.preventDefault()
+  }, [])
+
   const onAvatarInputChange: React.ChangeEventHandler<HTMLInputElement> = React.useCallback((e) => {
     const f = e.currentTarget.files?.[0]
     if (f) void onAvatarFile(f)
@@ -159,18 +174,22 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
         <div className="flex items-center justify-between p-4">
           <div className="text-sm">Avatar</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <button
+            <Button
               type="button"
               onClick={pickImage}
-              className="rounded-md  border ring-1 ring-border overflow-hidden"
+              onDrop={onAvatarDrop}
+              onDragOver={onAvatarDragOver}
               aria-label="Change avatar"
               disabled={uploadingImage}
+              variant="plain"
+              size="icon-sm"
+              className="relative bg-muted border ring-1 ring-border overflow-hidden"
             >
               <Avatar className="size-8">
                 {image.trim() || d.image ? <AvatarImage src={image.trim() || d.image || ""} alt={d.name} /> : null}
                 <AvatarFallback className="text-lg">{initials}</AvatarFallback>
               </Avatar>
-            </button>
+            </Button>
             <input
               ref={fileInputRef}
               type="file"
