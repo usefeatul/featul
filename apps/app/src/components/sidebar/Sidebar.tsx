@@ -127,7 +127,7 @@ export default function Sidebar({
           variant="ghost"
           onClick={() => setCreatePostOpen(true)}
         >
-          <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
+          <PlusIcon className="size-5 text-foreground opacity-60 transition-colors transform transition-transform duration-200 group-hover:text-primary group-hover:opacity-100 group-hover:scale-110 group-hover:-translate-y-0.5 group-active:scale-125 group-active:-translate-y-1" />
           <span className="transition-colors text-accent">Create Posts</span>
         </Button>
         <CreatePostModal
