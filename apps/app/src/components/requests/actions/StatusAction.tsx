@@ -3,7 +3,7 @@
 import React from "react"
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { ListFilterIcon } from "@featul/ui/icons/list-filter"
-import { cn } from "@featul/ui/lib/utils"
+import { Button } from "@featul/ui/components/button"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
@@ -63,9 +63,15 @@ export default function StatusAction({ className = "" }: { className?: string })
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" className={cn("rounded-sm dark:bg-black/40 border bg-card px-2 py-2 cursor-pointer", className)} aria-label="Requests">
+        <Button
+          type="button"
+          variant="nav"
+          size="icon-sm"
+          aria-label="Requests"
+          className={className}
+        >
           <ListFilterIcon className="w-4 h-4" size={16} />
-        </button>
+        </Button>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>

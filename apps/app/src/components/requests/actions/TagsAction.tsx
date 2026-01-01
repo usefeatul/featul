@@ -3,7 +3,7 @@
 import React from "react"
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { TagIcon } from "@featul/ui/icons/tag"
-import { cn } from "@featul/ui/lib/utils"
+import { Button } from "@featul/ui/components/button"
 import { client } from "@featul/api/client"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
@@ -87,9 +87,15 @@ export default function TagsAction({ className = "" }: { className?: string }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" className={cn("rounded-sm dark:bg-black/40 border bg-card px-2 py-2 cursor-pointer", className)} aria-label="Tags">
+        <Button
+          type="button"
+          variant="nav"
+          size="icon-sm"
+          aria-label="Tags"
+          className={className}
+        >
           <TagIcon className="w-4 h-4" size={16} />
-        </button>
+        </Button>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         {isLoading ? (
