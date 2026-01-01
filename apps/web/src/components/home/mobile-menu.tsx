@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { Container } from "../global/container";
-import { Logo } from "../global/logo";
+import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { Button } from "@featul/ui/components/button";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { navigationConfig } from "@/config/homeNav";
@@ -32,7 +32,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
       {/* Sheet header */}
       <div className="flex items-center justify-between h-14  px-4 sm:px-12 lg:px-16 xl:px-18">
         <span className="inline-flex items-center gap-2">
-          <Logo />
+          <FeatulLogoIcon />
           <span className="text-md font-medium">featul</span>
         </span>
         <Button

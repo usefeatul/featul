@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Container } from "../global/container";
-import { Logo } from "@/components/global/logo";
+import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { GitHubIcon } from "@featul/ui/icons/github";
 import { TwitterIcon } from "@featul/ui/icons/twitter";
@@ -19,7 +19,7 @@ export default function FooterSection() {
                 aria-label="Go home"
                 className="inline-flex items-center gap-2 hover:text-primary"
               >
-                <Logo />
+                <FeatulLogoIcon />
                 <span className="text-sm font-medium">featul</span>
               </Link>
               <p className="text-accent mt-1 text-sm">Made and hosted in EU.</p>
