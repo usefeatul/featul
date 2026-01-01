@@ -11,11 +11,18 @@ import { LoadingButton } from "@/components/global/loading-button"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
+import type { Role } from "../../../types/team"
 
-type Role = "admin" | "member" | "viewer"
 const ROLES: Role[] = ["admin", "member", "viewer"]
 
-export default function InviteMemberModal({ slug, open, onOpenChange, onInvited }: { slug: string; open: boolean; onOpenChange: (v: boolean) => void; onInvited: () => void }) {
+interface InviteMemberModalProps {
+  slug: string
+  open: boolean
+  onOpenChange: (value: boolean) => void
+  onInvited: () => void
+}
+
+export default function InviteMemberModal({ slug, open, onOpenChange, onInvited }: InviteMemberModalProps) {
   const [email, setEmail] = React.useState("")
   const [role, setRole] = React.useState<Role>("member")
   const [loading, setLoading] = React.useState(false)

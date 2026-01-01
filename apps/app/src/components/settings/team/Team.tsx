@@ -15,7 +15,19 @@ import MemberRow from "./MemberRow";
 import InvitesList from "./InvitesList";
 import type { Member, Invite } from "../../../types/team";
 
- 
+interface TeamSectionProps {
+  slug: string;
+  initialMembers?: Member[];
+  initialInvites?: Invite[];
+  initialMeId?: string | null;
+  initialPlan?: string;
+}
+
+interface TeamQueryData {
+  members: Member[];
+  invites: Invite[];
+  meId: string | null;
+}
 
 export default function TeamSection({
   slug,
@@ -23,18 +35,40 @@ export default function TeamSection({
   initialInvites,
   initialMeId,
   initialPlan,
-}: { slug: string; initialMembers?: Member[]; initialInvites?: Invite[]; initialMeId?: string | null; initialPlan?: string }) {
+}: TeamSectionProps) {
   const [inviteOpen, setInviteOpen] = React.useState(false);
   const [menuFor, setMenuFor] = React.useState<string | null>(null);
   const queryClient = useQueryClient();
-  const { data = { members: initialMembers || [], invites: initialInvites || [], meId: initialMeId ?? null }, isLoading, refetch } = useQuery({
+  const initialData: TeamQueryData | undefined =
+    initialMembers || initialInvites || initialMeId
+      ? {
+          members: initialMembers || [],
+          invites: initialInvites || [],
+          meId: initialMeId ?? null,
+        }
+      : undefined;
+
+  const {
+    data = initialData || { members: [], invites: [], meId: null },
+    isLoading,
+    refetch,
+  } = useQuery<TeamQueryData>({
     queryKey: ["team", slug],
-    queryFn: async () => {
+    queryFn: async (): Promise<TeamQueryData> => {
       const res = await client.team.membersByWorkspaceSlug.$get({ slug });
-      const d = await res.json();
-      return { members: d?.members || [], invites: d?.invites || [], meId: (d as { meId?: string })?.meId ?? null };
+      const d = (await res.json()) as {
+        members?: Member[];
+        invites?: Invite[];
+        meId?: string | null;
+      };
+
+      return {
+        members: d?.members || [],
+        invites: d?.invites || [],
+        meId: d?.meId ?? null,
+      };
     },
-    initialData: (initialMembers || initialInvites || initialMeId) ? { members: initialMembers || [], invites: initialInvites || [], meId: initialMeId ?? null } : undefined,
+    initialData,
     staleTime: 30000,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
@@ -42,14 +76,14 @@ export default function TeamSection({
   });
   const { loading: inviteAccessLoading, canInvite } = useCanInvite(slug);
 
-  const refresh = async () => {
+  const refresh = async (): Promise<void> => {
     await refetch();
   };
 
   const handleRoleChange = async (
     userId: string,
     newRole: "admin" | "member" | "viewer"
-  ) => {
+  ): Promise<void> => {
     try {
       const res = await client.team.updateRole.$post({
         slug,
@@ -61,10 +95,18 @@ export default function TeamSection({
         throw new Error(err?.message || "Update failed");
       }
       toast.success("Role updated");
-      queryClient.setQueryData(["team", slug], (prev: { members: Member[]; invites: Invite[]; meId: string | null }) => {
-        const p = prev || { members: [], invites: [], meId: null };
-        const nextMembers = (p.members || []).map((m: Member) => (m.userId === userId ? { ...m, role: newRole } : m));
-        return { ...p, members: nextMembers };
+      queryClient.setQueryData<TeamQueryData>(["team", slug], (prev) => {
+        const current: TeamQueryData = prev || {
+          members: [],
+          invites: [],
+          meId: null,
+        };
+
+        const nextMembers = current.members.map((member) =>
+          member.userId === userId ? { ...member, role: newRole } : member
+        );
+
+        return { ...current, members: nextMembers };
       });
       setMenuFor(null);
     } catch (e: unknown) {
@@ -72,7 +114,7 @@ export default function TeamSection({
     }
   };
 
-  const handleRemoveMember = async (userId: string) => {
+  const handleRemoveMember = async (userId: string): Promise<void> => {
     try {
       const res = await client.team.removeMember.$post({ slug, userId });
       if (!res.ok) {
@@ -80,10 +122,18 @@ export default function TeamSection({
         throw new Error(err?.message || "Remove failed");
       }
       toast.success("Member removed");
-      queryClient.setQueryData(["team", slug], (prev: { members: Member[]; invites: Invite[]; meId: string | null }) => {
-        const p = prev || { members: [], invites: [], meId: null };
-        const nextMembers = (p.members || []).filter((m: Member) => m.userId !== userId);
-        return { ...p, members: nextMembers };
+      queryClient.setQueryData<TeamQueryData>(["team", slug], (prev) => {
+        const current: TeamQueryData = prev || {
+          members: [],
+          invites: [],
+          meId: null,
+        };
+
+        const nextMembers = current.members.filter(
+          (member) => member.userId !== userId
+        );
+
+        return { ...current, members: nextMembers };
       });
     } catch (e: unknown) {
       toast.error((e as { message?: string })?.message || "Failed to remove member");

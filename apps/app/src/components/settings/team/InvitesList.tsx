@@ -3,17 +3,19 @@ import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "@
 import type { Invite } from "../../../types/team";
 import InviteRow from "./InviteRow";
 
+interface InvitesListProps {
+  slug: string;
+  invites: Invite[];
+  loading: boolean;
+  onChanged: () => void;
+}
+
 export default function InvitesList({
   slug,
   invites,
   loading,
   onChanged,
-}: {
-  slug: string;
-  invites: Invite[];
-  loading: boolean;
-  onChanged: () => void;
-}) {
+}: InvitesListProps) {
   if (invites.length === 0 && !loading) {
     return (
       <div className="rounded-md  border overflow-hidden">

@@ -5,19 +5,21 @@ import RoleCell from "./RoleCell";
 import type { Member } from "../../../types/team";
 import { getInitials } from "@/utils/user-utils";
 
+interface MemberRowProps {
+  m: Member;
+  menuFor: string | null;
+  setMenuFor: (id: string | null) => void;
+  onRoleChange: (userId: string, role: "admin" | "member" | "viewer") => void;
+  onRemoveMember: (userId: string) => void;
+}
+
 export default function MemberRow({
   m,
   menuFor,
   setMenuFor,
   onRoleChange,
   onRemoveMember,
-}: {
-  m: Member;
-  menuFor: string | null;
-  setMenuFor: (id: string | null) => void;
-  onRoleChange: (userId: string, role: "admin" | "member" | "viewer") => void;
-  onRemoveMember: (userId: string) => void;
-}) {
+}: MemberRowProps) {
   return (
     <TableRow>
       <TableCell className="px-4">

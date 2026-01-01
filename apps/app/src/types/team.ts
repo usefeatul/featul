@@ -1,6 +1,6 @@
 export type Role = "admin" | "member" | "viewer";
 
-export type Member = {
+export interface Member {
   userId: string;
   role: Role;
   isOwner?: boolean;
@@ -9,9 +9,9 @@ export type Member = {
   name?: string;
   email?: string;
   image?: string;
-};
+}
 
-export type Invite = {
+export interface Invite {
   id: string;
   email: string;
   role: Role;
@@ -19,5 +19,4 @@ export type Invite = {
   expiresAt: string;
   acceptedAt?: string | null;
   createdAt: string;
-};
-
+}

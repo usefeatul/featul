@@ -11,20 +11,21 @@ import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { roleBadgeClass } from "./role-badge";
 
+interface InviteRowProps {
+  slug: string;
+  i: Invite;
+  onChanged: () => void;
+}
 
 export default function InviteRow({
   slug,
   i,
   onChanged,
-}: {
-  slug: string;
-  i: Invite;
-  onChanged: () => void;
-}) {
+}: InviteRowProps) {
   const [menuFor, setMenuFor] = React.useState<string | null>(null);
-  const updatingRef = React.useRef(false);
+  const updatingRef = React.useRef<boolean>(false);
 
-  const handleUpdateRole = async (newRole: "admin" | "member" | "viewer") => {
+  const handleUpdateRole = async (newRole: "admin" | "member" | "viewer"): Promise<void> => {
     if (updatingRef.current) return;
     if (newRole === i.role) {
       setMenuFor(null);
@@ -52,7 +53,7 @@ export default function InviteRow({
     }
   };
 
-  const handleRevoke = async () => {
+  const handleRevoke = async (): Promise<void> => {
     if (updatingRef.current) return;
     updatingRef.current = true;
     try {
@@ -71,7 +72,7 @@ export default function InviteRow({
     }
   };
 
-  const handleResend = async () => {
+  const handleResend = async (): Promise<void> => {
     if (updatingRef.current) return;
     updatingRef.current = true;
     try {

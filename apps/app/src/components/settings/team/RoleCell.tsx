@@ -7,19 +7,21 @@ import { MoreVertical } from "lucide-react";
 import type { Member } from "../../../types/team";
 import { roleBadgeClass } from "./role-badge";
 
+interface RoleCellProps {
+  m: Member;
+  menuFor: string | null;
+  setMenuFor: (id: string | null) => void;
+  onRoleChange: (userId: string, role: "admin" | "member" | "viewer") => void;
+  onRemoveMember: (userId: string) => void;
+}
+
 export default function RoleCell({
   m,
   menuFor,
   setMenuFor,
   onRoleChange,
   onRemoveMember,
-}: {
-  m: Member;
-  menuFor: string | null;
-  setMenuFor: (id: string | null) => void;
-  onRoleChange: (userId: string, role: "admin" | "member" | "viewer") => void;
-  onRemoveMember: (userId: string) => void;
-}) {
+}: RoleCellProps) {
   return (
     <TableCell className="px-4 w-48">
       <div className="relative h-6">
