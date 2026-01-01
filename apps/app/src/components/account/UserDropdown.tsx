@@ -114,15 +114,15 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-30 max-w-[40vw] p-2" side="bottom" align="center" sideOffset={8}>
           <DropdownMenuItem onSelect={onAccount} className="px-2 py-2 rounded-md flex items-center gap-2 group">
-            <AccountIcon className="size-4 text-foreground transition-colors group-hover:text-primary" />
+            <AccountIcon className="size-4 text-foreground transition-colors group-hover:opacity-100 group-hover:text-primary " />
             <span className="transition-colors group-hover:text-foreground">Account</span>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={onSettings} className="px-2 py-2 rounded-md flex items-center gap-2 group">
-            <SettingIcon className="size-4 text-foreground transition-colors group-hover:text-primary" />
+            <SettingIcon className="size-4 text-foreground transition-colors group-hover:opacity-100 group-hover:text-primary" />
             <span className="transition-colors group-hover:text-foreground">Settings</span>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={onSignOut} className="px-2 py-2 rounded-md flex items-center gap-2 group" aria-disabled={loading}>
-            <LogoutIcon className="size-4 text-foreground group-hover:text-red-500 transition-colors" />
+            <LogoutIcon className="size-4 text-foreground group-hover:opacity-100 group-hover:text-red-500 transition-colors" />
             <span className="transition-colors group-hover:text-foreground">Sign out</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
