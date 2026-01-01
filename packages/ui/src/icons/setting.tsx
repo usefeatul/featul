@@ -17,7 +17,11 @@ export const SettingIcon: React.FC<SettingIconProps> = ({ className = '', size =
       opacity={opacity}
     >
       <title>gear-2</title>
-      <g fill="currentColor" stroke="currentColor">
+      <g
+        fill="currentColor"
+        stroke="currentColor"
+        className="origin-center transition-transform duration-300 group-hover:rotate-180 hover:rotate-180"
+      >
         <path d="M9 14.5C12.0376 14.5 14.5 12.0376 14.5 9C14.5 5.96243 12.0376 3.5 9 3.5C5.96243 3.5 3.5 5.96243 3.5 9C3.5 12.0376 5.96243 14.5 9 14.5Z" fill="currentColor" fillOpacity="0.3" stroke="none"></path>
         <path d="M6.25 4.237L9 9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"></path>
         <path d="M6.25 13.764L9 9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"></path>

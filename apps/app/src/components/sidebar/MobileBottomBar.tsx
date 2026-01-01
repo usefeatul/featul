@@ -21,14 +21,14 @@ export default function MobileBottomBar({ items }: { items: NavItem[] }) {
                 "group flex flex-col items-center justify-center gap-1 px-3 py-2 text-xs sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40"
               )}
             >
-              <Icon className="w-[18px] h-[18px] text-foreground opacity-60 hover:text-primary hover:opacity-100 transition-colors" />
+              <Icon className="size-4 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
               <span>{item.label}</span>
             </Link>
           );
         })}
         <DrawerTrigger asChild>
           <button className="group flex flex-col items-center justify-center gap-1 px-3 py-2 text-xs sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40">
-            <MoreIcon className="w-[18px] h-[18px] text-foreground opacity-60 hover:text-primary hover:opacity-100 transition-colors" />
+            <MoreIcon className="size-4 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
             <span>More</span>
           </button>
         </DrawerTrigger>

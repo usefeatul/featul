@@ -23,11 +23,13 @@ export const MemberIcon: React.FC<MemberIconProps> = ({ className = '', size = 1
         fill="currentColor"
         data-color="color-2"
         data-stroke="none"
+        className="transition-transform duration-300 origin-center group-hover:-translate-y-0.5 hover:-translate-y-0.5"
       />
       <path
         d="M13.762 15.516C14.622 15.245 15.074 14.295 14.709 13.471C13.739 11.28 11.55 9.75 8.99999 9.75C6.44999 9.75 4.26099 11.28 3.29099 13.471C2.92599 14.296 3.37799 15.245 4.23799 15.516C5.46299 15.902 7.08399 16.25 8.99999 16.25C10.916 16.25 12.537 15.902 13.762 15.516Z"
         fill="currentColor"
         fillOpacity="0.4"
+        className="transition-transform duration-300 origin-center group-hover:scale-105 hover:scale-105"
       />
     </svg>
   )
