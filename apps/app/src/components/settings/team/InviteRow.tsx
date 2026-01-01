@@ -129,10 +129,10 @@ export default function InviteRow({
                     </PopoverListItem>
                   ))}
                   <PopoverListItem role="menuitem" onClick={handleResend}>
-                    <span className="text-sm">Resend</span>
+                    <span className="text-sm text-primary">Resend</span>
                   </PopoverListItem>
                   <PopoverListItem role="menuitem" onClick={handleRevoke}>
-                    <span className="text-sm">Revoke</span>
+                    <span className="text-sm text-destructive">Revoke</span>
                   </PopoverListItem>
                 </PopoverList>
               </PopoverContent>
