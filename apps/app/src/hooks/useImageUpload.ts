@@ -2,6 +2,7 @@ import { useState, useRef } from "react"
 import { toast } from "sonner"
 import { getCommentImageUploadUrl } from "@/lib/comment-service"
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, UploadedImage } from "./usePostImageUpload"
+export { type UploadedImage } from "./usePostImageUpload"
 
 export function useImageUpload(postId: string) {
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null)
