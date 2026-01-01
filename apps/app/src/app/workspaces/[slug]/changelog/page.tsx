@@ -1,7 +1,5 @@
 import type { Metadata } from "next"
 import { createPageMetadata } from "@/lib/seo"
-import { client } from "@featul/api/client"
-import { ChangelogEntryList } from "@/components/changelog/changelog-entry-list"
 
 export const revalidate = 30
 
@@ -18,21 +16,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ChangelogPage({ params }: Props) {
-  const { slug } = await params
-  
-  // Fetch entries for initial render (public entries)
-  const res = await client.changelog.entriesList.$get({ slug, limit: 20 })
-  const data = await res.json()
-  const entries = (data as any)?.entries || []
-  const total = (data as any)?.total || 0
-
-  return (
-    <section className="max-w-4xl mx-auto py-6">
-      <ChangelogEntryList
-        slug={slug}
-        initialEntries={entries}
-        initialTotal={total}
-      />
-    </section>
-  )
+  await params
+  return null
 }
