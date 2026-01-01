@@ -27,7 +27,7 @@ export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 })
         fillOpacity="0.3"
         data-color="color-2"
         data-stroke="none"
-        className="transition-transform duration-200 ease-out origin-center group-hover:scale-105 group-active:scale-110"
+        className="transform transition-transform duration-150 ease-out origin-center group-hover:scale-105 group-active:scale-100"
       />
       <rect
         x="2.25"
@@ -40,6 +40,7 @@ export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 })
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        className="transform transition-transform duration-150 ease-out origin-center group-hover:scale-105 group-active:scale-100"
       />
       <path
         d="M9 6V12"
@@ -48,8 +49,7 @@ export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 })
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
-        className="transform transition-transform duration-200 ease-out origin-center group-hover:scale-110 group-active:scale-125"
-      ></path>
+      />
       <path
         d="M6 9H12"
         stroke="currentColor"
@@ -57,8 +57,7 @@ export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 })
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
-        className="transform transition-transform duration-200 ease-out origin-center group-hover:scale-110 group-active:scale-125"
-      ></path>
+      />
     </svg>
   )
 }
