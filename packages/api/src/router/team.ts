@@ -10,6 +10,7 @@ import {
   removeMemberInputSchema,
   listInvitesInputSchema,
   revokeInviteInputSchema,
+  resendInviteInputSchema,
   acceptInviteInputSchema,
   addExistingMemberInputSchema,
 } from "../validators/team"
@@ -246,6 +247,61 @@ export function createTeamRouter() {
         } catch {}
 
         return c.superjson({ ok: true, token })
+      }),
+
+    resendInvite: privateProcedure
+      .input(resendInviteInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
+        await requireCanManageMembers(ctx, ws)
+
+        const [inv] = await ctx.db
+          .select({
+            id: workspaceInvite.id,
+            email: workspaceInvite.email,
+            token: workspaceInvite.token,
+            expiresAt: workspaceInvite.expiresAt,
+            workspaceId: workspaceInvite.workspaceId,
+          })
+          .from(workspaceInvite)
+          .where(and(eq(workspaceInvite.id, input.inviteId), eq(workspaceInvite.workspaceId, ws.id)))
+          .limit(1)
+
+        if (!inv) {
+          throw new HTTPException(404, { message: "Invite not found" })
+        }
+
+        let token = inv.token
+        let expiresAt = inv.expiresAt
+
+        if (!expiresAt || expiresAt.getTime() < Date.now()) {
+          token = crypto.randomUUID()
+          expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          await ctx.db
+            .update(workspaceInvite)
+            .set({ token, expiresAt })
+            .where(eq(workspaceInvite.id, inv.id))
+        }
+
+        try {
+          const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+          const url = `${baseUrl}/invite/${token}`
+          const [branding] = await ctx.db
+            .select({ primaryColor: brandingConfig.primaryColor })
+            .from(brandingConfig)
+            .where(eq(brandingConfig.workspaceId, ws.id))
+            .limit(1)
+          const brand = {
+            name: ws.name || "featul",
+            logoUrl: undefined,
+            primaryColor: branding?.primaryColor || undefined,
+            backgroundColor: undefined,
+            textColor: undefined,
+          }
+          await sendWorkspaceInvite(inv.email.trim().toLowerCase(), ws.name || "Workspace", url, brand)
+        } catch {}
+
+        return c.json({ ok: true })
       }),
 
     listInvites: privateProcedure

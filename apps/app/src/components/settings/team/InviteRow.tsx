@@ -71,6 +71,25 @@ export default function InviteRow({
     }
   };
 
+  const handleResend = async () => {
+    if (updatingRef.current) return;
+    updatingRef.current = true;
+    try {
+      const res = await client.team.resendInvite.$post({ slug, inviteId: i.id });
+      if (!res.ok) {
+        const err = (await res.json().catch(() => null)) as { message?: string } | null;
+        throw new Error(err?.message || "Resend failed");
+      }
+      toast.success("Invite resent");
+      onChanged();
+      setMenuFor(null);
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Failed to resend invite");
+    } finally {
+      updatingRef.current = false;
+    }
+  };
+
   return (
     <TableRow>
       <TableCell className="px-4">
@@ -108,6 +127,9 @@ export default function InviteRow({
                       {i.role === r ? <span className="ml-auto text-xs">✓</span> : null}
                     </PopoverListItem>
                   ))}
+                  <PopoverListItem role="menuitem" onClick={handleResend}>
+                    <span className="text-sm">Resend</span>
+                  </PopoverListItem>
                   <PopoverListItem role="menuitem" onClick={handleRevoke}>
                     <span className="text-sm">Revoke</span>
                   </PopoverListItem>

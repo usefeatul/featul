@@ -33,6 +33,11 @@ export const revokeInviteInputSchema = z.object({
   inviteId: z.string().min(1),
 })
 
+export const resendInviteInputSchema = z.object({
+  slug: slugSchema,
+  inviteId: z.string().min(1),
+})
+
 export const acceptInviteInputSchema = z.object({
   token: z.string().min(1),
 })
@@ -42,4 +47,3 @@ export const addExistingMemberInputSchema = z.object({
   email: z.string().email(),
   role: roleSchema,
 })
-
