@@ -6,6 +6,7 @@ import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, getWorkspaceBoards } from "@/lib/workspace"
 import { readHasVotedForPost } from "@/lib/vote.server"
 import { MainContent } from "@/components/subdomain/MainContent"
+import type { RequestItemData } from "@/components/requests/RequestItem"
 
 export const revalidate = 0
 export const dynamic = "force-dynamic"
@@ -14,7 +15,9 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const { subdomain, slug } = await params
   return createWorkspaceSectionMetadata(subdomain, "feedback", { boardSlug: slug })
 }
+
 const PAGE_SIZE = 20
+
 export default async function BoardPage({
   params,
   searchParams,
@@ -45,8 +48,27 @@ export default async function BoardPage({
     publicOnly: true,
   })
 
-  const items = await Promise.all(
-    (rows as any[]).map(async (r) => ({ ...r, hasVoted: await readHasVotedForPost(r.id) }))
+  const items: RequestItemData[] = await Promise.all(
+    (rows as any[]).map(async (r) => ({
+      id: r.id,
+      title: r.title,
+      slug: r.slug,
+      content: r.content,
+      image: r.image,
+      commentCount: Number(r.commentCount ?? 0),
+      upvotes: Number(r.upvotes ?? 0),
+      roadmapStatus: r.roadmapStatus,
+      publishedAt: r.publishedAt ? new Date(r.publishedAt).toISOString() : null,
+      createdAt: new Date(r.createdAt).toISOString(),
+      boardSlug: r.boardSlug,
+      boardName: r.boardName,
+      authorImage: r.authorImage,
+      authorName: r.authorName,
+      isAnonymous: r.isAnonymous,
+      hasVoted: await readHasVotedForPost(r.id),
+      role: r.role,
+      isOwner: false,
+    }))
   )
 
   const totalCount = await getWorkspacePostsCount(subdomain, {
@@ -59,12 +81,12 @@ export default async function BoardPage({
     <MainContent
       subdomain={subdomain}
       slug={subdomain}
-      items={items as any}
+      items={items}
       totalCount={totalCount}
       page={page}
       pageSize={PAGE_SIZE}
       sidebarPosition={sidebarPosition}
-      initialBoards={initialBoards as any}
+      initialBoards={initialBoards}
       selectedBoard={boardSlug}
       linkPrefix="/board/p"
     />

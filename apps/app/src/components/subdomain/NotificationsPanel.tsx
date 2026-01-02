@@ -1,4 +1,4 @@
-"use client"
+ "use client"
 
 import React from "react"
 import Link from "next/link"
@@ -7,8 +7,17 @@ import { getInitials } from "@/utils/user-utils"
 import { relativeTime } from "@/lib/time"
 import { motion, HTMLMotionProps } from "framer-motion"
 
+export interface NotificationItem {
+  id: string
+  postSlug: string
+  authorImage?: string | null
+  authorName?: string | null
+  isRead?: boolean
+  createdAt: string
+}
+
 interface NotificationsPanelProps {
-  notifications: Array<any>
+  notifications: NotificationItem[]
   markRead: (id: string) => void
   onMarkAllRead?: () => void
 }

@@ -23,13 +23,15 @@ import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { Check, ChevronsUpDown } from "lucide-react"
 
+type ReportReason = "spam" | "harassment" | "inappropriate" | "off_topic" | "other"
+
 interface ReportPostDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   postId: string
 }
 
-const REASONS = [
+const REASONS: { value: ReportReason; label: string }[] = [
   { value: "spam", label: "Spam" },
   { value: "harassment", label: "Harassment" },
   { value: "inappropriate", label: "Inappropriate Content" },
@@ -42,7 +44,7 @@ export default function ReportPostDialog({
   onOpenChange,
   postId,
 }: ReportPostDialogProps) {
-  const [reason, setReason] = useState<string>("spam")
+  const [reason, setReason] = useState<ReportReason>("spam")
   const [reasonOpen, setReasonOpen] = useState(false)
   const [description, setDescription] = useState("")
   const [isPending, startTransition] = useTransition()
@@ -53,7 +55,7 @@ export default function ReportPostDialog({
       try {
         const res = await client.post.report.$post({
           postId,
-          reason: reason as any,
+          reason,
           description,
         })
 

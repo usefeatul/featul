@@ -14,6 +14,7 @@ import { useState, useEffect } from "react"
 import { client } from "@featul/api/client"
 import { useDebounce } from "../../hooks/useDebounce"
 import { SimilarPosts } from "../post/SimilarPosts"
+import type { SimilarPost } from "../post/SimilarPosts"
 
 interface CreatePostModalProps {
   open: boolean
@@ -64,7 +65,7 @@ export default function CreatePostModal({
     await submitPost(selectedBoard, user, uploadedImage?.url)
   }
 
-  const [similarPosts, setSimilarPosts] = useState<any[]>([])
+  const [similarPosts, setSimilarPosts] = useState<SimilarPost[]>([])
   const [isSearchingSimilar, setIsSearchingSimilar] = useState(false)
   
   const debouncedTitle = useDebounce(title, 1000)
@@ -84,8 +85,9 @@ export default function CreatePostModal({
           workspaceSlug,
         })
         if (res.ok) {
-           const data = await res.json()
-           setSimilarPosts(data.posts)
+          const data = await res.json()
+          const payload = data as { posts?: SimilarPost[] } | null
+          setSimilarPosts(Array.isArray(payload?.posts) ? payload.posts : [])
         }
       } catch (e) {
         console.error("Failed to fetch similar posts", e)

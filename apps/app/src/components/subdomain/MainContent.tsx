@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useSearchParams } from "next/navigation";
+import type { RequestItemData } from "@/components/requests/RequestItem";
 
 import { BoardsDropdown } from "./BoardsDropdown";
 import { PublicRequestPagination } from "./PublicRequestPagination";
@@ -12,7 +13,7 @@ import { SubmitIdeaCard } from "./SubmitIdeaCard";
 import PostCard from "@/components/subdomain/PostCard";
 import EmptyDomainPosts from "./EmptyPosts";
 
-type Item = any;
+type Item = RequestItemData;
 
 export function MainContent({
   subdomain,
@@ -44,16 +45,19 @@ export function MainContent({
   }, [items]);
   const orderParam = String(search.get("order") || "likes").toLowerCase();
   const handleVoteChange = React.useCallback((id: string, upvotes: number, hasVoted: boolean) => {
-    setListItems((prev: any[]) => {
+    setListItems((prev) => {
       const next = prev.map((p) => (p.id === id ? { ...p, upvotes, hasVoted } : p));
       if (orderParam === "likes") {
-        next.sort((a, b) => (Number(b.upvotes || 0) - Number(a.upvotes || 0)) || new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        next.sort(
+          (a, b) =>
+            (Number(b.upvotes || 0) - Number(a.upvotes || 0)) ||
+            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        );
       }
       return next;
     });
   }, [orderParam]);
 
-  // Optimistic UI for deletions
   React.useEffect(() => {
     const handlePostDeleted = (event: Event) => {
       const detail = (event as CustomEvent).detail;
@@ -73,17 +77,18 @@ export function MainContent({
       <div
         className={
           sidebarPosition === "left"
-            // ? "lg:grid lg:grid-cols-[250px_minmax(0,1.5fr)] lg:gap-6"
-            // : "lg:grid lg:grid-cols-[minmax(0,1.5fr)_250px] lg:gap-6"
-
-
-                ? "grid md:grid-cols-[0.3fr_0.7fr] gap-6 mb-6"
+            ? "grid md:grid-cols-[0.3fr_0.7fr] gap-6 mb-6"
             : "grid md:grid-cols-[0.7fr_0.3fr] gap-6 mb-6"
         }
       >
         {sidebarPosition === "left" ? (
           <aside className="hidden lg:block mt-10 lg:mt-0">
-            <DomainSidebar subdomain={subdomain} slug={slug} initialBoards={initialBoards} selectedBoard={selectedBoard} />
+            <DomainSidebar
+              subdomain={subdomain}
+              slug={slug}
+              initialBoards={initialBoards}
+              selectedBoard={selectedBoard}
+            />
           </aside>
         ) : null}
         <div>
@@ -94,30 +99,51 @@ export function MainContent({
                   <SortPopover subdomain={subdomain} slug={slug} />
                   <SearchAction slug={slug} />
                 </span>
-                <BoardsDropdown slug={slug} subdomain={subdomain} initialBoards={initialBoards} selectedBoard={selectedBoard} />
+                <BoardsDropdown
+                  slug={slug}
+                  subdomain={subdomain}
+                  initialBoards={initialBoards}
+                  selectedBoard={selectedBoard}
+                />
               </div>
             ) : (
               <div className="lg:hidden flex items-center justify-between gap-2">
-                <BoardsDropdown slug={slug} subdomain={subdomain} initialBoards={initialBoards} selectedBoard={selectedBoard} />
+                <BoardsDropdown
+                  slug={slug}
+                  subdomain={subdomain}
+                  initialBoards={initialBoards}
+                  selectedBoard={selectedBoard}
+                />
                 <span className="inline-flex items-center gap-2">
                   <SortPopover subdomain={subdomain} slug={slug} />
                   <SearchAction slug={slug} />
                 </span>
               </div>
             )}
-            <div className={sidebarPosition === "left" ? "hidden lg:flex items-center justify-end" : "hidden lg:flex items-center justify-start"}>
-              <BoardsDropdown slug={slug} subdomain={subdomain} initialBoards={initialBoards} selectedBoard={selectedBoard} />
+            <div
+              className={
+                sidebarPosition === "left"
+                  ? "hidden lg:flex items-center justify-end"
+                  : "hidden lg:flex items-center justify-start"
+              }
+            >
+              <BoardsDropdown
+                slug={slug}
+                subdomain={subdomain}
+                initialBoards={initialBoards}
+                selectedBoard={selectedBoard}
+              />
             </div>
           </div>
           <div className="lg:hidden mb-4">
             <SubmitIdeaCard subdomain={subdomain} slug={slug} />
           </div>
           <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-background border bg-card mt-4">
-            {(items as any[]).length === 0 ? (
+            {items.length === 0 ? (
               <EmptyDomainPosts subdomain={subdomain} slug={slug} />
             ) : (
               <div className="divide-y">
-                {(listItems as any[]).map((p: any) => (
+                {listItems.map((p) => (
                   <PostCard key={p.id} item={p} onVoteChange={handleVoteChange} linkPrefix={linkPrefix} />
                 ))}
               </div>
@@ -133,7 +159,12 @@ export function MainContent({
         </div>
         {sidebarPosition === "right" ? (
           <aside className="hidden lg:block mt-10 lg:mt-0">
-            <DomainSidebar subdomain={subdomain} slug={slug} initialBoards={initialBoards} selectedBoard={selectedBoard} />
+            <DomainSidebar
+              subdomain={subdomain}
+              slug={slug}
+              initialBoards={initialBoards}
+              selectedBoard={selectedBoard}
+            />
           </aside>
         ) : null}
       </div>

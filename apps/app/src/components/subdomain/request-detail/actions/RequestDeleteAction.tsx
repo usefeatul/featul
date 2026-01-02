@@ -38,9 +38,15 @@ export function RequestDeleteAction({
         if (res.ok) {
           toast.success("Post deleted successfully");
           try {
-            const detail: PostDeletedEventDetail = { postId, workspaceSlug: workspaceSlug || "", status: "deleted" };
+            const detail: PostDeletedEventDetail = {
+              postId,
+              workspaceSlug: workspaceSlug || "",
+              status: "deleted",
+            };
             window.dispatchEvent(
-              new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail })
+              new CustomEvent<PostDeletedEventDetail>("post:deleted", {
+                detail,
+              })
             );
           } catch {}
 
@@ -54,8 +60,10 @@ export function RequestDeleteAction({
             router.refresh();
           }
         } else {
-          const err = await res.json();
-          toast.error((err as any)?.message || "Failed to delete post");
+          const err = (await res.json().catch(() => null)) as {
+            message?: string;
+          } | null;
+          toast.error(err?.message || "Failed to delete post");
         }
       } catch (error) {
         console.error("Failed to delete post:", error);

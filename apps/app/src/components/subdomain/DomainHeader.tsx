@@ -61,8 +61,8 @@ export function DomainHeader({
     (async () => {
       try {
         const res = await client.changelog.visible.$get({ slug: subdomain });
-        const d = await res.json();
-        if (active) setChangelogVisible(Boolean((d as any)?.visible));
+        const d = (await res.json()) as { visible?: boolean } | null;
+        if (active) setChangelogVisible(Boolean(d?.visible));
       } catch {}
     })();
     return () => {
