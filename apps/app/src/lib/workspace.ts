@@ -14,6 +14,7 @@ import {
 import { randomAvatarUrl } from "@/utils/avatar";
 import { eq, and, inArray, desc, asc, sql } from "drizzle-orm";
 import { createHash } from "crypto";
+import type { BrandingConfig } from "../types/branding";
 
 export async function findFirstAccessibleWorkspaceSlug(
   userId: string
@@ -551,7 +552,7 @@ export async function getSettingsInitialData(
   initialChangelogVisible?: boolean;
   initialChangelogTags?: any[];
   initialHidePoweredBy?: boolean;
-  initialBrandingConfig?: any;
+  initialBrandingConfig?: BrandingConfig | null;
   initialDomainInfo?: any;
   initialDefaultDomain?: string;
   initialFeedbackBoards?: any[];

@@ -61,13 +61,14 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
       })
       if (!res.ok) throw new Error("Upload failed")
       toast.loading("Saving...", { id: toastId })
-      const ok = await saveBranding(slug, { logoUrl: publicUrl })
-      if (!ok) throw new Error("Save failed")
+      const result = await saveBranding(slug, { logoUrl: publicUrl })
+      if (!result.ok) throw new Error(result.message || "Save failed")
       setWorkspaceLogo(slug, publicUrl)
       onChange(publicUrl)
       toast.success("Logo updated", { id: toastId })
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to upload", { id: toastId })
+    } catch (error: unknown) {
+      const message = error instanceof Error && error.message ? error.message : "Failed to upload"
+      toast.error(message, { id: toastId })
     } finally {
       setUploading(false)
     }

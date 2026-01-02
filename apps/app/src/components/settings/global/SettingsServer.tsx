@@ -10,6 +10,7 @@ import SSOSection from "../sso/SSO";
 import DataSection from "../data/Data";
 import BoardSettings from "../board/Board";
 import type { Member, Invite } from "../../../types/team";
+import type { BrandingConfig } from "../../../types/branding";
 import { SECTIONS } from "../../../config/sections";
 import SettingsTabsHeader from "./SettingsTabsHeader";
 
@@ -21,7 +22,7 @@ type Props = {
   initialChangelogTags?: any[];
   initialHidePoweredBy?: boolean;
   initialPlan?: string;
-  initialBrandingConfig?: any;
+  initialBrandingConfig?: BrandingConfig | null;
   initialWorkspaceName?: string;
   initialDomainInfo?: any;
   initialDefaultDomain?: string;
@@ -95,7 +96,7 @@ function SectionRenderer({
   initialChangelogTags?: any[];
   initialHidePoweredBy?: boolean;
   initialPlan?: string;
-  initialBrandingConfig?: any;
+  initialBrandingConfig?: BrandingConfig | null;
   initialWorkspaceName?: string;
   initialDomainInfo?: any;
   initialDefaultDomain?: string;

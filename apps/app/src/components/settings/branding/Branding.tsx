@@ -26,32 +26,68 @@ import { Input } from "@featul/ui/components/input";
 import { useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
-import {  getPlanLimits } from "@/lib/plan";
+import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
+import type { BrandingConfig } from "../../../types/branding";
+import type { Ws } from "@/components/sidebar/useWorkspaceSwitcher";
 
-export default function BrandingSection({ slug, initialHidePoweredBy, initialPlan, initialConfig, initialWorkspaceName }: { slug: string; initialHidePoweredBy?: boolean; initialPlan?: string; initialConfig?: any; initialWorkspaceName?: string }) {
-  const initialPrimary = (initialConfig?.primaryColor as string | undefined) || "#3b82f6"
-  const initialFound = findColorByPrimary(initialPrimary) || BRANDING_COLORS[1]
+type WorkspacesQueryResult = Ws[] | { workspaces: Ws[] };
+
+interface BrandingSectionProps {
+  slug: string;
+  initialHidePoweredBy?: boolean;
+  initialPlan?: string;
+  initialConfig?: BrandingConfig | null;
+  initialWorkspaceName?: string;
+}
+
+export default function BrandingSection({
+  slug,
+  initialHidePoweredBy,
+  initialPlan,
+  initialConfig,
+  initialWorkspaceName,
+}: BrandingSectionProps) {
+  const initialPrimary = initialConfig?.primaryColor || "#3b82f6";
+  const initialFound = findColorByPrimary(initialPrimary) || BRANDING_COLORS[1];
   const [logoUrl, setLogoUrl] = React.useState(String(initialConfig?.logoUrl || ""));
   const [primaryColor, setPrimaryColor] = React.useState(initialPrimary);
-  const [accentColor, setAccentColor] = React.useState(String(initialConfig?.accentColor || (initialFound && initialFound.accent) || "#60a5fa"));
+  const [accentColor, setAccentColor] = React.useState(
+    String(initialConfig?.accentColor || (initialFound && initialFound.accent) || "#60a5fa"),
+  );
   const [colorKey, setColorKey] = React.useState<string>(initialFound ? initialFound.key : "blue");
-  const [theme, setTheme] = React.useState<"light" | "dark" | "system">((initialConfig?.theme === "light" || initialConfig?.theme === "dark" || initialConfig?.theme === "system") ? initialConfig.theme : "system");
-  const [hidePoweredBy, setHidePoweredBy] = React.useState<boolean>(typeof initialHidePoweredBy === "boolean" ? Boolean(initialHidePoweredBy) : Boolean(initialConfig?.hidePoweredBy));
-  const [layoutStyle, setLayoutStyle] = React.useState<"compact" | "comfortable" | "spacious">((initialConfig?.layoutStyle === "compact" || initialConfig?.layoutStyle === "comfortable" || initialConfig?.layoutStyle === "spacious") ? initialConfig.layoutStyle : "comfortable");
-  const [sidebarPosition, setSidebarPosition] = React.useState<"left" | "right">((initialConfig?.sidebarPosition === "left" || initialConfig?.sidebarPosition === "right") ? initialConfig.sidebarPosition : "left");
+  const [theme, setTheme] = React.useState<"light" | "dark" | "system">(
+    initialConfig?.theme === "light" || initialConfig?.theme === "dark" || initialConfig?.theme === "system"
+      ? initialConfig.theme
+      : "system",
+  );
+  const [hidePoweredBy, setHidePoweredBy] = React.useState<boolean>(
+    typeof initialHidePoweredBy === "boolean" ? Boolean(initialHidePoweredBy) : Boolean(initialConfig?.hidePoweredBy),
+  );
+  const [layoutStyle, setLayoutStyle] = React.useState<"compact" | "comfortable" | "spacious">(
+    initialConfig?.layoutStyle === "compact" ||
+      initialConfig?.layoutStyle === "comfortable" ||
+      initialConfig?.layoutStyle === "spacious"
+      ? initialConfig.layoutStyle
+      : "comfortable",
+  );
+  const [sidebarPosition, setSidebarPosition] = React.useState<"left" | "right">(
+    initialConfig?.sidebarPosition === "left" || initialConfig?.sidebarPosition === "right"
+      ? initialConfig.sidebarPosition
+      : "left",
+  );
   const [saving, setSaving] = React.useState(false);
   const [loading, setLoading] = React.useState(!initialConfig);
   const [workspaceName, setWorkspaceName] = React.useState(String(initialWorkspaceName || ""));
   const originalNameRef = React.useRef<string>(String(initialWorkspaceName || ""));
   const queryClient = useQueryClient();
-  const [plan, setPlan] = React.useState<string>(initialPlan || "free");
+  const [plan, setPlan] = React.useState<PlanKey>(normalizePlan(initialPlan || "free"));
   const { loading: brandingAccessLoading, canEditBranding } = useCanEditBranding(slug);
 
   React.useEffect(() => {
     let mounted = true;
     void (async () => {
       try {
-        const conf0 = initialConfig || null
+        const conf0 = initialConfig || null;
         if (mounted && conf0) {
           setLogoUrl(conf0.logoUrl || "");
           const currentPrimary = conf0.primaryColor || "#3b82f6";
@@ -60,9 +96,21 @@ export default function BrandingSection({ slug, initialHidePoweredBy, initialPla
           setAccentColor(conf0.accentColor || (found && found.accent) || "#60a5fa");
           setColorKey(found ? found.key : "blue");
           if (conf0.theme === "light" || conf0.theme === "dark" || conf0.theme === "system") setTheme(conf0.theme);
-          setHidePoweredBy(typeof initialHidePoweredBy === "boolean" ? Boolean(initialHidePoweredBy) : Boolean(conf0.hidePoweredBy));
-          if (conf0.layoutStyle === "compact" || conf0.layoutStyle === "comfortable" || conf0.layoutStyle === "spacious") setLayoutStyle(conf0.layoutStyle);
-          if (conf0.sidebarPosition === "left" || conf0.sidebarPosition === "right") setSidebarPosition(conf0.sidebarPosition);
+          setHidePoweredBy(
+            typeof initialHidePoweredBy === "boolean"
+              ? Boolean(initialHidePoweredBy)
+              : Boolean(conf0.hidePoweredBy),
+          );
+          if (
+            conf0.layoutStyle === "compact" ||
+            conf0.layoutStyle === "comfortable" ||
+            conf0.layoutStyle === "spacious"
+          ) {
+            setLayoutStyle(conf0.layoutStyle);
+          }
+          if (conf0.sidebarPosition === "left" || conf0.sidebarPosition === "right") {
+            setSidebarPosition(conf0.sidebarPosition);
+          }
         } else {
           const conf = await loadBrandingBySlug(slug);
           if (mounted && conf) {
@@ -73,17 +121,29 @@ export default function BrandingSection({ slug, initialHidePoweredBy, initialPla
             setAccentColor(conf.accentColor || (found && found.accent) || "#60a5fa");
             setColorKey(found ? found.key : "blue");
             if (conf.theme === "light" || conf.theme === "dark" || conf.theme === "system") setTheme(conf.theme);
-            setHidePoweredBy(typeof initialHidePoweredBy === "boolean" ? Boolean(initialHidePoweredBy) : Boolean(conf.hidePoweredBy));
-            if (conf.layoutStyle === "compact" || conf.layoutStyle === "comfortable" || conf.layoutStyle === "spacious") setLayoutStyle(conf.layoutStyle);
-            if (conf.sidebarPosition === "left" || conf.sidebarPosition === "right") setSidebarPosition(conf.sidebarPosition);
+            setHidePoweredBy(
+              typeof initialHidePoweredBy === "boolean"
+                ? Boolean(initialHidePoweredBy)
+                : Boolean(conf.hidePoweredBy),
+            );
+            if (
+              conf.layoutStyle === "compact" ||
+              conf.layoutStyle === "comfortable" ||
+              conf.layoutStyle === "spacious"
+            ) {
+              setLayoutStyle(conf.layoutStyle);
+            }
+            if (conf.sidebarPosition === "left" || conf.sidebarPosition === "right") {
+              setSidebarPosition(conf.sidebarPosition);
+            }
           }
         }
         if (typeof initialWorkspaceName === "string" && initialWorkspaceName) {
-          const n = String(initialWorkspaceName || "")
+          const n = String(initialWorkspaceName || "");
           if (mounted) {
             setWorkspaceName(n);
             originalNameRef.current = n;
-            setPlan(String(initialPlan || "free"));
+            setPlan(normalizePlan(initialPlan || "free"));
           }
         } else {
           try {
@@ -94,12 +154,12 @@ export default function BrandingSection({ slug, initialHidePoweredBy, initialPla
             if (mounted) {
               setWorkspaceName(n);
               originalNameRef.current = n;
-              setPlan(String(w?.plan || "free"));
+              setPlan(normalizePlan(String(w?.plan || "free")));
             }
           } catch {}
         }
         
-      } catch (e) {
+      } catch {
       } finally {
         if (mounted) setLoading(false);
       }
@@ -132,21 +192,19 @@ export default function BrandingSection({ slug, initialHidePoweredBy, initialPla
         if (!r.ok) throw new Error(r.message || "Update failed");
         originalNameRef.current = workspaceName.trim();
         try {
-          queryClient.setQueryData(["workspace", slug], (prev: any) =>
-            prev ? { ...prev, name: workspaceName.trim() } : prev
+          queryClient.setQueryData<Ws | null>(["workspace", slug], (prev) =>
+            prev ? { ...prev, name: workspaceName.trim() } : prev,
           );
-          queryClient.setQueryData(["workspaces"], (prev: any) => {
+          queryClient.setQueryData<WorkspacesQueryResult>(["workspaces"], (prev) => {
             const list = Array.isArray(prev) ? prev : prev?.workspaces || [];
-            const next = list.map((w: any) =>
-              w?.slug === slug ? { ...w, name: workspaceName.trim() } : w
+            const next = list.map((w) =>
+              w?.slug === slug ? { ...w, name: workspaceName.trim() } : w,
             );
-            return prev && prev.workspaces
-              ? { ...prev, workspaces: next }
-              : next;
+            return prev && "workspaces" in prev ? { ...prev, workspaces: next } : next;
           });
         } catch {}
       }
-      const brandingInput: any = {};
+      let brandingInput: BrandingConfig & { logoUrl?: string } = {};
       if (canBranding) {
         if (logoUrl.trim()) brandingInput.logoUrl = logoUrl.trim();
         brandingInput.primaryColor = p;
@@ -160,22 +218,26 @@ export default function BrandingSection({ slug, initialHidePoweredBy, initialPla
       if (logoUrl.trim() && canBranding) {
         setWorkspaceLogo(slug, logoUrl.trim());
         try {
-          queryClient.setQueryData(["workspace", slug], (prev: any) =>
-            prev ? { ...prev, logo: logoUrl.trim() } : prev
+          queryClient.setQueryData<Ws | null>(["workspace", slug], (prev) =>
+            prev ? { ...prev, logo: logoUrl.trim() } : prev,
           );
-          queryClient.setQueryData(["workspaces"], (prev: any) => {
+          queryClient.setQueryData<WorkspacesQueryResult>(["workspaces"], (prev) => {
             const list = Array.isArray(prev) ? prev : prev?.workspaces || [];
-            const next = list.map((w: any) =>
-              w?.slug === slug ? { ...w, logo: logoUrl.trim() } : w
+            const next = list.map((w) =>
+              w?.slug === slug ? { ...w, logo: logoUrl.trim() } : w,
             );
-            return prev && prev.workspaces ? { ...prev, workspaces: next } : next;
+            return prev && "workspaces" in prev ? { ...prev, workspaces: next } : next;
           });
         } catch {}
       }
       toast.success("Settings updated");
-    } catch (e: any) {
+    } catch (error: unknown) {
       if (canBranding) applyBrandPrimary(prevP || "#3b82f6");
-      toast.error(e?.message || "Failed to update settings");
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Failed to update settings";
+      toast.error(message);
     } finally {
       setSaving(false);
     }
