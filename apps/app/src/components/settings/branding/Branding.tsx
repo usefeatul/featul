@@ -28,9 +28,7 @@ import { client } from "@featul/api/client";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
 import type { BrandingConfig } from "../../../types/branding";
-import type { Ws } from "@/components/sidebar/useWorkspaceSwitcher";
-
-type WorkspacesQueryResult = Ws[] | { workspaces: Ws[] };
+import { updateWorkspaceLogoInCache, updateWorkspaceNameInCache } from "./branding-cache";
 
 interface BrandingSectionProps {
   slug: string;
@@ -187,23 +185,15 @@ export default function BrandingSection({
       const nameChanged =
         workspaceName.trim() &&
         workspaceName.trim() !== originalNameRef.current;
-      if (nameChanged) {
-        const r = await updateWorkspaceName(slug, workspaceName.trim());
-        if (!r.ok) throw new Error(r.message || "Update failed");
-        originalNameRef.current = workspaceName.trim();
-        try {
-          queryClient.setQueryData<Ws | null>(["workspace", slug], (prev) =>
-            prev ? { ...prev, name: workspaceName.trim() } : prev,
-          );
-          queryClient.setQueryData<WorkspacesQueryResult>(["workspaces"], (prev) => {
-            const list = Array.isArray(prev) ? prev : prev?.workspaces || [];
-            const next = list.map((w) =>
-              w?.slug === slug ? { ...w, name: workspaceName.trim() } : w,
-            );
-            return prev && "workspaces" in prev ? { ...prev, workspaces: next } : next;
-          });
-        } catch {}
-      }
+        if (nameChanged) {
+          const nextName = workspaceName.trim();
+          const r = await updateWorkspaceName(slug, nextName);
+          if (!r.ok) throw new Error(r.message || "Update failed");
+          originalNameRef.current = nextName;
+          try {
+            updateWorkspaceNameInCache(queryClient, slug, nextName);
+          } catch {}
+        }
       let brandingInput: BrandingConfig & { logoUrl?: string } = {};
       if (canBranding) {
         if (logoUrl.trim()) brandingInput.logoUrl = logoUrl.trim();
@@ -218,16 +208,7 @@ export default function BrandingSection({
       if (logoUrl.trim() && canBranding) {
         setWorkspaceLogo(slug, logoUrl.trim());
         try {
-          queryClient.setQueryData<Ws | null>(["workspace", slug], (prev) =>
-            prev ? { ...prev, logo: logoUrl.trim() } : prev,
-          );
-          queryClient.setQueryData<WorkspacesQueryResult>(["workspaces"], (prev) => {
-            const list = Array.isArray(prev) ? prev : prev?.workspaces || [];
-            const next = list.map((w) =>
-              w?.slug === slug ? { ...w, logo: logoUrl.trim() } : w,
-            );
-            return prev && "workspaces" in prev ? { ...prev, workspaces: next } : next;
-          });
+          updateWorkspaceLogoInCache(queryClient, slug, logoUrl.trim());
         } catch {}
       }
       toast.success("Settings updated");
