@@ -18,7 +18,7 @@ const authMiddleware = j.middleware(async ({ next, c }) => {
   if (!session || !session.user) {
     throw new HTTPException(401, { message: "Unauthorized" })
   }
-  return await next({ session: session as any })
+  return await next({ session })
 })
 
 // Temporarily disable rate limiting middleware; keep for future re-enable.
