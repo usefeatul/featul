@@ -11,9 +11,21 @@ import { getInitials, getDisplayUser } from "@/utils/user-utils"
 import { useTheme } from "next-themes"
 import CreatePostModal from "./CreatePostModal"
 import { SubdomainUserMenu } from "./SubdomainUserMenu"
-//
+
 
 type User = { name?: string; email?: string; image?: string | null } | null
+
+interface SessionUser {
+  name?: string
+  email?: string
+  image?: string | null
+}
+
+interface SessionPayload {
+  data?: {
+    user?: SessionUser | null
+  } | null
+}
 
 export default function SubdomainUserDropdown({
   className = "",
@@ -36,9 +48,9 @@ export default function SubdomainUserDropdown({
     ;(async () => {
       try {
         if (initialUser?.image) return
-        const s = await authClient.getSession()
+        const s = (await authClient.getSession()) as SessionPayload | null
         if (!active) return
-        const u = (s as any)?.data?.user || null
+        const u = s?.data?.user || null
         if (u?.image) setUser(u)
       } catch {}
     })()
