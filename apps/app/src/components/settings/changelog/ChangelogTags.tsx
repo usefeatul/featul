@@ -11,13 +11,19 @@ import { client } from "@featul/api/client"
 import ModalTags from "./ModalTags"
 import { toast } from "sonner"
 
-export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug: string; initialPlan?: string; initialTags?: any[] }) {
-  const { data: tagsData = [], isLoading, refetch } = useQuery({
+export interface ChangelogTag {
+  id: string
+  name: string
+}
+
+export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug: string; initialPlan?: string; initialTags?: ChangelogTag[] }) {
+  const { data: tagsData = [], isLoading, refetch } = useQuery<ChangelogTag[]>({
     queryKey: ["changelog-tags", slug],
     queryFn: async () => {
       const res = await client.changelog.tagsList.$get({ slug })
       const d = await res.json()
-      return (d as any)?.tags || []
+      const tags = (d as { tags?: ChangelogTag[] } | null)?.tags
+      return Array.isArray(tags) ? tags : []
     },
     initialData: Array.isArray(initialTags) ? initialTags : undefined,
     staleTime: 300000,
@@ -48,7 +54,7 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
                 <TableCell colSpan={2} className="px-4 py-6 text-accent">No tags</TableCell>
               </TableRow>
             ) : (
-              (tagsData || []).map((t: any) => (
+              (tagsData || []).map((t) => (
                 <TableRow key={t.id}>
                   <TableCell className="px-4 text-sm">
                     <span className="inline-flex items-center gap-2">

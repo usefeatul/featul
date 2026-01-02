@@ -1,5 +1,3 @@
-"use client"
-
 import type { QueryClient } from "@tanstack/react-query"
 import type { Ws } from "@/components/sidebar/useWorkspaceSwitcher"
 
@@ -26,4 +24,3 @@ export function updateWorkspaceLogoInCache(queryClient: QueryClient, slug: strin
     return prev && "workspaces" in prev ? { ...prev, workspaces: next } : next
   })
 }
-

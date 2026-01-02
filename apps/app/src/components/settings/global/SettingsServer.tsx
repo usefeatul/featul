@@ -11,6 +11,9 @@ import DataSection from "../data/Data";
 import BoardSettings from "../board/Board";
 import type { Member, Invite } from "../../../types/team";
 import type { BrandingConfig } from "../../../types/branding";
+import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
+import type { FeedbackTag } from "../feedback/ManageTags";
+import type { ChangelogTag } from "../changelog/ChangelogTags";
 import { SECTIONS } from "../../../config/sections";
 import SettingsTabsHeader from "./SettingsTabsHeader";
 
@@ -19,15 +22,15 @@ type Props = {
   selectedSection?: string;
   initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
   initialChangelogVisible?: boolean;
-  initialChangelogTags?: any[];
+  initialChangelogTags?: ChangelogTag[];
   initialHidePoweredBy?: boolean;
   initialPlan?: string;
   initialBrandingConfig?: BrandingConfig | null;
   initialWorkspaceName?: string;
   initialDomainInfo?: any;
   initialDefaultDomain?: string;
-  initialFeedbackBoards?: any[];
-  initialFeedbackTags?: any[];
+  initialFeedbackBoards?: FeedbackBoardSettings[];
+  initialFeedbackTags?: FeedbackTag[];
 };
 
 export default function SettingsServer({
@@ -93,15 +96,15 @@ function SectionRenderer({
   section: string;
   initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
   initialChangelogVisible?: boolean;
-  initialChangelogTags?: any[];
+  initialChangelogTags?: ChangelogTag[];
   initialHidePoweredBy?: boolean;
   initialPlan?: string;
   initialBrandingConfig?: BrandingConfig | null;
   initialWorkspaceName?: string;
   initialDomainInfo?: any;
   initialDefaultDomain?: string;
-  initialFeedbackBoards?: any[];
-  initialFeedbackTags?: any[];
+  initialFeedbackBoards?: FeedbackBoardSettings[];
+  initialFeedbackTags?: FeedbackTag[];
 }) {
   switch (section) {
     case "branding":

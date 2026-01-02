@@ -2,14 +2,14 @@
 
 import React from "react"
 import { Switch } from "@featul/ui/components/switch"
-import { useGlobalBoardToggle } from "@/hooks/useGlobalBoardToggle"
+import { useGlobalBoardToggle, type FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle"
 
 export default function AllowAnonymousToggle({
   slug,
   initialBoards,
 }: {
   slug: string
-  initialBoards?: any[]
+  initialBoards?: FeedbackBoardSettings[]
 }) {
   const { value, onToggle } = useGlobalBoardToggle(
     slug,

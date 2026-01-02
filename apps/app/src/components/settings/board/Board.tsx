@@ -6,6 +6,7 @@ import AllowAnonymousToggle from "./AllowAnonymousToggle"
 import AllowCommentsToggle from "./AllowCommentsToggle"
 import ManageBoards from "./ManageBoards"
 import HidePublicMemberIdentityToggle from "./HidePublicMemberIdentityToggle"
+import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle"
 
 export default function BoardSettings({
   slug,
@@ -14,7 +15,7 @@ export default function BoardSettings({
 }: {
   slug: string
   plan?: string
-  initialBoards?: any[]
+  initialBoards?: FeedbackBoardSettings[]
 }) {
   return (
     <SectionCard title="Board Settings" description="Configure board settings">

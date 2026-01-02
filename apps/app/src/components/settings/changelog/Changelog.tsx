@@ -3,9 +3,19 @@
 import React from "react";
 import SectionCard from "../global/SectionCard";
 import ChangelogVisibility from "./ChangelogVisibility";
-import ChangelogTags from "./ChangelogTags";
+import ChangelogTags, { type ChangelogTag } from "./ChangelogTags";
 
-export default function ChangelogSection({ slug, initialIsVisible, initialPlan, initialTags }: { slug: string; initialIsVisible?: boolean; initialPlan?: string; initialTags?: any[] }) {
+export default function ChangelogSection({
+  slug,
+  initialIsVisible,
+  initialPlan,
+  initialTags,
+}: {
+  slug: string;
+  initialIsVisible?: boolean;
+  initialPlan?: string;
+  initialTags?: ChangelogTag[];
+}) {
   return (
     <SectionCard title="Changelog" description="Manage product updates and visibility.">
       <div className="space-y-6">

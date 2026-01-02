@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import PlanNotice from "../global/PlanNotice"
 import ModalCreateBoard from "../feedback/ModalCreateBoard"
 import { MoreVertical } from "lucide-react"
+import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle"
 
 export default function ManageBoards({
   slug,
@@ -18,15 +19,16 @@ export default function ManageBoards({
 }: {
   slug: string
   plan?: string
-  initialBoards?: any[]
+  initialBoards?: FeedbackBoardSettings[]
 }) {
   const queryClient = useQueryClient()
-  const { data: boards = [], isLoading, refetch } = useQuery({
+  const { data: boards = [], isLoading, refetch } = useQuery<FeedbackBoardSettings[]>({
     queryKey: ["feedback-boards", slug],
     queryFn: async () => {
       const res = await client.board.settingsByWorkspaceSlug.$get({ slug })
       const d = await res.json()
-      return (d as any)?.boards || []
+      const boardsData = (d as { boards?: FeedbackBoardSettings[] } | null)?.boards
+      return Array.isArray(boardsData) ? boardsData : []
     },
     initialData: Array.isArray(initialBoards) ? initialBoards : undefined,
     staleTime: 300000,
@@ -35,7 +37,10 @@ export default function ManageBoards({
     refetchOnMount: false,
   })
 
-  const otherBoards = React.useMemo(() => (boards || []).filter((b: any) => b.slug !== "roadmap" && b.slug !== "changelog"), [boards])
+  const otherBoards = React.useMemo(
+    () => (boards || []).filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"),
+    [boards],
+  )
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null)
   const [createOpen, setCreateOpen] = React.useState(false)
   const [creating, setCreating] = React.useState(false)
@@ -43,9 +48,9 @@ export default function ManageBoards({
 
   const setVisibility = async (boardSlug: string, isPublic: boolean) => {
     try {
-      queryClient.setQueryData(["feedback-boards", slug], (prev: any) => {
+      queryClient.setQueryData<FeedbackBoardSettings[]>(["feedback-boards", slug], (prev) => {
         const arr = Array.isArray(prev) ? prev : []
-        return arr.map((it: any) => it.slug === boardSlug ? { ...it, isPublic } : it)
+        return arr.map((it) => (it.slug === boardSlug ? { ...it, isPublic } : it))
       })
     } catch {}
     try {

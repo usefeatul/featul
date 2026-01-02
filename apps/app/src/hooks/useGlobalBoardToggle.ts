@@ -5,21 +5,36 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 
-export type ToggleKey = "allowAnonymous" | "allowComments" | "hidePublicMemberIdentity"
+export interface FeedbackBoardSettings {
+  id: string
+  name: string
+  slug: string
+  isPublic: boolean
+  isVisible: boolean
+  isActive: boolean
+  allowAnonymous: boolean
+  allowComments: boolean
+  hidePublicMemberIdentity: boolean
+  sortOrder: number
+  postCount: number
+}
+
+export type ToggleKey = keyof Pick<FeedbackBoardSettings, "allowAnonymous" | "allowComments" | "hidePublicMemberIdentity">
 
 export function useGlobalBoardToggle(
   slug: string,
   key: ToggleKey,
   successMessage?: string,
-  initialBoards?: any[]
+  initialBoards?: FeedbackBoardSettings[]
 ) {
   const queryClient = useQueryClient()
-  const { data: boards = [], refetch } = useQuery({
+  const { data: boards = [], refetch } = useQuery<FeedbackBoardSettings[]>({
     queryKey: ["feedback-boards", slug],
     queryFn: async () => {
       const res = await client.board.settingsByWorkspaceSlug.$get({ slug })
       const d = await res.json()
-      return (d as any)?.boards || []
+      const boardsData = (d as { boards?: FeedbackBoardSettings[] } | null)?.boards
+      return Array.isArray(boardsData) ? boardsData : []
     },
     initialData: Array.isArray(initialBoards) ? initialBoards : undefined,
     staleTime: 300000,
@@ -28,8 +43,15 @@ export function useGlobalBoardToggle(
     refetchOnMount: false,
   })
 
-  const otherBoards = React.useMemo(() => (boards || []).filter((b: any) => b.slug !== "roadmap" && b.slug !== "changelog"), [boards])
-  const allTrue = React.useCallback((k: ToggleKey) => (otherBoards || []).length > 0 && (otherBoards || []).every((b: any) => Boolean(b?.[k])), [otherBoards])
+  const otherBoards = React.useMemo(
+    () => (boards || []).filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"),
+    [boards],
+  )
+  const allTrue = React.useCallback(
+    (k: ToggleKey) =>
+      (otherBoards || []).length > 0 && (otherBoards || []).every((b) => Boolean(b[k])),
+    [otherBoards],
+  )
   const [value, setValue] = React.useState<boolean>(allTrue(key))
 
   React.useEffect(() => { setValue(allTrue(key)) }, [allTrue, key])
@@ -37,9 +59,11 @@ export function useGlobalBoardToggle(
   const onToggle = async (v: boolean) => {
     try {
       setValue(v)
-      queryClient.setQueryData(["feedback-boards", slug], (prev: any) => {
+      queryClient.setQueryData<FeedbackBoardSettings[]>(["feedback-boards", slug], (prev) => {
         const arr = Array.isArray(prev) ? prev : []
-        return arr.map((it: any) => (it.slug !== "roadmap" && it.slug !== "changelog") ? { ...it, [key]: v } : it)
+        return arr.map((it) =>
+          it.slug !== "roadmap" && it.slug !== "changelog" ? { ...it, [key]: v } : it,
+        )
       })
     } catch {}
     try {
@@ -58,4 +82,3 @@ export function useGlobalBoardToggle(
 
   return { value, onToggle }
 }
-

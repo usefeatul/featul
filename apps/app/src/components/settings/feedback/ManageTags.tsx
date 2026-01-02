@@ -11,6 +11,13 @@ import ModalCreateTag from "./ModalCreateTag"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { MoreVertical } from "lucide-react"
 
+export interface FeedbackTag {
+  id: string
+  name: string
+  slug: string
+  postCount: number
+}
+
 export default function ManageTags({
   slug,
   plan,
@@ -18,19 +25,25 @@ export default function ManageTags({
 }: {
   slug: string
   plan?: string
-  initialTags?: any[]
+  initialTags?: FeedbackTag[]
 }) {
-  const { data: tags = [], isLoading, refetch } = useQuery({
+  const { data: tags = [], isLoading, refetch } = useQuery<FeedbackTag[]>({
     queryKey: ["workspace-tags", slug],
     queryFn: async () => {
       const res = await client.board.tagsByWorkspaceSlug.$get({ slug })
       const d = await res.json()
-      return ((d as any)?.tags || []).map((t: any) => ({
-        id: t.id,
-        name: t.name,
-        slug: t.slug,
-        postCount: Number(t.count || 0),
-      }))
+      const raw =
+        (d as { tags?: { id: string; name: string; slug: string; count?: number | null }[] } | null)
+          ?.tags || []
+      return raw.map(
+        (t) =>
+          ({
+            id: t.id,
+            name: t.name,
+            slug: t.slug,
+            postCount: Number(t.count || 0),
+          }) satisfies FeedbackTag,
+      )
     },
     initialData: Array.isArray(initialTags) ? initialTags : undefined,
     staleTime: 300000,
@@ -61,7 +74,7 @@ export default function ManageTags({
                 <TableCell colSpan={2} className="px-4 py-6 text-accent">No tags</TableCell>
               </TableRow>
             ) : (
-              (tags || []).map((t: any) => (
+              (tags || []).map((t) => (
                 <TableRow key={t.id}>
                   <TableCell className="px-4 text-sm">{t.name}</TableCell>
                   <TableCell className="px-2 text-center">
