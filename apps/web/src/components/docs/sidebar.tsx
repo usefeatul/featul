@@ -50,49 +50,45 @@ export function DocsSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden md:block w-56 shrink-0 pr-6 border-r border-border/40">
-      <div className="sticky top-24 flex flex-col gap-8">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-accent">
-            Docs
-          </span>
-        </div>
-
-        <nav className="space-y-6 text-sm">
-          {docsSections.map((section) => (
-            <div key={section.label} className="space-y-2">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {section.label}
-              </div>
-              <ul className="space-y-1">
-                {section.items.map((item) => {
-                  const isActive = pathname === item.href
-
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-accent hover:text-foreground hover:bg-muted transition-colors",
-                          isActive && "bg-muted text-foreground"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "inline-block size-1.5 rounded-full bg-border transition-colors",
-                            isActive && "bg-primary"
-                          )}
-                        />
-                        <span className="truncate">{item.label}</span>
-                      </Link>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          ))}
-        </nav>
+    <nav className="space-y-6 text-sm">
+      <div className="flex items-center gap-2 mb-8 px-2">
+        <span className="inline-flex items-center justify-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-accent">
+          Docs
+        </span>
       </div>
-    </aside>
+
+      {docsSections.map((section) => (
+        <div key={section.label} className="space-y-2">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-2">
+            {section.label}
+          </div>
+          <ul className="space-y-1">
+            {section.items.map((item) => {
+              const isActive = pathname === item.href
+
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-accent hover:text-foreground hover:bg-background/50 transition-colors",
+                      isActive && "bg-background text-foreground shadow-sm"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "inline-block size-1.5 rounded-full bg-border transition-colors",
+                        isActive && "bg-primary"
+                      )}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
   )
 }
