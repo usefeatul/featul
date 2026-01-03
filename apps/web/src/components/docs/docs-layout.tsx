@@ -8,18 +8,21 @@ interface DocsLayoutShellProps {
 
 export function DocsLayoutShell({ children, rightColumn }: DocsLayoutShellProps) {
   return (
-    <div className="flex h-screen bg-muted overflow-hidden">
-      <div className="hidden md:flex w-64 flex-col shrink-0">
-        <div className="h-full overflow-y-auto py-8 pl-6 pr-4">
+    <div className="flex h-screen overflow-hidden bg-muted">
+      <aside className="hidden md:flex w-64 flex-col shrink-0">
+        <div className="h-full overflow-y-auto py-8 pl-6 pr-6">
           <DocsSidebar />
         </div>
-      </div>
+      </aside>
 
-      <main className="flex-1 flex flex-col min-w-0 pt-2 lg:pt-3">
-        <div className="flex-1 bg-background rounded-tl-2xl border-l border-t border-border/50  overflow-hidden relative flex flex-col">
-          <div className="flex-1 overflow-y-auto pt-12 pb-16 px-8 sm:px-12 lg:px-16">
-            <div className="mx-auto max-w-6xl flex gap-12">
-              <div className="flex-1 min-w-0 max-w-3xl">
+      <main className="flex-1 bg-background rounded-tl-[2.5rem] shadow-[0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col relative">
+        <div className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-6 py-12 md:px-12 lg:px-16 max-w-[90rem]">
+            <div className="flex flex-col xl:flex-row xl:justify-center xl:gap-12">
+              {/* Left Spacer for Perfect Centering on large screens */}
+              {rightColumn && <div className="hidden 2xl:block w-64 shrink-0" />}
+              
+              <div className="min-w-0 w-full max-w-3xl">
                 {children}
               </div>
               
