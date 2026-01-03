@@ -56,14 +56,14 @@ export function DocsSidebar() {
         <Link href="/" className="flex items-center">
           <FeatulLogoIcon className="h-6 w-6 text-foreground" />
         </Link>
-        <span className="inline-flex items-center justify-center rounded-sm border border-border bg-background px-2 py-1 text-xs font-medium text-accent">
+        <span className="inline-flex items-center justify-center rounded-sm border border-border bg-background px-1 py-0.5 text-xs font-medium text-accent">
           Docs
         </span>
       </div>
 
       {docsSections.map((section) => (
         <div key={section.label} className="space-y-2">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-2">
+          <div className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-2">
             {section.label}
           </div>
           <ul className="space-y-1">

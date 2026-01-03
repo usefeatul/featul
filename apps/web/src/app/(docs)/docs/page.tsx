@@ -47,7 +47,7 @@ export default function DocsIndexPage() {
 
           <div className="rounded-md border border-dashed border-border bg-muted px-4 py-3 text-xs sm:text-sm text-accent">
             Replace{" "}
-            <span className="font-mono text-[11px] sm:text-xs bg-background rounded px-1 py-0.5 border border-border/60">
+            <span className="font-mono text-sm sm:text-xs bg-background rounded px-1 py-0.5 border border-border/60">
               YOUR_TOKEN
             </span>{" "}
             with your project token.
