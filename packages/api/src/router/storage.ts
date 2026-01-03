@@ -12,6 +12,30 @@ function getEnv(name: string): string {
   return v
 }
 
+interface StorageContext {
+  s3: S3Client
+  bucket: string
+  publicBase: string
+}
+
+function createStorageContext(): StorageContext {
+  const accountId = getEnv("R2_ACCOUNT_ID")
+  const accessKeyId = getEnv("R2_ACCESS_KEY_ID")
+  const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY")
+  const bucket = getEnv("R2_BUCKET")
+  const publicBase = getEnv("R2_PUBLIC_BASE_URL")
+
+  const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
+  const s3 = new S3Client({
+    region: "auto",
+    endpoint,
+    credentials: { accessKeyId, secretAccessKey },
+    forcePathStyle: true,
+  })
+
+  return { s3, bucket, publicBase }
+}
+
 function sanitizeName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]/g, "-")
 }
@@ -20,21 +44,8 @@ export function createStorageRouter() {
   return j.router({
     getAvatarUploadUrl: privateProcedure
       .input(getAvatarUploadUrlInputSchema)
-      .post(async ({ ctx, input, c }: any) => {
-        const accountId = getEnv("R2_ACCOUNT_ID")
-        const accessKeyId = getEnv("R2_ACCESS_KEY_ID")
-        const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY")
-        const bucket = getEnv("R2_BUCKET")
-        const publicBase = getEnv("R2_PUBLIC_BASE_URL")
-
-        const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
-        const s3 = new S3Client({
-          region: "auto",
-          endpoint,
-          credentials: { accessKeyId, secretAccessKey },
-          forcePathStyle: true,
-        })
-
+      .post(async ({ ctx, input, c }) => {
+        const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
         const safe = sanitizeName(input.fileName)
         const userId = String(ctx.session.user.id || "")
@@ -52,7 +63,7 @@ export function createStorageRouter() {
 
     getUploadUrl: privateProcedure
       .input(getUploadUrlInputSchema)
-      .post(async ({ ctx, input, c }: any) => {
+      .post(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
           .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
@@ -71,20 +82,7 @@ export function createStorageRouter() {
           if (me?.role === "admin" || me?.role === "member" || (isBrandingUpload && perms?.canConfigureBranding === true)) allowed = true
         }
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
-        const accountId = getEnv("R2_ACCOUNT_ID")
-        const accessKeyId = getEnv("R2_ACCESS_KEY_ID")
-        const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY")
-        const bucket = getEnv("R2_BUCKET")
-        const publicBase = getEnv("R2_PUBLIC_BASE_URL")
-
-        const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
-        const s3 = new S3Client({
-          region: "auto",
-          endpoint,
-          credentials: { accessKeyId, secretAccessKey },
-          forcePathStyle: true,
-        })
-
+        const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
         const safe = sanitizeName(input.fileName)
         const folder = input.folder?.trim() || "branding/logo"
@@ -102,7 +100,7 @@ export function createStorageRouter() {
 
     getPublicPostImageUploadUrl: publicProcedure
       .input(getPostImageUploadUrlInputSchema)
-      .post(async ({ ctx, input, c }: any) => {
+      .post(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
@@ -110,20 +108,7 @@ export function createStorageRouter() {
           .limit(1)
         if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
 
-        const accountId = getEnv("R2_ACCOUNT_ID")
-        const accessKeyId = getEnv("R2_ACCESS_KEY_ID")
-        const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY")
-        const bucket = getEnv("R2_BUCKET")
-        const publicBase = getEnv("R2_PUBLIC_BASE_URL")
-
-        const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
-        const s3 = new S3Client({
-          region: "auto",
-          endpoint,
-          credentials: { accessKeyId, secretAccessKey },
-          forcePathStyle: true,
-        })
-
+        const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
         const safe = sanitizeName(input.fileName)
         const folder = "posts"
@@ -141,7 +126,7 @@ export function createStorageRouter() {
 
     getPostImageUploadUrl: privateProcedure
       .input(getPostImageUploadUrlInputSchema)
-      .post(async ({ ctx, input, c }: any) => {
+      .post(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
           .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
@@ -163,20 +148,7 @@ export function createStorageRouter() {
         
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
-        const accountId = getEnv("R2_ACCOUNT_ID")
-        const accessKeyId = getEnv("R2_ACCESS_KEY_ID")
-        const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY")
-        const bucket = getEnv("R2_BUCKET")
-        const publicBase = getEnv("R2_PUBLIC_BASE_URL")
-
-        const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
-        const s3 = new S3Client({
-          region: "auto",
-          endpoint,
-          credentials: { accessKeyId, secretAccessKey },
-          forcePathStyle: true,
-        })
-
+        const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
         const safe = sanitizeName(input.fileName)
         const folder = "posts"
@@ -194,7 +166,7 @@ export function createStorageRouter() {
 
     getCommentImageUploadUrl: privateProcedure
       .input(getCommentImageUploadUrlInputSchema)
-      .post(async ({ ctx, input, c }: any) => {
+      .post(async ({ ctx, input, c }) => {
         // Get workspace slug from postId
         const [targetPost] = await ctx.db
           .select({
@@ -243,20 +215,7 @@ export function createStorageRouter() {
           allowed = true
         }
 
-        const accountId = getEnv("R2_ACCOUNT_ID")
-        const accessKeyId = getEnv("R2_ACCESS_KEY_ID")
-        const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY")
-        const bucket = getEnv("R2_BUCKET")
-        const publicBase = getEnv("R2_PUBLIC_BASE_URL")
-
-        const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
-        const s3 = new S3Client({
-          region: "auto",
-          endpoint,
-          credentials: { accessKeyId, secretAccessKey },
-          forcePathStyle: true,
-        })
-
+        const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
         const safe = sanitizeName(input.fileName)
         const folder = "comments"
