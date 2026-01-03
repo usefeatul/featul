@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@featul/ui/lib/utils"
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
 
 interface DocsNavItem {
   label: string
@@ -52,7 +53,10 @@ export function DocsSidebar() {
   return (
     <nav className="space-y-6 text-sm">
       <div className="flex items-center gap-2 mb-8 px-2">
-        <span className="inline-flex items-center justify-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-accent">
+        <Link href="/" className="flex items-center">
+          <FeatulLogoIcon className="h-6 w-6 text-foreground" />
+        </Link>
+        <span className="inline-flex items-center justify-center rounded-sm border border-border bg-background px-2 py-1 text-xs font-medium text-accent">
           Docs
         </span>
       </div>
