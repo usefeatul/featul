@@ -1,140 +1,139 @@
 # featul Widget Specification (`@featul/widget`)
 
-This document defines the first version of the **Featul Widget** package used by customers to embed a unified feedback experience (feedback submit, roadmap, changelog) into their applications.
+This document defines the first version of the **Featul Widget** used by customers to embed a unified feedback experience (feedback submit, roadmap, changelog) into their applications.
 
 The goal is:
 
-- One npm package: `@featul/widget`
-- One integration point (provider + widget component)
+- One line snippet to install the widget via `<script>` tag
+- One initialization call with a `projectKey`
 - One unified UI with **three tabs** inside the same panel:
   - Feedback (submit only + similar suggestions)
   - Roadmap (planned only)
   - Changelog (release notes list)
 
-The widget is React‑based and targets Next.js 15/16 and other React 18+ apps.
+The widget is primarily loaded as a JavaScript snippet injected into any HTML page. Internally it is React‑based and uses modern tooling, but integrators only need to add a script tag and call a small global API.
 
 ---
 
-## 1. Package Overview
+## 1. Snippet Overview
 
-- **Name:** `@featul/widget`
-- **Consumer Install:**
+- **Primary installation:** HTML `<script>` snippet
+- **No npm install required**
+- Works on:
+  - Any website (plain HTML, PHP, Rails, Laravel, etc.)
+  - Any SPA framework (React, Vue, Svelte, Next.js, Remix, etc.)
 
-  ```bash
-  npm install @featul/widget
-  # or
-  yarn add @featul/widget
-  pnpm add @featul/widget
-  ```
+The snippet sets up:
 
-- **Tech stack inside the package**
-  - React 18+ (function components)
-  - TypeScript
-  - Zustand for local widget state (open/close, active tab, selection)
-  - TanStack React Query for data fetching and caching
-  - Zod for runtime validation and type inference
-  - UI built to be themable (reusing Featul’s design tokens)
+- A queue for widget commands before the SDK loads
+- A global proxy object for commands (`window.featul`)
+- A loader that fetches the SDK from the Featul CDN
 
-- **High‑level exports**
-  - `FeatulWidgetProvider` – top‑level provider with project config
-  - `FeatulWidget` – main floating widget (panel + tabs)
-  - `useFeatulWidget` – hook for imperative open/close/tab control
+Example snippet (added before `</body>`):
 
-The package is intentionally self‑contained so customers do **not** need to understand internal board/roadmap/changelog internals.
+```html
+<script>
+  window.$ftq = window.$ftq || [];
+  window.featul =
+    window.featul ||
+    new Proxy(
+      {},
+      {
+        get: function (_, prop) {
+          return function () {
+            window.$ftq.push([prop].concat([].slice.call(arguments)));
+          };
+        },
+      }
+    );
 
----
-
-## 2. Integration API (Consumer View)
-
-Basic usage in a React/Next.js app:
-
-```tsx
-import { FeatulWidgetProvider, FeatulWidget } from "@featul/widget";
-
-export function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <FeatulWidgetProvider
-      projectKey="ws_123_featul_slug" // maps to a workspace/subdomain
-      user={{
-        id: "user_123",
-        email: "user@example.com",
-        name: "Demo User",
-      }}
-      config={{
-        theme: "system",
-        defaultTab: "feedback",
-      }}
-    >
-      {children}
-      <FeatulWidget />
-    </FeatulWidgetProvider>
-  );
-}
+  (function () {
+    var s = document.createElement("script");
+    s.src = "https://cdn.featul.com/widget/v1/featul.js";
+    s.type = "module";
+    s.async = true;
+    document.head.appendChild(s);
+  })();
+</script>
 ```
 
-### 2.1 Provider Props
+Initialization:
+
+```html
+<script>
+  window.featul.init("YOUR_PROJECT_KEY", {
+    widget: true,
+    theme: "auto",
+    defaultTab: "feedback",
+  });
+</script>
+```
+
+Once installed, the widget button appears and users can:
+
+- Submit feedback and ideas
+- See similar existing posts
+- View the planned roadmap
+- Stay updated with changelog entries
+
+Internally, the SDK remains React/TypeScript‑based, but integrators never need to install npm packages or import React components.
+
+---
+
+## 2. Global Widget API (`window.featul`)
+
+The script exposes a single global object: `window.featul`.
+
+Commands are queued until the SDK loads, then processed in order.
+
+### 2.1 Core Methods
 
 ```ts
-interface FeatulWidgetUser {
-  id: string;
-  email?: string;
-  name?: string;
-  avatarUrl?: string;
-}
-
 type FeatulWidgetTab = "feedback" | "roadmap" | "changelog";
 
-interface FeatulWidgetConfig {
-  projectKey: string;
-  user?: FeatulWidgetUser;
-  config?: {
-    theme?: "light" | "dark" | "system";
-    defaultTab?: FeatulWidgetTab;
+interface FeatulInitOptions {
+  widget?: boolean;
+  theme?: "light" | "dark" | "auto";
+  defaultTab?: FeatulWidgetTab;
+  user?: {
+    id: string;
+    email?: string;
+    name?: string;
+    avatarUrl?: string;
   };
 }
-```
 
-- `projectKey`
-  - Public identifier for a workspace/domain.
-  - Internally resolved to:
-    - Workspace ID
-    - Workspace slug (subdomain)
-    - Default public board for feedback submissions.
-- `user`
-  - Optional identified user; used to attribute feedback and votes.
-  - If omitted, widget uses anonymous mode.
-- `config.theme`
-  - Forces light/dark or follows system.
-- `config.defaultTab`
-  - Initial tab when widget opens.
-
-### 2.2 Control Hook
-
-```ts
-import { useFeatulWidget } from "@featul/widget";
-
-function CustomButton() {
-  const { open, setTab } = useFeatulWidget();
-
-  function handleClick() {
-    setTab("feedback");
-    open();
-  }
-
-  return <button onClick={handleClick}>Give Feedback</button>;
-}
-```
-
-Exposed fields:
-
-```ts
-interface FeatulWidgetController {
-  isOpen: boolean;
-  activeTab: FeatulWidgetTab;
-  open: () => void;
+interface FeatulGlobal {
+  init: (projectKey: string, options?: FeatulInitOptions) => void;
+  open: (tab?: FeatulWidgetTab) => void;
   close: () => void;
-  setTab: (tab: FeatulWidgetTab) => void;
+  toggle: () => void;
+  identify: (user: FeatulInitOptions["user"]) => void;
 }
+```
+
+Usage examples:
+
+```html
+<script>
+  window.featul.init("YOUR_PROJECT_KEY", {
+    widget: true,
+    theme: "auto",
+    defaultTab: "feedback",
+  });
+</script>
+
+<script>
+  window.featul.identify({
+    id: "user_123",
+    email: "user@example.com",
+    name: "Demo User",
+  });
+</script>
+
+<button onclick="window.featul.open('roadmap')">
+  View roadmap
+</button>
 ```
 
 ---
@@ -299,17 +298,17 @@ The widget package should not assume it is running on the same origin as the app
 
 ---
 
-## 5. Internal Package Structure
+## 5. Internal SDK Structure
 
-Planned directory layout inside `packages/widget`:
+The CDN‑served SDK (for example, `featul.js`) is built from an internal package inside the monorepo, but consumers only see the script and `window.featul`.
+
+Planned layout:
 
 - `src/`
-  - `index.ts` – public exports
+  - `bootstrap.ts` – reads `window.$ftq`, processes queued commands, attaches SDK to `window.featul`
   - `types.ts` – shared TypeScript/Zod schemas (user, config, tabs)
   - `store.ts` – Zustand store (open/close/tab state)
-  - `context.tsx` – `FeatulWidgetProvider` + React Query client setup
-  - `widget.tsx` – main floating widget + tab bar + layout
-  - `hooks.ts` – `useFeatulWidget` hook
+  - `widget-root.tsx` – main floating widget + tab bar + layout
   - `api/`
     - `client.ts` – thin fetch client with base URL and helpers
     - `queries.ts` – React Query hooks for config, roadmap, changelog
@@ -318,7 +317,7 @@ Planned directory layout inside `packages/widget`:
     - `roadmap-tab.tsx` – planned roadmap list
     - `changelog-tab.tsx` – changelog list
   - `components/`
-    - Reusable primitives for buttons, list items, etc. (or wrappers around `@featul/ui` if shared).
+    - Reusable primitives for buttons, list items, etc.
 
 ---
 
@@ -329,12 +328,11 @@ Not part of the initial version, but planned:
 - Show existing feedback list inside the Feedback tab (toggleable).
 - Allow switching roadmap status filters (planned, in progress, completed).
 - Support multiple widgets per page scoped to different projects.
-- Allow custom triggers instead of the default floating button.
 - Deeper theming (fonts, corner radius, dark/light preferences) passed from the host app.
+- Optional React wrapper that injects the script and exposes typed hooks.
 
 The initial scope remains focused on:
 
 - Feedback creation + duplicate suggestions.
 - Planned roadmap visibility.
 - Changelog visibility.
-
