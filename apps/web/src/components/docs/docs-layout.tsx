@@ -32,25 +32,21 @@ export function DocsLayoutShell({ children, rightColumn }: DocsLayoutShellProps)
             data-docs-scroll-container="true"
           >
             <div className="container mx-auto px-6 pt-8 pb-24 md:pb-12 md:px-12 lg:px-16 max-w-[90rem]">
-              <div className="flex flex-col xl:flex-row xl:justify-center xl:gap-12">
-                {rightColumn && <div className="hidden 2xl:block w-64 shrink-0" />}
-
-                <div className="min-w-0 w-full max-w-3xl">
-                  {children}
-                </div>
-
-                {rightColumn && (
-                  <aside className="hidden xl:block w-64 shrink-0">
-                    <div className="sticky top-24">
-                      {rightColumn}
-                    </div>
-                  </aside>
-                )}
+              <div className="flex justify-center">
+                <div className="min-w-0 w-full max-w-3xl">{children}</div>
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {rightColumn && (
+        <aside className="hidden xl:block pointer-events-none fixed top-16 right-4 sm:right-6 lg:right-10 2xl:right-16 z-20">
+          <div className="w-64 max-w-xs pointer-events-auto">
+            {rightColumn}
+          </div>
+        </aside>
+      )}
     </div>
   )
 }

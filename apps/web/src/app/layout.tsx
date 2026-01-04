@@ -123,7 +123,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        {/* {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "false") && <DebugTools />} */}
+        {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "false") && <DebugTools />}
       </body>
     </html>
   );
