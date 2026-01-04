@@ -18,28 +18,30 @@ export function DocsLayoutShell({ children, rightColumn }: DocsLayoutShellProps)
   return (
     <div className="flex h-screen overflow-hidden bg-muted">
       <aside className="hidden md:flex w-64 flex-col shrink-0">
-        <div className="h-full overflow-y-auto py-8 pl-6 pr-6">
+        <div className="sticky top-0 h-screen py-8 pl-6 pr-6">
           <DocsSidebar />
         </div>
       </aside>
 
       <DocsMobileNav />
 
-      <main className="flex-1 flex flex-col min-w-0 pt-8 md:pt-1 lg:pt-2">
-        <div className="flex-1 bg-background md:rounded-tl-2xl shadow-[0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col relative">
-          <div className="flex-1 overflow-y-auto">
+      <main className="flex-1 flex flex-col min-w-0 pt-8 md:pt-1 lg:pt-2 min-h-0">
+        <div className="flex-1 min-h-0 bg-background md:rounded-tl-2xl shadow-[0_0_0_1px_rgba(0,0,0,0.05)] flex flex-col relative">
+          <div
+            className="flex-1 min-h-0 overflow-y-auto"
+            data-docs-scroll-container="true"
+          >
             <div className="container mx-auto px-6 pt-8 pb-24 md:pb-12 md:px-12 lg:px-16 max-w-[90rem]">
               <div className="flex flex-col xl:flex-row xl:justify-center xl:gap-12">
-                {/* Left Spacer for Perfect Centering on large screens */}
                 {rightColumn && <div className="hidden 2xl:block w-64 shrink-0" />}
-                
+
                 <div className="min-w-0 w-full max-w-3xl">
                   {children}
                 </div>
-                
+
                 {rightColumn && (
                   <aside className="hidden xl:block w-64 shrink-0">
-                    <div className="sticky top-0">
+                    <div className="sticky top-24">
                       {rightColumn}
                     </div>
                   </aside>

@@ -6,15 +6,16 @@ import { usePrefersReducedMotion } from "../../hooks/use-prefers-reduced-motion"
 import { ScrollArea } from "@featul/ui/components/scroll-area"
 import { useActiveHeading } from "@/hooks/use-active-heading"
 import { useAutoScrollActiveLink } from "@/hooks/use-auto-scroll-active-link"
-import { scrollToHeading, updateUrlHash } from "@/lib/toc-utils"
+import { scrollToHeading, scrollToHeadingInContainer, updateUrlHash } from "@/lib/toc-utils"
 
 type TableOfContentsProps = {
   items: TocItem[]
   className?: string
   title?: string
+  scrollContainerSelector?: string
 }
 
-export function TableOfContents({ items, className, title = "Table of content" }: TableOfContentsProps) {
+export function TableOfContents({ items, className, title = "Table of content", scrollContainerSelector }: TableOfContentsProps) {
   const activeId = useActiveHeading(items)
   const prefersReducedMotion = usePrefersReducedMotion()
   const [expanded, setExpanded] = useState(false)
@@ -24,7 +25,11 @@ export function TableOfContents({ items, className, title = "Table of content" }
 
   function onAnchorClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     e.preventDefault()
-    scrollToHeading(id, prefersReducedMotion)
+    if (scrollContainerSelector) {
+      scrollToHeadingInContainer(id, prefersReducedMotion, scrollContainerSelector)
+    } else {
+      scrollToHeading(id, prefersReducedMotion)
+    }
     updateUrlHash(id)
   }
   return (

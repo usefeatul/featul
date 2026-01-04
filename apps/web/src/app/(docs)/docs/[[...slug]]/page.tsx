@@ -74,6 +74,7 @@ export default async function DocsPage(props: DocsPageProps) {
           title="On this page"
           items={tocItems}
           className="text-xs"
+          scrollContainerSelector='[data-docs-scroll-container="true"]'
         />
       }
     >
