@@ -45,19 +45,18 @@ export function TableOfContents({ items, className, title = "Table of content", 
       <div className="text-md font-bold text-foreground mb-2">{title}</div>
       {expanded ? (
         <ul className="space-y-1 list-none pl-0 m-0">
-          {items.map((item, i) => (
+          {items.map((item) => (
             <li key={item.id} className={cn("leading-snug text-left")}> 
               <a
                 href={`#${item.id}`}
                 onClick={(e) => onAnchorClick(e, item.id)}
                 className={cn(
-                  "block py-1 text-left text-md text-accent hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
+                  "block py-1 text-left text-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
                   item.level === 2 ? "font-light" : "font-normal",
-                  activeId === item.id && "text-primary font-light"
+                  activeId === item.id && "text-foreground font-medium"
                 )}
                 aria-current={activeId === item.id ? "page" : undefined}
               >
-                <span className="mr-2 tabular-nums">{i + 1}.</span>
                 {item.text}
               </a>
             </li>
@@ -66,19 +65,18 @@ export function TableOfContents({ items, className, title = "Table of content", 
       ) : (
         <ScrollArea className="pr-1 h-[9rem]">
           <ul className="space-y-1 list-none pl-0 m-0">
-            {items.map((item, i) => (
+            {items.map((item) => (
               <li key={item.id} className={cn("leading-snug text-left")}> 
                 <a
                   href={`#${item.id}`}
                   onClick={(e) => onAnchorClick(e, item.id)}
                   className={cn(
-                    "block py-1 text-left text-md text-accent truncate hover:text-primary hover:underline underline-offset-2 decoration-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
+                    "block py-1 text-left text-md text-muted-foreground truncate transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
                     item.level === 2 ? "font-light" : "font-normal",
-                    activeId === item.id && "text-primary font-light"
+                    activeId === item.id && "text-foreground font-medium"
                   )}
                   aria-current={activeId === item.id ? "page" : undefined}
                 >
-                  <span className="mr-2 tabular-nums">{i + 1}.</span>
                   {item.text}
                 </a>
               </li>
