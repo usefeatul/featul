@@ -17,7 +17,9 @@ type DocsPageProps = {
 
 function resolvePathname(params: { slug?: string[] }): string {
   const segments = params.slug ?? []
-  if (!segments.length) return "/docs"
+  if (!segments.length) {
+    return "/docs/getting-started"
+  }
   return `/docs/${segments.join("/")}`
 }
 
@@ -49,11 +51,8 @@ export async function generateMetadata(props: DocsPageProps): Promise<Metadata> 
     notFound()
   }
 
-  const docs = await readDocsMarkdown(nav.item.id as DocsPageId)
-
   return {
-    title: docs.frontmatter.title ?? nav.item.label,
-    description: docs.frontmatter.description,
+    title: nav.item.label,
   }
 }
 
