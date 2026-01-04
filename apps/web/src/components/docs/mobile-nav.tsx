@@ -9,7 +9,7 @@ import type { ReactElement } from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Button } from "@featul/ui/components/button"
 import { AnimatePresence, motion } from "framer-motion"
-import { docsSections, type DocsNavSection } from "./sidebar"
+import { docsSections, type DocsNavSection } from "@/config/docsNav"
 
 /**
  * Derives the current page label from a docs pathname.

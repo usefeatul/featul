@@ -1,67 +1,16 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@featul/ui/lib/utils"
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
-
-/**
- * Single navigable item within a docs navigation section.
- */
-export interface DocsNavItem {
-  label: string
-  href: string
-}
-
-/**
- * Group of related docs navigation items rendered under a shared label.
- */
-export interface DocsNavSection {
-  label: string
-  items: DocsNavItem[]
-}
-
-/**
- * Static configuration of docs navigation sections shared by the desktop
- * sidebar and the mobile docs navigation.
- */
-export const docsSections: DocsNavSection[] = [
-  {
-    label: "Getting started",
-    items: [
-      { label: "Introduction", href: "/docs" },
-      { label: "Installation", href: "/docs/installation" },
-    ],
-  },
-  {
-    label: "Installation",
-    items: [
-      { label: "Basic", href: "/docs/installation" },
-      { label: "Next.js", href: "/docs/installation/nextjs" },
-      { label: "React", href: "/docs/installation/react" },
-      { label: "Vue.js", href: "/docs/installation/vue" },
-      { label: "Nuxt.js", href: "/docs/installation/nuxt" },
-      { label: "SvelteKit", href: "/docs/installation/sveltekit" },
-      { label: "Astro", href: "/docs/installation/astro" },
-      { label: "Angular", href: "/docs/installation/angular" },
-    ],
-  },
-  {
-    label: "Advanced",
-    items: [
-      { label: "Subdomain tracking", href: "/docs/advanced/subdomain-tracking" },
-      { label: "Custom events", href: "/docs/advanced/custom-events" },
-      { label: "Identify", href: "/docs/advanced/identify" },
-      { label: "Persist", href: "/docs/advanced/persist" },
-    ],
-  },
-]
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@featul/ui/lib/utils";
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { docsSections } from "@/config/docsNav";
 
 /**
  * Desktop sidebar navigation for docs pages.
  */
 export function DocsSidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="space-y-6 text-sm">
@@ -76,36 +25,30 @@ export function DocsSidebar() {
 
       {docsSections.map((section) => (
         <div key={section.label} className="space-y-2">
-          <div className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-2">
+          <div className="text-xs font-semibold uppercase tracking-wide text-accent ">
             {section.label}
           </div>
           <ul className="space-y-1">
             {section.items.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href;
 
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
-                      "group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-accent hover:text-foreground hover:bg-background/50 transition-colors",
-                      isActive && "bg-background text-foreground"
+                      "group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-accent hover:text-black transition-colors",
+                      isActive && "text-black"
                     )}
                   >
-                    <span
-                      className={cn(
-                        "inline-block size-1.5 rounded-full bg-border transition-colors",
-                        isActive && "bg-primary"
-                      )}
-                    />
                     <span className="truncate">{item.label}</span>
                   </Link>
                 </li>
-              )
+              );
             })}
           </ul>
         </div>
       ))}
     </nav>
-  )
+  );
 }
