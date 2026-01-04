@@ -151,7 +151,7 @@ export function DocsMobileNav(): ReactElement {
           onClick={!isOpen ? handleOpen : undefined}
           initial={false}
           animate={{
-            width: isOpen ? "90vw" : "70vw",
+            width: isOpen ? "90vw" : "60vw",
             height: isOpen ? "80vh" : "3rem",
             transition: isOpen
               ? {
@@ -165,9 +165,8 @@ export function DocsMobileNav(): ReactElement {
           }}
           style={{ originY: 1 }}
           className={cn(
-            "bg-black text-white rounded-2xl shadow-lg border border-white/10 overflow-hidden flex flex-col mx-auto",
+            "bg-black text-white rounded-4xl shadow-lg border border-white/10 overflow-hidden flex flex-col mx-auto",
             "max-w-[380px]",
-            isOpen ? "shadow-2xl rounded-4xl" : "",
           )}
         >
           {isOpen ? (
