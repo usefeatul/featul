@@ -16,7 +16,7 @@ type TableOfContentsProps = {
 }
 
 export function TableOfContents({ items, className, title = "Table of content", scrollContainerSelector }: TableOfContentsProps) {
-  const activeId = useActiveHeading(items)
+  const activeId = useActiveHeading(items, scrollContainerSelector)
   const prefersReducedMotion = usePrefersReducedMotion()
   const [expanded, setExpanded] = useState(false)
   const navRef = useRef<HTMLDivElement | null>(null)

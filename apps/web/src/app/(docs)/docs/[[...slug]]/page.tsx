@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { DocsLayoutShell } from "@/components/docs/docs-layout"
-import { TableOfContents } from "@/components/blog/table-of-contents"
+import { DocsToc } from "@/components/docs/docs-toc"
 import type { TocItem as TocItemType } from "@/lib/toc"
 import { docsSections } from "@/config/docsNav"
 import { readDocsMarkdown, type DocsPageId } from "@/lib/docs-markdown"
@@ -70,12 +70,7 @@ export default async function DocsPage(props: DocsPageProps) {
   return (
     <DocsLayoutShell
       rightColumn={
-        <TableOfContents
-          title="On this page"
-          items={tocItems}
-          className="text-xs"
-          scrollContainerSelector='[data-docs-scroll-container="true"]'
-        />
+        <DocsToc items={tocItems} />
       }
     >
       <section>
