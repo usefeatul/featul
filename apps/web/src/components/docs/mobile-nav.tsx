@@ -137,7 +137,7 @@ export function DocsMobileNav(): ReactElement {
           layout
           initial={false}
           animate={{
-            width: isOpen ? "min(90vw, 380px)" : "auto",
+            width: isOpen ? "min(90vw, 380px)" : "280px",
             height: isOpen ? "min(80vh, 500px)" : "48px",
           }}
           transition={{
@@ -209,12 +209,13 @@ export function DocsMobileNav(): ReactElement {
             className={cn(
               "flex items-center justify-between gap-3 px-4 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-inset h-12",
               isOpen && "border-t border-white/10",
+              !isOpen && "max-w-[280px]",
             )}
             aria-label={`Toggle docs navigation, currently on ${currentSectionLabel} – ${currentPageLabel}`}
             aria-expanded={isOpen}
             aria-controls="docs-mobile-nav-panel"
           >
-            <div className="flex items-center gap-2 text-sm font-medium text-white min-w-0">
+            <div className="flex items-center gap-2 text-sm font-medium text-white min-w-0 overflow-hidden">
               <span className="text-white/50 text-xs shrink-0">{currentSectionLabel}</span>
               <span className="truncate">{currentPageLabel}</span>
             </div>
