@@ -18,6 +18,10 @@ export type DocsPageId =
   | "getting-started/guest-feedback"
   | "getting-started/add-userjot-links"
   | "getting-started/mask-identities"
+  | "branding-setup/branding"
+  | "branding-setup/domain"
+  | "branding-setup/integrations"
+  | "branding-setup/sso"
   | "advanced/subdomain-tracking"
   | "advanced/custom-events"
   | "advanced/identify"
@@ -34,6 +38,10 @@ const DOC_IDS: DocsPageId[] = [
   "getting-started/guest-feedback",
   "getting-started/add-userjot-links",
   "getting-started/mask-identities",
+  "branding-setup/branding",
+  "branding-setup/domain",
+  "branding-setup/integrations",
+  "branding-setup/sso",
   "advanced/subdomain-tracking",
   "advanced/custom-events",
   "advanced/identify",

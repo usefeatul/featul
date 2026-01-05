@@ -11,7 +11,7 @@ export interface DocsNavSection {
 
 export const docsSections: DocsNavSection[] = [
   {
-    label: "Intro",
+    label: "Introduction",
     items: [
       { id: "getting-started/index", label: "Getting Started", href: "/docs/getting-started" },
     ],
@@ -32,6 +32,11 @@ export const docsSections: DocsNavSection[] = [
   },
   {
     label: "Branding & Setup",
-    items: [],
+    items: [
+      { id: "branding-setup/branding", label: "Branding", href: "/docs/branding-setup/branding" },
+      { id: "branding-setup/domain", label: "Custom Domain", href: "/docs/branding-setup/domain" },
+      { id: "branding-setup/integrations", label: "Integrations", href: "/docs/branding-setup/integrations" },
+      { id: "branding-setup/sso", label: "Single Sign-On", href: "/docs/branding-setup/sso" },
+    ],
   },
 ]
