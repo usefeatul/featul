@@ -2,18 +2,12 @@ import type { ReactNode } from "react"
 import { DocsSidebar } from "./Sidebar"
 import { DocsMobileNav } from "./MobileNav"
 
-/**
- * Props for the DocsLayoutShell component.
- */
 interface DocsLayoutShellProps {
   children: ReactNode
   rightColumn?: ReactNode
 }
 
-/**
- * Shared layout shell for documentation pages, providing the desktop sidebar,
- * mobile navigation, and optional right-hand column for contextual content.
- */
+
 export function DocsLayoutShell({ children, rightColumn }: DocsLayoutShellProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-muted">
