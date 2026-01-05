@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@featul/ui/lib/utils"
-import ChevronExpandIcon from "@featul/ui/icons/chevron-expand"
+import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { docsSections } from "@/config/docsNav"
@@ -28,8 +28,8 @@ export function DocsMobileFloatingNav() {
     [pathname],
   )
 
-  function handleOpen(): void {
-    setIsOpen(true)
+  function handleToggle(): void {
+    setIsOpen((prev) => !prev)
   }
 
   function handleClose(): void {
@@ -73,105 +73,134 @@ export function DocsMobileFloatingNav() {
           : "translate-y-0 opacity-100",
       )}
     >
+      {/* Unified floating container */}
       <motion.div
         role="group"
         aria-label="Docs navigation"
         initial={false}
         animate={{
-          width: isOpen ? "min(90vw, 380px)" : "280px",
-          height: isOpen ? "min(80vh, 500px)" : "48px",
+          width: isOpen ? "min(90vw, 340px)" : "auto",
+          height: isOpen ? "min(70vh, 440px)" : 44,
         }}
         transition={{
-          type: "tween",
-          duration: 0.2,
-          ease: "easeOut",
+          type: "spring",
+          stiffness: 400,
+          damping: 32,
+          mass: 0.8,
         }}
-        className="bg-black text-white rounded-3xl shadow-lg border border-white/10 overflow-hidden flex flex-col"
+        className="bg-[#0a0a0a] rounded-2xl border border-white/[0.08] shadow-2xl overflow-hidden flex flex-col"
       >
-        {/* Navigation content panel - expands above the trigger */}
-        <AnimatePresence>
-          {isOpen && (
+        <AnimatePresence mode="wait" initial={false}>
+          {isOpen ? (
             <motion.div
-              key="docs-mobile-nav-panel"
-              id="docs-mobile-nav-panel"
+              key="open-content"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, delay: isOpen ? 0.1 : 0 }}
-              className="overflow-y-auto flex-1 p-4 space-y-5"
+              transition={{ duration: 0.15 }}
+              className="flex flex-col h-full"
             >
-              {docsSections.map((section, sectionIdx) => (
-                <motion.div
-                  key={section.label}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: 0.05 * sectionIdx }}
-                  className="space-y-2"
-                >
-                  <div className="text-[11px] font-medium uppercase tracking-wider text-white/40 px-2">
-                    {section.label}
-                  </div>
-                  <ul className="space-y-0.5">
-                    {section.items.map((item) => {
-                      const isActive = pathname === item.href
-                      return (
-                        <li key={item.href}>
-                          <Link
-                            href={item.href}
-                            onClick={handleClose}
-                            className={cn(
-                              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-                              isActive
-                                ? "bg-white/10 text-white font-medium"
-                                : "text-white/60 hover:text-white hover:bg-white/5",
-                            )}
+              {/* Navigation content */}
+              <div
+                id="docs-mobile-nav-panel"
+                className="flex-1 overflow-y-auto overscroll-contain"
+              >
+                <div className="py-2">
+                  {docsSections.map((section, sectionIdx) => (
+                    <motion.div
+                      key={section.label}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 35,
+                        delay: sectionIdx * 0.04,
+                      }}
+                    >
+                      {/* Section label */}
+                      <div className="px-4 pt-3 pb-1.5">
+                        <span className="text-[9px] uppercase tracking-[0.2em] text-white/25 font-semibold">
+                          {section.label}
+                        </span>
+                      </div>
+
+                      {/* Items */}
+                      {section.items.map((item, itemIdx) => {
+                        const isActive = pathname === item.href
+                        return (
+                          <motion.div
+                            key={item.href}
+                            initial={{ opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 35,
+                              delay: sectionIdx * 0.04 + itemIdx * 0.02,
+                            }}
                           >
-                            <span
+                            <Link
+                              href={item.href}
+                              onClick={handleClose}
                               className={cn(
-                                "size-1.5 rounded-full shrink-0 transition-colors",
-                                isActive ? "bg-primary" : "bg-white/20",
+                                "block mx-2 px-3 py-2 rounded-lg text-[13px] transition-all duration-150",
+                                isActive
+                                  ? "bg-white/[0.08] text-white font-medium"
+                                  : "text-white/50 hover:text-white/80 hover:bg-white/[0.04] active:bg-white/[0.06]",
                               )}
-                            />
-                            {item.label}
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </motion.div>
-              ))}
+                            >
+                              <span className="truncate">{item.label}</span>
+                            </Link>
+                          </motion.div>
+                        )
+                      })}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer with title and close - at bottom */}
+              <button
+                type="button"
+                onClick={handleClose}
+                className="flex items-center justify-between gap-3 px-4 h-12 shrink-0 border-t border-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset w-full"
+                aria-label="Close navigation"
+              >
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/30 font-medium">
+                  Navigation
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] text-white/50 font-medium">Close</span>
+                  <XMarkIcon className="text-white/50" size={16} />
+                </div>
+              </button>
             </motion.div>
+          ) : (
+            <motion.button
+              key="closed-trigger"
+              type="button"
+              onClick={handleToggle}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-center gap-1.5 min-w-0 overflow-hidden h-11 px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
+              aria-label={`Toggle docs navigation, currently on ${currentSectionLabel} – ${currentPageLabel}`}
+              aria-expanded={isOpen}
+              aria-controls="docs-mobile-nav-panel"
+            >
+              <span className="text-[11px] text-white/35 shrink-0">
+                {currentSectionLabel}
+              </span>
+              <span className="text-white/20">/</span>
+              <span className="text-[13px] text-white/80 font-medium truncate">
+                {currentPageLabel}
+              </span>
+            </motion.button>
           )}
         </AnimatePresence>
-
-        {/* Bottom trigger bar - stays at bottom */}
-        <button
-          type="button"
-          onClick={isOpen ? handleClose : handleOpen}
-          className={cn(
-            "flex items-center justify-between gap-3 px-4 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-inset h-12 w-full",
-            isOpen && "border-t border-white/10",
-          )}
-          aria-label={`Toggle docs navigation, currently on ${currentSectionLabel} – ${currentPageLabel}`}
-          aria-expanded={isOpen}
-          aria-controls="docs-mobile-nav-panel"
-        >
-          <div className="flex items-center gap-2 text-sm font-medium text-white min-w-0 overflow-hidden">
-            <span className="text-white/50 text-xs shrink-0">
-              {currentSectionLabel}
-            </span>
-            <span className="truncate">{currentPageLabel}</span>
-          </div>
-          <motion.div
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="shrink-0"
-          >
-            <ChevronExpandIcon className="w-4 h-4 text-white/50" />
-          </motion.div>
-        </button>
       </motion.div>
     </div>
   )
 }
-
