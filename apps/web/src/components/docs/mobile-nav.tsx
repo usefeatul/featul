@@ -151,6 +151,7 @@ export function DocsMobileNav(): ReactElement {
           <AnimatePresence>
             {isOpen && (
               <motion.div
+                key="docs-mobile-nav-panel"
                 id="docs-mobile-nav-panel"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
