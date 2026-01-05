@@ -114,7 +114,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const isInline = !className
             if (isInline) {
               return (
-                <code className="rounded bg-muted px-1.5 py-0.5 text-sm font-mono text-foreground">
+                <code className="rounded-md border border-border bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary">
                   {children}
                 </code>
               )
