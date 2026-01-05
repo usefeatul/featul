@@ -40,7 +40,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const text = extractTextFromChildren(children)
             const id = slugifyHeading(text)
             return (
-              <h2 id={id}>
+              <h2 id={id} className="text-muted-foreground tracking-wide">
                 {children}
               </h2>
             )
@@ -49,11 +49,21 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const text = extractTextFromChildren(children)
             const id = slugifyHeading(text)
             return (
-              <h3 id={id}>
+              <h3 id={id} className="text-muted-foreground tracking-wide">
                 {children}
               </h3>
             )
           },
+          p: ({ children }) => (
+            <p className="text-accent tracking-normal">
+              {children}
+            </p>
+          ),
+          li: ({ children }) => (
+            <li className="text-accent tracking-normal">
+              {children}
+            </li>
+          ),
           a: ({ href, children }) => {
             const url = typeof href === "string" ? href : ""
             const isExternal = /^https?:\/\//.test(url)
@@ -69,34 +79,34 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             )
           },
           table: ({ children }) => (
-            <div className="my-6 w-full overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
+            <div className="my-4 w-full overflow-x-auto rounded-md border border-border">
+              <table className="w-full text-sm border-collapse">
                 {children}
               </table>
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="border-b border-border bg-muted/50">
+            <thead className="bg-muted/50 border-b border-border">
               {children}
             </thead>
           ),
           tbody: ({ children }) => (
-            <tbody className="divide-y divide-border">
+            <tbody>
               {children}
             </tbody>
           ),
           tr: ({ children }) => (
-            <tr className="border-b border-border last:border-0">
+            <tr className="border-b border-border last:border-b-0">
               {children}
             </tr>
           ),
           th: ({ children }) => (
-            <th className="px-4 py-3 text-left text-xs font-semibold text-foreground">
+            <th className="px-3 py-2 text-left text-xs font-medium text-foreground">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="px-4 py-3 text-left text-accent">
+            <td className="px-3 py-2 text-left text-xs text-accent">
               {children}
             </td>
           ),
