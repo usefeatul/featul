@@ -8,6 +8,7 @@ export type DocsFrontmatter = {
 }
 
 export type DocsPageId =
+  | "getting-started/overview"
   | "getting-started/index"
   | "getting-started/create-boards"
   | "getting-started/invite-members"
@@ -28,6 +29,7 @@ export type DocsPageId =
   | "advanced/persist"
 
 const DOC_IDS: DocsPageId[] = [
+  "getting-started/overview",
   "getting-started/index",
   "getting-started/create-boards",
   "getting-started/invite-members",

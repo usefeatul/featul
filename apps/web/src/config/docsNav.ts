@@ -13,6 +13,7 @@ export const docsSections: DocsNavSection[] = [
   {
     label: "Introduction",
     items: [
+      { id: "getting-started/overview", label: "What is Featul?", href: "/docs/getting-started/overview" },
       { id: "getting-started/index", label: "Getting Started", href: "/docs/getting-started" },
     ],
   },
