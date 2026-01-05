@@ -96,3 +96,4 @@ export default async function DocsPage(props: DocsPageProps) {
     </>
   )
 }
+
