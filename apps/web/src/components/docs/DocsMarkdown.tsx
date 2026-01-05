@@ -32,7 +32,7 @@ function extractTextFromChildren(children: React.ReactNode): string {
 
 export function DocsMarkdown({ markdown }: { markdown: string }) {
   return (
-    <Prose>
+    <Prose className="prose-h2:font-bold prose-h3:font-bold prose-h2:text-muted-foreground prose-h3:text-muted-foreground">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -40,7 +40,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const text = extractTextFromChildren(children)
             const id = slugifyHeading(text)
             return (
-              <h2 id={id} className="text-muted-foreground tracking-wide">
+              <h2 id={id} className="font-bold text-muted-foreground tracking-wide">
                 {children}
               </h2>
             )
@@ -49,7 +49,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const text = extractTextFromChildren(children)
             const id = slugifyHeading(text)
             return (
-              <h3 id={id} className="text-muted-foreground tracking-wide">
+              <h3 id={id} className="font-bold text-muted-foreground tracking-wide">
                 {children}
               </h3>
             )

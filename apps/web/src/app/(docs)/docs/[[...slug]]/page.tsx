@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { DocsLayoutShell } from "@/components/docs/docs-layout"
-import { DocsToc } from "@/components/docs/docs-toc"
+import { DocsLayoutShell } from "@/components/docs/DocsLayout"
+import { DocsToc } from "@/components/docs/DocsToc"
 import type { TocItem as TocItemType } from "@/lib/toc"
 import { docsSections } from "@/config/docsNav"
 import { readDocsMarkdown, type DocsPageId } from "@/lib/docs-markdown"
-import { DocsMarkdown, extractDocsToc } from "@/components/docs/docs-markdown"
+import { DocsMarkdown, extractDocsToc } from "@/components/docs/DocsMarkdown"
 
 type DocsPageParams = {
   slug?: string[]

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
-import { DocsSidebar } from "./sidebar"
-import { DocsMobileNav } from "./mobile-nav"
+import { DocsSidebar } from "./Sidebar"
+import { DocsMobileNav } from "./MobileNav"
 
 /**
  * Props for the DocsLayoutShell component.
