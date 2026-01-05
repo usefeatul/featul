@@ -23,6 +23,7 @@ export type DocsPageId =
   | "branding-setup/domain"
   | "branding-setup/integrations"
   | "branding-setup/sso"
+  | "open-source/index"
   | "advanced/subdomain-tracking"
   | "advanced/custom-events"
   | "advanced/identify"
@@ -44,6 +45,7 @@ const DOC_IDS: DocsPageId[] = [
   "branding-setup/domain",
   "branding-setup/integrations",
   "branding-setup/sso",
+  "open-source/index",
   "advanced/subdomain-tracking",
   "advanced/custom-events",
   "advanced/identify",

@@ -40,4 +40,10 @@ export const docsSections: DocsNavSection[] = [
       { id: "branding-setup/sso", label: "Single Sign-On", href: "/docs/branding-setup/sso" },
     ],
   },
+  {
+    label: "Open Source",
+    items: [
+      { id: "open-source/index", label: "Overview", href: "/docs/open-source" },
+    ],
+  },
 ]

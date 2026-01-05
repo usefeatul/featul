@@ -2,6 +2,7 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prose } from "@/components/blog/prose"
+import { GitHubIcon } from "@featul/ui/icons/github"
 
 function slugifyHeading(input: string) {
   return input
@@ -67,6 +68,22 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
           a: ({ href, children }) => {
             const url = typeof href === "string" ? href : ""
             const isExternal = /^https?:\/\//.test(url)
+            const isGitHub = url.includes("github.com")
+            
+            if (isGitHub) {
+              return (
+                <a
+                  href={url}
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-primary px-3 py-1.5 text-sm font-medium !text-white no-underline transition-colors hover:bg-primary/90"
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                >
+                  <GitHubIcon size={16} className="text-white" />
+                  <span className="text-white">{children}</span>
+                </a>
+              )
+            }
+            
             return (
               <a
                 href={url}
