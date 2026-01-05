@@ -27,11 +27,6 @@ export const docsSections: DocsNavSection[] = [
   },
   {
     label: "Advanced",
-    items: [
-      { id: "advanced/subdomain-tracking", label: "Subdomain tracking", href: "/docs/advanced/subdomain-tracking" },
-      { id: "advanced/custom-events", label: "Custom events", href: "/docs/advanced/custom-events" },
-      { id: "advanced/identify", label: "Identify", href: "/docs/advanced/identify" },
-      { id: "advanced/persist", label: "Persist", href: "/docs/advanced/persist" },
-    ],
+    items: [],
   },
 ]
