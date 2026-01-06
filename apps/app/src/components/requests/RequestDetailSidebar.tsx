@@ -67,6 +67,7 @@ export default function RequestDetailSidebar({
                 <AvatarImage
                   src={displayAuthor.image}
                   alt={displayAuthor.name}
+                  className={displayAuthor.image?.includes('data:image/svg+xml') ? 'p-1' : ''}
                 />
               ) : (
                 <AvatarFallback className="bg-muted text-xs text-muted-foreground">

@@ -26,6 +26,7 @@ export type PostSidebarProps = {
     isFeatured?: boolean
     role?: "admin" | "member" | "viewer" | null
     isOwner?: boolean
+    isFeatul?: boolean
     author?: {
       name: string | null
       image: string | null
@@ -69,7 +70,11 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
           <div className="relative">
             <Avatar className="size-10 relative overflow-visible">
               {displayAuthor.image ? (
-                <AvatarImage src={displayAuthor.image} alt={displayAuthor.name} />
+                <AvatarImage 
+                  src={displayAuthor.image} 
+                  alt={displayAuthor.name}
+                  className={displayAuthor.image?.includes('data:image/svg+xml') ? 'p-1.5' : ''}
+                />
               ) : (
                 <AvatarFallback className="text-xs bg-muted text-muted-foreground">{authorInitials}</AvatarFallback>
               )}

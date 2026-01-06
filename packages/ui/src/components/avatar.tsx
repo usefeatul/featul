@@ -29,11 +29,11 @@ function AvatarImage({
     <BaseAvatar.Image
       data-slot="avatar-image"
       className={cn(
-        "aspect-square bg-accent/10 dark:bg-black/50 rounded-full size-full",
+        "aspect-square bg-accent/10 dark:bg-black/10 rounded-full size-full",
         // Invert white SVGs in light mode for proper contrast (e.g., FeatulLogoIcon data URIs)
         "[[src*='data:image/svg+xml']]:dark:brightness-100 [[src*='data:image/svg+xml']]:brightness-0",
         // Ensure SVG data URIs are fully visible - less padding and larger scale for better visibility
-        "[[src*='data:image/svg+xml']]:object-contain [[src*='data:image/svg+xml']]:p-1 [[src*='data:image/svg+xml']]:scale-100",
+        "[[src*='data:image/svg+xml']]:object-contain [[src*='data:image/svg+xml']]:p-1 [[src*='data:image/svg+xml']]:scale-90",
         className
       )}
       {...props}
