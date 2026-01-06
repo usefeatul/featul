@@ -55,7 +55,7 @@ export function buildMiddleNav(slug: string, customDomain?: string | null): NavI
 
 export function buildBottomNav(): NavItem[] {
   return [
-    { label: "Docs", href: "/docs", icon: DocIcon },
+    { label: "Docs", href: "https://www.featul.com/docs", icon: DocIcon, external: true },
   ]
 }
 
