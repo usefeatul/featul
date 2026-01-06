@@ -12,9 +12,9 @@ export function DocsSidebar() {
 
   return (
     <nav className="space-y-6 text-sm">
-      <div className="flex items-center gap-2 mb-8 px-2">
+      <div className="flex items-center gap-2 mb-8">
         <Link href="/" className="flex items-center">
-          <FeatulLogoIcon className="h-6 w-6 text-foreground" />
+          <FeatulLogoIcon className="size-8 text-foreground" />
         </Link>
         <span className="inline-flex items-center justify-center rounded-sm border border-border bg-background px-1 py-0.5 text-xs font-medium text-accent">
           Docs

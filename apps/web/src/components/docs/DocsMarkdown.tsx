@@ -148,7 +148,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             </pre>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="my-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-border/60 dark:bg-amber-950/30 dark:text-amber-200 [&>p]:m-0">
+            <blockquote className="my-4 rounded-lg bg-primary px-4 py-3 text-sm text-white ring-1 ring-border/60 [&>p]:m-0 [&>p]:text-white">
               {children}
             </blockquote>
           ),
