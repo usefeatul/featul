@@ -147,8 +147,8 @@ export function DocsMobileFloatingNav() {
                               className={cn(
                                 "block mx-2 px-3 py-2 rounded-lg text-[13px] transition-all duration-150",
                                 isActive
-                                  ? "bg-white/[0.08] text-white font-medium"
-                                  : "text-white/50 hover:text-white/80 hover:bg-white/[0.04] active:bg-white/[0.06]",
+                                  ? "bg-white/10 text-white font-medium"
+                                  : "text-white/50 hover:text-white/80 hover:bg-white/10 active:bg-white/20",
                               )}
                             >
                               {item.label}
@@ -169,7 +169,7 @@ export function DocsMobileFloatingNav() {
           layout
           className={cn(
             "shrink-0",
-            isOpen && "border-t border-white/[0.06]",
+            isOpen && "border-t border-white/10",
           )}
         >
           <button

@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prose } from "@/components/blog/prose"
 import { GitHubIcon } from "@featul/ui/icons/github"
+import { cn } from "@featul/ui/lib/utils"
 
 function slugifyHeading(input: string) {
   return input
@@ -74,7 +75,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
               return (
                 <a
                   href={url}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-primary px-3 py-1.5 text-sm font-medium !text-white no-underline transition-colors hover:bg-primary/90"
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-primary px-3 py-1.5 text-sm font-medium text-white! no-underline transition-colors hover:bg-primary/90"
                   target="_blank"
                   rel="noopener noreferrer nofollow"
                 >
@@ -96,14 +97,14 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             )
           },
           table: ({ children }) => (
-            <div className="my-4 w-full overflow-x-auto rounded-md border border-border">
+            <div className="my-4 w-full overflow-x-auto rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-background">
               <table className="w-full text-sm border-collapse">
                 {children}
               </table>
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-muted/50 border-b border-border">
+            <thead className="bg-primary/20 border-b border-border ">
               {children}
             </thead>
           ),
@@ -131,13 +132,13 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const isInline = !className
             if (isInline) {
               return (
-                <code className="rounded-md border border-border bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary">
+                <code className="rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-background bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary">
                   {children}
                 </code>
               )
             }
             return (
-              <code className={className}>
+              <code className={cn("rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-background bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary", className)}>
                 {children}
               </code>
             )
@@ -148,7 +149,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             </pre>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="my-4 rounded-lg bg-primary px-4 py-3 text-sm text-white ring-1 ring-border/60 [&>p]:m-0 [&>p]:text-white">
+            <blockquote className="my-4 rounded-lg bg-primary px-2 py-1 text-sm text-white border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-background [&>p]:m-0 [&>p]:text-white">
               {children}
             </blockquote>
           ),
