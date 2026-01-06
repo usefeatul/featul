@@ -7,8 +7,10 @@ import { SearchIcon } from "lucide-react"
 import { cn } from "@featul/ui/lib/utils"
 import {
   Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@featul/ui/components/dialog"
-import { DialogShell } from "@featul/ui/components/dialog-shell"
 
 function Command({
   className,
@@ -28,7 +30,6 @@ type CommandDialogProps = Omit<
   "children"
 > & {
   title?: string
-  // description?: string
   children?: React.ReactNode
   width?: "default" | "wide" | "widest" | "xl" | "xxl"
   offsetY?: string | number
@@ -37,27 +38,42 @@ type CommandDialogProps = Omit<
 
 function CommandDialog({
   title = "Command Palette",
-  // description = "Search for a command to run...",
   children,
   width = "default",
   offsetY = "15%",
   icon,
   ...props
 }: CommandDialogProps) {
+  const styleWidth =
+    width === "xxl"
+      ? { width: "min(92vw, 1120px)", maxWidth: "none" as const }
+      : width === "xl"
+      ? { width: "min(92vw, 780px)", maxWidth: "none" as const }
+      : width === "widest"
+      ? { width: "min(92vw, 680px)", maxWidth: "none" as const }
+      : width === "wide"
+      ? { width: "min(92vw, 520px)", maxWidth: "none" as const }
+      : { width: "min(92vw, 450px)", maxWidth: "none" as const }
+
+  const topValue = typeof offsetY === "number" ? `${offsetY}%` : offsetY
+  const positionStyle = { top: topValue, ["--tw-translate-y" as any]: `-${topValue}` }
+
   return (
-    <DialogShell
-      open={props.open ?? false}
-      onOpenChange={props.onOpenChange as (v: boolean) => void}
-      title={title}
-      // description={description}
-      width={width}
-      offsetY={offsetY}
-      icon={icon ?? <SearchIcon className="size-3.5 opacity-80" />}
-    >
-      <Command className="">
-        {children}
-      </Command>
-    </DialogShell>
+    <Dialog open={props.open ?? false} onOpenChange={props.onOpenChange}>
+      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1">
+        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+          <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+            {icon ?? <SearchIcon className="size-3.5 opacity-80" />}
+            {title}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="bg-card rounded-lg p-2 dark:bg-black/40 border border-border">
+          <Command className="">
+            {children}
+          </Command>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

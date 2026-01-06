@@ -3,16 +3,8 @@
 import React, { useState, useTransition } from "react";
 import { TrashIcon } from "@featul/ui/icons/trash";
 import { PopoverListItem } from "@featul/ui/components/popover";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@featul/ui/components/alert-dialog";
+import { AlertDialogShell } from "@/components/global/AlertDialogShell";
+import { AlertDialogAction, AlertDialogCancel, AlertDialogFooter } from "@featul/ui/components/alert-dialog";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -84,48 +76,34 @@ export function RequestDeleteAction({
         <TrashIcon className="ml-auto size-4" />
       </PopoverListItem>
 
-      <AlertDialog
+      <AlertDialogShell
         open={open}
         onOpenChange={(next) => {
           if (isPending) return;
           setOpen(next);
         }}
+        title="Are you absolutely sure?"
+        description="This will permanently delete this post. This action cannot be undone."
       >
-        <AlertDialogContent className="p-1 bg-muted rounded-xl gap-2">
-          <AlertDialogHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-            <AlertDialogTitle className="flex items-center gap-2 px-2 mt-1 py-1 text-sm font-normal">
-              <TrashIcon width={18} height={18} className="opacity-80" />
-              Are you absolutely sure?
-            </AlertDialogTitle>
-          </AlertDialogHeader>
-          <div className="bg-card rounded-lg p-2 dark:bg-black/40 border border-border">
-            <AlertDialogDescription className="space-y-3 text-sm text-accent mb-2">
-              <span className="block">
-                This will permanently delete this post. This action cannot be
-                undone.
-              </span>
-            </AlertDialogDescription>
-            <AlertDialogFooter className="flex justify-end gap-2 mt-4">
-              <AlertDialogCancel
-                disabled={isPending}
-                className="h-8 px-3 text-sm"
-              >
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleDelete();
-                }}
-                disabled={isPending}
-                className="h-8 px-4 text-sm bg-red-500 hover:bg-red-600 text-white"
-              >
-                {isPending ? "Deleting..." : "Delete"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
+        <AlertDialogFooter className="flex justify-end gap-2 mt-2">
+          <AlertDialogCancel
+            disabled={isPending}
+            className="h-8 px-3 text-sm"
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={(e) => {
+              e.preventDefault();
+              handleDelete();
+            }}
+            disabled={isPending}
+            className="h-8 px-4 text-sm bg-red-500 hover:bg-red-600 text-white"
+          >
+            {isPending ? "Deleting..." : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogShell>
     </>
   );
 }
