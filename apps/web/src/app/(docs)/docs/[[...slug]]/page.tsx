@@ -98,7 +98,7 @@ export default async function DocsPage(props: DocsPageProps) {
       <section>
         <div className="max-w-2xl lg:max-w-3xl space-y-6">
           <div className="space-y-3">
-            <div className="inline-flex items-center rounded-sm bg-card border border-border px-2 py-0.5 text-xs font-medium text-accent">
+            <div className="inline-flex items-center rounded-md bg-card border border-border px-2 py-0.5 text-xs font-medium text-accent">
               {nav.sectionLabel}
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">

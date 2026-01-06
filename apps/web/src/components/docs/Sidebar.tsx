@@ -54,8 +54,8 @@ export function DocsSidebar() {
         className="group flex items-center gap-3 mb-12"
       >
         <FeatulLogoIcon className="size-5 text-foreground" />
-        <span className="text-[11px] font-medium text-muted-foreground/60 tracking-widest uppercase">
-          Documentation
+        <span className="text-sm bg-card border border-border rounded-md px-2 py-0.5 font-medium text-foreground">
+          Docs
         </span>
       </Link>
 
@@ -72,8 +72,9 @@ export function DocsSidebar() {
           }}
           transition={{
             type: "spring",
-            stiffness: 350,
-            damping: 30,
+            stiffness: 120,
+            damping: 20,
+            mass: 1,
           }}
         />
 
@@ -111,25 +112,6 @@ export function DocsSidebar() {
             </ul>
           </div>
         ))}
-      </div>
-
-      {/* Footer - back link */}
-      <div className="mt-auto pt-8">
-        <Link 
-          href="/"
-          className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
-        >
-          <svg 
-            className="size-3" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor" 
-            strokeWidth={1.5}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-          </svg>
-          Back to Featul
-        </Link>
       </div>
     </nav>
   );
