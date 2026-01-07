@@ -83,7 +83,7 @@ export default function DangerZoneSection({ slug, workspaceName }: Props) {
     <div className="space-y-4">
       <div>
         <h3 className="text-base font-semibold text-foreground">Danger Zone</h3>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-accent mt-1">
           Delete this workspace permanently. This action cannot be undone.
         </p>
       </div>

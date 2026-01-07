@@ -15,7 +15,7 @@ export default function WorkspaceIdSection({ workspaceId }: Props) {
     <div className="space-y-4">
       <div>
         <h3 className="text-base font-semibold text-foreground">Workspace ID</h3>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-accent mt-1">
           Unique identifier for this workspace. Use this for API integrations.
         </p>
       </div>
@@ -23,19 +23,18 @@ export default function WorkspaceIdSection({ workspaceId }: Props) {
         <Input
           readOnly
           value={workspaceId || ""}
-          className="font-mono text-sm bg-muted/50"
+          disabled
         />
         <Button
-          variant="outline"
-          size="sm"
+          variant="card"
           onClick={() => {
             if (!workspaceId) return;
             navigator.clipboard.writeText(workspaceId);
             toast.success("Copied to clipboard");
           }}
-          className="h-9 gap-2"
+
         >
-          <Copy className="w-4 h-4" />
+          <Copy className="size-3.5" />
           Copy
         </Button>
       </div>
