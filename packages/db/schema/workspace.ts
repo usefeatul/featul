@@ -3,7 +3,7 @@ import { createId } from '@paralleldrive/cuid2'
 import { user } from './auth'
 
 export const workspace = pgTable('workspace', {
-  id: text('id').primaryKey().$defaultFn(() => createId()),
+  id: text('id').primaryKey().$defaultFn(() => `fl${createId()}`),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(), // for subdomain like mantlz.featul.com
   domain: text('domain').notNull(),
