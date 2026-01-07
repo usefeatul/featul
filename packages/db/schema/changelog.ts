@@ -1,12 +1,15 @@
 import { pgTable, text, timestamp, json, uuid, uniqueIndex, index } from 'drizzle-orm/pg-core'
+import { createId } from '@paralleldrive/cuid2'
 import { board } from './feedback'
 import { user } from './auth'
 
 export const changelogEntry = pgTable(
   'changelog_entry',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    boardId: uuid('board_id')
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    boardId: text('board_id')
       .notNull()
       .references(() => board.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),

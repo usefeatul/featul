@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2";
 import {
   pgTable,
   text,
@@ -14,7 +15,9 @@ import { workspace } from "./workspace";
 export const brandingConfig = pgTable(
   "branding_config",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
     workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspace.id, { onDelete: "cascade" }),

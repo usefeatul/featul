@@ -10,13 +10,16 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core'
+import { createId } from '@paralleldrive/cuid2'
 import { workspace } from './workspace'
 import { user } from './auth'
 
 export const board = pgTable(
   'board',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
     workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),

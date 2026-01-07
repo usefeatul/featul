@@ -34,7 +34,9 @@ export const workspace = pgTable('workspace', {
 export const workspaceDomain = pgTable(
   'workspace_domain',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
     workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),
@@ -60,7 +62,9 @@ export const workspaceDomain = pgTable(
 )
 
 export const workspaceMember = pgTable('workspace_member',{
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
     workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),
@@ -109,7 +113,9 @@ export const workspaceMember = pgTable('workspace_member',{
 export const workspaceInvite = pgTable(
   'workspace_invite',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
     workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),

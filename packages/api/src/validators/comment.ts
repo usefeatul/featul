@@ -14,9 +14,9 @@ const metadataSchema = z.object({
 })
 
 export const createCommentInputSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   content: z.string().max(5000).default(""),
-  parentId: z.string().uuid().optional(),
+  parentId: z.string().min(1).optional(),
   metadata: metadataSchema.optional(),
   fingerprint: fingerprintSchema,
 }).refine(
@@ -31,33 +31,33 @@ export const createCommentInputSchema = z.object({
 )
 
 export const updateCommentInputSchema = z.object({
-  commentId: z.string().uuid(),
+  commentId: z.string().min(1),
   content: z.string().min(1).max(5000),
 })
 
 export const deleteCommentInputSchema = z.object({
-  commentId: z.string().uuid(),
+  commentId: z.string().min(1),
 })
 
 export const listCommentsInputSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   fingerprint: fingerprintSchema,
 })
 
 export const voteCommentInputSchema = z.object({
-  commentId: z.string().uuid(),
+  commentId: z.string().min(1),
   voteType: z.enum(["upvote", "downvote"]),
   fingerprint: fingerprintSchema,
 })
 
 export const reportCommentInputSchema = z.object({
-  commentId: z.string().uuid(),
+  commentId: z.string().min(1),
   reason: z.enum(["spam", "harassment", "inappropriate", "off_topic", "other"]),
   description: z.string().max(1000).optional(),
 })
 
 export const pinCommentInputSchema = z.object({
-  commentId: z.string().uuid(),
+  commentId: z.string().min(1),
   isPinned: z.boolean(),
 })
 
@@ -66,7 +66,7 @@ export const mentionsListInputSchema = z.object({
 })
 
 export const mentionsMarkReadInputSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().min(1),
 })
 
 export type CreateCommentInput = z.infer<typeof createCommentInputSchema>

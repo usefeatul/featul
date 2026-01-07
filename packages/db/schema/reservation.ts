@@ -1,10 +1,13 @@
 import { pgTable, text, timestamp, uuid, uniqueIndex, index } from 'drizzle-orm/pg-core'
+import { createId } from '@paralleldrive/cuid2'
 import { user } from './auth'
 
 export const workspaceSlugReservation = pgTable(
   'workspace_slug_reservation',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
     slug: text('slug').notNull().unique(),
     email: text('email').notNull(),
     token: text('token').notNull().unique(),

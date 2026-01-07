@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, boolean, integer, json, uuid, uniqueIndex, foreignKey, index } from 'drizzle-orm/pg-core'
+import { createId } from '@paralleldrive/cuid2'
 import { board } from './feedback'
 import { workspace } from './workspace'
 import { user } from './auth'
@@ -6,8 +7,10 @@ import { user } from './auth'
 export const post = pgTable(
   'post',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    boardId: uuid('board_id')
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    boardId: text('board_id')
       .notNull()
       .references(() => board.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
@@ -40,7 +43,7 @@ export const post = pgTable(
       .references(() => user.id),
     moderatedAt: timestamp('moderated_at'),
     moderationReason: text('moderation_reason'),
-    duplicateOfId: uuid('duplicate_of_id'),
+    duplicateOfId: text('duplicate_of_id'),
   },
   (table) => ({
     postSlugBoardUnique: uniqueIndex('post_slug_board_unique').on(table.boardId, table.slug),
@@ -60,7 +63,9 @@ export const post = pgTable(
 export const tag = pgTable(
   'tag',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
     workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),
@@ -80,11 +85,13 @@ export const tag = pgTable(
 export const postTag = pgTable(
   'post_tag',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id')
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    postId: text('post_id')
       .notNull()
       .references(() => post.id, { onDelete: 'cascade' }),
-    tagId: uuid('tag_id')
+    tagId: text('tag_id')
       .notNull()
       .references(() => tag.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -98,8 +105,10 @@ export const postTag = pgTable(
 
 
 export const postUpdate = pgTable('post_update', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  postId: uuid('post_id')
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  postId: text('post_id')
     .notNull()
     .references(() => post.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
@@ -112,8 +121,10 @@ export const postUpdate = pgTable('post_update', {
 })
 
 export const postReport = pgTable("post_report", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  postId: uuid("post_id")
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  postId: text("post_id")
     .notNull()
     .references(() => post.id, { onDelete: "cascade" }),
   reportedBy: text("reported_by").references(() => user.id, {
@@ -137,11 +148,13 @@ export const postReport = pgTable("post_report", {
 });
 
 export const postMerge = pgTable("post_merge", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  sourcePostId: uuid("source_post_id")
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  sourcePostId: text("source_post_id")
     .notNull()
     .references(() => post.id, { onDelete: "cascade" }),
-  targetPostId: uuid("target_post_id")
+  targetPostId: text("target_post_id")
     .notNull()
     .references(() => post.id, { onDelete: "cascade" }),
   mergedBy: text("merged_by")
@@ -166,7 +179,9 @@ export const postMerge = pgTable("post_merge", {
 export const activityLog = pgTable(
   "activity_log",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
     workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspace.id, { onDelete: "cascade" }),

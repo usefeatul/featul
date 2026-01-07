@@ -8,7 +8,7 @@ export const getUploadUrlInputSchema = z.object({
 })
 
 export const getCommentImageUploadUrlInputSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   fileName: z.string().min(1),
   contentType: z.string().min(1),
 })

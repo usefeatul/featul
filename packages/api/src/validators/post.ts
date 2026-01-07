@@ -1,10 +1,10 @@
 import { z } from "zod"
 import { fingerprintSchema } from "./shared"
 
-export const byIdSchema = z.object({ postId: z.string().uuid() })
+export const byIdSchema = z.object({ postId: z.string().min(1) })
 
 export const updatePostMetaSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   roadmapStatus: z.string().min(1).max(64).optional(),
   isPinned: z.boolean().optional(),
   isLocked: z.boolean().optional(),
@@ -12,12 +12,12 @@ export const updatePostMetaSchema = z.object({
 })
 
 export const updatePostBoardSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   boardSlug: z.string().min(1).max(128),
 })
 
 export const votePostSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   fingerprint: fingerprintSchema,
 })
 
@@ -29,21 +29,21 @@ export const createPostSchema = z.object({
   boardSlug: z.string().min(1),
   fingerprint: fingerprintSchema.optional(),
   roadmapStatus: z.string().min(1).max(64).optional(),
-  tags: z.array(z.string().uuid()).optional(),
+  tags: z.array(z.string().min(1)).optional(),
 })
 
 export const updatePostSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   title: z.string().min(1).max(100).optional(),
   content: z.string().min(1).optional(),
   image: z.string().url().optional().nullable(),
   boardSlug: z.string().min(1).optional(),
   roadmapStatus: z.string().min(1).max(64).optional(),
-  tags: z.array(z.string().uuid()).optional(),
+  tags: z.array(z.string().min(1)).optional(),
 })
 
 export const reportPostSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   reason: z.enum(["spam", "harassment", "inappropriate", "off_topic", "other"]),
   description: z.string().max(500).optional(),
 })
@@ -55,20 +55,20 @@ export const getSimilarSchema = z.object({
 })
 
 export const mergePostSchema = z.object({
-  postId: z.string().uuid(),
-  targetPostId: z.string().uuid(),
+  postId: z.string().min(1),
+  targetPostId: z.string().min(1),
   mergeType: z.enum(["merge_into", "merge_here"]),
   reason: z.string().max(500).optional(),
 })
 
 export const mergeHerePostSchema = z.object({
-  postId: z.string().uuid(),
-  sourcePostIds: z.array(z.string().uuid()).min(1),
+  postId: z.string().min(1),
+  sourcePostIds: z.array(z.string().min(1)).min(1),
   reason: z.string().max(500).optional(),
 })
 
 export const searchMergeCandidatesSchema = z.object({
-  postId: z.string().uuid(),
+  postId: z.string().min(1),
   query: z.string().min(1).max(128),
   excludeSelf: z.boolean().optional().default(true),
 })

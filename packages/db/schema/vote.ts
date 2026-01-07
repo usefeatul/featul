@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, boolean, integer, json, uuid, uniqueIndex } from 'drizzle-orm/pg-core'
+import { createId } from '@paralleldrive/cuid2'
 import { post } from './post'
 import { comment } from './comment'
 import { user } from './auth'
@@ -7,10 +8,12 @@ import { fingerprintColumn } from './shared'
 export const vote = pgTable(
   'vote',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id')
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    postId: text('post_id')
       .references(() => post.id, { onDelete: 'cascade' }),
-    commentId: uuid('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
+    commentId: text('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .references(() => user.id, { onDelete: 'cascade' }),
     ipAddress: text('ip_address'),
@@ -36,10 +39,12 @@ export const vote = pgTable(
 export const voteAggregate = pgTable(
   'vote_aggregate',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id')
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    postId: text('post_id')
       .references(() => post.id, { onDelete: 'cascade' }),
-    commentId: uuid('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
+    commentId: text('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
     upvotes: integer('upvotes').default(0),
     totalVotes: integer('total_votes').default(0),
     updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
@@ -51,7 +56,9 @@ export const voteAggregate = pgTable(
 
 // User voting history for recommendations and analytics
 export const userVoteHistory = pgTable('user_vote_history', {
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),

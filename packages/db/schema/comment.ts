@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   foreignKey,
 } from "drizzle-orm/pg-core";
+import { createId } from "@paralleldrive/cuid2";
 import { post } from "./post";
 import { user } from "./auth";
 import { fingerprintColumn } from "./shared";
@@ -16,11 +17,13 @@ import { fingerprintColumn } from "./shared";
 export const comment = pgTable(
   "comment",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    postId: uuid("post_id")
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    postId: text("post_id")
       .notNull()
       .references(() => post.id, { onDelete: "cascade" }),
-    parentId: uuid("parent_id"),
+    parentId: text("parent_id"),
     content: text("content").notNull(),
     authorId: text("author_id").references(() => user.id, {
       onDelete: "set null",
@@ -63,8 +66,10 @@ export const comment = pgTable(
 export const commentReaction = pgTable(
   "comment_reaction",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    commentId: uuid("comment_id")
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    commentId: text("comment_id")
       .notNull()
       .references(() => comment.id, { onDelete: "cascade" }),
     userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
@@ -83,8 +88,10 @@ export const commentReaction = pgTable(
 
 // Comment mentions for notifications
 export const commentMention = pgTable("comment_mention", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  commentId: uuid("comment_id")
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  commentId: text("comment_id")
     .notNull()
     .references(() => comment.id, { onDelete: "cascade" }),
   mentionedUserId: text("mentioned_user_id")
@@ -100,8 +107,10 @@ export const commentMention = pgTable("comment_mention", {
 
 // Comment reports for moderation
 export const commentReport = pgTable("comment_report", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  commentId: uuid("comment_id")
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  commentId: text("comment_id")
     .notNull()
     .references(() => comment.id, { onDelete: "cascade" }),
   reportedBy: text("reported_by").references(() => user.id, {
