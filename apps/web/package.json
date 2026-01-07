@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@featul/ui": "workspace:*",
@@ -27,11 +28,13 @@
     "remark-gfm": "4",
     "superjson": "^2.2.1",
     "tailwind-merge": "^3.4.0",
-    "zod": "^4.3.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250214.0",
+    "@featul/eslint-config": "workspace:*",
     "@featul/tsconfig": "workspace:*",
+    "eslint": "^9.17.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^22.10.6",
     "@types/react": "^19.0.7",

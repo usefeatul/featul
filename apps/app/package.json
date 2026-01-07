@@ -5,7 +5,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbopack",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
     "start": "next start"
   },
   "dependencies": {
@@ -66,7 +67,7 @@
     "tailwind-merge": "^2.6.0",
     "tippy.js": "^6.3.7",
     "vaul": "^1.1.2",
-    "zod": "^4.1.13",
+    "zod": "^3.25.76",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
@@ -82,7 +83,7 @@
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^15.5.7",
+    "@featul/eslint-config": "workspace:*",
     "eslint-plugin-drizzle": "^0.2.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",

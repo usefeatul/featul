@@ -10,12 +10,14 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "app:dev": "turbo run dev --filter=app",
     "feed:dev": "turbo run dev --filter=feed",
     "web:dev": "turbo run dev --filter=web",
     "db:generate": "turbo run db:generate --filter=@featul/db",
     "db:migrate": "turbo run db:migrate --filter=@featul/db",
     "db:push": "turbo run db:push --filter=@featul/db",
     "db:studio": "turbo run db:studio --filter=@featul/db",
+    "check-types": "turbo check-types",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
@@ -23,14 +25,11 @@
     "@featul/tsconfig": "workspace:*",
     "prettier": "^3.6.2",
     "turbo": "^2.5.5",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "mitata": "^1.0.34"
   },
   "engines": {
     "node": ">=20"
-  },
-  "dependencies": {
-    "@radix-ui/react-visually-hidden": "^1.2.4",
-    "countries-and-timezones": "^3.8.0",
-    "mitata": "^1.0.34"
   }
 }
+

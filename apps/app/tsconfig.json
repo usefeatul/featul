@@ -1,37 +1,19 @@
 {
+  "extends": "@featul/tsconfig/nextjs.json",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
     "composite": true,
-    "esModuleInterop": true,
-    "noUncheckedIndexedAccess": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
     "incremental": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
     "types": [
       "@cloudflare/workers-types/2023-07-01"
-    ],
-    "plugins": [
-      {
-        "name": "next"
-      }
     ],
     "paths": {
       "@/*": [
         "./src/*"
       ]
     },
-    "target": "ES2017",
-    "noEmit": true
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
@@ -39,9 +21,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "**/*.d.ts",
-    "../../packages/ui/src/icons/more.tsx",
-    ".next/dev/types/**/*.ts"
-, "next.config.ts"  ],
+    ".next/dev/types/**/*.ts",
+    "next.config.ts"
+  ],
   "exclude": [
     "node_modules"
   ]

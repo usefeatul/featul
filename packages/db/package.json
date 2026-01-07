@@ -5,6 +5,7 @@
     ".": "./index.ts"
   },
   "scripts": {
+    "check-types": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
