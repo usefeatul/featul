@@ -17,7 +17,7 @@ export const board = pgTable(
   'board',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    workspaceId: uuid('workspace_id')
+    workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),

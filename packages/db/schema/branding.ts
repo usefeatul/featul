@@ -15,7 +15,7 @@ export const brandingConfig = pgTable(
   "branding_config",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    workspaceId: uuid("workspace_id")
+    workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspace.id, { onDelete: "cascade" }),
     primaryColor: text("primary_color").default("#3b82f6"),

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
+    "@paralleldrive/cuid2": "^3.0.6",
     "drizzle-orm": "^0.39.0",
     "ws": "^8.18.0"
   },

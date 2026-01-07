@@ -1,8 +1,9 @@
 import { pgTable, text, timestamp, boolean, integer, json, uuid, uniqueIndex, index } from 'drizzle-orm/pg-core'
+import { createId } from '@paralleldrive/cuid2'
 import { user } from './auth'
 
 export const workspace = pgTable('workspace', {
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: text('id').primaryKey().$defaultFn(() => createId()),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(), // for subdomain like mantlz.featul.com
   domain: text('domain').notNull(),
@@ -34,7 +35,7 @@ export const workspaceDomain = pgTable(
   'workspace_domain',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    workspaceId: uuid('workspace_id')
+    workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),
     // Full host, e.g., "feedback.mantlz.com"
@@ -60,7 +61,7 @@ export const workspaceDomain = pgTable(
 
 export const workspaceMember = pgTable('workspace_member',{
     id: uuid('id').primaryKey().defaultRandom(),
-    workspaceId: uuid('workspace_id')
+    workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),
     userId: text('user_id')
@@ -109,7 +110,7 @@ export const workspaceInvite = pgTable(
   'workspace_invite',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    workspaceId: uuid('workspace_id')
+    workspaceId: text('workspace_id')
       .notNull()
       .references(() => workspace.id, { onDelete: 'cascade' }),
     email: text('email').notNull(),

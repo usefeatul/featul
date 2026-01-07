@@ -19,6 +19,7 @@ import SettingsTabsHeader from "./SettingsTabsHeader";
 
 type Props = {
   slug: string;
+  initialWorkspaceId?: string;
   selectedSection?: string;
   initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
   initialChangelogVisible?: boolean;
@@ -35,6 +36,7 @@ type Props = {
 
 export default function SettingsServer({
   slug,
+  initialWorkspaceId,
   selectedSection,
   initialTeam,
   initialChangelogVisible,
@@ -59,6 +61,7 @@ export default function SettingsServer({
       <div className="mt-2">
         <SectionRenderer
           slug={slug}
+          initialWorkspaceId={initialWorkspaceId}
           section={selected}
           initialTeam={initialTeam}
           initialChangelogVisible={initialChangelogVisible}
@@ -79,6 +82,7 @@ export default function SettingsServer({
 
 function SectionRenderer({
   slug,
+  initialWorkspaceId,
   section,
   initialTeam,
   initialChangelogVisible,
@@ -93,6 +97,7 @@ function SectionRenderer({
   initialFeedbackTags,
 }: {
   slug: string;
+  initialWorkspaceId?: string;
   section: string;
   initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
   initialChangelogVisible?: boolean;
@@ -106,6 +111,7 @@ function SectionRenderer({
   initialFeedbackBoards?: FeedbackBoardSettings[];
   initialFeedbackTags?: FeedbackTag[];
 }) {
+
   switch (section) {
     case "branding":
       return (
@@ -171,6 +177,7 @@ function SectionRenderer({
       return (
         <DataSection
           slug={slug}
+          workspaceId={initialWorkspaceId}
           workspaceName={initialWorkspaceName}
         />
       );

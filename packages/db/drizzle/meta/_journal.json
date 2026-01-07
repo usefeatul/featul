@@ -8,6 +8,13 @@
       "when": 1764787553488,
       "tag": "0000_lazy_expediter",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1767754996808,
+      "tag": "0001_freezing_multiple_man",
+      "breakpoints": true
     }
   ]
 }

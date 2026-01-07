@@ -12,10 +12,11 @@ import { useRouter } from "next/navigation";
 
 type Props = {
   slug: string;
+  workspaceId?: string;
   workspaceName?: string;
 };
 
-export default function DataSection({ slug, workspaceName }: Props) {
+export default function DataSection({ slug, workspaceId, workspaceName }: Props) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [confirmName, setConfirmName] = React.useState("");
@@ -76,82 +77,107 @@ export default function DataSection({ slug, workspaceName }: Props) {
     confirmName.trim() !== expectedName;
 
   return (
-    <SectionCard
-      title="Danger zone"
-      description="Delete this workspace and all of its data."
-    >
-      <div className="space-y-4">
-        <p className="text-sm text-accent">
-          Deleting a workspace is permanent and cannot be undone. All boards,
-          posts, tags, members, and settings will be removed.
-        </p>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={() => setOpen(true)}
-          disabled={isPending || !slug}
-        >
-          Delete workspace
-        </Button>
+    <>
+      <SectionCard
+        title="Workspace ID"
+        description="Unique identifier for this workspace. Use this for API integrations."
+      >
+        <div className="flex items-center gap-2">
+          <Input
+            readOnly
+            value={workspaceId || ""}
+            className="font-mono text-sm bg-muted/50"
+          />
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (!workspaceId) return;
+              navigator.clipboard.writeText(workspaceId);
+              toast.success("Copied to clipboard");
+            }}
+          >
+            Copy
+          </Button>
+        </div>
+      </SectionCard>
 
-        <AlertDialogShell
-          open={open}
-          onOpenChange={(next) => {
-            if (isPending) return;
-            setOpen(next);
-            if (!next) setConfirmName("");
-          }}
-          title="Are you absolutely sure?"
-        >
-          <div className="space-y-3 text-sm text-accent mb-2">
-            <span className="block">
-              This will permanently delete{" "}
-              <span className="font-semibold text-red-500">
-                {workspaceName || slug}
-              </span>{" "}
-              and <span className="font-semibold">all content within this workspace</span>.
-            </span>
-            {expectedName ? (
+      <SectionCard
+        title="Danger zone"
+        description="Delete this workspace and all of its data."
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-accent">
+            Deleting a workspace is permanent and cannot be undone. All boards,
+            posts, tags, members, and settings will be removed.
+          </p>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => setOpen(true)}
+            disabled={isPending || !slug}
+          >
+            Delete workspace
+          </Button>
+
+          <AlertDialogShell
+            open={open}
+            onOpenChange={(next) => {
+              if (isPending) return;
+              setOpen(next);
+              if (!next) setConfirmName("");
+            }}
+            title="Are you absolutely sure?"
+          >
+            <div className="space-y-3 text-sm text-accent mb-2">
               <span className="block">
-                To confirm, type the workspace name{" "}
-                <span className="font-mono text-red-500">
-                  {expectedName}
+                This will permanently delete{" "}
+                <span className="font-semibold text-red-500">
+                  {workspaceName || slug}
                 </span>{" "}
-                below.
+                and <span className="font-semibold">all content within this workspace</span>.
               </span>
-            ) : (
-              <span className="block">
-                To confirm, type the workspace name below.
-              </span>
-            )}
-          </div>
-          <div className="mt-3">
-            <Input
-              autoFocus
-              placeholder={expectedName || "Workspace name"}
-              value={confirmName}
-              onChange={(e) => setConfirmName(e.target.value)}
-              disabled={isPending}
-              className="h-10"
-            />
-          </div>
-          <AlertDialogFooter className="flex justify-end gap-2 mt-2">
-            <AlertDialogCancel disabled={isPending} className="h-8 px-3 text-sm">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                if (!disableConfirm) handleDelete();
-              }}
-              disabled={disableConfirm}
-              className="h-8 px-4 text-sm bg-red-500 hover:bg-red-600 text-white"
-            >
-              {isPending ? "Deleting..." : "Delete workspace"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogShell>
-      </div>
-    </SectionCard>
+              {expectedName ? (
+                <span className="block">
+                  To confirm, type the workspace name{" "}
+                  <span className="font-mono text-red-500">
+                    {expectedName}
+                  </span>{" "}
+                  below.
+                </span>
+              ) : (
+                <span className="block">
+                  To confirm, type the workspace name below.
+                </span>
+              )}
+            </div>
+            <div className="mt-3">
+              <Input
+                autoFocus
+                placeholder={expectedName || "Workspace name"}
+                value={confirmName}
+                onChange={(e) => setConfirmName(e.target.value)}
+                disabled={isPending}
+                className="h-10"
+              />
+            </div>
+            <AlertDialogFooter className="flex justify-end gap-2 mt-2">
+              <AlertDialogCancel disabled={isPending} className="h-8 px-3 text-sm">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!disableConfirm) handleDelete();
+                }}
+                disabled={disableConfirm}
+                className="h-8 px-4 text-sm bg-red-500 hover:bg-red-600 text-white"
+              >
+                {isPending ? "Deleting..." : "Delete workspace"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogShell>
+        </div>
+      </SectionCard>
+    </>
   );
 }

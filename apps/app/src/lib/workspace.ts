@@ -548,6 +548,7 @@ export async function getSettingsInitialData(
   meId?: string
 ): Promise<{
   initialPlan?: string;
+  initialWorkspaceId?: string;
   initialWorkspaceName?: string;
   initialTeam?: { members: any[]; invites: any[]; meId: string | null };
   initialChangelogVisible?: boolean;
@@ -699,6 +700,7 @@ export async function getSettingsInitialData(
 
   return {
     initialPlan: String((ws as any)?.plan || "free"),
+    initialWorkspaceId: ws.id,
     initialWorkspaceName: String((ws as any)?.name || ""),
     initialTeam: {
       members: members.map((m) => ({

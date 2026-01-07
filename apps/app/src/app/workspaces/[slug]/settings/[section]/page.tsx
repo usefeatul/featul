@@ -24,6 +24,7 @@ export default async function SettingsSectionPage({ params }: Props) {
   const session = await getServerSession()
   const {
     initialPlan,
+    initialWorkspaceId,
     initialWorkspaceName,
     initialTeam,
     initialChangelogVisible,
@@ -43,6 +44,7 @@ export default async function SettingsSectionPage({ params }: Props) {
       initialChangelogVisible={initialChangelogVisible}
       initialHidePoweredBy={initialHidePoweredBy}
       initialPlan={initialPlan}
+      initialWorkspaceId={initialWorkspaceId}
       initialWorkspaceName={initialWorkspaceName}
       initialTeam={initialTeam as any}
       initialChangelogTags={initialChangelogTags}
