@@ -5,8 +5,10 @@ import { SettingsDialogShell } from "../global/SettingsDialogShell";
 import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
-import { Download, Loader2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { FileExportIcon } from "@featul/ui/icons/file-export";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Props = {
   slug: string;
@@ -90,41 +92,73 @@ export function ExportDialog({ slug, open, onOpenChange }: Props) {
       title="Export to CSV"
       icon={<FileExportIcon className="w-4 h-4" />}
     >
-      <div className="p-4 space-y-4">
-        {state === "exporting" && (
-          <div className="flex flex-col items-center justify-center py-6 gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            <p className="text-sm text-accent">Exporting your data...</p>
-          </div>
-        )}
+      <div className="p-4 space-y-4 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {state === "exporting" && (
+            <motion.div
+              key="exporting"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="flex flex-col items-center justify-center py-6 gap-3"
+            >
+              <LoaderIcon className="animate-spin text-muted-foreground size-5" />
+              <p className="text-sm text-accent">Exporting your data...</p>
+            </motion.div>
+          )}
 
-        {state === "ready" && (
-          <div className="flex flex-col items-center justify-center py-6 gap-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <Download className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-medium text-foreground">Export ready!</p>
-              <p className="text-sm text-accent mt-1">
-                Your CSV file is ready to download.
-              </p>
-            </div>
-            <Button onClick={handleDownload} className="gap-2">
-              <Download className="w-4 h-4" />
-              Download CSV
-            </Button>
-          </div>
-        )}
+          {state === "ready" && (
+            <motion.div
+              key="ready"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center py-6 gap-4"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-center"
+              >
+                <p className="text-sm font-medium text-foreground">Export ready!</p>
+                <p className="text-sm text-accent mt-1">
+                  Your CSV file is ready to download.
+                </p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Button onClick={handleDownload} className="gap-2">
+                  <Download className="w-4 h-4" />
+                  Download CSV
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
 
-        {state === "error" && (
-          <div className="flex flex-col items-center justify-center py-6 gap-4">
-            <p className="text-sm text-destructive">{error}</p>
-            <Button variant="secondary" onClick={handleExport}>
-              Try Again
-            </Button>
-          </div>
-        )}
+          {state === "error" && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="flex flex-col items-center justify-center py-6 gap-4"
+            >
+              <p className="text-sm text-destructive">{error}</p>
+              <Button variant="secondary" onClick={handleExport}>
+                Try Again
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </SettingsDialogShell>
   );
 }
+
