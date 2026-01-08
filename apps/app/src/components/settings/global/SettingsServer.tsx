@@ -171,7 +171,7 @@ function SectionRenderer({
         />
       );
     case "integrations":
-      return <IntegrationsSection />;
+      return <IntegrationsSection slug={slug} plan={initialPlan} />;
 
     case "data":
       return (

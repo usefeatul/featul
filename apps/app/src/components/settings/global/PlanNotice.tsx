@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { normalizePlan, getPlanLimits, type PlanKey, type PlanLimits } from "@/lib/plan"
 
-type Feature = "branding" | "team" | "domain" | "tags" | "changelog_tags" | "boards"
+type Feature = "branding" | "team" | "domain" | "tags" | "changelog_tags" | "boards" | "integrations"
 
 function buildMessage(feature: Feature, plan: PlanKey, limits: PlanLimits, counts?: { members?: number; tags?: number; changelogTags?: number; boards?: number }) {
   if (feature === "branding") {
@@ -47,6 +47,10 @@ function buildMessage(feature: Feature, plan: PlanKey, limits: PlanLimits, count
       return { title: `Up to ${limits.maxNonSystemBoards} boards`, detail: `${used} currently in workspace` }
     }
     if (limits.maxNonSystemBoards == null) return { title: "Unlimited boards" }
+  }
+  if (feature === "integrations") {
+    if (plan === "free") return { title: "Integrations are only available on our paid plans", detail: "Upgrade to Starter or Professional" }
+    return { title: "Integrations included in your plan" }
   }
   return { title: `Your plan: ${plan}` }
 }
