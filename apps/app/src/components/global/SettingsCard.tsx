@@ -42,7 +42,6 @@ export default function SettingsCard({
         <div className="flex items-center gap-2">
           {isConnected && onTest && (
             <Button
-              variant="ghost"
               onClick={onTest}
               disabled={disabled}
             >

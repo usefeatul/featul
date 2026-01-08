@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@featul/ui/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center  dark:text-white justify-center gap-2 whitespace-now rap rounded-md    text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer",
+  "inline-flex items-center  dark:text-white justify-center gap-2 whitespace-now rap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer",
   {
     variants: {
       variant: {
@@ -36,8 +36,8 @@ const buttonVariants = cva(
         ),
       },
       size: {
-        default: "h-8 px-2 py-2 rounded-md has-[>svg]:px-3",
-        xs: "h-8 rounded-md  gap-1 px-2 has-[>svg]:px-2 text-xs",
+        default: "h-7.5 px-2 py-2 rounded-md has-[>svg]:px-3",
+        xs: "h-7.5 rounded-md  gap-1 px-2 has-[>svg]:px-2 text-xs",
         sm: "h-9 rounded-md  gap-1 px-3 has-[>svg]:px-2.5",
         md: "h-9 rounded-md px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-4 has-[>svg]:px-3",
