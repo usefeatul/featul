@@ -11,6 +11,7 @@ const routerImports = {
   post: () => import("./router/post").then((m) => m.createPostRouter()),
   comment: () => import("./router/comment").then((m) => m.createCommentRouter()),
   member: () => import("./router/member").then((m) => m.createMemberRouter()),
+  integration: () => import("./router/integration").then((m) => m.createIntegrationRouter()),
 }
 
 const api = j
@@ -30,6 +31,7 @@ const appRouter = j.mergeRouters(api, {
   post: routerImports.post,
   comment: routerImports.comment,
   member: routerImports.member,
+  integration: routerImports.integration,
 })
 
 export type AppRouter = typeof appRouter

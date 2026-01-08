@@ -6,6 +6,7 @@ import { HTTPException } from "hono/http-exception"
 import { auth } from "@featul/auth"
 import { headers } from "next/headers"
 import { mapPermissions } from "../shared/permissions"
+import { triggerPostWebhooks } from "../services/webhook"
 
 export function createPostRouter() {
   return j.router({
@@ -122,6 +123,32 @@ export function createPostRouter() {
             tags: tagSummaries,
             isAnonymous: !userId,
           },
+        })
+
+        // Trigger webhook notifications (fire and forget)
+        // We need board name and workspace name for the notification
+        const [boardDetails] = await ctx.db
+          .select({ name: board.name })
+          .from(board)
+          .where(eq(board.id, b.id))
+          .limit(1)
+
+        const [wsDetails] = await ctx.db
+          .select({ name: workspace.name })
+          .from(workspace)
+          .where(eq(workspace.id, ws.id))
+          .limit(1)
+
+        triggerPostWebhooks(ctx.db, ws.id, {
+          id: newPost.id,
+          title: newPost.title,
+          content: newPost.content,
+          slug: newPost.slug,
+          boardName: boardDetails?.name || boardSlug,
+          boardSlug,
+          workspaceName: wsDetails?.name || workspaceSlug,
+          workspaceSlug,
+          createdAt: newPost.createdAt,
         })
 
         return c.superjson({ post: newPost })

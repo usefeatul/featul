@@ -35,4 +35,5 @@ export const {
   workspaceSlugReservation,
   changelogEntry,
   activityLog,
+  workspaceIntegration,
 } = schema
