@@ -101,7 +101,7 @@ export default function WebhookDialog({
               setWebhookUrl(e.target.value);
               setError(null);
             }}
-            className="font-mono text-sm"
+            className="font-mono text-sm placeholder:text-accent"
           />
           {error && (
             <p className="text-sm text-red-500">{error}</p>
