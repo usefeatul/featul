@@ -137,6 +137,7 @@ export async function getWorkspaceBySlug(
   logo?: string | null;
   domain?: string | null;
   customDomain?: string | null;
+  plan?: "free" | "starter" | "professional" | null;
 } | null> {
   const [ws] = await db
     .select({
@@ -147,6 +148,7 @@ export async function getWorkspaceBySlug(
       logo: workspace.logo,
       domain: workspace.domain,
       customDomain: workspace.customDomain,
+      plan: workspace.plan,
     })
     .from(workspace)
     .where(eq(workspace.slug, slug))
@@ -186,7 +188,7 @@ export async function getWorkspaceTimezoneBySlug(
 export async function listUserWorkspaces(
   userId: string
 ): Promise<
-  Array<{ id: string; name: string; slug: string; logo?: string | null }>
+  Array<{ id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }>
 > {
   const owned = await db
     .select({
@@ -194,6 +196,7 @@ export async function listUserWorkspaces(
       name: workspace.name,
       slug: workspace.slug,
       logo: workspace.logo,
+      plan: workspace.plan,
     })
     .from(workspace)
     .where(eq(workspace.ownerId, userId));
@@ -204,6 +207,7 @@ export async function listUserWorkspaces(
       name: workspace.name,
       slug: workspace.slug,
       logo: workspace.logo,
+      plan: workspace.plan,
     })
     .from(workspaceMember)
     .innerJoin(workspace, eq(workspaceMember.workspaceId, workspace.id))
@@ -216,7 +220,7 @@ export async function listUserWorkspaces(
 
   const map = new Map<
     string,
-    { id: string; name: string; slug: string; logo?: string | null }
+    { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }
   >();
   for (const w of owned.concat(memberRows)) map.set(w.id, w as any);
   return Array.from(map.values());
