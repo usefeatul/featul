@@ -4,7 +4,6 @@ import React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
 import { Input } from "@featul/ui/components/input"
 import { Button } from "@featul/ui/components/button"
-import { Tag } from "lucide-react"
 import TagIcon from "@featul/ui/icons/tag"
 
 type TagNameDialogProps = {
@@ -70,10 +69,10 @@ export function TagNameDialog({
           />
 
           <div className="flex justify-end gap-2 mt-4">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="h-8 px-3 text-sm">
+            <Button type="button" variant="card" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="button" onClick={handleSubmit} disabled={disabled} className="h-8 px-4 text-sm">
+            <Button type="button" onClick={handleSubmit} disabled={disabled}>
               {saving ? loadingLabel : actionLabel}
             </Button>
           </div>

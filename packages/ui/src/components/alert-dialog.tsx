@@ -152,7 +152,7 @@ function AlertDialogCancel({
 }: React.ComponentProps<typeof BaseAlertDialog.Close>) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants({ variant: "outline" }), className)}
+      className={cn(buttonVariants({ variant: "card" }), className)}
       {...props}
     />
   )

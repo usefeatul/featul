@@ -27,7 +27,7 @@ export default function ModalCreateBoard({ open, onOpenChange, onSave, saving }:
       width="wide"
       icon={<BoardDialogIcon className="size-3.5" />}
     >
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="space-y-2">
           <label htmlFor="board-name" className="text-xs">Name</label>
           <Input id="board-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Board name" className="h-10 placeholder:text-accent" />
@@ -44,15 +44,14 @@ export default function ModalCreateBoard({ open, onOpenChange, onSave, saving }:
         </div>
       </div>
  
-      <div className="flex justify-end gap-2 mt-4">
-        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="h-8 px-3 text-sm">
+      <div className="flex justify-end gap-2 mt-2.5">
+        <Button type="button" variant="card" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>
         <Button
           type="button"
           onClick={() => onSave({ name: name.trim(), slug: slug ? toSlug(slug) : undefined })}
           disabled={Boolean(saving) || !name.trim()}
-          className="h-8 px-4 text-sm"
         >
           {saving ? "Creating..." : "Create"}
         </Button>

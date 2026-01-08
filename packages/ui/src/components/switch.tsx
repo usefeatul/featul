@@ -7,7 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@featul/ui/lib/utils"
 
 const trackVariants = cva(
-  "peer inline-flex items-center rounded-lg border shadow-xs transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 bg-zinc-200 dark:bg-zinc-700 border-zinc-200 dark:border-zinc-700 data-[checked]:bg-[#22c55e] dark:data-[checked]:bg-[#22c55e] data-[checked]:border-[#16a34a] dark:data-[checked]:border-[#16a34a] focus-visible:ring-[#22c55e]/40 focus-visible:ring-[3px]",
+  "peer inline-flex items-center rounded-lg border shadow-xs transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 bg-zinc-200 dark:bg-zinc-700 border-zinc-200 dark:border-zinc-700 data-[checked]:bg-[#22c55e] dark:data-[checked]:bg-[#22c55e] data-[checked]:border-[#16a34a] dark:data-[checked]:border-[#16a34a] focus-visible:ring-[#22c55e]/40 focus-visible:ring-[3px] cursor-pointer",
   {
     variants: {
       size: {

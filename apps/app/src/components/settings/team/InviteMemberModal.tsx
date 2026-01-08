@@ -83,10 +83,10 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
       </div>
  
       <div className="flex justify-end gap-2 mt-4">
-        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="h-8 px-3 text-sm">
+        <Button type="button" variant="card" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>
-        <LoadingButton type="button" onClick={onSubmit} loading={loading} disabled={!email.trim()} className="h-8 px-4 text-sm">
+        <LoadingButton type="button" onClick={onSubmit} loading={loading} disabled={!email.trim()}>
           Send Invite
         </LoadingButton>
       </div>

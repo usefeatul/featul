@@ -44,10 +44,10 @@ export default function AddDomainDialog({
         </div>
       </div>
       <div className="flex justify-end gap-2 pt-3">
-        <Button variant="secondary" onClick={() => onOpenChange(false)}>
+        <Button variant="card" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>
-        <Button onClick={() => onSave(value)} disabled={Boolean(saving)}>
+        <Button variant="default" onClick={() => onSave(value)} disabled={Boolean(saving)}>
           {saving ? "Saving..." : "Save"}
         </Button>
       </div>
