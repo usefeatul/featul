@@ -74,9 +74,9 @@ export default function WorkspaceSwitcher({
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-56 max-w-[95vw] max-h-[80vh] overflow-auto p-2"
+          className="w-46 max-w-[95vw] max-h-[80vh] overflow-auto p-2"
           side="bottom"
-          align="start"
+          align="center"
           sideOffset={8}
         >
           {all.length === 0 ? (

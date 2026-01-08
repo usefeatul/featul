@@ -112,7 +112,7 @@ export default function UserDropdown({ className = "", initialUser }: { classNam
             <span className="transition-colors">{d.name || "Account"}</span>
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-30 max-w-[40vw] p-2" side="bottom" align="center" sideOffset={8}>
+        <DropdownMenuContent className="w-36 max-w-[40vw] p-2" side="bottom" align="center" sideOffset={8}>
           <DropdownMenuItem onSelect={onAccount} className="px-2 py-2 rounded-md flex items-center gap-2 group">
             <AccountIcon className="size-4 text-foreground transition-colors group-hover:opacity-100 group-hover:text-primary " />
             <span className="transition-colors group-hover:text-foreground">Account</span>
