@@ -8,6 +8,7 @@ import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 import { buildSiteNavigationSchema, buildSoftwareApplicationSchema } from "@/lib/structured-data";
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
+import { VerticalLines } from "@/components/vertical-lines";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -123,6 +124,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <VerticalLines />
         {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "false") && <DebugTools />}
       </body>
     </html>

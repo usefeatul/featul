@@ -38,11 +38,21 @@ export default function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-colors",
         scrolled
-          ? "backdrop-blur-lg bg-background/70 border-b border-border"
+          ? "backdrop-blur-lg bg-background/70"
           : "bg-background"
       )}
       data-component="Navbar"
     >
+      <div
+        className="absolute bottom-0 left-0 right-0 h-px text-foreground/20 pointer-events-none"
+        style={{
+          backgroundImage: "linear-gradient(to right, currentColor 6px, transparent 6px)",
+          backgroundSize: "13px 1px",
+          backgroundRepeat: "repeat-x"
+        }}
+      />
+
+
       <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6 flex items-center justify-between h-14">
           <Link
