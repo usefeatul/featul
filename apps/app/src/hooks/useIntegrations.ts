@@ -23,6 +23,7 @@ export interface Integration {
 
 interface UseIntegrationsProps {
   workspaceSlug: string;
+  initialData?: Integration[];
 }
 
 interface UseIntegrationsReturn {
@@ -41,11 +42,12 @@ interface UseIntegrationsReturn {
  */
 export function useIntegrations({
   workspaceSlug,
+  initialData,
 }: UseIntegrationsProps): UseIntegrationsReturn {
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
 
-  // Fetch integrations
+  // Fetch integrations with initial data support
   const { data, isLoading } = useQuery({
     queryKey: ["integrations", workspaceSlug],
     queryFn: async () => {
@@ -55,6 +57,7 @@ export function useIntegrations({
       if (!res.ok) return { integrations: [] };
       return await res.json();
     },
+    initialData: initialData ? { integrations: initialData } : undefined,
     staleTime: 30_000,
   });
 

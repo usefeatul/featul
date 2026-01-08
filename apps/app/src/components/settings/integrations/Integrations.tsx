@@ -6,17 +6,18 @@ import PlanNotice from "../global/PlanNotice";
 import SlackCard from "./SlackCard";
 import DiscordCard from "./DiscordCard";
 import SuggestIntegrationCard from "./SuggestIntegrationCard";
-import { useIntegrations } from "@/hooks/useIntegrations";
+import { useIntegrations, type Integration } from "@/hooks/useIntegrations";
 
 type Props = {
   slug: string;
   plan?: string;
+  initialIntegrations?: Integration[];
 };
 
 /**
  * Integrations settings section with Discord and Slack webhook support
  */
-export default function IntegrationsSection({ slug, plan }: Props) {
+export default function IntegrationsSection({ slug, plan, initialIntegrations }: Props) {
   const {
     integrations,
     isLoading,
@@ -25,7 +26,7 @@ export default function IntegrationsSection({ slug, plan }: Props) {
     disconnect,
     test,
     getIntegration,
-  } = useIntegrations({ workspaceSlug: slug });
+  } = useIntegrations({ workspaceSlug: slug, initialData: initialIntegrations });
 
   const handleConnectDiscord = async (webhookUrl: string) => {
     return await connect("discord", webhookUrl);

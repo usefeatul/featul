@@ -32,6 +32,7 @@ type Props = {
   initialDefaultDomain?: string;
   initialFeedbackBoards?: FeedbackBoardSettings[];
   initialFeedbackTags?: FeedbackTag[];
+  initialIntegrations?: any[];
 };
 
 export default function SettingsServer({
@@ -49,6 +50,7 @@ export default function SettingsServer({
   initialDefaultDomain,
   initialFeedbackBoards,
   initialFeedbackTags,
+  initialIntegrations,
 }: Props) {
   const sections = SECTIONS;
   const selected: string =
@@ -74,6 +76,7 @@ export default function SettingsServer({
           initialDefaultDomain={initialDefaultDomain}
           initialFeedbackBoards={initialFeedbackBoards}
           initialFeedbackTags={initialFeedbackTags}
+          initialIntegrations={initialIntegrations}
         />
       </div>
     </section>
@@ -95,6 +98,7 @@ function SectionRenderer({
   initialDefaultDomain,
   initialFeedbackBoards,
   initialFeedbackTags,
+  initialIntegrations,
 }: {
   slug: string;
   initialWorkspaceId?: string;
@@ -110,6 +114,7 @@ function SectionRenderer({
   initialDefaultDomain?: string;
   initialFeedbackBoards?: FeedbackBoardSettings[];
   initialFeedbackTags?: FeedbackTag[];
+  initialIntegrations?: any[];
 }) {
 
   switch (section) {
@@ -171,7 +176,7 @@ function SectionRenderer({
         />
       );
     case "integrations":
-      return <IntegrationsSection slug={slug} plan={initialPlan} />;
+      return <IntegrationsSection slug={slug} plan={initialPlan} initialIntegrations={initialIntegrations} />;
 
     case "data":
       return (

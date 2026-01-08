@@ -24,33 +24,30 @@ export async function sendDiscordNotification(
   post: PostNotificationData
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const postUrl = `https://${post.workspaceSlug}.featul.com/${post.boardSlug}/${post.slug}`
+    const postUrl = `https://${post.workspaceSlug}.featul.com/board/p/${post.slug}`
 
     const embed = {
-      title: "🆕 New Feedback Submission",
+      author: {
+        name: "New Feedback Submission",
+      },
+      title: post.title,
+      url: postUrl,
       color: 5814783, // Featul brand color (hex: #58b0ff)
+      description: post.content.length > 300
+        ? `${post.content.substring(0, 300)}...`
+        : post.content,
       fields: [
         {
-          name: "Title",
-          value: post.title,
-          inline: false,
-        },
-        {
           name: "Board",
-          value: post.boardName,
+          value: `**${post.boardName}**`,
           inline: true,
         },
         {
           name: "Submitted by",
-          value: post.authorName || "Anonymous",
+          value: `**${post.authorName || "Anonymous"}**`,
           inline: true,
         },
       ],
-      description:
-        post.content.length > 200
-          ? `${post.content.substring(0, 200)}...`
-          : post.content,
-      url: postUrl,
       timestamp: post.createdAt.toISOString(),
       footer: {
         text: `${post.workspaceName} • Powered by Featul`,
@@ -85,7 +82,7 @@ export async function sendSlackNotification(
   post: PostNotificationData
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const postUrl = `https://${post.workspaceSlug}.featul.com/${post.boardSlug}/${post.slug}`
+    const postUrl = `https://${post.workspaceSlug}.featul.com/board/p/${post.slug}`
 
     const payload = {
       blocks: [

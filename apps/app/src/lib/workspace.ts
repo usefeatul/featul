@@ -10,6 +10,7 @@ import {
   workspaceDomain,
   workspaceInvite,
   user,
+  workspaceIntegration,
 } from "@featul/db";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { eq, and, inArray, desc, asc, sql } from "drizzle-orm";
@@ -559,6 +560,7 @@ export async function getSettingsInitialData(
   initialDefaultDomain?: string;
   initialFeedbackBoards?: any[];
   initialFeedbackTags?: any[];
+  initialIntegrations?: any[];
 }> {
   const [ws] = await db
     .select({
@@ -698,6 +700,18 @@ export async function getSettingsInitialData(
     .where(eq(tag.workspaceId, ws.id))
     .groupBy(tag.id, tag.name, tag.slug, tag.color)
 
+  // Fetch integrations for the workspace
+  const integrationsRows = await db
+    .select({
+      id: workspaceIntegration.id,
+      type: workspaceIntegration.type,
+      isActive: workspaceIntegration.isActive,
+      lastTriggeredAt: workspaceIntegration.lastTriggeredAt,
+      createdAt: workspaceIntegration.createdAt,
+    })
+    .from(workspaceIntegration)
+    .where(eq(workspaceIntegration.workspaceId, ws.id));
+
   return {
     initialPlan: String((ws as any)?.plan || "free"),
     initialWorkspaceId: ws.id,
@@ -745,6 +759,13 @@ export async function getSettingsInitialData(
       name: t.name,
       slug: t.slug,
       postCount: Number(t.count || 0),
+    })),
+    initialIntegrations: integrationsRows.map((i: any) => ({
+      id: i.id,
+      type: i.type,
+      isActive: Boolean(i.isActive),
+      lastTriggeredAt: i.lastTriggeredAt,
+      createdAt: i.createdAt,
     })),
   };
 }
