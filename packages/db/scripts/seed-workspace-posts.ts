@@ -2,10 +2,14 @@ import 'dotenv/config'
 import { db, post, board, workspace, user } from '../index'
 import { eq, inArray } from 'drizzle-orm'
 
-const WORKSPACE_ID = 'yzqhpv3batxes7uyr04xhwah'
-const FEATURE_BOARD_ID = '8c98a1bd-3b84-4e75-9550-114dd6cf5c0f'
-const BUGS_BOARD_ID = 'a51b719d-9fd4-402d-a36e-3d8b3b399d97'
-const USER_ID = 'SwTxGQKIPZfLlX2eY3TegQk7ai1gdzC3'
+const WORKSPACE_ID = process.env.WORKSPACE_ID!
+const FEATURE_BOARD_ID = process.env.FEATURE_BOARD_ID!
+const BUGS_BOARD_ID = process.env.BUGS_BOARD_ID!
+const USER_ID = process.env.USER_ID!
+
+if (!WORKSPACE_ID || !FEATURE_BOARD_ID || !BUGS_BOARD_ID || !USER_ID) {
+  throw new Error('Missing required environment variables: WORKSPACE_ID, FEATURE_BOARD_ID, BUGS_BOARD_ID, USER_ID')
+}
 
 function slugify(s: string) {
   return s

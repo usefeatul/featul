@@ -32,7 +32,7 @@ export default function WorkspaceHeader() {
   if (!title && !showRequestsActions && !isMemberDetail) return null
 
   return (
-    <div className="mt-4 mb-5.5">
+    <div className="mt-4 mb-6.5">
       <div className="flex items-center justify-between">
         {title ? (
           <div className="flex items-center gap-2">
