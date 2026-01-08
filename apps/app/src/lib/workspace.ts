@@ -453,7 +453,7 @@ export async function getWorkspaceStatusCounts(
 export async function getWorkspaceBoards(
   slug: string
 ): Promise<
-  Array<{ id: string; name: string; slug: string; postCount: number }>
+  Array<{ id: string; name: string; slug: string; postCount: number; hidePublicMemberIdentity?: boolean }>
 > {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return [];
@@ -462,6 +462,7 @@ export async function getWorkspaceBoards(
       id: board.id,
       name: board.name,
       slug: board.slug,
+      hidePublicMemberIdentity: board.hidePublicMemberIdentity,
       postCount: sql<number>`count(${post.id})`,
     })
     .from(board)
@@ -483,6 +484,7 @@ export async function getWorkspaceBoards(
     name: r.name,
     slug: r.slug,
     postCount: Number(r.postCount || 0),
+    hidePublicMemberIdentity: Boolean(r.hidePublicMemberIdentity),
   }));
 }
 

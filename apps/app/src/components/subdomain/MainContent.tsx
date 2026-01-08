@@ -34,7 +34,7 @@ export function MainContent({
   page: number;
   pageSize: number;
   sidebarPosition?: "left" | "right";
-  initialBoards?: Array<{ id: string; name: string; slug: string; postCount?: number }>;
+  initialBoards?: Array<{ id: string; name: string; slug: string; postCount?: number; hidePublicMemberIdentity?: boolean }>;
   selectedBoard?: string;
   linkPrefix?: string;
 }) {
@@ -143,9 +143,14 @@ export function MainContent({
               <EmptyDomainPosts subdomain={subdomain} slug={slug} />
             ) : (
               <div className="divide-y">
-                {listItems.map((p) => (
-                  <PostCard key={p.id} item={p} onVoteChange={handleVoteChange} linkPrefix={linkPrefix} />
-                ))}
+                {listItems.map((p) => {
+                  // Check if the board for this post has hidePublicMemberIdentity enabled
+                  const postBoard = initialBoards?.find((b) => b.slug === p.boardSlug);
+                  const hideIdentity = postBoard?.hidePublicMemberIdentity ?? false;
+                  return (
+                    <PostCard key={p.id} item={p} onVoteChange={handleVoteChange} linkPrefix={linkPrefix} hidePublicMemberIdentity={hideIdentity} />
+                  );
+                })}
               </div>
             )}
           </div>

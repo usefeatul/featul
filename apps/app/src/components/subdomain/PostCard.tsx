@@ -12,14 +12,31 @@ import { randomAvatarUrl } from "@/utils/avatar"
 import { statusLabel } from "@/lib/roadmap"
 import { relativeTime } from "@/lib/time"
 import RoleBadge from "@/components/global/RoleBadge"
+import { MemberIcon } from "@featul/ui/icons/member"
 
 function toPlain(s?: string | null): string {
   if (!s) return ""
   return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
 }
 
-function PostCardBase({ item, onVoteChange, linkPrefix = "/p" }: { item: RequestItemData; onVoteChange?: (id: string, upvotes: number, hasVoted: boolean) => void; linkPrefix?: string }) {
+function PostCardBase({
+  item,
+  onVoteChange,
+  linkPrefix = "/p",
+  hidePublicMemberIdentity = false
+}: {
+  item: RequestItemData;
+  onVoteChange?: (id: string, upvotes: number, hasVoted: boolean) => void;
+  linkPrefix?: string;
+  hidePublicMemberIdentity?: boolean;
+}) {
   const href = `${linkPrefix}/${item.slug}`
+
+  // Determine display values based on hidePublicMemberIdentity setting
+  const showHiddenIdentity = hidePublicMemberIdentity && !item.isAnonymous
+  const displayName = showHiddenIdentity ? "Member" : (item.isAnonymous ? "Guest" : (item.authorName || "Guest"))
+  const displayImage = showHiddenIdentity ? null : (item.authorImage || randomAvatarUrl(item.id || item.slug))
+
   return (
     <div className="py-6 px-6 relative group">
       <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
@@ -41,14 +58,22 @@ function PostCardBase({ item, onVoteChange, linkPrefix = "/p" }: { item: Request
         <div className="flex items-center gap-2">
           <div className="relative">
             <Avatar className="size-8 relative overflow-visible">
-              <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Guest" : (item.authorName || "Guest")} />
-              <AvatarFallback className="text-xs bg-muted text-muted-foreground">{getInitials(item.isAnonymous ? "Guest" : (item.authorName || "Guest"))}</AvatarFallback>
-              <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} className="bg-card" />
+              {showHiddenIdentity ? (
+                <AvatarFallback className="bg-muted text-muted-foreground">
+                  <MemberIcon className="size-4" opacity={1} />
+                </AvatarFallback>
+              ) : (
+                <>
+                  <AvatarImage src={displayImage || undefined} alt={displayName} />
+                  <AvatarFallback className="text-xs bg-muted text-muted-foreground">{getInitials(displayName)}</AvatarFallback>
+                </>
+              )}
+              {!showHiddenIdentity && <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} className="bg-card" />}
             </Avatar>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs font-medium text-foreground whitespace-nowrap max-w-[180px] truncate">
-              {item.isAnonymous ? "Guest" : (item.authorName || "Guest")}
+              {displayName}
             </span>
             <span className="text-xs text-muted-foreground leading-tight">
               {relativeTime(item.publishedAt ?? item.createdAt)}
