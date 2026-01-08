@@ -1,59 +1,20 @@
 import React from "react"
 import SectionCard from "../global/SectionCard"
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@featul/ui/components/card"
-import { Button } from "@featul/ui/components/button"
-import { SlackIcon } from "@featul/ui/icons/slack"
-import { CommentsIcon } from "@featul/ui/icons/comments"
+import { CardFooter } from "@featul/ui/components/card"
 import { ShieldIcon } from "@featul/ui/icons/shield"
+import SlackCard from "./SlackCard"
+import DiscordCard from "./DiscordCard"
+import SuggestIntegrationCard from "./SuggestIntegrationCard"
 
 export default function IntegrationsSection() {
   return (
     <SectionCard title="Available Integrations" description="Connect your integrations here.">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <span className="inline-flex size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
-                <SlackIcon className="size-5" />
-              </span>
-              <CardTitle className="text-left">Slack</CardTitle>
-            </div>
-            <CardDescription className="text-left">Connect your Slack workspace to get notified when a new request is submitted.</CardDescription>
-          </CardHeader>
-          <CardFooter className="mt-auto justify-start">
-            <Button variant="outline" size="sm" disabled>Connect</Button>
-          </CardFooter>
-        </Card>
-
-        <Card >
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <span className="inline-flex size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
-                <CommentsIcon className="size-5" />
-              </span>
-              <CardTitle className="text-left">Discord</CardTitle>
-            </div>
-            <CardDescription className="text-left">Connect your Discord server to get notified when a new request is submitted.</CardDescription>
-          </CardHeader>
-          <CardFooter className="mt-auto justify-start">
-            <Button variant="outline" size="sm" disabled>Connect</Button>
-          </CardFooter>
-        </Card>
-
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <span className="inline-flex size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1">
-                <ShieldIcon className="size-5" />
-              </span>
-              <CardTitle className="text-left">Integrations?</CardTitle>
-            </div>
-            <CardDescription className="text-left">Tell us what integrations would help improve your workflow.</CardDescription>
-          </CardHeader>
-          <CardFooter className="mt-auto justify-start">
-            <Button variant="outline" size="sm">Suggest Integration</Button>
-          </CardFooter>
-        </Card>
+        <SlackCard />
+        <DiscordCard />
+        <div className="md:col-span-1">
+          <SuggestIntegrationCard />
+        </div>
       </div>
 
       <CardFooter className="mt-2">

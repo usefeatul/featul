@@ -1,5 +1,5 @@
 import React from "react";
-import ImportCard from "./ImportCard";
+import SettingsCard from "../../../global/SettingsCard";
 import { CsvIcon } from "@featul/ui/icons/csv";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 export default function ImportFromCSV({ onImport }: Props) {
   return (
-    <ImportCard
+    <SettingsCard
       icon={<CsvIcon className="w-5 h-5" />}
       title="Import from CSV"
       description="Import your feature requests, boards, and users from a CSV file."

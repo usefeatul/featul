@@ -1,5 +1,5 @@
 import React from "react";
-import ImportCard from "./ImportCard";
+import SettingsCard from "../../../global/SettingsCard";
 import { ProductRoadIcon } from "@featul/ui/icons/productroad";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 export default function ImportFromProductRoad({ onImport }: Props) {
   return (
-    <ImportCard
+    <SettingsCard
       icon={<ProductRoadIcon className="w-5 h-5" />}
       title="Import from ProductRoad"
       description="Import your posts, boards, and comments directly from ProductRoad."

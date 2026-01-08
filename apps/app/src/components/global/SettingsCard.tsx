@@ -10,7 +10,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function ImportCard({
+export default function SettingsCard({
   icon,
   title,
   description,

@@ -1,5 +1,5 @@
 import React from "react";
-import ImportCard from "./ImportCard";
+import SettingsCard from "../../../global/SettingsCard";
 import { FileExportIcon } from "@featul/ui/icons/file-export";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 export default function ExportToCSV({ onExport }: Props) {
   return (
-    <ImportCard
+    <SettingsCard
       icon={<FileExportIcon className="w-5 h-5" />}
       title="Export to CSV"
       description="Export all your feedback submissions and their details to a downloadable CSV file."
