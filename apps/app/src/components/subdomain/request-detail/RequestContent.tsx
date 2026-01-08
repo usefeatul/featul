@@ -17,7 +17,7 @@ import { SubdomainRequestDetailData } from "../../../types/subdomain";
 import ContentImage from "@/components/global/ContentImage";
 import { RequestActions } from "./RequestActions";
 import RoleBadge from "../../global/RoleBadge";
-import { MemberIcon } from "@featul/ui/icons/member";
+
 
 interface RequestContentProps {
   post: SubdomainRequestDetailData;
@@ -126,29 +126,25 @@ export function RequestContent({
       ) : null}
       {/* Footer: Author & Upvotes */}
       <div className="flex items-center justify-between pt-2">
-        <div className="inline-flex items-center gap-2">
-          <Avatar className="size-8 relative overflow-visible">
-            {showHiddenIdentity ? (
-              <AvatarFallback className="bg-muted text-muted-foreground">
-                <MemberIcon className="size-4" opacity={1} />
+        {showHiddenIdentity ? (
+          <div />
+        ) : (
+          <div className="inline-flex items-center gap-2">
+            <Avatar className="size-8 relative overflow-visible">
+              <AvatarImage
+                src={displayAuthor.image || randomAvatarUrl(post.id)}
+                alt={displayAuthor.name}
+              />
+              <AvatarFallback className="text-xs bg-muted text-muted-foreground">
+                {getInitials(displayAuthor.name)}
               </AvatarFallback>
-            ) : (
-              <>
-                <AvatarImage
-                  src={displayAuthor.image || randomAvatarUrl(post.id)}
-                  alt={displayAuthor.name}
-                />
-                <AvatarFallback className="text-xs bg-muted text-muted-foreground">
-                  {getInitials(displayAuthor.name)}
-                </AvatarFallback>
-              </>
-            )}
-            {!showHiddenIdentity && <RoleBadge role={post.role} isOwner={post.isOwner} isFeatul={post.isFeatul} />}
-          </Avatar>
-          <span className="text-xs text-accent whitespace-nowrap mt-2 max-w-[180px] truncate">
-            {displayAuthor.name}
-          </span>
-        </div>
+              <RoleBadge role={post.role} isOwner={post.isOwner} isFeatul={post.isFeatul} />
+            </Avatar>
+            <span className="text-xs text-accent whitespace-nowrap mt-2 max-w-[180px] truncate">
+              {displayAuthor.name}
+            </span>
+          </div>
+        )}
         <div className="flex items-center gap-3 text-xs text-accent">
           <UpvoteButton
             postId={post.id}
