@@ -24,18 +24,25 @@ export default function MobileSidebar({
   initialTimezone?: string | null;
   initialServerNow?: number;
   initialWorkspace:
-    | {
-        id: string;
-        name: string;
-        slug: string;
-        logo?: string | null;
-        customDomain?: string | null;
-      }
-    | undefined;
+  | {
+    id: string;
+    name: string;
+    slug: string;
+    logo?: string | null;
+    customDomain?: string | null;
+    plan?: "free" | "starter" | "professional" | null;
+  }
+  | undefined;
   initialDomainInfo?: { domain: { status: string; host?: string } | null } | undefined;
   initialWorkspaces:
-    | { id: string; name: string; slug: string; logo?: string | null }[]
-    | undefined;
+  | {
+    id: string;
+    name: string;
+    slug: string;
+    logo?: string | null;
+    plan?: "free" | "starter" | "professional" | null;
+  }[]
+  | undefined;
   initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
 }) {
   const pathname = usePathname() || "/";

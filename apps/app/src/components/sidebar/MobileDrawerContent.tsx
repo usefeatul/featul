@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
 import { DrawerContent, DrawerTitle } from "@featul/ui/components/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
@@ -33,8 +34,10 @@ export default function MobileDrawerContent({
   secondaryNav: NavItem[];
   initialTimezone?: string | null;
   initialServerNow?: number;
-  initialWorkspace?: { id: string; name: string; slug: string; logo?: string | null } | undefined;
-  initialWorkspaces?: { id: string; name: string; slug: string; logo?: string | null }[] | undefined;
+  initialWorkspace?: { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null } | undefined;
+  initialWorkspaces?:
+  | { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }[]
+  | undefined;
   initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
@@ -49,11 +52,11 @@ export default function MobileDrawerContent({
       </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-md  px-2 py-2">
-            <Image src="/logo.svg" alt="feedback" width={24} height={24} />
-            <div className="text-sm font-semibold">feedback</div>
+          <div className="group flex items-center gap-2 rounded-md px-2 py-2">
+            <FeatulLogoIcon className="size-6" size={24} />
+            <div className="text-lg font-semibold">Featul</div>
           </div>
-          <WorkspaceSwitcher className="mt-3" initialWorkspace={initialWorkspace} initialWorkspaces={initialWorkspaces} />
+          <WorkspaceSwitcher className="mt-5.5" initialWorkspace={initialWorkspace} initialWorkspaces={initialWorkspaces} />
           <Timezone className="mt-2" initialTimezone={initialTimezone} initialServerNow={initialServerNow} />
         </div>
 
