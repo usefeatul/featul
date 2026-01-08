@@ -6,9 +6,10 @@ import { Input } from "@featul/ui/components/input"
 import { Label } from "@featul/ui/components/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@featul/ui/components/card"
 import TimezonePicker from "./TimezonePicker"
-import { ArrowRight, Loader2, AlertCircle, Link2 } from "lucide-react"
+import { ArrowRight, AlertCircle, Link2 } from "lucide-react"
 import CheckIcon from "@featul/ui/icons/check"
 import XMarkIcon from "@featul/ui/icons/xmark"
+import LoaderIcon from "@featul/ui/icons/loader"
 import {
   isNameValid,
   isDomainValid,
@@ -190,25 +191,27 @@ export default function StepWizardForm({
                 value={slug}
                 onChange={(e) => handleSlugChange(e.target.value)}
                 placeholder="project-slug"
-                className="h-10 pl-9 pr-24 bg-muted/50 placeholder:text-accent"
+                className="h-auto py-2.5 pl-9 pr-24 bg-muted/50 placeholder:text-accent text-sm leading-5"
                 disabled={!!slugLocked}
                 autoFocus
               />
-              <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <div className="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none mt-0.5">
+                <Link2 className="size-4 text-muted-foreground" />
+              </div>
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
                 .featul.com
               </span>
-              <div className="absolute right-[6.5rem] top-1/2 -translate-y-1/2">
+              <div className="absolute right-[6rem] top-1/2 -translate-y-1/2">
                 {slugChecking ? (
-                  <Loader2 className="size-4 text-muted-foreground animate-spin" />
+                  <LoaderIcon className="size-4 text-muted-foreground animate-spin" />
                 ) : !slugLocked && slug && slugAvailable === true ? (
                   <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500 text-white">
-                    <CheckIcon className="size-2" />
+                    <CheckIcon className="size-2.5" />
                   </span>
                 ) : !slugLocked &&
                   (slugAvailable === false || (slug && !isSlugValid(slug))) ? (
                   <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-destructive text-destructive-foreground">
-                    <XMarkIcon className="size-2" />
+                    <XMarkIcon className="size-2.5" />
                   </span>
                 ) : null}
               </div>
@@ -238,14 +241,13 @@ export default function StepWizardForm({
         </Button>
         <Button
           type="button"
-          size="sm"
           onClick={onNext}
           disabled={isCreating || (!canNext && step !== steps.length - 1) || (step === steps.length - 1 && !allValid)}
-          className="min-w-24"
+
         >
           {isCreating ? (
             <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
+              <LoaderIcon className="mr-2 size-4 animate-spin" />
               Creating...
             </>
           ) : step === steps.length - 1 ? (
