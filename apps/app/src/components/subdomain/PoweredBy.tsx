@@ -12,7 +12,7 @@ export function PoweredBy() {
         href="https://featul.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block rounded-mdbg-muted px-2 py-1 text-xs text-accent hover:bg-muted/80 transition-colors cursor-pointer"
+        className="inline-block rounded-md bg-muted px-2 py-1 text-xs border border-border/10 text-accent hover:bg-muted/80 transition-colors cursor-pointer"
       >
         Powered by featul
       </a>
