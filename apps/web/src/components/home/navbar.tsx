@@ -44,11 +44,11 @@ export default function Navbar() {
       data-component="Navbar"
     >
       <div
-        className="absolute bottom-0 left-0 right-0 h-px text-foreground/20 pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
         style={{
-          backgroundImage: "linear-gradient(to right, currentColor 6px, transparent 6px)",
-          backgroundSize: "13px 1px",
-          backgroundRepeat: "repeat-x"
+          backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.06) 100%)",
+          backgroundSize: "100% 1px",
+          backgroundRepeat: "no-repeat"
         }}
       />
 

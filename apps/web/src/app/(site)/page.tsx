@@ -10,7 +10,6 @@ import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/featureTwo";
 import { ConversionHero } from "@/components/home/conversion-hero";
 import Benefits from "@/components/home/benefits";
-import { LinearSeparator } from "@/components/linear-separator";
 import { SectionStack } from "@/components/layout/section-stack";
 
 export const metadata: Metadata = createPageMetadata({

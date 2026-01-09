@@ -2,12 +2,12 @@
 export function VerticalLines() {
     return (
         <div
-            className="fixed inset-0 z-[60] mx-auto max-w-6xl pointer-events-none text-foreground/20 px-2 md:px-0"
+            className="fixed inset-0 z-[60] mx-auto max-w-6xl pointer-events-none px-2 md:px-0"
             style={{
-                backgroundImage: `linear-gradient(to bottom, currentColor 6px, transparent 6px), linear-gradient(to bottom, currentColor 6px, transparent 6px)`,
-                backgroundSize: "1px 13px",
+                backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.06) 100%), linear-gradient(to bottom, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.06) 100%)`,
+                backgroundSize: "1px 100%",
                 backgroundPosition: "left top, right top",
-                backgroundRepeat: "repeat-y",
+                backgroundRepeat: "no-repeat",
                 backgroundOrigin: "content-box"
             }}
         />
