@@ -4,6 +4,8 @@ import ArrTool from '../components/tools/revenue/arr'
 import GrowthRateTool from '../components/tools/revenue/growth-rate'
 import ArpuTool from '../components/tools/revenue/arpu'
 import LtvTool from '../components/tools/revenue/ltv'
+import QuickRatioTool from '../components/tools/revenue/quick-ratio'
+import NetRevenueRetentionTool from '../components/tools/revenue/net-revenue-retention'
 import ChurnTool from '../components/tools/customer/churn'
 import NpsTool from '../components/tools/customer/nps'
 import CacTool from '../components/tools/customer/cac'
@@ -39,6 +41,17 @@ import AbTestSignificanceTool from '../components/tools/performance/ab-test-sign
 import CpaTool from '../components/tools/performance/cpa-calculator'
 import EngagementRateTool from '../components/tools/performance/engagement-rate'
 import FunnelConversionTool from '../components/tools/performance/funnel-conversion'
+// Content & Marketing tools
+import WordCounterTool from '../components/tools/content/word-counter'
+import ReadabilityScoreTool from '../components/tools/content/readability-score'
+import HeadlineAnalyzerTool from '../components/tools/content/headline-analyzer'
+// Feedback & Survey tools
+import CsatCalculatorTool from '../components/tools/feedback/csat-calculator'
+import CesCalculatorTool from '../components/tools/feedback/ces-calculator'
+import SampleSizeCalculatorTool from '../components/tools/feedback/sample-size-calculator'
+// Team & Productivity tools
+import MeetingCostCalculatorTool from '../components/tools/team/meeting-cost-calculator'
+import SprintVelocityCalculatorTool from '../components/tools/team/sprint-velocity-calculator'
 
 export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
   'product-feature-analytics': {
@@ -54,6 +67,8 @@ export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
     'growth-rate-calculator': GrowthRateTool,
     'arpu-calculator': ArpuTool,
     'ltv-calculator': LtvTool,
+    'quick-ratio': QuickRatioTool,
+    'net-revenue-retention': NetRevenueRetentionTool,
   },
   'customer-metrics': {
     'churn-calculator': ChurnTool,
@@ -92,5 +107,19 @@ export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
     'cpa-calculator': CpaTool,
     'engagement-rate': EngagementRateTool,
     'funnel-conversion': FunnelConversionTool,
+  },
+  'content-marketing': {
+    'word-counter': WordCounterTool,
+    'readability-score': ReadabilityScoreTool,
+    'headline-analyzer': HeadlineAnalyzerTool,
+  },
+  'feedback-survey': {
+    'csat-calculator': CsatCalculatorTool,
+    'ces-calculator': CesCalculatorTool,
+    'sample-size-calculator': SampleSizeCalculatorTool,
+  },
+  'team-productivity': {
+    'meeting-cost-calculator': MeetingCostCalculatorTool,
+    'sprint-velocity-calculator': SprintVelocityCalculatorTool,
   },
 }

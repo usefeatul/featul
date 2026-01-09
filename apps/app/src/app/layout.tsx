@@ -113,8 +113,8 @@ export default function RootLayout({
               "window.$ujq=window.$ujq||[];window.uj=window.uj||new Proxy({},{get:(_,p)=>(...a)=>window.$ujq.push([p,...a])});document.head.appendChild(Object.assign(document.createElement('script'),{src:'https://cdn.userjot.com/sdk/v2/uj.js',type:'module',async:!0}));window.uj.init('cm9daudvf001drw15p5m6c2bl',{widget:!0,position:'right',theme:'light',trigger:'default'});",
           }}
         /> */}
-        {(process.env.NODE_ENV !== "production" ||
-          process.env.NEXT_PUBLIC_ENABLE_DEBUG === "true") && <DebugTools />}
+        {/* {(process.env.NODE_ENV !== "production" ||
+          process.env.NEXT_PUBLIC_ENABLE_DEBUG === "true") && <DebugTools />} */}
       </body>
     </html>
   );

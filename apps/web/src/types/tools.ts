@@ -103,6 +103,18 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         name: "LTV",
         description: "Estimate lifetime value using churn and ARPU.",
       },
+      {
+        slug: "quick-ratio",
+        name: "Quick Ratio",
+        description: "Measure SaaS growth efficiency with the Quick Ratio.",
+        isNew: true,
+      },
+      {
+        slug: "net-revenue-retention",
+        name: "Net Revenue Retention",
+        description: "Calculate dollar-based net retention from existing customers.",
+        isNew: true,
+      },
     ],
   },
   // Customer Metrics — 7 tools
@@ -310,6 +322,78 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         slug: "funnel-conversion",
         name: "Funnel Conversion",
         description: "Analyze conversion by funnel stage.",
+      },
+    ],
+  },
+  // Content & Marketing — 3 tools
+  {
+    slug: "content-marketing",
+    name: "Content & Marketing",
+    description: "Analyze and optimize your content for better engagement.",
+    tools: [
+      {
+        slug: "word-counter",
+        name: "Word Counter",
+        description: "Count words, characters, sentences, and reading time.",
+        isNew: true,
+      },
+      {
+        slug: "readability-score",
+        name: "Readability Score",
+        description: "Calculate Flesch-Kincaid, Gunning Fog, and SMOG scores.",
+        isNew: true,
+      },
+      {
+        slug: "headline-analyzer",
+        name: "Headline Analyzer",
+        description: "Score headlines for engagement and emotional impact.",
+        isNew: true,
+      },
+    ],
+  },
+  // Feedback & Survey — 3 tools
+  {
+    slug: "feedback-survey",
+    name: "Feedback & Survey",
+    description: "Measure customer satisfaction and survey effectiveness.",
+    tools: [
+      {
+        slug: "csat-calculator",
+        name: "CSAT Calculator",
+        description: "Calculate Customer Satisfaction Score from survey data.",
+        isNew: true,
+      },
+      {
+        slug: "ces-calculator",
+        name: "CES Calculator",
+        description: "Calculate Customer Effort Score on a 1-7 scale.",
+        isNew: true,
+      },
+      {
+        slug: "sample-size-calculator",
+        name: "Survey Sample Size",
+        description: "Calculate required sample size for statistically significant surveys.",
+        isNew: true,
+      },
+    ],
+  },
+  // Team & Productivity — 2 tools
+  {
+    slug: "team-productivity",
+    name: "Team & Productivity",
+    description: "Calculate team productivity metrics and resource costs.",
+    tools: [
+      {
+        slug: "meeting-cost-calculator",
+        name: "Meeting Cost Calculator",
+        description: "Calculate the true cost of meetings based on attendee salaries.",
+        isNew: true,
+      },
+      {
+        slug: "sprint-velocity-calculator",
+        name: "Sprint Velocity",
+        description: "Calculate sprint velocity and predict future capacity.",
+        isNew: true,
       },
     ],
   },

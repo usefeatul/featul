@@ -16,9 +16,9 @@ export function Hero() {
   const showPillHint = usePreviewHint(active);
 
   const imageSrc = {
-    dashboard: "/image/image.jpeg",
-    roadmap: "/bg.png",
-    changelog: "/logo.png",
+    dashboard: "/image/dashboard.png",
+    roadmap: "/image/dashboard.png",
+    changelog: "/image/dashboard.png",
   }[active];
 
   return (
