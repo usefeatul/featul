@@ -16,9 +16,9 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
       </div>
 
       <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
-        <div className="relative flex items-center gap-1.5 rounded-md  bg-white backdrop-blur-3xl  shadow-sm  px-2 py-2">
+        <div className="relative flex items-center gap-1.5 rounded-2xl  bg-white backdrop-blur-3xl  shadow-sm  px-2 py-2">
           {showHint && (
-            <div className="pointer-events-none absolute inset-0 rounded-md  ring-2 ring-border/60 animate-pulse"></div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl  ring-2 ring-border/60 animate-pulse"></div>
           )}
 
           <div
@@ -28,8 +28,8 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
           >
             <Button
               size="sm"
-              variant="ghost"
-              className={`${active === "dashboard" ? "bg-primary text-foreground border border-border" : "bg-transparent text-foreground hover:bg-white"} rounded-md  px-2 min-h-[32px] min-w-[32px]`}
+              variant="default"
+              className={`${active === "dashboard" ? "bg-primary text-white border border-border" : "bg-transparent text-foreground hover:bg-white"} rounded-md  px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange("dashboard")}
               aria-pressed={active === "dashboard"}
             >
@@ -38,7 +38,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === "roadmap" ? "bg-primary text-foreground border border-border" : "bg-transparent text-foreground hover:bg-white"} rounded-md  px-2 min-h-[32px] min-w-[32px]`}
+              className={`${active === "roadmap" ? "bg-primary text-white border border-border" : "bg-transparent text-foreground hover:bg-white"} rounded-md  px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange("roadmap")}
               aria-pressed={active === "roadmap"}
             >
@@ -47,7 +47,7 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
             <Button
               size="sm"
               variant="ghost"
-              className={`${active === "changelog" ? "bg-primary text-foreground border border-border" : "bg-transparent text-foreground hover:bg-white"} rounded-md  px-2 min-h-[32px] min-w-[32px]`}
+              className={`${active === "changelog" ? "bg-primary text-white border border-border" : "bg-transparent text-foreground hover:bg-white"} rounded-md  px-2 min-h-[32px] min-w-[32px]`}
               onClick={() => onChange("changelog")}
               aria-pressed={active === "changelog"}
             >
