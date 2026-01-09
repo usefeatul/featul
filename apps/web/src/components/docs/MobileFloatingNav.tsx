@@ -67,7 +67,7 @@ export function DocsMobileFloatingNav() {
   return (
     <div
       className={cn(
-        "md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-70 transition-all duration-300 ease-out",
+        "lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-70 transition-all duration-300 ease-out",
         !isOpen && !isBottomNavVisible
           ? "translate-y-24 opacity-0"
           : "translate-y-0 opacity-100",
