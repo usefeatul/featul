@@ -20,7 +20,7 @@ export function AlternativeHeroContent({
   }, [slug]);
 
   return (
-    <div className="w-full max-w-2xl sm:max-w-3xl text-left mt-14 sm:mt-0 mr-auto self-start justify-self-start">
+    <div className="w-full max-w-2xl sm:max-w-3xl text-left mt-0 mr-auto self-start justify-self-start">
       {/* Main heading */}
       <h1 className=" text-3xl  leading-tight tracking-normal sm:tracking-tight font-extrabold text-foreground text-balance">
         The simple,
