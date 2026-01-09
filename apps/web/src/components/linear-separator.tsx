@@ -1,11 +1,20 @@
+"use client";
 
 import { cn } from "@featul/ui/lib/utils";
+import { usePathname } from "next/navigation";
 
 interface LinearSeparatorProps {
     className?: string;
 }
 
 export function LinearSeparator({ className }: LinearSeparatorProps) {
+    const pathname = usePathname();
+
+    // Hide on docs pages
+    if (pathname?.startsWith("/docs")) {
+        return null;
+    }
+
     return (
         <div
             className={cn(
