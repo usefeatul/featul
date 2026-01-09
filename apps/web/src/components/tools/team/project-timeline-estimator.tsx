@@ -41,7 +41,7 @@ export default function ProjectTimelineEstimatorTool() {
     const [velocity, setVelocity] = useState<string>("20")
     const [sprintLength, setSprintLength] = useState<string>("2")
     const [riskLevel, setRiskLevel] = useState<string>("medium")
-    const [startDate, setStartDate] = useState<string>(new Date().toISOString().split("T")[0])
+    const [startDate, setStartDate] = useState<string>(new Date().toISOString().split("T")[0] ?? "")
 
     const metrics = useMemo(() => {
         const points = Number(totalPoints)
