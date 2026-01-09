@@ -11,6 +11,7 @@ import FeaturesSection from "@/components/home/featureTwo";
 import { ConversionHero } from "@/components/home/conversion-hero";
 import Benefits from "@/components/home/benefits";
 import { LinearSeparator } from "@/components/linear-separator";
+import { SectionStack } from "@/components/layout/section-stack";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Privacy‑first product feedback, roadmaps, and changelogs - featul",
@@ -23,23 +24,17 @@ export default function Home() {
   return (
     <main className="min-h-screen pt-16">
       <div className="mx-auto max-w-6xl">
-        <Hero />
-        <LinearSeparator />
-        <ConversionHero />
-        <LinearSeparator />
-        <Listening />
-        <LinearSeparator />
-        <FeaturesSection />
-        <LinearSeparator />
-        <Setup />
-        <LinearSeparator />
-        <Create />
-        <LinearSeparator />
-        <Benefits />
-        <LinearSeparator />
-        <Faq />
-        <LinearSeparator />
-        <StatsSection />
+        <SectionStack>
+          <Hero />
+          <ConversionHero />
+          <Listening />
+          <FeaturesSection />
+          <Setup />
+          <Create />
+          <Benefits />
+          <Faq />
+          <StatsSection />
+        </SectionStack>
       </div>
     </main>
   );
