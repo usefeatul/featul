@@ -3,7 +3,7 @@ import { relativeTime } from "@/lib/time"
 import PinnedBadge from "./PinnedBadge"
 import CommentCollapseToggle from "./CommentCollapseToggle"
 import CommentActions from "./actions/CommentActions"
-import { CommentData } from "../../types/comment"
+import type { CommentData } from "../../types/comment"
 
 interface CommentHeaderProps {
   comment: CommentData
@@ -32,7 +32,9 @@ export default function CommentHeader({
   onDeleteSuccess,
   hidePublicMemberIdentity,
 }: CommentHeaderProps) {
-  const displayName = hidePublicMemberIdentity && comment.authorName !== "Guest" ? "Member" : comment.authorName
+  // Guest check must match CommentItem: null/undefined or "Guest" are all considered guests
+  const isGuest = !comment.authorName || comment.authorName === "Guest"
+  const displayName = hidePublicMemberIdentity && !isGuest ? "Member" : comment.authorName
 
   return (
     <div className="flex items-start justify-between gap-2">
