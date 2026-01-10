@@ -81,7 +81,7 @@ function renderActivityDescription(it: any) {
               {tags.map((t: any) => (
                 <span
                   key={String(t.id || t.slug || t.name)}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/70  ring-1 ring-border/60 ring-offset-1 ring-offset-background bg-muted/80 px-2 py-0.5"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/70  ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5"
                 >
                   {t.color ? (
                     <span
@@ -117,7 +117,7 @@ function renderActivityDescription(it: any) {
               {tags.map((t: any) => (
                 <span
                   key={String(t.id || t.slug || t.name)}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/70  ring-1 ring-border/60 ring-offset-1 ring-offset-background bg-muted/80 px-2 py-0.5"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/70  ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5"
                 >
                   {t.color ? (
                     <span
@@ -387,7 +387,7 @@ function renderActivityDescription(it: any) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created tag</span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/80 ring-1 ring-border/60 ring-offset-1 ring-offset-background px-2 py-0.5 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/80 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-2 py-0.5 text-sm">
             {color ? (
               
               
@@ -408,7 +408,7 @@ function renderActivityDescription(it: any) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>deleted tag</span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/60 ring-1 ring-border/60 ring-offset-1 ring-offset-background px-2 py-0.5 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/60 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-2 py-0.5 text-sm">
             <span className="truncate max-w-[160px]">
               {label}
             </span>
@@ -426,7 +426,7 @@ function renderActivityDescription(it: any) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created changelog tag</span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-background bg-muted/80 px-2 py-0.5 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5 text-sm">
             {color ? (
               <span
                 className="inline-block size-2 rounded-full"

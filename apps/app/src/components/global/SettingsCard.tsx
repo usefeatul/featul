@@ -69,7 +69,7 @@ export default function SettingsCard({
         </div>
       </div>
       {/* Description section */}
-      <div className="px-4 py-3 bg-card dark:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-background rounded-lg min-h-[60px]">
+      <div className="px-4 py-3 bg-card dark:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
         <p className="text-sm text-accent leading-relaxed">
           {description}
         </p>

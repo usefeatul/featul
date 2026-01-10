@@ -138,7 +138,7 @@ export function MainContent({
           <div className="lg:hidden mb-4">
             <SubmitIdeaCard subdomain={subdomain} slug={slug} />
           </div>
-          <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-background border bg-card mt-4">
+          <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
             {items.length === 0 ? (
               <EmptyDomainPosts subdomain={subdomain} slug={slug} />
             ) : (

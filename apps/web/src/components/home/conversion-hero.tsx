@@ -21,17 +21,17 @@ export function ConversionHero() {
               Build better products with customer feedback.
               <span className="block mt-1 text-accent/80">
                 Collect, prioritize, and ship what matters with
-                <span className={`group mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md  bg-foreground/5 py-0 text-accent/50 border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-background align-baseline`}>
+                <span className={`group mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md  bg-foreground/5 py-0 text-accent/50 border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black align-baseline`}>
                   <BoardIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   boards
                 </span>
                 ,
-                <span className={`group mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md  bg-foreground/5 py-0 text-accent/50 border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-background align-baseline`}>
+                <span className={`group mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md  bg-foreground/5 py-0 text-accent/50 border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black align-baseline`}>
                   <RoadmapIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   roadmaps
                 </span>
                 , and
-                <span className={`group mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md  bg-foreground/5 py-0 text-accent/50 border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-background align-baseline`}>
+                <span className={`group mx-1 inline-flex items-center ${isMobile ? "gap-0.5 px-1.5 text-[0.9em]" : "gap-1 px-2"} rounded-md  bg-foreground/5 py-0 text-accent/50 border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black align-baseline`}>
                   <ChangelogIcon className={`${isMobile ? "size-6" : "size-8"} text-primary`} />
                   changelogs
                 </span>

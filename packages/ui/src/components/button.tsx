@@ -15,7 +15,7 @@ const buttonVariants = cva(
           "bg-destructive text-white hover:bg-destructive/90 ring-destructive/50 hover:ring-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60"
         ),
         outline: cn(
-          "border bg-background shadow-xs hover:bg-muted hover:text-accent-foreground ring-border/60 hover:ring-accent/60 dark:bg-input/30 dark:border-input dark:hover:bg-input/50 ring-1 ring-border/60 ring-offset-1 ring-offset-background"
+          "border bg-background shadow-xs hover:bg-muted hover:text-accent-foreground ring-border/60 hover:ring-accent/60 dark:bg-input/30 dark:border-input dark:hover:bg-input/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
         ),
         secondary: cn(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 ring-secondary/50 hover:ring-secondary/60 dark:bg-black/40"
@@ -26,7 +26,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline bg-transparent",
         quiet: cn("bg-primary text-primary-foreground hover:bg-primary/70"),
         nav: cn(
-          "border bg-card text-foreground border-border hover:bg-muted/30 hover:text-accent-foreground hover:border-accent/20 dark:bg-black/30 dark:hover:bg-black/40 ring-1 ring-border/30 ring-offset-1 ring-offset-background"
+          "border bg-card text-foreground border-border hover:bg-muted/30 hover:text-accent-foreground hover:border-accent/20 dark:bg-black/30 dark:hover:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
         ),
         plain: cn(
           "bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50 "

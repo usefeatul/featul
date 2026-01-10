@@ -45,7 +45,7 @@ export function RequestContent({
     : rawDisplayAuthor
 
   return (
-    <div className="rounded-lg border bg-card p-6 ring-1 ring-border/60 ring-offset-1 ring-offset-background">
+    <div className="rounded-lg border bg-card p-6 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
       {/* Status & Actions */}
       <div className="flex items-center justify-between mb-4">
         <div className="inline-flex items-center gap-2">

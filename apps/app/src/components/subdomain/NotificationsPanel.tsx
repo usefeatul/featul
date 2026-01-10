@@ -28,7 +28,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
       <motion.div
         ref={ref}
         {...props}
-        className={`z-50 max-w-[90vw] max-h-[36rem] bg-card dark:bg-black overflow-y-auto rounded-md border  p-2 text-popover-foreground shadow-md ring-1 ring-border/60 ring-offset-1 ring-offset-background "}`}
+        className={`z-50 max-w-[90vw] max-h-[36rem] bg-card dark:bg-black overflow-y-auto rounded-md border  p-2 text-popover-foreground shadow-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black "}`}
         role="dialog"
         aria-label="Notifications"
         initial={{ opacity: 0, y: -6, scale: 0.98 }}

@@ -38,7 +38,7 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
 
   return (
 
-      <div className="rounded-sm border bg-card dark:bg-black/40 overflow-hidden ring-1 ring-border/60 ring-offset-1 ring-offset-background">
+      <div className="rounded-sm border bg-card dark:bg-black/40 overflow-hidden ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
         <Table>
           <TableHeader>
             <TableRow>
