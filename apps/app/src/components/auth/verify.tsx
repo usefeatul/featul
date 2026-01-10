@@ -4,8 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@featul/auth/client";
 import { Button } from "@featul/ui/components/button";
-import { Input } from "@featul/ui/components/input";
 import { Label } from "@featul/ui/components/label";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@featul/ui/components/opt";
 import Link from "next/link";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";
@@ -53,6 +57,12 @@ export default function Verify() {
     setError("");
     setInfo("");
     setSubmitted(true);
+
+    if (code.trim().length !== 6) {
+      setError("Please enter the 6-digit code.");
+      setIsVerifying(false);
+      return;
+    }
     try {
       const { error } = await authClient.emailOtp.verifyEmail({
         email: email.trim(),
@@ -94,47 +104,39 @@ export default function Verify() {
           </div>
 
           <div className="mt-6 space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="block text-sm">
-                Email
-              </Label>
-              <Input
-                type="email"
-                required
-                id="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                className="placeholder:text-accent/50"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="code" className="block text-sm">
-                Verification Code
-              </Label>
-              <Input
-                type="text"
-                required
-                id="code"
+            <div className="space-y-3">
+              <InputOTP
+                maxLength={6}
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                inputMode="numeric"
-                pattern="^[0-9]{6}$"
-                title="Enter the 6-digit code"
-                autoComplete="one-time-code"
-                placeholder="123456"
-                className="placeholder:text-accent/50"
+                onChange={(value) => {
+                  setCode(value);
+                  setSubmitted(false);
+                  setError("");
+                }}
+                containerClassName="justify-center gap-2"
+                aria-label="One-time password"
                 aria-invalid={submitted && Boolean(error)}
                 aria-describedby={submitted && error ? "code-error" : undefined}
-              />
+              >
+                <InputOTPGroup>
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <InputOTPSlot
+                      key={index}
+                      index={index}
+                      className="h-10 w-9 text-base"
+                    />
+                  ))}
+                </InputOTPGroup>
+              </InputOTP>
+              <p className="text-xs text-accent text-center">
+                Enter your one-time password.
+              </p>
               {submitted && error && (
                 <p id="code-error" className="text-destructive text-xs">
                   {error}
                 </p>
               )}
-              {info && <p className="text-xs">{info}</p>}
+              {info && <p className="text-xs text-muted-foreground">{info}</p>}
             </div>
 
             <LoadingButton
@@ -151,7 +153,7 @@ export default function Verify() {
               onClick={resend}
               loading={isResending}
             >
-              Resend Code
+              Resend code
             </LoadingButton>
           </div>
         </div>
@@ -160,7 +162,17 @@ export default function Verify() {
           <p className="text-accent-foreground text-center text-sm sm:text-base">
             Already verified?
             <Button asChild variant="link" className="px-2">
-              <Link href={rawRedirect ? `/auth/sign-in?redirect=${encodeURIComponent(rawRedirect)}` : "/auth/sign-in"}>Sign in</Link>
+              <Link
+                href={
+                  rawRedirect
+                    ? `/auth/sign-in?redirect=${encodeURIComponent(
+                        rawRedirect,
+                      )}`
+                    : "/auth/sign-in"
+                }
+              >
+                Sign in
+              </Link>
             </Button>
           </p>
         </div>
