@@ -13,6 +13,12 @@ interface UseCommentSubmitProps {
   resetForm: () => void
 }
 
+interface CreateCommentResponse {
+  comment?: Partial<CommentData>;
+  message?: string;
+  error?: { message?: string };
+}
+
 export function useCommentSubmit({
   postId,
   parentId,
@@ -36,14 +42,14 @@ export function useCommentSubmit({
 
         const metadata = uploadedImage
           ? {
-              attachments: [
-                {
-                  name: uploadedImage.name,
-                  url: uploadedImage.url,
-                  type: uploadedImage.type,
-                },
-              ],
-            }
+            attachments: [
+              {
+                name: uploadedImage.name,
+                url: uploadedImage.url,
+                type: uploadedImage.type,
+              },
+            ],
+          }
           : undefined
 
         const res = await client.comment.create.$post({
@@ -55,11 +61,13 @@ export function useCommentSubmit({
         })
 
         if (res.ok) {
-          let createdComment: any = null
+          let createdComment: Partial<CommentData> | null = null
           try {
-            const data = await res.json()
-            createdComment = (data as any)?.comment || null
-          } catch {}
+            const data = await res.json() as CreateCommentResponse
+            createdComment = data?.comment || null
+          } catch {
+            // ignore
+          }
 
           if (createdComment) {
             try {
@@ -100,7 +108,7 @@ export function useCommentSubmit({
                   createdComment.createdAt ||
                   new Date().toISOString(),
                 editedAt: createdComment.editedAt ?? null,
-                userVote: createdComment.hasVoted ? "upvote" : null,
+                userVote: createdComment.userVote === "upvote" ? "upvote" : null,
                 role: null,
                 isOwner: false,
                 metadata: createdComment.metadata ?? null,
@@ -120,7 +128,9 @@ export function useCommentSubmit({
                   }
                 }
               )
-            } catch {}
+            } catch (e) {
+              console.error("Failed to update cache:", e)
+            }
           }
 
           resetForm()
@@ -131,21 +141,24 @@ export function useCommentSubmit({
                 detail: { postId, parentId: parentId || null },
               })
             )
-          } catch {}
+          } catch (e) {
+            console.error("Failed to dispatch event:", e)
+          }
 
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
-          } catch {}
+          } catch (e) {
+            console.error("Failed to invalidate queries:", e)
+          }
 
           onSuccess?.()
         } else if (res.status === 401) {
           toast.error("Please sign in to comment")
         } else if (res.status === 403) {
           try {
-            const data = await res.json()
-            const apiMessage =
-              (data as any)?.message || (data as any)?.error?.message
+            const data = await res.json() as CreateCommentResponse
+            const apiMessage = data?.message || data?.error?.message
 
             if (typeof apiMessage === "string" && apiMessage.length > 0) {
               toast.error(apiMessage)
