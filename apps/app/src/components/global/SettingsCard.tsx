@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@featul/ui/components/button";
+import { Card } from "@featul/ui/components/card";
 
 type Props = {
   icon: React.ReactNode;
@@ -25,9 +26,8 @@ export default function SettingsCard({
   onTest,
 }: Props) {
   return (
-    <div className="rounded-xl bg-muted/40 dark:bg-muted/20 overflow-hidden p-2 border border-border
-    ">
-      {/* Header row */}
+    <Card className="rounded-xl bg-muted/40 dark:bg-muted/20 overflow-hidden px-2 pt-2 pb-2 border border-border gap-0
+    " variant="plain">
       <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 text-muted-foreground">
@@ -71,12 +71,12 @@ export default function SettingsCard({
         </div>
       </div>
       {/* Description section */}
-      <div className="px-4 py-3 bg-card dark:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
+      <div className="px-4 pt-3 pb-2 bg-card dark:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
         <p className="text-sm text-accent leading-relaxed">
           {description}
         </p>
       </div>
-    </div>
+    </Card>
   );
 }
 
