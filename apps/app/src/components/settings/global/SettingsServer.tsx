@@ -9,6 +9,8 @@ import IntegrationsSection from "../integrations/Integrations";
 
 import DataSection from "../data/Data";
 import WorkspaceSection from "../workspace/Workspace";
+import type { DomainInfo } from "../../../types/domain";
+import type { Integration } from "@/hooks/useIntegrations";
 import BoardSettings from "../board/Board";
 import type { Member, Invite } from "../../../types/team";
 import type { BrandingConfig } from "../../../types/branding";

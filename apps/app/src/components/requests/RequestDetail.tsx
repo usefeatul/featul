@@ -119,7 +119,7 @@ export default function RequestDetail({
                       </div>
                     </div>
                   </div>
-                  <h1 className="text-lg font-semibold leading-tight break-words text-foreground">
+                  <h1 className="text-lg font-semibold leading-tight wrap-break-words text-foreground">
                     {post.title}
                   </h1>
                 </div>
@@ -127,7 +127,7 @@ export default function RequestDetail({
                 <div className="flex flex-col gap-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1 min-w-0 flex-1">
-                      <h1 className="text-lg font-semibold leading-snug break-words text-foreground md:text-xl">
+                      <h1 className="text-lg font-semibold leading-snug wrap-break-words text-foreground md:text-xl">
                         {post.title}
                       </h1>
                     </div>
@@ -165,7 +165,7 @@ export default function RequestDetail({
                 </Button>
               ) : null}
               {post.content ? (
-                <div className="prose text-sm text-accent dark:prose-invert break-all md:break-words whitespace-normal min-w-0">
+                <div className="prose text-sm text-accent dark:prose-invert break-all md:wrap-break-words whitespace-normal min-w-0">
                   {post.content}
                 </div>
               ) : null}
