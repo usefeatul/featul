@@ -35,3 +35,4 @@ export {
   ChangelogRenderer,
   type ChangelogRendererProps,
 } from "./changelog-renderer";
+export * from "./icons";

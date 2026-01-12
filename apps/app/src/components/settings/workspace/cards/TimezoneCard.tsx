@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SettingsCard from "../../../global/SettingsCard";
-import { Globe2 } from "lucide-react";
+import { Timezone } from "@featul/editor/components/icons/timezone";
 import TimezonePicker from "../../../wizard/TimezonePicker";
 import { SettingsDialogShell } from "../../global/SettingsDialogShell";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";
@@ -30,7 +30,7 @@ export default function TimezoneCard({ slug, initialTimezone }: Props) {
     return (
         <>
             <SettingsCard
-                icon={<Globe2 className="size-5 text-primary" />}
+                icon={<Timezone className="size-5 text-primary" />}
                 title="Timezone"
                 description={<span>Current timezone: <span className="font-medium text-black">{friendlyTZ(timezone)}</span>. All workspace graphs, ranges and timestamps will be matched to this timezone.</span>}
                 buttonLabel="Change"
@@ -41,7 +41,7 @@ export default function TimezoneCard({ slug, initialTimezone }: Props) {
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 title="Change Timezone"
-                icon={<Globe2 className="w-4 h-4" />}
+                icon={<Timezone className="w-4 h-4" />}
                 width="default"
             >
                 <TimezonePicker value={timezone} onChange={handleTimezoneChange} now={now} />

@@ -2,7 +2,7 @@
 
 import React from "react";
 import SettingsCard from "../../../global/SettingsCard";
-import { Trash2 } from "lucide-react";
+
 import { AlertDialogShell } from "@/components/global/AlertDialogShell";
 import {
     AlertDialogAction,
@@ -13,6 +13,7 @@ import { Input } from "@featul/ui/components/input";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { DangerDelete } from "@featul/editor/components/icons/danger-delete";
 
 type Props = {
     slug: string;
@@ -82,7 +83,7 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
     return (
         <>
             <SettingsCard
-                icon={<Trash2 className="size-5 text-primary" />}
+                icon={<DangerDelete className="size-5 text-primary" />}
                 title="Danger Zone"
                 description="Delete this workspace permanently. This action cannot be undone and will remove all content."
                 buttonLabel="Delete Workspace"
