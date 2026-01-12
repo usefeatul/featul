@@ -25,7 +25,8 @@ export default function SettingsCard({
   onTest,
 }: Props) {
   return (
-    <div className="rounded-xl bg-muted/40 dark:bg-muted/20 overflow-hidden p-2 border border-border">
+    <div className="rounded-xl bg-muted/40 dark:bg-muted/20 overflow-hidden p-2 border border-border
+    ">
       {/* Header row */}
       <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-3">
@@ -43,6 +44,7 @@ export default function SettingsCard({
           {isConnected && onTest && (
             <Button
               onClick={onTest}
+              size="xs"
               disabled={disabled}
             >
               Test

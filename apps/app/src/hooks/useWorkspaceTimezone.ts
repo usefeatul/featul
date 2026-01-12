@@ -15,8 +15,11 @@ export function useWorkspaceTimezone(slug: string, initialTimezone?: string) {
             return data?.workspace?.timezone || "UTC";
         },
         enabled: !!slug,
-        staleTime: 60_000,
-        initialData: initialTimezone || "UTC",
+        staleTime: 5 * 60 * 1000, // 5 minutes - timezone changes are rare
+        gcTime: 10 * 60 * 1000, // 10 minutes cache
+        refetchOnMount: false, // Don't refetch on mount if we have cached data
+        refetchOnWindowFocus: false, // Don't refetch on window focus
+        placeholderData: initialTimezone || "UTC", // Use placeholder to prevent loading state
     });
 
     // Mutation for updating timezone

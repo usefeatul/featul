@@ -8,24 +8,48 @@ import { formatTime12h } from "@/lib/time";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@featul/ui/components/tooltip";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";
 
-export default function Timezone({ className = "", initialTimezone, initialServerNow }: { className?: string; initialTimezone?: string | null; initialServerNow?: number }) {
+interface TimezoneProps {
+  className?: string;
+  initialTimezone?: string | null;
+  initialServerNow?: number;
+}
+
+export default function Timezone({
+  className = "",
+  initialTimezone,
+  initialServerNow
+}: TimezoneProps) {
   const pathname = usePathname();
   const slug = getSlugFromPath(pathname || "");
-  const driftRef = React.useRef<number>(initialServerNow ? initialServerNow - Date.now() : 0);
-  const [time, setTime] = React.useState<string | null>(null);
 
-  // Use the shared hook to get timezone from TanStack Query cache
-  const { timezone: tz } = useWorkspaceTimezone(slug || "", initialTimezone || undefined);
+  // Calculate server time drift (memoized since it's based on initial values)
+  const drift = React.useMemo(
+    () => (initialServerNow ? initialServerNow - Date.now() : 0),
+    [initialServerNow]
+  );
+
+  // Get timezone from TanStack Query cache
+  const { timezone } = useWorkspaceTimezone(slug || "", initialTimezone || undefined);
+
+  // Format and update time display
+  const [time, setTime] = React.useState<string>(() =>
+    timezone ? formatTime12h(timezone, new Date(Date.now() + drift)) : ""
+  );
 
   React.useEffect(() => {
-    if (!tz) return;
-    const format = () => setTime(formatTime12h(tz, new Date(Date.now() + driftRef.current)));
-    format();
-    const id = setInterval(format, 1000);
-    return () => clearInterval(id);
-  }, [tz]);
+    if (!timezone) return;
 
-  if (!tz || !time) return null;
+    const updateTime = () => {
+      setTime(formatTime12h(timezone, new Date(Date.now() + drift)));
+    };
+
+    updateTime(); // Update immediately
+    const intervalId = setInterval(updateTime, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [timezone, drift]);
+
+  if (!timezone || !time) return null;
 
   return (
     <div className={cn("px-3", className)}>
