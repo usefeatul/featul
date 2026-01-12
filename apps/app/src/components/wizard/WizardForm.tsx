@@ -170,7 +170,7 @@ export default function WizardForm({
           <Label>Timezone</Label>
           <TimezonePicker value={timezone} onChange={setTimezone} now={now} />
           <p className="text-xs text-accent">
-            All project graphs, ranges and timestamps will be matched to this
+            All workspace graphs, ranges and timestamps will be matched to this
             timezone. Can be updated later.
           </p>
         </div>
