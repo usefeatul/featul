@@ -9,7 +9,7 @@ type Props = {
 export default function ImportFromCSV({ onImport }: Props) {
   return (
     <SettingsCard
-      icon={<CsvIcon className="w-5 h-5" />}
+      icon={<CsvIcon className="w-5 h-5 text-sky-700" />}
       title="Import from CSV"
       description="Import your feature requests, boards, and users from a CSV file."
       buttonLabel="Import"

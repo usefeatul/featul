@@ -9,7 +9,7 @@ type Props = {
 export default function ExportToCSV({ onExport }: Props) {
   return (
     <SettingsCard
-      icon={<FileExportIcon className="w-5 h-5" />}
+      icon={<FileExportIcon className="w-5 h-5 text-primary" />}
       title="Export to CSV"
       description="Export all your feedback submissions and their details to a downloadable CSV file."
       buttonLabel="Export"
