@@ -4,7 +4,7 @@ import { getServerSession } from "@featul/auth"
 
 export async function readHasVotedForPost(postId: string): Promise<boolean> {
   const session = await getServerSession()
-  const userId = String((session as any)?.user?.id || "")
+  const userId = session?.user?.id
   if (!userId) return false
   const [v] = await db
     .select({ id: vote.id })

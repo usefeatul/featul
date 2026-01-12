@@ -42,7 +42,7 @@ export function createBoardRouter() {
           .orderBy(asc(board.sortOrder), asc(board.createdAt))
 
         const withCounts = await Promise.all(
-          rows.map(async (b: any) => {
+          rows.map(async (b: typeof board.$inferSelect) => {
             const [row] = await ctx.db
               .select({ count: sql<number>`count(*)` })
               .from(post)
@@ -192,7 +192,7 @@ export function createBoardRouter() {
           .where(and(eq(board.workspaceId, ws.id), eq(board.slug, input.boardSlug)))
           .limit(1)
         if (!b) throw new HTTPException(404, { message: "Board not found" })
-        if (b.isSystem || b.slug === "roadmap" || b.slug === "changelog" || (b as any).systemType != null) {
+        if (b.isSystem || b.slug === "roadmap" || b.slug === "changelog" || b.systemType != null) {
           throw new HTTPException(403, { message: "Cannot delete system board" })
         }
 
@@ -467,7 +467,7 @@ export function createBoardRouter() {
         }
 
         const toAvatar = (seed?: string | null) => `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')}`
-        const withAvatars = postsList.map((p: any) => {
+        const withAvatars = postsList.map((p: typeof postsList[number]) => {
           const isOwner = p.workspaceOwnerId === p.authorId
           
           let avatarSeed = p.authorImage ? null : (p.id || p.slug)
@@ -489,7 +489,14 @@ export function createBoardRouter() {
       .input(byIdSchema)
       .get(async ({ ctx, input, c }) => {
         const userId = ctx.session?.user?.id
-        let p: any
+        let p: typeof post.$inferSelect & {
+          authorName: string | null
+          authorEmail: string | null
+          authorImage: string | null
+          hasVoted: boolean
+          memberRole: string | null
+          workspaceOwnerId: string | null
+        } | undefined
         
         if (userId) {
             const [res] = await ctx.db

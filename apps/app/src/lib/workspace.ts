@@ -13,9 +13,15 @@ import {
   workspaceIntegration,
 } from "@featul/db";
 import { randomAvatarUrl } from "@/utils/avatar";
-import { eq, and, inArray, desc, asc, sql } from "drizzle-orm";
+import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
 import { createHash } from "crypto";
 import type { BrandingConfig } from "../types/branding";
+import type { Member, Invite } from "../types/team";
+import type { DomainInfo } from "../types/domain";
+import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
+import type { FeedbackTag } from "../components/settings/feedback/ManageTags";
+import type { ChangelogTag } from "../components/settings/changelog/ChangelogTags";
+import type { Integration } from "@/hooks/useIntegrations";
 
 export async function findFirstAccessibleWorkspaceSlug(
   userId: string
@@ -70,7 +76,6 @@ export async function getBrandingBySlug(
   let theme: "light" | "dark" | "system" = "system";
   let sidebarPosition: "left" | "right" | undefined;
   let layoutStyle: "compact" | "comfortable" | "spacious" | undefined;
-  let hidePoweredBy: boolean | undefined;
   const [row] = await db
     .select({
       primaryColor: brandingConfig.primaryColor,
@@ -87,17 +92,17 @@ export async function getBrandingBySlug(
     .limit(1);
   if (row?.primaryColor) primary = row.primaryColor;
   else if (row?.wsPrimary) primary = row.wsPrimary;
-  if (row?.theme) theme = row.theme as any;
-  else if (row?.wsTheme) theme = row.wsTheme as any;
+  if (row?.theme) theme = row.theme as "light" | "dark" | "system";
+  else if (row?.wsTheme) theme = row.wsTheme as "light" | "dark" | "system";
   if (row?.sidebarPosition === "left" || row?.sidebarPosition === "right")
-    sidebarPosition = row.sidebarPosition as any;
+    sidebarPosition = row.sidebarPosition;
   if (
     row?.layoutStyle === "compact" ||
     row?.layoutStyle === "comfortable" ||
     row?.layoutStyle === "spacious"
   )
-    layoutStyle = row.layoutStyle as any;
-  hidePoweredBy = Boolean((row as any)?.hidePoweredBy);
+    layoutStyle = row.layoutStyle;
+  const hidePoweredBy = Boolean(row?.hidePoweredBy);
   return { primary, theme, sidebarPosition, layoutStyle, hidePoweredBy };
 }
 
@@ -171,7 +176,7 @@ export async function getWorkspaceDomainInfoBySlug(
     .where(eq(workspaceDomain.workspaceId, ws.id))
     .limit(1);
   if (!d) return { domain: null };
-  return { domain: { status: (d as any).status, host: (d as any).host } };
+  return { domain: { status: d.status, host: d.host } };
 }
 
 export async function getWorkspaceTimezoneBySlug(
@@ -182,7 +187,7 @@ export async function getWorkspaceTimezoneBySlug(
     .from(workspace)
     .where(eq(workspace.slug, slug))
     .limit(1);
-  return (ws as any)?.timezone || null;
+  return ws?.timezone || null;
 }
 
 export async function listUserWorkspaces(
@@ -222,7 +227,7 @@ export async function listUserWorkspaces(
     string,
     { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }
   >();
-  for (const w of owned.concat(memberRows)) map.set(w.id, w as any);
+  for (const w of owned.concat(memberRows)) map.set(w.id, w);
   return Array.from(map.values());
 }
 
@@ -284,7 +289,7 @@ export async function getWorkspacePosts(
     }
   }
 
-  const filters: any[] = [
+  const filters: SQL[] = [
     eq(board.workspaceId, ws.id),
     eq(board.isSystem, false),
   ];
@@ -324,15 +329,15 @@ export async function getWorkspacePosts(
     .innerJoin(board, eq(post.boardId, board.id))
     .leftJoin(user, eq(post.authorId, user.id))
     .leftJoin(workspaceMember, and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, ws.id)))
-    .where(and(...filters) as any)
+    .where(and(...filters))
     .orderBy(order)
     .limit(lim)
     .offset(off);
 
   const withAvatars = rows.map((r) => {
     let avatarSeed = r.id || r.slug
-    if (r.isAnonymous && (r.metadata as any)?.fingerprint) {
-      avatarSeed = createHash("sha256").update((r.metadata as any).fingerprint).digest("hex")
+    if (r.isAnonymous && (r.metadata as Record<string, unknown>)?.fingerprint) {
+      avatarSeed = createHash("sha256").update(String((r.metadata as Record<string, unknown>).fingerprint)).digest("hex")
     }
 
     return {
@@ -399,7 +404,7 @@ export async function getWorkspacePostsCount(
     }
   }
 
-  const filters: any[] = [
+  const filters: SQL[] = [
     eq(board.workspaceId, ws.id),
     eq(board.isSystem, false),
   ];
@@ -418,10 +423,10 @@ export async function getWorkspacePostsCount(
     .select({ count: sql<number>`count(*)` })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
-    .where(and(...filters) as any)
+    .where(and(...filters))
     .limit(1);
 
-  return Number((row as any)?.count || 0);
+  return Number(row?.count || 0);
 }
 export async function getWorkspaceStatusCounts(
   slug: string
@@ -437,7 +442,7 @@ export async function getWorkspaceStatusCounts(
     .groupBy(post.roadmapStatus);
 
   const counts: Record<string, number> = {};
-  for (const r of rows as any[]) {
+  for (const r of rows) {
     const s = normalizeStatus(String(r.status));
     counts[s] = (counts[s] || 0) + Number(r.count);
   }
@@ -483,7 +488,7 @@ export async function getWorkspaceBoards(
     )
     .orderBy(asc(board.name))
     .groupBy(board.id);
-  return (rows as any[]).map((r) => ({
+  return rows.map((r) => ({
     id: r.id,
     name: r.name,
     slug: r.slug,
@@ -508,7 +513,7 @@ export async function getPlannedRoadmapPosts(
     .where(
       and(
         eq(board.workspaceId, ws.id),
-        eq(board.systemType, "roadmap" as any)
+        eq(board.systemType, "roadmap")
       )
     )
     .limit(1);
@@ -558,16 +563,16 @@ export async function getSettingsInitialData(
   initialWorkspaceId?: string;
   initialWorkspaceName?: string;
   initialTimezone?: string;
-  initialTeam?: { members: any[]; invites: any[]; meId: string | null };
+  initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
   initialChangelogVisible?: boolean;
-  initialChangelogTags?: any[];
+  initialChangelogTags?: ChangelogTag[];
   initialHidePoweredBy?: boolean;
   initialBrandingConfig?: BrandingConfig | null;
-  initialDomainInfo?: any;
+  initialDomainInfo?: DomainInfo;
   initialDefaultDomain?: string;
-  initialFeedbackBoards?: any[];
-  initialFeedbackTags?: any[];
-  initialIntegrations?: any[];
+  initialFeedbackBoards?: FeedbackBoardSettings[];
+  initialFeedbackTags?: FeedbackTag[];
+  initialIntegrations?: Integration[];
 }> {
   const [ws] = await db
     .select({
@@ -594,7 +599,7 @@ export async function getSettingsInitialData(
     .where(
       and(
         eq(board.workspaceId, ws.id),
-        eq(board.systemType, "changelog" as any)
+        eq(board.systemType, "changelog")
       )
     )
     .limit(1);
@@ -684,7 +689,7 @@ export async function getSettingsInitialData(
     })
     .from(board)
     .leftJoin(post, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap" as any)))
+    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
     .groupBy(board.id)
     .orderBy(asc(board.sortOrder), asc(board.createdAt));
 
@@ -721,27 +726,39 @@ export async function getSettingsInitialData(
     .where(eq(workspaceIntegration.workspaceId, ws.id));
 
   return {
-    initialPlan: String((ws as any)?.plan || "free"),
+    initialPlan: String(ws?.plan || "free"),
     initialWorkspaceId: ws.id,
-    initialWorkspaceName: String((ws as any)?.name || ""),
-    initialTimezone: String((ws as any)?.timezone || "UTC"),
+    initialWorkspaceName: String(ws?.name || ""),
+    initialTimezone: String(ws?.timezone || "UTC"),
     initialTeam: {
       members: members.map((m) => ({
-        ...m,
-        isOwner:
-          String((ws as any)?.ownerId || "") ===
-          String((m as any)?.userId || ""),
+        userId: m.userId,
+        role: m.role,
+        isOwner: String(ws?.ownerId || "") === String(m?.userId || ""),
+        joinedAt: m.joinedAt ? m.joinedAt.toISOString() : undefined,
+        isActive: m.isActive ?? undefined,
+        name: m.name ?? undefined,
+        email: m.email ?? undefined,
+        image: m.image ?? undefined,
       })),
-      invites,
+      invites: invites.map((inv) => ({
+        id: inv.id,
+        email: inv.email,
+        role: inv.role,
+        invitedBy: inv.invitedBy,
+        expiresAt: inv.expiresAt.toISOString(),
+        acceptedAt: inv.acceptedAt ? inv.acceptedAt.toISOString() : null,
+        createdAt: inv.createdAt.toISOString(),
+      })),
       meId: meId || null,
     },
     initialChangelogVisible: Boolean(b?.isVisible),
-    initialChangelogTags: Array.isArray((b as any)?.changelogTags)
-      ? (b as any)?.changelogTags
+    initialChangelogTags: Array.isArray(b?.changelogTags)
+      ? (b.changelogTags as ChangelogTag[])
       : [],
-    initialHidePoweredBy: Boolean((br as any)?.hidePoweredBy),
+    initialHidePoweredBy: Boolean(br?.hidePoweredBy),
     initialBrandingConfig: {
-      logoUrl: (ws as any)?.logo || undefined,
+      logoUrl: ws?.logo || undefined,
       primaryColor: branding.primary,
       theme: branding.theme,
       layoutStyle: branding.layoutStyle,
@@ -749,8 +766,8 @@ export async function getSettingsInitialData(
       hidePoweredBy: branding.hidePoweredBy,
     },
     initialDomainInfo: d || null,
-    initialDefaultDomain: String((ws as any)?.domain || ""),
-    initialFeedbackBoards: feedbackBoards.map((b: any) => ({
+    initialDefaultDomain: String(ws?.domain || ""),
+    initialFeedbackBoards: feedbackBoards.map((b) => ({
       id: b.id,
       name: b.name,
       slug: b.slug,
@@ -763,13 +780,13 @@ export async function getSettingsInitialData(
       sortOrder: Number(b.sortOrder || 0),
       postCount: Number(b.postCount || 0),
     })),
-    initialFeedbackTags: feedbackTagsRows.map((t: any) => ({
+    initialFeedbackTags: feedbackTagsRows.map((t) => ({
       id: t.id,
       name: t.name,
       slug: t.slug,
       postCount: Number(t.count || 0),
     })),
-    initialIntegrations: integrationsRows.map((i: any) => ({
+    initialIntegrations: integrationsRows.map((i) => ({
       id: i.id,
       type: i.type,
       isActive: Boolean(i.isActive),
@@ -828,7 +845,7 @@ export async function getPostNavigation(
     }
   }
 
-  const filters: any[] = [
+  const filters: SQL[] = [
     eq(board.workspaceId, ws.id),
     eq(board.isSystem, false),
   ];
@@ -850,7 +867,7 @@ export async function getPostNavigation(
     })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
-    .where(and(...filters) as any)
+    .where(and(...filters))
     .orderBy(order);
 
   const idx = rows.findIndex((p) => p.id === currentPostId);

@@ -35,7 +35,8 @@ export const post = pgTable(
     metadata: json('metadata').$type<{
       attachments?: { name: string; url: string; type: string }[];
       integrations?: { github?: string; jira?: string };
-      customFields?: Record<string, any>;
+      customFields?: Record<string, unknown>;
+      fingerprint?: string;
     }>(),
     metaTitle: text('meta_title'),
     metaDescription: text('meta_description'),
