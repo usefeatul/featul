@@ -12,7 +12,6 @@ interface UpvoteButtonProps {
   upvotes: number;
   hasVoted?: boolean;
   className?: string;
-  activeBg?: boolean;
   onChange?: (v: { upvotes: number; hasVoted: boolean }) => void;
 }
 
@@ -21,7 +20,6 @@ export function UpvoteButton({
   upvotes: initialUpvotes,
   hasVoted: initialHasVoted,
   className,
-  activeBg = false,
   onChange,
 }: UpvoteButtonProps) {
   const { upvotes, hasVoted, isPending, handleVote } = useUpvote({

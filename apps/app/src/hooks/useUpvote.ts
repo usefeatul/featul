@@ -1,4 +1,4 @@
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
@@ -29,6 +29,7 @@ export function useUpvote({
   const [isPending, startTransition] = useTransition();
   const [fingerprint, setFingerprint] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const isVotingRef = useRef(false); // Track if we're currently voting
 
   useEffect(() => {
     getBrowserFingerprint().then(setFingerprint);
@@ -48,15 +49,19 @@ export function useUpvote({
     staleTime: 10_000,
   });
 
+  // Sync with query data, but don't overwrite during optimistic updates
   useEffect(() => {
-    if (statusData && statusData.hasVoted !== hasVoted) {
+    if (statusData && !isVotingRef.current) {
       setHasVoted(statusData.hasVoted);
     }
-  }, [statusData, hasVoted]);
+  }, [statusData]);
 
   const handleVote = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Mark that we're voting to prevent query sync from overwriting
+    isVotingRef.current = true;
 
     // Optimistic update
     const previousUpvotes = upvotes;
@@ -86,6 +91,7 @@ export function useUpvote({
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] });
             queryClient.invalidateQueries({ queryKey: ["member-activity"] });
+            queryClient.invalidateQueries({ queryKey: ["post-vote-status", postId] });
           } catch {
             // Silently ignore query invalidation errors - these are non-critical
           }
@@ -107,6 +113,9 @@ export function useUpvote({
         if (onChange)
           onChange({ upvotes: previousUpvotes, hasVoted: previousHasVoted });
         console.error("Failed to vote:", error);
+      } finally {
+        // Clear voting flag after operation completes
+        isVotingRef.current = false;
       }
     });
   };

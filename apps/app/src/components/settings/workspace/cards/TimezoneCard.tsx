@@ -41,7 +41,7 @@ export default function TimezoneCard({ slug, initialTimezone }: Props) {
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 title="Change Timezone"
-                icon={<Timezone className="w-4 h-4" />}
+                icon={<Timezone className="size-5" />}
                 width="default"
             >
                 <TimezonePicker value={timezone} onChange={handleTimezoneChange} now={now} />
