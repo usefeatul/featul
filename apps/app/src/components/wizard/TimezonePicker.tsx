@@ -4,9 +4,10 @@
 import { Button } from "@featul/ui/components/button"
 import { Input } from "@featul/ui/components/input"
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { Globe2, ChevronDown, Search } from "lucide-react"
+import { ChevronDown, Search } from "lucide-react"
 import * as ct from "countries-and-timezones"
 import { formatTimeWithDate } from "../../lib/time"
+import { Timezone } from "@featul/editor/components/icons/timezone"
 
 export default function TimezonePicker({ value, onChange, now }: { value: string; onChange: (v: string) => void; now: Date }) {
   const [open, setOpen] = useState(false)
@@ -54,7 +55,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
       <PopoverTrigger asChild>
         <Button type="button" variant="outline" className="w-full h-10 justify-between bg-muted/50 border-input font-normal hover:bg-muted/70 px-3">
             <div className="flex items-center gap-2 truncate">
-                <Globe2 className="size-4 text-muted-foreground shrink-0" />
+                <Timezone className="size-4 text-muted-foreground shrink-0" />
                 <span className="truncate">
                     {friendlyTZ(value)}
                 </span>

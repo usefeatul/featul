@@ -180,7 +180,7 @@ export default function StepWizardForm({
             <Label htmlFor="slug" className="flex items-center gap-2">
               Workspace URL
               {slugLocked && (
-                <span className="text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground font-normal">
+                <span className="text-xs bg-primary px-1 py-0.5 rounded-sm text-primary-foreground font-normal border border-border ">
                   Reserved
                 </span>
               )}
@@ -248,7 +248,6 @@ export default function StepWizardForm({
           {isCreating ? (
             <>
               <LoaderIcon className="mr-2 size-4 animate-spin" />
-              Creating...
             </>
           ) : step === steps.length - 1 ? (
             "Create"
