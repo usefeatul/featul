@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@featul/ui/components/dropdown-menu";
 import { useWorkspaceSwitcher } from "./useWorkspaceSwitcher";
-import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image"
 import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@featul/ui/icons/chevron";
@@ -27,7 +26,6 @@ export default function WorkspaceSwitcher({
   initialWorkspaces?: Ws[];
 }) {
   const pathname = usePathname();
-  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname || "");
   const {
@@ -74,7 +72,7 @@ export default function WorkspaceSwitcher({
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-46 max-w-[95vw] max-h-[80vh] overflow-auto p-2"
+          className="w-46 max-w-[95vw] p-2"
           side="bottom"
           align="center"
           sideOffset={8}
@@ -82,50 +80,56 @@ export default function WorkspaceSwitcher({
           {all.length === 0 ? (
             <DropdownMenuItem disabled>No workspaces yet</DropdownMenuItem>
           ) : (
-            <div className="flex flex-col gap-1">
-              {all.map((w) => {
-                const logoUrl: string | null = w.logo ?? null;
-                const isCurrent = w.slug === slug;
-                return (
-                  <DropdownMenuItem
-                    key={w.slug}
-                    onSelect={() => onSelectWorkspace(w.slug)}
-                    className={cn(
-                      "flex items-center gap-3 px-2 py-2 rounded-sm cursor-pointer",
-                      isCurrent ? "bg-muted" : "hover:bg-muted"
-                    )}
-                  >
-                    {logoUrl ? (
-                      <div className="relative w-8 h-8 flex-shrink-0 rounded-md bg-muted border ring-1 ring-border overflow-hidden">
-                        <Image
-                          src={logoUrl}
-                          alt={w.name}
-                          fill
-                          sizes="32px"
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-8 h-8 flex-shrink-0 rounded-md bg-muted border ring-1 ring-border" />
-                    )}
-                    <div className="flex flex-col overflow-hidden">
-                      <span className="truncate text-sm font-medium">{w.name}</span>
-                      <span className="text-xs text-muted-foreground capitalize">
-                        {w.plan || "Free"}
-                      </span>
-                    </div>
-                  </DropdownMenuItem>
-                );
-              })}
-              <DropdownMenuItem
-                onSelect={onCreateNew}
-                className="flex items-center gap-3 px-2 py-2 rounded-sm cursor-pointer hover:bg-muted"
-              >
-                <div className="relative w-8 h-8 flex-shrink-0 flex items-center justify-center">
-                  <PlusIcon className="size-5 text-muted-foreground" />
+            <div className="flex flex-col">
+              <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-thin">
+                <div className="flex flex-col gap-1 pb-1">
+                  {all.map((w) => {
+                    const logoUrl: string | null = w.logo ?? null;
+                    const isCurrent = w.slug === slug;
+                    return (
+                      <DropdownMenuItem
+                        key={w.slug}
+                        onSelect={() => onSelectWorkspace(w.slug)}
+                        className={cn(
+                          "flex items-center gap-3 px-2 py-2 rounded-sm cursor-pointer",
+                          isCurrent ? "bg-muted" : "hover:bg-muted"
+                        )}
+                      >
+                        {logoUrl ? (
+                          <div className="relative w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border overflow-hidden">
+                            <Image
+                              src={logoUrl}
+                              alt={w.name}
+                              fill
+                              sizes="32px"
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border" />
+                        )}
+                        <div className="flex flex-col overflow-hidden">
+                          <span className="truncate text-sm font-medium">{w.name}</span>
+                          <span className="text-xs text-muted-foreground capitalize">
+                            {w.plan || "Free"}
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    );
+                  })}
                 </div>
-                <span className="truncate text-sm font-medium">Add workspace</span>
-              </DropdownMenuItem>
+              </div>
+              <div className="flex flex-col gap-1 pt-1 border-t border-border">
+                <DropdownMenuItem
+                  onSelect={onCreateNew}
+                  className="flex items-center gap-3 px-2 py-2 rounded-sm cursor-pointer hover:bg-muted"
+                >
+                  <div className="relative w-8 h-8 shrink-0 flex items-center justify-center">
+                    <PlusIcon className="size-5 text-muted-foreground" />
+                  </div>
+                  <span className="truncate text-sm font-medium">Add workspace</span>
+                </DropdownMenuItem>
+              </div>
             </div>
           )}
         </DropdownMenuContent>
