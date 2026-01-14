@@ -36,6 +36,13 @@
       "when": 1768316524138,
       "tag": "0004_lowly_manta",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1768421961490,
+      "tag": "0005_large_purple_man",
+      "breakpoints": true
     }
   ]
 }

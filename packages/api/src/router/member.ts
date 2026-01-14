@@ -65,7 +65,7 @@ export function createMemberRouter() {
           .from(vote)
           .innerJoin(post, eq(vote.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId)))
+          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId), isNull(vote.commentId)))
           .limit(1)
 
         const [commentVotesCountRow] = await ctx.db
@@ -74,7 +74,7 @@ export function createMemberRouter() {
           .innerJoin(comment, eq(vote.commentId, comment.id))
           .innerJoin(post, eq(comment.postId, post.id))
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId)))
+          .where(and(eq(board.workspaceId, ws.id), eq(vote.userId, input.userId), isNull(vote.postId)))
           .limit(1)
 
         const topPosts = await ctx.db
