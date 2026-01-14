@@ -1,4 +1,4 @@
-export type PricingPlanKey = 'free' | 'pro' | 'enterprise' | 'self_hosted'
+export type PricingPlanKey = 'free' | 'starter' | 'professional' | 'self_hosted'
 
 export type PricingPlan = {
   key: PricingPlanKey
@@ -28,9 +28,9 @@ export const topPlans: PricingPlan[] = [
     ],
   },
   {
-    key: 'pro',
+    key: 'starter',
     name: 'Growth',
-    price: '$19/mo',
+    price: '$20/mo',
     note: 'Save 20% annually',
     ctaLabel: 'Start 14-day trial',
     href: 'https://app.featul.com/auth/sign-up',
@@ -45,19 +45,19 @@ export const topPlans: PricingPlan[] = [
     ],
   },
   {
-    key: 'enterprise',
-    name: 'Scale',
+    key: 'professional',
+    name: 'Professional',
     price: '$49/mo',
     note: 'Save 20% annually',
-    ctaLabel: 'Contact sales',
-    href: '/contact',
+    ctaLabel: 'Start 14-day trial',
+    href: 'https://app.featul.com/auth/sign-up',
     features: [
       'Unlimited feedback & members',
       'SSO (SAML, OAuth)',
       'Advanced roles & permissions',
       'Jira/Linear/GitHub integrations',
       'White‑label & custom domain',
-      '99.9% uptime SLA',
+      'Priority support',
     ],
   },
 ]
