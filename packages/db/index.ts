@@ -29,6 +29,7 @@ export const {
   commentMention,
   commentReport,
   vote,
+  subscription,
   brandingConfig,
   workspaceSlugReservation,
   changelogEntry,

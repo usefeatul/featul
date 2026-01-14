@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, json } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -9,13 +9,6 @@ export const user = pgTable('user', {
   isAdmin: boolean('is_admin').default(false),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
-  plan: text('plan', { enum: ['free', 'starter', 'professional'] })
-    .notNull()
-    .default('free'),
-  stripeId: text('stripe_id').unique(),
-  hadTrial: boolean('had_trial').default(false),
-  goals: json('goals').$type<string[]>().default([]),
-  frequency: integer('frequency'),
 })
 
 export const session = pgTable('session', {

@@ -11,7 +11,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { workspace } from "./workspace";
 
-// Extended branding configuration
 export const brandingConfig = pgTable(
   "branding_config",
   {
@@ -48,24 +47,4 @@ export const brandingConfig = pgTable(
     }) as const
 );
 
-// Predefined color palettes
-// export const colorPalette = pgTable("color_palette", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   name: text("name").notNull(),
-//   description: text("description"),
-//   colors: json("colors")
-//     .$type<{
-//       primary: string;
-//       secondary: string;
-//       accent: string;
-//       background: string;
-//       text: string;
-//     }>()
-//     .notNull(),
-//   isDefault: boolean("is_default").default(false),
-//   isActive: boolean("is_active").default(true),
-//   createdAt: timestamp("created_at").notNull().defaultNow(),
-// });
-
 export type BrandingConfig = typeof brandingConfig.$inferSelect;
-// export type ColorPalette = typeof colorPalette.$inferSelect;
