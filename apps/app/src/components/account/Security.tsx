@@ -3,37 +3,42 @@
 import React from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
 import SectionCard from "@/components/settings/global/SectionCard"
+import SettingsCard from "@/components/global/SettingsCard"
 import { Button } from "@featul/ui/components/button"
 import { useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { ShieldIcon } from "@featul/ui/icons/shield"
+import { KeyIcon } from "@featul/ui/icons/key"
 
-export default function Security({ initialMeSession, initialSessions }: { initialMeSession?: any; initialSessions?: { token: string; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[] | null }) {
+export default function Security({ initialMeSession, initialSessions }: { initialMeSession?: unknown; initialSessions?: { token: string; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[] | null }) {
   const router = useRouter()
   const pathname = usePathname() || "/"
   const queryClient = useQueryClient()
 
-  const { data: meSession } = useQuery({
+  type SessionData = { session?: { token?: string }; token?: string } | null
+
+  const { data: meSession } = useQuery<SessionData>({
     queryKey: ["me-session"],
     queryFn: async () => {
       const s = await authClient.getSession()
-      return (s as any)?.data || null
+      return (s && typeof s === "object" && "data" in s) ? s.data as SessionData : null
     },
     staleTime: 60_000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    initialData: () => (initialMeSession as any) || undefined,
-    placeholderData: (prev) => prev as any,
+    initialData: () => (initialMeSession as SessionData) || undefined,
+    placeholderData: (prev) => prev,
   })
-  const currentToken = String(((meSession as any)?.session?.token || (meSession as any)?.token || ""))
+  const currentToken = String(meSession?.session?.token || meSession?.token || "")
 
   const { data: sessions, isFetching } = useQuery<{ token: string; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[] | null>({
     queryKey: ["sessions"],
     queryFn: async () => {
       const list = await authClient.listSessions()
-      const arr = Array.isArray(list) ? list : ((list as any)?.data || [])
+      const arr = Array.isArray(list) ? list : ((list && typeof list === "object" && "data" in list) ? list.data as typeof sessions : [])
       return arr
     },
     staleTime: 60_000,
@@ -41,7 +46,7 @@ export default function Security({ initialMeSession, initialSessions }: { initia
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     initialData: () => (Array.isArray(initialSessions) ? initialSessions : null),
-    placeholderData: (prev) => prev as any,
+    placeholderData: (prev) => prev,
   })
 
   const [revoking, setRevoking] = React.useState<string | null>(null)
@@ -52,55 +57,66 @@ export default function Security({ initialMeSession, initialSessions }: { initia
   }, [router, pathname])
 
   const onSignOutAll = React.useCallback(async () => {
+    const toastId = toast.loading("Signing out...")
     try {
       await authClient.revokeOtherSessions()
-      toast.success("Signed out of other devices")
+      toast.success("Signed out of other devices", { id: toastId })
       queryClient.invalidateQueries({ queryKey: ["sessions"] })
     } catch {
-      toast.error("Failed to sign out other devices")
+      toast.error("Failed to sign out other devices", { id: toastId })
     }
   }, [queryClient])
 
   const revokeOne = React.useCallback(async (token: string) => {
     if (revoking) return
     setRevoking(token)
+    const toastId = toast.loading("Removing session...")
     try {
       if (token && token === currentToken) {
         await authClient.signOut()
-        toast.success("Signed out")
+        toast.success("Signed out", { id: toastId })
         router.replace(`/auth/sign-in?redirect=${encodeURIComponent(pathname)}`)
       } else {
         await authClient.revokeSession({ token })
-        toast.success("Session removed")
+        toast.success("Session removed", { id: toastId })
       }
       queryClient.invalidateQueries({ queryKey: ["sessions"] })
     } catch {
-      toast.error("Failed to remove session")
+      toast.error("Failed to remove session", { id: toastId })
     } finally {
       setRevoking(null)
     }
-  }, [currentToken, revoking, queryClient])
+  }, [currentToken, revoking, queryClient, router, pathname])
 
   return (
-    <SectionCard title="Security" description="Manage password and sessions">
-      <div className="divide-y mt-2">
-        <div className="flex items-center justify-between p-4">
-          <div className="text-sm">Password</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-            <Button onClick={onChangePassword}>Change password</Button>
-          </div>
+    <SectionCard title="Security" description="Manage your password and active sessions">
+      <div className="space-y-4">
+        {/* Password and Sessions cards in 2-column grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <SettingsCard
+            icon={<KeyIcon className="size-5 text-primary" />}
+            title="Password"
+            description="Change your account password for security."
+            buttonLabel="Change password"
+            onAction={onChangePassword}
+          />
+          <SettingsCard
+            icon={<ShieldIcon className="size-5 text-primary" opacity={1} />}
+            title="Sessions"
+            description="Sign out of all other devices and browsers."
+            buttonLabel="Sign out all"
+            buttonVariant="destructive"
+            onAction={onSignOutAll}
+          />
         </div>
-        <div className="flex items-center justify-between p-4">
-          <div className="text-sm">Sessions</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-            <Button variant="secondary" onClick={onSignOutAll}>Sign out of other devices</Button>
-          </div>
-        </div>
-        <div className="p-4">
+
+        {/* Sessions table */}
+        <div className="bg-card dark:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg p-4">
+          <div className="text-sm font-medium mb-3">Active Sessions</div>
           {isFetching ? (
             <div className="text-sm text-accent">Loading sessions…</div>
           ) : Array.isArray(sessions) && sessions.length > 0 ? (
-            <div className="rounded-md  border overflow-hidden">
+            <div className="rounded-md border overflow-hidden">
               <Table className="table-fixed">
                 <TableHeader>
                   <TableRow>
@@ -121,7 +137,7 @@ export default function Security({ initialMeSession, initialSessions }: { initia
                         <TableCell className="px-3">
                           <div className="flex items-center gap-2 min-w-0">
                             <span className="truncate block">{ua || "Unknown"}</span>
-                            {isCurrent ? <span className="ml-2 text-xs rounded-md  bg-muted px-2 py-0.5">This device</span> : null}
+                            {isCurrent ? <span className="ml-2 text-xs rounded-md bg-muted px-2 py-0.5">This device</span> : null}
                           </div>
                         </TableCell>
                         <TableCell className="px-3 text-center">{ip}</TableCell>
@@ -151,3 +167,4 @@ export default function Security({ initialMeSession, initialSessions }: { initia
     </SectionCard>
   )
 }
+

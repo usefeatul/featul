@@ -7,6 +7,7 @@ type Props = {
   title: string;
   description: React.ReactNode;
   buttonLabel?: string;
+  buttonVariant?: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link" | "card" | "plain";
   onAction?: () => void;
   href?: string;
   disabled?: boolean;
@@ -20,6 +21,7 @@ export default function SettingsCard({
   title,
   description,
   buttonLabel = "Import",
+  buttonVariant = "card",
   onAction,
   href,
   disabled = false,
@@ -67,7 +69,7 @@ export default function SettingsCard({
                 </a>
               ) : (
                 <Button
-                  variant="card"
+                  variant={buttonVariant}
                   onClick={onAction}
                   disabled={disabled}
                 >
