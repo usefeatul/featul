@@ -43,3 +43,29 @@ export async function listServerSessions(): Promise<
     return [];
   }
 }
+
+export async function listServerAccounts(): Promise<
+  { id: string; accountId: string; providerId: string }[]
+> {
+  try {
+    const s = await getServerSession();
+    const userId = String((s as any)?.user?.id || "").trim();
+    if (!userId) return [];
+    const { account } = await import("@featul/db");
+    const rows = await db
+      .select({
+        id: account.id,
+        accountId: account.accountId,
+        providerId: account.providerId,
+      })
+      .from(account)
+      .where(eq(account.userId, userId));
+    return rows.filter((r) => r.providerId !== "credential").map((r) => ({
+      id: String(r.id),
+      accountId: String(r.accountId),
+      providerId: String(r.providerId),
+    }));
+  } catch {
+    return [];
+  }
+}

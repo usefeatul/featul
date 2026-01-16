@@ -2,8 +2,8 @@
 
 import React from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
-import { LoadingButton } from "@/components/global/loading-button"
 import SectionCard from "@/components/settings/global/SectionCard"
+import SettingsCard from "@/components/global/SettingsCard"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getInitials, getDisplayUser } from "@/utils/user-utils"
 import { Input } from "@featul/ui/components/input"
@@ -12,8 +12,11 @@ import { authClient } from "@featul/auth/client"
 import { client } from "@featul/api/client"
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from "@/hooks/usePostImageUpload"
 import { Button } from "@featul/ui/components/button"
+import { AvatarIcon } from "@featul/ui/icons/avatar"
+import { UserFocusIcon } from "@featul/ui/icons/userfocus"
+import OAuthConnections from "./OAuthConnections"
 
-export default function Profile({ initialUser }: { initialUser?: { name?: string; email?: string; image?: string | null } | null }) {
+export default function Profile({ initialUser, initialAccounts }: { initialUser?: { name?: string; email?: string; image?: string | null } | null; initialAccounts?: { id: string; accountId: string; providerId: string }[] }) {
   const queryClient = useQueryClient()
   const [name, setName] = React.useState(() => String(initialUser?.name || "").trim())
   const [image, setImage] = React.useState(() => String(initialUser?.image || ""))
@@ -24,11 +27,12 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
     queryKey: ["me"],
     queryFn: async () => {
       const s = await authClient.getSession()
-      const u = (s as any)?.data?.user || null
-      return { user: u }
+      const sessionData = s && typeof s === "object" && "data" in s ? s.data : s
+      const u = sessionData && typeof sessionData === "object" && "user" in sessionData ? sessionData.user : null
+      return { user: u as { name?: string; email?: string; image?: string | null } | null }
     },
-    initialData: () => ({ user: (initialUser as any) || null }),
-    placeholderData: (prev) => prev as any,
+    initialData: () => ({ user: initialUser || null }),
+    placeholderData: (prev) => prev,
     staleTime: 300_000,
     gcTime: 900_000,
     refetchOnMount: false,
@@ -43,7 +47,9 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
     if (user) {
       setName((user?.name || "").trim())
       setImage(String(user?.image || ""))
-      try { queryClient.setQueryData(["me"], { user }) } catch {}
+      try { queryClient.setQueryData(["me"], { user }) } catch (e: unknown) {
+        console.error(e)
+      }
     }
   }, [user, queryClient])
 
@@ -75,9 +81,9 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
         fileName: file.name,
         contentType: file.type,
       })
-      const data = await res.json()
-      const uploadUrl = (data as any)?.uploadUrl as string
-      const publicUrl = (data as any)?.publicUrl as string
+      const jsonData = await res.json() as { uploadUrl?: string; publicUrl?: string }
+      const uploadUrl = jsonData.uploadUrl
+      const publicUrl = jsonData.publicUrl
       if (!uploadUrl || !publicUrl) {
         throw new Error("Upload failed")
       }
@@ -95,17 +101,19 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
       if (error) {
         throw new Error(error.message || "Failed to save avatar")
       }
-      const updatedUser = (updated as any)?.user || {
-        ...(user || {}),
-        image: publicUrl,
-      }
+      const updatedUser = (updated && typeof updated === "object" && "user" in updated)
+        ? updated.user as { name?: string; email?: string; image?: string | null }
+        : { ...(user || {}), image: publicUrl }
       setImage(publicUrl)
       try {
         queryClient.setQueryData(["me"], { user: updatedUser })
-      } catch {}
+      } catch (e: unknown) {
+        console.error(e)
+      }
       toast.success("Avatar updated", { id: toastId })
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to upload avatar", { id: toastId })
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to upload avatar"
+      toast.error(msg, { id: toastId })
       if (user?.image) {
         setImage(String(user.image))
       }
@@ -147,21 +155,27 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
       return
     }
     setSaving(true)
+    const toastId = toast.loading("Saving...")
     try {
-      const { error, data } = await authClient.updateUser({ name: nextName || undefined, image: nextImage })
+      const { error, data: saveData } = await authClient.updateUser({ name: nextName || undefined, image: nextImage })
       if (error) {
-        toast.error(error.message || "Failed to save")
+        toast.error(error.message || "Failed to save", { id: toastId })
         return
       }
-      const updatedUser = (data as any)?.user || {
-        ...(user || {}),
-        name: nextName || user?.name,
-        image: typeof nextImage === "string" ? nextImage : user?.image,
-      }
-      try { queryClient.setQueryData(["me"], { user: updatedUser }) } catch {}
-      toast.success("Saved")
-    } catch {
-      toast.error("Failed to save")
+      const updatedUser = (saveData && typeof saveData === "object" && "user" in saveData)
+        ? saveData.user as { name?: string; email?: string; image?: string | null }
+        : {
+          ...(user || {}),
+          name: nextName || user?.name,
+          image: typeof nextImage === "string" ? nextImage : user?.image,
+        }
+      try { queryClient.setQueryData(["me"], { user: updatedUser }) } catch (e: unknown) {
+        console.error(e)
+      } 
+      toast.success("Saved", { id: toastId })
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save"
+      toast.error(msg, { id: toastId })
     } finally {
       setSaving(false)
     }
@@ -169,11 +183,17 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
 
 
   return (
-    <SectionCard title="Profile" description="Update your name and avatar">
-      <div className="divide-y mt-2">
-        <div className="flex items-center justify-between p-4">
-          <div className="text-sm">Avatar</div>
-          <div className="w-full max-w-md flex items-center justify-end">
+    <SectionCard
+      title="Profile"
+      description="Manage your account settings and connected services"
+    >
+      <div className="grid grid-cols-2 gap-4">
+        <SettingsCard
+          title="Avatar"
+          description="This is your public display avatar."
+          icon={<AvatarIcon className="size-5 text-primary" />}
+        >
+          <div className="flex items-center gap-2">
             <Button
               type="button"
               onClick={pickImage}
@@ -182,13 +202,16 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
               aria-label="Change avatar"
               disabled={uploadingImage}
               variant="plain"
-              size="icon-sm"
+              size="sm"
               className="relative bg-muted border ring-1 ring-border overflow-hidden"
             >
-              <Avatar className="size-8">
-                {image.trim() || d.image ? <AvatarImage src={image.trim() || d.image || ""} alt={d.name} /> : null}
-                <AvatarFallback className="text-lg">{initials}</AvatarFallback>
-              </Avatar>
+              <span className="flex items-center gap-2">
+                <Avatar className="size-5">
+                  {image.trim() || d.image ? <AvatarImage src={image.trim() || d.image || ""} alt={d.name} /> : null}
+                  <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+                </Avatar>
+                <span>Change Avatar</span>
+              </span>
             </Button>
             <input
               ref={fileInputRef}
@@ -198,22 +221,27 @@ export default function Profile({ initialUser }: { initialUser?: { name?: string
               onChange={onAvatarInputChange}
             />
           </div>
-        </div>
-        <div className="flex items-center justify-between p-4">
-          <div className="text-sm">Name</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-            <Input value={name} onChange={(e) => setName(e.target.value)} className="h-9 w-[220px] text-right" placeholder="Your name" />
+        </SettingsCard>
+
+        <SettingsCard
+          title="Account Details"
+          description="Your name and email address."
+          icon={<UserFocusIcon className="size-5 text-primary" />}
+        >
+          <div className="flex items-center gap-3">
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={() => { if (name.trim() !== (user?.name || "").trim()) void onSave() }}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.currentTarget.blur() } }}
+              className="h-8 w-[140px]"
+              placeholder="Your name"
+            />
+            <Input value={d.email || ""} disabled className="h-8 w-[140px]" />
           </div>
-        </div>
-        <div className="flex items-center justify-between p-4">
-          <div className="text-sm">Email</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-            <Input  value={d.email || ""} disabled className="h-9 w-[220px] text-right" />
-          </div>
-        </div>
-      </div>
-      <div className="px-4 pb-4 flex justify-end">
-        <LoadingButton onClick={onSave} loading={saving}>Save</LoadingButton>
+        </SettingsCard>
+
+        <OAuthConnections initialAccounts={initialAccounts} />
       </div>
     </SectionCard>
   )
