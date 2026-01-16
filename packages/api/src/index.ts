@@ -12,6 +12,7 @@ const routerImports = {
   comment: () => import("./router/comment").then((m) => m.createCommentRouter()),
   member: () => import("./router/member").then((m) => m.createMemberRouter()),
   integration: () => import("./router/integration").then((m) => m.createIntegrationRouter()),
+  account: () => import("./router/account").then((m) => m.createAccountRouter()),
 }
 
 const api = j
@@ -19,7 +20,7 @@ const api = j
   .basePath("/api")
   .use(j.defaults.cors)
   .onError(j.defaults.errorHandler)
-  
+
 const appRouter = j.mergeRouters(api, {
   workspace: routerImports.workspace,
   board: routerImports.board,
@@ -32,6 +33,7 @@ const appRouter = j.mergeRouters(api, {
   comment: routerImports.comment,
   member: routerImports.member,
   integration: routerImports.integration,
+  account: routerImports.account,
 })
 
 export type AppRouter = typeof appRouter
