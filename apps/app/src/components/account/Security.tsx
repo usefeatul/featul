@@ -12,7 +12,16 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { ShieldIcon } from "@featul/ui/icons/shield"
 import { KeyIcon } from "@featul/ui/icons/key"
 
-export default function Security({ initialMeSession, initialSessions }: { initialMeSession?: unknown; initialSessions?: { token: string; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[] | null }) {
+
+type SessionItem = {
+  token: string
+  userAgent?: string | null
+  ipAddress?: string | null
+  createdAt?: string | Date
+  expiresAt?: string | Date
+}
+
+export default function Security({ initialMeSession, initialSessions }: { initialMeSession?: unknown; initialSessions?: SessionItem[] | null }) {
   const router = useRouter()
   const pathname = usePathname() || "/"
   const queryClient = useQueryClient()
@@ -34,18 +43,18 @@ export default function Security({ initialMeSession, initialSessions }: { initia
   })
   const currentToken = String(meSession?.session?.token || meSession?.token || "")
 
-  const { data: sessions, isFetching } = useQuery<{ token: string; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[] | null>({
+  const { data: sessions, isFetching } = useQuery<SessionItem[] | null>({
     queryKey: ["sessions"],
     queryFn: async () => {
       const list = await authClient.listSessions()
-      const arr = Array.isArray(list) ? list : ((list && typeof list === "object" && "data" in list) ? list.data as typeof sessions : [])
+      const arr = Array.isArray(list) ? list : ((list && typeof list === "object" && "data" in list) ? (list as unknown as { data: SessionItem[] }).data : [])
       return arr
     },
     staleTime: 60_000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    initialData: () => (Array.isArray(initialSessions) ? initialSessions : null),
+    initialData: () => (initialSessions || null),
     placeholderData: (prev) => prev,
   })
 
