@@ -89,7 +89,7 @@ export default function SignUp() {
     <section className="flex min-h-screen bg-background px-4 sm:px-6 py-8 sm:py-12">
       <form
         noValidate
-        className="bg-background m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border border-border dark:[--color-muted:var(--color-zinc-900)] ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
+        className="bg-background m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border border-border shadow-sm shadow-zinc-950/3 dark:[--color-muted:var(--color-zinc-900)] ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
@@ -192,7 +192,7 @@ export default function SignUp() {
         <div className="p-3">
           <p className="text-accent-foreground text-center text-sm sm:text-base">
             Already have an account?
-            <Button asChild variant="link" className="px-2">
+            <Button asChild variant="link" className="px-2 text-primary">
               <Link href={rawRedirect ? `/auth/sign-in?redirect=${encodeURIComponent(rawRedirect)}` : "/auth/sign-in"}>Sign in</Link>
             </Button>
           </p>

@@ -23,7 +23,7 @@ const buttonVariants = cva(
         ghost: cn(
           "hover:bg-muted hover:text-accent-foreground ring-border/50 hover:ring-accent/60 dark:hover:bg-muted/50 dark:bg-black/40"
         ),
-        link: "text-primary underline-offset-4 hover:underline bg-transparent",
+        link: "text-primary dark:text-primary underline-offset-4 hover:underline bg-transparent",
         quiet: cn("bg-primary text-primary-foreground hover:bg-primary/70"),
         nav: cn(
           "border bg-card text-foreground border-border hover:bg-muted/30 hover:text-accent-foreground hover:border-accent/20 dark:bg-black/30 dark:hover:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
