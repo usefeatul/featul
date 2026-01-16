@@ -36,15 +36,15 @@ export function AlertDialogShell({
     width === "xxl"
       ? { width: "min(92vw, 1120px)", maxWidth: "none" as const }
       : width === "xl"
-      ? { width: "min(92vw, 780px)", maxWidth: "none" as const }
-      : width === "widest"
-      ? { width: "min(92vw, 680px)", maxWidth: "none" as const }
-      : width === "wide"
-      ? { width: "min(92vw, 480px)", maxWidth: "none" as const }
-      : { width: "min(92vw, 380px)", maxWidth: "none" as const }
+        ? { width: "min(92vw, 780px)", maxWidth: "none" as const }
+        : width === "widest"
+          ? { width: "min(92vw, 680px)", maxWidth: "none" as const }
+          : width === "wide"
+            ? { width: "min(92vw, 480px)", maxWidth: "none" as const }
+            : { width: "min(92vw, 380px)", maxWidth: "none" as const }
 
   const topValue = typeof offsetY === "number" ? `${offsetY}%` : offsetY
-  const positionStyle = { top: topValue, ["--tw-translate-y" as any]: `-${topValue}` }
+  const positionStyle: React.CSSProperties = { top: topValue, ["--tw-translate-y" as PropertyKey]: `-${topValue}` }
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -57,7 +57,7 @@ export function AlertDialogShell({
         </AlertDialogHeader>
         <div className="bg-card rounded-lg p-2 dark:bg-black/60 border border-border">
           {description ? (
-            <AlertDialogDescription className="text-sm mb-2">
+            <AlertDialogDescription className="text-sm text-accent mb-2">
               {description}
             </AlertDialogDescription>
           ) : null}

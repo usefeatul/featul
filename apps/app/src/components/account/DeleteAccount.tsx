@@ -61,7 +61,7 @@ export default function DeleteAccount() {
             >
                 <div className="mb-2">
                     <p className="text-sm text-muted-foreground mb-2">
-                        Type <span className="font-mono font-semibold text-foreground">DELETE</span> to confirm:
+                        Type <span className="font-mono font-semibold text-destructive">DELETE</span> to confirm:
                     </p>
                     <Input
                         value={deleteConfirmation}
