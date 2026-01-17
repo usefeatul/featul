@@ -19,7 +19,6 @@ import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { CreatePostModal } from "../post/CreatePostModal";
-import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
 const secondaryNav: NavItem[] = buildBottomNav();
 export default function Sidebar({
@@ -70,16 +69,11 @@ export default function Sidebar({
   );
   const [hotkeysActive, setHotkeysActive] = useState(false);
   const [createPostOpen, setCreatePostOpen] = useState(false);
-  const isMobile = useIsMobile(1024);
   useSidebarHotkeys(hotkeysActive, middleNav, router);
 
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
-
-  if (isMobile) {
-    return null;
-  }
 
   return (
     <aside
@@ -89,8 +83,8 @@ export default function Sidebar({
       onFocus={() => setHotkeysActive(true)}
       onBlur={() => setHotkeysActive(false)}
       className={cn(
-        "w-full md:w-60 flex-col bg-background",
-        "md:sticky md:top-2 md:h-[calc(100vh-1rem)] md:overflow-hidden flex",
+        "hidden lg:flex w-full lg:w-60 flex-col bg-background",
+        "lg:sticky lg:top-2 lg:h-[calc(100vh-1rem)] lg:overflow-hidden",
         className
       )}
     >

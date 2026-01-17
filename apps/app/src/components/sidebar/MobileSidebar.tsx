@@ -8,7 +8,6 @@ import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { buildBottomNav, getSlugFromPath } from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
-import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
 export default function MobileSidebar({
   className = "",
@@ -50,14 +49,9 @@ export default function MobileSidebar({
   const slug = getSlugFromPath(pathname);
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(slug, initialCounts, initialDomainInfo || null);
   const secondaryNav = buildBottomNav();
-  const isMobile = useIsMobile(1024);
-
-  if (!isMobile) {
-    return null;
-  }
 
   return (
-    <div className={cn(className)}>
+    <div className={cn("lg:hidden", className)}>
       <Drawer direction="right">
         <MobileBottomBar items={middleNav} />
         <MobileDrawerContent
