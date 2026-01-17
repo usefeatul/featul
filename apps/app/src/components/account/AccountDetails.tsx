@@ -117,7 +117,7 @@ export default function AccountDetails({ initialUser }: AccountDetailsProps) {
                     className="h-8 w-[100px] placeholder:text-accent"
                     placeholder="Your name"
                 />
-                <Input value={d.email || ""} disabled className="h-8 w-[170px] text-center" />
+                <Input value={d.email || ""} disabled className="hidden lg:block h-8 w-[170px] text-center" />
             </div>
         </SettingsCard>
     )
