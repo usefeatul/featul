@@ -10,7 +10,7 @@ type StatusButtonProps = {
   className?: string
 }
 
-export function StatusButton({ href = "https://status.featul.com", label = "status", className }: StatusButtonProps) {
+export function StatusButton({ href = "https://featul.openstatus.dev", label = "status", className }: StatusButtonProps) {
   return (
     <Link
       href={href}
