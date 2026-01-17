@@ -138,7 +138,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                         <div className="space-y-6">
                             {sections.howItWorks.map((step, i) => (
                                 <div key={i} className="flex gap-4">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                    <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                                         {i + 1}
                                     </div>
                                     <div>

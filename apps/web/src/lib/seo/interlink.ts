@@ -121,7 +121,7 @@ function addIntegrationRelated(slug: string, links: RelatedLink[]) {
     if (!integration) return;
 
     // Add related definitions
-    for (const defSlug of integration.relatedDefinitions.slice(0, 2)) {
+    for (const defSlug of integration.relatedDefinitions.slice(0, 1)) {
         const def = getDefinitionBySlug(defSlug);
         if (def) {
             links.push({
@@ -135,12 +135,32 @@ function addIntegrationRelated(slug: string, links: RelatedLink[]) {
     // Add other integrations in same category
     const sameCategory = INTEGRATIONS.filter(
         (i) => i.category === integration.category && i.slug !== slug
-    ).slice(0, 2);
+    ).slice(0, 1);
     for (const other of sameCategory) {
         links.push({
             href: `/integrations/${other.slug}`,
             label: `${other.name} Integration`,
             type: "integration",
+        });
+    }
+
+    // Add relevant use cases (cross-hub connection)
+    const useCases = USE_CASES.slice(0, 1);
+    for (const uc of useCases) {
+        links.push({
+            href: `/use-cases/${uc.slug}`,
+            label: uc.title,
+            type: "use-case",
+        });
+    }
+
+    // Add a top competitor (cross-hub connection)
+    const topCompetitor = COMPETITORS[0];
+    if (topCompetitor) {
+        links.push({
+            href: `/alternatives/${topCompetitor.slug}`,
+            label: `Featul vs ${topCompetitor.name}`,
+            type: "competitor",
         });
     }
 
@@ -157,7 +177,7 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
     if (!useCase) return;
 
     // Add related definitions
-    for (const defSlug of useCase.relatedDefinitions.slice(0, 2)) {
+    for (const defSlug of useCase.relatedDefinitions.slice(0, 1)) {
         const def = getDefinitionBySlug(defSlug);
         if (def) {
             links.push({
@@ -168,12 +188,32 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
         }
     }
 
-    // Add related tools
-    for (const toolSlug of useCase.relatedTools.slice(0, 2)) {
+    // Add related tools (limit to 1)
+    for (const toolSlug of useCase.relatedTools.slice(0, 1)) {
         links.push({
             href: `/tools`,
             label: `${toolSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`,
             type: "tool",
+        });
+    }
+
+    // Add integrations (cross-hub connection)
+    const integrations = INTEGRATIONS.slice(0, 1);
+    for (const int of integrations) {
+        links.push({
+            href: `/integrations/${int.slug}`,
+            label: `${int.name} Integration`,
+            type: "integration",
+        });
+    }
+
+    // Add a top competitor (cross-hub connection)
+    const topCompetitor = COMPETITORS[0];
+    if (topCompetitor) {
+        links.push({
+            href: `/alternatives/${topCompetitor.slug}`,
+            label: `Featul vs ${topCompetitor.name}`,
+            type: "competitor",
         });
     }
 

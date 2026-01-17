@@ -61,15 +61,34 @@ export function generateComparisonPage(slug: string): ComparisonPageData | null 
     const competitor = COMPETITORS.find((c) => c.slug === slug);
     if (!competitor) return null;
 
+    // Build unique description using competitor-specific data
+    const primaryAdvantage = competitor.victoryPoints[0] || "privacy-first approach";
+    const uniqueDescription = `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul offers ${primaryAdvantage.toLowerCase()}. Compare features, pricing, and privacy to find the right fit.`;
+
+    // Unique intro based on competitor category
+    const introVariants: Record<string, string> = {
+        "saas": `${competitor.name} has been a popular choice for SaaS teams. But if you value EU hosting and GDPR compliance, Featul might be the better fit.`,
+        "enterprise": `Enterprise teams often evaluate ${competitor.name}. Featul offers a simpler, privacy-first alternative without the complexity.`,
+        "startup": `Startups love ${competitor.name} for its simplicity. Featul matches that while adding EU hosting and unified changelog.`,
+    };
+
+    // Pick intro variant based on competitor name pattern
+    let introKey = "saas";
+    if (["productboard", "aha", "pendo", "uservoice", "salesforce"].includes(slug)) {
+        introKey = "enterprise";
+    } else if (["userjot", "nolt", "upvoty", "feedbear", "convas"].includes(slug)) {
+        introKey = "startup";
+    }
+
     const meta: GeneratedPageMeta = {
         title: `Featul vs ${competitor.name}: A Detailed Comparison`,
-        description: `Compare Featul and ${competitor.name} for product feedback management. See features, pricing, privacy, and which tool is right for your team.`,
+        description: uniqueDescription,
         h1: `${competitor.name} Alternative: Why Teams Choose Featul`,
         canonical: `/alternatives/${slug}`,
     };
 
     const sections = {
-        intro: `Looking for an alternative to ${competitor.name}? Featul offers a privacy-first approach to product feedback with EU hosting by default. Here's how we compare.`,
+        intro: introVariants[introKey] || `Looking for an alternative to ${competitor.name}? Featul offers a privacy-first approach to product feedback with EU hosting by default. Here's how we compare.`,
         victoryPoints: competitor.victoryPoints.map((point, i) => ({
             title: `Advantage ${i + 1}`,
             description: point,
