@@ -14,11 +14,13 @@ export default function SettingsTabsHeader({ slug, selected }: { slug: string; s
 
   return (
     <Tabs value={selected} onValueChange={onValueChange} className="space-y-4">
-      <TabsList className="w-full">
-        {SECTIONS.map((item) => (
-          <TabsTrigger key={item.value} value={item.value} className=" px-3 text-accent">{item.label}</TabsTrigger>
-        ))}
-      </TabsList>
+      <div className="overflow-x-auto -mx-4 px-4 scrollbar-hide">
+        <TabsList className="w-max flex-nowrap">
+          {SECTIONS.map((item) => (
+            <TabsTrigger key={item.value} value={item.value} className="px-3 text-accent whitespace-nowrap">{item.label}</TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
     </Tabs>
   )
 }
