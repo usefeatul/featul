@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
     images: [
       {
-        url: "/logo.png",
+        url: "/og.png",
         width: 1200,
         height: 630,
         alt: "featul",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: "featul",
     description:
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
-    images: ["/logo.png"],
+    images: ["/og.png"],
   },
   robots: {
     index: true,

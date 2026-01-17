@@ -101,7 +101,7 @@ type BuildBlogPostingParams = {
 
 export function buildBlogPostingSchema({ siteUrl, slug, post }: BuildBlogPostingParams) {
   const page = `${siteUrl}/blog/${slug}`;
-  const image = post.coverImage ? (post.coverImage.startsWith("http") ? post.coverImage : `${siteUrl}${post.coverImage}`) : `${siteUrl}/logo.png`;
+  const image = post.coverImage ? (post.coverImage.startsWith("http") ? post.coverImage : `${siteUrl}${post.coverImage}`) : `${siteUrl}/og.png`;
   const authors = (post.authors && post.authors.length > 0 ? post.authors : post.author ? [post.author] : [])
     .filter(Boolean)
     .map((a) => ({ "@type": "Person", name: a!.name }));
@@ -119,7 +119,7 @@ export function buildBlogPostingSchema({ siteUrl, slug, post }: BuildBlogPosting
       name: "featul",
       logo: {
         "@type": "ImageObject",
-        url: `${siteUrl}/logo.png`,
+        url: `${siteUrl}/og.png`,
       },
     },
   };
@@ -179,6 +179,6 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
     applicationCategory: "Product feedback, public roadmap, changelog",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    image: `${siteUrl}/logo.png`,
+    image: `${siteUrl}/og.png`,
   };
 }

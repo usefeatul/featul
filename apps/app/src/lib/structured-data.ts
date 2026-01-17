@@ -7,6 +7,6 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
     applicationCategory: "Project planning and delivery",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    image: `${siteUrl}/logo.png`,
+    image: `${siteUrl}/og.png`,
   }
 }

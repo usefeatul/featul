@@ -15,7 +15,7 @@ export const DEFAULT_KEYWORDS = [
   "SaaS",
 ]
 
-export const DEFAULT_OG_IMAGE = "/logo.png"
+export const DEFAULT_OG_IMAGE = "/og.png"
 
 export function getOrganizationJsonLd() {
   return {
@@ -23,7 +23,7 @@ export function getOrganizationJsonLd() {
     '@type': 'Organization',
     name: 'featul',
     url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/og.png`,
     sameAs: [],
     contactPoint: [
       {
