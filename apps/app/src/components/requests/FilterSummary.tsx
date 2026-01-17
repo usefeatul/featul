@@ -46,7 +46,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
     queryFn: async () => {
       const res = await client.board.byWorkspaceSlug.$get({ slug })
       const data = await res.json()
-      const boardsArr = (data?.boards || []).filter((b: any) => b?.slug !== "roadmap" && b?.slug !== "changelog")
+      const boardsArr = (data?.boards || []).filter((b: { slug: string; name?: string | null }) => b?.slug !== "roadmap" && b?.slug !== "changelog")
       const map: Record<string, string> = {}
       for (const b of boardsArr) map[String(b.slug)] = String(b.name || b.slug)
       return map
