@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@featul/ui/lib/utils"; 
+import { cn } from "@featul/ui/lib/utils";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -182,7 +182,6 @@ export default function FeaturesSection() {
                 <div className="flex aspect-video items-center justify-center">
                   <div className="flex items-center gap-2 rounded-md  border-foreground/10 border p-2">
                     <ToggleGroup
-                      type="multiple"
                       size="sm"
                       className="gap-0.5 *:rounded-md"
                     >
@@ -256,7 +255,7 @@ export const ScheduleIllustation = ({
           <span className="text-sm font-medium">Schedule</span>
         </Button>
         <span className="bg-border block h-4 w-px"></span>
-        <ToggleGroup type="multiple" size="sm" className="gap-0.5 *:rounded-md">
+        <ToggleGroup size="sm" className="gap-0.5 *:rounded-md">
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
             <Bold className="size-4" />
           </ToggleGroupItem>
@@ -303,7 +302,7 @@ export const CodeIllustration = ({ className }: { className?: string }) => {
               key={index}
               className={cn(
                 index == 2 &&
-                  "text-foreground before:absolute before:-translate-x-[110%] before:text-orange-500 before:content-['Import']"
+                "text-foreground before:absolute before:-translate-x-[110%] before:text-orange-500 before:content-['Import']"
               )}
             >
               {item}

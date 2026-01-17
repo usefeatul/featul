@@ -41,7 +41,7 @@ export default function Create() {
               <Card className="relative p-4 sm:p-6">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
-                  <ChartIcon className="size-4 text-primary opacity-100"   opacity={1} aria-hidden />
+                  <ChartIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
                   <h3 className="text-foreground text-sm sm:text-base font-semibold">Marketing Campaigns</h3>
                   <CardAccent>Plan, track, and optimize campaigns.</CardAccent>
                 </div>
@@ -58,7 +58,7 @@ export default function Create() {
               <Card className="relative p-4 sm:p-6">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
-                  <UsersIcon className="size-4 text-primary opacity-100"  opacity={1} aria-hidden />
+                  <UsersIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
                   <h3 className="text-foreground text-sm sm:text-base font-semibold">AI Meeting Scheduler</h3>
                   <CardAccent>Auto-schedule and manage meetings with AI.</CardAccent>
                 </div>
@@ -75,7 +75,7 @@ export default function Create() {
               <Card className="relative p-4 sm:p-6 sm:col-span-2">
                 <CardTag />
                 <div className="absolute left-3 top-3 z-10 space-y-1">
-                  <SetupIcon className="size-4 text-primary opacity-100"  opacity={1} aria-hidden />
+                  <SetupIcon className="size-4 text-primary opacity-100" opacity={1} aria-hidden />
                   <h3 className="text-foreground text-sm sm:text-base font-semibold">Create workspace</h3>
                   <CardAccent>Get started in seconds.</CardAccent>
                 </div>
@@ -130,7 +130,7 @@ export const ScheduleIllustation = ({
           <span className="text-sm font-medium">Schedule</span>
         </Button>
         <span className="bg-border block h-4 w-px"></span>
-        <ToggleGroup type="multiple" size="sm" className="gap-0.5 *:rounded-md">
+        <ToggleGroup size="sm" className="gap-0.5 *:rounded-md">
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
             <Bold className="size-4" />
           </ToggleGroupItem>
@@ -166,12 +166,12 @@ export const CodeIllustration = ({ className }: { className?: string }) => {
       )}
     >
       <ul className="text-muted-foreground mx-auto w-fit font-mono text-xl sm:text-2xl font-medium">
-        {["Variables", "Pages", "Components", ].map((item, index) => (
+        {["Variables", "Pages", "Components",].map((item, index) => (
           <li
             key={index}
             className={cn(
               index == 2 &&
-                "text-foreground before:absolute before:-translate-x-[110%] before:text-orange-500 before:content-['Import']"
+              "text-foreground before:absolute before:-translate-x-[110%] before:text-orange-500 before:content-['Import']"
             )}
           >
             {item}
