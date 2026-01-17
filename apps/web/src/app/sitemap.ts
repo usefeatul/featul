@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 import { getPosts } from "@/lib/query"
-import { getAlternativeSlugs } from "@/config/alternatives"
+import { getAllCompetitorSlugs, getAllIntegrationSlugs, getAllUseCaseSlugs } from "@/lib/data/programmatic"
 import { getAllCategorySlugs, getAllToolParams } from "@/types/tools"
 import { getAllDefinitionSlugs } from "@/types/definitions"
 import { SITE_URL } from "@/config/seo"
@@ -18,14 +18,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/tools/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE_URL}/alternatives`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/definitions`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/integrations`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/use-cases`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${SITE_URL}/gdpr`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ]
 
-  // Alternatives index: dynamic pages
-  const alternativeEntries: MetadataRoute.Sitemap = getAlternativeSlugs().map((slug) => ({
+  // Alternatives index: dynamic pages (now using expanded list from content-matrix)
+  const alternativeEntries: MetadataRoute.Sitemap = getAllCompetitorSlugs().map((slug) => ({
     url: `${SITE_URL}/alternatives/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }))
+
+  // Integrations pages
+  const integrationEntries: MetadataRoute.Sitemap = getAllIntegrationSlugs().map((slug) => ({
+    url: `${SITE_URL}/integrations/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }))
+
+  // Use Case pages
+  const useCaseEntries: MetadataRoute.Sitemap = getAllUseCaseSlugs().map((slug) => ({
+    url: `${SITE_URL}/use-cases/${slug}`,
     lastModified: now,
     changeFrequency: "monthly",
     priority: 0.6,
@@ -66,11 +84,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
     }
   } catch {
+    console.error("Failed to generate blog sitemap entries")
   }
 
   return [
     ...staticEntries,
     ...alternativeEntries,
+    ...integrationEntries,
+    ...useCaseEntries,
     ...categoryEntries,
     ...toolEntries,
     ...definitionEntries,
