@@ -104,20 +104,20 @@ export default function AccountDetails({ initialUser }: AccountDetailsProps) {
 
     return (
         <SettingsCard
-            title="Account Details"
+            title="Account"
             description="Your name and email address."
             icon={<UserFocusIcon className="size-5 text-primary" />}
         >
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-3">
                 <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     onBlur={() => { if (name.trim() !== (user?.name || "").trim()) void onSave() }}
                     onKeyDown={(e) => { if (e.key === "Enter") { e.currentTarget.blur() } }}
-                    className="h-8 flex-1 min-w-[80px] max-w-[120px] placeholder:text-accent"
+                    className="h-8 w-[100px] placeholder:text-accent"
                     placeholder="Your name"
                 />
-                <Input value={d.email || ""} disabled className="h-8 flex-1 min-w-[120px] text-xs truncate" />
+                <Input value={d.email || ""} disabled className="h-8 w-[170px] text-center" />
             </div>
         </SettingsCard>
     )

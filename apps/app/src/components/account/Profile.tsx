@@ -17,7 +17,7 @@ export default function Profile({ initialUser, initialAccounts }: ProfileProps) 
       title="Profile"
       description="Manage your account settings and connected services"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <AvatarUpload initialUser={initialUser} />
         <AccountDetails initialUser={initialUser} />
         <OAuthConnections initialAccounts={initialAccounts} />
