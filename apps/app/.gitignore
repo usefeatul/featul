@@ -47,3 +47,6 @@ certificates
 config/ssl/certificates/localhost.csr
 config/ssl/certificates/RootCA.key
 config/ssl/certificates/RootCA.srl
+
+# Sentry Config File
+.env.sentry-build-plugin
