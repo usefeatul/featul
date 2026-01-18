@@ -132,9 +132,9 @@ export default function FilterSummary({ className = "" }: { className?: string }
       {isVisible ? (
         <div
           key="filter-summary-bar"
-          className="bg-card dark:bg-black/60 pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-2 border-t-transparent overflow-hidden rounded-xs  px-1 py-0.5  backdrop-blur supports-backdrop-filter:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border border-border"
+          className="bg-white dark:bg-black/60 pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-2 border-t-transparent overflow-hidden rounded-xs shadow-sm px-1 py-0.5  backdrop-blur-lg supports-backdrop-filter:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border border-border"
         >
-          <div className="flex items-center gap-2 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
+          <div className="flex items-center  gap-2 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
             {status.map((s) => (
               <div key={`status-${s}`}>
                 <Button
@@ -194,7 +194,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
           </div>
 
           <div className="flex items-center shrink-0 gap-2">
-            <div className="h-5 w-px bg-border/70" />
+            <div className="h-4 w-px bg-border" />
             <Button
               type="button"
               onClick={handleClearAll}
