@@ -1,4 +1,5 @@
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount } from "@/lib/workspace";
+import type { RequestItemData } from "@/components/requests/RequestItem";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
@@ -30,7 +31,9 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
       if (Array.isArray(parsed)) {
         initialSelectedIds = parsed.filter((v) => typeof v === "string") as string[];
       }
-    } catch { }
+    } catch {
+      console.error("Error parsing selected ids", selectedRaw);
+    }
   }
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return notFound();
@@ -39,20 +42,34 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
   if (searchParams) {
     try {
       sp = await searchParams;
-    } catch { }
+    } catch {
+      console.error("Error parsing search params", searchParams);
+    }
   }
   const PAGE_SIZE = 20;
   const pageSize = PAGE_SIZE;
-  const page = Math.max(Number((sp as any).page) || 1, 1);
+  const rawPage = sp.page;
+  const pageValue = Array.isArray(rawPage) ? rawPage[0] : rawPage;
+  const page = Math.max(Number(pageValue) || 1, 1);
   const offset = (page - 1) * pageSize;
 
   const rows = await getWorkspacePosts(slug, { order: "newest", limit: pageSize, offset });
-  const totalCount = await getWorkspacePostsCount(slug, {} as any);
+  const totalCount = await getWorkspacePostsCount(slug, {});
+
+  const items: RequestItemData[] = rows.map((row) => ({
+    ...row,
+    content: row.content ?? null,
+    commentCount: row.commentCount ?? 0,
+    upvotes: row.upvotes ?? 0,
+    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt),
+    publishedAt: row.publishedAt instanceof Date ? row.publishedAt.toISOString() : row.publishedAt ? String(row.publishedAt) : null,
+    isAnonymous: row.isAnonymous ?? undefined,
+  }));
 
   return (
     <section className="space-y-4">
       <RequestList
-        items={rows as any}
+        items={items}
         workspaceSlug={slug}
         initialTotalCount={totalCount}
         initialIsSelecting={initialIsSelecting}
