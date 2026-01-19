@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { AlternativeHero } from "@/components/alternatives/hero";
 import TLDR from "@/components/alternatives/tldr";
 import Compare from "@/components/alternatives/compare";
@@ -12,8 +13,10 @@ import {
   getAlternativeBySlug,
   getAlternativeSlugs,
 } from "@/config/alternatives";
-import { VerticalLines } from "@/components/vertical-lines";
+
 import { SectionStack } from "@/components/layout/section-stack";
+import { SITE_URL } from "@/config/seo";
+import { buildAlternativesBreadcrumbSchema } from "@/lib/structured-data";
 
 export async function generateStaticParams() {
   return getAlternativeSlugs().map((slug) => ({ slug }));
@@ -48,6 +51,16 @@ export default async function AlternativePage({
 
   return (
     <main className="pt-16">
+      <Script
+        id="alternatives-breadcrumb-jsonld"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildAlternativesBreadcrumbSchema({ siteUrl: SITE_URL, slug, name: alt.name })
+          ),
+        }}
+      />
       <div className="mx-auto max-w-6xl">
         <SectionStack>
           <AlternativeHero alt={alt} />

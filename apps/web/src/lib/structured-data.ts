@@ -182,3 +182,20 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
     image: `${siteUrl}/og.png`,
   };
 }
+
+type BuildAlternativesBreadcrumbParams = {
+  siteUrl: string;
+  slug: string;
+  name: string;
+};
+
+export function buildAlternativesBreadcrumbSchema({ siteUrl, slug, name }: BuildAlternativesBreadcrumbParams) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Alternatives", item: `${siteUrl}/alternatives` },
+      { "@type": "ListItem", position: 2, name: `${name} vs featul`, item: `${siteUrl}/alternatives/${slug}` },
+    ],
+  };
+}
