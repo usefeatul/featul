@@ -10,11 +10,11 @@ export function HeroContent() {
   return (
     <div className="text-left" data-component="HeroContent">
       <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-semibold text-foreground text-balance">
-        The
+        The{" "}
         <span className="mx-2 inline-flex items-center align-baseline rounded-md  bg-primary/30 px-2 py-[2px] text-black/70">
           simple and fast
-        </span>
-        <span className="block mt-0"> Customer feedback alternative</span>
+        </span>{" "}
+        <span className="block mt-0">Customer feedback alternative</span>
       </h1>
       <p className="mt-6 max-w-xl sm:max-w-2xl lg:max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed text-accent text-balance">
         featul is a privacy-first, open-source customer feedback platform

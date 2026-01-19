@@ -17,7 +17,7 @@ export function ConversionHero() {
       <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <div className="mx-auto w-full px-1 sm:px-6">
           <div className="pt-6 pb-8 sm:pt-8 sm:pb-14">
-            <h1 className="text-foreground text-balance max-w-5xl sm:max-w-6xl text-xl sm:text-2xl md:text-3xl font-semibold leading-snug">
+            <h2 className="text-foreground text-balance max-w-5xl sm:max-w-6xl text-xl sm:text-2xl md:text-3xl font-semibold leading-snug">
               Build better products with customer feedback.
               <span className="block mt-1 text-accent/80">
                 Collect, prioritize, and ship what matters with
@@ -37,7 +37,7 @@ export function ConversionHero() {
                 </span>
                 .
               </span>
-            </h1>
+            </h2>
             <p className="mt-3 text-accent/90 text-xs sm:text-sm md:text-sm leading-relaxed max-w-lg sm:max-w-xl">
               Set up your complete customer feedback system in under 5 minutes.
               Engage your users, prioritize what matters, and ship features

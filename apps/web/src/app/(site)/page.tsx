@@ -13,7 +13,7 @@ import Benefits from "@/components/home/benefits";
 import { SectionStack } from "@/components/layout/section-stack";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Privacy‑first product feedback, roadmaps, and changelogs - featul",
+  title: "Customer Feedback, Roadmaps & Changelogs | featul",
   description: DEFAULT_DESCRIPTION,
   path: "/",
   absoluteTitle: true,
