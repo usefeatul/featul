@@ -14,6 +14,7 @@ export const {
   account,
   verification,
   passkeyTable,
+  twoFactorTable,
   workspace,
   workspaceDomain,
   workspaceMember,

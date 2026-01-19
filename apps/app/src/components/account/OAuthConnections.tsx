@@ -160,6 +160,7 @@ export default function OAuthConnections({ initialAccounts }: { initialAccounts?
                                 ? handleDisconnect(provider.id)
                                 : handleConnect(provider.id)
                         }
+                        isLoading={isConnecting || isDisconnecting}
                         disabled={isConnecting || isDisconnecting}
                     />
                 )

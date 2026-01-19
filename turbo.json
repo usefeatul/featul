@@ -27,8 +27,12 @@
         "GITHUB_CLIENT_SECRET",
         "UPSTASH_REDIS_REST_URL",
         "UPSTASH_REDIS_REST_TOKEN",
-        "MARBLE_API_URL" ,
-        "MARBLE_WORKSPACE_KEY" 
+        "MARBLE_API_URL",
+        "MARBLE_WORKSPACE_KEY",
+        "SENTRY_AUTH_TOKEN",
+        "PASSKEY_RP_ID",
+        "PASSKEY_RP_NAME",
+        "PASSKEY_ORIGIN"
       ]
     },
     "lint": {

@@ -36,7 +36,7 @@ function SectionRenderer({ section, initialUser, initialMeSession, initialSessio
     case "profile":
       return <ProfileSection initialUser={initialUser} initialAccounts={initialAccounts} initialPasskeys={initialPasskeys} />
     case "security":
-      return <SecuritySection initialMeSession={initialMeSession} initialSessions={initialSessions} />
+      return <SecuritySection initialMeSession={initialMeSession} initialSessions={initialSessions} initialAccounts={initialAccounts} twoFactorEnabled={initialMeSession?.user?.twoFactorEnabled} />
     case "notifications":
       return <NotificationsSection />
     case "appearance":

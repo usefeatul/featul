@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@featul/ui/components/button";
 import { Card } from "@featul/ui/components/card";
+import { LoaderIcon } from "@featul/ui/icons/loader";
 
 type Props = {
   icon: React.ReactNode;
@@ -12,6 +13,7 @@ type Props = {
   href?: string;
   disabled?: boolean;
   isConnected?: boolean;
+  isLoading?: boolean;
   onTest?: () => void;
   children?: React.ReactNode;
 };
@@ -26,6 +28,7 @@ export default function SettingsCard({
   href,
   disabled = false,
   isConnected = false,
+  isLoading = false,
   onTest,
   children,
 }: Props) {
@@ -39,7 +42,7 @@ export default function SettingsCard({
           </div>
           <span className="text-sm font-medium text-foreground leading-none mt-0.5">{title}</span>
           {isConnected && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+            <span className="text-xs px-2 py-0.5  rounded-md border border-border/80  bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
               Connected
             </span>
           )}
@@ -71,9 +74,9 @@ export default function SettingsCard({
                 <Button
                   variant={buttonVariant}
                   onClick={onAction}
-                  disabled={disabled}
+                  disabled={disabled || isLoading}
                 >
-                  {buttonLabel}
+                  {isLoading ? <LoaderIcon className="animate-spin" size={16} /> : buttonLabel}
                 </Button>
               )}
             </>

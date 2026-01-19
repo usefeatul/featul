@@ -11,6 +11,7 @@ import { authClient } from "@featul/auth/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { ShieldIcon } from "@featul/ui/icons/shield"
 import { KeyIcon } from "@featul/ui/icons/key"
+import TwoFactorAuth from "@/components/account/TwoFactorAuth"
 
 
 type SessionItem = {
@@ -21,10 +22,13 @@ type SessionItem = {
   expiresAt?: string | Date
 }
 
-export default function Security({ initialMeSession, initialSessions }: { initialMeSession?: unknown; initialSessions?: SessionItem[] | null }) {
+export default function Security({ initialMeSession, initialSessions, twoFactorEnabled, initialAccounts }: { initialMeSession?: unknown; initialSessions?: SessionItem[] | null; twoFactorEnabled?: boolean; initialAccounts?: { id: string; accountId: string; providerId: string }[] }) {
   const router = useRouter()
   const pathname = usePathname() || "/"
   const queryClient = useQueryClient()
+
+  // Check if user has a password-based account (credential provider)
+  const hasPassword = initialAccounts?.some(acc => acc.providerId === "credential") ?? false
 
   type SessionData = { session?: { token?: string }; token?: string } | null
 
@@ -100,7 +104,7 @@ export default function Security({ initialMeSession, initialSessions }: { initia
   return (
     <SectionCard title="Security" description="Manage your password and active sessions">
       <div className="space-y-4">
-        {/* Password and Sessions cards in 2-column grid */}
+        {/* Password, Sessions, and 2FA cards in 2-column grid */}
         <div className="grid grid-cols-2 gap-4">
           <SettingsCard
             icon={<KeyIcon className="size-5 text-primary" />}
@@ -117,6 +121,7 @@ export default function Security({ initialMeSession, initialSessions }: { initia
             buttonVariant="destructive"
             onAction={onSignOutAll}
           />
+          <TwoFactorAuth twoFactorEnabled={twoFactorEnabled} hasPassword={hasPassword} />
         </div>
 
         {/* Sessions table */}

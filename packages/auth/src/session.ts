@@ -5,7 +5,7 @@ import { eq, desc } from "drizzle-orm";
 
 export type SessionData = {
   session?: { token?: string }
-  user?: { id?: string; name?: string; email?: string; image?: string | null }
+  user?: { id?: string; name?: string; email?: string; image?: string | null; twoFactorEnabled?: boolean }
 } | null
 
 export async function getServerSession(): Promise<SessionData> {
@@ -65,7 +65,7 @@ export async function listServerAccounts(): Promise<
       })
       .from(account)
       .where(eq(account.userId, userId));
-    return rows.filter((r) => r.providerId !== "credential").map((r) => ({
+    return rows.map((r) => ({
       id: String(r.id),
       accountId: String(r.accountId),
       providerId: String(r.providerId),

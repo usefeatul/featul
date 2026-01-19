@@ -7,6 +7,7 @@ export const user = pgTable('user', {
   emailVerified: boolean('email_verified').notNull(),
   image: text('image'),
   isAdmin: boolean('is_admin').default(false),
+  twoFactorEnabled: boolean('two_factor_enabled'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
 })
@@ -68,4 +69,15 @@ export const passkeyTable = pgTable('passkey', {
   transports: text('transports'),
   aaguid: text('aaguid'),
   createdAt: timestamp('created_at'),
+})
+
+export const twoFactorTable = pgTable('two_factor', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  secret: text('secret').notNull(),
+  backupCodes: text('backup_codes').notNull(),
+  createdAt: timestamp('created_at'),
+  updatedAt: timestamp('updated_at'),
 })

@@ -18,10 +18,11 @@ type Props = {
  * Integrations settings section with Discord and Slack webhook support
  */
 export default function IntegrationsSection({ slug, plan, initialIntegrations }: Props) {
+  const [pendingIntegration, setPendingIntegration] = React.useState<string | null>(null);
+
   const {
     integrations,
     isLoading,
-    isPending,
     connect,
     disconnect,
     test,
@@ -29,27 +30,57 @@ export default function IntegrationsSection({ slug, plan, initialIntegrations }:
   } = useIntegrations({ workspaceSlug: slug, initialData: initialIntegrations });
 
   const handleConnectDiscord = async (webhookUrl: string) => {
-    return await connect("discord", webhookUrl);
+    setPendingIntegration("discord");
+    try {
+      return await connect("discord", webhookUrl);
+    } finally {
+      setPendingIntegration(null);
+    }
   };
 
   const handleConnectSlack = async (webhookUrl: string) => {
-    return await connect("slack", webhookUrl);
+    setPendingIntegration("slack");
+    try {
+      return await connect("slack", webhookUrl);
+    } finally {
+      setPendingIntegration(null);
+    }
   };
 
   const handleDisconnectDiscord = async () => {
-    return await disconnect("discord");
+    setPendingIntegration("discord");
+    try {
+      return await disconnect("discord");
+    } finally {
+      setPendingIntegration(null);
+    }
   };
 
   const handleDisconnectSlack = async () => {
-    return await disconnect("slack");
+    setPendingIntegration("slack");
+    try {
+      return await disconnect("slack");
+    } finally {
+      setPendingIntegration(null);
+    }
   };
 
   const handleTestDiscord = async () => {
-    return await test("discord");
+    setPendingIntegration("discord");
+    try {
+      return await test("discord");
+    } finally {
+      setPendingIntegration(null);
+    }
   };
 
   const handleTestSlack = async () => {
-    return await test("slack");
+    setPendingIntegration("slack");
+    try {
+      return await test("slack");
+    } finally {
+      setPendingIntegration(null);
+    }
   };
 
   return (
@@ -63,16 +94,16 @@ export default function IntegrationsSection({ slug, plan, initialIntegrations }:
           onConnect={handleConnectSlack}
           onDisconnect={handleDisconnectSlack}
           onTest={handleTestSlack}
-          isPending={isPending}
-          disabled={isLoading}
+          isPending={pendingIntegration === "slack"}
+          disabled={isLoading || (pendingIntegration !== null && pendingIntegration !== "slack")}
         />
         <DiscordCard
           integration={getIntegration("discord")}
           onConnect={handleConnectDiscord}
           onDisconnect={handleDisconnectDiscord}
           onTest={handleTestDiscord}
-          isPending={isPending}
-          disabled={isLoading}
+          isPending={pendingIntegration === "discord"}
+          disabled={isLoading || (pendingIntegration !== null && pendingIntegration !== "discord")}
         />
         <div className="md:col-span-1">
           <SuggestIntegrationCard />

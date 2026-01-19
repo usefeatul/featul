@@ -1,8 +1,8 @@
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import { organization, lastLoginMethod, emailOTP } from "better-auth/plugins"
+import { organization, lastLoginMethod, emailOTP, twoFactor } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
-import { db, user, session, account, verification, passkeyTable } from "@featul/db"
+import { db, user, session, account, verification, passkeyTable, twoFactorTable } from "@featul/db"
 import { sendVerificationOtpEmail, sendWelcome } from "./email"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { getPasswordError } from "./password"
@@ -18,6 +18,7 @@ export const auth = betterAuth({
       account,
       verification,
       passkey: passkeyTable,
+      twoFactor: twoFactorTable,
     },
   }),
 
@@ -71,6 +72,9 @@ export const auth = betterAuth({
       rpID: process.env.PASSKEY_RP_ID || "localhost",
       rpName: process.env.PASSKEY_RP_NAME || "Featul",
       origin: process.env.PASSKEY_ORIGIN || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    }),
+    twoFactor({
+      issuer: "Featul",
     }),
   ],
 

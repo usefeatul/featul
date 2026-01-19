@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import AccountServer from "@/components/account/AccountServer"
 import { createPageMetadata } from "@/lib/seo"
 import { getAccountSectionMeta } from "@/config/account-sections"
-import { getServerSession, listServerSessions, listServerAccounts, listServerPasskeys } from "@featul/auth/session"
+import { getServerSession, listServerSessions, listServerAccounts, listServerPasskeys, type SessionData } from "@featul/auth/session"
 import { redirect } from "next/navigation"
 
 export const revalidate = 30
@@ -28,7 +28,7 @@ export default async function AccountSectionPage({ params }: Props) {
   }
   const [initialSessions, initialAccounts, initialPasskeys] = await Promise.all([
     section === "security" ? listServerSessions() : Promise.resolve(undefined),
-    section === "profile" ? listServerAccounts() : Promise.resolve(undefined),
+    section === "profile" || section === "security" ? listServerAccounts() : Promise.resolve(undefined),
     section === "profile" ? listServerPasskeys() : Promise.resolve(undefined),
   ])
   return (
@@ -36,7 +36,7 @@ export default async function AccountSectionPage({ params }: Props) {
       slug={slug}
       selectedSection={section}
       initialUser={session.user}
-      initialMeSession={session as any}
+      initialMeSession={session as SessionData}
       initialSessions={initialSessions}
       initialAccounts={initialAccounts}
       initialPasskeys={initialPasskeys}

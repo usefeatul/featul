@@ -82,6 +82,7 @@ export default function Passkeys({ initialPasskeys }: { initialPasskeys?: Passke
             onAction={hasPasskeys ? onDisconnect : onAddPasskey}
             buttonLabel={hasPasskeys ? "Disconnect" : "Connect"}
             isConnected={!!hasPasskeys}
+            isLoading={loading}
             disabled={loading}
         />
     )

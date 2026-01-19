@@ -57,6 +57,7 @@ export default function SlackCard({
         }
         buttonLabel={isConnected ? "Disconnect" : "Connect"}
         onAction={handleAction}
+        isLoading={isPending}
         disabled={disabled || isPending}
         isConnected={isConnected}
         onTest={isConnected && onTest ? onTest : undefined}

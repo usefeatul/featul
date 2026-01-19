@@ -3,6 +3,7 @@ import {
   inferOrgAdditionalFields,
   organizationClient,
   lastLoginMethodClient,
+  twoFactorClient,
 } from "better-auth/client/plugins"
 import { emailOTPClient } from "better-auth/client/plugins"
 import { passkeyClient } from "@better-auth/passkey/client"
@@ -15,6 +16,7 @@ export const authClient = createAuthClient({
     lastLoginMethodClient(),
     emailOTPClient(),
     passkeyClient(),
+    twoFactorClient(),
   ],
 })
 
