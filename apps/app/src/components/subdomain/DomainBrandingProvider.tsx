@@ -2,12 +2,12 @@
 
 import * as React from "react"
 
-type DomainBrandingContextType = { hidePoweredBy?: boolean; sidebarPosition?: "left" | "right" }
+type DomainBrandingContextType = { hidePoweredBy?: boolean; sidebarPosition?: "left" | "right"; subdomain?: string }
 
 const DomainBrandingContext = React.createContext<DomainBrandingContextType>({})
 
-export function DomainBrandingProvider({ hidePoweredBy, sidebarPosition, children }: { hidePoweredBy?: boolean; sidebarPosition?: "left" | "right"; children: React.ReactNode }) {
-  const value = React.useMemo(() => ({ hidePoweredBy, sidebarPosition }), [hidePoweredBy, sidebarPosition])
+export function DomainBrandingProvider({ hidePoweredBy, sidebarPosition, children, subdomain }: { hidePoweredBy?: boolean; sidebarPosition?: "left" | "right"; children: React.ReactNode; subdomain?: string }) {
+  const value = React.useMemo(() => ({ hidePoweredBy, sidebarPosition, subdomain }), [hidePoweredBy, sidebarPosition, subdomain])
   return <DomainBrandingContext.Provider value={value}>{children}</DomainBrandingContext.Provider>
 }
 

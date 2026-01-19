@@ -28,6 +28,7 @@ export default async function Layout({
         <DomainBrandingProvider
           hidePoweredBy={hidePoweredBy}
           sidebarPosition={branding.sidebarPosition}
+          subdomain={subdomain}
         >
           <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
           <BrandVarsEffect primary={p} />
