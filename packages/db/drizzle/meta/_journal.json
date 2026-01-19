@@ -57,6 +57,13 @@
       "when": 1768837504561,
       "tag": "0007_short_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1768839216701,
+      "tag": "0008_motionless_romulus",
+      "breakpoints": true
     }
   ]
 }
