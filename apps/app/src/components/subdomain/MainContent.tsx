@@ -82,7 +82,7 @@ export function MainContent({
         }
       >
         {sidebarPosition === "left" ? (
-          <aside className="hidden lg:block mt-10 lg:mt-0">
+          <aside className="hidden md:block mt-10 md:mt-0">
             <DomainSidebar
               subdomain={subdomain}
               slug={slug}
@@ -94,7 +94,7 @@ export function MainContent({
         <div>
           <div className="mb-4">
             {sidebarPosition === "left" ? (
-              <div className="lg:hidden flex items-center justify-between gap-2">
+              <div className="md:hidden flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-2">
                   <SortPopover subdomain={subdomain} slug={slug} />
                   <SearchAction slug={slug} />
@@ -107,7 +107,7 @@ export function MainContent({
                 />
               </div>
             ) : (
-              <div className="lg:hidden flex items-center justify-between gap-2">
+              <div className="md:hidden flex items-center justify-between gap-2">
                 <BoardsDropdown
                   slug={slug}
                   subdomain={subdomain}
@@ -123,8 +123,8 @@ export function MainContent({
             <div
               className={
                 sidebarPosition === "left"
-                  ? "hidden lg:flex items-center justify-end"
-                  : "hidden lg:flex items-center justify-start"
+                  ? "hidden md:flex items-center justify-end"
+                  : "hidden md:flex items-center justify-start"
               }
             >
               <BoardsDropdown
@@ -135,7 +135,7 @@ export function MainContent({
               />
             </div>
           </div>
-          <div className="lg:hidden mb-4">
+          <div className="md:hidden mb-4">
             <SubmitIdeaCard subdomain={subdomain} slug={slug} />
           </div>
           <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
@@ -163,7 +163,7 @@ export function MainContent({
           />
         </div>
         {sidebarPosition === "right" ? (
-          <aside className="hidden lg:block mt-10 lg:mt-0">
+          <aside className="hidden md:block mt-10 md:mt-0">
             <DomainSidebar
               subdomain={subdomain}
               slug={slug}
