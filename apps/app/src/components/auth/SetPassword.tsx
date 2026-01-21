@@ -178,7 +178,7 @@ export default function SetPassword() {
         }
     };
     return (
-        <section className="flex min-h-screen bg-background px-4 sm:px-6 py-8 sm:py-12">
+        <section className="flex flex-1 bg-background px-4 sm:px-6 py-8 sm:py-12 items-center justify-center">
             <form
                 noValidate
                 className="bg-background m-auto h-fit w-full max-w-sm"
@@ -335,7 +335,7 @@ export default function SetPassword() {
                 </div>
 
                 <div className="p-3">
-                    <p className="text-accent-foreground text-center text-sm sm:text-base">
+                    <p className="text-accent-foreground text-center text-sm font-normal">
                         Changed your mind?
                         <Button asChild variant="link" className="px-2 text-primary">
                             <Link href={redirectUrl}>Go back</Link>
