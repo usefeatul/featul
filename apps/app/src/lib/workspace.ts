@@ -261,7 +261,8 @@ export async function getWorkspacePosts(
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
   const orderParam = String(opts?.order || "newest").toLowerCase();
-  const order = orderParam === "oldest" ? asc(post.createdAt) : orderParam === "likes" ? desc(post.upvotes) : desc(post.createdAt);
+  const dateCol = sql`COALESCE(${post.publishedAt}, ${post.createdAt})`;
+  const order = orderParam === "oldest" ? asc(dateCol) : orderParam === "likes" ? desc(post.upvotes) : desc(dateCol);
   const search = (opts?.search || "").trim();
   const lim = Math.min(Math.max(Number(opts?.limit ?? 50), 1), 5000);
   const off = Math.max(Number(opts?.offset ?? 0), 0);
@@ -821,7 +822,8 @@ export async function getPostNavigation(
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
   const orderParam = String(opts?.order || "newest").toLowerCase();
-  const order = orderParam === "oldest" ? asc(post.createdAt) : orderParam === "likes" ? desc(post.upvotes) : desc(post.createdAt);
+  const dateCol = sql`COALESCE(${post.publishedAt}, ${post.createdAt})`;
+  const order = orderParam === "oldest" ? asc(dateCol) : orderParam === "likes" ? desc(post.upvotes) : desc(dateCol);
   const search = (opts?.search || "").trim();
 
   let tagPostIds: string[] | null = null;

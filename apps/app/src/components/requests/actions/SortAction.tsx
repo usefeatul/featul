@@ -6,11 +6,16 @@ import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down"
 import { Button } from "@featul/ui/components/button"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { buildRequestsUrl } from "@/utils/request-filters"
+import { type SortOrder, SORT_OPTIONS, parseSortOrder } from "@/types/sort"
 
-export default function SortAction({ className = "" }: { className?: string }) {
+interface SortActionProps {
+  className?: string
+}
+
+export default function SortAction({ className = "" }: SortActionProps) {
   const router = useRouter()
   const pathname = usePathname() || "/"
-  const sp = useSearchParams()
+  const searchParams = useSearchParams()
   const [open, setOpen] = React.useState(false)
 
   const slug = React.useMemo(() => {
@@ -18,13 +23,13 @@ export default function SortAction({ className = "" }: { className?: string }) {
     return parts[2] || ""
   }, [pathname])
 
-  const order = (sp.get("order") || "newest").toLowerCase() === "oldest" ? "oldest" : "newest"
+  const currentOrder = parseSortOrder(searchParams.get("order"))
 
-  const setOrder = (v: "newest" | "oldest") => {
-    const href = buildRequestsUrl(slug, sp, { order: v })
+  const handleOrderChange = React.useCallback((newOrder: SortOrder) => {
+    const href = buildRequestsUrl(slug, searchParams, { order: newOrder })
     React.startTransition(() => router.push(href, { scroll: false }))
     setOpen(false)
-  }
+  }, [slug, searchParams, router])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,21 +41,22 @@ export default function SortAction({ className = "" }: { className?: string }) {
           aria-label="Sort"
           className={className}
         >
-          <ArrowUpDownIcon className="w-4 h-4" size={16} />
+          <ArrowUpDownIcon className="size-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
-          <PopoverListItem role="menuitemradio" aria-checked={order === "newest"}
-            onClick={() => setOrder("newest")}>
-            <span className="text-sm">Newest</span>
-            {order === "newest" ? <span className="ml-auto text-xs">✓</span> : null}
-          </PopoverListItem>
-          <PopoverListItem role="menuitemradio" aria-checked={order === "oldest"}
-            onClick={() => setOrder("oldest")} >
-            <span className="text-sm">Oldest</span>
-            {order === "oldest" ? <span className="ml-auto text-xs">✓</span> : null}
-          </PopoverListItem>
+          {SORT_OPTIONS.map(({ value, label }) => (
+            <PopoverListItem
+              key={value}
+              role="menuitemradio"
+              aria-checked={currentOrder === value}
+              onClick={() => handleOrderChange(value)}
+            >
+              <span className="text-sm">{label}</span>
+              {currentOrder === value && <span className="ml-auto text-xs">✓</span>}
+            </PopoverListItem>
+          ))}
         </PopoverList>
       </PopoverContent>
     </Popover>

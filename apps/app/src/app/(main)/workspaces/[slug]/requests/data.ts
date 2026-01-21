@@ -1,8 +1,12 @@
 import { getServerSession } from "@featul/auth/session"
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normalizeStatus } from "@/lib/workspace"
 import { parseArrayParam } from "@/utils/request-filters"
+import { parseSortOrder } from "@/types/sort"
 
 const PAGE_SIZE = 20
+
+/** Default statuses to show when no filter is applied */
+const DEFAULT_STATUSES = ["pending", "review", "planned", "progress"] as const
 
 export type RequestsSearchParams = {
   status?: string | string[]
@@ -25,6 +29,18 @@ export type RequestsPageData = {
   search: string
 }
 
+/** Extract a single string value from a string or string array */
+function pickSingle(value?: string | string[]): string | null {
+  if (typeof value === "string") return value
+  if (Array.isArray(value)) return value[0] ?? null
+  return null
+}
+
+/** Normalize and filter slug arrays */
+function normalizeSlugArray(items: string[]): string[] {
+  return items.map((s) => s.trim().toLowerCase()).filter(Boolean)
+}
+
 export async function loadRequestsPageData({
   slug,
   searchParams,
@@ -34,6 +50,7 @@ export async function loadRequestsPageData({
 }): Promise<RequestsPageData | null> {
   const sp = searchParams ?? {}
 
+  // Session check (non-blocking, page is still viewable without auth)
   try {
     await getServerSession()
   } catch {
@@ -43,38 +60,46 @@ export async function loadRequestsPageData({
   const ws = await getWorkspaceBySlug(slug)
   if (!ws) return null
 
+  // Parse filter parameters
   const statusRaw = parseArrayParam(pickSingle(sp.status))
   const boardRaw = parseArrayParam(pickSingle(sp.board))
   const tagRaw = parseArrayParam(pickSingle(sp.tag))
-  const order = typeof sp.order === "string" && sp.order ? sp.order : "newest"
+  const order = parseSortOrder(typeof sp.order === "string" ? sp.order : undefined)
   const search = typeof sp.search === "string" ? sp.search : ""
 
+  // Pagination
   const pageSize = PAGE_SIZE
   const page = Math.max(Number(pickSingle(sp.page)) || 1, 1)
   const offset = (page - 1) * pageSize
 
+  // Process status filter (use defaults if none provided)
   const statusFilter = statusRaw.map(normalizeStatus)
-  if (statusFilter.length === 0) statusFilter.push("pending", "review", "planned", "progress")
+  if (statusFilter.length === 0) {
+    statusFilter.push(...DEFAULT_STATUSES)
+  }
 
-  const boardSlugs = (search ? [] : boardRaw.map((b: string) => b.trim().toLowerCase())).filter(Boolean)
-  const tagSlugs = tagRaw.map((t: string) => t.trim().toLowerCase()).filter(Boolean)
+  // Process board/tag filters (clear boards when searching)
+  const boardSlugs = search ? [] : normalizeSlugArray(boardRaw)
+  const tagSlugs = normalizeSlugArray(tagRaw)
 
-  const rows = await getWorkspacePosts(slug, {
-    statuses: statusFilter,
-    boardSlugs,
-    tagSlugs,
-    order: order === "oldest" ? "oldest" : "newest",
-    search,
-    limit: pageSize,
-    offset,
-  })
-
-  const totalCount = await getWorkspacePostsCount(slug, {
-    statuses: statusFilter,
-    boardSlugs,
-    tagSlugs,
-    search,
-  })
+  // Fetch data
+  const [rows, totalCount] = await Promise.all([
+    getWorkspacePosts(slug, {
+      statuses: statusFilter,
+      boardSlugs,
+      tagSlugs,
+      order,
+      search,
+      limit: pageSize,
+      offset,
+    }),
+    getWorkspacePostsCount(slug, {
+      statuses: statusFilter,
+      boardSlugs,
+      tagSlugs,
+      search,
+    }),
+  ])
 
   return {
     slug,
@@ -88,11 +113,3 @@ export async function loadRequestsPageData({
     search,
   }
 }
-
-function pickSingle(value?: string | string[]): string | null {
-  if (typeof value === "string") return value
-  if (Array.isArray(value)) return value[0] ?? null
-  return null
-}
-
-
