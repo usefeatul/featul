@@ -17,6 +17,7 @@ export const EditorSlashMenu = ({
   items,
   editor,
   range,
+  isLoading,
 }: EditorSlashMenuProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
@@ -69,6 +70,10 @@ export const EditorSlashMenu = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [items, selectedIndex]);
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Popover open={true}>
