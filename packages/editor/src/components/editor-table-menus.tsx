@@ -1,5 +1,6 @@
 import { useCurrentEditor } from "@tiptap/react";
-import { TableColumnMenu, TableRowMenu } from "../extensions/table";
+import { TableColumnMenu } from "../extensions/table/menus/table-column/table-column-menu";
+import { TableRowMenu } from "../extensions/table/menus/table-row/table-row-menu";
 
 /**
  * EditorTableMenus Component

@@ -2,7 +2,7 @@ import type { NodeViewProps } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
 import { useCallback } from "react";
 import { ImageUploadComp } from "./image-upload-comp";
-import { pendingUploads } from "./index";
+import { pendingUploads } from "./image-upload";
 
 export const ImageUploadView = ({
   getPos,

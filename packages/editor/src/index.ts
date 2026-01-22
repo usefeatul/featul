@@ -22,7 +22,7 @@ export type {
   EditorNodeTextProps,
   EditorProviderProps,
   EditorSelectorProps,
-  UseMarbleEditorOptions,
+  useFeatulEditorOptions,
 } from "./components";
 export {
   EditorBubbleMenu,
@@ -51,9 +51,14 @@ export {
   EditorTableMenus,
   useCurrentEditor,
   useEditor,
-  useMarbleEditor,
+  useFeatulEditor,
 } from "./components";
-export * from "./components/ui";
+export {
+  BubbleMenuButton,
+  EditorClearFormatting,
+  type EditorClearFormattingProps,
+} from "./components/ui/editor-button";
+
 export {
   CodeBlock,
   configureSlashCommand,
@@ -70,7 +75,7 @@ export {
 } from "./extensions";
 export type { ExtensionKitOptions } from "./extensions";
 export { ExtensionKit } from "./extensions";
-export { lowlight } from "./lib";
+export { lowlight } from "./lib/lowlight";
 export type {
   EditorButtonProps,
   EditorIcon,

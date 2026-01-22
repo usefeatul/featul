@@ -26,7 +26,7 @@ import {
   EditorSelector,
   EditorTableMenus,
   useCurrentEditor,
-  useMarbleEditor as usefeatulEditor,
+  useFeatulEditor as usefeatulEditor,
   type JSONContent,
 } from "@featul/editor";
 import { EditorContent as TiptapEditorContent } from "@tiptap/react";
@@ -40,7 +40,7 @@ import {
  * Feed Editor Menus and Content
  *
  * This component provides the editor menus (bubble menu, table menus) and content.
- * It relies on the editor instance from context (EditorContext / useMarbleEditor).
+ * It relies on the editor instance from context (EditorContext / useFeatulEditor).
  */
 function FeedEditorMenus() {
   const { editor } = useCurrentEditor();

@@ -8,7 +8,7 @@ import {
 } from "@tiptap/react/menus";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
-import { isCustomNodeSelected, isTextSelected } from "../../lib";
+import { isCustomNodeSelected, isTextSelected } from "../../lib/utils";
 
 export type EditorBubbleMenuProps = Omit<TiptapBubbleMenuProps, "editor">;
 

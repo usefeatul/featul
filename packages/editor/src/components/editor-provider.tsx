@@ -6,7 +6,7 @@ import {
   useEditor,
 } from "@tiptap/react";
 import { ExtensionKit } from "../extensions/extension-kit";
-import { handleCommandNavigation } from "../extensions/slash-command";
+import { handleCommandNavigation } from "../extensions/slash-command/menu-list";
 
 export type EditorProviderProps = Omit<
   TiptapEditorProviderProps,
@@ -73,7 +73,7 @@ export { EditorContext, useCurrentEditor, useEditor } from "@tiptap/react";
  *
  * @example
  * ```tsx
- * const editor = useMarbleEditor({
+ * const editor = useFeatulEditor({
  *   content: "<p>Hello</p>",
  *   placeholder: "Start typing...",
  *   onUpdate: ({ editor }) => {
@@ -89,7 +89,7 @@ export { EditorContext, useCurrentEditor, useEditor } from "@tiptap/react";
  * );
  * ```
  */
-export function useMarbleEditor(options: UseMarbleEditorOptions) {
+export function useFeatulEditor(options: useFeatulEditorOptions) {
   const { limit, placeholder, imageUpload, extensions = [], ...restOptions } = options;
   const defaultExtensions = ExtensionKit({ limit, placeholder, imageUpload });
 
@@ -108,7 +108,7 @@ export function useMarbleEditor(options: UseMarbleEditorOptions) {
   return editor;
 }
 
-export type UseMarbleEditorOptions = Omit<UseEditorOptions, "extensions"> & {
+export type useFeatulEditorOptions = Omit<UseEditorOptions, "extensions"> & {
   limit?: number;
   placeholder?: string;
   imageUpload?: import("../types").ImageUploadOptions;

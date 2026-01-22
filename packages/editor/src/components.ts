@@ -2,10 +2,10 @@ export {
     EditorContext,
     EditorProvider,
     type EditorProviderProps,
-    type UseMarbleEditorOptions,
+    type useFeatulEditorOptions,
     useCurrentEditor,
     useEditor,
-    useMarbleEditor,
+    useFeatulEditor,
 } from "./components/editor-provider";
 export { EditorTableMenus } from "./components/editor-table-menus";
 
@@ -78,4 +78,11 @@ export {
 } from "./components/nodes/editor-node-task-list";
 export { EditorNodeText, type EditorNodeTextProps } from "./components/nodes/editor-node-text";
 
-export * from "./components/ui";
+// UI
+export {
+    BubbleMenuButton,
+    EditorClearFormatting,
+    type EditorClearFormattingProps,
+} from "./components/ui/editor-button";
+export { EditorSelector, type EditorSelectorProps } from "./components/ui/editor-selector";
+
