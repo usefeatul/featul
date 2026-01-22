@@ -319,7 +319,10 @@ export const configureSlashCommand = () =>
             }
 
             component = new ReactRenderer(EditorSlashMenu, {
-              props: onStartProps,
+              props: {
+                ...onStartProps,
+                isLoading: true,
+              },
               editor: onStartProps.editor,
             });
 
@@ -342,6 +345,8 @@ export const configureSlashCommand = () =>
                     top: `${y}px`,
                     position: "absolute",
                   });
+                  // Only show component after positioning is calculated
+                  component.updateProps({ isLoading: false });
                 });
               }
             );

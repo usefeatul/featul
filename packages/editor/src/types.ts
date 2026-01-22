@@ -42,6 +42,7 @@ export type EditorSlashMenuProps = {
     command: (item: SuggestionItem) => void;
     editor: Editor;
     range: Range;
+    isLoading?: boolean;
 };
 
 /**
