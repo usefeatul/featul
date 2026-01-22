@@ -1,8 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalDependencies": [".env", ".env.local", ".env.example"],
   "tasks": {
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
@@ -36,12 +38,10 @@
       ]
     },
     "lint": {
-      "dependsOn": ["^lint"],
-      "outputs": []
+      "dependsOn": ["transit"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"],
-      "outputs": []
+      "dependsOn": ["transit"]
     },
     "dev": {
       "cache": false,
