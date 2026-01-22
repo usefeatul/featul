@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
@@ -8,9 +8,10 @@ import { FeedEditor, type FeedEditorRef } from "@/components/editor/editor";
 import type { JSONContent } from "@featul/editor";
 import TextareaAutosize from "react-textarea-autosize";
 
-import { EditorHeader } from "./EditorHeader";
+import { useEditorHeaderActions } from "./EditorHeaderContext";
 import { CoverImageUploader } from "./CoverImageUploader";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
+import { Loader2, Save, FileText, CheckCircle, ArrowLeft } from "lucide-react";
 
 interface ChangelogEditorProps {
     workspaceSlug: string;
@@ -41,6 +42,7 @@ export function ChangelogEditor({
     const [selectedTags, setSelectedTags] = useState<string[]>(initialData?.tags || []);
     const [isDraft, setIsDraft] = useState(initialData?.status !== "published");
     const [isSaving, setIsSaving] = useState(false);
+    const { setActions, clearActions } = useEditorHeaderActions();
 
     // Image upload handler for the editor (slash command, drag & drop, paste)
     const handleImageUpload = useCallback(async (file: File): Promise<string> => {
@@ -120,17 +122,36 @@ export function ChangelogEditor({
         }
     }, [mode, workspaceSlug, entryId, title, coverImage, selectedTags, isDraft, router]);
 
+    // Register actions with the header context
+    useEffect(() => {
+        setActions([
+            {
+                key: "save",
+                label: "Save Changes",
+                icon: isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />,
+                onClick: handleSave,
+                disabled: isSaving,
+            },
+            {
+                key: "status",
+                label: isDraft ? "Publish Entry" : "Revert to Draft",
+                icon: isDraft ? <CheckCircle className="h-4 w-4" /> : <FileText className="h-4 w-4" />,
+                onClick: () => setIsDraft(!isDraft),
+            },
+            {
+                key: "back",
+                label: "Back to Changelog",
+                icon: <ArrowLeft className="h-4 w-4" />,
+                onClick: () => router.push(`/workspaces/${workspaceSlug}/changelog`),
+            },
+        ]);
+
+        return () => clearActions();
+    }, [setActions, clearActions, handleSave, isSaving, isDraft, router, workspaceSlug]);
+
     return (
         <div className="min-h-screen bg-background">
-            <EditorHeader
-                workspaceSlug={workspaceSlug}
-                isDraft={isDraft}
-                onDraftChange={setIsDraft}
-                onSave={handleSave}
-                isSaving={isSaving}
-            />
-
-            <main className="mx-auto max-w-3xl px-4 py-8">
+            <main className="mx-auto max-w-3xl px-4 pt-0 pb-8">
                 {/* Cover Image (when present) */}
                 {coverImage && (
                     <CoverImageUploader

@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import { createPageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
-import { Badge } from "@featul/ui/components/badge";
-import { Plus, Edit, FileText } from "lucide-react";
+
+import { Plus, FileText } from "lucide-react";
 import { getChangelogListData } from "./data";
+import ChangelogItem from "@/components/changelog/ChangelogItem";
 
 export const revalidate = 0;
 
@@ -21,25 +22,10 @@ export default async function ChangelogListPage({ params }: Props) {
     const data = await getChangelogListData(slug);
     if (!data) return notFound();
 
-    const { entries, availableTags } = data;
+    const { entries } = data;
 
     return (
-        <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold">Changelog</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Manage your product updates and announcements
-                    </p>
-                </div>
-                <Link href={`/workspaces/${slug}/changelog/new`}>
-                    <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        New Entry
-                    </Button>
-                </Link>
-            </div>
-
+        <section className="space-y-4">
             {entries.length === 0 ? (
                 <div className="border rounded-lg p-12 text-center">
                     <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -48,61 +34,21 @@ export default async function ChangelogListPage({ params }: Props) {
                         Create your first changelog entry to share updates with your users.
                     </p>
                     <Link href={`/workspaces/${slug}/changelog/new`}>
-                        <Button>
+                        <Button variant="nav">
                             <Plus className="h-4 w-4 mr-2" />
                             Create Entry
                         </Button>
                     </Link>
                 </div>
             ) : (
-                <div className="border rounded-lg divide-y">
-                    {entries.map((entry) => (
-                        <div
-                            key={entry.id}
-                            className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors"
-                        >
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <h3 className="font-medium truncate">{entry.title}</h3>
-                                    <Badge
-                                        variant={entry.status === "published" ? "default" : "secondary"}
-                                        className="text-xs"
-                                    >
-                                        {entry.status}
-                                    </Badge>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    {entry.publishedAt && (
-                                        <time dateTime={entry.publishedAt.toISOString()}>
-                                            {new Date(entry.publishedAt).toLocaleDateString()}
-                                        </time>
-                                    )}
-                                    {!entry.publishedAt && entry.createdAt && (
-                                        <time dateTime={entry.createdAt.toISOString()}>
-                                            Created {new Date(entry.createdAt).toLocaleDateString()}
-                                        </time>
-                                    )}
-                                    {entry.tags.length > 0 && (
-                                        <div className="flex items-center gap-1">
-                                            <span>·</span>
-                                            {entry.tags.slice(0, 3).map((tag) => (
-                                                <span key={tag.id} className="text-xs">
-                                                    {tag.name}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <Link href={`/workspaces/${slug}/changelog/${entry.id}/edit`}>
-                                <Button variant="ghost" size="sm">
-                                    <Edit className="h-4 w-4" />
-                                </Button>
-                            </Link>
-                        </div>
-                    ))}
+                <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
+                    <ul className="m-0 list-none p-0">
+                        {entries.map((entry) => (
+                            <ChangelogItem key={entry.id} item={entry} workspaceSlug={slug} />
+                        ))}
+                    </ul>
                 </div>
             )}
-        </div>
+        </section>
     );
 }

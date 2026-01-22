@@ -8,6 +8,7 @@ import FilterSummary from "@/components/requests/FilterSummary"
 import { getServerSession } from "@featul/auth/session"
 import { redirect } from "next/navigation"
 import UnauthorizedWorkspace from "@/components/global/Unauthorized"
+import { EditorHeaderProvider } from "@/components/changelog/EditorHeaderContext"
 
 export const revalidate = 30
 
@@ -39,9 +40,11 @@ export default async function WorkspaceLayout({ children, params }: { children: 
       <BrandVarsEffect primary={p} />
       <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialDomainInfo={domainInfo || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
       <main className="w-full lg:flex-1 px-4 lg:px-0 pb-10 lg:pb-0">
-        <WorkspaceHeader />
-        <FilterSummary />
-        {children}
+        <EditorHeaderProvider>
+          <WorkspaceHeader />
+          <FilterSummary />
+          {children}
+        </EditorHeaderProvider>
       </main>
       <MobileSidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialDomainInfo={domainInfo || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
     </Container>

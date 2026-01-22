@@ -1,4 +1,4 @@
-import { db, workspace, board, changelogEntry, tag } from "@featul/db";
+import { db, workspace, board, changelogEntry, tag, user } from "@featul/db";
 import { and, eq, desc, sql } from "drizzle-orm";
 import type { JSONContent } from "@featul/editor";
 
@@ -17,6 +17,8 @@ export interface ChangelogEntryData {
     summary?: string | null;
     coverImage?: string | null;
     authorId: string;
+    authorName?: string | null;
+    authorImage?: string | null;
     status: "draft" | "published" | "archived";
     tags: string[]; // Tag IDs
     publishedAt?: Date | null;
@@ -87,9 +89,26 @@ export async function getChangelogListData(
         .from(changelogEntry)
         .where(and(...whereConditions));
 
+
     const entries = await db
-        .select()
+        .select({
+            id: changelogEntry.id,
+            title: changelogEntry.title,
+            slug: changelogEntry.slug,
+            content: changelogEntry.content,
+            summary: changelogEntry.summary,
+            coverImage: changelogEntry.coverImage,
+            authorId: changelogEntry.authorId,
+            status: changelogEntry.status,
+            tags: changelogEntry.tags,
+            publishedAt: changelogEntry.publishedAt,
+            createdAt: changelogEntry.createdAt,
+            updatedAt: changelogEntry.updatedAt,
+            authorName: user.name,
+            authorImage: user.image,
+        })
         .from(changelogEntry)
+        .leftJoin(user, eq(changelogEntry.authorId, user.id))
         .where(and(...whereConditions))
         .orderBy(desc(changelogEntry.updatedAt))
         .limit(limit)

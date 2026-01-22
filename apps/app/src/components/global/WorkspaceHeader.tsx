@@ -6,6 +6,15 @@ import { Button } from "@featul/ui/components/button"
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections"
 import HeaderActions from "@/components/requests/HeaderActions"
+import { Plus, MoreHorizontal } from "lucide-react"
+import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  PopoverList,
+  PopoverListItem,
+} from "@featul/ui/components/popover"
 
 function resolveTitle(segment: string): string {
   const s = segment.toLowerCase()
@@ -21,7 +30,10 @@ export default function WorkspaceHeader() {
   const workspaceSlug = idx >= 0 ? parts[idx + 1] : ""
   const rest = idx >= 0 ? parts.slice(idx + 2) : []
   const showRequestsActions = rest.length === 0 || rest[0] === "requests"
+  const showChangelogActions = rest[0] === "changelog" && rest.length === 1
+  const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2
   const isMemberDetail = rest[0] === "members" && rest.length > 1
+  const editorContext = useEditorHeaderActionsOptional()
 
   let title = rest.length === 0 ? "Requests" : ""
   if (rest.length > 0) {
@@ -50,6 +62,36 @@ export default function WorkspaceHeader() {
           </Button>
         ) : showRequestsActions ? (
           <HeaderActions />
+        ) : showChangelogActions ? (
+          <Button asChild variant="nav">
+            <Link href={`/workspaces/${workspaceSlug}/changelog/new`}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Entry
+            </Link>
+          </Button>
+        ) : showChangelogEditActions && editorContext && editorContext.actions.length > 0 ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="nav" size="icon-sm">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" list className="min-w-0 w-fit">
+              <PopoverList>
+                {editorContext.actions.map((action) => (
+                  <PopoverListItem
+                    key={action.key}
+                    onClick={action.onClick}
+                    disabled={action.disabled}
+                    className={`gap-2 text-sm ${action.destructive ? "text-destructive" : ""}`}
+                  >
+                    {action.icon}
+                    {action.label}
+                  </PopoverListItem>
+                ))}
+              </PopoverList>
+            </PopoverContent>
+          </Popover>
         ) : null}
       </div>
     </div>
