@@ -18,11 +18,11 @@ export const BubbleMenuButton = ({
   return (
     <Button
       className={cn(
-        "flex items-center gap-2 h-8 px-2",
-        hideName 
-          ? "w-8 justify-center" 
+        "flex items-center gap-2 h-8 px-2 text-sm font-medium",
+        hideName
+          ? "w-8 justify-center"
           : "w-full justify-between",
-        isActive() && "bg-primary/10 text-primary hover:bg-primary/20"
+        isActive() ? "text-foreground" : "text-muted-foreground hover:text-foreground"
       )}
       onClick={() => command()}
       size="sm"
@@ -31,15 +31,15 @@ export const BubbleMenuButton = ({
       <Icon
         className={cn(
           "shrink-0",
-          isActive() ? "text-primary" : "text-muted-foreground"
+          isActive() ? "text-foreground" : "text-muted-foreground"
         )}
         size={14}
       />
       {!hideName && (
-        <span className="text-xs whitespace-nowrap flex-1 text-left">{name}</span>
+        <span className="truncate flex-1 text-left">{name}</span>
       )}
       {isActive() && !hideName && (
-        <CheckIcon className="shrink-0 text-primary ml-auto" size={12} />
+        <CheckIcon className="shrink-0 text-blue-600 ml-auto" size={14} />
       )}
     </Button>
   );

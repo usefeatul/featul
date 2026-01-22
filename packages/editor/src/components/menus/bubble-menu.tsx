@@ -72,9 +72,7 @@ export const EditorBubbleMenu = ({
   return (
     <TiptapBubbleMenu
       className={cn(
-        "flex items-center rounded-lg border bg-card shadow-lg p-1 gap-0",
-        "[&>*:first-child]:rounded-l-md",
-        "[&>*:last-child]:rounded-r-md",
+        "flex items-center rounded-lg border bg-background/80 backdrop-blur-sm shadow-sm p-1 gap-1",
         className
       )}
       editor={editor ?? undefined}
@@ -82,23 +80,7 @@ export const EditorBubbleMenu = ({
       data-bubble-menu="true"
       {...props}
     >
-      {children && Array.isArray(children)
-        ? children.reduce((acc: ReactNode[], child, index) => {
-            if (index === 0) {
-              return [child];
-            }
-
-            acc.push(
-              <Separator
-                key={`separator-${index}`}
-                orientation="vertical"
-                className="h-6 mx-0.5"
-              />
-            );
-            acc.push(child);
-            return acc;
-          }, [])
-        : children}
+      {children}
     </TiptapBubbleMenu>
   );
 };

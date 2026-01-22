@@ -46,7 +46,7 @@ export const EditorSelector = ({
 }: EditorSelectorProps) => {
   const { editor } = useCurrentEditor();
   const [internalOpen, setInternalOpen] = useState(false);
-  
+
   const open = controlledOpen ?? internalOpen;
   const onOpenChange = controlledOnOpenChange ?? setInternalOpen;
 
@@ -59,8 +59,8 @@ export const EditorSelector = ({
       <PopoverTrigger asChild>
         <Button
           className={cn(
-            "flex items-center justify-center gap-1.5 h-8 px-2 rounded-md",
-            open && "bg-primary/10 text-primary hover:bg-primary/20"
+            "flex items-center justify-center gap-1 h-7 px-2 rounded-sm",
+            open ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
           )}
           size="sm"
           type="button"
@@ -70,19 +70,16 @@ export const EditorSelector = ({
             onOpenChange(!open);
           }}
         >
-          <span className="whitespace-nowrap text-xs font-medium">{title}</span>
-          <ChevronDownIcon 
-            className={cn(
-              "shrink-0 transition-transform text-muted-foreground",
-              open && "rotate-180"
-            )}
-            size={12} 
+          <span className="whitespace-nowrap text-sm font-medium">{title}</span>
+          <ChevronDownIcon
+            className="shrink-0 text-muted-foreground"
+            size={14}
           />
         </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className={cn("w-56 p-0 z-[100]", className)}
+        className={cn("min-w-0 w-fit p-0 z-[100]", className)}
         list={true}
         side="bottom"
         sideOffset={8}
@@ -98,30 +95,30 @@ export const EditorSelector = ({
         <PopoverList>
           {Array.isArray(children)
             ? children.map((child, index) => (
-                <PopoverListItem
-                  key={index}
-                  as="div"
-                  className="flex items-center gap-3 px-3 py-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenChange(false);
-                  }}
-                >
-                  {child}
-                </PopoverListItem>
-              ))
+              <PopoverListItem
+                key={index}
+                as="div"
+                className="flex items-center gap-2 px-2 py-1.5"
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  onOpenChange(false);
+                }}
+              >
+                {child}
+              </PopoverListItem>
+            ))
             : children && (
-                <PopoverListItem
-                  as="div"
-                  className="flex items-center gap-3 px-3 py-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenChange(false);
-                  }}
-                >
-                  {children}
-                </PopoverListItem>
-              )}
+              <PopoverListItem
+                as="div"
+                className="flex items-center gap-2 px-2 py-1.5"
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  onOpenChange(false);
+                }}
+              >
+                {children}
+              </PopoverListItem>
+            )}
         </PopoverList>
       </PopoverContent>
     </Popover>
