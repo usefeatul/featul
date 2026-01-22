@@ -1,12 +1,5 @@
 import { Button } from "@featul/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@featul/ui/components/card";
-import { Textarea } from "@featul/ui/components/textarea";
+import { Input } from "@featul/ui/components/input";
 import { cn } from "@featul/ui/lib/utils";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
@@ -43,7 +36,7 @@ export const TwitterComp = ({
   }, [url, onSubmit]);
 
   const handleInputChange = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
+    (e: ChangeEvent<HTMLInputElement>) => {
       setUrl(e.target.value);
       setError(null);
     },
@@ -51,7 +44,7 @@ export const TwitterComp = ({
   );
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
         validateAndSubmit();
@@ -66,21 +59,20 @@ export const TwitterComp = ({
   const isValidUrl = isValidTwitterUrl(url) !== null;
 
   return (
-    <Card className="col-span-full gap-4 rounded-[20px] border-none bg-sidebar p-2.5">
-      <CardHeader className="gap-0 px-4 pt-2">
-        <div className="flex items-center justify-between gap-2">
-          <Twitter className="size-5" />
-          <CardTitle className="font-normal text-sm">
-            Paste a Tweet link
-          </CardTitle>
+    <div className="flex flex-col gap-2 p-1 bg-muted rounded-2xl">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5">
+        <div className="flex items-center gap-2 text-sm font-normal">
+          <Twitter className="size-3.5" />
+          Paste a Tweet link
         </div>
-      </CardHeader>
-      <CardContent className="rounded-[12px] bg-background p-4 shadow-xs">
+      </div>
+
+      <div className="bg-card rounded-lg p-2 dark:bg-black/40 border border-border">
         <div className="flex flex-col gap-2">
-          <Textarea
+          <Input
             autoFocus
             className={cn(
-              "resize-none",
+              "h-8 text-sm placeholder:text-muted-foreground",
               error && "border-destructive focus-visible:ring-destructive"
             )}
             onChange={handleInputChange}
@@ -91,20 +83,21 @@ export const TwitterComp = ({
           {error && <p className="text-destructive text-xs">{error}</p>}
         </div>
 
-        <CardFooter className="flex items-center gap-2 px-0 pt-4">
+        <div className="flex items-center gap-2 mt-2 justify-end">
+          <Button onClick={onCancel} size="sm" type="button" variant="card">
+            Cancel
+          </Button>
           <Button
             disabled={!url || !isValidUrl}
             onClick={validateAndSubmit}
             size="sm"
             type="button"
+            variant="card"
           >
             Embed Tweet
           </Button>
-          <Button onClick={onCancel} size="sm" type="button" variant="ghost">
-            Cancel
-          </Button>
-        </CardFooter>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 };

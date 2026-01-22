@@ -9,6 +9,7 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import type { NodeViewProps } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
+import { ImageIcon } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 export const FigureView = ({
@@ -276,89 +277,98 @@ export const FigureView = ({
         {/* Toolbar in Popover - only shown when selected */}
         <PopoverContent
           align="start"
-          className="flex w-80 flex-col gap-3 p-3"
+          className="p-1 bg-muted rounded-2xl gap-1 w-80 shadow-none border-none"
           onOpenAutoFocus={(event) => event.preventDefault()}
           side="right"
           sideOffset={18}
         >
-          {/* Width Controls - Only percent for now */}
-          <div className="space-y-2">
-            <Label className="font-medium text-xs" htmlFor={widthId}>
-              Width (%)
-            </Label>
-            <Input
-              className="h-8 text-sm"
-              id={widthId}
-              onBlur={handleWidthBlur}
-              onChange={handleWidthChange}
-              placeholder="100"
-              type="text"
-              value={widthValue}
-            />
-          </div>
-
-          {/* Alignment Controls */}
-          <div className="space-y-2">
-            <Label className="font-medium text-xs">Alignment</Label>
-            <div className="grid grid-cols-3 gap-1.5">
-              <Button
-                className="!rounded-mdw-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
-                data-active={alignValue === "left"}
-                onClick={() => handleAlignChange("left")}
-                type="button"
-                variant="outline"
-              >
-                {/* <AlignLeft className="size-4" /> */}
-                Left
-              </Button>
-              <Button
-                className="!rounded-mdw-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
-                data-active={alignValue === "center"}
-                onClick={() => handleAlignChange("center")}
-                type="button"
-                variant="outline"
-              >
-                {/* <AlignCenter className="size-4" /> */}
-                Center
-              </Button>
-              <Button
-                className="!rounded-mdw-full shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary"
-                data-active={alignValue === "right"}
-                onClick={() => handleAlignChange("right")}
-                type="button"
-                variant="outline"
-              >
-                {/* <AlignRight className="size-4" /> */}
-                Right
-              </Button>
+          <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
+            <div className="flex items-center gap-2 text-sm font-normal">
+              <ImageIcon className="size-3.5" />
+              Image Settings
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="font-medium text-xs" htmlFor={altId}>
-              Alt Text
-            </Label>
-            <Input
-              className="h-8 text-sm"
-              id={altId}
-              onChange={handleAltChange}
-              placeholder="Describe the image..."
-              type="text"
-              value={altValue}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label className="font-medium text-xs" htmlFor={captionId}>
-              Caption
-            </Label>
-            <Input
-              className="h-8 text-sm"
-              id="caption"
-              onChange={handleCaptionChange}
-              placeholder="Add a caption..."
-              type="text"
-              value={captionValue}
-            />
+          <div className="bg-card rounded-lg p-3 dark:bg-black/40 border border-border flex flex-col gap-3">
+            {/* Width Controls - Only percent for now */}
+            <div className="space-y-1">
+              <Label className="font-normal text-xs text-muted-foreground" htmlFor={widthId}>
+                Width (%)
+              </Label>
+              <Input
+                className="h-8 text-sm placeholder:text-muted-foreground"
+                id={widthId}
+                onBlur={handleWidthBlur}
+                onChange={handleWidthChange}
+                placeholder="100"
+                type="text"
+                value={widthValue}
+              />
+            </div>
+
+            {/* Alignment Controls */}
+            <div className="space-y-1">
+              <Label className="font-normal text-xs text-muted-foreground">Alignment</Label>
+              <div className="grid grid-cols-3 gap-1.5">
+                <Button
+                  className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                  data-active={alignValue === "left"}
+                  onClick={() => handleAlignChange("left")}
+                  type="button"
+                  variant="card"
+                  size="sm"
+                >
+                  Left
+                </Button>
+                <Button
+                  className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                  data-active={alignValue === "center"}
+                  onClick={() => handleAlignChange("center")}
+                  type="button"
+                  variant="card"
+                  size="sm"
+                >
+                  Center
+                </Button>
+                <Button
+                  className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                  data-active={alignValue === "right"}
+                  onClick={() => handleAlignChange("right")}
+                  type="button"
+                  variant="card"
+                  size="sm"
+                >
+                  Right
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label className="font-normal text-xs text-muted-foreground" htmlFor={altId}>
+                Alt Text
+              </Label>
+              <Input
+                className="h-8 text-sm placeholder:text-muted-foreground"
+                id={altId}
+                onChange={handleAltChange}
+                placeholder="Describe the image..."
+                type="text"
+                value={altValue}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="font-normal text-xs text-muted-foreground" htmlFor={captionId}>
+                Caption
+              </Label>
+              <Input
+                className="h-8 text-sm placeholder:text-muted-foreground"
+                id={captionId}
+                onChange={handleCaptionChange}
+                placeholder="Add a caption..."
+                type="text"
+                value={captionValue}
+              />
+            </div>
           </div>
         </PopoverContent>
       </Popover>

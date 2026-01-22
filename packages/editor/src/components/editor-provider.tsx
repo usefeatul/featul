@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
+
 import {
   EditorProvider as TiptapEditorProvider,
   type EditorProviderProps as TiptapEditorProviderProps,
@@ -90,10 +90,10 @@ export { EditorContext, useCurrentEditor, useEditor } from "@tiptap/react";
  * ```
  */
 export function useMarbleEditor(options: UseMarbleEditorOptions) {
-  const { limit, placeholder, extensions = [], ...restOptions } = options;
-  const defaultExtensions = ExtensionKit({ limit, placeholder });
+  const { limit, placeholder, imageUpload, extensions = [], ...restOptions } = options;
+  const defaultExtensions = ExtensionKit({ limit, placeholder, imageUpload });
 
-  return useEditor({
+  const editor = useEditor({
     immediatelyRender: false,
     editorProps: {
       handleKeyDown: (_view, event) => {
@@ -104,10 +104,13 @@ export function useMarbleEditor(options: UseMarbleEditorOptions) {
     extensions: [...defaultExtensions, ...extensions],
     ...restOptions,
   });
+
+  return editor;
 }
 
 export type UseMarbleEditorOptions = Omit<UseEditorOptions, "extensions"> & {
   limit?: number;
   placeholder?: string;
+  imageUpload?: import("../types").ImageUploadOptions;
   extensions?: any[];
 };

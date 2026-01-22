@@ -1,34 +1,32 @@
 @media only screen and (max-width: 480px) {
-  div[data-youtube-video] > iframe {
+  div[data-youtube-video]>iframe {
     max-height: 50px;
   }
 }
 
 @media only screen and (max-width: 720px) {
-  div[data-youtube-video] > iframe {
+  div[data-youtube-video]>iframe {
     max-height: 100px;
   }
 }
 
-/* Placeholder styles */
-.tiptap p.is-editor-empty:first-child::before {
-  color: #adb5bd;
+/* Placeholder styles - shows on empty paragraph */
+.ProseMirror>p.is-empty::before,
+.ProseMirror>p.is-node-empty::before,
+.ProseMirror>p.is-editor-empty::before {
+  color: var(--accent, #adb5bd);
   content: attr(data-placeholder);
   float: left;
   height: 0;
   pointer-events: none;
 }
 
-.dark .tiptap p.is-editor-empty:first-child::before {
-  color: #6c757d;
-}
-
 /* CSS for bold coloring and highlighting issue*/
-span[style] > strong {
+span[style]>strong {
   color: inherit;
 }
 
-mark[style] > strong {
+mark[style]>strong {
   color: inherit;
 }
 

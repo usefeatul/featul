@@ -22,6 +22,9 @@ import { Twitter } from "./twitter/index";
 import { TwitterUpload } from "./twitter/twitter-upload";
 import { YouTubeUpload } from "./youtube/youtube-upload";
 import "../styles/task-list.css";
+import "../styles/editor.css";
+
+import type { ImageUploadOptions } from "../types";
 
 /**
  * Extension kit configuration options
@@ -31,6 +34,8 @@ export type ExtensionKitOptions = {
   limit?: number;
   /** Placeholder text for empty editor */
   placeholder?: string;
+  /** Image upload configuration */
+  imageUpload?: ImageUploadOptions;
 };
 
 /**
@@ -40,173 +45,174 @@ export type ExtensionKitOptions = {
 export const ExtensionKit = ({
   limit,
   placeholder,
+  imageUpload,
 }: ExtensionKitOptions = {}) => [
-  // Markdown extension for parsing and serializing markdown
-  Markdown,
+    // Markdown extension for parsing and serializing markdown
+    Markdown,
 
-  // StarterKit with customizations
-  StarterKit.configure({
-    codeBlock: false, // Using custom CodeBlock with syntax highlighting
-    bulletList: {
-      HTMLAttributes: {
-        class: cn("list-outside list-disc pl-4"),
+    // StarterKit with customizations
+    StarterKit.configure({
+      codeBlock: false, // Using custom CodeBlock with syntax highlighting
+      bulletList: {
+        HTMLAttributes: {
+          class: cn("list-outside list-disc pl-4"),
+        },
       },
-    },
-    orderedList: {
-      HTMLAttributes: {
-        class: cn("list-outside list-decimal pl-4"),
+      orderedList: {
+        HTMLAttributes: {
+          class: cn("list-outside list-decimal pl-4"),
+        },
       },
-    },
-    listItem: {
-      HTMLAttributes: {
-        class: cn("leading-normal"),
+      listItem: {
+        HTMLAttributes: {
+          class: cn("leading-normal"),
+        },
       },
-    },
-    blockquote: {
-      HTMLAttributes: {
-        class: cn("border-l border-l-2 pl-2"),
+      blockquote: {
+        HTMLAttributes: {
+          class: cn("border-l border-l-2 pl-2"),
+        },
       },
-    },
-    code: {
-      HTMLAttributes: {
-        class: cn("rounded-md  bg-muted px-1.5 py-1 font-medium font-mono"),
-        spellcheck: "false",
+      code: {
+        HTMLAttributes: {
+          class: cn("rounded-md  bg-muted px-1.5 py-1 font-medium font-mono"),
+          spellcheck: "false",
+        },
       },
-    },
-    horizontalRule: {
-      HTMLAttributes: {
-        class: cn("mt-4 mb-6 border-muted-foreground border-t"),
+      horizontalRule: {
+        HTMLAttributes: {
+          class: cn("mt-4 mb-6 border-muted-foreground border-t"),
+        },
       },
-    },
-    dropcursor: {
-      color: "var(--border)",
-      width: 4,
-    },
-  }),
+      dropcursor: {
+        color: "var(--border)",
+        width: 4,
+      },
+    }),
 
-  // Typography for smart quotes, dashes, etc.
-  Typography,
+    // Typography for smart quotes, dashes, etc.
+    Typography,
 
-  // Placeholder
-  Placeholder.configure({
-    placeholder: ({ editor }) => {
-      if (!editor) {
+    // Placeholder - shows on the currently focused empty paragraph
+    Placeholder.configure({
+      showOnlyCurrent: true,
+      placeholder: ({ editor }) => {
+        if (!editor) {
+          return placeholder ?? "";
+        }
+
+        // Hide placeholder inside tables, blockquotes, code blocks, and lists
+        if (
+          editor.isActive("table") ||
+          editor.isActive("tableCell") ||
+          editor.isActive("tableHeader") ||
+          editor.isActive("blockquote") ||
+          editor.isActive("codeBlock") ||
+          editor.isActive("bulletList") ||
+          editor.isActive("orderedList") ||
+          editor.isActive("taskList") ||
+          editor.isActive("listItem") ||
+          editor.isActive("taskItem")
+        ) {
+          return "";
+        }
+
         return placeholder ?? "";
-      }
+      },
+    }),
 
-      // Hide placeholder inside tables, blockquotes, code blocks, and lists
-      if (
-        editor.isActive("table") ||
-        editor.isActive("tableCell") ||
-        editor.isActive("tableHeader") ||
-        editor.isActive("blockquote") ||
-        editor.isActive("codeBlock") ||
-        editor.isActive("bulletList") ||
-        editor.isActive("orderedList") ||
-        editor.isActive("taskList") ||
-        editor.isActive("listItem") ||
-        editor.isActive("taskItem")
-      ) {
-        return "";
-      }
+    // Character count
+    CharacterCount.configure({
+      limit,
+    }),
 
-      return placeholder ?? "";
-    },
-  }),
+    // Code block with syntax highlighting
+    CodeBlock,
 
-  // Character count
-  CharacterCount.configure({
-    limit,
-  }),
+    // Subscript and superscript
+    Superscript,
+    Subscript,
 
-  // Code block with syntax highlighting
-  CodeBlock,
+    // Slash command
+    configureSlashCommand(),
 
-  // Subscript and superscript
-  Superscript,
-  Subscript,
+    // Table extensions
+    Table,
+    TableRow,
+    TableCell,
+    TableHeader,
 
-  // Slash command
-  configureSlashCommand(),
+    // YouTube
+    Youtube.configure({
+      controls: true,
+      nocookie: false,
+    }),
 
-  // Table extensions
-  Table,
-  TableRow,
-  TableCell,
-  TableHeader,
+    // YouTube Upload (placeholder node for YouTube upload component)
+    YouTubeUpload,
 
-  // YouTube
-  Youtube.configure({
-    controls: true,
-    nocookie: false,
-  }),
+    // Twitter
+    Twitter.configure({
+      addPasteHandler: true,
+      inline: false,
+    }),
 
-  // YouTube Upload (placeholder node for YouTube upload component)
-  YouTubeUpload,
+    // Twitter Upload (placeholder node for Twitter upload component)
+    TwitterUpload,
 
-  // Twitter
-  Twitter.configure({
-    addPasteHandler: true,
-    inline: false,
-  }),
+    // Image extension for backward compatibility with older posts
+    Image.configure({
+      inline: false,
+      allowBase64: true,
+    }),
 
-  // Twitter Upload (placeholder node for Twitter upload component)
-  TwitterUpload,
+    // Figure (image with caption support)
+    Figure,
 
-  // Image extension for backward compatibility with older posts
-  Image.configure({
-    inline: false,
-    allowBase64: true,
-  }),
+    // Image Upload (placeholder node for image upload component)
+    ImageUpload.configure(imageUpload ?? {}),
 
-  // Figure (image with caption support)
-  Figure,
+    // File Handler for drag-and-drop and paste image uploads
+    FileHandler.configure({
+      allowedMimeTypes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
+      onDrop: (currentEditor, files, _pos) => {
+        for (const file of files) {
+          // Insert imageUpload node at drop position with the file
+          currentEditor.chain().focus().setImageUpload({ file }).run();
+        }
+      },
+      onPaste: (currentEditor, files) => {
+        for (const file of files) {
+          // Insert imageUpload node at cursor with the file
+          currentEditor.chain().focus().setImageUpload({ file }).run();
+        }
+      },
+    }),
 
-  // Image Upload (placeholder node for image upload component)
-  // Note: Will be unconfigured by default, CMS app should pass configured version
-  ImageUpload,
+    // Task list
+    TaskList.configure({
+      HTMLAttributes: {
+        class: "list-none p-0",
+      },
+    }),
+    TaskItem.configure({
+      nested: true,
+      HTMLAttributes: {
+        class: "flex",
+      },
+    }),
 
-  // File Handler for drag-and-drop and paste image uploads
-  FileHandler.configure({
-    allowedMimeTypes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
-    onDrop: (currentEditor, files, _pos) => {
-      for (const file of files) {
-        // Insert imageUpload node at drop position with the file
-        currentEditor.chain().focus().setImageUpload({ file }).run();
-      }
-    },
-    onPaste: (currentEditor, files) => {
-      for (const file of files) {
-        // Insert imageUpload node at cursor with the file
-        currentEditor.chain().focus().setImageUpload({ file }).run();
-      }
-    },
-  }),
+    // Text styling kit (Tiptap v3)
+    TextStyleKit,
 
-  // Task list
-  TaskList.configure({
-    HTMLAttributes: {
-      class: "list-none p-0",
-    },
-  }),
-  TaskItem.configure({
-    nested: true,
-    HTMLAttributes: {
-      class: "flex",
-    },
-  }),
+    // Color extension for text color
+    Color,
 
-  // Text styling kit (Tiptap v3)
-  TextStyleKit,
+    // Highlight extension for text highlighting
+    Highlight.configure({ multicolor: true }),
 
-  // Color extension for text color
-  Color,
-
-  // Highlight extension for text highlighting
-  Highlight.configure({ multicolor: true }),
-
-  // Markdown input handling (paste and file drop)
-  MarkdownInput,
-];
+    // Markdown input handling (paste and file drop)
+    MarkdownInput,
+  ];
 
 export default ExtensionKit;

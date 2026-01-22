@@ -85,11 +85,12 @@ export const EditorSlashMenu = ({
       </PopoverAnchor>
       <PopoverContent
         id="slash-command"
-        className="w-80 p-0 shadow-lg"
+        className="w-64 p-0 shadow-lg"
         list={true}
         side="bottom"
         align="start"
         sideOffset={6}
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {items.length === 0 ? (
           <div className="flex w-full items-center justify-center p-4 text-muted-foreground text-sm">
@@ -103,7 +104,7 @@ export const EditorSlashMenu = ({
                 ref={(el: HTMLButtonElement | null) => {
                   itemRefs.current[index] = el;
                 }}
-                className="flex items-center gap-3 px-3 py-2"
+                className="flex items-center gap-2 px-2 py-1.5"
                 onClick={() => selectItem(index)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 style={{
@@ -113,12 +114,12 @@ export const EditorSlashMenu = ({
                       : "transparent",
                 }}
               >
-                <div className="flex size-9 shrink-0 items-center justify-center rounded border bg-secondary">
-                  <item.icon className="text-muted-foreground" size={16} />
+                <div className="flex size-7 shrink-0 items-center justify-center rounded border bg-secondary">
+                  <item.icon className="text-muted-foreground size-3.5" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-medium text-sm">{item.title}</span>
-                  <span className="text-muted-foreground text-xs">
+                  <span className="text-accent text-xs">
                     {item.description}
                   </span>
                 </div>

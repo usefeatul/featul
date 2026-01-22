@@ -102,6 +102,8 @@ export interface FeedEditorProps {
   className?: string;
   onUpdate?: (content: JSONContent) => void;
   editable?: boolean;
+  /** Upload handler for images (slash command, drag & drop, paste) */
+  onImageUpload?: (file: File) => Promise<string>;
 }
 
 /**
@@ -118,6 +120,7 @@ export const FeedEditor = forwardRef(
       className,
       onUpdate,
       editable = true,
+      onImageUpload,
     }: FeedEditorProps,
     ref: ForwardedRef<FeedEditorRef>
   ) => {
@@ -125,6 +128,7 @@ export const FeedEditor = forwardRef(
       content: initialContent,
       placeholder,
       editable,
+      imageUpload: onImageUpload ? { upload: onImageUpload } : undefined,
       onUpdate: ({ editor }) => {
         onUpdate?.(editor.getJSON());
       },

@@ -1,25 +1,10 @@
 import { Button } from "@featul/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@featul/ui/components/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@featul/ui/components/dialog";
 import { Input } from "@featul/ui/components/input";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
 import { cn } from "@featul/ui/lib/utils";
 import {
   CheckIcon,
   ImageIcon,
-  ImagesIcon,
   Loader2Icon,
   XIcon,
 } from "lucide-react";
@@ -151,13 +136,6 @@ export const ImageUploadComp = ({
     [onUpload]
   );
 
-  const handleMediaSelect = useCallback(
-    (url: string) => {
-      onUpload(url);
-      setIsGalleryOpen(false);
-    },
-    [onUpload]
-  );
 
   const handleDropzoneClick = useCallback(() => {
     handleUploadClick();
@@ -183,32 +161,31 @@ export const ImageUploadComp = ({
 
   return (
     <>
-      <Card className="col-span-full gap-4 rounded-[20px] border-none bg-sidebar p-2.5">
-        <CardHeader className="gap-0 px-4 pt-2">
-          <div className="flex items-center justify-between gap-2">
-            <ImageIcon className="size-5" />
-            <CardTitle className="font-normal text-sm">
-              Upload or embed an image
-            </CardTitle>
+
+      <div className="flex flex-col gap-2 p-1 bg-muted rounded-2xl">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5">
+          <div className="flex items-center gap-2 text-sm font-normal">
+            <ImageIcon className="size-3.5" />
+            Upload or embed an image
           </div>
-        </CardHeader>
-        <CardContent className="rounded-[12px] bg-background p-4 shadow-xs">
+        </div>
+
+        <div className="bg-card rounded-lg p-2 dark:bg-black/40 border border-border">
           {/* Dropzone or Uploading state */}
           {loading ? (
-            <div className="flex min-h-[260px] flex-1 flex-col items-center justify-center">
-              <p className="text-muted-foreground text-sm">
-                Uploading image...
-              </p>
+            <div className="flex min-h-[80px] flex-1 flex-col items-center justify-center">
+              <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+              <p className="text-muted-foreground text-sm mt-2">Uploading...</p>
             </div>
           ) : (
             // biome-ignore lint/a11y/useSemanticElements: Dropzone requires div for drag-and-drop functionality
             <div
               aria-label="Upload image by clicking or dragging and dropping"
               className={cn(
-                "flex min-h-[260px] flex-1 cursor-pointer flex-col items-center justify-center gap-2",
+                "flex min-h-[80px] flex-1 cursor-pointer flex-col items-center justify-center rounded-md transition-colors",
                 draggedInside
                   ? "border-primary bg-primary/5"
-                  : "border-muted bg-background"
+                  : "border-muted-foreground/25 hover:border-muted-foreground/50",
               )}
               onClick={handleDropzoneClick}
               onDragEnter={onDragEnter}
@@ -221,8 +198,8 @@ export const ImageUploadComp = ({
             >
               <p
                 className={cn(
-                  "text-center font-medium text-sm",
-                  draggedInside ? "text-primary" : "text-muted-foreground"
+                  "text-center text-sm",
+                  draggedInside ? "text-primary" : "text-accent",
                 )}
               >
                 {getDropzoneText()}
@@ -237,15 +214,15 @@ export const ImageUploadComp = ({
               />
             </div>
           )}
-        </CardContent>
-        <CardFooter className="-mt-2 flex items-center justify-between gap-10 rounded-[12px] bg-background p-4 shadow-xs">
-          {showEmbedInput ? (
-            <div className="flex flex-1 flex-col gap-2">
-              <div className="flex items-center gap-2">
+
+          {/* Footer actions */}
+          <div className="flex items-center justify-between mt-0 pt-0 gap-4">
+            {showEmbedInput ? (
+              <div className="flex flex-1 items-center gap-2">
                 <Input
                   className={cn(
-                    "flex-1 bg-background",
-                    urlError && "border-destructive"
+                    "flex-1 h-8 text-sm placeholder:text-muted-foreground",
+                    urlError && "border-destructive",
                   )}
                   disabled={isValidatingUrl || loading}
                   onChange={({ target }) => {
@@ -266,12 +243,12 @@ export const ImageUploadComp = ({
                   value={embedUrl}
                 />
                 <Button
-                  className="shrink-0 shadow-none"
+                  className="shrink-0"
                   disabled={!embedUrl || isValidatingUrl || loading}
                   onClick={() => handleEmbedUrl(embedUrl)}
-                  size="icon"
+                  size="sm"
                   type="button"
-                  variant="outline"
+                  variant="card"
                 >
                   {isValidatingUrl ? (
                     <Loader2Icon className="size-4 animate-spin" />
@@ -280,120 +257,60 @@ export const ImageUploadComp = ({
                   )}
                 </Button>
                 <Button
-                  className="shrink-0 shadow-none"
+                  className="shrink-0"
                   disabled={loading}
                   onClick={() => {
                     setShowEmbedInput(false);
                     setEmbedUrl("");
                     setUrlError(null);
                   }}
-                  size="icon"
+                  size="sm"
                   type="button"
-                  variant="outline"
+                  variant="card"
                 >
                   <XIcon className="size-4" />
                 </Button>
               </div>
-              {urlError && (
-                <p className="text-destructive text-xs">{urlError}</p>
-              )}
-            </div>
-          ) : (
-            // Media and Embed URL buttons - shown by default
-            <div className="flex items-center gap-2">
-              {(media !== undefined || fetchMedia) && (
+            ) : (
+              <div className="flex items-center gap-2">
+                {(media !== undefined || fetchMedia) && (
+                  <Button
+                    className="shrink-0"
+                    disabled={loading}
+                    onClick={() => setIsGalleryOpen(true)}
+                    size="sm"
+                    type="button"
+                    variant="card"
+                  >
+                    Gallery
+                  </Button>
+                )}
                 <Button
-                  className="shrink-0 shadow-none"
+                  className="shrink-0"
                   disabled={loading}
-                  onClick={() => setIsGalleryOpen(true)}
+                  onClick={() => setShowEmbedInput(true)}
                   size="sm"
                   type="button"
-                  variant="outline"
+                  variant="card"
                 >
-                  View Gallery
+                  Embed URL
                 </Button>
-              )}
-              <Button
-                className="shrink-0 shadow-none"
-                disabled={loading}
-                onClick={() => setShowEmbedInput(true)}
-                size="sm"
-                type="button"
-                variant="outline"
-              >
-                Embed URL
-              </Button>
-            </div>
-          )}
-          <Button
-            className="shrink-0 shadow-none"
-            disabled={loading}
-            onClick={onCancel}
-            size="sm"
-            type="button"
-          >
-            Cancel
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {/* Media Gallery Dialog */}
-      {(media !== undefined || fetchMedia) && (
-        <Dialog onOpenChange={setIsGalleryOpen} open={isGalleryOpen}>
-          <DialogHeader className="sr-only">
-            <DialogTitle>Media Gallery</DialogTitle>
-            <DialogDescription>
-              Select an image from your media library to embed.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogContent className="max-h-[800px] min-w-[1000px] sm:min-w-[1000px]">
-            {isLoadingMedia ? (
-              <div className="flex h-full items-center justify-center p-8">
-                <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                  <p className="font-medium text-sm">Loading media...</p>
-                </div>
-              </div>
-            ) : media && media.length > 0 ? (
-              <ScrollArea className="max-h-[550px]">
-                <ul className="m-0 grid w-full list-none grid-cols-[repeat(auto-fill,minmax(8.125rem,1fr))] gap-2.5 p-0">
-                  {media
-                    ?.filter((item) => item.type === "image")
-                    .map((item) => (
-                      <li
-                        className="group relative size-[8.125rem]"
-                        key={item.id}
-                      >
-                        <button
-                          className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-background p-1 transition-opacity hover:opacity-80"
-                          onClick={() => handleMediaSelect(item.url)}
-                          type="button"
-                        >
-                          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-md  border border-border">
-                            {/* biome-ignore lint: Preview image in dialog */}
-                            <img
-                              alt={item.name}
-                              className="h-full w-full object-contain"
-                              src={item.url}
-                            />
-                          </div>
-                        </button>
-                      </li>
-                    ))}
-                </ul>
-              </ScrollArea>
-            ) : (
-              <div className="flex min-h-[400px] items-center justify-center p-8">
-                <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                  <ImagesIcon className="size-8" />
-                  <p className="font-medium text-sm">
-                    Your gallery is empty. Upload some media to get started.
-                  </p>
-                </div>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
-      )}
+            <Button
+              className="shrink-0"
+              disabled={loading}
+              onClick={onCancel}
+              size="sm"
+              type="button"
+              variant="card"
+            >
+              Cancel
+            </Button>
+          </div>
+          {urlError && <p className="text-destructive text-xs mt-2">{urlError}</p>}
+        </div>
+      </div >
     </>
   );
 };
