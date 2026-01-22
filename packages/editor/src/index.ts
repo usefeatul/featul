@@ -22,7 +22,12 @@ export type {
   EditorNodeTextProps,
   EditorProviderProps,
   EditorSelectorProps,
+<<<<<<< HEAD
   useFeatulEditorOptions,
+=======
+  UseMarbleEditorOptions,
+  // Legacy-compatible types
+>>>>>>> d1482aa1 (refactor(editor): remove unused components and clean up exports)
 } from "./components";
 export {
   EditorBubbleMenu,
@@ -51,7 +56,12 @@ export {
   EditorTableMenus,
   useCurrentEditor,
   useEditor,
+<<<<<<< HEAD
   useFeatulEditor,
+=======
+  useMarbleEditor,
+  // Legacy-compatible components (for migration from editorold)
+>>>>>>> d1482aa1 (refactor(editor): remove unused components and clean up exports)
 } from "./components";
 export {
   BubbleMenuButton,
