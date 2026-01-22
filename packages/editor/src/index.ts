@@ -1,12 +1,7 @@
-// Components
-/** biome-ignore-all lint/performance/noBarrelFile: <> */
-
-// Types
 export type { Editor, JSONContent } from "@tiptap/react";
 export type {
   EditorBubbleMenuProps,
   EditorLinkSelectorProps,
-  // Mark Component Types
   EditorMarkBoldProps,
   EditorMarkCodeProps,
   EditorMarkHighlightProps,
@@ -23,21 +18,16 @@ export type {
   EditorNodeHeading3Props,
   EditorNodeOrderedListProps,
   EditorNodeQuoteProps,
-  EditorNodeTableProps,
   EditorNodeTaskListProps,
-  // Node Component Types
   EditorNodeTextProps,
   EditorProviderProps,
-  // Utility Component Types
   EditorSelectorProps,
   UseMarbleEditorOptions,
-  // Legacy-compatible types
 } from "./components";
 export {
   EditorBubbleMenu,
   EditorContext,
   EditorLinkSelector,
-  // Mark Components
   EditorMarkBold,
   EditorMarkCode,
   EditorMarkHighlight,
@@ -54,18 +44,14 @@ export {
   EditorNodeHeading3,
   EditorNodeOrderedList,
   EditorNodeQuote,
-  EditorNodeTable,
   EditorNodeTaskList,
-  // Node Components
   EditorNodeText,
   EditorProvider,
-  // Utility Components
   EditorSelector,
   EditorTableMenus,
   useCurrentEditor,
   useEditor,
   useMarbleEditor,
-  // Legacy-compatible components (for migration from editorold)
 } from "./components";
 export * from "./components/ui";
 export {
@@ -82,10 +68,8 @@ export {
   TableRow,
   TableRowMenu,
 } from "./extensions";
-export type { ExtensionKitOptions } from "./extensions/extension-kit";
-// Extensions
-export { ExtensionKit } from "./extensions/extension-kit";
-// Lib
+export type { ExtensionKitOptions } from "./extensions";
+export { ExtensionKit } from "./extensions";
 export { lowlight } from "./lib";
 export type {
   EditorButtonProps,

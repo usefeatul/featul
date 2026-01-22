@@ -3,7 +3,7 @@ import { Input } from "@featul/ui/components/input";
 import { cn } from "@featul/ui/lib/utils";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
-import { Twitter } from "../../components/icons/twitter";
+import { TwitterIcon as Twitter } from "@featul/ui/icons/twitter";
 
 // Validate Twitter/X.com URL
 const TWITTER_REGEX =

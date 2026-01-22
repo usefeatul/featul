@@ -3,7 +3,7 @@ import { Input } from "@featul/ui/components/input";
 import { cn } from "@featul/ui/lib/utils";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
-import { YouTubeIcon } from "../../components/icons/youtube";
+import { YoutubeIcon as YouTubeIcon } from "@featul/ui/icons/youtube";
 
 // Extract YouTube video ID from various URL formats
 function extractYouTubeVideoId(url: string): string | null {

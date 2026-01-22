@@ -13,7 +13,7 @@ import { Input } from "@featul/ui/components/input";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { DangerDelete } from "@featul/editor/components/icons/danger-delete";
+import { DangerDeleteIcon as DangerDelete } from "@featul/ui/icons/danger-delete";
 
 type Props = {
     slug: string;

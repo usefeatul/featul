@@ -1,13 +1,13 @@
- "use client"
- 
- import { useEffect, useMemo, useState } from "react"
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
 import { Button } from "@featul/ui/components/button"
 import { Input } from "@featul/ui/components/input"
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { ChevronDown, Search } from "lucide-react"
 import * as ct from "countries-and-timezones"
 import { formatTimeWithDate } from "../../lib/time"
-import { Timezone } from "@featul/editor/components/icons/timezone"
+import { TimezoneIcon as Timezone } from "@featul/ui/icons/timezone"
 
 export default function TimezonePicker({ value, onChange, now }: { value: string; onChange: (v: string) => void; now: Date }) {
   const [open, setOpen] = useState(false)
@@ -39,9 +39,9 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
   }, [mounted, value, now])
 
   const friendlyTZ = (tz: string) => {
-      const city = tz.split("/").slice(-1)[0]?.replace(/_/g, " ") ?? tz
-      const country = ct.getCountryForTimezone(tz)?.name
-      return country ? `${city}, ${country}` : city
+    const city = tz.split("/").slice(-1)[0]?.replace(/_/g, " ") ?? tz
+    const country = ct.getCountryForTimezone(tz)?.name
+    return country ? `${city}, ${country}` : city
   }
 
   const filtered = useMemo(() => {
@@ -54,15 +54,15 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button type="button" variant="outline" className="w-full h-10 justify-between bg-muted/50 border-input font-normal hover:bg-muted/70 px-3">
-            <div className="flex items-center gap-2 truncate">
-                <Timezone className="size-4 text-muted-foreground shrink-0" />
-                <span className="truncate">
-                    {friendlyTZ(value)}
-                </span>
-            </div>
+          <div className="flex items-center gap-2 truncate">
+            <Timezone className="size-4 text-muted-foreground shrink-0" />
+            <span className="truncate">
+              {friendlyTZ(value)}
+            </span>
+          </div>
           <div className="flex items-center gap-2 shrink-0">
-             <span className="text-xs text-muted-foreground bg-muted dark:bg-black px-1.5 py-0.5 rounded-md border" suppressHydrationWarning>{timeString}</span>
-             <ChevronDown className="size-4 text-muted-foreground opacity-50" />
+            <span className="text-xs text-muted-foreground bg-muted dark:bg-black px-1.5 py-0.5 rounded-md border" suppressHydrationWarning>{timeString}</span>
+            <ChevronDown className="size-4 text-muted-foreground opacity-50" />
           </div>
         </Button>
       </PopoverTrigger>
@@ -73,18 +73,18 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
         container={typeof document !== "undefined" ? (document.querySelector('[data-slot="dialog-content"]') as HTMLElement | null) : undefined}
       >
         <div className="p-2 border-b">
-           <div className="w-fit bg-muted/50 dark:bg-black rounded-sm  px-1.5 py-1 mb-1.5">
-               <span className="text-xs font-light text-accent" suppressHydrationWarning>
-                 Your local time - {formatTimeWithDate((typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC"), now)}
-               </span>
-           </div>
+          <div className="w-fit bg-muted/50 dark:bg-black rounded-sm  px-1.5 py-1 mb-1.5">
+            <span className="text-xs font-light text-accent" suppressHydrationWarning>
+              Your local time - {formatTimeWithDate((typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC"), now)}
+            </span>
+          </div>
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input 
-                placeholder="Search by city or country..." 
-                value={query} 
-                onChange={(e) => setQuery(e.target.value)} 
-                className="pl-8 h-9 bg-transparent border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70" 
+            <Input
+              placeholder="Search by city or country..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-8 h-9 bg-transparent border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
             />
           </div>
         </div>

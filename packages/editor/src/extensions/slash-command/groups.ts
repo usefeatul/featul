@@ -12,8 +12,8 @@ import {
   TextIcon,
   TextQuoteIcon,
 } from "lucide-react";
-import { Twitter } from "../../components/icons/twitter";
-import { YouTubeIcon } from "../../components/icons/youtube";
+import { TwitterIcon as Twitter } from "@featul/ui/icons/twitter";
+import { YoutubeIcon as YouTubeIcon } from "@featul/ui/icons/youtube";
 import type { SuggestionItem } from "../../types";
 
 /**

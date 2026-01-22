@@ -2,7 +2,7 @@
 
 import React from "react";
 import SettingsCard from "../../../global/SettingsCard";
-import { Clipboard } from "@featul/editor/components/icons/clipboard";
+import { ClipboardIcon as Clipboard } from "@featul/ui/icons/clipboard";
 import { toast } from "sonner";
 
 type Props = {
