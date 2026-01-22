@@ -53,6 +53,12 @@ export const ExtensionKit = ({
     // StarterKit with customizations
     StarterKit.configure({
       codeBlock: false, // Using custom CodeBlock with syntax highlighting
+      heading: {
+        levels: [1, 2, 3],
+        HTMLAttributes: {
+          class: "font-bold",
+        },
+      },
       bulletList: {
         HTMLAttributes: {
           class: cn("list-outside list-disc pl-4"),
