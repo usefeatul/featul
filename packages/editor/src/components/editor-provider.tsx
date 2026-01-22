@@ -43,7 +43,34 @@ export const EditorProvider = ({
 
 export { EditorContext, useCurrentEditor, useEditor } from "@tiptap/react";
 
+<<<<<<< HEAD
 
+=======
+/**
+ * Hook to create a Marble editor instance with default extensions and configuration.
+ * This is a convenience hook that sets up the editor with ExtensionKit and handleCommandNavigation.
+ *
+ * Use this with EditorContext.Provider to avoid layout issues:
+ *
+ * @example
+ * ```tsx
+ * const editor = useFeatulEditor({
+ *   content: "<p>Hello</p>",
+ *   placeholder: "Start typing...",
+ *   onUpdate: ({ editor }) => {
+ *     console.log(editor.getHTML());
+ *   },
+ * });
+ *
+ * return (
+ *   <EditorContext.Provider value={{ editor }}>
+ *     <EditorContent />
+ *     <EditorSidebar />
+ *   </EditorContext.Provider>
+ * );
+ * ```
+ */
+>>>>>>> 581fe1a9 (refactor: flatten barrel files to direct imports for better tree shaking)
 export function useFeatulEditor(options: useFeatulEditorOptions) {
   const { limit, placeholder, imageUpload, extensions = [], ...restOptions } = options;
   const defaultExtensions = ExtensionKit({ limit, placeholder, imageUpload });
