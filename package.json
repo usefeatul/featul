@@ -8,8 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
     "app:dev": "turbo run dev --filter=app",
     "feed:dev": "turbo run dev --filter=feed",
     "web:dev": "turbo run dev --filter=web",
@@ -17,8 +17,8 @@
     "db:migrate": "turbo run db:migrate --filter=@featul/db",
     "db:push": "turbo run db:push --filter=@featul/db",
     "db:studio": "turbo run db:studio --filter=@featul/db",
-    "check-types": "turbo check-types",
-    "lint": "turbo lint",
+    "check-types": "turbo run check-types",
+    "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
@@ -32,4 +32,3 @@
     "node": ">=20"
   }
 }
-
