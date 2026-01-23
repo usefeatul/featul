@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <> */
 import { Separator } from "@featul/ui/components/separator";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor } from "@tiptap/react";
@@ -6,6 +5,7 @@ import {
   BubbleMenu as TiptapBubbleMenu,
   type BubbleMenuProps as TiptapBubbleMenuProps,
 } from "@tiptap/react/menus";
+import { TextIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
 import { isCustomNodeSelected, isTextSelected } from "../../lib/utils";
@@ -72,7 +72,7 @@ export const EditorBubbleMenu = ({
   return (
     <TiptapBubbleMenu
       className={cn(
-        "flex items-center rounded-lg border bg-background/80 backdrop-blur-sm shadow-sm p-1 gap-1",
+        "p-1 bg-muted rounded-2xl gap-1 shadow-none border-none",
         className
       )}
       editor={editor ?? undefined}
@@ -80,7 +80,15 @@ export const EditorBubbleMenu = ({
       data-bubble-menu="true"
       {...props}
     >
-      {children}
+      <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
+        <div className="flex items-center gap-2 text-sm font-normal">
+          <TextIcon className="size-3.5 text-primary" />
+          Text
+        </div>
+      </div>
+      <div className="bg-card border border-border rounded-lg flex items-center p-0.5 shadow-sm">
+        {children}
+      </div>
     </TiptapBubbleMenu>
   );
 };

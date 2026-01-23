@@ -5,6 +5,7 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
+import { AspectIcon } from "@featul/ui/icons/aspect";
 import { useEffect, useRef, useState } from "react";
 import type { EditorSlashMenuProps } from "../../types";
 
@@ -90,33 +91,41 @@ export const EditorSlashMenu = ({
       </PopoverAnchor>
       <PopoverContent
         id="slash-command"
-        className="w-64 p-0 shadow-lg"
+        className="p-1 bg-muted rounded-2xl gap-1 w-80 shadow-none border-none"
         list={true}
         side="bottom"
         align="start"
-        sideOffset={6}
+        sideOffset={12}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
+        <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
+          <div className="flex items-center gap-2 text-sm font-normal">
+            <AspectIcon className="size-3.5 text-primary" />
+            Commands
+          </div>
+        </div>
         {items.length === 0 ? (
-          <div className="flex w-full items-center justify-center p-4 text-muted-foreground text-sm">
+          <div className="bg-card border border-border rounded-lg flex w-full items-center justify-center p-4 text-muted-foreground text-sm">
             <p>No results</p>
           </div>
         ) : (
-          <PopoverList ref={listRef}>
+          <PopoverList
+            ref={listRef}
+            className="bg-card border border-border rounded-lg p-2 flex flex-col gap-1 max-h-[300px] overflow-y-auto"
+          >
             {items.map((item, index) => (
               <PopoverListItem
                 key={item.title}
                 ref={(el: HTMLButtonElement | null) => {
                   itemRefs.current[index] = el;
                 }}
-                className="flex items-center gap-2 px-2 py-1.5"
+                className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50 data-[selected=true]:bg-muted/50"
                 onClick={() => selectItem(index)}
                 onMouseEnter={() => setSelectedIndex(index)}
+                data-selected={selectedIndex === index}
                 style={{
                   backgroundColor:
-                    selectedIndex === index
-                      ? "var(--muted)"
-                      : "transparent",
+                    selectedIndex === index ? "var(--muted)" : "transparent",
                 }}
               >
                 <div className="flex size-7 shrink-0 items-center justify-center rounded border bg-secondary">

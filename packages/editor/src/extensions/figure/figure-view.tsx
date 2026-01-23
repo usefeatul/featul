@@ -9,7 +9,7 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import type { NodeViewProps } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon } from "@featul/ui/icons/image";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 export const FigureView = ({
@@ -284,7 +284,7 @@ export const FigureView = ({
         >
           <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
             <div className="flex items-center gap-2 text-sm font-normal">
-              <ImageIcon className="size-3.5" />
+              <ImageIcon className="size-3.5 text-primary" />
               Image Settings
             </div>
           </div>
