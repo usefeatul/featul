@@ -79,8 +79,92 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
 }
 
 /**
+ * Configuration for route features that have dynamic segments.
+ * Defines which routes should be stripped of specific IDs when switching workspaces.
+ */
+const DYNAMIC_ROUTE_CONFIG = {
+  changelog: {
+    // Preserve these specific paths (e.g., /changelog/new is safe across workspaces)
+    preservePaths: new Set(["new"]),
+    // Strip everything after this depth (0 = keep only /changelog)
+    // This handles paths like /changelog/[id] and /changelog/[id]/edit
+    stripAfterDepth: 0,
+  },
+  requests: {
+    preservePaths: new Set<string>(),
+    stripAfterDepth: 0,
+  },
+} as const
+
+type RouteFeature = keyof typeof DYNAMIC_ROUTE_CONFIG
+
+/**
+ * Extracts the sub-path after the workspace slug.
+ */
+function extractSubPath(pathname: string, currentSlug: string): string {
+  return pathname.slice(`/workspaces/${currentSlug}`.length)
+}
+
+/**
+ * Parses the sub-path into components.
+ */
+function parseSubPath(subPath: string) {
+  const parts = subPath.split("/").filter(Boolean)
+  const feature = parts[0] as RouteFeature | undefined
+  const secondSegment = parts[1]
+
+  return { parts, feature, secondSegment }
+}
+
+/**
+ * Determines if a route should be sanitized (stripped of dynamic IDs).
+ */
+function shouldSanitizeRoute(
+  feature: string | undefined,
+  secondSegment: string | undefined,
+  parts: string[]
+): boolean {
+  if (!feature || !(feature in DYNAMIC_ROUTE_CONFIG)) {
+    return false
+  }
+
+  const config = DYNAMIC_ROUTE_CONFIG[feature as RouteFeature]
+
+  // If we have more parts than allowed depth, check if it's a preserved path
+  if (parts.length > config.stripAfterDepth + 1) {
+    // If the second segment is in preserve list, don't sanitize
+    if (secondSegment && config.preservePaths.has(secondSegment)) {
+      return false
+    }
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Builds a safe path for the route by stripping dynamic segments.
+ */
+function buildSafePath(targetSlug: string, feature: string): string {
+  return `/workspaces/${targetSlug}/${feature}`
+}
+
+/**
+ * Appends query parameters to a path.
+ */
+function appendQueryParams(path: string, searchParams: ReadonlyURLSearchParams | null): string {
+  const queryString = searchParams?.toString()
+  return queryString ? `${path}?${queryString}` : path
+}
+
+/**
  * Calculates the redirection path when switching workspaces.
  * Preserves the current route if possible, or falls back to a safe default.
+ * 
+ * Features:
+ * - Prevents 404s on workspace-specific dynamic content
+ * - Maintains query parameters during workspace switches
+ * - Configurable route sanitization via DYNAMIC_ROUTE_CONFIG
  */
 export function getWorkspaceRedirectPath(
   pathname: string | null,
@@ -88,53 +172,46 @@ export function getWorkspaceRedirectPath(
   targetSlug: string,
   searchParams: ReadonlyURLSearchParams | null
 ): string {
-  let targetPath = `/workspaces/${targetSlug}`
+  const defaultPath = `/workspaces/${targetSlug}`
 
   // Ensure pathname exists and we are currently in a workspace context
   if (!pathname || !pathname.startsWith(`/workspaces/${currentSlug}`)) {
-    return targetPath
+    return defaultPath
   }
 
   // Replace the current slug with the target slug
-  targetPath = pathname.replace(`/workspaces/${currentSlug}`, `/workspaces/${targetSlug}`)
+  let targetPath = pathname.replace(`/workspaces/${currentSlug}`, `/workspaces/${targetSlug}`)
 
-  // Fix 404s on dynamic routes that don't exist in the target workspace
-  const subPath = pathname.slice(`/workspaces/${currentSlug}`.length)
-  const parts = subPath.split("/").filter(Boolean)
-  const feature = parts[0]
+  // Extract and parse the sub-path
+  const subPath = extractSubPath(pathname, currentSlug)
+  const { parts, feature, secondSegment } = parseSubPath(subPath)
 
-  // Feature-specific path preservation logic
-  if (feature === "changelog") {
-    // Keep /changelog and /changelog/new, but strip specific entries (e.g. /changelog/entry-id)
-    if (parts.length > 1 && parts[1] !== "new") {
-      targetPath = `/workspaces/${targetSlug}/changelog`
-    }
-  } else if (feature === "requests") {
-    // Keep /requests, but strip specific request entries
-    if (parts.length > 1) {
-      targetPath = `/workspaces/${targetSlug}/requests`
-    }
+  // Sanitize routes with dynamic segments that may not exist in target workspace
+  if (shouldSanitizeRoute(feature, secondSegment, parts)) {
+    targetPath = buildSafePath(targetSlug, feature!)
   }
 
   // Append query parameters if any
-  if (searchParams?.toString()) {
-    targetPath += `?${searchParams.toString()}`
-  }
-
-  return targetPath
+  return appendQueryParams(targetPath, searchParams)
 }
 
+/**
+ * Prefetches workspace route and related data for smoother transitions.
+ */
 function prefetchWorkspaceRoute(
   router: ReturnType<typeof useRouter>,
   queryClient: QueryClient,
   targetPath: string,
   targetSlug: string
 ) {
+  // Prefetch the route
   try {
     router.prefetch(targetPath)
-  } catch {
-    console.error("Failed to prefetch", targetPath)
+  } catch (error) {
+    console.error("Failed to prefetch route:", targetPath, error)
   }
+
+  // Prefetch workspace-specific data
   try {
     queryClient.prefetchQuery({
       queryKey: ["status-counts", targetSlug],
@@ -146,7 +223,7 @@ function prefetchWorkspaceRoute(
       staleTime: 300_000,
       gcTime: 300_000,
     })
-  } catch {
-    console.error("Failed to prefetch status counts for", targetSlug)
+  } catch (error) {
+    console.error("Failed to prefetch status counts for:", targetSlug, error)
   }
 }
