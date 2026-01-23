@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useRouter, usePathname, useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
+import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { useWorkspaceLogo } from "@/lib/branding-store"
 
@@ -64,37 +64,8 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
 
   const handleSelectWorkspace = React.useCallback(
     (targetSlug: string) => {
-      let targetPath = `/workspaces/${targetSlug}`
-
-      // Check if we are currently in a workspace path
-      if (pathname?.startsWith(`/workspaces/${slug}`)) {
-        // Replace the current slug with the target slug
-        targetPath = pathname.replace(`/workspaces/${slug}`, `/workspaces/${targetSlug}`)
-        // Append query parameters if any
-        if (searchParams?.toString()) {
-          targetPath += `?${searchParams.toString()}`
-        }
-      }
-
-      try {
-        router.prefetch(targetPath)
-      } catch {
-        console.error("Failed to prefetch", targetPath)
-      }
-      try {
-        queryClient.prefetchQuery({
-          queryKey: ["status-counts", targetSlug],
-          queryFn: async () => {
-            const res = await client.workspace.statusCounts.$get({ slug: targetSlug })
-            const data = await res.json()
-            return (data?.counts || null) as Record<string, number> | null
-          },
-          staleTime: 300_000,
-          gcTime: 300_000,
-        })
-      } catch {
-        console.error("Failed to prefetch status counts for", targetSlug)
-      }
+      const targetPath = getWorkspaceRedirectPath(pathname, slug, targetSlug, searchParams)
+      prefetchWorkspaceRoute(router, queryClient, targetPath, targetSlug)
       router.push(targetPath)
     },
     [router, queryClient, slug, pathname, searchParams]
@@ -105,4 +76,77 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
   }, [router])
 
   return { workspaces, all: workspaces, current, wsInfo, liveLogo, currentLogo, currentName, handleSelectWorkspace, handleCreateNew }
+}
+
+/**
+ * Calculates the redirection path when switching workspaces.
+ * Preserves the current route if possible, or falls back to a safe default.
+ */
+export function getWorkspaceRedirectPath(
+  pathname: string | null,
+  currentSlug: string,
+  targetSlug: string,
+  searchParams: ReadonlyURLSearchParams | null
+): string {
+  let targetPath = `/workspaces/${targetSlug}`
+
+  // Ensure pathname exists and we are currently in a workspace context
+  if (!pathname || !pathname.startsWith(`/workspaces/${currentSlug}`)) {
+    return targetPath
+  }
+
+  // Replace the current slug with the target slug
+  targetPath = pathname.replace(`/workspaces/${currentSlug}`, `/workspaces/${targetSlug}`)
+
+  // Fix 404s on dynamic routes that don't exist in the target workspace
+  const subPath = pathname.slice(`/workspaces/${currentSlug}`.length)
+  const parts = subPath.split("/").filter(Boolean)
+  const feature = parts[0]
+
+  // Feature-specific path preservation logic
+  if (feature === "changelog") {
+    // Keep /changelog and /changelog/new, but strip specific entries (e.g. /changelog/entry-id)
+    if (parts.length > 1 && parts[1] !== "new") {
+      targetPath = `/workspaces/${targetSlug}/changelog`
+    }
+  } else if (feature === "requests") {
+    // Keep /requests, but strip specific request entries
+    if (parts.length > 1) {
+      targetPath = `/workspaces/${targetSlug}/requests`
+    }
+  }
+
+  // Append query parameters if any
+  if (searchParams?.toString()) {
+    targetPath += `?${searchParams.toString()}`
+  }
+
+  return targetPath
+}
+
+function prefetchWorkspaceRoute(
+  router: ReturnType<typeof useRouter>,
+  queryClient: QueryClient,
+  targetPath: string,
+  targetSlug: string
+) {
+  try {
+    router.prefetch(targetPath)
+  } catch {
+    console.error("Failed to prefetch", targetPath)
+  }
+  try {
+    queryClient.prefetchQuery({
+      queryKey: ["status-counts", targetSlug],
+      queryFn: async () => {
+        const res = await client.workspace.statusCounts.$get({ slug: targetSlug })
+        const data = await res.json()
+        return (data?.counts || null) as Record<string, number> | null
+      },
+      staleTime: 300_000,
+      gcTime: 300_000,
+    })
+  } catch {
+    console.error("Failed to prefetch status counts for", targetSlug)
+  }
 }
