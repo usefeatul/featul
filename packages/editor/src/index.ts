@@ -22,19 +22,8 @@ export type {
   EditorNodeTextProps,
   EditorProviderProps,
   EditorSelectorProps,
-<<<<<<< HEAD
-<<<<<<< HEAD
   useFeatulEditorOptions,
-=======
-  UseMarbleEditorOptions,
-<<<<<<< HEAD
   // Legacy-compatible types
->>>>>>> d1482aa1 (refactor(editor): remove unused components and clean up exports)
-=======
->>>>>>> 7c0fb29d (refactor(editor): consolidate icons and restructure barrel files)
-=======
-  useFeatulEditorOptions,
->>>>>>> 581fe1a9 (refactor: flatten barrel files to direct imports for better tree shaking)
 } from "./components";
 export {
   EditorBubbleMenu,
@@ -63,19 +52,8 @@ export {
   EditorTableMenus,
   useCurrentEditor,
   useEditor,
-<<<<<<< HEAD
-<<<<<<< HEAD
   useFeatulEditor,
-=======
-  useMarbleEditor,
-<<<<<<< HEAD
   // Legacy-compatible components (for migration from editorold)
->>>>>>> d1482aa1 (refactor(editor): remove unused components and clean up exports)
-=======
->>>>>>> 7c0fb29d (refactor(editor): consolidate icons and restructure barrel files)
-=======
-  useFeatulEditor,
->>>>>>> 581fe1a9 (refactor: flatten barrel files to direct imports for better tree shaking)
 } from "./components";
 export {
   BubbleMenuButton,
@@ -84,7 +62,6 @@ export {
 } from "./components/ui/editor-button";
 
 export {
-  CodeBlock,
   configureSlashCommand,
   Figure,
   handleCommandNavigation,
@@ -99,15 +76,7 @@ export {
 } from "./extensions";
 export type { ExtensionKitOptions } from "./extensions";
 export { ExtensionKit } from "./extensions";
-<<<<<<< HEAD
-<<<<<<< HEAD
 export { lowlight } from "./lib/lowlight";
-=======
-export { lowlight } from "./lib";
->>>>>>> 7c0fb29d (refactor(editor): consolidate icons and restructure barrel files)
-=======
-export { lowlight } from "./lib/lowlight";
->>>>>>> 581fe1a9 (refactor: flatten barrel files to direct imports for better tree shaking)
 export type {
   EditorButtonProps,
   EditorIcon,
