@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { createPageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
 
 import { Plus, FileText } from "lucide-react";
 import { getChangelogListData } from "./data";
-import ChangelogItem from "@/components/changelog/ChangelogItem";
+import { ChangelogList } from "@/components/changelog/ChangelogList";
 
 export const revalidate = 0;
 
@@ -21,6 +22,24 @@ export default async function ChangelogListPage({ params }: Props) {
 
     const data = await getChangelogListData(slug);
     if (!data) return notFound();
+
+    const listKey = `changelog-${slug}`;
+    const cookieStore = await cookies();
+    const isSelectingCookie = cookieStore.get(`requests_isSelecting_${listKey}`);
+    const initialIsSelecting = isSelectingCookie?.value === "1" || isSelectingCookie?.value === "true";
+
+    const selectedCookie = cookieStore.get(`requests_selected_${listKey}`);
+    let initialSelectedIds: string[] = [];
+    if (selectedCookie?.value) {
+        try {
+            const parsed = JSON.parse(decodeURIComponent(selectedCookie.value));
+            if (Array.isArray(parsed)) {
+                initialSelectedIds = parsed;
+            }
+        } catch {
+            // Ignore JSON parse errors
+        }
+    }
 
     const { entries } = data;
 
@@ -41,13 +60,13 @@ export default async function ChangelogListPage({ params }: Props) {
                     </Link>
                 </div>
             ) : (
-                <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
-                    <ul className="m-0 list-none p-0">
-                        {entries.map((entry) => (
-                            <ChangelogItem key={entry.id} item={entry} workspaceSlug={slug} />
-                        ))}
-                    </ul>
-                </div>
+                <ChangelogList
+                    items={entries}
+                    workspaceSlug={slug}
+                    initialTotalCount={data.total}
+                    initialIsSelecting={initialIsSelecting}
+                    initialSelectedIds={initialSelectedIds}
+                />
             )}
         </section>
     );

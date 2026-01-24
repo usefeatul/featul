@@ -4,6 +4,7 @@ import React from "react"
 import Link from "next/link"
 
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
+import { Checkbox } from "@featul/ui/components/checkbox"
 import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
 import { ChangelogDraftIcon } from "@featul/ui/icons/changelog-draft"
@@ -14,9 +15,12 @@ import { ChangelogItemContextMenu } from "./ChangelogItemContextMenu"
 interface ChangelogItemProps {
     item: ChangelogEntryWithTags
     workspaceSlug: string
+    isSelecting?: boolean
+    isSelected?: boolean
+    onToggle?: (checked: boolean) => void
 }
 
-function ChangelogItem({ item, workspaceSlug }: ChangelogItemProps) {
+function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle }: ChangelogItemProps) {
     const authorName = item.authorName || "Guest"
     const publishedDate = item.publishedAt ? new Date(item.publishedAt) : null
     const createdDate = new Date(item.createdAt)
@@ -24,34 +28,42 @@ function ChangelogItem({ item, workspaceSlug }: ChangelogItemProps) {
 
     return (
         <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug}>
-            <Link
-                href={`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`}
-                className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 hover:bg-muted/50 transition-colors"
-            >
-                <div className="shrink-0">
-                    {item.status === "published" ? (
-                        <ChangelogPublishedIcon className="size-6" />
-                    ) : (
-                        <ChangelogDraftIcon className="size-6" />
-                    )}
-                </div>
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-foreground truncate">{item.title}</h3>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(displayDate)}</span>
-                    <div className="relative">
-                        <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
-                            <AvatarImage src={item.authorImage || randomAvatarUrl(item.authorId)} alt={authorName} />
-                            <AvatarFallback>{getInitials(authorName)}</AvatarFallback>
-                        </Avatar>
+            <div className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 ${isSelecting ? "" : "hover:bg-muted/50 transition-colors"}`}>
+                {isSelecting && (
+                    <Checkbox
+                        checked={!!isSelected}
+                        onCheckedChange={(v) => onToggle?.(!!v)}
+                        className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
+                    />
+                )}
+                <Link
+                    href={`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`}
+                    className={`flex items-center gap-3 flex-1 min-w-0 ${isSelecting ? "pointer-events-none" : ""}`}
+                >
+                    <div className="shrink-0">
+                        {item.status === "published" ? (
+                            <ChangelogPublishedIcon className="size-6" />
+                        ) : (
+                            <ChangelogDraftIcon className="size-6" />
+                        )}
                     </div>
-                </div>
-            </Link>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-foreground truncate">{item.title}</h3>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(displayDate)}</span>
+                        <div className="relative">
+                            <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
+                                <AvatarImage src={item.authorImage || randomAvatarUrl(item.authorId)} alt={authorName} />
+                                <AvatarFallback>{getInitials(authorName)}</AvatarFallback>
+                            </Avatar>
+                        </div>
+                    </div>
+                </Link>
+            </div>
         </ChangelogItemContextMenu>
     )
 }
 
 export default React.memo(ChangelogItem)
-
