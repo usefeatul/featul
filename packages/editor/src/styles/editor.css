@@ -10,6 +10,22 @@
   }
 }
 
+/* Base editor spacing */
+/* Base editor spacing */
+.ProseMirror {
+  line-height: 1.75;
+  font-size: 0.95rem;
+}
+
+/* Paragraph spacing */
+.ProseMirror p {
+  margin-bottom: 1em;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
 /* Placeholder styles - shows on empty paragraph */
 .ProseMirror>p.is-empty::before,
 .ProseMirror>p.is-node-empty::before,
@@ -22,22 +38,23 @@
 }
 
 /* Heading styles */
+/* Heading styles */
 .ProseMirror h1 {
-  font-size: 2em;
+  font-size: 1.75em;
   font-weight: 700;
   margin-top: 1em;
   margin-bottom: 0.5em;
 }
 
 .ProseMirror h2 {
-  font-size: 1.5em;
+  font-size: 1.4em;
   font-weight: 600;
   margin-top: 1em;
   margin-bottom: 0.5em;
 }
 
 .ProseMirror h3 {
-  font-size: 1.25em;
+  font-size: 1.2em;
   font-weight: 600;
   margin-top: 1em;
   margin-bottom: 0.5em;

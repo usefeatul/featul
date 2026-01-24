@@ -4,8 +4,7 @@ import type { KeyboardEvent, ForwardedRef } from "react";
 import { forwardRef, useState } from "react";
 import type { TextareaAutosizeProps } from "react-textarea-autosize";
 import ReactTextareaAutosize from "react-textarea-autosize";
-
-import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
+import { useIsomorphicLayoutEffect } from "@featul/ui/hooks/use-isomorphic-layout-effect"
 
 export type ExtendedTextareaAutosizeProps = TextareaAutosizeProps & {
   onEnterPress?: () => void;

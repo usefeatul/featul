@@ -4,7 +4,7 @@ import React from "react"
 import { Input } from "@featul/ui/components/input"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 import ContentImage from "@/components/global/ContentImage"
-import { TextareaAutosize } from "@/components/editor/TextareaAutosize"
+import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
 
 export interface UploadedImage {
   url: string
@@ -43,7 +43,7 @@ export function PostContent({
         className="text-lg md:text-xl  font-semibold h-auto py-2 placeholder:text-accent "
       />
       <TextareaAutosize
-        placeholder="Add post content"
+        placeholder="Add post contentss"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         minRows={2}
