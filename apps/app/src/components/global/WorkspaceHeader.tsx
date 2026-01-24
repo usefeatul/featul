@@ -70,7 +70,7 @@ export default function WorkspaceHeader() {
             {editorContext.actions
               .filter((action) => action.type === "switch")
               .map((action) => (
-                <div key={action.key} className="flex items-center gap-2 px-3 h-8 bg-transparent hover:bg-muted/50 transition-colors">
+                <div key={action.key} className="flex items-center gap-2 px-3 h-8 bg-transparent dark:bg-black/40 hover:bg-muted/50 transition-colors">
                   <span className="text-sm font-medium text-muted-foreground">{action.label}</span>
                   <Switch checked={action.checked} onCheckedChange={action.onClick} />
                 </div>

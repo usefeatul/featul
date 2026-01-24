@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useState, Fragment } from "react";
 import { Button } from "@featul/ui/components/button";
+import { Switch } from "@featul/ui/components/switch";
+import { ChevronLeft, ChevronRight, Check, Search } from "lucide-react";
+import { cn } from "@featul/ui/lib/utils";
 
 type Severity = "info" | "warn" | "error";
 type Diagnostic = {
@@ -19,13 +22,13 @@ function usePersistentBoolean(key: string, defaultValue: boolean) {
     try {
       const raw = window.localStorage.getItem(key);
       if (raw !== null) setValue(raw === "true");
-    } catch {}
+    } catch { }
   }, [key]);
 
   useEffect(() => {
     try {
       window.localStorage.setItem(key, String(value));
-    } catch {}
+    } catch { }
   }, [key, value]);
 
   return [value, setValue] as const;
@@ -171,6 +174,7 @@ export function DebugTools() {
   const [showGrid, setShowGrid] = usePersistentBoolean("__debug_grid", false);
   const [showOutline, setShowOutline] = usePersistentBoolean("__debug_outline", false);
   const [showAnalysis, setShowAnalysis] = usePersistentBoolean("__debug_analysis", false);
+  const [isCollapsed, setIsCollapsed] = usePersistentBoolean("__debug_collapsed", false);
   const [results, setResults] = useState<Diagnostic[]>([]);
   const [mounted, setMounted] = useState(false);
   const [pathname, setPathname] = useState<string>("");
@@ -179,7 +183,7 @@ export function DebugTools() {
     setMounted(true);
     try {
       setPathname(window.location.pathname);
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -231,7 +235,7 @@ export function DebugTools() {
     const text = results.map((r) => `${r.severity.toUpperCase()}: ${r.message}`).join("\n");
     try {
       navigator.clipboard.writeText(text);
-    } catch {}
+    } catch { }
   }
 
   function resetAll() {
@@ -241,9 +245,11 @@ export function DebugTools() {
     setResults([]);
   }
 
+  if (!mounted) return null;
+
   return (
-    <div className="fixed bottom-5 right-4 z-[10000] flex gap-2 items-end">
-      {mounted && showGrid && (
+    <div className="fixed bottom-5 right-4 z-[10000] flex flex-col items-end gap-2">
+      {showGrid && (
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 z-[9999]"
@@ -255,7 +261,7 @@ export function DebugTools() {
         />
       )}
 
-      {mounted && showAnalysis && results.map((r) =>
+      {showAnalysis && results.map((r) =>
         r.rect ? (
           <Fragment key={r.id}>
             <div
@@ -290,64 +296,117 @@ export function DebugTools() {
         ) : null
       )}
 
-      <div className="rounded-md  border bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-2 py-1 shadow-sm">
-        <div className="flex items-center gap-1">
+      <div className={cn(
+        "flex items-stretch rounded-lg border bg-background/95 transition-all duration-300 overflow-hidden h-9",
+        isCollapsed ? "w-9" : "w-auto"
+      )}>
+        {isCollapsed ? (
           <Button
-            size="xs"
-            variant={showGrid ? "quiet" : "outline"}
-            onClick={() => setShowGrid((v) => !v)}
-            aria-pressed={showGrid}
-            aria-label="Toggle baseline grid overlay"
+            size="icon"
+            variant="ghost"
+            className="h-full w-full rounded-none hover:bg-muted"
+            onClick={() => setIsCollapsed(false)}
+            aria-label="Expand debug tools"
           >
-            Grid
+            <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button
-            size="xs"
-            variant={showOutline ? "quiet" : "outline"}
-            onClick={() => setShowOutline((v) => !v)}
-            aria-pressed={showOutline}
-            aria-label="Toggle element outlines"
-          >
-            Outline
-          </Button>
-          <Button
-            size="xs"
-            variant="quiet"
-            onClick={analyze}
-            aria-label="Analyze layout for UX issues"
-          >
-            Scan
-          </Button>
-          {showAnalysis && (
-            <div className="ml-2 flex items-center gap-3">
-              <span className="px-2 py-1 rounded-md  border text-xs bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
-              <span className="px-2 py-1 rounded-md  border text-xs bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
-              <span className="px-2 py-1 rounded-md  border text-xs bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 px-3 hover:bg-muted/50 transition-colors">
+              <span className="text-xs font-medium text-muted-foreground">Grid</span>
+              <Switch
+                checked={showGrid}
+                onCheckedChange={setShowGrid}
+                size="sm"
+                className="scale-75 data-[state=checked]:bg-green-500"
+              />
             </div>
-          )}
-        </div>
 
-        {showAnalysis && (
-          <div className="mt-1 text-xs text-accent">
-            <ul className="max-h-28 overflow-auto space-y-0.5 pr-1">
-              {results.slice(0, 8).map((r) => (
-                <li key={r.id}>
-                  <span className={r.severity === "error" ? "text-red-600" : r.severity === "warn" ? "text-orange-600" : "text-blue-600"}>
-                    {r.component ? `[${r.component}] ` : ""}{r.severity.toUpperCase()}: {r.message}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-1 flex gap-1">
-              <Button size="xs" variant="nav" onClick={copyReport} aria-label="Copy analysis report">Copy</Button>
-              <Button size="xs" variant="nav" onClick={resetAll} aria-label="Reset debug toggles">Reset</Button>
+            <div className="w-[1px] bg-border" />
+
+            <div className="flex items-center gap-2 px-3 hover:bg-muted/50 transition-colors">
+              <span className="text-xs font-medium text-muted-foreground">Outline</span>
+              <Switch
+                checked={showOutline}
+                onCheckedChange={setShowOutline}
+                size="sm"
+                className="scale-75 data-[state=checked]:bg-green-500"
+              />
             </div>
-          </div>
+
+            <div className="w-[1px] bg-border" />
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "h-full rounded-none px-3 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted",
+                showAnalysis && "bg-accent text-accent-foreground"
+              )}
+              onClick={analyze}
+            >
+              Scan
+              <div className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary/10">
+                {showAnalysis ? (
+                  <Check className="h-2.5 w-2.5 text-primary" />
+                ) : (
+                  <Search className="h-2.5 w-2.5" />
+                )}
+              </div>
+            </Button>
+
+            <div className="w-[1px] bg-border" />
+
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-full w-9 rounded-none hover:bg-muted"
+              onClick={() => setIsCollapsed(true)}
+              aria-label="Collapse debug tools"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </>
         )}
       </div>
+
+      {showAnalysis && !isCollapsed && (
+        <div className="mt-1 w-[300px] rounded-lg border bg-background/95 p-3 shadow-md backdrop-blur">
+          <div className="mb-2 flex items-center justify-between border-b pb-2">
+            <h4 className="text-sm font-semibold">Analysis Results</h4>
+            <div className="flex items-center gap-2">
+              <span className="px-1.5 py-0.5 rounded-md border text-[10px] bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
+              <span className="px-1.5 py-0.5 rounded-md border text-[10px] bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
+              <span className="px-1.5 py-0.5 rounded-md border text-[10px] bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
+            </div>
+          </div>
+          <ul className="max-h-48 overflow-auto space-y-1 text-xs">
+            {results.length === 0 ? (
+              <li className="text-muted-foreground italic">No issues found.</li>
+            ) : (
+              results.slice(0, 20).map((r) => (
+                <li key={r.id} className="flex gap-1.5 leading-snug">
+                  <span className={cn(
+                    "mt-0.5 shrink-0 h-1.5 w-1.5 rounded-full",
+                    r.severity === "error" ? "bg-red-500" : r.severity === "warn" ? "bg-orange-500" : "bg-blue-500"
+                  )} />
+                  <span className="text-muted-foreground">
+                    {r.component && <span className="font-mono text-[10px] text-foreground mr-1">[{r.component}]</span>}
+                    {r.message}
+                  </span>
+                </li>
+              ))
+            )}
+            {results.length > 20 && <li className="pt-1 text-center text-muted-foreground italic">...and {results.length - 20} more</li>}
+          </ul>
+          <div className="mt-3 flex gap-2 border-t pt-2">
+            <Button size="xs" variant="outline" className="h-7 flex-1" onClick={copyReport}>Copy Report</Button>
+            <Button size="xs" variant="outline" className="h-7 flex-1" onClick={resetAll}>Clear</Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default DebugTools;
-
