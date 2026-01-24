@@ -11,6 +11,7 @@ import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
 import RoleBadge from "@/components/global/RoleBadge"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
+import { RequestItemContextMenu } from "./RequestItemContextMenu"
 
 export interface RequestItemData {
   id: string
@@ -33,6 +34,12 @@ export interface RequestItemData {
   role?: "admin" | "member" | "viewer" | null
   isOwner?: boolean
   isFeatul?: boolean
+  tags?: Array<{
+    id: string
+    name: string
+    slug: string
+    color?: string | null
+  }>
 }
 
 interface RequestItemProps {
@@ -53,7 +60,11 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const title = item.title || ""
   const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0">
+    <RequestItemContextMenu
+      item={item}
+      workspaceSlug={workspaceSlug}
+      className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0"
+    >
       {isSelecting ? (
         <Checkbox
           checked={!!isSelected}
@@ -91,7 +102,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           </Avatar>
         </div>
       </div>
-    </div>
+    </RequestItemContextMenu>
   )
 }
 

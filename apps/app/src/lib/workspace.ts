@@ -335,6 +335,30 @@ export async function getWorkspacePosts(
     .limit(lim)
     .offset(off);
 
+  // Fetch tags for these posts
+  type TagData = { id: string; name: string; color: string | null; slug: string }
+  const tagsByPostId: Record<string, TagData[]> = {}
+  if (rows.length > 0) {
+    const postIds = rows.map((r) => r.id)
+    const tagRows = await db
+      .select({
+        postId: postTag.postId,
+        id: tag.id,
+        name: tag.name,
+        color: tag.color,
+        slug: tag.slug,
+      })
+      .from(postTag)
+      .innerJoin(tag, eq(postTag.tagId, tag.id))
+      .where(inArray(postTag.postId, postIds))
+
+    for (const tr of tagRows) {
+      const list = tagsByPostId[tr.postId] || []
+      list.push({ id: String(tr.id), name: String(tr.name), color: tr.color, slug: String(tr.slug) })
+      tagsByPostId[tr.postId] = list
+    }
+  }
+
   const withAvatars = rows.map((r) => {
     let avatarSeed = r.id || r.slug
     if (r.isAnonymous && (r.metadata as Record<string, unknown>)?.fingerprint) {
@@ -348,6 +372,7 @@ export async function getWorkspacePosts(
       authorImage: !r.isAnonymous
         ? r.authorImage || randomAvatarUrl(r.id || r.slug)
         : randomAvatarUrl(avatarSeed),
+      tags: tagsByPostId[r.id] || [],
     }
   });
 
