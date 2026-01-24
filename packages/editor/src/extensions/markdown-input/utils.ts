@@ -111,30 +111,71 @@ export function transformImageToFigure(
 }
 
 /**
- * Lifts figures out of paragraphs where they're the only child
- * Markdown parsers often wrap standalone images in paragraphs, which becomes
- * invalid when the image is transformed to a figure (block-level element)
+ * Lifts figures out of paragraphs.
+ * If a paragraph contains a figure, it splits the paragraph into multiple nodes:
+ * segments of text (as separate paragraphs) and the figure interlaced.
+ * This ensures figures (block nodes) are not nested inside paragraphs.
  */
-function liftFiguresFromParagraphs(content: JSONContent): JSONContent {
+function liftFiguresFromParagraphs(
+  content: JSONContent
+): JSONContent | JSONContent[] {
   if (!content) {
     return content;
   }
 
-  // If this is a paragraph with a single figure child, replace the paragraph with the figure
+  // If this is a paragraph that might contain figures
   if (
     content.type === "paragraph" &&
     content.content &&
-    content.content.length === 1 &&
-    content.content[0]?.type === "figure"
+    Array.isArray(content.content)
   ) {
-    return content.content[0]; // Replace paragraph with the figure
+    const hasFigure = content.content.some((child) => child.type === "figure");
+
+    if (hasFigure) {
+      const newNodes: JSONContent[] = [];
+      let currentBuffer: JSONContent[] = [];
+
+      for (const child of content.content) {
+        if (child.type === "figure") {
+          // If we have text accumulated, push it as a paragraph first
+          if (currentBuffer.length > 0) {
+            newNodes.push({
+              type: "paragraph",
+              content: currentBuffer,
+            });
+            currentBuffer = [];
+          }
+          // Push the figure itself (now a top-level block sibling)
+          newNodes.push(child);
+        } else {
+          // Accumulate non-figure nodes (text, etc.)
+          currentBuffer.push(child);
+        }
+      }
+
+      // Push remaining text if any
+      if (currentBuffer.length > 0) {
+        newNodes.push({
+          type: "paragraph",
+          content: currentBuffer,
+        });
+      }
+
+      return newNodes;
+    }
   }
 
   // Recursively process children
   if (content.content && Array.isArray(content.content)) {
+    // Process each child and flatten the results (in case a child became multiple nodes)
+    const newContent = content.content.flatMap((child) => {
+      const result = liftFiguresFromParagraphs(child);
+      return Array.isArray(result) ? result : [result];
+    });
+
     return {
       ...content,
-      content: content.content.map((child) => liftFiguresFromParagraphs(child)),
+      content: newContent,
     };
   }
 
@@ -152,7 +193,10 @@ export function transformContent(
     // First transform images to figures
     const transformed = json.map((item) => transformImageToFigure(item));
     // Then lift figures out of paragraphs
-    return transformed.map((item) => liftFiguresFromParagraphs(item));
+    return transformed.flatMap((item) => {
+      const result = liftFiguresFromParagraphs(item);
+      return Array.isArray(result) ? result : [result];
+    });
   }
   // First transform images to figures
   const transformed = transformImageToFigure(json);

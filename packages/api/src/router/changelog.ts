@@ -6,34 +6,11 @@ import { HTTPException } from "hono/http-exception"
 import { normalizePlan, getPlanLimits, assertWithinLimit } from "../shared/plan"
 import { toSlug } from "../shared/slug"
 import { requireBoardManagerBySlug } from "../shared/access"
-
-const bySlugSchema = z.object({ slug: z.string().min(2).max(64) })
-
-const entryContentSchema = z.object({
-  type: z.string(),
-  content: z.array(z.any()).optional(),
-}).passthrough()
-
-const createEntrySchema = z.object({
-  slug: bySlugSchema.shape.slug,
-  title: z.string().min(1).max(256),
-  content: entryContentSchema,
-  summary: z.string().max(512).optional(),
-  coverImage: z.string().url().optional(),
-  tags: z.array(z.string()).optional(),
-  status: z.enum(["draft", "published"]).optional(),
-})
-
-const updateEntrySchema = z.object({
-  slug: bySlugSchema.shape.slug,
-  entryId: z.string().uuid(),
-  title: z.string().min(1).max(256).optional(),
-  content: entryContentSchema.optional(),
-  summary: z.string().max(512).optional().nullable(),
-  coverImage: z.string().url().optional().nullable(),
-  tags: z.array(z.string()).optional(),
-  status: z.enum(["draft", "published", "archived"]).optional(),
-})
+import {
+  bySlugSchema,
+  createEntrySchema,
+  updateEntrySchema,
+} from "../validators/changelog";
 
 export function createChangelogRouter() {
   return j.router({
@@ -179,7 +156,7 @@ export function createChangelogRouter() {
       .input(createEntrySchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug)
-        
+
         const [b] = await ctx.db
           .select({ id: board.id })
           .from(board)
@@ -235,7 +212,7 @@ export function createChangelogRouter() {
       .input(updateEntrySchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug)
-        
+
         const [b] = await ctx.db
           .select({ id: board.id })
           .from(board)
@@ -327,7 +304,7 @@ export function createChangelogRouter() {
       }),
 
     entriesGetForEdit: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().uuid() }))
+      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }))
       .get(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug)
 
@@ -349,7 +326,7 @@ export function createChangelogRouter() {
       }),
 
     entriesDelete: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().uuid() }))
+      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }))
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug)
 
@@ -384,7 +361,7 @@ export function createChangelogRouter() {
       }),
 
     entriesPublish: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().uuid() }))
+      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }))
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug)
 
@@ -428,7 +405,7 @@ export function createChangelogRouter() {
       }),
 
     entriesList: publicProcedure
-      .input(z.object({ 
+      .input(z.object({
         slug: bySlugSchema.shape.slug,
         limit: z.number().min(1).max(50).optional(),
         offset: z.number().min(0).optional(),
@@ -475,7 +452,7 @@ export function createChangelogRouter() {
       }),
 
     entriesListAll: privateProcedure
-      .input(z.object({ 
+      .input(z.object({
         slug: bySlugSchema.shape.slug,
         status: z.enum(["draft", "published", "archived"]).optional(),
         limit: z.number().min(1).max(50).optional(),
