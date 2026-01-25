@@ -2,6 +2,7 @@ import { Container } from "@/components/global/container"
 import BrandVarsEffect from "@/components/global/BrandVarsEffect"
 import Sidebar from "@/components/sidebar/Sidebar"
 import MobileSidebar from "@/components/sidebar/MobileSidebar"
+import { WorkspaceEvents } from "@/components/global/WorkspaceEvents"
 import { getBrandingColorsBySlug, getWorkspaceStatusCounts, getWorkspaceTimezoneBySlug, getWorkspaceBySlug, listUserWorkspaces, getWorkspaceDomainInfoBySlug } from "@/lib/workspace"
 import WorkspaceHeader from "@/components/global/WorkspaceHeader"
 import FilterSummary from "@/components/requests/FilterSummary"
@@ -38,6 +39,7 @@ export default async function WorkspaceLayout({ children, params }: { children: 
     <Container className="min-h-screen lg:flex lg:gap-4" maxWidth="7xl" noPadding>
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
+      <WorkspaceEvents slug={slug} />
       <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialDomainInfo={domainInfo || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
       <main className="w-full lg:flex-1 px-4 lg:px-0 pb-10 lg:pb-0">
         <EditorHeaderProvider>

@@ -8,7 +8,17 @@ import { useQueryClient } from "@tanstack/react-query"
 
 
 
-export function useRequestItemActions({ requestId, onSuccess }: { requestId: string; onSuccess?: () => void }) {
+export function useRequestItemActions({
+    requestId,
+    workspaceSlug,
+    roadmapStatus,
+    onSuccess
+}: {
+    requestId: string;
+    workspaceSlug?: string;
+    roadmapStatus?: string | null;
+    onSuccess?: () => void
+}) {
     const router = useRouter()
     const queryClient = useQueryClient()
     const [isPending, setIsPending] = useState(false)
@@ -43,6 +53,15 @@ export function useRequestItemActions({ requestId, onSuccess }: { requestId: str
             })
             if (res.ok) {
                 toast.success("Request deleted")
+                if (workspaceSlug) {
+                    window.dispatchEvent(new CustomEvent("post:deleted", {
+                        detail: {
+                            postId: requestId,
+                            workspaceSlug,
+                            status: roadmapStatus
+                        }
+                    }))
+                }
                 router.refresh()
                 onSuccess?.()
             } else {

@@ -49,6 +49,8 @@ export function RequestItemContextMenu({
 
     const { updateStatus, deleteRequest, isPending } = useRequestItemActions({
         requestId: item.id,
+        workspaceSlug,
+        roadmapStatus: item.roadmapStatus,
         onSuccess: () => {
             setOpen(false)
             setShowDeleteDialog(false)
