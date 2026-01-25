@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
-import { DrawerContent, DrawerTitle } from "@featul/ui/components/drawer";
+import { SheetContent, SheetTitle } from "@featul/ui/components/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import type { NavItem } from "../../types/nav";
@@ -27,6 +26,7 @@ export default function MobileDrawerContent({
   initialWorkspace,
   initialWorkspaces,
   initialUser,
+  onLinkClick,
 }: {
   pathname: string;
   primaryNav: NavItem[];
@@ -39,6 +39,7 @@ export default function MobileDrawerContent({
   | { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }[]
   | undefined;
   initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
+  onLinkClick?: () => void;
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
@@ -46,9 +47,9 @@ export default function MobileDrawerContent({
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent>
+    <SheetContent side="right">
       <VisuallyHidden>
-        <DrawerTitle>Menu</DrawerTitle>
+        <SheetTitle>Menu</SheetTitle>
       </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
@@ -62,7 +63,7 @@ export default function MobileDrawerContent({
 
         <SidebarSection title="REQUEST">
           {primaryNav.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={pathname} count={statusCounts ? statusCounts[statusKey(item.label)] : undefined} mutedIcon={false} />
+            <SidebarItem key={item.label} item={item} pathname={pathname} count={statusCounts ? statusCounts[statusKey(item.label)] : undefined} mutedIcon={false} onClick={onLinkClick} />
           ))}
         </SidebarSection>
 
@@ -82,11 +83,11 @@ export default function MobileDrawerContent({
             user={initialUser}
           />
           {secondaryNav.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={pathname} mutedIcon />
+            <SidebarItem key={item.label} item={item} pathname={pathname} mutedIcon onClick={onLinkClick} />
           ))}
           <UserDropdown initialUser={initialUser} />
         </SidebarSection>
       </ScrollArea>
-    </DrawerContent>
+    </SheetContent>
   );
 }
