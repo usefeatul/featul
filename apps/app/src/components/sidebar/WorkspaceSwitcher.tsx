@@ -81,7 +81,7 @@ export default function WorkspaceSwitcher({
             <DropdownMenuItem disabled>No workspaces yet</DropdownMenuItem>
           ) : (
             <div className="flex flex-col">
-              <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-thin">
+              <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-hide">
                 <div className="flex flex-col gap-1 pb-1">
                   {all.map((w) => {
                     const logoUrl: string | null = w.logo ?? null;

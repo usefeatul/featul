@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
-import { Sheet } from "@featul/ui/components/sheet";
+import { Drawer } from "@featul/ui/components/drawer";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { buildBottomNav, getSlugFromPath } from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
@@ -53,7 +53,7 @@ export default function MobileSidebar({
 
   return (
     <div className={cn("lg:hidden", className)}>
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Drawer direction="right" open={open} onOpenChange={setOpen}>
         <MobileBottomBar items={middleNav} />
         <MobileDrawerContent
           pathname={pathname}
@@ -67,7 +67,7 @@ export default function MobileSidebar({
           initialUser={initialUser}
           onLinkClick={() => setOpen(false)}
         />
-      </Sheet>
+      </Drawer>
     </div>
   );
 }

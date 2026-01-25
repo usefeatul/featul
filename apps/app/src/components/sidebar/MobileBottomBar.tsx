@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@featul/ui/lib/utils";
-import { SheetTrigger } from "@featul/ui/components/sheet";
+import { DrawerTrigger } from "@featul/ui/components/drawer";
 import type { NavItem } from "../../types/nav";
 import MoreIcon from "@featul/ui/icons/more";
 
@@ -26,12 +26,12 @@ export default function MobileBottomBar({ items }: { items: NavItem[] }) {
             </Link>
           );
         })}
-        <SheetTrigger asChild>
+        <DrawerTrigger asChild>
           <button className="group flex w-full flex-col items-center justify-center gap-1 px-1 py-2 text-[10px] sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40">
             <MoreIcon className="size-4 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
             <span className="truncate w-full text-center">More</span>
           </button>
-        </SheetTrigger>
+        </DrawerTrigger>
       </div>
     </div>
   );

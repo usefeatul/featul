@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
-import { SheetContent, SheetTitle } from "@featul/ui/components/sheet";
+import { DrawerContent, DrawerTitle } from "@featul/ui/components/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import type { NavItem } from "../../types/nav";
@@ -47,9 +47,9 @@ export default function MobileDrawerContent({
     return label.trim().toLowerCase();
   };
   return (
-    <SheetContent side="right">
+    <DrawerContent>
       <VisuallyHidden>
-        <SheetTitle>Menu</SheetTitle>
+        <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
@@ -88,6 +88,6 @@ export default function MobileDrawerContent({
           <UserDropdown initialUser={initialUser} />
         </SidebarSection>
       </ScrollArea>
-    </SheetContent>
+    </DrawerContent>
   );
 }
