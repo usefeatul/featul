@@ -9,12 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@featul/ui/components/dropdown-menu";
-import { useWorkspaceSwitcher } from "./useWorkspaceSwitcher";
+import { useWorkspaceSwitcher } from "../../hooks/useWorkspaceSwitcher";
 import Image from "next/image"
 import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
-import type { Ws } from "./useWorkspaceSwitcher";
+import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 
 export default function WorkspaceSwitcher({
   className = "",
