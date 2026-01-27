@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import SettingsCard from "@/components/global/SettingsCard"
-import { ShieldIcon } from "@featul/ui/icons/shield"
+import { CloudIcon } from "@featul/ui/icons/cloud"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import type { SessionItem, SessionData } from "@/types/session"
@@ -107,6 +107,9 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
                                 return (
                                     <div key={s.token} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 bg-card gap-2">
                                         <div className="flex items-center gap-3 overflow-hidden">
+                                            <div className="p-2 rounded-full bg-muted/50 shrink-0">
+                                                <CloudIcon className="size-4 text-primary" />
+                                            </div>
                                             <div className="min-w-0 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-medium truncate">{deviceName}</span>
@@ -157,7 +160,7 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
                     )}
                 </div>
             }
-            icon={<ShieldIcon className="size-5 text-primary" opacity={1} />}
+            icon={<CloudIcon className="size-5 text-primary" />}
             buttonLabel="Sign out all other devices"
             buttonVariant="destructive"
             onAction={onSignOutAll}
