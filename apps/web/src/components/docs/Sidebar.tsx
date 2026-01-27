@@ -49,8 +49,8 @@ export function DocsSidebar() {
   return (
     <nav className="flex flex-col h-full select-none">
       {/* Logo header - clean and simple */}
-      <Link 
-        href="/" 
+      <Link
+        href="/"
         className="group flex items-center gap-3 mb-12"
       >
         <FeatulLogoIcon className="size-5 text-foreground" />
@@ -81,7 +81,7 @@ export function DocsSidebar() {
         {docsSections.map((section) => (
           <div key={section.label}>
             {/* Section label */}
-            <p className="text-[10px] font-semibold text-foreground tracking-[0.1em] uppercase mb-3 pl-3">
+            <p className="text-xs font-semibold text-foreground tracking-[0.1em] uppercase mb-3 pl-3">
               {section.label}
             </p>
 
@@ -99,8 +99,8 @@ export function DocsSidebar() {
                       href={item.href}
                       className={cn(
                         "group relative block py-1.5 pl-3 -ml-px text-[13px] transition-colors duration-150",
-                        isActive 
-                          ? "text-foreground font-medium" 
+                        isActive
+                          ? "text-foreground font-medium"
                           : "text-muted-foreground/60 hover:text-foreground"
                       )}
                     >

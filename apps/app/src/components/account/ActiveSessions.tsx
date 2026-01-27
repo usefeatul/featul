@@ -8,20 +8,15 @@ import SettingsCard from "@/components/global/SettingsCard"
 import { ShieldIcon } from "@featul/ui/icons/shield"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
+import type { SessionItem, SessionData } from "@/types/session"
+import { parseUserAgent } from "@/utils/user-agent"
 
-type SessionItem = {
-    token: string
-    userAgent?: string | null
-    ipAddress?: string | null
-    createdAt?: string | Date
-    expiresAt?: string | Date
-}
 
-type SessionData = { session?: { token?: string }; token?: string } | null
 
 export default function ActiveSessions({ initialSessions, initialMeSession }: { initialSessions?: SessionItem[] | null, initialMeSession?: unknown }) {
     const queryClient = useQueryClient()
     const [revoking, setRevoking] = React.useState<string | null>(null)
+    const [expanded, setExpanded] = React.useState(false)
 
     const { data: meSession } = useQuery<SessionData>({
         queryKey: ["me-session"],
@@ -100,35 +95,39 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2">
-                            {(sessions || []).map((s) => {
+                            {(sessions || []).slice(0, expanded ? undefined : 8).map((s) => {
                                 const isCurrent = s.token === currentToken
-                                const ua = String(s.userAgent || "Unknown Device").slice(0, 80)
+                                const deviceName = parseUserAgent(s.userAgent)
+
                                 const ip = String(s.ipAddress || "-")
-                                const exp = s.expiresAt ? new Date(s.expiresAt).toLocaleDateString() : "-"
+                                const exp = s.expiresAt
+                                    ? new Date(s.expiresAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                                    : "-"
 
                                 return (
-                                    <div key={s.token} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-md bg-background border border-border/50 gap-3">
-                                        <div className="flex items-start gap-3 overflow-hidden">
-                                            <div className="mt-1 sm:mt-0 p-2 rounded-full bg-muted/50 shrink-0">
+                                    <div key={s.token} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 rounded-md bg-card gap-2">
+                                        <div className="flex items-center gap-3 overflow-hidden">
+                                            <div className="p-2 rounded-full bg-muted/50 shrink-0">
                                                 <ShieldIcon className="size-4 text-primary" />
                                             </div>
-                                            <div className="min-w-0">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <span className="text-sm font-medium truncate">{ua}</span>
+                                            <div className="min-w-0 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm font-medium truncate">{deviceName}</span>
                                                     {isCurrent && (
-                                                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-medium">
+                                                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 font-medium shrink-0">
                                                             Current
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center gap-3 text-xs text-accent mt-1">
-                                                    <span>IP: {ip}</span>
-                                                    <span className="hidden sm:inline">&bull;</span>
+                                                <div className="flex items-center gap-3 text-xs text-accent">
+                                                    <span className="hidden sm:inline text-border">•</span>
+                                                    <span>{ip}</span>
+                                                    <span className="text-border">•</span>
                                                     <span>Exp: {exp}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex justify-end sm:ml-auto">
+                                        <div className="flex justify-end sm:ml-auto shrink-0">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
@@ -142,6 +141,18 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
                                     </div>
                                 )
                             })}
+
+                            {sessions && sessions.length > 8 && !expanded && (
+                                <Button
+                                    variant="card"
+                                    className="w-full text-accent mt-2 gap-2"
+                                    onClick={() => setExpanded(true)}
+                                >
+                                    <LoaderIcon className="size-4" />
+                                    Load more sessions
+                                </Button>
+                            )}
+
                             {(!sessions || sessions.length === 0) && (
                                 <div className="text-sm text-accent py-2">No active sessions found.</div>
                             )}
