@@ -11,10 +11,12 @@ import {
 } from "@featul/ui/components/popover";
 import { cn } from "@featul/ui/lib/utils";
 
+import type { BoardSummary } from "@/types/post";
+
 interface BoardSelectorProps {
-  boards: any[];
-  selectedBoard: { name: string; slug: string } | null;
-  onSelectBoard: (board: any) => void;
+  boards: BoardSummary[];
+  selectedBoard: BoardSummary | null;
+  onSelectBoard: (board: BoardSummary) => void;
 }
 
 export function BoardSelector({
@@ -28,7 +30,7 @@ export function BoardSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="nav"
+          variant="card"
           size="sm"
           className="h-8 gap-1 px-2 font-medium text-foreground hover:bg-muted"
         >

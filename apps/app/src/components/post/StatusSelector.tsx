@@ -24,7 +24,7 @@ export function StatusSelector({ status, onStatusChange }: StatusSelectorProps) 
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="nav"
+          variant="card"
           size="sm"
           className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
         >

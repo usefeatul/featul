@@ -10,7 +10,7 @@ import { client } from "@featul/api/client"
 
 type Board = { id: string; name: string; slug: string; type?: string | null }
 
-export function BoardsDropdown({ slug, subdomain, initialBoards, selectedBoard }: { slug: string; subdomain: string; initialBoards?: Board[]; selectedBoard?: string }) {
+export function BoardsDropdown({ slug, initialBoards, selectedBoard }: { slug: string; initialBoards?: Board[]; selectedBoard?: string }) {
   const router = useRouter()
   const search = useSearchParams()
   const selected = selectedBoard || search.get("board") || "__all__"
@@ -39,7 +39,9 @@ export function BoardsDropdown({ slug, subdomain, initialBoards, selectedBoard }
           setLoading(false)
         }
       }
-    } catch {}
+    } catch {
+      setLoading(false)
+    }
     ;(async () => {
       try {
         const res = await client.board.byWorkspaceSlug.$get({ slug })
@@ -49,7 +51,9 @@ export function BoardsDropdown({ slug, subdomain, initialBoards, selectedBoard }
         if (mounted) setBoards(filtered)
         try {
           if (typeof window !== "undefined") localStorage.setItem(key, JSON.stringify({ boards: filtered, ts: Date.now() }))
-        } catch {}
+        } catch {
+          setLoading(false)
+        }
       } finally {
         if (mounted) setLoading(false)
       }
@@ -80,7 +84,7 @@ export function BoardsDropdown({ slug, subdomain, initialBoards, selectedBoard }
           <ChevronDownIcon className="size-3" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent id={`popover-${subdomain}-${slug}-boards`} align="start" list className="min-w-[9rem] w-fit">
+      <PopoverContent id={`popover-${slug}-boards`} align="start" list className="min-w-[9rem] w-fit">
         <div className="px-3 py-2 text-xs font-medium text-accent">Boards</div>
         <PopoverList>
           <PopoverListItem onClick={() => go("__all__")}> 

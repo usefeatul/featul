@@ -7,7 +7,7 @@ import { DocumentTextIcon } from "@featul/ui/icons/document-text"
 
 type Board = { id: string; name: string; slug: string; postCount?: number }
 
-export function BoardsList({ slug, subdomain, initialBoards, selectedBoard }: { slug: string; subdomain: string; initialBoards?: Board[]; selectedBoard?: string }) {
+export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: string; initialBoards?: Board[]; selectedBoard?: string }) {
   const router = useRouter()
   const search = useSearchParams()
   const current = selectedBoard || search.get("board") || "__all__"

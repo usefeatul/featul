@@ -11,8 +11,10 @@ import {
   PopoverListItem,
 } from "@featul/ui/components/popover";
 
+import type { TagSummary } from "@/types/post";
+
 interface TagSelectorProps {
-  availableTags: any[];
+  availableTags: TagSummary[];
   selectedTags: string[];
   onToggleTag: (tagId: string) => void;
 }
@@ -28,7 +30,7 @@ export function TagSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="nav"
+          variant="card"
           size="sm"
           className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
         >
