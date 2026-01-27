@@ -131,22 +131,25 @@ function TabsList({
         aria-hidden
         className="pointer-events-none absolute bottom-0 bg-border left-0 right-0 h-px z-0"
       />
-      {!isMobile && (
-        <AnimatePresence>
-          {hover.visible && (
-            <motion.div
-              key="hover"
-              className={cn(
-                "pointer-events-none absolute top-0 bottom-1 left-0 mb-1 rounded-md bg-accent/10 z-0"
-              )}
-              initial={{ opacity: 0, x: hover.x, width: hover.width }}
-              animate={{ opacity: 1, x: hover.x, width: hover.width }}
-              exit={{ opacity: 0, x: hover.x, width: hover.width }}
-              transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
-            />
-          )}
-        </AnimatePresence>
-      )}
+
+      {
+        !isMobile && (
+          <AnimatePresence>
+            {hover.visible && (
+              <motion.div
+                key="hover"
+                className={cn(
+                  "pointer-events-none absolute top-0 bottom-1 left-0 mb-1 rounded-md bg-accent/10 z-0"
+                )}
+                initial={{ opacity: 0, x: hover.x, width: hover.width }}
+                animate={{ opacity: 1, x: hover.x, width: hover.width }}
+                exit={{ opacity: 0, x: hover.x, width: hover.width }}
+                transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
+              />
+            )}
+          </AnimatePresence>
+        )
+      }
       <GliderContext.Provider
         value={{
           value: ctx?.value,
@@ -161,24 +164,26 @@ function TabsList({
       >
         {props.children}
       </GliderContext.Provider>
-      {!isMobile && (
-        <AnimatePresence>
-          {indicator.visible && (
-            <motion.div
-              key="selected"
-              aria-hidden
-              className={cn(
-                "pointer-events-none absolute bottom-0 left-0 h-[2px] rounded-md bg-primary z-10"
-              )}
-              initial={false}
-              animate={{ x: indicator.x, width: indicator.width, opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ type: "tween", ease: "easeOut", duration: 0.2 }}
-            />
-          )}
-        </AnimatePresence>
-      )}
-    </BaseTabs.List>
+      {
+        !isMobile && (
+          <AnimatePresence>
+            {indicator.visible && (
+              <motion.div
+                key="selected"
+                aria-hidden
+                className={cn(
+                  "pointer-events-none absolute bottom-0 left-0 h-[2px] rounded-md bg-primary z-10"
+                )}
+                initial={false}
+                animate={{ x: indicator.x, width: indicator.width, opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: "tween", ease: "easeOut", duration: 0.2 }}
+              />
+            )}
+          </AnimatePresence>
+        )
+      }
+    </BaseTabs.List >
   );
 }
 
