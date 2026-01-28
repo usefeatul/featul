@@ -3,7 +3,7 @@
 import React from "react"
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
-import { getDisplayUser, getInitials, getPrivacySafeDisplayUser } from "@/utils/user-utils"
+import { getInitials, getPrivacySafeDisplayUser } from "@/utils/user-utils"
 import { relativeTime } from "@/lib/time"
 import BoardPicker from "../requests/meta/BoardPicker"
 import StatusPicker from "../requests/meta/StatusPicker"

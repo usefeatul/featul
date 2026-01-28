@@ -101,7 +101,6 @@ export function MainContent({
                 </span>
                 <BoardsDropdown
                   slug={slug}
-                  subdomain={subdomain}
                   initialBoards={initialBoards}
                   selectedBoard={selectedBoard}
                 />
@@ -110,7 +109,6 @@ export function MainContent({
               <div className="md:hidden flex items-center justify-between gap-2">
                 <BoardsDropdown
                   slug={slug}
-                  subdomain={subdomain}
                   initialBoards={initialBoards}
                   selectedBoard={selectedBoard}
                 />
@@ -129,7 +127,6 @@ export function MainContent({
             >
               <BoardsDropdown
                 slug={slug}
-                subdomain={subdomain}
                 initialBoards={initialBoards}
                 selectedBoard={selectedBoard}
               />
@@ -155,8 +152,6 @@ export function MainContent({
             )}
           </div>
           <PublicRequestPagination
-            subdomain={subdomain}
-            slug={slug}
             page={page}
             pageSize={pageSize}
             totalCount={totalCount}

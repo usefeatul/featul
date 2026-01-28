@@ -35,14 +35,14 @@ export function BoardsDropdown({ slug, initialBoards, selectedBoard }: { slug: s
         const list = ((cached?.boards || cached?.data) || []) as Board[]
         const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
         if (mounted) {
-          if (boards.length === 0) setBoards(filtered)
+          setBoards((prev) => (prev.length === 0 ? filtered : prev))
           setLoading(false)
         }
       }
     } catch {
       setLoading(false)
     }
-    ;(async () => {
+    ; (async () => {
       try {
         const res = await client.board.byWorkspaceSlug.$get({ slug })
         const data = await res.json()
@@ -87,7 +87,7 @@ export function BoardsDropdown({ slug, initialBoards, selectedBoard }: { slug: s
       <PopoverContent id={`popover-${slug}-boards`} align="start" list className="min-w-[9rem] w-fit">
         <div className="px-3 py-2 text-xs font-medium text-accent">Boards</div>
         <PopoverList>
-          <PopoverListItem onClick={() => go("__all__")}> 
+          <PopoverListItem onClick={() => go("__all__")}>
             <span className="text-sm">All Feedback</span>
           </PopoverListItem>
           {boards.map((b) => (

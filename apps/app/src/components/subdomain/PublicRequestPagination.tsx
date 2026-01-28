@@ -8,14 +8,10 @@ import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 import PaginationHotkeys from "@/components/pagination/PaginationHotkeys"
 
 export function PublicRequestPagination({
-  subdomain,
-  slug,
   page,
   pageSize,
   totalCount,
 }: {
-  subdomain: string
-  slug: string
   page: number
   pageSize: number
   totalCount: number

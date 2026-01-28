@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "@featul/ui/components/button";
 import { Bell } from "lucide-react";
 import { client } from "@featul/api/client";
-import NotificationsPanel, { NotificationItem } from "./NotificationsPanel";
+import NotificationsPanel, { type NotificationItem } from "./NotificationsPanel";
 import {
   Popover,
   PopoverTrigger,
@@ -17,6 +17,14 @@ export default function NotificationsBell() {
     []
   );
   const [unread, setUnread] = React.useState<number>(0);
+  const mounted = React.useRef(false);
+
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     let active = true;
@@ -28,7 +36,7 @@ export default function NotificationsBell() {
         } | null;
         if (active) setUnread(Number(d?.unread ?? 0));
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       active = false;
     };
@@ -42,7 +50,9 @@ export default function NotificationsBell() {
       setNotifications(
         Array.isArray(payload?.notifications) ? payload.notifications : []
       );
-    } catch {}
+    } catch {
+      if (mounted.current) setNotifications([]);
+    }
   }, []);
 
   const onOpenChange = React.useCallback(
@@ -60,7 +70,9 @@ export default function NotificationsBell() {
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
       setUnread((u) => Math.max(0, u - 1));
-    } catch {}
+    } catch {
+      if (mounted.current) setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    }
   }, []);
 
   const markAllRead = React.useCallback(async () => {
@@ -68,7 +80,9 @@ export default function NotificationsBell() {
       await client.comment.mentionsMarkAllRead.$post();
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnread(0);
-    } catch {}
+    } catch {
+      if (mounted.current) setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    }
   }, []);
 
   return (

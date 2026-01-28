@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { getInitials } from "@/utils/user-utils"
 import { relativeTime } from "@/lib/time"
-import { motion, HTMLMotionProps } from "framer-motion"
+import { motion, type HTMLMotionProps } from "framer-motion"
 
 export interface NotificationItem {
   id: string
@@ -23,7 +23,7 @@ interface NotificationsPanelProps {
 }
 
 const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelProps & HTMLMotionProps<"div">>(
-  ({ notifications, markRead, onMarkAllRead, className, ...props }, ref) => {
+  ({ notifications, markRead, onMarkAllRead, ...props }, ref) => {
     return (
       <motion.div
         ref={ref}
