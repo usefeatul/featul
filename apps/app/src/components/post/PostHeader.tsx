@@ -10,16 +10,17 @@ import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
 import { BoardSelector } from "./BoardSelector";
 import { StatusSelector } from "./StatusSelector";
 import { TagSelector } from "./TagSelector";
+import type { BoardSummary, TagSummary, PostUser } from "@/types/post";
 
 export interface PostHeaderProps {
-  user: { name?: string; image?: string | null } | null;
+  user: PostUser | null;
   initials: string;
-  boards: any[];
-  selectedBoard: { name: string; slug: string } | null;
-  onSelectBoard: (board: any) => void;
+  boards: BoardSummary[];
+  selectedBoard: BoardSummary | null;
+  onSelectBoard: (board: BoardSummary) => void;
   status?: string;
   onStatusChange?: (status: string) => void;
-  availableTags?: any[];
+  availableTags?: TagSummary[];
   selectedTags?: string[];
   onToggleTag?: (tagId: string) => void;
 }

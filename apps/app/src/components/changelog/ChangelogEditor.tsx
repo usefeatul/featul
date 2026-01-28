@@ -12,7 +12,7 @@ import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
-import { useChangelogEntry } from "./useChangelogEntry";
+import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 
 interface ChangelogEditorProps {
     workspaceSlug: string;

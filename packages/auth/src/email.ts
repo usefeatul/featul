@@ -4,6 +4,8 @@ import { renderInviteEmail } from "./email/inviteemail"
 import type { Brand } from "./email/brandemail"
 import { sendEmail } from "./email/transport"
 import { renderReserveEmail } from "./email/reserveemail"
+import { renderReportEmail, type ReportEmailProps } from "./email/reportemail"
+
 
 export async function sendWelcome(to: string, name?: string, brand?: Brand) {
   const { html, text } = await renderWelcomeEmail(name, brand)
@@ -25,5 +27,10 @@ export async function sendWorkspaceInvite(to: string, workspaceName: string, inv
 export async function sendReservationEmail(to: string, slug: string, confirmUrl: string, brand?: Brand) {
   const subject = `Reserve ${slug}.featul.com`
   const { html, text } = await renderReserveEmail(slug, confirmUrl, brand)
+  await sendEmail({ to, subject, html, text })
+}
+export async function sendReportEmail(to: string, props: ReportEmailProps) {
+  const subject = `Report: ${props.itemName}`
+  const { html, text } = await renderReportEmail(props)
   await sendEmail({ to, subject, html, text })
 }

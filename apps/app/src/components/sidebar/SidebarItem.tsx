@@ -12,6 +12,7 @@ function SidebarItem({
   shortcut,
   count,
   mutedIcon = false,
+  onClick,
 }: {
   item: NavItem;
   pathname: string;
@@ -19,6 +20,7 @@ function SidebarItem({
   shortcut?: string;
   count?: number;
   mutedIcon?: boolean;
+  onClick?: () => void;
 }) {
   const Icon = item.icon;
   const [mounted, setMounted] = React.useState(false);
@@ -64,6 +66,7 @@ function SidebarItem({
         rel="noopener noreferrer"
         className={classes}
         aria-current={active ? "page" : undefined}
+        onClick={onClick}
       >
         {content}
       </a>
@@ -75,6 +78,7 @@ function SidebarItem({
       href={item.href}
       className={classes}
       aria-current={active ? "page" : undefined}
+      onClick={onClick}
     >
       {content}
     </Link>

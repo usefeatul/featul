@@ -17,7 +17,7 @@ export function DomainSidebar({ subdomain, slug, initialBoards, selectedBoard, h
         <SearchAction slug={slug} />
       </div>
       {!hideSubmitButton && <SubmitIdeaCard subdomain={subdomain} slug={slug} />}
-      <BoardsList subdomain={subdomain} slug={slug} initialBoards={initialBoards} selectedBoard={selectedBoard} />
+      <BoardsList slug={slug} initialBoards={initialBoards} selectedBoard={selectedBoard} />
       <PoweredBy />
     </aside>
   )

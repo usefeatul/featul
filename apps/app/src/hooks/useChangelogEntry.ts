@@ -120,7 +120,7 @@ export function useChangelogEntry({
         if (isDirty && !isSaving) {
             const timer = setTimeout(() => {
                 handleSave();
-            }, 2000); // Auto-save after 2 seconds
+            }, 5000); // Auto-save after 5 seconds
             return () => clearTimeout(timer);
         }
     }, [isDirty, isSaving, handleSave]);

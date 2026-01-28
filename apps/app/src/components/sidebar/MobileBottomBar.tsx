@@ -18,18 +18,18 @@ export default function MobileBottomBar({ items }: { items: NavItem[] }) {
               key={item.label}
               href={item.href}
               className={cn(
-                "group flex flex-col items-center justify-center gap-1 px-3 py-2 text-xs sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40"
+                "group flex w-full flex-col items-center justify-center gap-1 px-1 py-2 text-xs sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40"
               )}
             >
               <Icon className="size-4 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
-              <span>{item.label}</span>
+              <span className="truncate w-full text-center">{item.label}</span>
             </Link>
           );
         })}
         <DrawerTrigger asChild>
-          <button className="group flex flex-col items-center justify-center gap-1 px-3 py-2 text-xs sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40">
+          <button className="group flex w-full flex-col items-center justify-center gap-1 px-1 py-2 text-xs sm:text-xs text-accent hover:bg-muted dark:hover:bg-black/40">
             <MoreIcon className="size-4 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
-            <span>More</span>
+            <span className="truncate w-full text-center">More</span>
           </button>
         </DrawerTrigger>
       </div>

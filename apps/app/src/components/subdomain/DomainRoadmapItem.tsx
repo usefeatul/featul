@@ -27,7 +27,7 @@ export default function DomainRoadmapItem({ item }: { item: RoadmapItemData & { 
         </Link>
       </div>
       {item.content ? (
-        <p className="mt-3 text-sm text-accent break-words whitespace-normal line-clamp-2">{toPlain(item.content)}</p>
+        <p className="mt-3 text-sm text-accent wrap-break-word whitespace-normal line-clamp-2">{toPlain(item.content)}</p>
       ) : null}
       <div className="mt-3 inline-flex items-center gap-2">
         <StatusIcon status={item.roadmapStatus || undefined} className="w-[18px] h-[18px] text-foreground/80" />

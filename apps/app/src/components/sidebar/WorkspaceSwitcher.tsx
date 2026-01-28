@@ -9,12 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@featul/ui/components/dropdown-menu";
-import { useWorkspaceSwitcher } from "./useWorkspaceSwitcher";
+import { useWorkspaceSwitcher } from "../../hooks/useWorkspaceSwitcher";
 import Image from "next/image"
 import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
-import type { Ws } from "./useWorkspaceSwitcher";
+import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 
 export default function WorkspaceSwitcher({
   className = "",
@@ -81,7 +81,7 @@ export default function WorkspaceSwitcher({
             <DropdownMenuItem disabled>No workspaces yet</DropdownMenuItem>
           ) : (
             <div className="flex flex-col">
-              <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-thin">
+              <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-hide">
                 <div className="flex flex-col gap-1 pb-1">
                   {all.map((w) => {
                     const logoUrl: string | null = w.logo ?? null;
@@ -119,7 +119,7 @@ export default function WorkspaceSwitcher({
                   })}
                 </div>
               </div>
-              <div className="flex flex-col gap-1 pt-1 border-t border-border">
+              <div className="flex flex-col gap-1 pt-1 border-t border-border -mx-2 px-2">
                 <DropdownMenuItem
                   onSelect={onCreateNew}
                   className="flex items-center gap-3 px-2 py-2 rounded-sm cursor-pointer hover:bg-muted"

@@ -36,7 +36,7 @@ export default async function WorkspaceLayout({ children, params }: { children: 
   const { primary: p } = branding
   const serverNow = Date.now()
   return (
-    <Container className="min-h-screen lg:flex lg:gap-4" maxWidth="7xl" noPadding>
+    <Container className="min-h-screen lg:flex lg:gap-4 lg:px-6" maxWidth="7xl" noPadding>
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />

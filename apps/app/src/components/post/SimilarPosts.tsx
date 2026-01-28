@@ -3,14 +3,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { UpvoteButton } from "@/components/upvote/UpvoteButton";
 import { CommentsIcon } from "@featul/ui/icons/comments";
-
-export interface SimilarPost {
-  id: string;
-  title: string;
-  slug: string;
-  upvotes: number | null;
-  commentCount: number | null;
-}
+import type { SimilarPost } from "@/types/post";
 
 interface SimilarPostsProps {
   posts: SimilarPost[];

@@ -74,6 +74,7 @@ export type RequestDetailData = {
   }
   | null
   metadata?: Record<string, unknown> | null
+  reportCount?: number
 }
 
 export default function RequestDetail({

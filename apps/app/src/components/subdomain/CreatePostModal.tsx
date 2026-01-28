@@ -14,7 +14,7 @@ import { useState, useEffect } from "react"
 import { client } from "@featul/api/client"
 import { useDebounce } from "../../hooks/useDebounce"
 import { SimilarPosts } from "../post/SimilarPosts"
-import type { SimilarPost } from "../post/SimilarPosts"
+import type { SimilarPost } from "@/types/post"
 
 interface CreatePostModalProps {
   open: boolean
@@ -66,8 +66,8 @@ export default function CreatePostModal({
   }
 
   const [similarPosts, setSimilarPosts] = useState<SimilarPost[]>([])
-  const [isSearchingSimilar, setIsSearchingSimilar] = useState(false)
-  
+
+
   const debouncedTitle = useDebounce(title, 1000)
 
   useEffect(() => {
@@ -76,8 +76,7 @@ export default function CreatePostModal({
         setSimilarPosts([])
         return
       }
-      
-      setIsSearchingSimilar(true)
+
       try {
         const res = await client.post.getSimilar.$get({
           title: debouncedTitle,
@@ -91,13 +90,11 @@ export default function CreatePostModal({
         }
       } catch (e) {
         console.error("Failed to fetch similar posts", e)
-      } finally {
-        setIsSearchingSimilar(false)
       }
     }
 
     fetchSimilar()
-  }, [debouncedTitle, selectedBoard])
+  }, [debouncedTitle, selectedBoard, workspaceSlug])
 
   const initials = user?.name ? getInitials(user.name) : "?"
 
@@ -119,7 +116,7 @@ export default function CreatePostModal({
           selectedBoard={selectedBoard}
           onSelectBoard={setSelectedBoard}
         />
-        
+
         <PostContent
           title={title}
           setTitle={setTitle}
@@ -129,7 +126,7 @@ export default function CreatePostModal({
           uploadingImage={uploadingImage}
           handleRemoveImage={handleRemoveImage}
         />
- 
+
         <PostFooter
           isPending={isPending}
           disabled={!title || !content || !selectedBoard || isPending || uploadingImage}
@@ -139,7 +136,7 @@ export default function CreatePostModal({
           handleFileSelect={handleFileSelect}
           ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
         />
-        
+
         <SimilarPosts posts={similarPosts} />
       </form>
     </SettingsDialogShell>

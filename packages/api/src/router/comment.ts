@@ -83,6 +83,7 @@ export function createCommentRouter() {
             userImage: user.image,
             memberRole: workspaceMember.role,
             workspaceOwnerId: workspace.ownerId,
+            reportCount: sql<number>`(SELECT count(*) FROM ${commentReport} WHERE ${commentReport.commentId} = ${comment.id})`,
           })
           .from(comment)
           .leftJoin(user, eq(comment.authorId, user.id))
@@ -116,22 +117,22 @@ export function createCommentRouter() {
               .from(commentReaction)
               .where(eq(commentReaction.userId, userId));
             votes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
-           }
-         } catch {
-         }
-         if (!userId && fingerprint) {
-           const anonymousVotes = await ctx.db
-             .select({ commentId: commentReaction.commentId, type: commentReaction.type })
-             .from(commentReaction)
-             .where(
-               and(
-                 isNull(commentReaction.userId),
-                 eq(commentReaction.fingerprint, fingerprint)
-               )
-             );
-             
-           anonymousVotes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
-         }
+          }
+        } catch {
+        }
+        if (!userId && fingerprint) {
+          const anonymousVotes = await ctx.db
+            .select({ commentId: commentReaction.commentId, type: commentReaction.type })
+            .from(commentReaction)
+            .where(
+              and(
+                isNull(commentReaction.userId),
+                eq(commentReaction.fingerprint, fingerprint)
+              )
+            );
+
+          anonymousVotes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
+        }
         const toAvatar = (seed?: string | null) =>
           `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
             (seed || "anonymous").trim() || "anonymous"
@@ -154,6 +155,7 @@ export function createCommentRouter() {
             userVote: userVotes.get(c.id) || null,
             role: isOwner ? null : c.memberRole || null, // null means owner (handled separately)
             isOwner: Boolean(isOwner),
+            reportCount: c.reportCount ? Number(c.reportCount) : 0,
           };
         });
 
@@ -374,7 +376,7 @@ export function createCommentRouter() {
                 .where(eq(comment.id, newComment.id));
             }
           }
-        } catch {}
+        } catch { }
 
         // Auto-upvote the comment by the author
         await ctx.db.insert(commentReaction).values({
@@ -400,11 +402,11 @@ export function createCommentRouter() {
           })
           .where(eq(post.id, postId));
 
-        return c.superjson({ 
+        return c.superjson({
           comment: {
             ...finalComment,
             hasVoted: true,
-          } 
+          }
         });
       }),
 
@@ -664,9 +666,8 @@ export function createCommentRouter() {
             const [updatedComment] = await ctx.db
               .update(comment)
               .set({
-                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${
-                  voteType === "upvote" ? comment.upvotes : comment.downvotes
-                } - 1)`,
+                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${voteType === "upvote" ? comment.upvotes : comment.downvotes
+                  } - 1)`,
               })
               .where(eq(comment.id, commentId))
               .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
@@ -705,12 +706,10 @@ export function createCommentRouter() {
             const [updatedComment] = await ctx.db
               .update(comment)
               .set({
-                [existingReaction.type === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${
-                  existingReaction.type === "upvote" ? comment.upvotes : comment.downvotes
-                } - 1)`,
-                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
-                  voteType === "upvote" ? comment.upvotes : comment.downvotes
-                } + 1`,
+                [existingReaction.type === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${existingReaction.type === "upvote" ? comment.upvotes : comment.downvotes
+                  } - 1)`,
+                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${voteType === "upvote" ? comment.upvotes : comment.downvotes
+                  } + 1`,
               })
               .where(eq(comment.id, commentId))
               .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
@@ -753,9 +752,8 @@ export function createCommentRouter() {
           const [updatedComment] = await ctx.db
             .update(comment)
             .set({
-              [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
-                voteType === "upvote" ? comment.upvotes : comment.downvotes
-              } + 1`,
+              [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${voteType === "upvote" ? comment.upvotes : comment.downvotes
+                } + 1`,
             })
             .where(eq(comment.id, commentId))
             .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
@@ -798,6 +796,7 @@ export function createCommentRouter() {
           .select({
             id: comment.id,
             postId: comment.postId,
+            content: comment.content,
           })
           .from(comment)
           .where(eq(comment.id, commentId))
@@ -811,6 +810,7 @@ export function createCommentRouter() {
           .select({
             workspaceId: workspace.id,
             postTitle: post.title,
+            postSlug: post.slug,
             roadmapStatus: post.roadmapStatus,
           })
           .from(post)
@@ -832,6 +832,14 @@ export function createCommentRouter() {
           status: "pending",
         });
 
+        // Count total reports
+        const [{ count }] = await ctx.db
+          .select({ count: sql<number>`count(*)` })
+          .from(commentReport)
+          .where(eq(commentReport.commentId, commentId));
+
+        const reportCount = Number(count);
+
         await ctx.db.insert(activityLog).values({
           workspaceId: postInfo.workspaceId,
           userId,
@@ -846,8 +854,41 @@ export function createCommentRouter() {
             roadmapStatus: postInfo.roadmapStatus,
             reason,
             hasDescription: Boolean(description),
+            reportCount,
           },
         });
+
+        // Send Email to Workspace Owner
+        const [ws] = await ctx.db
+          .select({
+            name: workspace.name,
+            slug: workspace.slug,
+            ownerId: workspace.ownerId,
+          })
+          .from(workspace)
+          .where(eq(workspace.id, postInfo.workspaceId))
+          .limit(1);
+
+        if (ws) {
+          const [owner] = await ctx.db
+            .select({ email: user.email })
+            .from(user)
+            .where(eq(user.id, ws.ownerId))
+            .limit(1);
+
+          if (owner && owner.email) {
+            const { sendReportEmail } = await import("@featul/auth");
+            await sendReportEmail(owner.email, {
+              workspaceName: ws.name,
+              itemName: `Comment on ${postInfo.postTitle}`,
+              itemUrl: `https://${ws.slug}.featul.com/requests/${postInfo.postSlug}`,
+              itemType: "comment",
+              reason,
+              description,
+              reportCount
+            });
+          }
+        }
 
         return c.superjson({ success: true });
       }),

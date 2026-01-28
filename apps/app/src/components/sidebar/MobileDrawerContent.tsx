@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
 import { DrawerContent, DrawerTitle } from "@featul/ui/components/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -27,6 +26,7 @@ export default function MobileDrawerContent({
   initialWorkspace,
   initialWorkspaces,
   initialUser,
+  onLinkClick,
 }: {
   pathname: string;
   primaryNav: NavItem[];
@@ -39,6 +39,7 @@ export default function MobileDrawerContent({
   | { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }[]
   | undefined;
   initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
+  onLinkClick?: () => void;
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
@@ -62,7 +63,7 @@ export default function MobileDrawerContent({
 
         <SidebarSection title="REQUEST">
           {primaryNav.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={pathname} count={statusCounts ? statusCounts[statusKey(item.label)] : undefined} mutedIcon={false} />
+            <SidebarItem key={item.label} item={item} pathname={pathname} count={statusCounts ? statusCounts[statusKey(item.label)] : undefined} mutedIcon={false} onClick={onLinkClick} />
           ))}
         </SidebarSection>
 
@@ -82,7 +83,7 @@ export default function MobileDrawerContent({
             user={initialUser}
           />
           {secondaryNav.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={pathname} mutedIcon />
+            <SidebarItem key={item.label} item={item} pathname={pathname} mutedIcon onClick={onLinkClick} />
           ))}
           <UserDropdown initialUser={initialUser} />
         </SidebarSection>

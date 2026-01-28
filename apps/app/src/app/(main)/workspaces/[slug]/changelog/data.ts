@@ -19,7 +19,7 @@ export interface ChangelogEntryData {
     authorId: string;
     authorName?: string | null;
     authorImage?: string | null;
-    status: "draft" | "published" | "archived";
+    status: "draft" | "published";
     tags: string[]; // Tag IDs
     publishedAt?: Date | null;
     createdAt: Date;
@@ -58,7 +58,7 @@ async function getWorkspaceTags(workspaceId: string): Promise<WorkspaceTag[]> {
 
 export async function getChangelogListData(
     workspaceSlug: string,
-    options?: { status?: "draft" | "published" | "archived"; limit?: number; offset?: number }
+    options?: { status?: "draft" | "published"; limit?: number; offset?: number }
 ): Promise<ChangelogListData | null> {
     const [ws] = await db
         .select({ id: workspace.id })
@@ -121,7 +121,7 @@ export async function getChangelogListData(
 
     const entriesWithTags = entries.map((e) => ({
         ...e,
-        status: e.status as "draft" | "published" | "archived",
+        status: e.status as "draft" | "published",
         content: e.content as JSONContent,
         tags: (e.tags as string[]).map((id) => tagsMap.get(id)).filter(Boolean) as WorkspaceTag[],
     }));
@@ -179,7 +179,7 @@ export async function getChangelogEntryForEdit(
     return {
         entry: {
             ...entry,
-            status: entry.status as "draft" | "published" | "archived",
+            status: entry.status as "draft" | "published",
             content: entry.content as JSONContent,
             tags: entry.tags as string[],
         },

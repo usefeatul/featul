@@ -15,7 +15,7 @@ export default function SettingsTabsHeader({ slug, selected }: { slug: string; s
   return (
     <Tabs value={selected} onValueChange={onValueChange} className="mt-7.5 space-y-4">
       <div className="overflow-x-auto -mx-4 px-4 scrollbar-hide">
-        <TabsList className="w-full">
+        <TabsList className="min-w-full w-fit lg:w-full overflow-visible">
           {SECTIONS.map((item) => (
             <TabsTrigger key={item.value} value={item.value} className="px-3 text-accent whitespace-nowrap">{item.label}</TabsTrigger>
           ))}

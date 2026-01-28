@@ -1,5 +1,6 @@
 "use client"
 
+import type { FC } from "react"
 import PlannedIcon from "@featul/ui/icons/planned"
 import ProgressIcon from "@featul/ui/icons/progress"
 import ReviewingIcon from "@featul/ui/icons/review"
@@ -9,7 +10,7 @@ import ClosedIcon from "@featul/ui/icons/closed"
 
 export default function StatusIcon({ status, className = "" }: { status?: string; className?: string }) {
   const s = (status || "").toLowerCase()
-  const map: Record<string, any> = {
+  const map: Record<string, FC<{ className?: string }>> = {
     planned: PlannedIcon,
     progress: ProgressIcon,
     review: ReviewingIcon,

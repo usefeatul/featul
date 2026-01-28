@@ -3,6 +3,7 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { useCallback } from "react";
 import { ImageUploadComp } from "./image-upload-comp";
 import { pendingUploads } from "./image-upload";
+import { EditorNodeViewWrapper } from "../../components/shared/node-view-wrapper";
 
 export const ImageUploadView = ({
   getPos,
@@ -62,30 +63,28 @@ export const ImageUploadView = ({
   // Only render if upload handler is configured
   if (!options.upload) {
     return (
-      <NodeViewWrapper className="my-5">
+      <EditorNodeViewWrapper>
         <div className="flex items-center justify-center rounded-md  border border-muted bg-muted/50 p-8">
           <p className="text-muted-foreground text-sm">
             Image upload is not configured. Please configure the ImageUpload
             extension with an upload handler.
           </p>
         </div>
-      </NodeViewWrapper>
+      </EditorNodeViewWrapper>
     );
   }
 
   return (
-    <NodeViewWrapper className="my-5">
-      <div className="m-0 p-0" data-drag-handle>
-        <ImageUploadComp
-          fetchMedia={options.fetchMedia}
-          initialFile={initialFile}
-          media={options.media}
-          onCancel={onCancel}
-          onError={options.onError}
-          onUpload={onUpload}
-          upload={options.upload}
-        />
-      </div>
-    </NodeViewWrapper>
+    <EditorNodeViewWrapper data-drag-handle>
+      <ImageUploadComp
+        fetchMedia={options.fetchMedia}
+        initialFile={initialFile}
+        media={options.media}
+        onCancel={onCancel}
+        onError={options.onError}
+        onUpload={onUpload}
+        upload={options.upload}
+      />
+    </EditorNodeViewWrapper>
   );
 };

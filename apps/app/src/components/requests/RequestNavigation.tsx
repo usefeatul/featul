@@ -23,10 +23,9 @@ export interface RequestNavigationProps {
   backHref?: string
   className?: string
   showActions?: boolean
-  onMergeClick?: () => void
 }
 
-export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions, onMergeClick }: RequestNavigationProps) {
+export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions }: RequestNavigationProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <Toolbar size="sm" variant="plain">

@@ -12,6 +12,7 @@ import { client } from "@featul/api/client"
 import { useRouter } from "next/navigation"
 import { useDebounce } from "@/hooks/useDebounce"
 import { SimilarPosts } from "./SimilarPosts"
+import type { SimilarPost, BoardSummary, TagSummary, PostUser } from "@/types/post"
 
 export function CreatePostModal({
   open,
@@ -22,15 +23,15 @@ export function CreatePostModal({
   open: boolean
   onOpenChange: (v: boolean) => void
   workspaceSlug: string
-  user?: any
+  user?: PostUser
 }) {
   const router = useRouter()
-  const [boards, setBoards] = useState<any[]>([])
-  const [selectedBoard, setSelectedBoard] = useState<any>(null)
-  
+  const [boards, setBoards] = useState<BoardSummary[]>([])
+  const [selectedBoard, setSelectedBoard] = useState<BoardSummary | null>(null)
+
   // New State for Status and Tags
   const [status, setStatus] = useState("pending")
-  const [availableTags, setAvailableTags] = useState<any[]>([])
+  const [availableTags, setAvailableTags] = useState<TagSummary[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   const {
@@ -60,7 +61,7 @@ export function CreatePostModal({
       setSelectedTags([])
     },
     onCreated: (post) => {
-        router.push(`/workspaces/${workspaceSlug}/requests/${post.slug}`)
+      router.push(`/workspaces/${workspaceSlug}/requests/${post.slug}`)
     },
     skipDefaultRedirect: true
   })
@@ -70,14 +71,15 @@ export function CreatePostModal({
       // Fetch Boards
       client.board.byWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res) => {
         if (res.ok) {
-           const data = await res.json()
-           const b = (data.boards || [])
-             .filter((x: any) => !['roadmap', 'changelog'].includes(x.slug))
-             .map((x: any) => ({ id: x.id, name: x.name, slug: x.slug }))
-           setBoards(b)
-           if (b.length > 0 && !selectedBoard) {
-             setSelectedBoard(b[0])
-           }
+          const data = await res.json()
+          const b = (data.boards || [])
+            .filter((x: BoardSummary) => !['roadmap', 'changelog'].includes(x.slug))
+            .map((x: BoardSummary) => ({ id: x.id, name: x.name, slug: x.slug }))
+          setBoards(b)
+          const firstBoard = b[0]
+          if (firstBoard && !selectedBoard) {
+            setSelectedBoard(firstBoard)
+          }
         }
       })
 
@@ -85,12 +87,12 @@ export function CreatePostModal({
       client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res) => {
         if (res.ok) {
           const data = await res.json()
-          const tags = (data?.tags || []).map((t: any) => ({ id: t.id, name: t.name, slug: t.slug, color: t.color }))
+          const tags = (data?.tags || []).map((t: TagSummary) => ({ id: t.id, name: t.name, slug: t.slug, color: t.color }))
           setAvailableTags(tags)
         }
       })
     }
-  }, [open, workspaceSlug])
+  }, [open, workspaceSlug, selectedBoard])
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -99,9 +101,8 @@ export function CreatePostModal({
     submitPost(selectedBoard, user, uploadedImage?.url, status, tagIds)
   }
 
-  const [similarPosts, setSimilarPosts] = useState<any[]>([])
-  const [isSearchingSimilar, setIsSearchingSimilar] = useState(false)
-  
+  const [similarPosts, setSimilarPosts] = useState<SimilarPost[]>([])
+
   const debouncedTitle = useDebounce(title, 1000)
 
   useEffect(() => {
@@ -110,8 +111,7 @@ export function CreatePostModal({
         setSimilarPosts([])
         return
       }
-      
-      setIsSearchingSimilar(true)
+
       try {
         const res = await client.post.getSimilar.$get({
           title: debouncedTitle,
@@ -119,22 +119,20 @@ export function CreatePostModal({
           workspaceSlug,
         })
         if (res.ok) {
-           const data = await res.json()
-           setSimilarPosts(data.posts)
+          const data = await res.json()
+          setSimilarPosts(data.posts)
         }
       } catch (e) {
         console.error("Failed to fetch similar posts", e)
-      } finally {
-        setIsSearchingSimilar(false)
       }
     }
 
     fetchSimilar()
-  }, [debouncedTitle, selectedBoard])
+  }, [debouncedTitle, selectedBoard, workspaceSlug])
 
   const toggleTag = (tagId: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tagId) 
+    setSelectedTags(prev =>
+      prev.includes(tagId)
         ? prev.filter(id => id !== tagId)
         : [...prev, tagId]
     )
@@ -171,17 +169,17 @@ export function CreatePostModal({
           uploadingImage={uploadingImage}
           handleRemoveImage={handleRemoveImage}
         />
- 
-        <PostFooter 
-          isPending={isPending} 
-          disabled={!title || !content || !selectedBoard || isPending || uploadingImage} 
+
+        <PostFooter
+          isPending={isPending}
+          disabled={!title || !content || !selectedBoard || isPending || uploadingImage}
           uploadedImage={uploadedImage}
           uploadingImage={uploadingImage}
           fileInputRef={fileInputRef}
           handleFileSelect={handleFileSelect}
           ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
         />
- 
+
         <SimilarPosts posts={similarPosts} />
       </form>
     </SettingsDialogShell>

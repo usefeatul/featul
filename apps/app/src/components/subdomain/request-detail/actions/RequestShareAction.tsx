@@ -5,11 +5,9 @@ import { ShareIcon } from "@featul/ui/icons/share";
 import { PopoverListItem } from "@featul/ui/components/popover";
 import { toast } from "sonner";
 
-interface RequestShareActionProps {
-  postId: string;
-}
 
-export function RequestShareAction({ postId }: RequestShareActionProps) {
+
+export function RequestShareAction() {
   const handleShare = async () => {
     const url = window.location.href;
     const title = document.title;

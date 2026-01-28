@@ -11,6 +11,7 @@ import {
   workspaceInvite,
   user,
   workspaceIntegration,
+  postReport,
 } from "@featul/db";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
@@ -245,6 +246,7 @@ export async function getWorkspacePosts(
     // Used for public-facing subdomain pages so that
     // posts in private boards are fully hidden.
     publicOnly?: boolean;
+    includeReportCounts?: boolean;
   }
 ) {
   const ws = await getWorkspaceBySlug(slug);
@@ -267,6 +269,7 @@ export async function getWorkspacePosts(
   const lim = Math.min(Math.max(Number(opts?.limit ?? 50), 1), 5000);
   const off = Math.max(Number(opts?.offset ?? 0), 0);
   const publicOnly = Boolean(opts?.publicOnly);
+  const includeReportCounts = Boolean(opts?.includeReportCounts);
 
   let tagPostIds: string[] | null = null;
   if (tagSlugs.length > 0) {
@@ -325,6 +328,9 @@ export async function getWorkspacePosts(
       authorId: post.authorId,
       metadata: post.metadata,
       role: workspaceMember.role,
+      ...(includeReportCounts
+        ? { reportCount: sql<number>`(SELECT count(*) FROM ${postReport} WHERE ${postReport.postId} = ${post.id})` }
+        : {}),
     })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
@@ -373,6 +379,7 @@ export async function getWorkspacePosts(
         ? r.authorImage || randomAvatarUrl(r.id || r.slug)
         : randomAvatarUrl(avatarSeed),
       tags: tagsByPostId[r.id] || [],
+      reportCount: "reportCount" in r ? Number(r.reportCount) : 0,
     }
   });
 

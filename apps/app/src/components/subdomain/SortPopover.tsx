@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { ChevronDownIcon } from "@featul/ui/icons/chevron-down"
-import { ListFilterIcon } from "@featul/ui/icons/list-filter"
 import ArrowUpDownIcon from "@featul/ui/icons/arrow-up-down"
 
 export function SortPopover({ slug, subdomain }: { slug: string; subdomain: string }) {

@@ -2,6 +2,7 @@ import type { NodeViewProps } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
 import { useCallback } from "react";
 import { YouTubeComp } from "./youtube-comp";
+import { EditorNodeViewWrapper } from "../../components/shared/node-view-wrapper";
 
 export const YouTubeUploadView = ({ getPos, editor }: NodeViewProps) => {
   const onSubmit = useCallback(
@@ -37,10 +38,8 @@ export const YouTubeUploadView = ({ getPos, editor }: NodeViewProps) => {
   }, [getPos, editor]);
 
   return (
-    <NodeViewWrapper className="my-5">
-      <div className="m-0 p-0" data-drag-handle>
-        <YouTubeComp onCancel={onCancel} onSubmit={onSubmit} />
-      </div>
-    </NodeViewWrapper>
+    <EditorNodeViewWrapper data-drag-handle>
+      <YouTubeComp onCancel={onCancel} onSubmit={onSubmit} />
+    </EditorNodeViewWrapper>
   );
 };

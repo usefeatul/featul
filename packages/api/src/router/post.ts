@@ -522,6 +522,15 @@ export function createPostRouter() {
           status: "pending",
         })
 
+        // Count total reports
+        const [{ count }] = await ctx.db
+          .select({ count: sql<number>`count(*)` })
+          .from(postReport)
+          .where(eq(postReport.postId, postId))
+
+        const reportCount = Number(count)
+
+        // Get Workspace Owner Email
         const [boardRow] = await ctx.db
           .select({ workspaceId: board.workspaceId })
           .from(board)
@@ -542,8 +551,41 @@ export function createPostRouter() {
               hasDescription: Boolean(description),
               roadmapStatus: existingPost.roadmapStatus,
               slug: existingPost.slug,
+              reportCount
             },
           })
+
+          // Send Email to Workspace Owner
+          const [ws] = await ctx.db
+            .select({
+              name: workspace.name,
+              slug: workspace.slug,
+              ownerId: workspace.ownerId
+            })
+            .from(workspace)
+            .where(eq(workspace.id, boardRow.workspaceId))
+            .limit(1)
+
+          if (ws) {
+            const [owner] = await ctx.db
+              .select({ email: user.email })
+              .from(user)
+              .where(eq(user.id, ws.ownerId))
+              .limit(1)
+
+            if (owner && owner.email) {
+              const { sendReportEmail } = await import("@featul/auth")
+              await sendReportEmail(owner.email, {
+                workspaceName: ws.name,
+                itemName: existingPost.title,
+                itemUrl: `https://${ws.slug}.featul.com/requests/${existingPost.slug}`,
+                itemType: "post",
+                reason,
+                description,
+                reportCount
+              })
+            }
+          }
         }
 
         return c.superjson({ success: true })

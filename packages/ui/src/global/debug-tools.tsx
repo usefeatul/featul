@@ -373,9 +373,9 @@ export function DebugTools() {
           <div className="mb-2 flex items-center justify-between border-b pb-2">
             <h4 className="text-sm font-semibold">Analysis Results</h4>
             <div className="flex items-center gap-2">
-              <span className="px-1.5 py-0.5 rounded-md border text-[10px] bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
-              <span className="px-1.5 py-0.5 rounded-md border text-[10px] bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
-              <span className="px-1.5 py-0.5 rounded-md border text-[10px] bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
+              <span className="px-1.5 py-0.5 rounded-md border text-xs bg-red-500/10 border-red-500 text-red-600">{counts.error}</span>
+              <span className="px-1.5 py-0.5 rounded-md border text-xs bg-orange-400/10 border-orange-500 text-orange-600">{counts.warn}</span>
+              <span className="px-1.5 py-0.5 rounded-md border text-xs bg-blue-500/10 border-blue-500 text-blue-600">{counts.info}</span>
             </div>
           </div>
           <ul className="max-h-48 overflow-auto space-y-1 text-xs">
@@ -389,7 +389,7 @@ export function DebugTools() {
                     r.severity === "error" ? "bg-red-500" : r.severity === "warn" ? "bg-orange-500" : "bg-blue-500"
                   )} />
                   <span className="text-muted-foreground">
-                    {r.component && <span className="font-mono text-[10px] text-foreground mr-1">[{r.component}]</span>}
+                    {r.component && <span className="font-mono text-xs text-foreground mr-1">[{r.component}]</span>}
                     {r.message}
                   </span>
                 </li>

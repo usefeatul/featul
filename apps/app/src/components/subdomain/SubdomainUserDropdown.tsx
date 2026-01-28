@@ -52,7 +52,9 @@ export default function SubdomainUserDropdown({
         if (!active) return
         const u = s?.data?.user || null
         if (u?.image) setUser(u)
-      } catch {}
+      } catch {
+        if (active) setUser(null)
+      }
     })()
     return () => { active = false }
   }, [initialUser?.image])

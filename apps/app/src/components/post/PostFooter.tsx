@@ -4,7 +4,7 @@ import React from "react"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import { ImageIcon } from "lucide-react"
-import { UploadedImage } from "./PostContent"
+import type { UploadedImage } from "./PostContent"
 
 export interface PostFooterProps {
   isPending: boolean

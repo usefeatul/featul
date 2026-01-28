@@ -6,7 +6,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query"
 import { HTTPException } from "hono/http-exception"
-import { PropsWithChildren, useState } from "react"
+import { type PropsWithChildren, useState } from "react"
 import { Toaster } from "@featul/ui/components/sonner"
 
 export const Providers = ({ children }: PropsWithChildren) => {

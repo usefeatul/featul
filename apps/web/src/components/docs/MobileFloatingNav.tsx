@@ -196,7 +196,7 @@ export function DocsMobileFloatingNav() {
                   transition={{ duration: 0.1 }}
                   className="flex items-center justify-between w-full"
                 >
-                  <span className="text-[10px] uppercase tracking-[0.15em] text-white/30 font-medium">
+                  <span className="text-xs uppercase tracking-[0.15em] text-white/30 font-medium">
                     Navigation
                   </span>
                   <div className="flex items-center gap-2">

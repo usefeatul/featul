@@ -1,4 +1,4 @@
-import { db, workspace, board, post, user, workspaceMember, postTag, tag, postMerge } from "@featul/db"
+import { db, workspace, board, post, user, workspaceMember, postTag, tag, postMerge, postReport } from "@featul/db"
 import { and, eq, sql } from "drizzle-orm"
 import { client } from "@featul/api/client"
 import { readHasVotedForPost } from "@/lib/vote.server"
@@ -31,16 +31,23 @@ type WorkspaceRecord = {
   ownerId: string
 }
 
+type PMetadata = {
+  attachments?: { name: string; url: string; type: string }[]
+  integrations?: { github?: string; jira?: string }
+  customFields?: Record<string, unknown>
+  fingerprint?: string
+}
+
 type RawPostRecord = RequestDetailData & {
   authorId: string | null
-  metadata: Record<string, any> | null
+  metadata: PMetadata | null
   author:
-    | {
-        name: string | null
-        image: string | null
-        email: string | null
-      }
-    | null
+  | {
+    name: string | null
+    image: string | null
+    email: string | null
+  }
+  | null
 }
 
 export async function loadRequestDetailPageData({
@@ -74,6 +81,16 @@ export async function loadRequestDetailPageData({
     searchParams,
   })
 
+  let reportCount = 0
+  if (isOwner) {
+    const [row] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(postReport)
+      .where(eq(postReport.postId, rawPost.id))
+      .limit(1)
+    reportCount = Number(row?.count || 0)
+  }
+
   const post: RequestDetailData = {
     ...postWithAuthor,
     role,
@@ -81,7 +98,8 @@ export async function loadRequestDetailPageData({
     isFeatul: rawPost.authorId === "featul-founder",
     tags,
     hasVoted,
-  }
+    reportCount,
+  } as RequestDetailData & { reportCount: number }
 
   return {
     workspaceSlug,
@@ -151,14 +169,14 @@ async function loadPostWithAuthorAndBoard(workspaceId: string, postSlug: string)
   const mergedCount = Number(mergedCountRow?.[0]?.count || 0)
   let mergedInto:
     | {
-        id: string
-        slug: string
-        title: string
-        roadmapStatus?: string | null
-        mergedAt?: string | null
-        boardName?: string
-        boardSlug?: string
-      }
+      id: string
+      slug: string
+      title: string
+      roadmapStatus?: string | null
+      mergedAt?: string | null
+      boardName?: string
+      boardSlug?: string
+    }
     | null = null
 
   if (p.duplicateOfId) {
@@ -185,10 +203,10 @@ async function loadPostWithAuthorAndBoard(workspaceId: string, postSlug: string)
         id: target.id,
         slug: target.slug,
         title: target.title,
-        roadmapStatus: (target as any).roadmapStatus,
-        mergedAt: mergeRow?.createdAt ? new Date(mergeRow.createdAt as any).toISOString() : null,
-        boardName: (target as any).boardName,
-        boardSlug: (target as any).boardSlug,
+        roadmapStatus: target.roadmapStatus,
+        mergedAt: mergeRow?.createdAt ? new Date(mergeRow.createdAt).toISOString() : null,
+        boardName: target.boardName,
+        boardSlug: target.boardSlug,
       }
     }
   }
@@ -209,22 +227,29 @@ async function loadPostWithAuthorAndBoard(workspaceId: string, postSlug: string)
     .where(eq(postMerge.targetPostId, p.id))
     .orderBy(sql`${postMerge.createdAt} desc`)
     .limit(3)
-  const mergedSources = mergedSourcesRows.map((r: any) => ({
+  const mergedSources = mergedSourcesRows.map((r) => ({
     id: r.id,
     slug: r.slug,
     title: r.title,
     roadmapStatus: r.roadmapStatus ?? null,
-    mergedAt: r.mergedAt ? new Date(r.mergedAt as any).toISOString() : null,
+    mergedAt: r.mergedAt ? new Date(r.mergedAt).toISOString() : null,
     boardName: r.boardName,
     boardSlug: r.boardSlug,
   }))
 
-  return { ...(p as any), mergedCount, mergedInto, mergedSources } as RawPostRecord
+  return {
+    ...p,
+    publishedAt: p.publishedAt ? new Date(p.publishedAt).toISOString() : null,
+    createdAt: new Date(p.createdAt).toISOString(),
+    mergedCount,
+    mergedInto,
+    mergedSources
+  } as RawPostRecord
 }
 
 function ensureAuthorAvatar(postRecord: RawPostRecord): RawPostRecord {
-  if ((!postRecord.author || !postRecord.author.name) && (postRecord.metadata as any)?.fingerprint) {
-    const avatarSeed = createHash("sha256").update((postRecord.metadata as any).fingerprint).digest("hex")
+  if ((!postRecord.author || !postRecord.author.name) && postRecord.metadata?.fingerprint) {
+    const avatarSeed = createHash("sha256").update(postRecord.metadata.fingerprint).digest("hex")
 
     if (!postRecord.author) {
       postRecord.author = { name: "Guest", image: null, email: null }
@@ -280,10 +305,8 @@ async function loadPostTags(postId: string) {
 
 async function loadComments(postId: string): Promise<{ initialComments: CommentData[]; initialCollapsedIds: string[] }> {
   const commentsRes = await client.comment.list.$get({ postId })
-  const commentsJson = await commentsRes.json().catch(() => ({ comments: [] }))
-  const initialComments = Array.isArray((commentsJson as any)?.comments)
-    ? ((commentsJson as any).comments as CommentData[])
-    : []
+  const commentsJson = (await commentsRes.json().catch(() => ({ comments: [] }))) as { comments: CommentData[] }
+  const initialComments = Array.isArray(commentsJson.comments) ? commentsJson.comments : []
   const initialCollapsedIds = await readInitialCollapsedCommentIds(postId)
 
   return { initialComments, initialCollapsedIds }

@@ -43,7 +43,7 @@ export function PostContent({
         className="text-lg md:text-xl  font-semibold h-auto py-2 placeholder:text-accent "
       />
       <TextareaAutosize
-        placeholder="Add post contentss"
+        placeholder="Add post contents"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         minRows={2}

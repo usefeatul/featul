@@ -28,7 +28,7 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
 
     return (
         <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug}>
-            <div className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 ${isSelecting ? "" : "hover:bg-muted/50 transition-colors"}`}>
+            <div className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}>
                 {isSelecting && (
                     <Checkbox
                         checked={!!isSelected}

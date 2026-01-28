@@ -26,4 +26,5 @@ export type CommentData = {
     mentions?: string[]
     editHistory?: { content: string; editedAt: string }[]
   } | null
+  reportCount?: number
 }

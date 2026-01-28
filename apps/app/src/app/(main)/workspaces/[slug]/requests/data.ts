@@ -2,6 +2,7 @@ import { getServerSession } from "@featul/auth/session"
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normalizeStatus } from "@/lib/workspace"
 import { parseArrayParam } from "@/utils/request-filters"
 import { parseSortOrder } from "@/types/sort"
+import type { RequestItemData } from "@/components/requests/RequestItem"
 
 const PAGE_SIZE = 20
 
@@ -19,7 +20,7 @@ export type RequestsSearchParams = {
 
 export type RequestsPageData = {
   slug: string
-  rows: unknown[]
+  rows: RequestItemData[]
   totalCount: number
   page: number
   pageSize: number
@@ -27,6 +28,7 @@ export type RequestsPageData = {
   boardSlugs: string[]
   tagSlugs: string[]
   search: string
+  isWorkspaceOwner: boolean
 }
 
 /** Extract a single string value from a string or string array */
@@ -51,14 +53,19 @@ export async function loadRequestsPageData({
   const sp = searchParams ?? {}
 
   // Session check (non-blocking, page is still viewable without auth)
+  let userId: string | null = null
   try {
-    await getServerSession()
+    const session = await getServerSession()
+    userId = session?.user?.id || null
   } catch {
     // Ignore session errors; page is still viewable
   }
 
+
   const ws = await getWorkspaceBySlug(slug)
   if (!ws) return null
+
+  const isOwner = userId === ws.ownerId
 
   // Parse filter parameters
   const statusRaw = parseArrayParam(pickSingle(sp.status))
@@ -92,6 +99,7 @@ export async function loadRequestsPageData({
       search,
       limit: pageSize,
       offset,
+      includeReportCounts: isOwner,
     }),
     getWorkspacePostsCount(slug, {
       statuses: statusFilter,
@@ -103,7 +111,11 @@ export async function loadRequestsPageData({
 
   return {
     slug,
-    rows,
+    rows: rows.map((r) => ({
+      ...r,
+      createdAt: r.createdAt.toISOString(),
+      publishedAt: r.publishedAt ? r.publishedAt.toISOString() : null,
+    })) as RequestItemData[],
     totalCount,
     page,
     pageSize,
@@ -111,5 +123,6 @@ export async function loadRequestsPageData({
     boardSlugs,
     tagSlugs,
     search,
+    isWorkspaceOwner: isOwner,
   }
 }

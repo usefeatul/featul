@@ -3,6 +3,7 @@ import { relativeTime } from "@/lib/time"
 import PinnedBadge from "./PinnedBadge"
 import CommentCollapseToggle from "./CommentCollapseToggle"
 import CommentActions from "./actions/CommentActions"
+import { ReportIndicator } from "../requests/ReportIndicator"
 import type { CommentData } from "../../types/comment"
 
 interface CommentHeaderProps {
@@ -56,6 +57,9 @@ export default function CommentHeader({
             onToggle={onToggleCollapse}
             className="ml-auto sm:ml-0"
           />
+        )}
+        {isOwner && (
+          <ReportIndicator count={comment.reportCount || 0} className="ml-2" />
         )}
       </div>
 

@@ -1,5 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query"
-import type { Ws } from "@/components/sidebar/useWorkspaceSwitcher"
+import type { Ws } from "@/hooks/useWorkspaceSwitcher"
 
 export type WorkspacesQueryResult = Ws[] | { workspaces: Ws[] }
 

@@ -12,6 +12,7 @@ import { randomAvatarUrl } from "@/utils/avatar"
 import RoleBadge from "@/components/global/RoleBadge"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
+import { ReportIndicator } from "./ReportIndicator"
 
 export interface RequestItemData {
   id: string
@@ -40,6 +41,7 @@ export interface RequestItemData {
     slug: string
     color?: string | null
   }>
+  reportCount?: number
 }
 
 interface RequestItemProps {
@@ -50,6 +52,7 @@ interface RequestItemProps {
   isSelected?: boolean
   onToggle?: (checked: boolean) => void
   disableLink?: boolean
+
 }
 
 function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelected, onToggle, disableLink }: RequestItemProps) {
@@ -63,7 +66,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
-      className="flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0"
+      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
     >
       {isSelecting ? (
         <Checkbox
@@ -76,7 +79,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <Link
         href={href}
-        className={`flex-1 min-w-0 truncate text-sm font-medium ${disableLink ? "text-foreground/60 cursor-default" : "text-foreground hover:text-primary"}`}
+        className={`flex-1 min-w-0 truncate text-sm font-medium ${disableLink ? "text-foreground/60 cursor-default" : "text-foreground"}`}
         onClick={(e) => {
           if (disableLink) e.preventDefault()
         }}
@@ -86,6 +89,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
         {displayTitle}
       </Link>
       <div className="ml-auto flex items-center gap-3 text-xs text-accent">
+        <ReportIndicator count={item.reportCount || 0} />
         <div className="inline-flex items-center gap-2 relative z-10">
           <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
         </div>

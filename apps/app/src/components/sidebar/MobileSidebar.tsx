@@ -49,10 +49,11 @@ export default function MobileSidebar({
   const slug = getSlugFromPath(pathname);
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(slug, initialCounts, initialDomainInfo || null);
   const secondaryNav = buildBottomNav();
+  const [open, setOpen] = React.useState(false);
 
   return (
     <div className={cn("lg:hidden", className)}>
-      <Drawer direction="right">
+      <Drawer direction="right" open={open} onOpenChange={setOpen}>
         <MobileBottomBar items={middleNav} />
         <MobileDrawerContent
           pathname={pathname}
@@ -64,6 +65,7 @@ export default function MobileSidebar({
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
           initialUser={initialUser}
+          onLinkClick={() => setOpen(false)}
         />
       </Drawer>
     </div>

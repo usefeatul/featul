@@ -85,9 +85,9 @@ export default function SettingsCard({
       </div>
       {/* Description section */}
       <div className="px-4 pt-3 pb-2 bg-card dark:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
-        <p className="text-sm text-accent leading-relaxed">
+        <div className="text-sm text-accent leading-relaxed">
           {description}
-        </p>
+        </div>
       </div>
     </Card>
   );

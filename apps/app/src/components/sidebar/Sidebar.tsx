@@ -104,31 +104,35 @@ export default function Sidebar({
           initialServerNow={initialServerNow}
         />
       </div>
-      <SidebarSection title="REQUEST">
-        {primaryNav.map((item) => (
-          <SidebarItem
-            key={item.label}
-            item={item}
-            pathname={pathname}
-            count={
-              statusCounts ? statusCounts[statusKey(item.label)] : undefined
-            }
-            mutedIcon={false}
-          />
-        ))}
-      </SidebarSection>
-      <SidebarSection title="WORKSPACE" className="mt-4">
-        {middleNav.map((item) => (
-          <SidebarItem
-            key={item.label}
-            item={item}
-            pathname={pathname}
-            shortcut={getShortcutForLabel(item.label)}
-            mutedIcon
-          />
-        ))}
-      </SidebarSection>
-      <SidebarSection className="mt-auto pb-8 py-2">
+
+      <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <SidebarSection title="REQUEST">
+          {primaryNav.map((item) => (
+            <SidebarItem
+              key={item.label}
+              item={item}
+              pathname={pathname}
+              count={
+                statusCounts ? statusCounts[statusKey(item.label)] : undefined
+              }
+              mutedIcon={false}
+            />
+          ))}
+        </SidebarSection>
+        <SidebarSection title="WORKSPACE" className="mt-4">
+          {middleNav.map((item) => (
+            <SidebarItem
+              key={item.label}
+              item={item}
+              pathname={pathname}
+              shortcut={getShortcutForLabel(item.label)}
+              mutedIcon
+            />
+          ))}
+        </SidebarSection>
+      </div>
+
+      <SidebarSection className="pb-4 py-2">
         <Button
           className="w-full mb-1 group dark:bg-background flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
           variant="ghost"

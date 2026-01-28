@@ -40,7 +40,9 @@ export function RequestDeleteAction({
                 detail,
               })
             );
-          } catch {}
+          } catch {
+            console.error("Failed to dispatch post:deleted event");
+          }
 
           if (workspaceSlug) {
             // Force navigation to the home/list page instead of back()

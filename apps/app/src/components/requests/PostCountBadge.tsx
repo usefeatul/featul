@@ -20,7 +20,7 @@ export default function PostCountBadge({ className = "" }: { className?: string 
 
   const queryClient = useQueryClient()
   const queryKey: (string | string[])[] = ["post-count", slug, statuses, boards, tags, search]
-  const seeded = queryClient.getQueryData<number>(queryKey as any)
+  const seeded = queryClient.getQueryData<number>(queryKey)
 
   const { data: count = seeded ?? 0 } = useQuery<number, Error, number, (string | string[])[]>({
     queryKey,

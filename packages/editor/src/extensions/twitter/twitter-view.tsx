@@ -2,6 +2,7 @@ import type { NodeViewProps } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
 import { useCallback } from "react";
 import { TwitterComp } from "./twitter-comp";
+import { EditorNodeViewWrapper } from "../../components/shared/node-view-wrapper";
 
 export const TwitterUploadView = ({ getPos, editor }: NodeViewProps) => {
   const onSubmit = useCallback(
@@ -37,10 +38,8 @@ export const TwitterUploadView = ({ getPos, editor }: NodeViewProps) => {
   }, [getPos, editor]);
 
   return (
-    <NodeViewWrapper className="my-5">
-      <div className="m-0 p-0" data-drag-handle>
-        <TwitterComp onCancel={onCancel} onSubmit={onSubmit} />
-      </div>
-    </NodeViewWrapper>
+    <EditorNodeViewWrapper data-drag-handle>
+      <TwitterComp onCancel={onCancel} onSubmit={onSubmit} />
+    </EditorNodeViewWrapper>
   );
 };

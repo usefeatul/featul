@@ -8,6 +8,7 @@ import { ChangelogBulkDeleteDialog } from "./ChangelogBulkDeleteDialog"
 import { SelectionToolbar } from "@/components/requests/SelectionToolbar"
 import { useBulkDeleteChangelog } from "../../hooks/useBulkDeleteChangelog"
 import { useBulkSelectionHotkeys } from "@/hooks/useBulkSelectionHotkeys"
+import EmptyChangelog from "./EmptyChangelog"
 
 interface ChangelogListProps {
     items: ChangelogEntryWithTags[]
@@ -88,13 +89,7 @@ export function ChangelogList({ items, workspaceSlug, initialTotalCount, initial
     }, [allSelected, listItems, listKey])
 
     if (listItems.length === 0 && !isRefetching) {
-        // Empty state is handled by parent if needed, or we can render nothing/children
-        // Actually parent usually checks items length. 
-        // But if we delete all items, listItems becomes empty.
-        // We should probably render null here and let parent show empty state or handle refetch.
-        // But since `items` prop update will trigger effect, and `page.tsx` revalidates on refresh,
-        // we rely on `isRefetching` or just render empty list.
-        return null
+        return <EmptyChangelog workspaceSlug={workspaceSlug} />
     }
 
     return (

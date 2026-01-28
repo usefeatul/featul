@@ -7,4 +7,6 @@ export * from "./email"
 export * from "./email/brandemail"
 export * from "./email/verifyemail"
 export * from "./email/inviteemail"
+export * from "./email/reportemail"
 export * from "./trust"
+
