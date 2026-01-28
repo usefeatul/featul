@@ -25,11 +25,8 @@ export default function EmptyChangelog({ workspaceSlug }: EmptyChangelogProps) {
                     animate={{ opacity: [0.9, 1, 0.9], scale: [1, 1.03, 1] }}
                     transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
                 >
-                    <div className="flex items-center justify-center rounded-full border border-border ring-1 ring-border/60 shadow-xs size-20 sm:size-24">
+                    <div className="flex items-center justify-center rounded-full size-20 sm:size-24">
                         <EmptyFolderIcon size={48} className="size-10 sm:size-12 text-muted-foreground" />
-                    </div>
-                    <div className="absolute -top-1 right-2 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-sm font-semibold shadow-sm size-6">
-                        0
                     </div>
                 </motion.div>
 

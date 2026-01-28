@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createPageMetadata } from "@/lib/seo";
-
 import { getChangelogListData } from "./data";
 import { ChangelogList } from "@/components/changelog/ChangelogList";
 
