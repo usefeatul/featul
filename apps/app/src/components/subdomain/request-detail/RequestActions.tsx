@@ -16,7 +16,7 @@ import { RequestReportAction } from "./actions/RequestReportAction";
 import { RequestDeleteAction } from "./actions/RequestDeleteAction";
 import EditPostModal from "./EditPostModal";
 import ReportPostDialog from "./ReportPostDialog";
-import { SubdomainRequestDetailData } from "../../../types/subdomain";
+import type { SubdomainRequestDetailData } from "../../../types/subdomain";
 
 interface RequestActionsProps {
   post: SubdomainRequestDetailData;
@@ -39,7 +39,7 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
         <PopoverContent align="end" className="w-fit" list>
           <PopoverList>
             <RequestEditAction onClick={() => setEditOpen(true)} />
-            <RequestShareAction postId={post.id} />
+            <RequestShareAction />
             <RequestReportAction onClick={() => setReportOpen(true)} />
             <PopoverSeparator />
             <RequestDeleteAction postId={post.id} workspaceSlug={workspaceSlug} />

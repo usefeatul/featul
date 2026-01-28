@@ -7,7 +7,7 @@ import type { CommentData } from "../../../types/comment";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getDisplayUser } from "@/utils/user-utils";
-import { SubdomainRequestDetailData } from "../../../types/subdomain";
+import type { SubdomainRequestDetailData } from "../../../types/subdomain";
 import ContentImage from "@/components/global/ContentImage";
 import { RequestActions } from "./RequestActions";
 
@@ -39,10 +39,6 @@ export function RequestContent({
   // Apply hidePublicMemberIdentity - only hide if it's enabled AND user is not a guest
   const isGuest = !post.author?.name || rawDisplayAuthor.name === "Guest"
   const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
-
-  const displayAuthor = showHiddenIdentity
-    ? { name: "Member", image: null }
-    : rawDisplayAuthor
 
   return (
     <div className="rounded-lg border bg-card p-6 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
