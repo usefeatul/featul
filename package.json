@@ -24,7 +24,7 @@
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",
     "prettier": "^3.6.2",
-    "turbo": "^2.5.5",
+    "turbo": "^2.8.0",
     "typescript": "5.7.3"
   },
   "engines": {
