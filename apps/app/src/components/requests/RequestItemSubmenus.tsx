@@ -57,8 +57,8 @@ interface TagsSubmenuProps {
 export function TagsSubmenu({ availableTags, optimisticTags, onBack, onToggleTag }: TagsSubmenuProps) {
     return (
         <PopoverList>
-            <PopoverListItem onClick={onBack} className="text-muted-foreground">
-                <span className="text-sm">Back</span>
+            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-center">
+                <span className="text-sm ">Back</span>
             </PopoverListItem>
             <PopoverSeparator />
             {availableTags.length === 0 ? (
