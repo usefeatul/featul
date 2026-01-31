@@ -1,7 +1,7 @@
-import { and, eq, desc, sql } from "drizzle-orm"
+import { and, eq, desc, sql, getTableColumns } from "drizzle-orm"
 import { z } from "zod"
 import { j, publicProcedure, privateProcedure } from "../jstack"
-import { workspace, board, workspaceMember, changelogEntry, activityLog } from "@featul/db"
+import { workspace, board, workspaceMember, changelogEntry, activityLog, user } from "@featul/db"
 import { HTTPException } from "hono/http-exception"
 import { normalizePlan, getPlanLimits, assertWithinLimit } from "../shared/plan"
 import { toSlug } from "../shared/slug"
@@ -281,8 +281,13 @@ export function createChangelogRouter() {
         if (!b || !b.isVisible || !b.isPublic) return c.superjson({ entry: null })
 
         const [entry] = await ctx.db
-          .select()
+          .select({
+            ...getTableColumns(changelogEntry),
+            authorName: user.name,
+            authorImage: user.image,
+          })
           .from(changelogEntry)
+          .leftJoin(user, eq(changelogEntry.authorId, user.id))
           .where(and(
             eq(changelogEntry.boardId, b.id),
             eq(changelogEntry.slug, input.entrySlug),
@@ -292,12 +297,41 @@ export function createChangelogRouter() {
 
         if (!entry) return c.superjson({ entry: null })
 
+        // Get author's role in the workspace
+        let authorRole: string | null = null
+        let isOwner = false
+        if (entry.authorId) {
+          const [member] = await ctx.db
+            .select({ role: workspaceMember.role })
+            .from(workspaceMember)
+            .where(and(
+              eq(workspaceMember.workspaceId, ws.id),
+              eq(workspaceMember.userId, entry.authorId)
+            ))
+            .limit(1)
+          authorRole = member?.role || null
+
+          // Check if author is workspace owner
+          const [wsOwner] = await ctx.db
+            .select({ ownerId: workspace.ownerId })
+            .from(workspace)
+            .where(eq(workspace.id, ws.id))
+            .limit(1)
+          isOwner = wsOwner?.ownerId === entry.authorId
+        }
+
         const tags = (b.changelogTags as any[] || []).filter((t: any) => entry.tags.includes(t.id))
 
         c.header("Cache-Control", "public, max-age=60, stale-while-revalidate=300")
         return c.superjson({
           entry: {
             ...entry,
+            author: {
+              name: entry.authorName,
+              image: entry.authorImage,
+              role: authorRole,
+              isOwner,
+            },
             tags,
           },
         })
@@ -434,17 +468,43 @@ export function createChangelogRouter() {
           .where(and(eq(changelogEntry.boardId, b.id), eq(changelogEntry.status, "published")))
 
         const entries = await ctx.db
-          .select()
+          .select({
+            ...getTableColumns(changelogEntry),
+            authorName: user.name,
+            authorImage: user.image,
+          })
           .from(changelogEntry)
+          .leftJoin(user, eq(changelogEntry.authorId, user.id))
           .where(and(eq(changelogEntry.boardId, b.id), eq(changelogEntry.status, "published")))
           .orderBy(desc(changelogEntry.publishedAt))
           .limit(limit)
           .offset(offset)
 
+        // Get workspace owner
+        const [wsOwner] = await ctx.db
+          .select({ ownerId: workspace.ownerId })
+          .from(workspace)
+          .where(eq(workspace.id, ws.id))
+          .limit(1)
+
+        // Get all members for author role lookup
+        const authorIds = entries.map((e: any) => e.authorId).filter(Boolean) as string[]
+        const members = authorIds.length > 0 ? await ctx.db
+          .select({ userId: workspaceMember.userId, role: workspaceMember.role })
+          .from(workspaceMember)
+          .where(eq(workspaceMember.workspaceId, ws.id)) : []
+        const memberRoleMap = new Map(members.map((m: any) => [m.userId, m.role]))
+
         const tagsMap = new Map((b.changelogTags as any[] || []).map((t: { id: string }) => [t.id, t]))
-        const entriesWithTags = entries.map((e: typeof changelogEntry.$inferSelect) => ({
+        const entriesWithTags = entries.map((e: any) => ({
           ...e,
           tags: e.tags.map((id: string) => tagsMap.get(id)).filter(Boolean),
+          author: {
+            name: e.authorName,
+            image: e.authorImage,
+            role: e.authorId ? memberRoleMap.get(e.authorId) || null : null,
+            isOwner: e.authorId ? wsOwner?.ownerId === e.authorId : false,
+          },
         }))
 
         c.header("Cache-Control", "public, max-age=15, stale-while-revalidate=60")

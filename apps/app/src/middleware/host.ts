@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
-export const reservedSubdomains = new Set(["www", "app", "featul", "feedgot" ,"staging"])
+export const reservedSubdomains = new Set(["www", "app", "featul", "feedgot", "staging"])
 
 export function getHostInfo(req: NextRequest) {
   const pathname = req.nextUrl.pathname
@@ -31,6 +31,11 @@ export function rewriteSubdomain(req: NextRequest, ctx: ReturnType<typeof getHos
     if (pathname === "/changelog") {
       const url = req.nextUrl.clone()
       url.pathname = `/${subdomain}/changelog`
+      return NextResponse.rewrite(url)
+    }
+    if (pathname.startsWith("/changelog/")) {
+      const url = req.nextUrl.clone()
+      url.pathname = `/${subdomain}${pathname}`
       return NextResponse.rewrite(url)
     }
     if (pathname.startsWith("/board/")) {

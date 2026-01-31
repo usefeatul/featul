@@ -10,6 +10,7 @@ export const config = {
     "/",
     "/roadmap",
     "/changelog",
+    "/changelog/:path*",
     "/workspaces/:path*",
     "/auth/:path*",
     "/start",
