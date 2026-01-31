@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import SubdomainChangelogDetail from "@/components/subdomain/changelog-detail/SubdomainChangelogDetail"
+import SubdomainChangelogDetail from "@/components/subdomain/changelogDetail/SubdomainChangelogDetail"
 import { createPageMetadata } from "@/lib/seo"
 import { client } from "@featul/api/client"
 import type { Role } from "@/types/team"
