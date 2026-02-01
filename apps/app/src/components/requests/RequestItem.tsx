@@ -42,6 +42,7 @@ export interface RequestItemData {
     color?: string | null
   }>
   reportCount?: number
+  isPinned?: boolean
 }
 
 interface RequestItemProps {

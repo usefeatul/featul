@@ -326,6 +326,7 @@ export async function getWorkspacePosts(
       authorName: user.name,
       isAnonymous: post.isAnonymous,
       authorId: post.authorId,
+      isPinned: post.isPinned,
       metadata: post.metadata,
       role: workspaceMember.role,
       ...(includeReportCounts
@@ -337,7 +338,7 @@ export async function getWorkspacePosts(
     .leftJoin(user, eq(post.authorId, user.id))
     .leftJoin(workspaceMember, and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, ws.id)))
     .where(and(...filters))
-    .orderBy(order)
+    .orderBy(desc(post.isPinned), order)
     .limit(lim)
     .offset(off);
 
