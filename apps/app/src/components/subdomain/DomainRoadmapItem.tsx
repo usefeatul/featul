@@ -18,7 +18,7 @@ function toPlain(s?: string | null): string {
 }
 
 export default function DomainRoadmapItem({ item }: { item: RoadmapItemData & { boardSlug?: string } }) {
-  const href = item.boardSlug ? `/board/p/${item.slug}` : `/p/${item.slug}`
+  const href = item.boardSlug ? `/board/p/${item.slug}?from=roadmap` : `/p/${item.slug}?from=roadmap`
   return (
     <div className="py-6 px-6 min-h-[140px]">
       <div className="flex items-start gap-3">

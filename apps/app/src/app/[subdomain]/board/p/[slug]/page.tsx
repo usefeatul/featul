@@ -6,17 +6,23 @@ import { loadPublicBoardRequestDetailPageData } from "./data";
 
 export const revalidate = 0;
 
-type Props = { params: Promise<{ subdomain: string; slug: string }> };
+type Props = {
+  params: Promise<{ subdomain: string; slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { subdomain, slug } = await params;
   return createPostMetadata(subdomain, slug, "/board/p");
 }
 
-export default async function PublicBoardRequestDetailPage({ params }: Props) {
+export default async function PublicBoardRequestDetailPage({ params, searchParams }: Props) {
   const { subdomain, slug: postSlug } = await params;
+  const sp = await searchParams;
   const data = await loadPublicBoardRequestDetailPageData({ subdomain, postSlug });
   if (!data) return notFound();
+
+  const backLink = sp.from === "roadmap" ? "/roadmap" : data.backLink;
 
   return (
     <SubdomainRequestDetail
@@ -24,7 +30,7 @@ export default async function PublicBoardRequestDetailPage({ params }: Props) {
       workspaceSlug={data.workspaceSlug}
       initialComments={data.initialComments}
       initialCollapsedIds={data.initialCollapsedIds}
-      backLink={data.backLink}
+      backLink={backLink}
     />
   );
 }
