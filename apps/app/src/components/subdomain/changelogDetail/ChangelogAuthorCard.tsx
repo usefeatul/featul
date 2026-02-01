@@ -13,6 +13,7 @@ interface ChangelogAuthorCardProps {
         role?: Role | null;
         isOwner?: boolean;
     };
+    publishedAt?: string | Date | null;
 }
 
 function getRoleLabel(role?: Role | null, isOwner?: boolean): string {
@@ -23,14 +24,14 @@ function getRoleLabel(role?: Role | null, isOwner?: boolean): string {
     return "Author";
 }
 
-export function ChangelogAuthorCard({ author }: ChangelogAuthorCardProps) {
+export function ChangelogAuthorCard({ author, publishedAt }: ChangelogAuthorCardProps) {
     const displayName = author?.name || "Unknown";
     const displayImage = author?.image || undefined;
     const roleLabel = getRoleLabel(author?.role, author?.isOwner);
 
     return (
         <div className="rounded-xl bg-card p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
                 <div className="relative">
                     <Avatar className="size-10 relative overflow-visible">
                         <AvatarImage src={displayImage} alt={displayName} />
@@ -44,9 +45,21 @@ export function ChangelogAuthorCard({ author }: ChangelogAuthorCardProps) {
                         />
                     </Avatar>
                 </div>
-                <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-foreground">{displayName}</span>
-                    <span className="text-xs text-muted-foreground">{roleLabel}</span>
+                <div className="flex flex-col gap-0.5 min-w-0 justify-center">
+                    <div className="flex items-center gap-1.5 text-sm leading-tight">
+                        <span className="font-semibold text-foreground truncate">{displayName}</span>
+                        <span className="text-muted-foreground/40">•</span>
+                        <span className="text-muted-foreground truncate">{roleLabel}</span>
+                    </div>
+                    {publishedAt ? (
+                        <span className="text-xs text-muted-foreground/60 leading-tight">
+                            {new Date(publishedAt).toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric"
+                            })}
+                        </span>
+                    ) : null}
                 </div>
             </div>
         </div>

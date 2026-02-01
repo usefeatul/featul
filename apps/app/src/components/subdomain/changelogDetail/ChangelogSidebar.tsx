@@ -11,16 +11,17 @@ interface ChangelogSidebarProps {
         role?: Role | null;
         isOwner?: boolean;
     };
+    publishedAt?: string | Date | null;
 }
 
-export function ChangelogSidebar({ subdomain, author }: ChangelogSidebarProps) {
+export function ChangelogSidebar({ subdomain, author, publishedAt }: ChangelogSidebarProps) {
     return (
         <aside className="hidden md:block space-y-4">
             {/* Got an idea card */}
             <SubmitIdeaCard subdomain={subdomain} slug={subdomain} />
 
             {/* Author Card */}
-            <ChangelogAuthorCard author={author} />
+            <ChangelogAuthorCard author={author} publishedAt={publishedAt} />
 
             {/* Powered By */}
             <PoweredBy />

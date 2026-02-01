@@ -1,8 +1,5 @@
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar";
-import { getInitials } from "@/utils/user-utils";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
-import RoleBadge from "@/components/global/RoleBadge";
 import type { Role } from "@/types/team";
 
 export interface ChangelogEntryData {
@@ -27,9 +24,6 @@ interface ChangelogContentProps {
 }
 
 export function ChangelogContent({ entry }: ChangelogContentProps) {
-    const displayName = entry.author?.name || "Unknown";
-    const displayImage = entry.author?.image || undefined;
-
     return (
         <div className="rounded-lg border bg-card p-6 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
             {/* Cover Image */}
@@ -48,37 +42,7 @@ export function ChangelogContent({ entry }: ChangelogContentProps) {
                 {entry.title}
             </h1>
 
-            {/* Author & Date */}
-            <div className="flex items-center gap-3 mb-6">
-                <div className="relative">
-                    <Avatar className="size-8 relative overflow-visible">
-                        <AvatarImage src={displayImage} alt={displayName} />
-                        <AvatarFallback className="text-xs bg-muted text-muted-foreground">
-                            {getInitials(displayName)}
-                        </AvatarFallback>
-                        <RoleBadge
-                            role={entry.author?.role}
-                            isOwner={entry.author?.isOwner}
-                            className="bg-card"
-                        />
-                    </Avatar>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                    <span className="text-xs font-medium text-foreground">
-                        {displayName}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                        {entry.publishedAt
-                            ? new Date(entry.publishedAt).toLocaleDateString(undefined, {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            })
-                            : ""}
-                    </span>
-                </div>
-            </div>
+
 
             {/* Content */}
             {entry.content ? (

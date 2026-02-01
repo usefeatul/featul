@@ -72,7 +72,11 @@ export default function SubdomainChangelogDetail({
             >
                 {/* Left Sidebar */}
                 {sidebarPosition === "left" ? (
-                    <ChangelogSidebar subdomain={subdomain} author={entry.author} />
+                    <ChangelogSidebar
+                        subdomain={subdomain}
+                        author={entry.author}
+                        publishedAt={entry.publishedAt}
+                    />
                 ) : null}
 
                 {/* Main Content */}
@@ -80,7 +84,11 @@ export default function SubdomainChangelogDetail({
 
                 {/* Right Sidebar */}
                 {sidebarPosition === "right" ? (
-                    <ChangelogSidebar subdomain={subdomain} author={entry.author} />
+                    <ChangelogSidebar
+                        subdomain={subdomain}
+                        author={entry.author}
+                        publishedAt={entry.publishedAt}
+                    />
                 ) : null}
             </div>
         </section>
