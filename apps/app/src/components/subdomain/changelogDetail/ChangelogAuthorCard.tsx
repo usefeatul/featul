@@ -30,7 +30,7 @@ export function ChangelogAuthorCard({ author, publishedAt }: ChangelogAuthorCard
     const roleLabel = getRoleLabel(author?.role, author?.isOwner);
 
     return (
-        <div className="rounded-xl bg-card p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
+        <div className="rounded-md bg-card p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
             <div className="flex items-start gap-3">
                 <div className="relative">
                     <Avatar className="size-10 relative overflow-visible">
