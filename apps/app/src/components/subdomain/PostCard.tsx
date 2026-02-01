@@ -4,7 +4,6 @@ import React from "react"
 import Link from "next/link"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { CommentsIcon } from "@featul/ui/icons/comments"
-import { PinIcon } from "@featul/ui/icons/pin"
 import type { RequestItemData } from "@/components/requests/RequestItem"
 import StatusIcon from "@/components/requests/StatusIcon"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
@@ -47,17 +46,11 @@ function PostCardBase({
   const displayImage = displayUser.image
 
   return (
-    <div className="py-6 px-6 relative group">
+    <div className={`py-6 px-6 relative group ${item.isPinned ? "border-l-2 border-l-primary bg-primary/5 rounded-l-[5px]" : ""}`}>
       <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
         <span className="sr-only">View post</span>
       </Link>
       <div className="inline-flex items-center gap-2">
-        {item.isPinned ? (
-          <div className="inline-flex items-center gap-1 text-primary">
-            <PinIcon className="size-4" />
-            <span className="text-xs font-medium">Pinned</span>
-          </div>
-        ) : null}
         <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
         <span className="text-sm text-accent">{statusLabel(String(item.roadmapStatus || "pending"))}</span>
       </div>

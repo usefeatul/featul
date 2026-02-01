@@ -5,7 +5,6 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import StatusIcon from "./StatusIcon"
 import { CommentsIcon } from "@featul/ui/icons/comments"
-import { PinIcon } from "@featul/ui/icons/pin"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { Checkbox } from "@featul/ui/components/checkbox"
 import { getInitials } from "@/utils/user-utils"
@@ -68,7 +67,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
-      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
+      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 ${item.isPinned ? "border-l-2 border-l-primary bg-primary/5 rounded-l-[5px]" : ""} ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
     >
       {isSelecting ? (
         <Checkbox
@@ -77,9 +76,6 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           aria-label="Select post"
           className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
         />
-      ) : null}
-      {item.isPinned ? (
-        <PinIcon className="size-4 text-primary shrink-0" aria-label="Pinned" />
       ) : null}
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <Link
