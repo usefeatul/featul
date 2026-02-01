@@ -6,62 +6,15 @@ import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { ChevronDownIcon } from "@featul/ui/icons/chevron-down"
 import { ListIcon } from "@featul/ui/icons/list"
-import { client } from "@featul/api/client"
-
-type Board = { id: string; name: string; slug: string; type?: string | null }
+import { useBoards, type Board } from "@/hooks/useBoards"
 
 export function BoardsDropdown({ slug, initialBoards, selectedBoard }: { slug: string; initialBoards?: Board[]; selectedBoard?: string }) {
   const router = useRouter()
   const search = useSearchParams()
   const selected = selectedBoard || search.get("board") || "__all__"
   const [open, setOpen] = React.useState(false)
-  function sortBoards(list: Board[]) {
-    return [...list].sort((a, b) => a.name.localeCompare(b.name))
-  }
-  const [boards, setBoards] = React.useState<Board[]>(() => {
-    const list = Array.isArray(initialBoards) ? initialBoards : []
-    const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
-    return sortBoards(filtered)
-  })
-  const [loading, setLoading] = React.useState(() => !(Array.isArray(initialBoards) && initialBoards.length > 0))
 
-  React.useEffect(() => {
-    let mounted = true
-    const key = `boards:${slug}`
-    try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null
-      if (raw) {
-        const cached = JSON.parse(raw)
-        const list = ((cached?.boards || cached?.data) || []) as Board[]
-        const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
-        if (mounted) {
-          setBoards((prev) => (prev.length === 0 ? filtered : prev))
-          setLoading(false)
-        }
-      }
-    } catch {
-      setLoading(false)
-    }
-    ; (async () => {
-      try {
-        const res = await client.board.byWorkspaceSlug.$get({ slug })
-        const data = await res.json()
-        const list = (data?.boards || []) as Board[]
-        const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
-        if (mounted) setBoards(filtered)
-        try {
-          if (typeof window !== "undefined") localStorage.setItem(key, JSON.stringify({ boards: filtered, ts: Date.now() }))
-        } catch {
-          setLoading(false)
-        }
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [slug])
+  const { boards, loading } = useBoards({ slug, initialBoards })
 
   const label = selected === "__all__" ? "All Feedback" : boards.find((b) => b.slug === selected)?.name || "Select board"
 

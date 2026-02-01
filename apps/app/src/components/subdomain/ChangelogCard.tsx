@@ -7,6 +7,7 @@ import { getInitials } from "@/utils/user-utils";
 import { relativeTime } from "@/lib/time";
 import RoleBadge from "@/components/global/RoleBadge";
 import type { ChangelogEntry } from "@/types/changelog";
+import { extractTextFromTiptap } from "@/types/changelog";
 
 export interface ChangelogCardProps {
     item: ChangelogEntry;
@@ -19,7 +20,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
     const displayImage = item.author?.image || undefined;
 
     // Use summary if available, otherwise extract text from content
-    const previewText = item.summary || extractTextFromTiptapLocal(item.content);
+    const previewText = item.summary || extractTextFromTiptap(item.content);
 
     return (
         <div className="py-6 px-6 relative group">
@@ -89,31 +90,6 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
     );
 }
 
-// Local implementation to avoid import issues with server/client boundary
-function extractTextFromTiptapLocal(content: ChangelogEntry['content']): string {
-    if (!content) return "";
-    if (typeof content === "string") {
-        return content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    }
 
-    interface TiptapNode {
-        type: string;
-        text?: string;
-        content?: TiptapNode[];
-    }
-
-    const extractText = (node: TiptapNode): string => {
-        if (node.text) return node.text;
-        if (node.content && Array.isArray(node.content)) {
-            return node.content.map(extractText).join(" ");
-        }
-        return "";
-    };
-
-    if (typeof content === "object" && 'content' in content && Array.isArray(content.content)) {
-        return content.content.map(extractText).join(" ").replace(/\s+/g, " ").trim();
-    }
-    return "";
-}
 
 export default React.memo(ChangelogCard);

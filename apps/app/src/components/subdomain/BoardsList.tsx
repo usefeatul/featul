@@ -2,41 +2,15 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { client } from "@featul/api/client"
 import { DocumentTextIcon } from "@featul/ui/icons/document-text"
-
-type Board = { id: string; name: string; slug: string; postCount?: number }
+import { useBoards, type Board } from "@/hooks/useBoards"
 
 export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: string; initialBoards?: Board[]; selectedBoard?: string }) {
   const router = useRouter()
   const search = useSearchParams()
   const current = selectedBoard || search.get("board") || "__all__"
-  function sortBoards(list: Board[]) {
-    return [...list].sort((a, b) => a.name.localeCompare(b.name))
-  }
-  const [boards, setBoards] = React.useState<Board[]>(() => {
-    const list = Array.isArray(initialBoards) ? initialBoards : []
-    return sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
-  })
-  const [loading, setLoading] = React.useState(() => !(Array.isArray(initialBoards) && initialBoards.length > 0))
 
-  React.useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        const res = await client.board.byWorkspaceSlug.$get({ slug })
-        const data = await res.json()
-        const list = (data?.boards || []) as Board[]
-        const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
-        if (mounted) setBoards(filtered)
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [slug])
+  const { boards, loading } = useBoards({ slug, initialBoards })
 
   const total = boards.reduce((sum, b) => sum + (Number(b.postCount) || 0), 0)
 
@@ -52,9 +26,8 @@ export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: strin
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm cursor-pointer ${
-        active ? "bg-muted dark:bg-black/40" : "hover:bg-muted dark:hover:bg-black/60"
-      }`}
+      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm cursor-pointer ${active ? "bg-muted dark:bg-black/40" : "hover:bg-muted dark:hover:bg-black/60"
+        }`}
       disabled={loading}
     >
       <span className="flex items-center gap-2">
