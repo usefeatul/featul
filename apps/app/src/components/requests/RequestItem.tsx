@@ -43,6 +43,7 @@ export interface RequestItemData {
   }>
   reportCount?: number
   isPinned?: boolean
+  isFeatured?: boolean
 }
 
 interface RequestItemProps {
@@ -63,11 +64,25 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const href = `${base}/requests/${item.slug}${queryString}`
   const title = item.title || ""
   const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
+
+  // Styling for list items: keep left border design (more compact than ribbon)
+  const pinnedClasses = "border-l-2 border-l-primary bg-primary/5 rounded-l-[5px]"
+  const featuredClasses = "border-l-2 border-l-amber-500 bg-amber-500/5 rounded-l-[5px]"
+  const bothClasses = "border-l-2 border-l-transparent bg-gradient-to-b from-primary/5 to-amber-500/5 rounded-l-[5px] relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-gradient-to-b before:from-primary before:to-amber-500 before:rounded-l-[5px]"
+
+  const highlightClasses = item.isPinned && item.isFeatured
+    ? bothClasses
+    : item.isPinned
+      ? pinnedClasses
+      : item.isFeatured
+        ? featuredClasses
+        : ""
+
   return (
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
-      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 ${item.isPinned ? "border-l-2 border-l-primary bg-primary/5 rounded-l-[5px]" : ""} ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
+      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 ${highlightClasses} ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
     >
       {isSelecting ? (
         <Checkbox

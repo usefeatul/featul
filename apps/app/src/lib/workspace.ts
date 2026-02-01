@@ -327,6 +327,7 @@ export async function getWorkspacePosts(
       isAnonymous: post.isAnonymous,
       authorId: post.authorId,
       isPinned: post.isPinned,
+      isFeatured: post.isFeatured,
       metadata: post.metadata,
       role: workspaceMember.role,
       ...(includeReportCounts

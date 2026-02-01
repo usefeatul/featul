@@ -71,6 +71,7 @@ export default async function BoardPage({
       isOwner: false,
       isFeatul: r.authorId === "featul-founder",
       isPinned: r.isPinned ?? false,
+      isFeatured: r.isFeatured ?? false,
     }))
   )
 
