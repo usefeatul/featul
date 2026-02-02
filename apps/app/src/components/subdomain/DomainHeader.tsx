@@ -51,10 +51,10 @@ export function DomainHeader({
   );
   const navItemCls = (active: boolean) =>
     cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+      "relative px-3 py-1.5 text-sm font-medium transition-colors",
       active
-        ? "bg-card dark:bg-black/40 text-foreground shadow-xs"
-        : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
+        ? "text-foreground"
+        : "text-muted-foreground hover:text-foreground"
     );
   React.useEffect(() => {
     let active = true;
@@ -167,7 +167,7 @@ export function DomainHeader({
         </Link>
 
         <nav className="flex-1 flex items-center justify-center">
-          <div className="inline-flex items-center rounded-lg border border-border/60 bg-muted/10 p-1">
+          <div className="flex items-center gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -176,6 +176,9 @@ export function DomainHeader({
                 aria-current={item.active ? "page" : undefined}
               >
                 {item.label}
+                {item.active && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full" />
+                )}
               </Link>
             ))}
           </div>
