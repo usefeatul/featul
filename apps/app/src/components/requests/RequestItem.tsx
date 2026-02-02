@@ -13,7 +13,7 @@ import RoleBadge from "@/components/global/RoleBadge"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
-import { getFlagHighlightClasses } from "@/utils/flag-styles"
+import { FlagRibbon } from "@/components/global/FlagRibbon"
 
 export interface RequestItemData {
   id: string
@@ -66,14 +66,14 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const title = item.title || ""
   const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
 
-  const highlightClasses = getFlagHighlightClasses(item.isPinned, item.isFeatured)
+
 
   return (
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
-      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 ${highlightClasses} ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
     >
+      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       {isSelecting ? (
         <Checkbox
           checked={!!isSelected}
@@ -96,6 +96,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       </Link>
       <div className="ml-auto flex items-center gap-3 text-xs text-accent">
         <ReportIndicator count={item.reportCount || 0} />
+
         <div className="inline-flex items-center gap-2 relative z-10">
           <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
         </div>
