@@ -21,7 +21,7 @@ export function FlagRibbon({ isPinned, isFeatured, className = "" }: FlagRibbonP
 
     return (
         <div
-            className={`absolute -top-[19px] -right-[19px] w-[38px] h-[38px] rotate-45 z-10 flex items-end justify-center pb-1 shadow-sm pointer-events-none ${className}`}
+            className={`absolute -top-[19px] -right-[19px] w-[38px] h-[38px] rotate-45 flex items-end justify-center pb-1 shadow-sm pointer-events-none ${className}`}
             title={isPinned ? "Pinned" : "Featured"}
         >
             <div className={`
