@@ -13,7 +13,7 @@ import RoleBadge from "@/components/global/RoleBadge"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
-import { Pin, Star } from "lucide-react"
+import { FlagRibbon } from "@/components/global/FlagRibbon"
 
 export interface RequestItemData {
   id: string
@@ -74,25 +74,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       workspaceSlug={workspaceSlug}
       className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
     >
-      {(item.isPinned || item.isFeatured) && (
-        <div
-          className="absolute -top-[19px] -right-[19px] w-[38px] h-[38px] rotate-45 z-10 flex items-end justify-center pb-1 shadow-sm pointer-events-none"
-          title={item.isPinned ? "Pinned" : "Featured"}
-        >
-          <div className={`
-              absolute inset-0 shadow-sm
-              ${item.isPinned && item.isFeatured ? "bg-gradient-to-r from-primary to-amber-500" : ""}
-              ${item.isPinned && !item.isFeatured ? "bg-primary" : ""}
-              ${!item.isPinned && item.isFeatured ? "bg-amber-500" : ""}
-            `}
-          />
-          <div className="relative z-10 text-white transform rotate-0 mb-[1px]">
-            {item.isPinned && item.isFeatured ? <Star className="size-2.5 fill-current" /> :
-              item.isPinned ? <Pin className="size-2.5 fill-current" /> :
-                <Star className="size-2.5 fill-current" />}
-          </div>
-        </div>
-      )}
+      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       {isSelecting ? (
         <Checkbox
           checked={!!isSelected}
