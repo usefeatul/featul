@@ -44,6 +44,7 @@ export interface RequestItemData {
   }>
   reportCount?: number
   isPinned?: boolean
+  isLocked?: boolean
   isFeatured?: boolean
 }
 

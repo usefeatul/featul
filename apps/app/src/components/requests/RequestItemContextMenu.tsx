@@ -12,11 +12,13 @@ import {
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { LayersIcon } from "@featul/ui/icons/layers"
 import { TagIcon } from "@featul/ui/icons/tag"
+import { FlagIcon } from "@featul/ui/icons/flag"
 import { useRequestItemActions } from "../../hooks/useRequestItemActions"
 import { RequestDeleteDialog } from "./RequestDeleteDialog"
 import type { RequestItemData } from "./RequestItem"
 import { useRequestTags } from "../../hooks/useRequestTags"
-import { StatusSubmenu, TagsSubmenu } from "./RequestItemSubmenus"
+import { useRequestFlags } from "../../hooks/useRequestFlags"
+import { StatusSubmenu, TagsSubmenu, FlagsSubmenu } from "./RequestItemSubmenus"
 
 interface RequestItemContextMenuProps {
     children: React.ReactNode
@@ -33,7 +35,7 @@ export function RequestItemContextMenu({
 }: RequestItemContextMenuProps) {
     const [open, setOpen] = React.useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
-    const [currentSubmenu, setCurrentSubmenu] = React.useState<"main" | "status" | "tags">("main")
+    const [currentSubmenu, setCurrentSubmenu] = React.useState<"main" | "status" | "tags" | "flags">("main")
     const [position, setPosition] = React.useState<{ x: number; y: number } | null>(null)
 
     const {
@@ -46,6 +48,8 @@ export function RequestItemContextMenu({
         workspaceSlug,
         enabled: open && currentSubmenu === "tags"
     })
+
+    const { optimisticFlags, toggleFlag } = useRequestFlags({ item })
 
     const { updateStatus, deleteRequest, isPending } = useRequestItemActions({
         requestId: item.id,
@@ -115,6 +119,12 @@ export function RequestItemContextMenu({
                             onBack={() => setCurrentSubmenu("main")}
                             onToggleTag={toggleTag}
                         />
+                    ) : currentSubmenu === "flags" ? (
+                        <FlagsSubmenu
+                            flags={optimisticFlags}
+                            onBack={() => setCurrentSubmenu("main")}
+                            onToggleFlag={toggleFlag}
+                        />
                     ) : (
                         <PopoverList>
                             <PopoverListItem onClick={() => setCurrentSubmenu("status")}>
@@ -125,6 +135,11 @@ export function RequestItemContextMenu({
                             <PopoverListItem onClick={() => setCurrentSubmenu("tags")}>
                                 <TagIcon className="size-4" />
                                 <span className="text-sm">Tags</span>
+                            </PopoverListItem>
+
+                            <PopoverListItem onClick={() => setCurrentSubmenu("flags")}>
+                                <FlagIcon className="size-4" />
+                                <span className="text-sm">Flags</span>
                             </PopoverListItem>
 
                             <PopoverSeparator />

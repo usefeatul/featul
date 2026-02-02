@@ -4,6 +4,7 @@ import { CheckIcon } from "@featul/ui/icons/check"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import StatusIcon from "./StatusIcon"
 import type { Tag } from "../../hooks/useRequestTags"
+import type { RequestFlags } from "../../hooks/useRequestFlags"
 
 export const statusOptions = [
     { label: "Pending", value: "pending" },
@@ -84,6 +85,48 @@ export function TagsSubmenu({ availableTags, optimisticTags, onBack, onToggleTag
                     )
                 })
             )}
+        </PopoverList>
+    )
+}
+
+const flagOptions = [
+    { key: "isPinned", label: "Pinned" },
+    { key: "isLocked", label: "Locked" },
+    { key: "isFeatured", label: "Featured" },
+] as const
+
+interface FlagsSubmenuProps {
+    flags: RequestFlags
+    onBack: () => void
+    onToggleFlag: (key: keyof RequestFlags) => void
+}
+
+export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps) {
+    return (
+        <PopoverList>
+            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-center">
+                <span className="text-sm">Back</span>
+            </PopoverListItem>
+            <PopoverSeparator />
+            {flagOptions.map((option) => {
+                const isChecked = !!flags[option.key]
+                return (
+                    <PopoverListItem
+                        key={option.key}
+                        onClick={(e: React.MouseEvent) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            onToggleFlag(option.key)
+                        }}
+                        className="gap-2"
+                    >
+                        <div className="size-4 flex items-center justify-center shrink-0">
+                            {isChecked && <CheckIcon className="size-3.5" />}
+                        </div>
+                        <span className="text-sm truncate">{option.label}</span>
+                    </PopoverListItem>
+                )
+            })}
         </PopoverList>
     )
 }
