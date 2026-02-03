@@ -46,7 +46,7 @@ function PostCardBase({
   const displayImage = displayUser.image
 
   return (
-    <div className="py-6 px-6 relative group overflow-hidden">
+    <div className="py-6 px-6 relative group overflow-hidden transition-colors hover:bg-background dark:hover:bg-background">
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
         <span className="sr-only">View post</span>
@@ -56,7 +56,7 @@ function PostCardBase({
         <span className="text-sm text-accent">{statusLabel(String(item.roadmapStatus || "pending"))}</span>
       </div>
       <div className="mt-2">
-        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+        <h3 className="text-lg font-semibold text-foreground">
           {item.title}
         </h3>
       </div>
