@@ -2,6 +2,7 @@ import * as React from "react"
 import { PopoverList, PopoverListItem, PopoverSeparator } from "@featul/ui/components/popover"
 import { CheckIcon } from "@featul/ui/icons/check"
 import { LoaderIcon } from "@featul/ui/icons/loader"
+import { ArrowLeftIcon } from "@featul/ui/icons/arrow-left"
 import StatusIcon from "./StatusIcon"
 import type { TagSummary } from "@/types/post"
 import { REQUEST_FLAG_OPTIONS, type RequestFlagKey, type RequestFlags } from "@/types/request"
@@ -25,7 +26,8 @@ interface StatusSubmenuProps {
 export function StatusSubmenu({ currentStatus, isPending, onBack, onUpdateStatus }: StatusSubmenuProps) {
     return (
         <PopoverList className="max-h-none! overflow-visible">
-            <PopoverListItem onClick={onBack} className="text-muted-foreground">
+            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-start gap-2">
+                <ArrowLeftIcon className="size-4" />
                 <span className="text-sm">Back</span>
             </PopoverListItem>
             <PopoverSeparator />
@@ -58,7 +60,8 @@ interface TagsSubmenuProps {
 export function TagsSubmenu({ availableTags, optimisticTags, onBack, onToggleTag }: TagsSubmenuProps) {
     return (
         <PopoverList>
-            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-center">
+            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-start gap-2">
+                <ArrowLeftIcon className="size-4" />
                 <span className="text-sm ">Back</span>
             </PopoverListItem>
             <PopoverSeparator />
@@ -98,7 +101,8 @@ interface FlagsSubmenuProps {
 export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps) {
     return (
         <PopoverList>
-            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-center">
+            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-start gap-2">
+                <ArrowLeftIcon className="size-4" />
                 <span className="text-sm">Back</span>
             </PopoverListItem>
             <PopoverSeparator />
