@@ -38,7 +38,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
-      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
+      className={`flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
     >
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       {isSelecting ? (

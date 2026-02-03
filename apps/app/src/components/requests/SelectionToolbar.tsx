@@ -12,7 +12,7 @@ export interface SelectionToolbarProps {
 
 export function SelectionToolbar({ allSelected, selectedCount, isPending, onToggleAll, onConfirmDelete }: SelectionToolbarProps) {
   return (
-    <div className="flex items-center gap-2 px-4 py-2 border-b border-border/60 bg-muted/50">
+    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 border-b border-border/60 bg-muted/50">
       <Checkbox
         checked={allSelected}
         onCheckedChange={onToggleAll}
