@@ -22,12 +22,14 @@ interface ChangelogItemContextMenuProps {
     children: React.ReactNode
     item: ChangelogEntryWithTags
     workspaceSlug: string
+    onClick?: React.MouseEventHandler<HTMLDivElement>
 }
 
 export function ChangelogItemContextMenu({
     children,
     item,
     workspaceSlug,
+    onClick,
 }: ChangelogItemContextMenuProps) {
     const router = useRouter()
     const { publish, unpublish, isPending } = useChangelogEntryActions({
@@ -73,7 +75,7 @@ export function ChangelogItemContextMenu({
                     />
                 </PopoverTrigger>
 
-                <div onContextMenu={handleContextMenu}>
+                <div onContextMenu={handleContextMenu} onClick={onClick}>
                     {children}
                 </div>
 

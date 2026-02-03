@@ -5,6 +5,7 @@ import Link from "next/link"
 
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { Checkbox } from "@featul/ui/components/checkbox"
+import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
 import { ChangelogDraftIcon } from "@featul/ui/icons/changelog-draft"
@@ -25,20 +26,38 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
     const publishedDate = item.publishedAt ? new Date(item.publishedAt) : null
     const createdDate = new Date(item.createdAt)
     const displayDate = publishedDate || createdDate
+    const isSelectingMode = Boolean(isSelecting)
+    const isSelectedMode = Boolean(isSelected)
+    const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
+        if (!isSelectingMode) return
+        e.preventDefault()
+        e.stopPropagation()
+        onToggle?.(!isSelectedMode)
+    }, [isSelectingMode, isSelectedMode, onToggle])
+    const rowClassName = cn(
+        "flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40",
+        isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
+    )
 
     return (
-        <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug}>
-            <div className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}>
-                {isSelecting && (
+        <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug} onClick={handleRowClick}>
+            <div className={rowClassName}>
+                {isSelectingMode && (
                     <Checkbox
-                        checked={!!isSelected}
-                        onCheckedChange={(v) => onToggle?.(!!v)}
+                        checked={isSelectedMode}
+                        onCheckedChange={(v) => onToggle?.(Boolean(v))}
+                        onClick={(e) => e.stopPropagation()}
                         className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
                     />
                 )}
                 <Link
                     href={`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`}
-                    className={`flex items-center gap-3 flex-1 min-w-0 ${isSelecting ? "pointer-events-none" : ""}`}
+                    className={cn(
+                        "flex items-center gap-3 flex-1 min-w-0",
+                        isSelectingMode && "pointer-events-none"
+                    )}
+                    tabIndex={isSelectingMode ? -1 : 0}
+                    aria-disabled={isSelectingMode ? true : undefined}
                 >
                     <div className="shrink-0">
                         {item.status === "published" ? (

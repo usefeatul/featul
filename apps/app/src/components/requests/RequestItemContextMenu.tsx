@@ -25,6 +25,7 @@ interface RequestItemContextMenuProps {
     item: RequestItemData
     workspaceSlug: string
     className?: string
+    onClick?: React.MouseEventHandler<HTMLDivElement>
 }
 
 export function RequestItemContextMenu({
@@ -32,6 +33,7 @@ export function RequestItemContextMenu({
     item,
     workspaceSlug,
     className,
+    onClick,
 }: RequestItemContextMenuProps) {
     const [open, setOpen] = React.useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
@@ -165,7 +167,7 @@ export function RequestItemContextMenu({
                     />
                 </PopoverTrigger>
 
-                <div onContextMenu={handleContextMenu} className={className}>
+                <div onContextMenu={handleContextMenu} className={className} onClick={onClick}>
                     {children}
                 </div>
 
