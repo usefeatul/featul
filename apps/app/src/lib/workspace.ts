@@ -16,6 +16,7 @@ import {
 import { randomAvatarUrl } from "@/utils/avatar";
 import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
 import { createHash } from "crypto";
+import type { RequestItemRow } from "@/lib/request-item";
 import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
 import type { DomainInfo } from "../types/domain";
@@ -248,7 +249,7 @@ export async function getWorkspacePosts(
     publicOnly?: boolean;
     includeReportCounts?: boolean;
   }
-) {
+): Promise<RequestItemRow[]> {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return [];
 
@@ -368,7 +369,7 @@ export async function getWorkspacePosts(
     }
   }
 
-  const withAvatars = rows.map((r) => {
+  const withAvatars: RequestItemRow[] = rows.map((r) => {
     let avatarSeed = r.id || r.slug
     if (r.isAnonymous && (r.metadata as Record<string, unknown>)?.fingerprint) {
       avatarSeed = createHash("sha256").update(String((r.metadata as Record<string, unknown>).fingerprint)).digest("hex")

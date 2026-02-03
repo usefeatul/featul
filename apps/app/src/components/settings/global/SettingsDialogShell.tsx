@@ -37,7 +37,10 @@ export function SettingsDialogShell({
       : { width: "min(92vw, 450px)", maxWidth: "none" as const }
 
   const topValue = typeof offsetY === "number" ? `${offsetY}%` : offsetY
-  const positionStyle = { top: topValue, ["--tw-translate-y" as any]: `-${topValue}` }
+  const positionStyle: React.CSSProperties & { ["--tw-translate-y"]?: string } = {
+    top: topValue,
+    ["--tw-translate-y"]: `-${topValue}`,
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
