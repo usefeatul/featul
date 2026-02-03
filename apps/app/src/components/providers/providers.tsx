@@ -26,7 +26,7 @@ export const Providers = ({ children }: PropsWithChildren) => {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <Toaster richColors position="bottom-right" />
+      <Toaster position="bottom-right" />
     </QueryClientProvider>
   )
 }
