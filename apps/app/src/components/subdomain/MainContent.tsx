@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useSearchParams } from "next/navigation";
-import type { RequestItemData } from "@/components/requests/RequestItem";
+import type { RequestItemData } from "@/types/request";
 
 import { BoardsDropdown } from "./BoardsDropdown";
 import { PublicRequestPagination } from "./PublicRequestPagination";

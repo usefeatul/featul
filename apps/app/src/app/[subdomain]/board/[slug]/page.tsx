@@ -5,8 +5,9 @@ import { eq } from "drizzle-orm"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, getWorkspaceBoards } from "@/lib/workspace"
 import { readHasVotedForPost } from "@/lib/vote.server"
+import { toRequestItemData } from "@/lib/request-item"
 import { MainContent } from "@/components/subdomain/MainContent"
-import type { RequestItemData } from "@/components/requests/RequestItem"
+import type { RequestItemData } from "@/types/request"
 
 export const revalidate = 0
 export const dynamic = "force-dynamic"
@@ -49,31 +50,14 @@ export default async function BoardPage({
   })
 
   const items: RequestItemData[] = await Promise.all(
-    rows.map(async (r) => ({
-      id: r.id,
-      title: r.title,
-      slug: r.slug,
-      content: r.content,
-      image: r.image,
-      commentCount: Number(r.commentCount ?? 0),
-      upvotes: Number(r.upvotes ?? 0),
-      roadmapStatus: r.roadmapStatus,
-      publishedAt: r.publishedAt ? new Date(r.publishedAt).toISOString() : null,
-      createdAt: new Date(r.createdAt).toISOString(),
-      boardSlug: r.boardSlug,
-      boardName: r.boardName,
-      authorImage: r.authorImage,
-      authorName: r.authorName,
-      authorId: r.authorId,
-      isAnonymous: r.isAnonymous ?? undefined,
-      hasVoted: await readHasVotedForPost(r.id),
-      role: r.role,
-      isOwner: false,
-      isFeatul: r.authorId === "featul-founder",
-      isPinned: r.isPinned ?? false,
-      isLocked: r.isLocked ?? false,
-      isFeatured: r.isFeatured ?? false,
-    }))
+    rows.map(async (r) =>
+      toRequestItemData({
+        ...r,
+        hasVoted: await readHasVotedForPost(r.id),
+        isOwner: false,
+        isFeatul: r.authorId === "featul-founder",
+      })
+    )
   )
 
   const totalCount = await getWorkspacePostsCount(subdomain, {

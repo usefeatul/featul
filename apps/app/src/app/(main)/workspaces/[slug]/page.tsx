@@ -1,5 +1,6 @@
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount } from "@/lib/workspace";
-import type { RequestItemData } from "@/components/requests/RequestItem";
+import { toRequestItemData } from "@/lib/request-item";
+import type { RequestItemData } from "@/types/request";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
@@ -56,18 +57,12 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
   const rows = await getWorkspacePosts(slug, { order: "newest", limit: pageSize, offset });
   const totalCount = await getWorkspacePostsCount(slug, {});
 
-  const items: RequestItemData[] = rows.map((row) => ({
-    ...row,
-    content: row.content ?? null,
-    commentCount: row.commentCount ?? 0,
-    upvotes: row.upvotes ?? 0,
-    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt),
-    publishedAt: row.publishedAt instanceof Date ? row.publishedAt.toISOString() : row.publishedAt ? String(row.publishedAt) : null,
-    isAnonymous: row.isAnonymous ?? undefined,
-    isPinned: row.isPinned ?? undefined,
-    isLocked: row.isLocked ?? undefined,
-    isFeatured: row.isFeatured ?? undefined,
-  }));
+  const items: RequestItemData[] = rows.map((row) =>
+    toRequestItemData({
+      ...row,
+      content: row.content ?? null,
+    })
+  );
 
   return (
     <section className="space-y-4">

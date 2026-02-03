@@ -3,45 +3,37 @@ import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
-
-export type RequestFlags = {
-    isPinned?: boolean
-    isLocked?: boolean
-    isFeatured?: boolean
-}
+import type { RequestFlagKey, RequestFlags } from "@/types/request"
 
 interface UseRequestFlagsProps {
     item: {
         id: string
-        isPinned?: boolean
-        isLocked?: boolean
-        isFeatured?: boolean
-    }
+    } & RequestFlags
 }
+
+type FlagsState = Record<RequestFlagKey, boolean>
+
+const toFlagsState = (flags: RequestFlags): FlagsState => ({
+    isPinned: !!flags.isPinned,
+    isLocked: !!flags.isLocked,
+    isFeatured: !!flags.isFeatured,
+})
 
 export function useRequestFlags({ item }: UseRequestFlagsProps) {
     const router = useRouter()
     const [_, startTransition] = useTransition()
     const [isUpdating, setIsUpdating] = React.useState(false)
-    const [optimisticFlags, setOptimisticFlags] = React.useState<RequestFlags>({
-        isPinned: !!item.isPinned,
-        isLocked: !!item.isLocked,
-        isFeatured: !!item.isFeatured,
-    })
+    const [optimisticFlags, setOptimisticFlags] = React.useState<FlagsState>(() => toFlagsState(item))
 
     React.useEffect(() => {
-        setOptimisticFlags({
-            isPinned: !!item.isPinned,
-            isLocked: !!item.isLocked,
-            isFeatured: !!item.isFeatured,
-        })
+        setOptimisticFlags(toFlagsState(item))
     }, [item.isPinned, item.isLocked, item.isFeatured])
 
-    const toggleFlag = async (key: keyof RequestFlags) => {
+    const toggleFlag = async (key: RequestFlagKey) => {
         if (isUpdating) return
         const prev = optimisticFlags
         const nextValue = !prev[key]
-        const next = { ...prev, [key]: nextValue }
+        const next: FlagsState = { ...prev, [key]: nextValue }
         setOptimisticFlags(next)
         setIsUpdating(true)
 

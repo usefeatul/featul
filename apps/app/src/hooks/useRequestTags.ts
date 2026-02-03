@@ -4,19 +4,11 @@ import { useTransition } from "react"
 import { client } from "@featul/api/client"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
-
-export interface Tag {
-    id: string
-    name: string
-    slug: string
-    color?: string | null
-}
+import type { TagSummary } from "@/types/post"
+import type { RequestItemData } from "@/types/request"
 
 interface UseRequestTagsProps {
-    item: {
-        id: string
-        tags?: Array<any>
-    }
+    item: Pick<RequestItemData, "id" | "tags">
     workspaceSlug: string
     enabled?: boolean
 }
@@ -25,13 +17,11 @@ export function useRequestTags({ item, workspaceSlug, enabled = false }: UseRequ
     const router = useRouter()
     const [_, startTransition] = useTransition()
     const [hasPendingUpdates, setHasPendingUpdates] = React.useState(false)
-    const [optimisticTags, setOptimisticTags] = React.useState<Tag[]>([])
+    const [optimisticTags, setOptimisticTags] = React.useState<TagSummary[]>([])
 
     // Sync optimistic tags with items.tags when props change
     React.useEffect(() => {
-        if (item.tags) {
-            setOptimisticTags(item.tags as Tag[])
-        }
+        setOptimisticTags(item.tags ?? [])
     }, [item.tags])
 
     // Fetch tags
@@ -40,7 +30,7 @@ export function useRequestTags({ item, workspaceSlug, enabled = false }: UseRequ
         queryFn: async () => {
             const res = await client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug })
             const data = await res.json()
-            return (data?.tags || []) as Tag[]
+            return (data?.tags || []) as TagSummary[]
         },
         enabled,
         staleTime: 300_000,
@@ -73,11 +63,11 @@ export function useRequestTags({ item, workspaceSlug, enabled = false }: UseRequ
             } else {
                 toast.error("Failed to update tags")
                 // Revert on error
-                setOptimisticTags(item.tags as Tag[] || [])
+                setOptimisticTags(item.tags ?? [])
             }
         } catch {
             toast.error("Failed to update tags")
-            setOptimisticTags(item.tags as Tag[] || [])
+            setOptimisticTags(item.tags ?? [])
         }
     }
 

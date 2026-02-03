@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import RequestItem, { type RequestItemData } from "./RequestItem"
+import RequestItem from "./RequestItem"
+import type { RequestItemData } from "@/types/request"
 import EmptyRequests from "./EmptyRequests"
 import { useSelection, toggleSelectionId, selectAllForKey, removeSelectedIds } from "@/lib/selection-store"
 import { BulkDeleteConfirmDialog } from "./BulkDeleteConfirmDialog"

@@ -5,18 +5,17 @@ import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { DropdownIcon } from "@featul/ui/icons/dropdown"
 import { client } from "@featul/api/client"
+import { REQUEST_FLAG_OPTIONS, type RequestFlagKey, type RequestFlags } from "@/types/request"
 
-type Flags = { isPinned?: boolean; isLocked?: boolean; isFeatured?: boolean }
-
-export default function FlagsPicker({ postId, value, onChange }: { postId: string; value: Flags; onChange: (v: Flags) => void }) {
+export default function FlagsPicker({ postId, value, onChange }: { postId: string; value: RequestFlags; onChange: (v: RequestFlags) => void }) {
   const [open, setOpen] = React.useState(false)
   const [saving, setSaving] = React.useState(false)
 
-  const toggle = async (key: keyof Flags) => {
+  const toggle = async (key: RequestFlagKey) => {
     if (saving) return
     setSaving(true)
     try {
-      const patch: Flags = { [key]: !value[key] } as Flags
+      const patch: RequestFlags = { [key]: !value[key] }
       await client.board.updatePostMeta.$post({ postId, ...patch })
       onChange({ ...value, ...patch })
     } finally {
@@ -24,7 +23,10 @@ export default function FlagsPicker({ postId, value, onChange }: { postId: strin
     }
   }
 
-  const label = [value.isPinned ? "pinned" : null, value.isLocked ? "locked" : null, value.isFeatured ? "featured" : null].filter(Boolean).join(", ") || "flags"
+  const label = REQUEST_FLAG_OPTIONS
+    .filter((option) => value[option.key])
+    .map((option) => option.label.toLowerCase())
+    .join(", ") || "flags"
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,9 +38,14 @@ export default function FlagsPicker({ postId, value, onChange }: { postId: strin
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
-          <PopoverListItem role="menuitemcheckbox" aria-checked={!!value.isPinned} onClick={() => toggle("isPinned")}>Pinned{value.isPinned ? <span className="ml-auto text-xs">✓</span> : null}</PopoverListItem>
-          <PopoverListItem role="menuitemcheckbox" aria-checked={!!value.isLocked} onClick={() => toggle("isLocked")}>Locked{value.isLocked ? <span className="ml-auto text-xs">✓</span> : null}</PopoverListItem>
-          <PopoverListItem role="menuitemcheckbox" aria-checked={!!value.isFeatured} onClick={() => toggle("isFeatured")}>Featured{value.isFeatured ? <span className="ml-auto text-xs">✓</span> : null}</PopoverListItem>
+          {REQUEST_FLAG_OPTIONS.map((option) => {
+            const isChecked = !!value[option.key]
+            return (
+              <PopoverListItem key={option.key} role="menuitemcheckbox" aria-checked={isChecked} onClick={() => toggle(option.key)}>
+                {option.label}{isChecked ? <span className="ml-auto text-xs">✓</span> : null}
+              </PopoverListItem>
+            )
+          })}
         </PopoverList>
       </PopoverContent>
     </Popover>

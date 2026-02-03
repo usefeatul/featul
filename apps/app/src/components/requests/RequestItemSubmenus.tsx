@@ -3,8 +3,8 @@ import { PopoverList, PopoverListItem, PopoverSeparator } from "@featul/ui/compo
 import { CheckIcon } from "@featul/ui/icons/check"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import StatusIcon from "./StatusIcon"
-import type { Tag } from "../../hooks/useRequestTags"
-import type { RequestFlags } from "../../hooks/useRequestFlags"
+import type { TagSummary } from "@/types/post"
+import { REQUEST_FLAG_OPTIONS, type RequestFlagKey, type RequestFlags } from "@/types/request"
 
 export const statusOptions = [
     { label: "Pending", value: "pending" },
@@ -49,8 +49,8 @@ export function StatusSubmenu({ currentStatus, isPending, onBack, onUpdateStatus
 }
 
 interface TagsSubmenuProps {
-    availableTags: Tag[]
-    optimisticTags: Tag[]
+    availableTags: TagSummary[]
+    optimisticTags: TagSummary[]
     onBack: () => void
     onToggleTag: (tagId: string) => void
 }
@@ -89,16 +89,10 @@ export function TagsSubmenu({ availableTags, optimisticTags, onBack, onToggleTag
     )
 }
 
-const flagOptions = [
-    { key: "isPinned", label: "Pinned" },
-    { key: "isLocked", label: "Locked" },
-    { key: "isFeatured", label: "Featured" },
-] as const
-
 interface FlagsSubmenuProps {
     flags: RequestFlags
     onBack: () => void
-    onToggleFlag: (key: keyof RequestFlags) => void
+    onToggleFlag: (key: RequestFlagKey) => void
 }
 
 export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps) {
@@ -108,7 +102,7 @@ export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps)
                 <span className="text-sm">Back</span>
             </PopoverListItem>
             <PopoverSeparator />
-            {flagOptions.map((option) => {
+            {REQUEST_FLAG_OPTIONS.map((option) => {
                 const isChecked = !!flags[option.key]
                 return (
                     <PopoverListItem

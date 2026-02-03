@@ -14,39 +14,7 @@ import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
-
-export interface RequestItemData {
-  id: string
-  title: string
-  slug: string
-  content: string | null
-  image: string | null
-  commentCount: number
-  upvotes: number
-  roadmapStatus: string | null
-  publishedAt: string | null
-  createdAt: string
-  boardSlug: string
-  boardName: string
-  authorImage?: string | null
-  authorName?: string | null
-  authorId?: string | null
-  isAnonymous?: boolean
-  hasVoted?: boolean
-  role?: "admin" | "member" | "viewer" | null
-  isOwner?: boolean
-  isFeatul?: boolean
-  tags?: Array<{
-    id: string
-    name: string
-    slug: string
-    color?: string | null
-  }>
-  reportCount?: number
-  isPinned?: boolean
-  isLocked?: boolean
-  isFeatured?: boolean
-}
+import type { RequestItemData } from "@/types/request"
 
 interface RequestItemProps {
   item: RequestItemData
@@ -56,7 +24,6 @@ interface RequestItemProps {
   isSelected?: boolean
   onToggle?: (checked: boolean) => void
   disableLink?: boolean
-
 }
 
 function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelected, onToggle, disableLink }: RequestItemProps) {
@@ -66,8 +33,6 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const href = `${base}/requests/${item.slug}${queryString}`
   const title = item.title || ""
   const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
-
-
 
   return (
     <RequestItemContextMenu

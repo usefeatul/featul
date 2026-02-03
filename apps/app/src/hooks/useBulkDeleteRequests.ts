@@ -7,7 +7,7 @@ import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { getSelectedIds, removeSelectedIds } from "@/lib/selection-store"
 import type { PostDeletedEventDetail, RequestsPageRefreshingDetail } from "@/types/events"
-import type { RequestItemData } from "@/components/requests/RequestItem"
+import type { RequestItemData } from "@/types/request"
 
 interface UseBulkDeleteRequestsParams {
   workspaceSlug: string
@@ -128,4 +128,3 @@ export function useBulkDeleteRequests({
     handleBulkDelete,
   }
 }
-

@@ -15,7 +15,7 @@ import { TagIcon } from "@featul/ui/icons/tag"
 import { FlagIcon } from "@featul/ui/icons/flag"
 import { useRequestItemActions } from "../../hooks/useRequestItemActions"
 import { RequestDeleteDialog } from "./RequestDeleteDialog"
-import type { RequestItemData } from "./RequestItem"
+import type { RequestItemData } from "@/types/request"
 import { useRequestTags } from "../../hooks/useRequestTags"
 import { useRequestFlags } from "../../hooks/useRequestFlags"
 import { StatusSubmenu, TagsSubmenu, FlagsSubmenu } from "./RequestItemSubmenus"
@@ -38,6 +38,8 @@ export function RequestItemContextMenu({
     const [currentSubmenu, setCurrentSubmenu] = React.useState<"main" | "status" | "tags" | "flags">("main")
     const [position, setPosition] = React.useState<{ x: number; y: number } | null>(null)
 
+    const isTagsMenu = currentSubmenu === "tags"
+
     const {
         availableTags,
         optimisticTags,
@@ -46,7 +48,7 @@ export function RequestItemContextMenu({
     } = useRequestTags({
         item,
         workspaceSlug,
-        enabled: open && currentSubmenu === "tags"
+        enabled: open && isTagsMenu
     })
 
     const { optimisticFlags, toggleFlag } = useRequestFlags({ item })
@@ -72,6 +74,69 @@ export function RequestItemContextMenu({
     const handleDelete = () => {
         setShowDeleteDialog(true)
     }
+
+    const menuContent = (() => {
+        if (currentSubmenu === "status") {
+            return (
+                <StatusSubmenu
+                    currentStatus={item.roadmapStatus || "pending"}
+                    isPending={isPending}
+                    onBack={() => setCurrentSubmenu("main")}
+                    onUpdateStatus={updateStatus}
+                />
+            )
+        }
+
+        if (currentSubmenu === "tags") {
+            return (
+                <TagsSubmenu
+                    availableTags={availableTags}
+                    optimisticTags={optimisticTags}
+                    onBack={() => setCurrentSubmenu("main")}
+                    onToggleTag={toggleTag}
+                />
+            )
+        }
+
+        if (currentSubmenu === "flags") {
+            return (
+                <FlagsSubmenu
+                    flags={optimisticFlags}
+                    onBack={() => setCurrentSubmenu("main")}
+                    onToggleFlag={toggleFlag}
+                />
+            )
+        }
+
+        return (
+            <PopoverList>
+                <PopoverListItem onClick={() => setCurrentSubmenu("status")}>
+                    <LayersIcon className="size-4" />
+                    <span className="text-sm">Status</span>
+                </PopoverListItem>
+
+                <PopoverListItem onClick={() => setCurrentSubmenu("tags")}>
+                    <TagIcon className="size-4" />
+                    <span className="text-sm">Tags</span>
+                </PopoverListItem>
+
+                <PopoverListItem onClick={() => setCurrentSubmenu("flags")}>
+                    <FlagIcon className="size-4" />
+                    <span className="text-sm">Flags</span>
+                </PopoverListItem>
+
+                <PopoverSeparator />
+
+                <PopoverListItem
+                    onClick={handleDelete}
+                    className="text-destructive hover:text-destructive focus:text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
+                >
+                    <TrashIcon className="size-4" />
+                    <span className="text-sm">Delete</span>
+                </PopoverListItem>
+            </PopoverList>
+        )
+    })()
 
     return (
         <>
@@ -105,54 +170,7 @@ export function RequestItemContextMenu({
                 </div>
 
                 <PopoverContent align="start" className="fit" list>
-                    {currentSubmenu === "status" ? (
-                        <StatusSubmenu
-                            currentStatus={item.roadmapStatus || "pending"}
-                            isPending={isPending}
-                            onBack={() => setCurrentSubmenu("main")}
-                            onUpdateStatus={updateStatus}
-                        />
-                    ) : currentSubmenu === "tags" ? (
-                        <TagsSubmenu
-                            availableTags={availableTags}
-                            optimisticTags={optimisticTags}
-                            onBack={() => setCurrentSubmenu("main")}
-                            onToggleTag={toggleTag}
-                        />
-                    ) : currentSubmenu === "flags" ? (
-                        <FlagsSubmenu
-                            flags={optimisticFlags}
-                            onBack={() => setCurrentSubmenu("main")}
-                            onToggleFlag={toggleFlag}
-                        />
-                    ) : (
-                        <PopoverList>
-                            <PopoverListItem onClick={() => setCurrentSubmenu("status")}>
-                                <LayersIcon className="size-4" />
-                                <span className="text-sm">Status</span>
-                            </PopoverListItem>
-
-                            <PopoverListItem onClick={() => setCurrentSubmenu("tags")}>
-                                <TagIcon className="size-4" />
-                                <span className="text-sm">Tags</span>
-                            </PopoverListItem>
-
-                            <PopoverListItem onClick={() => setCurrentSubmenu("flags")}>
-                                <FlagIcon className="size-4" />
-                                <span className="text-sm">Flags</span>
-                            </PopoverListItem>
-
-                            <PopoverSeparator />
-
-                            <PopoverListItem
-                                onClick={handleDelete}
-                                className="text-destructive hover:text-destructive focus:text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
-                            >
-                                <TrashIcon className="size-4" />
-                                <span className="text-sm">Delete</span>
-                            </PopoverListItem>
-                        </PopoverList>
-                    )}
+                    {menuContent}
                 </PopoverContent>
             </Popover>
         </>
