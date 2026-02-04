@@ -10,7 +10,7 @@ import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
 import { ChangelogDraftIcon } from "@featul/ui/icons/changelog-draft"
 import { ChangelogPublishedIcon } from "@featul/ui/icons/changelog-published"
-import type { ChangelogEntryWithTags } from "@/app/(main)/workspaces/[slug]/changelog/data"
+import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 import { ChangelogItemContextMenu } from "./ChangelogItemContextMenu"
 
 interface ChangelogItemProps {

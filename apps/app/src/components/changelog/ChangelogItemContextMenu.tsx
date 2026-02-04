@@ -16,7 +16,7 @@ import { LoaderIcon } from "@featul/ui/icons/loader"
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { PenIcon } from "@featul/ui/icons/pen"
 import { ChangelogDeleteDialog } from "./ChangelogDeleteDialog"
-import type { ChangelogEntryWithTags } from "@/app/(main)/workspaces/[slug]/changelog/data"
+import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 
 interface ChangelogItemContextMenuProps {
     children: React.ReactNode
