@@ -11,6 +11,8 @@ import React from "react";
 import SubdomainUserDropdown from "@/components/subdomain/SubdomainUserDropdown";
 import { client } from "@featul/api/client";
 import NotificationsBell from "./NotificationsBell";
+import SubdomainAuthModal, { type AuthMode } from "./SubdomainAuthModal";
+import { useSession } from "@featul/auth/client";
 
 type WorkspaceInfo = {
   id: string;
@@ -31,7 +33,7 @@ export function DomainHeader({
   subdomain: string;
   changelogVisible?: boolean;
   roadmapVisible?: boolean;
-  initialUser?: { name?: string; email?: string; image?: string | null } | null;
+  initialUser?: { id?: string; name?: string; email?: string; image?: string | null } | null;
 }) {
   const pathname = usePathname() || "";
   const feedbackBase = `/`;
@@ -40,15 +42,16 @@ export function DomainHeader({
   const isFeedback = pathname === "/" || pathname.startsWith("/board") || pathname.startsWith("/p/");
   const isRoadmap = pathname.startsWith(roadmapBase);
   const isChangelog = pathname.startsWith(changelogBase);
-  const [user] = React.useState<{
-    name?: string;
-    email?: string;
-    image?: string | null;
-  } | null>(initialUser ?? null);
+  const { data: session } = useSession() as { data?: { user?: { id?: string; name?: string; email?: string; image?: string | null } | null } | null };
+  const sessionUser = session?.user ?? null;
+  const user = sessionUser ?? initialUser ?? null;
+  const isSignedIn = Boolean(sessionUser?.id || user?.email || user?.name);
   const roadmapVisible = Boolean(initialRoadmapVisible);
   const [changelogVisible, setChangelogVisible] = React.useState(
     Boolean(initialChangelogVisible)
   );
+  const [authOpen, setAuthOpen] = React.useState(false);
+  const [authMode, setAuthMode] = React.useState<AuthMode>("sign-in");
   const navItemCls = (active: boolean) =>
     cn(
       "relative px-3 py-1.5 text-sm font-medium transition-colors",
@@ -73,6 +76,13 @@ export function DomainHeader({
     };
   }, [subdomain]);
   const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/start`;
+  const openAuth = React.useCallback((mode: AuthMode) => {
+    setAuthMode(mode);
+    setAuthOpen(true);
+  }, []);
+  React.useEffect(() => {
+    if (isSignedIn && authOpen) setAuthOpen(false);
+  }, [isSignedIn, authOpen]);
 
   const navItems = [
     { href: feedbackBase, label: "Feedback", active: isFeedback, visible: true },
@@ -143,17 +153,30 @@ export function DomainHeader({
           <BrandMark size="sm" showName />
         </Link>
         <div className="flex items-center gap-2">
-          <NotificationsBell />
-          <Button asChild size="xs" variant="nav" aria-label="Dashboard">
-            <Link href={dashboardUrl} className="group inline-flex items-center">
-              <HomeIcon
-                className={cn(
-                  "opacity-90 text-accent rounded-md size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
-                )}
-              />
-            </Link>
-          </Button>
-          <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+          {isSignedIn ? (
+            <>
+              <NotificationsBell />
+              <Button asChild size="xs" variant="nav" aria-label="Dashboard">
+                <Link href={dashboardUrl} className="group inline-flex items-center">
+                  <HomeIcon
+                    className={cn(
+                      "opacity-90 text-accent rounded-md size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
+                    )}
+                  />
+                </Link>
+              </Button>
+              <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+            </>
+          ) : (
+            <>
+              <Button size="xs" variant="nav" onClick={() => openAuth("sign-in")}>
+                Sign in
+              </Button>
+              <Button size="xs" onClick={() => openAuth("sign-up")}>
+                Sign up
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -185,13 +208,27 @@ export function DomainHeader({
         </nav>
 
         <div className="flex items-center gap-3">
-          <NotificationsBell />
-          <Button asChild size="xs" variant="nav">
-            <Link href={dashboardUrl}>Dashboard</Link>
-          </Button>
-          <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+          {isSignedIn ? (
+            <>
+              <NotificationsBell />
+              <Button asChild size="xs" variant="nav">
+                <Link href={dashboardUrl}>Dashboard</Link>
+              </Button>
+              <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+            </>
+          ) : (
+            <>
+              <Button size="xs" variant="nav" onClick={() => openAuth("sign-in")}>
+                Sign in
+              </Button>
+              <Button size="xs" onClick={() => openAuth("sign-up")}>
+                Sign up
+              </Button>
+            </>
+          )}
         </div>
       </div>
+      <SubdomainAuthModal open={authOpen} onOpenChange={setAuthOpen} mode={authMode} />
     </header>
   );
 }
