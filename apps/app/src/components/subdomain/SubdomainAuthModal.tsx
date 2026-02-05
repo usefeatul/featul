@@ -29,13 +29,19 @@ export default function SubdomainAuthModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         fluid
-        showCloseButton
-        className="p-0 bg-transparent border-none shadow-none ring-0 ring-offset-0"
+        showCloseButton={false}
+        className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-4 sm:p-6"
       >
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {mode === "sign-in" ? <SignIn redirectTo={redirectTo} /> : <SignUp redirectTo={redirectTo} />}
+        <div className="w-[min(92vw,460px)] max-h-[90vh] overflow-y-auto rounded-2xl bg-background border border-border shadow-xl">
+          {mode === "sign-in" ? (
+            <SignIn redirectTo={redirectTo} embedded />
+          ) : (
+            <SignUp redirectTo={redirectTo} embedded />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

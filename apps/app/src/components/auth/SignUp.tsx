@@ -17,7 +17,13 @@ import {
 import { LoadingButton } from "@/components/global/loading-button";
 import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redirect";
 
-export default function SignUp({ redirectTo }: { redirectTo?: string } = {}) {
+export default function SignUp({
+  redirectTo,
+  embedded = false,
+}: {
+  redirectTo?: string;
+  embedded?: boolean;
+} = {}) {
   const router = useRouter();
   const search = useSearchParams();
   const rawRedirect = redirectTo || search?.get("redirect") || "";
@@ -88,11 +94,18 @@ export default function SignUp({ redirectTo }: { redirectTo?: string } = {}) {
     }
   };
 
+  const sectionCls = embedded
+    ? "flex flex-1 px-4 sm:px-6 py-4 sm:py-6 items-center justify-center"
+    : "flex flex-1 bg-background px-4 sm:px-6 py-8 sm:py-12 items-center justify-center";
+  const formCls = embedded
+    ? "m-auto h-fit w-full max-w-sm"
+    : "bg-background m-auto h-fit w-full max-w-sm";
+
   return (
-    <section className="flex flex-1 bg-background px-4 sm:px-6 py-8 sm:py-12 items-center justify-center">
+    <section className={sectionCls}>
       <form
         noValidate
-        className="bg-background m-auto h-fit w-full max-w-sm"
+        className={formCls}
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
