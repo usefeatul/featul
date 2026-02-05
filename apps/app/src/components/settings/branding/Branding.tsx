@@ -154,10 +154,21 @@ export default function BrandingSection({
               originalNameRef.current = n;
               setPlan(normalizePlan(String(w?.plan || "free")));
             }
-          } catch {}
+          } catch {
+            if (mounted) {
+              setWorkspaceName("");
+              originalNameRef.current = "";
+              setPlan(normalizePlan("free"));
+            }
+          }
         }
         
       } catch {
+        if (mounted) {
+          setWorkspaceName("");
+          originalNameRef.current = "";
+          setPlan(normalizePlan("free"));
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -192,9 +203,11 @@ export default function BrandingSection({
           originalNameRef.current = nextName;
           try {
             updateWorkspaceNameInCache(queryClient, slug, nextName);
-          } catch {}
+          } catch {
+            //ignore
+          }
         }
-      let brandingInput: BrandingConfig & { logoUrl?: string } = {};
+      const brandingInput: BrandingConfig & { logoUrl?: string } = {};
       if (canBranding) {
         if (logoUrl.trim()) brandingInput.logoUrl = logoUrl.trim();
         brandingInput.primaryColor = p;
@@ -209,7 +222,9 @@ export default function BrandingSection({
         setWorkspaceLogo(slug, logoUrl.trim());
         try {
           updateWorkspaceLogoInCache(queryClient, slug, logoUrl.trim());
-        } catch {}
+        } catch {
+          //ignore
+        }
       }
       toast.success("Settings updated");
     } catch (error: unknown) {
