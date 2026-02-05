@@ -30,12 +30,12 @@ export default function SubdomainAuthModal({
       <DialogContent
         fluid
         showCloseButton={false}
-        className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-4 sm:p-6"
+        className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-2"
       >
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="w-[min(92vw,460px)] max-h-[90vh] overflow-y-auto rounded-2xl bg-background border border-border shadow-xl">
+        <div className="w-[min(90vw,400px)] max-h-[66vh] overflow-y-auto rounded-2xl bg-background border border-border shadow-xl">
           {mode === "sign-in" ? (
             <SignIn redirectTo={redirectTo} embedded />
           ) : (

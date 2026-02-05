@@ -95,11 +95,22 @@ export default function SignUp({
   };
 
   const sectionCls = embedded
-    ? "flex flex-1 px-4 sm:px-6 py-4 sm:py-6 items-center justify-center"
+    ? "flex flex-1 px-4 sm:px-5 py-3 sm:py-4 items-center justify-center"
     : "flex flex-1 bg-background px-4 sm:px-6 py-8 sm:py-12 items-center justify-center";
   const formCls = embedded
     ? "m-auto h-fit w-full max-w-sm"
     : "bg-background m-auto h-fit w-full max-w-sm";
+  const bodyPaddingCls = embedded ? "p-4 sm:p-5 pb-4 sm:pb-4" : "p-6 sm:p-8 pb-5 sm:pb-6";
+  const footerPaddingCls = embedded ? "p-3 sm:p-4" : "p-3";
+  const headingCls = embedded
+    ? "mb-2 mt-1 text-lg sm:text-xl font-semibold text-center"
+    : "mb-2 mt-4 text-xl sm:text-2xl font-semibold text-center";
+  const sectionSpacingCls = embedded ? "mt-4 space-y-4" : "mt-6 space-y-6";
+  const socialGapCls = embedded ? "gap-2" : "gap-3";
+  const dividerCls = embedded
+    ? "my-1 grid grid-cols-[1fr_auto_1fr] items-center gap-2"
+    : "my-2 grid grid-cols-[1fr_auto_1fr] items-center gap-3";
+  const fieldSpacingCls = embedded ? "space-y-1.5" : "space-y-2";
 
   return (
     <section className={sectionCls}>
@@ -111,15 +122,15 @@ export default function SignUp({
           handleSubmit();
         }}
       >
-        <div className="p-6 sm:p-8 pb-5 sm:pb-6">
+        <div className={bodyPaddingCls}>
           <div className="text-center">
-            <h1 className="mb-2 mt-4 text-xl sm:text-2xl font-semibold text-center">
+            <h1 className={headingCls}>
               Sign up to featul
             </h1>
           </div>
 
-          <div className="mt-6 space-y-6">
-            <div className="flex flex-col gap-3">
+          <div className={sectionSpacingCls}>
+            <div className={`flex flex-col ${socialGapCls}`}>
               <Button
                 type="button"
                 variant="nav"
@@ -146,7 +157,7 @@ export default function SignUp({
               </Button>
             </div>
 
-            <div className="my-2 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <div className={dividerCls}>
               <hr className="border-dashed" />
               <span className="text-muted-foreground text-xs">
                 Or use email
@@ -154,7 +165,7 @@ export default function SignUp({
               <hr className="border-dashed" />
             </div>
 
-            <div className="space-y-2">
+            <div className={fieldSpacingCls}>
               <Label htmlFor="email" className="block text-sm">
                 Email
               </Label>
@@ -170,7 +181,7 @@ export default function SignUp({
               />
             </div>
 
-            <div className="space-y-2">
+            <div className={fieldSpacingCls}>
               <Label htmlFor="password" className="block text-sm">
                 Password
               </Label>
@@ -207,7 +218,7 @@ export default function SignUp({
           </div>
         </div>
 
-        <div className="p-3">
+        <div className={footerPaddingCls}>
           <p className="text-accent-foreground text-center text-sm font-normal">
             Already have an account?
             <Button asChild variant="link" className="px-2 text-primary">
