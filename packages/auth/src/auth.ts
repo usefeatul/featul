@@ -7,6 +7,27 @@ import { sendVerificationOtpEmail, sendWelcome } from "./email"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { getPasswordError } from "./password"
 
+function resolveCookieDomain() {
+  const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
+  if (explicit) {
+    if (explicit === "localhost" || explicit === "127.0.0.1") return ""
+    return explicit
+  }
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "").trim()
+  if (!appUrl) return ""
+  try {
+    const hostname = new URL(appUrl).hostname
+    if (hostname === "localhost" || hostname === "127.0.0.1") return ""
+    const parts = hostname.split(".").filter(Boolean)
+    if (parts.length < 2) return ""
+    return `.${parts.slice(-2).join(".")}`
+  } catch {
+    return ""
+  }
+}
+
+const cookieDomain = resolveCookieDomain()
+
 
 
 export const auth = betterAuth({
@@ -47,8 +68,8 @@ export const auth = betterAuth({
 
   advanced: {
     crossSubDomainCookies: {
-      enabled: process.env.AUTH_COOKIE_DOMAIN !== "localhost",
-      domain: process.env.AUTH_COOKIE_DOMAIN,
+      enabled: Boolean(cookieDomain),
+      domain: cookieDomain || undefined,
     },
     useSecureCookies: true,
     defaultCookieAttributes: {
@@ -107,4 +128,3 @@ export const auth = betterAuth({
 })
 
 export type AuthServer = typeof auth
-

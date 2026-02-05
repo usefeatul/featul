@@ -43,10 +43,14 @@ export function DomainHeader({
   const isFeedback = pathname === "/" || pathname.startsWith("/board") || pathname.startsWith("/p/");
   const isRoadmap = pathname.startsWith(roadmapBase);
   const isChangelog = pathname.startsWith(changelogBase);
-  const { data: session } = useSession() as { data?: { user?: { id?: string; name?: string; email?: string; image?: string | null } | null } | null };
+  const { data: session } = useSession() as {
+    data?: { user?: { id?: string; name?: string; email?: string; image?: string | null } | null } | null;
+  };
   const sessionUser = session?.user ?? null;
   const user = sessionUser ?? initialUser ?? null;
-  const isSignedIn = Boolean(sessionUser?.id || user?.email || user?.name);
+  const hasInitialUser = Boolean(initialUser?.id || initialUser?.email || initialUser?.name);
+  const hasSessionUser = Boolean(sessionUser?.id || sessionUser?.email || sessionUser?.name);
+  const isSignedIn = hasSessionUser || hasInitialUser;
   const roadmapVisible = Boolean(initialRoadmapVisible);
   const [changelogVisible, setChangelogVisible] = React.useState(
     Boolean(initialChangelogVisible)
