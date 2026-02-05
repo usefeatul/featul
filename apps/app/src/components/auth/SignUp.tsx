@@ -212,7 +212,7 @@ export default function SignUp({
               )}
             </div>
 
-            <LoadingButton className="w-full bg-blue-500 hover:bg-blue-600 text-white" type="submit" loading={isLoading}>
+            <LoadingButton className="w-full bg-primary text-primary-foreground hover:bg-primary/90" type="submit" loading={isLoading}>
               Sign Up
             </LoadingButton>
             {error && <p className="text-destructive text-xs mt-2 text-center">{error}</p>}

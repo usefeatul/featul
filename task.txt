@@ -2,7 +2,7 @@ remvoe the arrow from the  right click function done ✅
 implement the changelog on the subdomain  done ✅
 work on the import cvs file 
 work on the canny, nolt, productroad import function 
-work on the subdomain login function, should create a seperate login ui, maybe a modal to how the user to sign in
+work on the subdomain login function, should create a seperate login ui, maybe a modal to how the user to sign in done ✅
 finnish the subscription model plan
 fininsh the marketing page
 
