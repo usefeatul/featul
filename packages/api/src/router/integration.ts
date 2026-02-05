@@ -8,6 +8,7 @@ import {
   listIntegrationsSchema,
 } from "../validators/integration"
 import { sendTestNotification } from "../services/webhook"
+import { isIntegrationsAllowed } from "../shared/plan"
 import { HTTPException } from "hono/http-exception"
 import type { IntegrationType } from "../validators/integration"
 
@@ -100,7 +101,7 @@ export function createIntegrationRouter() {
 
         // Resolve workspace
         const [ws] = await ctx.db
-          .select({ id: workspace.id, name: workspace.name, ownerId: workspace.ownerId })
+          .select({ id: workspace.id, name: workspace.name, ownerId: workspace.ownerId, plan: workspace.plan })
           .from(workspace)
           .where(eq(workspace.slug, workspaceSlug))
           .limit(1)
@@ -113,6 +114,11 @@ export function createIntegrationRouter() {
         const hasPermission = await checkIntegrationPermission(ctx.db, ws.id, userId)
         if (!hasPermission) {
           throw new HTTPException(403, { message: "You don't have permission to manage integrations" })
+        }
+
+        const plan = ws.plan ?? "free"
+        if (!isIntegrationsAllowed(plan)) {
+          throw new HTTPException(403, { message: "Integrations are available on Starter or Professional plans" })
         }
 
         // Check if integration already exists
@@ -212,7 +218,7 @@ export function createIntegrationRouter() {
 
         // Resolve workspace
         const [ws] = await ctx.db
-          .select({ id: workspace.id, name: workspace.name, ownerId: workspace.ownerId })
+          .select({ id: workspace.id, name: workspace.name, ownerId: workspace.ownerId, plan: workspace.plan })
           .from(workspace)
           .where(eq(workspace.slug, workspaceSlug))
           .limit(1)
@@ -225,6 +231,11 @@ export function createIntegrationRouter() {
         const hasPermission = await checkIntegrationPermission(ctx.db, ws.id, userId)
         if (!hasPermission) {
           throw new HTTPException(403, { message: "You don't have permission to test integrations" })
+        }
+
+        const plan = ws.plan ?? "free"
+        if (!isIntegrationsAllowed(plan)) {
+          throw new HTTPException(403, { message: "Integrations are available on Starter or Professional plans" })
         }
 
         // Get integration
