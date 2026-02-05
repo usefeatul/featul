@@ -11,21 +11,10 @@ import { getInitials, getDisplayUser } from "@/utils/user-utils"
 import { useTheme } from "next-themes"
 import CreatePostModal from "./CreatePostModal"
 import { SubdomainUserMenu } from "./SubdomainUserMenu"
+import type { AuthUser } from "@/types/auth"
+import { hasAuthUser } from "@/components/subdomain/auth/utils"
+import { getCreateProjectUrl, getDashboardUrl } from "@/utils/app-urls"
 
-
-type User = { name?: string; email?: string; image?: string | null } | null
-
-interface SessionUser {
-  name?: string
-  email?: string
-  image?: string | null
-}
-
-interface SessionPayload {
-  data?: {
-    user?: SessionUser | null
-  } | null
-}
 
 export default function SubdomainUserDropdown({
   className = "",
@@ -34,13 +23,13 @@ export default function SubdomainUserDropdown({
 }: {
   className?: string
   subdomain: string
-  initialUser?: User
+  initialUser?: AuthUser | null
 }) {
   const router = useRouter()
   const { theme = "system", setTheme } = useTheme()
   const [open, setOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
-  const [user, setUser] = React.useState<User>(initialUser ?? null)
+  const [user, setUser] = React.useState<AuthUser | null>(initialUser ?? null)
   const [postModalOpen, setPostModalOpen] = React.useState(false)
 
   React.useEffect(() => {
@@ -48,7 +37,7 @@ export default function SubdomainUserDropdown({
     ;(async () => {
       try {
         if (initialUser?.image) return
-        const s = (await authClient.getSession()) as SessionPayload | null
+        const s = await authClient.getSession()
         if (!active) return
         const u = s?.data?.user || null
         if (u?.image) setUser(u)
@@ -76,13 +65,13 @@ export default function SubdomainUserDropdown({
 
   const onDashboard = React.useCallback(() => {
     setOpen(false)
-    const target = `${process.env.NEXT_PUBLIC_APP_URL || ""}/start`
+    const target = getDashboardUrl()
     window.location.href = target
   }, [])
 
   const onCreateProject = React.useCallback(() => {
     setOpen(false)
-    const target = `${process.env.NEXT_PUBLIC_APP_URL || ""}/workspaces/new`
+    const target = getCreateProjectUrl()
     window.location.href = target
   }, [])
 
@@ -129,7 +118,7 @@ export default function SubdomainUserDropdown({
           <SubdomainUserMenu
             themeLabel={themeLabel}
             loading={loading}
-            showSignOut={Boolean(user)}
+            showSignOut={hasAuthUser(user)}
             onSubmitPost={onSubmitPost}
             onDashboard={onDashboard}
             onCreateProject={onCreateProject}

@@ -9,8 +9,7 @@ import {
 } from "@featul/ui/components/dialog";
 import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
-
-export type AuthMode = "sign-in" | "sign-up";
+import type { AuthMode } from "@/types/auth";
 
 export default function SubdomainAuthModal({
   open,

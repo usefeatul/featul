@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import { MobileBoardsMenu } from "./MobileBoardsMenu";
@@ -11,8 +11,12 @@ import React from "react";
 import SubdomainUserDropdown from "@/components/subdomain/SubdomainUserDropdown";
 import { client } from "@featul/api/client";
 import NotificationsBell from "./NotificationsBell";
-import SubdomainAuthModal, { type AuthMode } from "./SubdomainAuthModal";
+import SubdomainAuthModal from "./SubdomainAuthModal";
 import { useSession } from "@featul/auth/client";
+import type { AuthUser } from "@/types/auth";
+import { hasAuthUser } from "@/components/subdomain/auth/utils";
+import { useSubdomainAuthModal } from "@/components/subdomain/auth/useSubdomainAuthModal";
+import { getDashboardUrl } from "@/utils/app-urls";
 
 type WorkspaceInfo = {
   id: string;
@@ -33,31 +37,31 @@ export function DomainHeader({
   subdomain: string;
   changelogVisible?: boolean;
   roadmapVisible?: boolean;
-  initialUser?: { id?: string; name?: string; email?: string; image?: string | null } | null;
+  initialUser?: AuthUser | null;
 }) {
   const pathname = usePathname() || "";
-  const searchParams = useSearchParams();
   const feedbackBase = `/`;
   const roadmapBase = `/roadmap`;
   const changelogBase = `/changelog`;
   const isFeedback = pathname === "/" || pathname.startsWith("/board") || pathname.startsWith("/p/");
   const isRoadmap = pathname.startsWith(roadmapBase);
   const isChangelog = pathname.startsWith(changelogBase);
-  const { data: session } = useSession() as {
-    data?: { user?: { id?: string; name?: string; email?: string; image?: string | null } | null } | null;
-  };
+  const { data: session } = useSession();
   const sessionUser = session?.user ?? null;
-  const user = sessionUser ?? initialUser ?? null;
-  const hasInitialUser = Boolean(initialUser?.id || initialUser?.email || initialUser?.name);
-  const hasSessionUser = Boolean(sessionUser?.id || sessionUser?.email || sessionUser?.name);
-  const isSignedIn = hasSessionUser || hasInitialUser;
+  const user: AuthUser | null = sessionUser ?? initialUser ?? null;
+  const isSignedIn = hasAuthUser(user);
   const roadmapVisible = Boolean(initialRoadmapVisible);
   const [changelogVisible, setChangelogVisible] = React.useState(
     Boolean(initialChangelogVisible)
   );
-  const [authOpen, setAuthOpen] = React.useState(false);
-  const [authMode, setAuthMode] = React.useState<AuthMode>("sign-in");
-  const [authRedirect, setAuthRedirect] = React.useState<string>("");
+  const {
+    isOpen: isAuthOpen,
+    mode: authMode,
+    redirectTo: authRedirect,
+    setOpen: setAuthOpen,
+    setMode: setAuthMode,
+    openAuth,
+  } = useSubdomainAuthModal();
   const navItemCls = (active: boolean) =>
     cn(
       "relative px-3 py-1.5 text-sm font-medium transition-colors",
@@ -81,19 +85,10 @@ export function DomainHeader({
       active = false;
     };
   }, [subdomain]);
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/start`;
-  const openAuth = React.useCallback((mode: AuthMode) => {
-    const query = searchParams?.toString();
-    const path = `${pathname}${query ? `?${query}` : ""}`;
-    const absolute =
-      typeof window !== "undefined" ? `${window.location.origin}${path}` : path;
-    setAuthRedirect(absolute);
-    setAuthMode(mode);
-    setAuthOpen(true);
-  }, [pathname, searchParams]);
+  const dashboardUrl = getDashboardUrl();
   React.useEffect(() => {
-    if (isSignedIn && authOpen) setAuthOpen(false);
-  }, [isSignedIn, authOpen]);
+    if (isSignedIn && isAuthOpen) setAuthOpen(false);
+  }, [isSignedIn, isAuthOpen, setAuthOpen]);
 
   const navItems = [
     { href: feedbackBase, label: "Feedback", active: isFeedback, visible: true },
@@ -240,7 +235,7 @@ export function DomainHeader({
         </div>
       </div>
       <SubdomainAuthModal
-        open={authOpen}
+        open={isAuthOpen}
         onOpenChange={setAuthOpen}
         mode={authMode}
         onModeChange={setAuthMode}
