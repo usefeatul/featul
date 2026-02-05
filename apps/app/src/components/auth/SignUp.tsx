@@ -20,9 +20,11 @@ import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redire
 export default function SignUp({
   redirectTo,
   embedded = false,
+  onSwitchMode,
 }: {
   redirectTo?: string;
   embedded?: boolean;
+  onSwitchMode?: () => void;
 } = {}) {
   const router = useRouter();
   const search = useSearchParams();
@@ -221,9 +223,20 @@ export default function SignUp({
         <div className={footerPaddingCls}>
           <p className="text-accent-foreground text-center text-sm font-normal">
             Already have an account?
-            <Button asChild variant="link" className="px-2 text-primary">
-              <Link href={safeRedirectParam ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}` : "/auth/sign-in"}>Sign in</Link>
-            </Button>
+            {embedded && onSwitchMode ? (
+              <Button
+                type="button"
+                variant="link"
+                className="px-2 text-primary"
+                onClick={onSwitchMode}
+              >
+                Sign in
+              </Button>
+            ) : (
+              <Button asChild variant="link" className="px-2 text-primary">
+                <Link href={safeRedirectParam ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}` : "/auth/sign-in"}>Sign in</Link>
+              </Button>
+            )}
           </p>
         </div>
       </form>

@@ -243,6 +243,7 @@ export function DomainHeader({
         open={authOpen}
         onOpenChange={setAuthOpen}
         mode={authMode}
+        onModeChange={setAuthMode}
         redirectTo={authRedirect}
       />
     </header>

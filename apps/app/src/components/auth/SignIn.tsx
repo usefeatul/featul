@@ -16,9 +16,11 @@ import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redire
 export default function SignIn({
   redirectTo,
   embedded = false,
+  onSwitchMode,
 }: {
   redirectTo?: string;
   embedded?: boolean;
+  onSwitchMode?: () => void;
 } = {}) {
   const router = useRouter();
   const search = useSearchParams();
@@ -231,9 +233,20 @@ export default function SignIn({
         <div className={footerPaddingCls}>
           <p className="text-accent-foreground text-center text-sm font-normal mb-4">
             Don't have an account ?
-            <Button asChild variant="link" className="px-2">
-              <Link href={safeRedirectParam ? `/auth/sign-up?redirect=${encodeURIComponent(safeRedirectParam)}` : "/auth/sign-up"}>Create account</Link>
-            </Button>
+            {embedded && onSwitchMode ? (
+              <Button
+                type="button"
+                variant="link"
+                className="px-2"
+                onClick={onSwitchMode}
+              >
+                Create account
+              </Button>
+            ) : (
+              <Button asChild variant="link" className="px-2">
+                <Link href={safeRedirectParam ? `/auth/sign-up?redirect=${encodeURIComponent(safeRedirectParam)}` : "/auth/sign-up"}>Create account</Link>
+              </Button>
+            )}
           </p>
 
           <div className="flex justify-center">
