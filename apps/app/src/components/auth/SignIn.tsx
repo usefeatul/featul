@@ -11,14 +11,16 @@ import GitHubIcon from "@featul/ui/icons/github";
 import Link from "next/link";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";
+import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redirect";
 
 
 
-export default function SignIn() {
+export default function SignIn({ redirectTo }: { redirectTo?: string } = {}) {
   const router = useRouter();
   const search = useSearchParams();
-  const rawRedirect = search?.get("redirect") || "";
-  const redirect = rawRedirect.startsWith("/") ? rawRedirect : "/start";
+  const rawRedirect = redirectTo || search?.get("redirect") || "";
+  const safeRedirectParam = normalizeRedirectParam(rawRedirect);
+  const redirect = resolveAuthRedirect(rawRedirect);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
@@ -207,7 +209,7 @@ export default function SignIn() {
           <p className="text-accent-foreground text-center text-sm font-normal mb-4">
             Don't have an account ?
             <Button asChild variant="link" className="px-2">
-              <Link href={rawRedirect ? `/auth/sign-up?redirect=${encodeURIComponent(rawRedirect)}` : "/auth/sign-up"}>Create account</Link>
+              <Link href={safeRedirectParam ? `/auth/sign-up?redirect=${encodeURIComponent(safeRedirectParam)}` : "/auth/sign-up"}>Create account</Link>
             </Button>
           </p>
 

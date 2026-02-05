@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import { MobileBoardsMenu } from "./MobileBoardsMenu";
@@ -36,6 +36,7 @@ export function DomainHeader({
   initialUser?: { id?: string; name?: string; email?: string; image?: string | null } | null;
 }) {
   const pathname = usePathname() || "";
+  const searchParams = useSearchParams();
   const feedbackBase = `/`;
   const roadmapBase = `/roadmap`;
   const changelogBase = `/changelog`;
@@ -52,6 +53,7 @@ export function DomainHeader({
   );
   const [authOpen, setAuthOpen] = React.useState(false);
   const [authMode, setAuthMode] = React.useState<AuthMode>("sign-in");
+  const [authRedirect, setAuthRedirect] = React.useState<string>("");
   const navItemCls = (active: boolean) =>
     cn(
       "relative px-3 py-1.5 text-sm font-medium transition-colors",
@@ -77,9 +79,14 @@ export function DomainHeader({
   }, [subdomain]);
   const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/start`;
   const openAuth = React.useCallback((mode: AuthMode) => {
+    const query = searchParams?.toString();
+    const path = `${pathname}${query ? `?${query}` : ""}`;
+    const absolute =
+      typeof window !== "undefined" ? `${window.location.origin}${path}` : path;
+    setAuthRedirect(absolute);
     setAuthMode(mode);
     setAuthOpen(true);
-  }, []);
+  }, [pathname, searchParams]);
   React.useEffect(() => {
     if (isSignedIn && authOpen) setAuthOpen(false);
   }, [isSignedIn, authOpen]);
@@ -228,7 +235,12 @@ export function DomainHeader({
           )}
         </div>
       </div>
-      <SubdomainAuthModal open={authOpen} onOpenChange={setAuthOpen} mode={authMode} />
+      <SubdomainAuthModal
+        open={authOpen}
+        onOpenChange={setAuthOpen}
+        mode={authMode}
+        redirectTo={authRedirect}
+      />
     </header>
   );
 }

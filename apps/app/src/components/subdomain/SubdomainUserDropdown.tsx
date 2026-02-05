@@ -92,7 +92,9 @@ export default function SubdomainUserDropdown({
     try {
       await authClient.signOut()
       toast.success("Signed out")
-      router.replace("/auth/sign-in")
+      setUser(null)
+      setOpen(false)
+      router.refresh()
     } catch {
       toast.error("Failed to sign out")
     } finally {

@@ -16,10 +16,12 @@ export default function SubdomainAuthModal({
   open,
   onOpenChange,
   mode,
+  redirectTo,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: AuthMode;
+  redirectTo?: string;
 }) {
   const title = mode === "sign-in" ? "Sign in" : "Sign up";
 
@@ -33,7 +35,7 @@ export default function SubdomainAuthModal({
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {mode === "sign-in" ? <SignIn /> : <SignUp />}
+        {mode === "sign-in" ? <SignIn redirectTo={redirectTo} /> : <SignUp redirectTo={redirectTo} />}
       </DialogContent>
     </Dialog>
   );

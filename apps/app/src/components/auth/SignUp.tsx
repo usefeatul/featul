@@ -15,12 +15,14 @@ import {
   getPasswordError,
 } from "@featul/auth/password";
 import { LoadingButton } from "@/components/global/loading-button";
+import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redirect";
 
-export default function SignUp() {
+export default function SignUp({ redirectTo }: { redirectTo?: string } = {}) {
   const router = useRouter();
   const search = useSearchParams();
-  const rawRedirect = search?.get("redirect") || "";
-  const redirect = rawRedirect.startsWith("/") ? rawRedirect : "/start";
+  const rawRedirect = redirectTo || search?.get("redirect") || "";
+  const safeRedirectParam = normalizeRedirectParam(rawRedirect);
+  const redirect = resolveAuthRedirect(rawRedirect);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
@@ -43,10 +45,10 @@ export default function SignUp() {
         name: displayName,
         email: email.trim(),
         password,
-        callbackURL: `/auth/verify?email=${encodeURIComponent(email.trim())}${rawRedirect ? `&redirect=${encodeURIComponent(rawRedirect)}` : ""}`,
+        callbackURL: `/auth/verify?email=${encodeURIComponent(email.trim())}${safeRedirectParam ? `&redirect=${encodeURIComponent(safeRedirectParam)}` : ""}`,
       });
       toast.success("Account created. Check your email for the code");
-      router.push(`/auth/verify?email=${encodeURIComponent(email)}${rawRedirect ? `&redirect=${encodeURIComponent(rawRedirect)}` : ""}`);
+      router.push(`/auth/verify?email=${encodeURIComponent(email)}${safeRedirectParam ? `&redirect=${encodeURIComponent(safeRedirectParam)}` : ""}`);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to sign up";
       setError(message);
@@ -196,7 +198,7 @@ export default function SignUp() {
           <p className="text-accent-foreground text-center text-sm font-normal">
             Already have an account?
             <Button asChild variant="link" className="px-2 text-primary">
-              <Link href={rawRedirect ? `/auth/sign-in?redirect=${encodeURIComponent(rawRedirect)}` : "/auth/sign-in"}>Sign in</Link>
+              <Link href={safeRedirectParam ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}` : "/auth/sign-in"}>Sign in</Link>
             </Button>
           </p>
         </div>
