@@ -12,14 +12,13 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";
 import { sendVerificationOtp, verifyEmail } from "../../utils/otp-utils";
-import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redirect";
+import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function Verify() {
   const router = useRouter();
   const params = useSearchParams();
-  const rawRedirect = params.get("redirect") || "";
-  const safeRedirectParam = normalizeRedirectParam(rawRedirect);
-  const redirect = resolveAuthRedirect(rawRedirect);
+  const { safeRedirectParam, redirect } = useAuthRedirect();
   const initialEmail = useMemo(() => params.get("email") || "", [params]);
   const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState("");
@@ -28,6 +27,7 @@ export default function Verify() {
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const styles = getAuthLayoutStyles(false);
 
   useEffect(() => {
     if (initialEmail) setEmail(initialEmail);
@@ -86,96 +86,82 @@ export default function Verify() {
   };
 
   return (
-    <section className="flex flex-1 bg-background px-4 sm:px-6 py-8 sm:py-12 items-center justify-center">
-      <form
-        noValidate
-        className="bg-background m-auto h-fit w-full max-w-sm"
-        onSubmit={(e) => {
-          e.preventDefault();
-          verify();
-        }}
-      >
-        <div className="p-6 sm:p-8 pb-5 sm:pb-6">
-          <div className="text-center">
-            <h1 className="mb-2 mt-4 text-xl sm:text-2xl font-semibold text-center">
-              Verify your email
-            </h1>
-          </div>
-
-          <div className="mt-6 space-y-6">
-            <div className="space-y-3">
-              <InputOTP
-                maxLength={6}
-                value={code}
-                onChange={(value) => {
-                  setCode(value);
-                  setSubmitted(false);
-                  setError("");
-                }}
-                containerClassName="justify-center gap-2"
-                aria-label="One-time password"
-                aria-invalid={submitted && Boolean(error)}
-                aria-describedby={submitted && error ? "code-error" : undefined}
-              >
-                <InputOTPGroup>
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <InputOTPSlot
-                      key={index}
-                      index={index}
-                      className="h-10 w-9 text-base"
-                    />
-                  ))}
-                </InputOTPGroup>
-              </InputOTP>
-              <p className="text-xs text-accent text-center">
-                Enter your one-time password.
-              </p>
-              {submitted && error && (
-                <p id="code-error" className="text-destructive text-xs">
-                  {error}
-                </p>
-              )}
-              {info && <p className="text-xs text-muted-foreground">{info}</p>}
-            </div>
-
-            <LoadingButton
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-              type="submit"
-              loading={isVerifying}
-            >
-              Verify
-            </LoadingButton>
-            <LoadingButton
-              className="w-full"
-              type="button"
-              variant="card"
-              onClick={resend}
-              loading={isResending}
-            >
-              Resend code
-            </LoadingButton>
-          </div>
-        </div>
-
-        <div className="p-3">
-          <p className="text-accent-foreground text-center text-sm font-normal">
-            Already verified?
-            <Button asChild variant="link" className="px-2 text-primary">
-              <Link
-                href={
-                  safeRedirectParam
-                    ? `/auth/sign-in?redirect=${encodeURIComponent(
-                      safeRedirectParam,
+    <AuthLayout
+      title="Verify your email"
+      onSubmit={(e) => {
+        e.preventDefault();
+        verify();
+      }}
+      footer={
+        <p className="text-accent-foreground text-center text-sm font-normal">
+          Already verified?
+          <Button asChild variant="link" className="px-2 text-primary">
+            <Link
+              href={
+                safeRedirectParam
+                  ? `/auth/sign-in?redirect=${encodeURIComponent(
+                      safeRedirectParam
                     )}`
-                    : "/auth/sign-in"
-                }
-              >
-                Sign in
-              </Link>
-            </Button>
+                  : "/auth/sign-in"
+              }
+            >
+              Sign in
+            </Link>
+          </Button>
+        </p>
+      }
+    >
+      <div className={styles.fieldSpacingCls}>
+        <InputOTP
+          maxLength={6}
+          value={code}
+          onChange={(value) => {
+            setCode(value);
+            setSubmitted(false);
+            setError("");
+          }}
+          containerClassName="justify-center gap-2"
+          aria-label="One-time password"
+          aria-invalid={submitted && Boolean(error)}
+          aria-describedby={submitted && error ? "code-error" : undefined}
+        >
+          <InputOTPGroup>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <InputOTPSlot
+                key={index}
+                index={index}
+                className="h-10 w-9 text-base"
+              />
+            ))}
+          </InputOTPGroup>
+        </InputOTP>
+        <p className="text-xs text-accent text-center">
+          Enter your one-time password.
+        </p>
+        {submitted && error && (
+          <p id="code-error" className="text-destructive text-xs">
+            {error}
           </p>
-        </div>
-      </form>
-    </section>
+        )}
+        {info && <p className="text-xs text-muted-foreground">{info}</p>}
+      </div>
+
+      <LoadingButton
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+        type="submit"
+        loading={isVerifying}
+      >
+        Verify
+      </LoadingButton>
+      <LoadingButton
+        className="w-full"
+        type="button"
+        variant="card"
+        onClick={resend}
+        loading={isResending}
+      >
+        Resend code
+      </LoadingButton>
+    </AuthLayout>
   );
 }

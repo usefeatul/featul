@@ -18,6 +18,7 @@ import {
   strongPasswordPattern,
   getPasswordError,
 } from "@featul/auth/password";
+import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import {
   sendVerificationOtp,
   checkVerificationOtp,
@@ -35,6 +36,7 @@ export default function ForgotPassword() {
   const [isResetting, setIsResetting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState<"request" | "otp" | "password">("request");
+  const styles = getAuthLayoutStyles(false);
 
   const sendResetCode = async () => {
     setIsSending(true);
@@ -165,149 +167,133 @@ export default function ForgotPassword() {
   };
 
   return (
-    <section className="flex flex-1 bg-background px-4 sm:px-6 py-8 sm:py-12 items-center justify-center">
-      <form
-        noValidate
-        className="bg-background m-auto h-fit w-full max-w-sm"
-        onSubmit={handleSubmit}
-      >
-        <div className="p-6 sm:p-8 pb-5 sm:pb-6">
-          <div className="text-center">
-            <h1 className="mb-2 mt-4 text-xl sm:text-2xl font-semibold text-center">
-              Forgot your password
-            </h1>
+    <AuthLayout
+      title="Forgot your password"
+      onSubmit={handleSubmit}
+      footer={
+        <p className="text-accent-foreground text-center text-sm font-normal">
+          Remembered your password?
+          <Button asChild variant="link" className="px-2 text-primary">
+            <Link href="/auth/sign-in">Sign in</Link>
+          </Button>
+        </p>
+      }
+    >
+      {/* Step 1: Email Input */}
+      {step === "request" && (
+        <>
+          <div className={styles.fieldSpacingCls}>
+            <Label htmlFor="email" className="block text-sm">
+              Email
+            </Label>
+            <Input
+              type="email"
+              required
+              id="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <LoadingButton
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            type="submit"
+            loading={isSending}
+          >
+            Send Reset Code
+          </LoadingButton>
+        </>
+      )}
+
+      {/* Step 2: OTP Verification */}
+      {step === "otp" && (
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <InputOTP
+              maxLength={6}
+              value={code}
+              onChange={(value) => {
+                setCode(value);
+                setSubmitted(false);
+                setError("");
+              }}
+              containerClassName="justify-center gap-2"
+              aria-label="One-time password"
+              aria-invalid={submitted && Boolean(error)}
+              aria-describedby={submitted && error ? "code-error" : undefined}
+            >
+              <InputOTPGroup>
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <InputOTPSlot
+                    key={index}
+                    index={index}
+                    className="h-10 w-9 text-base"
+                  />
+                ))}
+              </InputOTPGroup>
+            </InputOTP>
+            <p className="text-xs text-accent text-center">
+              Enter the 6-digit code from your email
+            </p>
           </div>
 
-          <div className="mt-6 space-y-6">
-            {/* Step 1: Email Input */}
-            {step === "request" && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="block text-sm">
-                    Email
-                  </Label>
-                  <Input
-                    type="email"
-                    required
-                    id="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <LoadingButton
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                  type="submit"
-                  loading={isSending}
-                >
-                  Send Reset Code
-                </LoadingButton>
-              </>
-            )}
+          {submitted && error && (
+            <p id="code-error" className="text-destructive text-center text-xs">
+              {error}
+            </p>
+          )}
 
-            {/* Step 2: OTP Verification */}
-            {step === "otp" && (
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <InputOTP
-                    maxLength={6}
-                    value={code}
-                    onChange={(value) => {
-                      setCode(value);
-                      setSubmitted(false);
-                      setError("");
-                    }}
-                    containerClassName="justify-center gap-2"
-                    aria-label="One-time password"
-                    aria-invalid={submitted && Boolean(error)}
-                    aria-describedby={
-                      submitted && error ? "code-error" : undefined
-                    }
-                  >
-                    <InputOTPGroup>
-                      {Array.from({ length: 6 }).map((_, index) => (
-                        <InputOTPSlot
-                          key={index}
-                          index={index}
-                          className="h-10 w-9 text-base"
-                        />
-                      ))}
-                    </InputOTPGroup>
-                  </InputOTP>
-                  <p className="text-xs text-accent text-center">
-                    Enter the 6-digit code from your email
-                  </p>
-                </div>
+          <LoadingButton className="w-full" type="submit" loading={isVerifying}>
+            Verify Code
+          </LoadingButton>
+          <LoadingButton
+            className="w-full"
+            type="button"
+            variant="card"
+            onClick={sendResetCode}
+            loading={isSending}
+          >
+            Resend Code
+          </LoadingButton>
+        </div>
+      )}
 
-                {submitted && error && (
-                  <p id="code-error" className="text-destructive text-center text-xs">
-                    {error}
-                  </p>
-                )}
-
-                <LoadingButton className="w-full" type="submit" loading={isVerifying}>
-                  Verify Code
-                </LoadingButton>
-                <LoadingButton
-                  className="w-full"
-                  type="button"
-                  variant="card"
-                  onClick={sendResetCode}
-                  loading={isSending}
-                >
-                  Resend Code
-                </LoadingButton>
-              </div>
-            )}
-
-            {/* Step 3: New Password */}
-            {step === "password" && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="block text-sm">
-                    New Password
-                  </Label>
-                  <Input
-                    type="password"
-                    required
-                    id="password"
-                    autoComplete="new-password"
-                    placeholder="••••••••"
-                    className="placeholder:text-accent/50"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      setSubmitted(false);
-                      setError("");
-                    }}
-                    pattern={strongPasswordPattern}
-                    title="8+ chars, uppercase, lowercase, number and symbol"
-                  />
-                </div>
-
-                {submitted && error && (
-                  <p id="password-error" className="text-destructive text-center text-xs">
-                    {error}
-                  </p>
-                )}
-
-                <LoadingButton className="w-full" type="submit" loading={isResetting}>
-                  Reset Password
-                </LoadingButton>
-              </div>
-            )}
+      {/* Step 3: New Password */}
+      {step === "password" && (
+        <div className="space-y-4">
+          <div className={styles.fieldSpacingCls}>
+            <Label htmlFor="password" className="block text-sm">
+              New Password
+            </Label>
+            <Input
+              type="password"
+              required
+              id="password"
+              autoComplete="new-password"
+              placeholder="••••••••"
+              className="placeholder:text-accent/50"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setSubmitted(false);
+                setError("");
+              }}
+              pattern={strongPasswordPattern}
+              title="8+ chars, uppercase, lowercase, number and symbol"
+            />
           </div>
-        </div>
 
-        <div className="p-3">
-          <p className="text-accent-foreground text-center text-sm font-normal">
-            Remembered your password?
-            <Button asChild variant="link" className="px-2 text-primary">
-              <Link href="/auth/sign-in">Sign in</Link>
-            </Button>
-          </p>
+          {submitted && error && (
+            <p id="password-error" className="text-destructive text-center text-xs">
+              {error}
+            </p>
+          )}
+
+          <LoadingButton className="w-full" type="submit" loading={isResetting}>
+            Reset Password
+          </LoadingButton>
         </div>
-      </form>
-    </section>
+      )}
+    </AuthLayout>
   );
 }

@@ -13,9 +13,8 @@ import {
   workspaceIntegration,
   postReport,
 } from "@featul/db";
-import { randomAvatarUrl } from "@/utils/avatar";
+import { resolvePostAuthorImage } from "@/lib/author-avatar";
 import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
-import { createHash } from "crypto";
 import type { RequestItemRow } from "@/lib/request-item";
 import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
@@ -132,6 +131,102 @@ export function normalizeStatus(s: string): string {
     closed: "closed",
   };
   return map[t] || raw;
+}
+
+type PostFilterOptions = {
+  statuses?: string[];
+  boardSlugs?: string[];
+  tagSlugs?: string[];
+  search?: string;
+  publicOnly?: boolean;
+};
+
+type NormalizedPostFilters = {
+  matchStatuses: string[];
+  boardSlugs: string[];
+  tagSlugs: string[];
+  search: string;
+  publicOnly: boolean;
+};
+
+function normalizePostFilters(opts?: PostFilterOptions): NormalizedPostFilters {
+  const normalizedStatuses = (opts?.statuses || [])
+    .map(normalizeStatus)
+    .filter(Boolean);
+  const matchStatuses = Array.from(new Set(normalizedStatuses));
+  const boardSlugs = (opts?.boardSlugs || [])
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const tagSlugs = (opts?.tagSlugs || [])
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const search = (opts?.search || "").trim();
+  const publicOnly = Boolean(opts?.publicOnly);
+  return { matchStatuses, boardSlugs, tagSlugs, search, publicOnly };
+}
+
+function resolvePostOrder(order?: "newest" | "oldest" | "likes") {
+  const orderParam = String(order || "newest").toLowerCase();
+  const dateCol = sql`COALESCE(${post.publishedAt}, ${post.createdAt})`;
+  if (orderParam === "oldest") return asc(dateCol);
+  if (orderParam === "likes") return desc(post.upvotes);
+  return desc(dateCol);
+}
+
+async function resolveTagPostIds(
+  workspaceId: string,
+  tagSlugs: string[],
+  publicOnly: boolean
+): Promise<string[]> {
+  if (tagSlugs.length === 0) return [];
+  const rows = await db
+    .select({ postId: postTag.postId })
+    .from(postTag)
+    .innerJoin(tag, eq(postTag.tagId, tag.id))
+    .innerJoin(post, eq(postTag.postId, post.id))
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, workspaceId),
+        eq(board.isSystem, false),
+        ...(publicOnly ? [eq(board.isPublic, true)] : []),
+        inArray(tag.slug, tagSlugs)
+      )
+    );
+  return Array.from(new Set(rows.map((r) => r.postId)));
+}
+
+function buildPostFilters({
+  workspaceId,
+  matchStatuses,
+  boardSlugs,
+  tagPostIds,
+  search,
+  publicOnly,
+}: {
+  workspaceId: string;
+  matchStatuses: string[];
+  boardSlugs: string[];
+  tagPostIds: string[] | null;
+  search: string;
+  publicOnly: boolean;
+}): SQL[] {
+  const filters: SQL[] = [
+    eq(board.workspaceId, workspaceId),
+    eq(board.isSystem, false),
+  ];
+  if (publicOnly) filters.push(eq(board.isPublic, true));
+  if (matchStatuses.length > 0)
+    filters.push(inArray(post.roadmapStatus, matchStatuses));
+  if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
+  if (tagPostIds && tagPostIds.length > 0)
+    filters.push(inArray(post.id, tagPostIds));
+  if (search) {
+    filters.push(
+      sql`to_tsvector('english', coalesce(${post.title}, '') || ' ' || coalesce(${post.content}, '')) @@ plainto_tsquery('english', ${search})`
+    );
+  }
+  return filters;
 }
 
 export async function getWorkspaceBySlug(
@@ -253,61 +348,29 @@ export async function getWorkspacePosts(
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return [];
 
-  const normalizedStatuses = (opts?.statuses || [])
-    .map(normalizeStatus)
-    .filter(Boolean);
-  const matchStatuses = Array.from(new Set(normalizedStatuses));
-  const boardSlugs = (opts?.boardSlugs || [])
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const tagSlugs = (opts?.tagSlugs || [])
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const orderParam = String(opts?.order || "newest").toLowerCase();
-  const dateCol = sql`COALESCE(${post.publishedAt}, ${post.createdAt})`;
-  const order = orderParam === "oldest" ? asc(dateCol) : orderParam === "likes" ? desc(post.upvotes) : desc(dateCol);
-  const search = (opts?.search || "").trim();
+  const { matchStatuses, boardSlugs, tagSlugs, search, publicOnly } =
+    normalizePostFilters(opts);
+  const order = resolvePostOrder(opts?.order);
   const lim = Math.min(Math.max(Number(opts?.limit ?? 50), 1), 5000);
   const off = Math.max(Number(opts?.offset ?? 0), 0);
-  const publicOnly = Boolean(opts?.publicOnly);
   const includeReportCounts = Boolean(opts?.includeReportCounts);
 
-  let tagPostIds: string[] | null = null;
-  if (tagSlugs.length > 0) {
-    const rows = await db
-      .select({ postId: postTag.postId })
-      .from(postTag)
-      .innerJoin(tag, eq(postTag.tagId, tag.id))
-      .innerJoin(post, eq(postTag.postId, post.id))
-      .innerJoin(board, eq(post.boardId, board.id))
-      .where(
-        and(
-          eq(board.workspaceId, ws.id),
-          eq(board.isSystem, false),
-          ...(publicOnly ? [eq(board.isPublic, true)] : []),
-          inArray(tag.slug, tagSlugs)
-        )
-      );
-    tagPostIds = Array.from(new Set(rows.map((r) => r.postId)));
-    if (tagPostIds.length === 0) {
-      return [];
-    }
+  const tagPostIds =
+    tagSlugs.length > 0
+      ? await resolveTagPostIds(ws.id, tagSlugs, publicOnly)
+      : null;
+  if (tagPostIds && tagPostIds.length === 0) {
+    return [];
   }
 
-  const filters: SQL[] = [
-    eq(board.workspaceId, ws.id),
-    eq(board.isSystem, false),
-  ];
-  if (publicOnly) filters.push(eq(board.isPublic, true));
-  if (matchStatuses.length > 0)
-    filters.push(inArray(post.roadmapStatus, matchStatuses));
-  if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
-  if (tagPostIds) filters.push(inArray(post.id, tagPostIds));
-  if (search) {
-    filters.push(
-      sql`to_tsvector('english', coalesce(${post.title}, '') || ' ' || coalesce(${post.content}, '')) @@ plainto_tsquery('english', ${search})`
-    );
-  }
+  const filters = buildPostFilters({
+    workspaceId: ws.id,
+    matchStatuses,
+    boardSlugs,
+    tagPostIds,
+    search,
+    publicOnly,
+  });
 
   const rows = await db
     .select({
@@ -369,23 +432,21 @@ export async function getWorkspacePosts(
     }
   }
 
-  const withAvatars: RequestItemRow[] = rows.map((r) => {
-    let avatarSeed = r.id || r.slug
-    if (r.isAnonymous && (r.metadata as Record<string, unknown>)?.fingerprint) {
-      avatarSeed = createHash("sha256").update(String((r.metadata as Record<string, unknown>).fingerprint)).digest("hex")
-    }
-
-    return {
-      ...r,
-      isOwner: r.authorId === ws.ownerId,
-      isFeatul: r.authorId === "featul-founder",
-      authorImage: !r.isAnonymous
-        ? r.authorImage || randomAvatarUrl(r.id || r.slug)
-        : randomAvatarUrl(avatarSeed),
-      tags: tagsByPostId[r.id] || [],
-      reportCount: "reportCount" in r ? Number(r.reportCount) : 0,
-    }
-  });
+  const withAvatars: RequestItemRow[] = rows.map((r) => ({
+    ...r,
+    isOwner: r.authorId === ws.ownerId,
+    isFeatul: r.authorId === "featul-founder",
+    authorImage: resolvePostAuthorImage({
+      isAnonymous: Boolean(r.isAnonymous),
+      authorImage: r.authorImage,
+      fallbackSeed: String(r.id || r.slug),
+      fingerprint: (r.metadata as Record<string, unknown>)?.fingerprint as
+        | string
+        | undefined,
+    }),
+    tags: tagsByPostId[r.id] || [],
+    reportCount: "reportCount" in r ? Number(r.reportCount) : 0,
+  }));
 
   return withAvatars;
 }
@@ -406,55 +467,25 @@ export async function getWorkspacePostsCount(
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return 0;
 
-  const normalizedStatuses = (opts?.statuses || [])
-    .map(normalizeStatus)
-    .filter(Boolean);
-  const matchStatuses = Array.from(new Set(normalizedStatuses));
-  const boardSlugs = (opts?.boardSlugs || [])
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const tagSlugs = (opts?.tagSlugs || [])
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const search = (opts?.search || "").trim();
-  const publicOnly = Boolean(opts?.publicOnly);
+  const { matchStatuses, boardSlugs, tagSlugs, search, publicOnly } =
+    normalizePostFilters(opts);
 
-  let tagPostIds: string[] | null = null;
-  if (tagSlugs.length > 0) {
-    const rows = await db
-      .select({ postId: postTag.postId })
-      .from(postTag)
-      .innerJoin(tag, eq(postTag.tagId, tag.id))
-      .innerJoin(post, eq(postTag.postId, post.id))
-      .innerJoin(board, eq(post.boardId, board.id))
-      .where(
-        and(
-          eq(board.workspaceId, ws.id),
-          eq(board.isSystem, false),
-          ...(publicOnly ? [eq(board.isPublic, true)] : []),
-          inArray(tag.slug, tagSlugs)
-        )
-      );
-    tagPostIds = Array.from(new Set(rows.map((r) => r.postId)));
-    if (tagPostIds.length === 0) {
-      return 0;
-    }
+  const tagPostIds =
+    tagSlugs.length > 0
+      ? await resolveTagPostIds(ws.id, tagSlugs, publicOnly)
+      : null;
+  if (tagPostIds && tagPostIds.length === 0) {
+    return 0;
   }
 
-  const filters: SQL[] = [
-    eq(board.workspaceId, ws.id),
-    eq(board.isSystem, false),
-  ];
-  if (publicOnly) filters.push(eq(board.isPublic, true));
-  if (matchStatuses.length > 0)
-    filters.push(inArray(post.roadmapStatus, matchStatuses));
-  if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
-  if (tagPostIds) filters.push(inArray(post.id, tagPostIds));
-  if (search) {
-    filters.push(
-      sql`to_tsvector('english', coalesce(${post.title}, '') || ' ' || coalesce(${post.content}, '')) @@ plainto_tsquery('english', ${search})`
-    );
-  }
+  const filters = buildPostFilters({
+    workspaceId: ws.id,
+    matchStatuses,
+    boardSlugs,
+    tagPostIds,
+    search,
+    publicOnly,
+  });
 
   const [row] = await db
     .select({ count: sql<number>`count(*)` })
@@ -626,141 +657,141 @@ export async function getSettingsInitialData(
     .limit(1);
   if (!ws?.id) return {};
 
-  const [b] = await db
-    .select({
-      isVisible: board.isVisible,
-      isPublic: board.isPublic,
-      changelogTags: board.changelogTags,
-    })
-    .from(board)
-    .where(
-      and(
-        eq(board.workspaceId, ws.id),
-        eq(board.systemType, "changelog")
+  const feedbackBoardSelect = {
+    id: board.id,
+    name: board.name,
+    slug: board.slug,
+    isPublic: board.isPublic,
+    isVisible: board.isVisible,
+    isActive: board.isActive,
+    allowAnonymous: board.allowAnonymous,
+    allowComments: board.allowComments,
+    hidePublicMemberIdentity: board.hidePublicMemberIdentity,
+    sortOrder: board.sortOrder,
+    postCount: sql<number>`count(${post.id})`,
+  };
+
+  const [
+    changelogRows,
+    brandingRows,
+    members,
+    invites,
+    domainRows,
+    feedbackBoardsNonSystem,
+    feedbackRoadmap,
+    feedbackTagsRows,
+    integrationsRows,
+    branding,
+  ] = await Promise.all([
+    db
+      .select({
+        isVisible: board.isVisible,
+        isPublic: board.isPublic,
+        changelogTags: board.changelogTags,
+      })
+      .from(board)
+      .where(
+        and(
+          eq(board.workspaceId, ws.id),
+          eq(board.systemType, "changelog")
+        )
       )
-    )
-    .limit(1);
+      .limit(1),
+    db
+      .select({ hidePoweredBy: brandingConfig.hidePoweredBy })
+      .from(brandingConfig)
+      .where(eq(brandingConfig.workspaceId, ws.id))
+      .limit(1),
+    db
+      .select({
+        userId: workspaceMember.userId,
+        role: workspaceMember.role,
+        joinedAt: workspaceMember.joinedAt,
+        isActive: workspaceMember.isActive,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+      })
+      .from(workspaceMember)
+      .innerJoin(user, eq(user.id, workspaceMember.userId))
+      .where(eq(workspaceMember.workspaceId, ws.id)),
+    db
+      .select({
+        id: workspaceInvite.id,
+        email: workspaceInvite.email,
+        role: workspaceInvite.role,
+        invitedBy: workspaceInvite.invitedBy,
+        expiresAt: workspaceInvite.expiresAt,
+        acceptedAt: workspaceInvite.acceptedAt,
+        createdAt: workspaceInvite.createdAt,
+      })
+      .from(workspaceInvite)
+      .where(eq(workspaceInvite.workspaceId, ws.id)),
+    db
+      .select({
+        id: workspaceDomain.id,
+        host: workspaceDomain.host,
+        cnameName: workspaceDomain.cnameName,
+        cnameTarget: workspaceDomain.cnameTarget,
+        txtName: workspaceDomain.txtName,
+        txtValue: workspaceDomain.txtValue,
+        status: workspaceDomain.status,
+      })
+      .from(workspaceDomain)
+      .where(eq(workspaceDomain.workspaceId, ws.id))
+      .limit(1),
+    db
+      .select(feedbackBoardSelect)
+      .from(board)
+      .leftJoin(post, eq(post.boardId, board.id))
+      .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+      .groupBy(board.id)
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
+    db
+      .select(feedbackBoardSelect)
+      .from(board)
+      .leftJoin(post, eq(post.boardId, board.id))
+      .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
+      .groupBy(board.id)
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
+    db
+      .select({
+        id: tag.id,
+        name: tag.name,
+        slug: tag.slug,
+        color: tag.color,
+        count: sql<number>`count(${board.id})`,
+      })
+      .from(tag)
+      .leftJoin(postTag, eq(postTag.tagId, tag.id))
+      .leftJoin(post, eq(postTag.postId, post.id))
+      .leftJoin(
+        board,
+        and(
+          eq(post.boardId, board.id),
+          eq(board.workspaceId, ws.id),
+          eq(board.isSystem, false)
+        )
+      )
+      .where(eq(tag.workspaceId, ws.id))
+      .groupBy(tag.id, tag.name, tag.slug, tag.color),
+    db
+      .select({
+        id: workspaceIntegration.id,
+        type: workspaceIntegration.type,
+        isActive: workspaceIntegration.isActive,
+        lastTriggeredAt: workspaceIntegration.lastTriggeredAt,
+        createdAt: workspaceIntegration.createdAt,
+      })
+      .from(workspaceIntegration)
+      .where(eq(workspaceIntegration.workspaceId, ws.id)),
+    getBrandingBySlug(slug),
+  ]);
 
-  const [br] = await db
-    .select({ hidePoweredBy: brandingConfig.hidePoweredBy })
-    .from(brandingConfig)
-    .where(eq(brandingConfig.workspaceId, ws.id))
-    .limit(1);
-
-  const branding = await getBrandingBySlug(slug);
-
-  const members = await db
-    .select({
-      userId: workspaceMember.userId,
-      role: workspaceMember.role,
-      joinedAt: workspaceMember.joinedAt,
-      isActive: workspaceMember.isActive,
-      name: user.name,
-      email: user.email,
-      image: user.image,
-    })
-    .from(workspaceMember)
-    .innerJoin(user, eq(user.id, workspaceMember.userId))
-    .where(eq(workspaceMember.workspaceId, ws.id));
-
-  const invites = await db
-    .select({
-      id: workspaceInvite.id,
-      email: workspaceInvite.email,
-      role: workspaceInvite.role,
-      invitedBy: workspaceInvite.invitedBy,
-      expiresAt: workspaceInvite.expiresAt,
-      acceptedAt: workspaceInvite.acceptedAt,
-      createdAt: workspaceInvite.createdAt,
-    })
-    .from(workspaceInvite)
-    .where(eq(workspaceInvite.workspaceId, ws.id));
-
-  const [d] = await db
-    .select({
-      id: workspaceDomain.id,
-      host: workspaceDomain.host,
-      cnameName: workspaceDomain.cnameName,
-      cnameTarget: workspaceDomain.cnameTarget,
-      txtName: workspaceDomain.txtName,
-      txtValue: workspaceDomain.txtValue,
-      status: workspaceDomain.status,
-    })
-    .from(workspaceDomain)
-    .where(eq(workspaceDomain.workspaceId, ws.id))
-    .limit(1);
-
-  const feedbackBoardsNonSystem = await db
-    .select({
-      id: board.id,
-      name: board.name,
-      slug: board.slug,
-      isPublic: board.isPublic,
-      isVisible: board.isVisible,
-      isActive: board.isActive,
-      allowAnonymous: board.allowAnonymous,
-      allowComments: board.allowComments,
-      hidePublicMemberIdentity: board.hidePublicMemberIdentity,
-      sortOrder: board.sortOrder,
-      postCount: sql<number>`count(${post.id})`,
-    })
-    .from(board)
-    .leftJoin(post, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
-    .groupBy(board.id)
-    .orderBy(asc(board.sortOrder), asc(board.createdAt));
-
-  const feedbackRoadmap = await db
-    .select({
-      id: board.id,
-      name: board.name,
-      slug: board.slug,
-      isPublic: board.isPublic,
-      isVisible: board.isVisible,
-      isActive: board.isActive,
-      allowAnonymous: board.allowAnonymous,
-      allowComments: board.allowComments,
-      hidePublicMemberIdentity: board.hidePublicMemberIdentity,
-      sortOrder: board.sortOrder,
-      postCount: sql<number>`count(${post.id})`,
-    })
-    .from(board)
-    .leftJoin(post, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
-    .groupBy(board.id)
-    .orderBy(asc(board.sortOrder), asc(board.createdAt));
-
+  const b = changelogRows[0];
+  const br = brandingRows[0];
+  const d = domainRows[0];
   const feedbackBoards = [...feedbackRoadmap, ...feedbackBoardsNonSystem]
-
-  const feedbackTagsRows = await db
-    .select({
-      id: tag.id,
-      name: tag.name,
-      slug: tag.slug,
-      color: tag.color,
-      count: sql<number>`count(${board.id})`,
-    })
-    .from(tag)
-    .leftJoin(postTag, eq(postTag.tagId, tag.id))
-    .leftJoin(post, eq(postTag.postId, post.id))
-    .leftJoin(
-      board,
-      and(eq(post.boardId, board.id), eq(board.workspaceId, ws.id), eq(board.isSystem, false))
-    )
-    .where(eq(tag.workspaceId, ws.id))
-    .groupBy(tag.id, tag.name, tag.slug, tag.color)
-
-  // Fetch integrations for the workspace
-  const integrationsRows = await db
-    .select({
-      id: workspaceIntegration.id,
-      type: workspaceIntegration.type,
-      isActive: workspaceIntegration.isActive,
-      lastTriggeredAt: workspaceIntegration.lastTriggeredAt,
-      createdAt: workspaceIntegration.createdAt,
-    })
-    .from(workspaceIntegration)
-    .where(eq(workspaceIntegration.workspaceId, ws.id));
 
   return {
     initialPlan: String(ws?.plan || "free"),
@@ -847,55 +878,24 @@ export async function getPostNavigation(
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return { prev: null, next: null };
 
-  const normalizedStatuses = (opts?.statuses || [])
-    .map(normalizeStatus)
-    .filter(Boolean);
-  const matchStatuses = Array.from(new Set(normalizedStatuses));
-  const boardSlugs = (opts?.boardSlugs || [])
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const tagSlugs = (opts?.tagSlugs || [])
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const orderParam = String(opts?.order || "newest").toLowerCase();
-  const dateCol = sql`COALESCE(${post.publishedAt}, ${post.createdAt})`;
-  const order = orderParam === "oldest" ? asc(dateCol) : orderParam === "likes" ? desc(post.upvotes) : desc(dateCol);
-  const search = (opts?.search || "").trim();
+  const { matchStatuses, boardSlugs, tagSlugs, search } =
+    normalizePostFilters(opts);
+  const order = resolvePostOrder(opts?.order);
 
-  let tagPostIds: string[] | null = null;
-  if (tagSlugs.length > 0) {
-    const rows = await db
-      .select({ postId: postTag.postId })
-      .from(postTag)
-      .innerJoin(tag, eq(postTag.tagId, tag.id))
-      .innerJoin(post, eq(postTag.postId, post.id))
-      .innerJoin(board, eq(post.boardId, board.id))
-      .where(
-        and(
-          eq(board.workspaceId, ws.id),
-          eq(board.isSystem, false),
-          inArray(tag.slug, tagSlugs)
-        )
-      );
-    tagPostIds = Array.from(new Set(rows.map((r) => r.postId)));
-    if (tagPostIds.length === 0) {
-      return { prev: null, next: null };
-    }
+  const tagPostIds =
+    tagSlugs.length > 0 ? await resolveTagPostIds(ws.id, tagSlugs, false) : null;
+  if (tagPostIds && tagPostIds.length === 0) {
+    return { prev: null, next: null };
   }
 
-  const filters: SQL[] = [
-    eq(board.workspaceId, ws.id),
-    eq(board.isSystem, false),
-  ];
-  if (matchStatuses.length > 0)
-    filters.push(inArray(post.roadmapStatus, matchStatuses));
-  if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
-  if (tagPostIds) filters.push(inArray(post.id, tagPostIds));
-  if (search) {
-    filters.push(
-      sql`to_tsvector('english', coalesce(${post.title}, '') || ' ' || coalesce(${post.content}, '')) @@ plainto_tsquery('english', ${search})`
-    );
-  }
+  const filters = buildPostFilters({
+    workspaceId: ws.id,
+    matchStatuses,
+    boardSlugs,
+    tagPostIds,
+    search,
+    publicOnly: false,
+  });
 
   const rows = await db
     .select({
