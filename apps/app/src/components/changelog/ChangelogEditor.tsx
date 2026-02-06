@@ -15,6 +15,8 @@ import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import ChangelogAiBar from "./ChangelogAiBar";
 
+const ENABLE_CHANGELOG_AI = false;
+
 interface ChangelogEditorProps {
     workspaceSlug: string;
     mode: "create" | "edit";
@@ -154,15 +156,17 @@ export function ChangelogEditor({
                     />
                 </div>
             </main>
-            <ChangelogAiBar
-                workspaceSlug={workspaceSlug}
-                editorRef={editorRef}
-                title={title}
-                summary={summary}
-                setTitle={(value) => { setTitle(value); setIsDirty(true); }}
-                setSummary={(value) => { setSummary(value); setIsDirty(true); }}
-                setIsDirty={setIsDirty}
-            />
+            {ENABLE_CHANGELOG_AI ? (
+                <ChangelogAiBar
+                    workspaceSlug={workspaceSlug}
+                    editorRef={editorRef}
+                    title={title}
+                    summary={summary}
+                    setTitle={(value) => { setTitle(value); setIsDirty(true); }}
+                    setSummary={(value) => { setSummary(value); setIsDirty(true); }}
+                    setIsDirty={setIsDirty}
+                />
+            ) : null}
         </div>
     );
 }
