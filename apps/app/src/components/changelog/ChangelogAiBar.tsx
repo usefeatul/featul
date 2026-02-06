@@ -18,7 +18,7 @@ interface ChangelogAiBarProps {
   summary: string;
   setTitle: (value: string) => void;
   setSummary: (value: string) => void;
-  editorRef: RefObject<FeedEditorRef>;
+  editorRef: RefObject<FeedEditorRef | null>;
   setIsDirty: (value: boolean) => void;
 }
 
