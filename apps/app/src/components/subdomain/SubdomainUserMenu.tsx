@@ -1,8 +1,9 @@
 import React from "react"
 import { DropdownMenuItem } from "@featul/ui/components/dropdown-menu"
-import { CommentsIcon } from "@featul/ui/icons/comments"
+import { IdeaIcon } from "@featul/ui/icons/idea"
 import { SettingIcon } from "@featul/ui/icons/setting"
-import { PlusIcon } from "@featul/ui/icons/plus"
+import { HomeIcon } from "@featul/ui/icons/home"
+import { FillPlusIcon } from "@featul/ui/icons/fill-plus"
 import { LogoutIcon } from "@featul/ui/icons/logout"
 
 type SubdomainUserMenuProps = {
@@ -36,7 +37,7 @@ export function SubdomainUserMenu({
           <span className="transition-colors group-hover:text-foreground">
             Submit post
           </span>
-          <CommentsIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
+          <IdeaIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
         </DropdownMenuItem>
       </div>
 
@@ -48,7 +49,7 @@ export function SubdomainUserMenu({
           <span className="transition-colors group-hover:text-foreground">
             Dashboard
           </span>
-          <SettingIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
+          <HomeIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={onCreateProject}
@@ -57,7 +58,7 @@ export function SubdomainUserMenu({
           <span className="transition-colors group-hover:text-foreground">
             Create project
           </span>
-          <PlusIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
+          <FillPlusIcon className="size-4 text-foreground/70 opacity-100 transition-colors group-hover:text-primary" />
         </DropdownMenuItem>
       </div>
 
@@ -86,5 +87,3 @@ export function SubdomainUserMenu({
     </div>
   )
 }
-
-

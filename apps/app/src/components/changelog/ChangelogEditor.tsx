@@ -13,6 +13,7 @@ import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
+import ChangelogAiBar from "./ChangelogAiBar";
 
 interface ChangelogEditorProps {
     workspaceSlug: string;
@@ -21,6 +22,7 @@ interface ChangelogEditorProps {
     initialData?: {
         title: string;
         content: JSONContent;
+        summary?: string | null;
         coverImage?: string | null;
         tags: string[];
         status: "draft" | "published";
@@ -42,6 +44,8 @@ export function ChangelogEditor({
         editorRef,
         title,
         setTitle,
+        summary,
+        setSummary,
         coverImage,
         setCoverImage,
         selectedTags,
@@ -93,7 +97,7 @@ export function ChangelogEditor({
 
     return (
         <div className="min-h-screen bg-background">
-            <main className="mx-auto max-w-3xl px-4 pt-0 pb-8">
+            <main className="mx-auto max-w-3xl px-4 pt-0 pb-[120px] lg:pb-[96px]">
                 {/* Cover Image (when present) */}
                 {coverImage && (
                     <CoverImageUploader
@@ -150,6 +154,15 @@ export function ChangelogEditor({
                     />
                 </div>
             </main>
+            <ChangelogAiBar
+                workspaceSlug={workspaceSlug}
+                editorRef={editorRef}
+                title={title}
+                summary={summary}
+                setTitle={(value) => { setTitle(value); setIsDirty(true); }}
+                setSummary={(value) => { setSummary(value); setIsDirty(true); }}
+                setIsDirty={setIsDirty}
+            />
         </div>
     );
 }

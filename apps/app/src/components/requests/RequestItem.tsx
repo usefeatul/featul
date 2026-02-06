@@ -7,45 +7,15 @@ import StatusIcon from "./StatusIcon"
 import { CommentsIcon } from "@featul/ui/icons/comments"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { Checkbox } from "@featul/ui/components/checkbox"
+import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user-utils"
 import { randomAvatarUrl } from "@/utils/avatar"
 import RoleBadge from "@/components/global/RoleBadge"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
-import { getFlagHighlightClasses } from "@/utils/flag-styles"
-
-export interface RequestItemData {
-  id: string
-  title: string
-  slug: string
-  content: string | null
-  image: string | null
-  commentCount: number
-  upvotes: number
-  roadmapStatus: string | null
-  publishedAt: string | null
-  createdAt: string
-  boardSlug: string
-  boardName: string
-  authorImage?: string | null
-  authorName?: string | null
-  authorId?: string | null
-  isAnonymous?: boolean
-  hasVoted?: boolean
-  role?: "admin" | "member" | "viewer" | null
-  isOwner?: boolean
-  isFeatul?: boolean
-  tags?: Array<{
-    id: string
-    name: string
-    slug: string
-    color?: string | null
-  }>
-  reportCount?: number
-  isPinned?: boolean
-  isFeatured?: boolean
-}
+import { FlagRibbon } from "@/components/global/FlagRibbon"
+import type { RequestItemData } from "@/types/request"
 
 interface RequestItemProps {
   item: RequestItemData
@@ -55,7 +25,6 @@ interface RequestItemProps {
   isSelected?: boolean
   onToggle?: (checked: boolean) => void
   disableLink?: boolean
-
 }
 
 function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelected, onToggle, disableLink }: RequestItemProps) {
@@ -63,39 +32,62 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : ""
   const base = linkBase || `/workspaces/${workspaceSlug}`
   const href = `${base}/requests/${item.slug}${queryString}`
-  const title = item.title || ""
+  const title = item.title ?? ""
   const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
-
-  const highlightClasses = getFlagHighlightClasses(item.isPinned, item.isFeatured)
+  const isSelectingMode = Boolean(isSelecting)
+  const isSelectedMode = Boolean(isSelected)
+  const isLinkDisabled = Boolean(disableLink || isSelectingMode)
+  const authorLabel = item.isAnonymous ? "Guest" : (item.authorName || "Guest")
+  const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
+    if (!isSelectingMode) return
+    e.preventDefault()
+    e.stopPropagation()
+    onToggle?.(!isSelectedMode)
+  }, [isSelectingMode, isSelectedMode, onToggle])
+  const rowClassName = cn(
+    "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
+    isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
+  )
+  const actionsClassName = cn(
+    "ml-auto flex items-center gap-3 text-xs text-accent",
+    isSelectingMode && "pointer-events-none"
+  )
 
   return (
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
-      className={`flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 ${highlightClasses} ${isSelecting ? "" : "hover:bg-background dark:hover:bg-background transition-colors"}`}
+      className={rowClassName}
+      onClick={handleRowClick}
     >
-      {isSelecting ? (
+      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
+      {isSelectingMode ? (
         <Checkbox
-          checked={!!isSelected}
-          onCheckedChange={(v) => onToggle?.(!!v)}
+          checked={isSelectedMode}
+          onCheckedChange={(v) => onToggle?.(Boolean(v))}
           aria-label="Select post"
+          onClick={(e) => e.stopPropagation()}
           className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
         />
       ) : null}
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <Link
         href={href}
-        className={`flex-1 min-w-0 truncate text-sm font-medium ${disableLink ? "text-foreground/60 cursor-default" : "text-foreground"}`}
+        className={cn(
+          "flex-1 min-w-0 truncate text-sm font-medium",
+          isLinkDisabled ? "text-foreground/60 cursor-default pointer-events-none" : "text-foreground"
+        )}
         onClick={(e) => {
-          if (disableLink) e.preventDefault()
+          if (isLinkDisabled) e.preventDefault()
         }}
-        tabIndex={disableLink ? -1 : 0}
-        aria-disabled={disableLink ? true : undefined}
+        tabIndex={isLinkDisabled ? -1 : 0}
+        aria-disabled={isLinkDisabled ? true : undefined}
       >
         {displayTitle}
       </Link>
-      <div className="ml-auto flex items-center gap-3 text-xs text-accent">
+      <div className={actionsClassName}>
         <ReportIndicator count={item.reportCount || 0} />
+
         <div className="inline-flex items-center gap-2 relative z-10">
           <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
         </div>
@@ -106,8 +98,8 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
         <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
         <div className="relative">
           <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
-            <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={item.isAnonymous ? "Guest" : (item.authorName || "Guest")} />
-            <AvatarFallback>{getInitials(item.isAnonymous ? "Guest" : (item.authorName || "Guest"))}</AvatarFallback>
+            <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
+            <AvatarFallback>{getInitials(authorLabel)}</AvatarFallback>
             <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />
           </Avatar>
         </div>

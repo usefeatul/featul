@@ -20,11 +20,15 @@ function toPlain(s?: string | null): string {
 export default function DomainRoadmapItem({ item }: { item: RoadmapItemData & { boardSlug?: string } }) {
   const href = item.boardSlug ? `/board/p/${item.slug}?from=roadmap` : `/p/${item.slug}?from=roadmap`
   return (
-    <div className="py-6 px-6 min-h-[140px]">
+    <Link
+      href={href}
+      aria-label={item.title}
+      className="block py-6 px-6 min-h-[140px] transition-colors hover:bg-background dark:hover:bg-background"
+    >
       <div className="flex items-start gap-3">
-        <Link href={href} className="text-lg font-semibold text-foreground hover:text-primary flex-1">
+        <span className="text-lg font-semibold text-foreground flex-1">
           {item.title}
-        </Link>
+        </span>
       </div>
       {item.content ? (
         <p className="mt-3 text-sm text-accent wrap-break-word whitespace-normal line-clamp-2">{toPlain(item.content)}</p>
@@ -33,6 +37,6 @@ export default function DomainRoadmapItem({ item }: { item: RoadmapItemData & { 
         <StatusIcon status={item.roadmapStatus || undefined} className="w-[18px] h-[18px] text-foreground/80" />
         <span className="text-sm text-accent">{statusLabel(String(item.roadmapStatus || "pending"))}</span>
       </div>
-    </div>
+    </Link>
   )
 }

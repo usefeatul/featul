@@ -12,12 +12,14 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";
 import { sendVerificationOtp, verifyEmail } from "../../utils/otp-utils";
+import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redirect";
 
 export default function Verify() {
   const router = useRouter();
   const params = useSearchParams();
   const rawRedirect = params.get("redirect") || "";
-  const redirect = rawRedirect.startsWith("/") ? rawRedirect : "/start";
+  const safeRedirectParam = normalizeRedirectParam(rawRedirect);
+  const redirect = resolveAuthRedirect(rawRedirect);
   const initialEmail = useMemo(() => params.get("email") || "", [params]);
   const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState("");
@@ -161,9 +163,9 @@ export default function Verify() {
             <Button asChild variant="link" className="px-2 text-primary">
               <Link
                 href={
-                  rawRedirect
+                  safeRedirectParam
                     ? `/auth/sign-in?redirect=${encodeURIComponent(
-                      rawRedirect,
+                      safeRedirectParam,
                     )}`
                     : "/auth/sign-in"
                 }

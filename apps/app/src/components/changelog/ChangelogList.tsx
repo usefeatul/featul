@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import type { ChangelogEntryWithTags } from "@/app/(main)/workspaces/[slug]/changelog/data"
+import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 import ChangelogItem from "./ChangelogItem"
 import { useSelection, toggleSelectionId, selectAllForKey, removeSelectedIds } from "@/lib/selection-store"
 import { ChangelogBulkDeleteDialog } from "./ChangelogBulkDeleteDialog"

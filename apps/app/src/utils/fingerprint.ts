@@ -29,7 +29,7 @@ export async function getBrowserFingerprint(): Promise<string> {
 
   let id = "";
   try {
-    id = (crypto as any).randomUUID ? (crypto as any).randomUUID() : "";
+    id = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : "";
   } catch {
     id = "";
   }

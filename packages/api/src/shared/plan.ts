@@ -9,6 +9,7 @@ export type PlanLimits = {
   allowBranding: boolean
   allowHidePoweredBy: boolean
   allowAttachments: boolean
+  allowIntegrations: boolean
   maxTags: number | null
   maxChangelogTags: number | null
   maxChangelogEntries: number | null
@@ -16,34 +17,37 @@ export type PlanLimits = {
 
 const LIMITS: Record<PlanKey, PlanLimits> = {
   free: {
-    maxMembers: 1,
-    maxNonSystemBoards: 5,
-    monthlyPostLimit: 100,
+    maxMembers: 3,
+    maxNonSystemBoards: null,
+    monthlyPostLimit: null,
     allowBranding: false,
     allowHidePoweredBy: false,
     allowAttachments: true,
+    allowIntegrations: false,
     maxTags: 5,
     maxChangelogTags: 5,
     maxChangelogEntries: 10,
   },
   starter: {
-    maxMembers: 15,
-    maxNonSystemBoards: 10,
-    monthlyPostLimit: 1000,
-    allowBranding: true,
-    allowHidePoweredBy: true,
-    allowAttachments: true,
-    maxTags: 10,
-    maxChangelogTags: 10,
-    maxChangelogEntries: 50,
-  },
-  professional: {
-    maxMembers: null,
+    maxMembers: 5,
     maxNonSystemBoards: null,
     monthlyPostLimit: null,
     allowBranding: true,
     allowHidePoweredBy: true,
     allowAttachments: true,
+    allowIntegrations: true,
+    maxTags: 10,
+    maxChangelogTags: 10,
+    maxChangelogEntries: 50,
+  },
+  professional: {
+    maxMembers: 10,
+    maxNonSystemBoards: null,
+    monthlyPostLimit: null,
+    allowBranding: true,
+    allowHidePoweredBy: true,
+    allowAttachments: true,
+    allowIntegrations: true,
     maxTags: 20,
     maxChangelogTags: 20,
     maxChangelogEntries: null,
@@ -59,6 +63,10 @@ export function normalizePlan(raw: string): PlanKey {
 
 export function getPlanLimits(plan: PlanKey | string): PlanLimits {
   return LIMITS[normalizePlan(String(plan))]
+}
+
+export function isIntegrationsAllowed(plan: PlanKey | string): boolean {
+  return getPlanLimits(plan).allowIntegrations
 }
 
 export function assertWithinLimit(

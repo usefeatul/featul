@@ -41,7 +41,7 @@ export default async function WorkspaceLayout({ children, params }: { children: 
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
       <Sidebar initialCounts={counts} initialTimezone={timezone} initialServerNow={serverNow} initialWorkspace={ws || undefined} initialDomainInfo={domainInfo || undefined} initialWorkspaces={workspaceList} initialUser={session?.user} />
-      <main className="w-full lg:flex-1 px-4 lg:px-0 pb-10 lg:pb-0">
+      <main className="w-full lg:flex-1 px-2 sm:px-3 md:px-4 lg:px-0 pb-10 lg:pb-0">
         <EditorHeaderProvider>
           <WorkspaceHeader />
           <FilterSummary />

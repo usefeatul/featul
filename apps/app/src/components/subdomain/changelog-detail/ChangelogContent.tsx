@@ -1,12 +1,13 @@
 import React from "react";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
+import type { JSONContent } from "@tiptap/core";
 import type { Role } from "@/types/team";
 
 export interface ChangelogEntryData {
     id: string;
     title: string;
     slug: string;
-    content?: unknown;
+    content?: JSONContent | null;
     summary?: string | null;
     coverImage?: string | null;
     publishedAt?: string | Date | null;

@@ -1,4 +1,5 @@
 import type { IntegrationType } from "../validators/integration"
+import { isIntegrationsAllowed } from "../shared/plan"
 
 /**
  * Post data structure for webhook notifications
@@ -227,8 +228,23 @@ export async function triggerPostWebhooks(
 ): Promise<void> {
   try {
     // Import here to avoid circular dependency issues
-    const { workspaceIntegration } = await import("@featul/db")
+    const { workspace, workspaceIntegration } = await import("@featul/db")
     const { eq } = await import("drizzle-orm")
+
+    const [ws] = await db
+      .select({ plan: workspace.plan })
+      .from(workspace)
+      .where(eq(workspace.id, workspaceId))
+      .limit(1)
+
+    if (!ws) {
+      return
+    }
+
+    const plan = ws.plan ?? "free"
+    if (!isIntegrationsAllowed(plan)) {
+      return
+    }
 
     // Get all active integrations for the workspace
     const integrations = await db

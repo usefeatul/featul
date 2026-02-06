@@ -94,6 +94,8 @@ function FeedEditorMenus() {
 export interface FeedEditorRef {
   focus: () => void;
   getContent: () => JSONContent | undefined;
+  getMarkdown: () => string | undefined;
+  setContentFromMarkdown: (markdown: string) => void;
 }
 
 export interface FeedEditorProps {
@@ -141,6 +143,11 @@ export const FeedEditor = forwardRef(
           editor?.chain().focus().run();
         },
         getContent: () => editor?.getJSON(),
+        getMarkdown: () => editor?.getMarkdown(),
+        setContentFromMarkdown: (markdown: string) => {
+          if (!editor) return;
+          editor.commands.setContent(markdown, { contentType: "markdown" });
+        },
       }),
       [editor]
     );
@@ -162,5 +169,4 @@ export const FeedEditor = forwardRef(
 FeedEditor.displayName = "FeedEditor";
 
 export default FeedEditor;
-
 

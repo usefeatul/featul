@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { getSelectedIds, removeSelectedIds } from "@/lib/selection-store"
-import type { ChangelogEntryWithTags } from "@/app/(main)/workspaces/[slug]/changelog/data"
+import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 
 interface UseBulkDeleteChangelogParams {
     workspaceSlug: string

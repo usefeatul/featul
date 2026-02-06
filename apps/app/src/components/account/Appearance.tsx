@@ -11,8 +11,13 @@ import { SystemMode } from "./theme-holder/system-theme"
 type ThemeOption = "light" | "dark" | "system"
 
 export default function Appearance() {
-  const { theme = "system", setTheme } = useTheme()
-  const currentTheme = (theme as ThemeOption) || "system"
+  const { theme = "system", resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => setMounted(true), [])
+
+  const effectiveTheme = mounted
+    ? ((theme === "system" ? resolvedTheme : theme) as ThemeOption) || "system"
+    : null
 
   const options: Array<{
     key: ThemeOption
@@ -45,7 +50,7 @@ export default function Appearance() {
       <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-3">
           {options.map(({ key, label, description, Preview }) => {
-            const isActive = currentTheme === key
+            const isActive = effectiveTheme === key
             return (
               <button
                 key={key}

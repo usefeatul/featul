@@ -50,3 +50,6 @@ config/ssl/certificates/RootCA.srl
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+#turbo
+.turbo

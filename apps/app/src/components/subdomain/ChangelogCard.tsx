@@ -23,7 +23,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
     const previewText = item.summary || extractTextFromTiptap(item.content);
 
     return (
-        <div className="py-6 px-6 relative group">
+        <div className="py-6 px-6 relative group transition-colors hover:bg-background dark:hover:bg-background">
             <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
                 <span className="sr-only">View changelog</span>
             </Link>
@@ -41,7 +41,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
 
             {/* Title */}
             <div className="mt-2">
-                <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                <h3 className="text-lg font-semibold text-foreground">
                     {item.title}
                 </h3>
             </div>

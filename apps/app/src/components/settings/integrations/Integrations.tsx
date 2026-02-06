@@ -7,6 +7,7 @@ import SlackCard from "./SlackCard";
 import DiscordCard from "./DiscordCard";
 import SuggestIntegrationCard from "./SuggestIntegrationCard";
 import { useIntegrations, type Integration } from "@/hooks/useIntegrations";
+import { isIntegrationsAllowed } from "@/lib/plan";
 
 type Props = {
   slug: string;
@@ -19,15 +20,20 @@ type Props = {
  */
 export default function IntegrationsSection({ slug, plan, initialIntegrations }: Props) {
   const [pendingIntegration, setPendingIntegration] = React.useState<string | null>(null);
+  const allowIntegrations = isIntegrationsAllowed(plan ?? "free");
 
   const {
-    integrations,
     isLoading,
     connect,
     disconnect,
     test,
     getIntegration,
   } = useIntegrations({ workspaceSlug: slug, initialData: initialIntegrations });
+
+  const slackIntegration = getIntegration("slack");
+  const discordIntegration = getIntegration("discord");
+  const slackActionsEnabled = allowIntegrations || Boolean(slackIntegration);
+  const discordActionsEnabled = allowIntegrations || Boolean(discordIntegration);
 
   const handleConnectDiscord = async (webhookUrl: string) => {
     setPendingIntegration("discord");
@@ -90,20 +96,28 @@ export default function IntegrationsSection({ slug, plan, initialIntegrations }:
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SlackCard
-          integration={getIntegration("slack")}
+          integration={slackIntegration}
           onConnect={handleConnectSlack}
           onDisconnect={handleDisconnectSlack}
-          onTest={handleTestSlack}
+          onTest={allowIntegrations ? handleTestSlack : undefined}
           isPending={pendingIntegration === "slack"}
-          disabled={isLoading || (pendingIntegration !== null && pendingIntegration !== "slack")}
+          disabled={
+            isLoading
+            || (pendingIntegration !== null && pendingIntegration !== "slack")
+            || !slackActionsEnabled
+          }
         />
         <DiscordCard
-          integration={getIntegration("discord")}
+          integration={discordIntegration}
           onConnect={handleConnectDiscord}
           onDisconnect={handleDisconnectDiscord}
-          onTest={handleTestDiscord}
+          onTest={allowIntegrations ? handleTestDiscord : undefined}
           isPending={pendingIntegration === "discord"}
-          disabled={isLoading || (pendingIntegration !== null && pendingIntegration !== "discord")}
+          disabled={
+            isLoading
+            || (pendingIntegration !== null && pendingIntegration !== "discord")
+            || !discordActionsEnabled
+          }
         />
         <div className="md:col-span-1">
           <SuggestIntegrationCard />

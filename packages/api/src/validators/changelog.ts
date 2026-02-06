@@ -29,3 +29,18 @@ export const updateEntrySchema = z.object({
     tags: z.array(z.string()).optional(),
     status: z.enum(["draft", "published"]).optional(),
 });
+
+export const aiAssistSchema = z.object({
+    slug: bySlugSchema.shape.slug,
+    action: z.enum(["prompt", "format", "improve", "summary"]),
+    prompt: z.string().min(1).max(2000).optional(),
+    title: z.string().max(256).optional(),
+    contentMarkdown: z.string().min(1).max(20000).optional(),
+}).superRefine((val, ctx) => {
+    if (val.action === "prompt" && !val.prompt) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Prompt is required for action=prompt", path: ["prompt"] });
+    }
+    if (val.action !== "prompt" && !val.contentMarkdown) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "contentMarkdown is required for this action", path: ["contentMarkdown"] });
+    }
+});

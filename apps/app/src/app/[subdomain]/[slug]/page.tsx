@@ -5,7 +5,9 @@ import { eq } from "drizzle-orm"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, getWorkspaceBoards } from "@/lib/workspace"
 import { readHasVotedForPost } from "@/lib/vote.server"
+import { toRequestItemData } from "@/lib/request-item"
 import { MainContent } from "@/components/subdomain/MainContent"
+import type { RequestItemData } from "@/types/request"
 
 export const revalidate = 0
 export const dynamic = "force-dynamic"
@@ -47,8 +49,13 @@ export default async function SitePage({
     publicOnly: true,
   })
 
-  const items = await Promise.all(
-    (rows as any[]).map(async (r) => ({ ...r, hasVoted: await readHasVotedForPost(r.id) }))
+  const items: RequestItemData[] = await Promise.all(
+    rows.map(async (r) =>
+      toRequestItemData({
+        ...r,
+        hasVoted: await readHasVotedForPost(r.id),
+      })
+    )
   )
 
   const totalCount = await getWorkspacePostsCount(slug, {
@@ -61,12 +68,12 @@ export default async function SitePage({
     <MainContent
       subdomain={subdomain}
       slug={slug}
-      items={items as any}
+      items={items}
       totalCount={totalCount}
       page={page}
       pageSize={PAGE_SIZE}
       sidebarPosition={sidebarPosition}
-      initialBoards={initialBoards as any}
+      initialBoards={initialBoards}
       linkPrefix="/board/p"
     />
   )

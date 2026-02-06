@@ -31,6 +31,7 @@ export default async function EditChangelogPage({ params }: Props) {
             initialData={{
                 title: entry.title,
                 content: entry.content,
+                summary: entry.summary,
                 coverImage: entry.coverImage,
                 tags: entry.tags,
                 status: entry.status,

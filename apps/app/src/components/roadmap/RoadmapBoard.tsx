@@ -10,22 +10,14 @@ import { useQueryClient } from "@tanstack/react-query"
 import RoadmapColumn from "@/components/roadmap/RoadmapColumn"
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable"
 import { ROADMAP_STATUSES, statusLabel, groupItemsByStatus, encodeCollapsed } from "@/lib/roadmap"
+import type { RequestItemData } from "@/types/request"
 
 
-type Item = {
-  id: string
-  title: string
-  slug: string
-  content: string | null
-  image: string | null
-  commentCount: number
-  upvotes: number
-  roadmapStatus: string | null
-  publishedAt: string | null
-  createdAt: string
-  boardSlug: string
-  boardName: string
-}
+type Item = RequestItemData
+type RoadmapStatus = (typeof ROADMAP_STATUSES)[number]
+
+const isRoadmapStatus = (value: string): value is RoadmapStatus =>
+  (ROADMAP_STATUSES as readonly string[]).includes(value)
 
 export default function RoadmapBoard({ workspaceSlug, items: initialItems, initialCollapsedByStatus }: { workspaceSlug: string; items: Item[]; initialCollapsedByStatus?: Record<string, boolean> }) {
   const [items, setItems] = React.useState<Item[]>(() => initialItems)
@@ -73,17 +65,26 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
     setActiveId(null)
     if (!dragged) return
     const target = (overId || "").toLowerCase()
-    if (!ROADMAP_STATUSES.includes(target as any)) return
+    if (!isRoadmapStatus(target)) return
     if ((dragged.roadmapStatus || "pending").toLowerCase() === target) return
-    const normalize = (s: string) => {
+    const normalize = (s: string): RoadmapStatus => {
       const raw = (s || "pending").trim().toLowerCase().replace(/[\s-]+/g, "")
-      const map: Record<string, string> = { pending:"pending", review:"review", inreviewing:"review", planned:"planned", progress:"progress", inprogress:"progress", completed:"completed", closed:"closed" }
+      const map: Record<string, RoadmapStatus> = {
+        pending: "pending",
+        review: "review",
+        inreviewing: "review",
+        planned: "planned",
+        progress: "progress",
+        inprogress: "progress",
+        completed: "completed",
+        closed: "closed",
+      }
       return map[raw] || "pending"
     }
     const prev = normalize(dragged.roadmapStatus || "pending")
     const next = normalize(target)
     setItems((prevItems) => prevItems.map((i) => (i.id === dragged.id ? { ...i, roadmapStatus: target } : i)))
-    queryClient.setQueryData(["status-counts", workspaceSlug], (prevCounts: any) => {
+    queryClient.setQueryData<Record<string, number> | undefined>(["status-counts", workspaceSlug], (prevCounts) => {
       if (!prevCounts) return prevCounts
       const copy: Record<string, number> = { ...prevCounts }
       if (typeof copy[prev] === "number") copy[prev] = Math.max(0, (copy[prev] || 0) - 1)
@@ -95,10 +96,11 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
       await client.board.updatePostMeta.$post({ postId: dragged.id, roadmapStatus: target })
       queryClient.invalidateQueries({ queryKey: ["status-counts", workspaceSlug] })
       toast.success("Status updated")
-    } catch (e: any) {
+    } catch (err: unknown) {
       setItems((prevItems) => prevItems.map((i) => (i.id === dragged.id ? { ...i, roadmapStatus: prev || null } : i)))
       queryClient.invalidateQueries({ queryKey: ["status-counts", workspaceSlug] })
-      toast.error(e?.message || "Failed to update status")
+      const message = err instanceof Error ? err.message : "Failed to update status"
+      toast.error(message)
     } finally {
       setSavingId(null)
     }

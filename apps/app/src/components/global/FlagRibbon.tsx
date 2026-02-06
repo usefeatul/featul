@@ -14,29 +14,39 @@ interface FlagRibbonProps {
  * - Featured: Amber/gold ribbon
  * - Both: Gradient ribbon with star
  */
+import { StarIcon } from "@featul/ui/icons/star"
+import { PinIcon } from "@featul/ui/icons/pin"
+import { StarPinIcon } from "@featul/ui/icons/star-pin"
+import { cn } from "@featul/ui/lib/utils"
+
 export function FlagRibbon({ isPinned, isFeatured, className = "" }: FlagRibbonProps) {
     if (!isPinned && !isFeatured) return null
 
-    const ribbonBg = isPinned && isFeatured
-        ? "bg-gradient-to-r from-primary to-amber-500"
-        : isPinned
-            ? "bg-primary"
-            : "bg-amber-500"
-
-    const label = isPinned && isFeatured
-        ? "★"
-        : isPinned
-            ? "Pinned"
-            : "Featured"
+    const Icon = isPinned && isFeatured ? StarPinIcon : isPinned ? PinIcon : StarIcon
+    const title = isPinned && isFeatured ? "Pinned & Featured" : isPinned ? "Pinned" : "Featured"
 
     return (
         <div
-            className={`absolute -right-8 top-3 w-24 text-center text-[10px] font-medium text-white py-0.5 rotate-45 shadow-sm ${ribbonBg} ${className}`}
-            aria-label={isPinned && isFeatured ? "Pinned and Featured" : isPinned ? "Pinned" : "Featured"}
+            className={cn(
+                "absolute -top-[19px] -right-[19px] w-[38px] h-[38px] rotate-45 flex items-end justify-center pb-1 pointer-events-none",
+                className
+            )}
+            title={title}
         >
-            {label}
+            <div className={cn(
+                "absolute inset-0",
+                {
+                    "bg-linear-to-r from-primary to-amber-500": isPinned && isFeatured,
+                    "bg-primary": isPinned && !isFeatured,
+                    "bg-amber-500": !isPinned && isFeatured
+                }
+            )} />
+            <div className="relative z-10 text-white mb-px">
+                <Icon width={10} height={10} className="fill-current" />
+            </div>
         </div>
     )
 }
 
 export default FlagRibbon
+

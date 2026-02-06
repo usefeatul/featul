@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import SettingsCard from "../../global/SettingsCard";
 import { DiscordIcon } from "@featul/ui/icons/discord";
 import WebhookDialog from "./WebhookDialog";
-import type { Integration, IntegrationType } from "@/hooks/useIntegrations";
+import type { Integration } from "@/hooks/useIntegrations";
 
 interface DiscordCardProps {
   integration?: Integration;

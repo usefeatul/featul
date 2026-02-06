@@ -6,6 +6,7 @@ import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import SubdomainThemeProvider from "@/components/subdomain/SubdomainThemeProvider";
 import { DomainBrandingProvider } from "@/components/subdomain/DomainBrandingProvider";
 import { loadSubdomainLayoutData } from "./data";
+import { getServerSession } from "@featul/auth/session";
 
 export default async function Layout({
   children,
@@ -16,6 +17,7 @@ export default async function Layout({
 }) {
   const { subdomain } = await params;
   const data = await loadSubdomainLayoutData(subdomain);
+  const session = await getServerSession();
 
   if (!data) notFound();
 
@@ -50,6 +52,7 @@ export default async function Layout({
                   subdomain={subdomain}
                   changelogVisible={changelogVisible}
                   roadmapVisible={roadmapVisible}
+                  initialUser={session?.user ?? null}
                 />
                 <div className="mt-6 pb-16 md:pb-0">{children}</div>
               </Container>

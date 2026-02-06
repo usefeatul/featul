@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import SettingsCard from "../../global/SettingsCard";
 import { SlackIcon } from "@featul/ui/icons/slack";
 import WebhookDialog from "./WebhookDialog";
-import type { Integration, IntegrationType } from "@/hooks/useIntegrations";
+import type { Integration } from "@/hooks/useIntegrations";
 
 interface SlackCardProps {
   integration?: Integration;

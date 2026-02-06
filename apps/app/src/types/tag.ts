@@ -2,6 +2,6 @@ export interface Tag {
     id: string;
     name: string;
     slug: string;
-    color?: string;
+    color?: string | null;
     count?: number;
 }

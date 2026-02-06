@@ -11,6 +11,12 @@ import React from "react";
 import SubdomainUserDropdown from "@/components/subdomain/SubdomainUserDropdown";
 import { client } from "@featul/api/client";
 import NotificationsBell from "./NotificationsBell";
+import SubdomainAuthModal from "./SubdomainAuthModal";
+import { useSession } from "@featul/auth/client";
+import type { AuthUser } from "@/types/auth";
+import { hasAuthUser } from "@/components/subdomain/auth/utils";
+import { useSubdomainAuthModal } from "@/components/subdomain/auth/useSubdomainAuthModal";
+import { getDashboardUrl } from "@/utils/app-urls";
 
 type WorkspaceInfo = {
   id: string;
@@ -31,7 +37,7 @@ export function DomainHeader({
   subdomain: string;
   changelogVisible?: boolean;
   roadmapVisible?: boolean;
-  initialUser?: { name?: string; email?: string; image?: string | null } | null;
+  initialUser?: AuthUser | null;
 }) {
   const pathname = usePathname() || "";
   const feedbackBase = `/`;
@@ -40,21 +46,28 @@ export function DomainHeader({
   const isFeedback = pathname === "/" || pathname.startsWith("/board") || pathname.startsWith("/p/");
   const isRoadmap = pathname.startsWith(roadmapBase);
   const isChangelog = pathname.startsWith(changelogBase);
-  const [user] = React.useState<{
-    name?: string;
-    email?: string;
-    image?: string | null;
-  } | null>(initialUser ?? null);
+  const { data: session } = useSession();
+  const sessionUser = session?.user ?? null;
+  const user: AuthUser | null = sessionUser ?? initialUser ?? null;
+  const isSignedIn = hasAuthUser(user);
   const roadmapVisible = Boolean(initialRoadmapVisible);
   const [changelogVisible, setChangelogVisible] = React.useState(
     Boolean(initialChangelogVisible)
   );
+  const {
+    isOpen: isAuthOpen,
+    mode: authMode,
+    redirectTo: authRedirect,
+    setOpen: setAuthOpen,
+    setMode: setAuthMode,
+    openAuth,
+  } = useSubdomainAuthModal();
   const navItemCls = (active: boolean) =>
     cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+      "relative px-3 py-1.5 text-sm font-medium transition-colors",
       active
-        ? "bg-card dark:bg-black/40 text-foreground shadow-xs"
-        : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
+        ? "text-foreground"
+        : "text-muted-foreground hover:text-foreground"
     );
   React.useEffect(() => {
     let active = true;
@@ -72,7 +85,10 @@ export function DomainHeader({
       active = false;
     };
   }, [subdomain]);
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/start`;
+  const dashboardUrl = getDashboardUrl();
+  React.useEffect(() => {
+    if (isSignedIn && isAuthOpen) setAuthOpen(false);
+  }, [isSignedIn, isAuthOpen, setAuthOpen]);
 
   const navItems = [
     { href: feedbackBase, label: "Feedback", active: isFeedback, visible: true },
@@ -143,17 +159,30 @@ export function DomainHeader({
           <BrandMark size="sm" showName />
         </Link>
         <div className="flex items-center gap-2">
-          <NotificationsBell />
-          <Button asChild size="xs" variant="nav" aria-label="Dashboard">
-            <Link href={dashboardUrl} className="group inline-flex items-center">
-              <HomeIcon
-                className={cn(
-                  "opacity-90 text-accent rounded-md size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
-                )}
-              />
-            </Link>
-          </Button>
-          <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+          {isSignedIn ? (
+            <>
+              <NotificationsBell />
+              <Button asChild size="xs" variant="nav" aria-label="Dashboard">
+                <Link href={dashboardUrl} className="group inline-flex items-center">
+                  <HomeIcon
+                    className={cn(
+                      "opacity-90 text-accent rounded-md size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
+                    )}
+                  />
+                </Link>
+              </Button>
+              <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+            </>
+          ) : (
+            <>
+              <Button size="xs" variant="nav" onClick={() => openAuth("sign-in")}>
+                Sign in
+              </Button>
+              <Button size="xs" onClick={() => openAuth("sign-up")}>
+                Sign up
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -167,7 +196,7 @@ export function DomainHeader({
         </Link>
 
         <nav className="flex-1 flex items-center justify-center">
-          <div className="inline-flex items-center rounded-lg border border-border/60 bg-muted/10 p-1">
+          <div className="flex items-center gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -176,19 +205,42 @@ export function DomainHeader({
                 aria-current={item.active ? "page" : undefined}
               >
                 {item.label}
+                {item.active && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full" />
+                )}
               </Link>
             ))}
           </div>
         </nav>
 
         <div className="flex items-center gap-3">
-          <NotificationsBell />
-          <Button asChild size="xs" variant="nav">
-            <Link href={dashboardUrl}>Dashboard</Link>
-          </Button>
-          <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+          {isSignedIn ? (
+            <>
+              <NotificationsBell />
+              <Button asChild size="xs" variant="nav">
+                <Link href={dashboardUrl}>Dashboard</Link>
+              </Button>
+              <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+            </>
+          ) : (
+            <>
+              <Button size="xs" variant="nav" onClick={() => openAuth("sign-in")}>
+                Sign in
+              </Button>
+              <Button size="xs" onClick={() => openAuth("sign-up")}>
+                Sign up
+              </Button>
+            </>
+          )}
         </div>
       </div>
+      <SubdomainAuthModal
+        open={isAuthOpen}
+        onOpenChange={setAuthOpen}
+        mode={authMode}
+        onModeChange={setAuthMode}
+        redirectTo={authRedirect}
+      />
     </header>
   );
 }
