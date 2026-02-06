@@ -11,7 +11,75 @@ import {
   bySlugSchema,
   createEntrySchema,
   updateEntrySchema,
+  aiAssistSchema,
 } from "../validators/changelog";
+import { sendOpenRouterChat } from "../services/openrouter";
+
+type AiAction = "prompt" | "format" | "improve" | "summary"
+
+const AI_SYSTEM_PROMPT = [
+  "You are a product changelog writing assistant.",
+  "Return ONLY valid JSON. No markdown fences, no commentary.",
+  "JSON keys: title, contentMarkdown, summary. Omit keys you are not asked to return.",
+  "contentMarkdown must be GitHub-flavored Markdown.",
+].join(" ");
+
+function buildAiUserPrompt(input: {
+  action: AiAction;
+  prompt?: string;
+  title?: string;
+  contentMarkdown?: string;
+}) {
+  const titleLine = input.title?.trim() ? `Title: ${input.title.trim()}` : ""
+  const contentBlock = input.contentMarkdown ? `Content (Markdown):\n${input.contentMarkdown}` : ""
+
+  switch (input.action) {
+    case "prompt":
+      return [
+        "Write a changelog entry based on the prompt below.",
+        "Requirements:",
+        "- Provide a short, clear title.",
+        "- Write a concise Markdown body with headings or bullets when helpful.",
+        "- Provide a 1-2 sentence summary (<= 512 characters).",
+        titleLine ? `Current title (if helpful): ${titleLine}` : "",
+        "Prompt:",
+        input.prompt || "",
+      ].filter(Boolean).join("\n")
+    case "format":
+      return [
+        "Fix formatting and structure without changing meaning.",
+        "Return JSON with contentMarkdown only.",
+        titleLine,
+        contentBlock,
+      ].filter(Boolean).join("\n\n")
+    case "improve":
+      return [
+        "Improve clarity and concision without changing meaning.",
+        "Return JSON with contentMarkdown only.",
+        titleLine,
+        contentBlock,
+      ].filter(Boolean).join("\n\n")
+    case "summary":
+      return [
+        "Write a concise 1-2 sentence summary (<= 512 characters).",
+        "Return JSON with summary only.",
+        titleLine,
+        contentBlock,
+      ].filter(Boolean).join("\n\n")
+    default:
+      return ""
+  }
+}
+
+function parseAiJson(text: string) {
+  const start = text.indexOf("{")
+  const end = text.lastIndexOf("}")
+  if (start === -1 || end === -1) {
+    throw new HTTPException(502, { message: "AI response was not valid JSON" })
+  }
+  const slice = text.slice(start, end + 1)
+  return JSON.parse(slice) as { contentMarkdown?: unknown; summary?: unknown; title?: unknown }
+}
 
 export function createChangelogRouter() {
   return j.router({
@@ -149,6 +217,57 @@ export function createChangelogRouter() {
           metadata: {},
         })
         return c.superjson({ ok: true })
+      }),
+
+    aiAssist: privateProcedure
+      .input(aiAssistSchema)
+      .post(async ({ ctx, input, c }) => {
+        await requireBoardManagerBySlug(ctx, input.slug)
+
+        const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto")
+        const temperatureByAction: Record<AiAction, number> = {
+          prompt: 0.6,
+          format: 0.2,
+          improve: 0.4,
+          summary: 0.2,
+        }
+
+        try {
+          const result = await sendOpenRouterChat({
+            model,
+            messages: [
+              { role: "system", content: AI_SYSTEM_PROMPT },
+              { role: "user", content: buildAiUserPrompt(input) },
+            ],
+            temperature: temperatureByAction[input.action],
+            max_tokens: 900,
+            response_format: { type: "json_object" },
+          })
+
+          const message = (result as any)?.choices?.[0]?.message?.content
+          if (!message || typeof message !== "string") {
+            throw new HTTPException(502, { message: "AI response was empty" })
+          }
+
+          const data = parseAiJson(message)
+
+          const contentMarkdown = typeof data.contentMarkdown === "string"
+            ? data.contentMarkdown.trim()
+            : undefined
+          const title = typeof data.title === "string"
+            ? data.title.trim().slice(0, 256)
+            : undefined
+          const summaryRaw = typeof data.summary === "string" ? data.summary.trim() : undefined
+          const summary = summaryRaw ? summaryRaw.slice(0, 512) : undefined
+
+          return c.superjson({ ok: true, contentMarkdown, title, summary })
+        } catch (err) {
+          if (err instanceof HTTPException) {
+            throw err
+          }
+          const message = err instanceof Error ? err.message : "Failed to generate AI response"
+          throw new HTTPException(500, { message })
+        }
       }),
 
     // Entry CRUD operations

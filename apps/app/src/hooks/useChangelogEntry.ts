@@ -14,6 +14,7 @@ interface UseChangelogEntryProps {
     initialData?: {
         title: string;
         content: JSONContent;
+        summary?: string | null;
         coverImage?: string | null;
         tags: string[];
         status: "draft" | "published";
@@ -30,6 +31,7 @@ export function useChangelogEntry({
     const editorRef = useRef<FeedEditorRef>(null);
 
     const [title, setTitle] = useState(initialData?.title || "");
+    const [summary, setSummary] = useState(initialData?.summary || "");
     const [coverImage, setCoverImage] = useState<string | null>(initialData?.coverImage || null);
     const [selectedTags, setSelectedTags] = useState<string[]>(initialData?.tags || []);
     const [isDraft, setIsDraft] = useState(initialData?.status !== "published");
@@ -77,6 +79,7 @@ export function useChangelogEntry({
                     slug: workspaceSlug,
                     title: title.trim(),
                     content: content as { type: string; content?: unknown[] },
+                    summary: summary.trim() ? summary.trim() : undefined,
                     coverImage: coverImage || undefined,
                     tags: selectedTags,
                     status: isDraft ? "draft" : "published",
@@ -95,6 +98,7 @@ export function useChangelogEntry({
                     entryId,
                     title: title.trim(),
                     content: content as { type: string; content?: unknown[] },
+                    summary: summary.trim() ? summary.trim() : null,
                     coverImage: coverImage,
                     tags: selectedTags,
                     status: isDraft ? "draft" : "published",
@@ -113,7 +117,7 @@ export function useChangelogEntry({
         } finally {
             setIsSaving(false);
         }
-    }, [mode, workspaceSlug, entryId, title, coverImage, selectedTags, isDraft, router]);
+    }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, isDraft, router]);
 
     // Auto-save effect
     useEffect(() => {
@@ -129,6 +133,8 @@ export function useChangelogEntry({
         editorRef,
         title,
         setTitle,
+        summary,
+        setSummary,
         coverImage,
         setCoverImage,
         selectedTags,
