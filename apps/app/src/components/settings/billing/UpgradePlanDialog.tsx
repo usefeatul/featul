@@ -35,10 +35,9 @@ export default function UpgradePlanDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Upgrade your workspace"
-      description="Pick a plan that fits your team. You can change or cancel anytime."
-      width="wide"
+      width="xl"
     >
-      <div className="space-y-6 p-1">
+      <div className="space-y-8 p-1">
         <div className="flex justify-center">
           <BillingCycleToggle
             billingCycle={billingCycle}
@@ -46,7 +45,7 @@ export default function UpgradePlanDialog({
           />
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {PLAN_ORDER.map((planKey) => (
             <PlanCard
               key={planKey}
@@ -109,53 +108,55 @@ function PlanCard({
 }: PlanCardProps) {
   const plan = getPlan(planKey)
   const isCurrent = planKey === currentPlan
-  // Logic to determine if this is an upgrade or downgrade could go here, 
-  // but for now we just show "Current" or "Upgrade" logic via the button.
 
   return (
     <div
       className={cn(
-        "group relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border p-4 transition-all hover:bg-muted/20",
-        isCurrent ? "border-primary/50 bg-primary/5" : "border-border"
+        "flex flex-col rounded-xl border p-5 transition-all h-full bg-card",
+        isCurrent ? "border-primary/50 shadow-sm ring-1 ring-primary/20" : "border-border hover:border-primary/30"
       )}
     >
-      <div className="space-y-1.5 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-foreground">{plan.label}</span>
+      <div className="mb-4 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="font-semibold text-foreground text-lg">{plan.label}</span>
           {isCurrent && (
-            <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+            <Badge variant="secondary" className="text-[10px] px-2 h-5">
               Current
             </Badge>
           )}
         </div>
-        <div className="text-sm text-muted-foreground">{plan.tagline}</div>
-
-        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
-          {plan.features.slice(0, 3).map((feature, i) => (
-            <div key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
-              <Check className="size-3 text-primary" />
-              <span>{feature.title}</span>
-            </div>
-          ))}
+        <div className="min-h-[40px] text-sm text-muted-foreground leading-snug">
+          {plan.tagline}
         </div>
       </div>
 
-      <div className="flex flex-col items-end gap-3 min-w-[140px]">
-        <div className="text-right">
-          <div className="text-xl font-bold text-foreground">
-            {formatPrice(plan, billingCycle)}
-          </div>
-          <div className="text-[11px] text-muted-foreground text-right">
-            {billingCycle === "yearly" ? "billed yearly" : "billed monthly"}
-          </div>
+      <div className="mb-6">
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-bold text-foreground tracking-tight">
+            {billingCycle === "yearly" ? `$${plan.yearlyPrice}` : `$${plan.monthlyPrice}`}
+          </span>
+          <span className="text-sm font-medium text-muted-foreground">
+            /{billingCycle === "yearly" ? "year" : "mo"}
+          </span>
         </div>
+      </div>
 
+      <div className="flex-1 space-y-3 mb-6">
+        {plan.features.map((feature, i) => (
+          <div key={i} className="flex items-start gap-2.5 text-sm">
+            <Check className="size-4 text-primary shrink-0 mt-0.5" />
+            <span className="text-muted-foreground/90">{feature.title}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-auto">
         <BillingCheckoutButton
           plan={plan}
           billingCycle={billingCycle}
           isCurrent={isCurrent}
           workspaceId={workspaceId}
-          className="w-full sm:w-auto h-9 text-xs"
+          className="w-full"
         />
       </div>
     </div>
