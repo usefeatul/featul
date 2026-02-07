@@ -41,8 +41,8 @@ export function PostFooter({
         <Button
           type="button"
           size="xs"
-          variant="nav"
-          className="h-8 w-8 p-0 rounded-full text-accent hover:text-foreground"
+          variant="card"
+          className="h-8 w-8 p-0 rounded-md text-accent hover:text-foreground"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadingImage || !!uploadedImage}
           aria-label="Add image"
