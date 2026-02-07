@@ -7,9 +7,16 @@ import type { SimilarPost } from "@/types/post";
 
 interface SimilarPostsProps {
   posts: SimilarPost[];
+  linkPrefix?: string;
+  onLinkClick?: () => void;
 }
 
-export function SimilarPosts({ posts }: SimilarPostsProps) {
+export function SimilarPosts({ posts, linkPrefix, onLinkClick }: SimilarPostsProps) {
+  const normalizedPrefix = linkPrefix?.endsWith("/")
+    ? linkPrefix.slice(0, -1)
+    : linkPrefix;
+  const baseHref = normalizedPrefix ?? "/board/p";
+
   return (
     <AnimatePresence>
       {posts.length > 0 && (
@@ -36,7 +43,8 @@ export function SimilarPosts({ posts }: SimilarPostsProps) {
                 className="relative group p-4 hover:bg-muted/30 dark:hover:bg-black/30 transition-colors"
               >
                 <Link
-                  href={`/board/p/${post.slug}`}
+                  href={`${baseHref}/${post.slug}`}
+                  onClick={onLinkClick}
                   className="absolute inset-0 focus:outline-none"
                 >
                   <span className="sr-only">View post</span>
@@ -51,7 +59,7 @@ export function SimilarPosts({ posts }: SimilarPostsProps) {
                     <div className="inline-flex items-center gap-2 relative z-10 pointer-events-none opacity-80">
                       <UpvoteButton
                         postId={post.id}
-                        upvotes={post.upvotes || 0}
+                        upvotes={post.upvotes ?? 0}
                         hasVoted={false}
                         className="text-xs"
                       />
@@ -59,7 +67,7 @@ export function SimilarPosts({ posts }: SimilarPostsProps) {
                     <div className="inline-flex items-center gap-1">
                       <CommentsIcon aria-hidden className="size-3.5" />
                       <span className="tabular-nums">
-                        {post.commentCount || 0}
+                        {post.commentCount ?? 0}
                       </span>
                     </div>
                   </div>

@@ -10,11 +10,8 @@ import { PostFooter } from "../post/PostFooter"
 import { useCreatePostData } from "../../hooks/useCreatePostData"
 import { usePostSubmission } from "../../hooks/usePostSubmission"
 import { usePostImageUpload } from "../../hooks/usePostImageUpload"
-import { useState, useEffect } from "react"
-import { client } from "@featul/api/client"
-import { useDebounce } from "../../hooks/useDebounce"
+import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "../post/SimilarPosts"
-import type { SimilarPost } from "@/types/post"
 
 interface CreatePostModalProps {
   open: boolean
@@ -65,36 +62,12 @@ export default function CreatePostModal({
     await submitPost(selectedBoard, user, uploadedImage?.url)
   }
 
-  const [similarPosts, setSimilarPosts] = useState<SimilarPost[]>([])
-
-
-  const debouncedTitle = useDebounce(title, 1000)
-
-  useEffect(() => {
-    async function fetchSimilar() {
-      if (debouncedTitle.length < 3 || !selectedBoard) {
-        setSimilarPosts([])
-        return
-      }
-
-      try {
-        const res = await client.post.getSimilar.$get({
-          title: debouncedTitle,
-          boardSlug: selectedBoard.slug,
-          workspaceSlug,
-        })
-        if (res.ok) {
-          const data = await res.json()
-          const payload = data as { posts?: SimilarPost[] } | null
-          setSimilarPosts(Array.isArray(payload?.posts) ? payload.posts : [])
-        }
-      } catch (e) {
-        console.error("Failed to fetch similar posts", e)
-      }
-    }
-
-    fetchSimilar()
-  }, [debouncedTitle, selectedBoard, workspaceSlug])
+  const { posts: similarPosts } = useSimilarPosts({
+    title,
+    boardSlug: selectedBoard?.slug,
+    workspaceSlug,
+    enabled: open,
+  })
 
   const initials = user?.name ? getInitials(user.name) : "?"
 
@@ -137,7 +110,10 @@ export default function CreatePostModal({
           ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
         />
 
-        <SimilarPosts posts={similarPosts} />
+        <SimilarPosts
+          posts={similarPosts}
+          onLinkClick={() => onOpenChange(false)}
+        />
       </form>
     </SettingsDialogShell>
   )

@@ -10,9 +10,9 @@ import { usePostSubmission } from "@/hooks/usePostSubmission"
 import { usePostImageUpload } from "@/hooks/usePostImageUpload"
 import { client } from "@featul/api/client"
 import { useRouter } from "next/navigation"
-import { useDebounce } from "@/hooks/useDebounce"
+import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "./SimilarPosts"
-import type { SimilarPost, BoardSummary, TagSummary, PostUser } from "@/types/post"
+import type { BoardSummary, TagSummary, PostUser } from "@/types/post"
 
 export function CreatePostModal({
   open,
@@ -101,34 +101,12 @@ export function CreatePostModal({
     submitPost(selectedBoard, user, uploadedImage?.url, status, tagIds)
   }
 
-  const [similarPosts, setSimilarPosts] = useState<SimilarPost[]>([])
-
-  const debouncedTitle = useDebounce(title, 1000)
-
-  useEffect(() => {
-    async function fetchSimilar() {
-      if (debouncedTitle.length < 3 || !selectedBoard) {
-        setSimilarPosts([])
-        return
-      }
-
-      try {
-        const res = await client.post.getSimilar.$get({
-          title: debouncedTitle,
-          boardSlug: selectedBoard.slug,
-          workspaceSlug,
-        })
-        if (res.ok) {
-          const data = await res.json()
-          setSimilarPosts(data.posts)
-        }
-      } catch (e) {
-        console.error("Failed to fetch similar posts", e)
-      }
-    }
-
-    fetchSimilar()
-  }, [debouncedTitle, selectedBoard, workspaceSlug])
+  const { posts: similarPosts } = useSimilarPosts({
+    title,
+    boardSlug: selectedBoard?.slug,
+    workspaceSlug,
+    enabled: open,
+  })
 
   const toggleTag = (tagId: string) => {
     setSelectedTags(prev =>
@@ -180,7 +158,11 @@ export function CreatePostModal({
           ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
         />
 
-        <SimilarPosts posts={similarPosts} />
+        <SimilarPosts
+          posts={similarPosts}
+          linkPrefix={`/workspaces/${workspaceSlug}/requests`}
+          onLinkClick={() => onOpenChange(false)}
+        />
       </form>
     </SettingsDialogShell>
   )
