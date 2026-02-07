@@ -36,6 +36,35 @@ Go to your Polar Organization Settings, and create an Organization Access Token.
 POLAR_ACCESS_TOKEN=...
 ```
 
+### Products (Starter + Professional, Monthly + Yearly)
+
+Create **four recurring products** in Polar for each environment you use (Production and/or Sandbox). These map directly to your plan tiers in the app:
+
+* Starter Monthly
+* Starter Yearly
+* Professional Monthly
+* Professional Yearly
+
+Product IDs are **environment-specific**, so your Sandbox IDs will differ from Production IDs.
+
+Add all four product IDs to your environment configuration:
+
+```bash
+# .env.production (Production)
+POLAR_ACCESS_TOKEN=prod_access_token_here
+POLAR_PRODUCT_ID_STARTER_MONTHLY=prod_starter_monthly_product_id
+POLAR_PRODUCT_ID_STARTER_YEARLY=prod_starter_yearly_product_id
+POLAR_PRODUCT_ID_PROFESSIONAL_MONTHLY=prod_professional_monthly_product_id
+POLAR_PRODUCT_ID_PROFESSIONAL_YEARLY=prod_professional_yearly_product_id
+
+# .env.local (Development / Sandbox)
+POLAR_ACCESS_TOKEN=sandbox_access_token_here
+POLAR_PRODUCT_ID_STARTER_MONTHLY=sandbox_starter_monthly_product_id
+POLAR_PRODUCT_ID_STARTER_YEARLY=sandbox_starter_yearly_product_id
+POLAR_PRODUCT_ID_PROFESSIONAL_MONTHLY=sandbox_professional_monthly_product_id
+POLAR_PRODUCT_ID_PROFESSIONAL_YEARLY=sandbox_professional_yearly_product_id
+```
+
 ### Configuring BetterAuth Server
 
 The Polar plugin comes with a handful additional plugins which adds functionality to your stack.
@@ -68,8 +97,20 @@ const auth = betterAuth({
                 checkout({
                     products: [
                         {
-                            productId: "123-456-789", // ID of Product from Polar Dashboard
-                            slug: "pro" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+                            productId: process.env.POLAR_PRODUCT_ID_STARTER_MONTHLY!, // Starter Monthly product ID
+                            slug: "starter-monthly" // Custom slug for easy reference in Checkout URL, e.g. /checkout/starter-monthly
+                        },
+                        {
+                            productId: process.env.POLAR_PRODUCT_ID_STARTER_YEARLY!, // Starter Yearly product ID
+                            slug: "starter-yearly" // Custom slug for easy reference in Checkout URL, e.g. /checkout/starter-yearly
+                        },
+                        {
+                            productId: process.env.POLAR_PRODUCT_ID_PROFESSIONAL_MONTHLY!, // Professional Monthly product ID
+                            slug: "professional-monthly" // Custom slug for easy reference in Checkout URL, e.g. /checkout/professional-monthly
+                        },
+                        {
+                            productId: process.env.POLAR_PRODUCT_ID_PROFESSIONAL_YEARLY!, // Professional Yearly product ID
+                            slug: "professional-yearly" // Custom slug for easy reference in Checkout URL, e.g. /checkout/professional-yearly
                         }
                     ],
                     successUrl: "/success?checkout_id={CHECKOUT_ID}",
@@ -175,7 +216,12 @@ const auth = betterAuth({
             use: [
                 checkout({
                     // Optional field - will make it possible to pass a slug to checkout instead of Product ID
-                    products: [ { productId: "123-456-789", slug: "pro" } ],
+                    products: [
+                        { productId: process.env.POLAR_PRODUCT_ID_STARTER_MONTHLY!, slug: "starter-monthly" },
+                        { productId: process.env.POLAR_PRODUCT_ID_STARTER_YEARLY!, slug: "starter-yearly" },
+                        { productId: process.env.POLAR_PRODUCT_ID_PROFESSIONAL_MONTHLY!, slug: "professional-monthly" },
+                        { productId: process.env.POLAR_PRODUCT_ID_PROFESSIONAL_YEARLY!, slug: "professional-yearly" }
+                    ],
                     // Relative URL to return to when checkout is successfully completed
                     successUrl: "/success?checkout_id={CHECKOUT_ID}",
                     // Whether you want to allow unauthenticated checkout sessions or not
@@ -191,10 +237,10 @@ When checkouts are enabled, you're able to initialize Checkout Sessions using th
 
 ```typescript
 await authClient.checkout({
-  // Any Polar Product ID can be passed here
-  products: ["e651f46d-ac20-4f26-b769-ad088b123df2"],
+  // Any Polar Product ID can be passed here (Starter or Professional)
+  products: ["STARTER_MONTHLY_PRODUCT_ID"], // or "STARTER_YEARLY_PRODUCT_ID" / "PROFESSIONAL_MONTHLY_PRODUCT_ID" / "PROFESSIONAL_YEARLY_PRODUCT_ID"
   // Or, if you setup "products" in the Checkout Config, you can pass the slug
-  slug: "pro",
+  slug: "starter-monthly", // or "starter-yearly" / "professional-monthly" / "professional-yearly"
 });
 ```
 
@@ -466,4 +512,3 @@ The plugin supports handlers for all Polar webhook events:
 * `onCustomerUpdated` - Triggered when a customer is updated
 * `onCustomerDeleted` - Triggered when a customer is deleted
 * `onCustomerStateChanged` - Triggered when a customer is created
-

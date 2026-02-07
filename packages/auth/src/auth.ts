@@ -2,10 +2,13 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { organization, lastLoginMethod, emailOTP, twoFactor } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
+import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth"
+import { Polar } from "@polar-sh/sdk"
 import { db, user, session, account, verification, passkeyTable, twoFactorTable } from "@featul/db"
 import { sendVerificationOtpEmail, sendWelcome } from "./email"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { getPasswordError } from "./password"
+import { syncPolarSubscription } from "./polar"
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
@@ -27,6 +30,94 @@ function resolveCookieDomain() {
 }
 
 const cookieDomain = resolveCookieDomain()
+
+const polarAccessToken = (process.env.POLAR_ACCESS_TOKEN || "").trim()
+const polarWebhookSecret = (process.env.POLAR_WEBHOOK_SECRET || "").trim()
+const polarServer =
+  process.env.POLAR_SERVER === "production" ? "production" : "sandbox"
+const polarStarterMonthly =
+  (process.env.POLAR_PRODUCT_ID_STARTER_MONTHLY || "").trim() ||
+  (process.env.POLAR_PRODUCT_ID_MONTHLY || "").trim()
+const polarStarterYearly =
+  (process.env.POLAR_PRODUCT_ID_STARTER_YEARLY || "").trim() ||
+  (process.env.POLAR_PRODUCT_ID_YEARLY || "").trim()
+const polarProfessionalMonthly = (process.env.POLAR_PRODUCT_ID_PROFESSIONAL_MONTHLY || "").trim()
+const polarProfessionalYearly = (process.env.POLAR_PRODUCT_ID_PROFESSIONAL_YEARLY || "").trim()
+
+const polarCheckoutProducts = [
+  polarStarterMonthly
+    ? { productId: polarStarterMonthly, slug: "starter-monthly" }
+    : null,
+  polarStarterYearly
+    ? { productId: polarStarterYearly, slug: "starter-yearly" }
+    : null,
+  polarProfessionalMonthly
+    ? { productId: polarProfessionalMonthly, slug: "professional-monthly" }
+    : null,
+  polarProfessionalYearly
+    ? { productId: polarProfessionalYearly, slug: "professional-yearly" }
+    : null,
+].filter(Boolean) as { productId: string; slug: string }[]
+
+const polarClient = polarAccessToken
+  ? new Polar({ accessToken: polarAccessToken, server: polarServer })
+  : null
+const polarUse: Array<
+  | ReturnType<typeof checkout>
+  | ReturnType<typeof portal>
+  | ReturnType<typeof usage>
+  | ReturnType<typeof webhooks>
+> = [
+  checkout({
+    products: polarCheckoutProducts.length > 0 ? polarCheckoutProducts : undefined,
+    successUrl: "/start?checkout_id={CHECKOUT_ID}",
+    authenticatedUsersOnly: true,
+  }),
+  portal(),
+  usage(),
+]
+
+if (polarClient && polarWebhookSecret) {
+  polarUse.push(
+    webhooks({
+      secret: polarWebhookSecret,
+      onSubscriptionCreated: async (payload) => {
+        await syncPolarSubscription(payload.data)
+      },
+      onSubscriptionUpdated: async (payload) => {
+        await syncPolarSubscription(payload.data)
+      },
+      onSubscriptionActive: async (payload) => {
+        await syncPolarSubscription(payload.data)
+      },
+      onSubscriptionCanceled: async (payload) => {
+        await syncPolarSubscription(payload.data)
+      },
+      onSubscriptionUncanceled: async (payload) => {
+        await syncPolarSubscription(payload.data)
+      },
+      onSubscriptionRevoked: async (payload) => {
+        await syncPolarSubscription(payload.data)
+      },
+    })
+  )
+}
+
+const polarPlugin = polarClient
+  ? polar({
+      client: polarClient,
+      createCustomerOnSignUp: true,
+      use: polarUse as [
+        ReturnType<typeof checkout>,
+        ...Array<
+          | ReturnType<typeof checkout>
+          | ReturnType<typeof portal>
+          | ReturnType<typeof usage>
+          | ReturnType<typeof webhooks>
+        >
+      ],
+    })
+  : null
 
 
 
@@ -97,6 +188,7 @@ export const auth = betterAuth({
     twoFactor({
       issuer: "Featul",
     }),
+    ...(polarPlugin ? [polarPlugin] : []),
   ],
 
   databaseHooks: {

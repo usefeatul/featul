@@ -7,6 +7,7 @@ import {
 } from "better-auth/client/plugins"
 import { emailOTPClient } from "better-auth/client/plugins"
 import { passkeyClient } from "@better-auth/passkey/client"
+import { polarClient } from "@polar-sh/better-auth/client"
 import type { AuthServer } from "./auth"
 
 export const authClient = createAuthClient({
@@ -17,6 +18,7 @@ export const authClient = createAuthClient({
     emailOTPClient(),
     passkeyClient(),
     twoFactorClient(),
+    polarClient(),
   ],
 })
 
@@ -31,4 +33,3 @@ export const {
   useActiveOrganization,
   passkey,
 } = authClient
-

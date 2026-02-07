@@ -173,7 +173,7 @@ function SectionRenderer({
         />
       );
     case "billing":
-      return <BillingSection />;
+      return <BillingSection currentPlan={initialPlan} workspaceId={initialWorkspaceId} />;
     case "domain":
       return (
         <DomainSection
