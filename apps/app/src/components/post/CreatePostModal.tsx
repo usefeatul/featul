@@ -8,11 +8,12 @@ import { PostContent } from "./PostContent"
 import { PostFooter } from "./PostFooter"
 import { usePostSubmission } from "@/hooks/usePostSubmission"
 import { usePostImageUpload } from "@/hooks/usePostImageUpload"
+import { useWorkspaceBoards } from "@/hooks/useWorkspaceBoards"
 import { client } from "@featul/api/client"
 import { useRouter } from "next/navigation"
 import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "./SimilarPosts"
-import type { BoardSummary, TagSummary, PostUser } from "@/types/post"
+import type { TagSummary, PostUser } from "@/types/post"
 
 export function CreatePostModal({
   open,
@@ -26,8 +27,10 @@ export function CreatePostModal({
   user?: PostUser
 }) {
   const router = useRouter()
-  const [boards, setBoards] = useState<BoardSummary[]>([])
-  const [selectedBoard, setSelectedBoard] = useState<BoardSummary | null>(null)
+  const { boards, selectedBoard, setSelectedBoard } = useWorkspaceBoards({
+    open,
+    workspaceSlug,
+  })
 
   // New State for Status and Tags
   const [status, setStatus] = useState("pending")
@@ -71,29 +74,11 @@ export function CreatePostModal({
 
     let canceled = false
 
-    const fetchBoards = async () => {
-      const res = await client.board.byWorkspaceSlug.$get({ slug: workspaceSlug })
-      if (!res.ok || canceled) return
-      const data = await res.json()
-      const nextBoards = (data.boards || [])
-        .filter((x: BoardSummary) => !['roadmap', 'changelog'].includes(x.slug))
-        .map((x: BoardSummary) => ({ id: x.id, name: x.name, slug: x.slug }))
-
-      if (canceled) return
-      setBoards(nextBoards)
-      setSelectedBoard((prev) => {
-        if (prev && nextBoards.some((board) => board.slug === prev.slug)) {
-          return prev
-        }
-        return nextBoards[0] ?? null
-      })
-    }
-
     const fetchTags = async () => {
       const res = await client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug })
       if (!res.ok || canceled) return
-      const data = await res.json()
-      const tags = (data?.tags || []).map((t: TagSummary) => ({
+      const data = (await res.json()) as { tags?: TagSummary[] } | null
+      const tags = (Array.isArray(data?.tags) ? data.tags : []).map((t) => ({
         id: t.id,
         name: t.name,
         slug: t.slug,
@@ -104,7 +89,6 @@ export function CreatePostModal({
       }
     }
 
-    fetchBoards()
     fetchTags()
 
     return () => {

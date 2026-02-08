@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { client } from "@featul/api/client"
 import { authClient } from "@featul/auth/client"
-import type { PostUser, BoardSummary } from "@/types/post"
+import type { PostUser } from "@/types/post"
+import { useWorkspaceBoards } from "@/hooks/useWorkspaceBoards"
 
 interface UseCreatePostDataProps {
   open: boolean
@@ -13,8 +13,11 @@ interface UseCreatePostDataProps {
 
 export function useCreatePostData({ open, workspaceSlug, boardSlug }: UseCreatePostDataProps) {
   const [user, setUser] = useState<PostUser | null>(null)
-  const [boards, setBoards] = useState<BoardSummary[]>([])
-  const [selectedBoard, setSelectedBoard] = useState<BoardSummary | null>(null)
+  const { boards, selectedBoard, setSelectedBoard } = useWorkspaceBoards({
+    open,
+    workspaceSlug,
+    initialBoardSlug: boardSlug,
+  })
 
   // Fetch user session
   useEffect(() => {
@@ -26,29 +29,6 @@ export function useCreatePostData({ open, workspaceSlug, boardSlug }: UseCreateP
       })
     }
   }, [open])
-
-  // Fetch boards
-  useEffect(() => {
-    if (open) {
-      client.board.byWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res) => {
-        if (res.ok) {
-          const data = await res.json()
-          const filteredBoards = (data.boards || []).filter((b: BoardSummary) =>
-            !['roadmap', 'changelog'].includes(b.slug)
-          ).map((b: BoardSummary) => ({ id: b.id, name: b.name, slug: b.slug }))
-          setBoards(filteredBoards)
-
-          // Set initial selected board based on prop
-          const current = filteredBoards.find((b: BoardSummary) => b.slug === boardSlug)
-          if (current) {
-            setSelectedBoard(current)
-          } else if (filteredBoards.length > 0) {
-            setSelectedBoard(filteredBoards[0]!)
-          }
-        }
-      })
-    }
-  }, [open, workspaceSlug, boardSlug])
 
   return {
     user,
