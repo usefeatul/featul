@@ -8,7 +8,7 @@ import type { SimilarPost } from "@/types/post";
 interface SimilarPostsProps {
   posts: SimilarPost[];
   linkPrefix?: string;
-  onLinkClick?: () => void;
+  onLinkClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }
 
 export function SimilarPosts({ posts, linkPrefix, onLinkClick }: SimilarPostsProps) {

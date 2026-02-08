@@ -6,6 +6,7 @@ import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import { useRouter } from "next/navigation"
+import type { BoardSummary, PostUser } from "@/types/post"
 
 interface UsePostSubmissionProps {
   workspaceSlug: string
@@ -14,6 +15,8 @@ interface UsePostSubmissionProps {
   skipDefaultRedirect?: boolean
 }
 
+type BoardRef = Pick<BoardSummary, "slug">
+
 export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDefaultRedirect }: UsePostSubmissionProps) {
   const [isPending, startTransition] = useTransition()
   const [title, setTitle] = useState("")
@@ -21,7 +24,13 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const submitPost = async (selectedBoard: { slug: string } | null, user: any | null, image?: string | null, roadmapStatus?: string, tags?: string[]) => {
+  const submitPost = async (
+    selectedBoard: BoardRef | null,
+    user: PostUser | null,
+    image?: string | null,
+    roadmapStatus?: string,
+    tags?: string[]
+  ) => {
     if (!title || !content || !selectedBoard) return
 
     const MAX_TITLE_LENGTH = 100

@@ -67,38 +67,56 @@ export function CreatePostModal({
   })
 
   useEffect(() => {
-    if (open) {
-      // Fetch Boards
-      client.board.byWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res) => {
-        if (res.ok) {
-          const data = await res.json()
-          const b = (data.boards || [])
-            .filter((x: BoardSummary) => !['roadmap', 'changelog'].includes(x.slug))
-            .map((x: BoardSummary) => ({ id: x.id, name: x.name, slug: x.slug }))
-          setBoards(b)
-          const firstBoard = b[0]
-          if (firstBoard && !selectedBoard) {
-            setSelectedBoard(firstBoard)
-          }
-        }
-      })
+    if (!open) return
 
-      // Fetch Tags
-      client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug }).then(async (res) => {
-        if (res.ok) {
-          const data = await res.json()
-          const tags = (data?.tags || []).map((t: TagSummary) => ({ id: t.id, name: t.name, slug: t.slug, color: t.color }))
-          setAvailableTags(tags)
+    let canceled = false
+
+    const fetchBoards = async () => {
+      const res = await client.board.byWorkspaceSlug.$get({ slug: workspaceSlug })
+      if (!res.ok || canceled) return
+      const data = await res.json()
+      const nextBoards = (data.boards || [])
+        .filter((x: BoardSummary) => !['roadmap', 'changelog'].includes(x.slug))
+        .map((x: BoardSummary) => ({ id: x.id, name: x.name, slug: x.slug }))
+
+      if (canceled) return
+      setBoards(nextBoards)
+      setSelectedBoard((prev) => {
+        if (prev && nextBoards.some((board) => board.slug === prev.slug)) {
+          return prev
         }
+        return nextBoards[0] ?? null
       })
     }
-  }, [open, workspaceSlug, selectedBoard])
+
+    const fetchTags = async () => {
+      const res = await client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug })
+      if (!res.ok || canceled) return
+      const data = await res.json()
+      const tags = (data?.tags || []).map((t: TagSummary) => ({
+        id: t.id,
+        name: t.name,
+        slug: t.slug,
+        color: t.color
+      }))
+      if (!canceled) {
+        setAvailableTags(tags)
+      }
+    }
+
+    fetchBoards()
+    fetchTags()
+
+    return () => {
+      canceled = true
+    }
+  }, [open, workspaceSlug])
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
     // Find tag IDs from selected slugs/ids
     const tagIds = availableTags.filter(t => selectedTags.includes(t.id)).map(t => t.id)
-    submitPost(selectedBoard, user, uploadedImage?.url, status, tagIds)
+    submitPost(selectedBoard, user ?? null, uploadedImage?.url, status, tagIds)
   }
 
   const { posts: similarPosts } = useSimilarPosts({
