@@ -28,6 +28,7 @@ export type PostSidebarProps = {
     role?: "admin" | "member" | "viewer" | null
     isOwner?: boolean
     isFeatul?: boolean
+    viewerCanEdit?: boolean
     hidePublicMemberIdentity?: boolean
     author?: {
       name: string | null
@@ -39,9 +40,9 @@ export type PostSidebarProps = {
 }
 
 export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
-  // Permission check: Only owner (creator) can edit
-  const { isOwner } = useWorkspaceRole(workspaceSlug)
-  const canEdit = isOwner
+  // Permission check: allow server-evaluated access (owner/admin/permissions) and fall back to client role
+  const { isOwner, role } = useWorkspaceRole(workspaceSlug)
+  const canEdit = Boolean(post.viewerCanEdit) || isOwner || role === "admin"
 
   const [meta, setMeta] = React.useState({
     roadmapStatus: post.roadmapStatus || undefined,

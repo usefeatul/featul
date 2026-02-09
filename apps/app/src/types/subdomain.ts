@@ -18,6 +18,7 @@ export type SubdomainRequestDetailData = {
   role?: "admin" | "member" | "viewer" | null;
   isOwner?: boolean;
   isFeatul?: boolean;
+  viewerCanEdit?: boolean;
   duplicateOfId?: string | null;
   mergedInto?:
   | {

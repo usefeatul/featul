@@ -1,5 +1,6 @@
 import { db, board, post, user, workspaceMember } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
+import { getServerSession } from "@featul/auth/session";
 import { readHasVotedForPost } from "@/lib/vote.server";
 import {
   buildPostSelect,
@@ -41,6 +42,43 @@ export async function loadPublicBoardRequestDetailPageData({
   const ws = await loadWorkspaceBySlug(subdomain);
   if (!ws) return null;
 
+  let viewerCanEdit = false;
+  try {
+    const session = await getServerSession();
+    const userId = session?.user?.id || null;
+    if (userId) {
+      if (userId === ws.ownerId) {
+        viewerCanEdit = true;
+      } else {
+        const [member] = await db
+          .select({
+            role: workspaceMember.role,
+            permissions: workspaceMember.permissions,
+            isActive: workspaceMember.isActive,
+          })
+          .from(workspaceMember)
+          .where(
+            and(
+              eq(workspaceMember.workspaceId, ws.id),
+              eq(workspaceMember.userId, userId),
+              eq(workspaceMember.isActive, true)
+            )
+          )
+          .limit(1);
+        const perms = (member?.permissions || {}) as Record<string, boolean>;
+        if (
+          member?.role === "admin" ||
+          perms?.canManageBoards ||
+          perms?.canModerateAllBoards
+        ) {
+          viewerCanEdit = true;
+        }
+      }
+    }
+  } catch {
+    // Ignore session errors; page is still viewable
+  }
+
   const rawPost = await loadPostWithAuthorAndBoard(ws.id, postSlug);
   if (!rawPost) return null;
 
@@ -56,6 +94,7 @@ export async function loadPublicBoardRequestDetailPageData({
     hasVoted,
     isOwner,
     isFeatul: rawPost.authorId === "featul-founder",
+    viewerCanEdit,
   };
 
   return {

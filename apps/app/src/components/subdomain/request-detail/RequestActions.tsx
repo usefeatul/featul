@@ -17,6 +17,7 @@ import { RequestDeleteAction } from "./actions/RequestDeleteAction";
 import EditPostModal from "./EditPostModal";
 import ReportPostDialog from "./ReportPostDialog";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
+import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
 
 interface RequestActionsProps {
   post: SubdomainRequestDetailData;
@@ -26,6 +27,8 @@ interface RequestActionsProps {
 export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const { isOwner, role } = useWorkspaceRole(workspaceSlug);
+  const canEdit = Boolean(post.viewerCanEdit) || isOwner || role === "admin";
 
   return (
     <>
@@ -38,21 +41,27 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
         </PopoverTrigger>
         <PopoverContent align="end" className="w-fit" list>
           <PopoverList>
-            <RequestEditAction onClick={() => setEditOpen(true)} />
+            {canEdit ? <RequestEditAction onClick={() => setEditOpen(true)} /> : null}
             <RequestShareAction />
             <RequestReportAction onClick={() => setReportOpen(true)} />
-            <PopoverSeparator />
-            <RequestDeleteAction postId={post.id} workspaceSlug={workspaceSlug} />
+            {canEdit ? (
+              <>
+                <PopoverSeparator />
+                <RequestDeleteAction postId={post.id} workspaceSlug={workspaceSlug} />
+              </>
+            ) : null}
           </PopoverList>
         </PopoverContent>
       </Popover>
 
-      <EditPostModal
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        workspaceSlug={workspaceSlug}
-        post={post}
-      />
+      {canEdit ? (
+        <EditPostModal
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          workspaceSlug={workspaceSlug}
+          post={post}
+        />
+      ) : null}
 
       <ReportPostDialog
         open={reportOpen}
