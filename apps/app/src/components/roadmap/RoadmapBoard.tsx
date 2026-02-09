@@ -9,12 +9,11 @@ import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem"
 import { useQueryClient } from "@tanstack/react-query"
 import RoadmapColumn from "@/components/roadmap/RoadmapColumn"
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable"
-import { ROADMAP_STATUSES, statusLabel, groupItemsByStatus, encodeCollapsed } from "@/lib/roadmap"
+import { ROADMAP_STATUSES, statusLabel, groupItemsByStatus, encodeCollapsed, normalizeRoadmapStatus, type RoadmapStatus } from "@/lib/roadmap"
 import type { RequestItemData } from "@/types/request"
 
 
 type Item = RequestItemData
-type RoadmapStatus = (typeof ROADMAP_STATUSES)[number]
 
 const isRoadmapStatus = (value: string): value is RoadmapStatus =>
   (ROADMAP_STATUSES as readonly string[]).includes(value)
@@ -36,7 +35,9 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
     try {
       const encoded = encodeCollapsed(collapsedByStatus)
       document.cookie = `rdmpc:${workspaceSlug}=${encoded}; path=/; max-age=31536000`
-    } catch {}
+    } catch {
+      console.error("Failed to set cookie")
+    }
   }, [collapsedByStatus, workspaceSlug])
 
   React.useEffect(() => {
@@ -46,11 +47,15 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
       } else {
         document.body.style.cursor = ""
       }
-    } catch {}
+    } catch {
+      console.error("Failed to set cursor")
+    }
     return () => {
       try {
         document.body.style.cursor = ""
-      } catch {}
+      } catch {
+        console.error("Failed to reset cursor")
+      }
     }
   }, [activeId])
 
@@ -67,22 +72,8 @@ export default function RoadmapBoard({ workspaceSlug, items: initialItems, initi
     const target = (overId || "").toLowerCase()
     if (!isRoadmapStatus(target)) return
     if ((dragged.roadmapStatus || "pending").toLowerCase() === target) return
-    const normalize = (s: string): RoadmapStatus => {
-      const raw = (s || "pending").trim().toLowerCase().replace(/[\s-]+/g, "")
-      const map: Record<string, RoadmapStatus> = {
-        pending: "pending",
-        review: "review",
-        inreviewing: "review",
-        planned: "planned",
-        progress: "progress",
-        inprogress: "progress",
-        completed: "completed",
-        closed: "closed",
-      }
-      return map[raw] || "pending"
-    }
-    const prev = normalize(dragged.roadmapStatus || "pending")
-    const next = normalize(target)
+    const prev = normalizeRoadmapStatus(dragged.roadmapStatus || "pending")
+    const next = normalizeRoadmapStatus(target)
     setItems((prevItems) => prevItems.map((i) => (i.id === dragged.id ? { ...i, roadmapStatus: target } : i)))
     queryClient.setQueryData<Record<string, number> | undefined>(["status-counts", workspaceSlug], (prevCounts) => {
       if (!prevCounts) return prevCounts
