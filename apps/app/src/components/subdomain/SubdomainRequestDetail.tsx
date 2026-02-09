@@ -35,8 +35,8 @@ export default function SubdomainRequestDetail({
       <div
         className={
           sidebarPosition === "left"
-            ? "grid md:grid-cols-[0.3fr_0.7fr] gap-6"
-            : "grid md:grid-cols-[0.7fr_0.3fr] gap-6"
+            ? "grid md:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)] gap-6"
+            : "grid md:grid-cols-[minmax(0,0.7fr)_minmax(0,0.3fr)] gap-6"
         }
       >
         {/* Left Sidebar */}

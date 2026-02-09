@@ -75,7 +75,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
 
   return (
-    <aside className="hidden md:block space-y-4">
+    <aside className="hidden md:block space-y-4 min-w-0">
       <div className="rounded-xl bg-card p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
         {/* Header: User & Time */}
         <div className="flex items-center gap-3 mb-6">
