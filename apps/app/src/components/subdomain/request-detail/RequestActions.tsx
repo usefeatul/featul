@@ -18,6 +18,7 @@ import EditPostModal from "./EditPostModal";
 import ReportPostDialog from "./ReportPostDialog";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
+import { useSession } from "@featul/auth/client";
 
 interface RequestActionsProps {
   post: SubdomainRequestDetailData;
@@ -28,7 +29,9 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const { isOwner, role } = useWorkspaceRole(workspaceSlug);
-  const canEdit = Boolean(post.viewerCanEdit) || isOwner || role === "admin";
+  const { data: session, isPending } = useSession();
+  const isSignedIn = isPending ? Boolean(post.viewerCanEdit) : Boolean(session?.user);
+  const canEdit = isSignedIn && (Boolean(post.viewerCanEdit) || isOwner || role === "admin");
 
   return (
     <>

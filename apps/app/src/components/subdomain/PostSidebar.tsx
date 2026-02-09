@@ -12,6 +12,7 @@ import StatusIcon from "../requests/StatusIcon"
 import { Badge } from "@featul/ui/components/badge"
 import { PoweredBy } from "./PoweredBy"
 import RoleBadge from "../global/RoleBadge"
+import { useSession } from "@featul/auth/client"
 
 
 export type PostSidebarProps = {
@@ -42,7 +43,9 @@ export type PostSidebarProps = {
 export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   // Permission check: allow server-evaluated access (owner/admin/permissions) and fall back to client role
   const { isOwner, role } = useWorkspaceRole(workspaceSlug)
-  const canEdit = Boolean(post.viewerCanEdit) || isOwner || role === "admin"
+  const { data: session, isPending } = useSession()
+  const isSignedIn = isPending ? Boolean(post.viewerCanEdit) : Boolean(session?.user)
+  const canEdit = isSignedIn && (Boolean(post.viewerCanEdit) || isOwner || role === "admin")
 
   const [meta, setMeta] = React.useState({
     roadmapStatus: post.roadmapStatus || undefined,
