@@ -34,8 +34,8 @@ export default async function ChangelogPage({ params }: { params: Promise<{ subd
   return (
     <DomainPageLayout subdomain={subdomain} slug={slug} sidebarPosition={sidebarPosition} hideSubmitButton={false} hideBoards={true}>
       <div>
-        <h1 className="text-lg font-semibold mb-4">Changelog</h1>
-        <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card">
+        <h1 className="text-lg font-semibold mb-5">Changelog</h1>
+        <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
           {entries.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
               <p>No changelog entries yet.</p>
