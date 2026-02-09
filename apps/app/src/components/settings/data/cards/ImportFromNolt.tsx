@@ -12,8 +12,9 @@ export default function ImportFromNolt({ onImport }: Props) {
       icon={<NoltIcon className="w-5 h-5" />}
       title="Import from Nolt"
       description="Import your feedback, feature requests, and comments directly from Nolt."
-      buttonLabel="Import"
+      buttonLabel="Soon"
       onAction={onImport}
+      disabled
     />
   );
 }

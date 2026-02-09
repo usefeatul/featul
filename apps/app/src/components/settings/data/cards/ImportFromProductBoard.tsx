@@ -12,8 +12,9 @@ export default function ImportFromProductBoard({ onImport }: Props) {
       icon={<ProductBoardIcon className="w-5 h-5" />}
       title="Import from ProductBoard"
       description="Import your posts, boards, and comments directly from ProductBoard."
-      buttonLabel="Import"
+      buttonLabel="Soon"
       onAction={onImport}
+      disabled
     />
   );
 }
