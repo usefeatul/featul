@@ -147,7 +147,7 @@ export function DocsMobileFloatingNav() {
                               href={item.href}
                               onClick={handleClose}
                               className={cn(
-                                "block mx-2 px-3 py-2 rounded-lg text-[13px] transition-all duration-150",
+                                "block mx-2 px-3 py-2 rounded-lg text-sm transition-all duration-150",
                                 isActive
                                   ? "bg-white/10 text-white font-medium"
                                   : "text-white/50 hover:text-white/80 hover:bg-white/10 active:bg-white/20",
@@ -200,7 +200,7 @@ export function DocsMobileFloatingNav() {
                     Navigation
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px] text-white/50 font-medium">Close</span>
+                    <span className="text-sm text-white/50 font-medium">Close</span>
                     <XMarkIcon className="text-white/50" size={16} />
                   </div>
                 </motion.div>
@@ -213,11 +213,11 @@ export function DocsMobileFloatingNav() {
                   transition={{ duration: 0.1 }}
                   className="flex items-center gap-1.5 whitespace-nowrap"
                 >
-                  <span className="text-[11px] text-white/35">
+                  <span className="text-xs text-white/35">
                     {currentSectionLabel}
                   </span>
                   <span className="text-white/20">/</span>
-                  <span className="text-[13px] text-white/80 font-medium">
+                  <span className="text-sm text-white/80 font-medium">
                     {currentPageLabel}
                   </span>
                 </motion.div>

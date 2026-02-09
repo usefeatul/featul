@@ -98,7 +98,7 @@ export function DocsSidebar() {
                       }}
                       href={item.href}
                       className={cn(
-                        "group relative block py-1.5 pl-3 -ml-px text-[13px] transition-colors duration-150",
+                        "group relative block py-1.5 pl-3 -ml-px text-sm transition-colors duration-150",
                         isActive
                           ? "text-foreground font-medium"
                           : "text-muted-foreground/60 hover:text-foreground"
