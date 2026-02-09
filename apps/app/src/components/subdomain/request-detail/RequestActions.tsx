@@ -17,8 +17,7 @@ import { RequestDeleteAction } from "./actions/RequestDeleteAction";
 import EditPostModal from "./EditPostModal";
 import ReportPostDialog from "./ReportPostDialog";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
-import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess";
-import { useSession } from "@featul/auth/client";
+import { usePostEditAccess } from "@/hooks/usePostEditAccess";
 
 interface RequestActionsProps {
   post: SubdomainRequestDetailData;
@@ -28,10 +27,7 @@ interface RequestActionsProps {
 export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const { isOwner, role } = useWorkspaceRole(workspaceSlug);
-  const { data: session, isPending } = useSession();
-  const isSignedIn = isPending ? Boolean(post.viewerCanEdit) : Boolean(session?.user);
-  const canEdit = isSignedIn && (Boolean(post.viewerCanEdit) || isOwner || role === "admin");
+  const { canEdit } = usePostEditAccess({ workspaceSlug, viewerCanEdit: post.viewerCanEdit });
 
   return (
     <>

@@ -36,9 +36,12 @@ function useWorkspaceRole(slug: string): { loading: boolean; role: Role | null; 
     void (async () => {
       try {
         const res = await client.team.membersByWorkspaceSlug.$get({ slug })
-        const d = await res.json()
-        const meId = (d as { meId: string })?.meId
-        const members = (d as { members: { userId: string; role: Role; isOwner: boolean }[] })?.members || []
+        if (!res.ok) throw new Error("Failed to load workspace members")
+        const d = (await res.json().catch(() => null)) as
+          | { meId?: string; members?: { userId: string; role: Role; isOwner: boolean }[] }
+          | null
+        const meId = d?.meId
+        const members = d?.members || []
         const me = Array.isArray(members) ? members.find((m: { userId: string; role: Role; isOwner: boolean }) => m?.userId === meId) : null
         if (mounted) {
           setIsOwner(Boolean(me?.isOwner))
