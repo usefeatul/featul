@@ -7,7 +7,6 @@ import { useDomainBranding } from "./DomainBrandingProvider";
 import type { SubdomainRequestDetailData } from "../../types/subdomain";
 import { RequestHeader } from "./request-detail/RequestHeader";
 import { RequestContent } from "./request-detail/RequestContent";
-import { PoweredBy } from "./PoweredBy";
 
 export default function SubdomainRequestDetail({
   post,
@@ -56,9 +55,6 @@ export default function SubdomainRequestDetail({
         {sidebarPosition === "right" ? (
           <PostSidebar post={post} workspaceSlug={workspaceSlug} />
         ) : null}
-      </div>
-      <div className="mt-6 md:hidden">
-        <PoweredBy />
       </div>
     </section>
   );

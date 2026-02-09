@@ -5,6 +5,7 @@ import { DomainHeader } from "@/components/subdomain/DomainHeader";
 import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import SubdomainThemeProvider from "@/components/subdomain/SubdomainThemeProvider";
 import { DomainBrandingProvider } from "@/components/subdomain/DomainBrandingProvider";
+import { PoweredBy } from "@/components/subdomain/PoweredBy";
 import { loadSubdomainLayoutData } from "./data";
 import { getServerSession } from "@featul/auth/session";
 
@@ -54,7 +55,10 @@ export default async function Layout({
                   roadmapVisible={roadmapVisible}
                   initialUser={session?.user ?? null}
                 />
-                <div className="mt-6 pb-16 md:pb-0">{children}</div>
+                <div className="mt-6 pb-10 md:pb-0">{children}</div>
+                <div className="pb-12">
+                  <PoweredBy />
+                </div>
               </Container>
             );
           })()}
