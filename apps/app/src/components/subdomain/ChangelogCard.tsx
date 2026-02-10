@@ -8,6 +8,7 @@ import { getInitials } from "@/utils/user-utils";
 import RoleBadge from "@/components/global/RoleBadge";
 import type { ChangelogEntry } from "@/types/changelog";
 import { extractTextFromTiptap } from "@/types/changelog";
+import { subdomainListItemClassName } from "./subdomainListItemStyles";
 
 export interface ChangelogCardProps {
     item: ChangelogEntry;
@@ -23,7 +24,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
     const previewText = item.summary || extractTextFromTiptap(item.content);
 
     return (
-        <div className="py-6 px-6 relative group transition-colors hover:bg-background dark:hover:bg-background">
+        <div className={`${subdomainListItemClassName} relative group`}>
             <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
                 <span className="sr-only">View changelog</span>
             </Link>

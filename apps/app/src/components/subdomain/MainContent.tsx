@@ -12,6 +12,7 @@ import { SubmitIdeaCard } from "./SubmitIdeaCard";
 import { SubdomainListHeader } from "./SubdomainListHeader";
 import { SubdomainListLayout } from "./SubdomainListLayout";
 import { SubdomainListCard } from "./SubdomainListCard";
+import { SubdomainListItems } from "./SubdomainListItems";
 import PostCard from "@/components/subdomain/PostCard";
 import EmptyDomainPosts from "./EmptyPosts";
 
@@ -126,7 +127,7 @@ export function MainContent({
           {items.length === 0 ? (
             <EmptyDomainPosts subdomain={subdomain} slug={slug} />
           ) : (
-            <div className="divide-y">
+            <SubdomainListItems>
               {listItems.map((p) => {
                 // Check if the board for this post has hidePublicMemberIdentity enabled
                 const postBoard = initialBoards?.find((b) => b.slug === p.boardSlug);
@@ -135,7 +136,7 @@ export function MainContent({
                   <PostCard key={p.id} item={p} onVoteChange={handleVoteChange} linkPrefix={linkPrefix} hidePublicMemberIdentity={hideIdentity} />
                 );
               })}
-            </div>
+            </SubdomainListItems>
           )}
         </SubdomainListCard>
         <PublicRequestPagination

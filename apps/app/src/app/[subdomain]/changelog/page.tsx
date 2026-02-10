@@ -11,6 +11,7 @@ import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
 import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPagination"
 import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
 import { SubdomainListEmptyState } from "@/components/subdomain/SubdomainListEmptyState"
+import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -66,11 +67,11 @@ export default async function ChangelogPage({
               description="Check back soon for updates."
             />
           ) : (
-            <div className="divide-y">
+            <SubdomainListItems>
               {entries.map((entry) => (
                 <ChangelogCard key={entry.id} item={entry} linkPrefix="/changelog/p" />
               ))}
-            </div>
+            </SubdomainListItems>
           )}
         </SubdomainListCard>
         <PublicRequestPagination

@@ -12,6 +12,7 @@ import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPag
 import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
 import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
 import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
+import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -70,14 +71,14 @@ export default async function RoadmapPage({
           {(items || []).length === 0 ? (
             <EmptyDomainPosts subdomain={subdomain} slug={slug} />
           ) : (
-            <div className="divide-y">
+            <SubdomainListItems>
               {(items || []).map((it) => (
                 <DomainRoadmapItem
                   key={it.id}
                   item={{ id: it.id, title: it.title, slug: it.slug, roadmapStatus: it.roadmapStatus, content: it.content, boardSlug: it.boardSlug }}
                 />
               ))}
-            </div>
+            </SubdomainListItems>
           )}
         </SubdomainListCard>
         <PublicRequestPagination
