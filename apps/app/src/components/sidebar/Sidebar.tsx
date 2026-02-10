@@ -8,7 +8,7 @@ import { buildBottomNav, getSlugFromPath } from "../../config/nav";
 import {
   useSidebarHotkeys,
   getShortcutForLabel,
-} from "../../utils/useSidebarHotkeys";
+} from "@/hooks/useSidebarHotkeys";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import UserDropdown from "@/components/account/UserDropdown";
 import Timezone from "./Timezone";

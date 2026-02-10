@@ -14,8 +14,8 @@ import NotificationsBell from "./NotificationsBell";
 import SubdomainAuthModal from "./SubdomainAuthModal";
 import { useSession } from "@featul/auth/client";
 import type { AuthUser } from "@/types/auth";
-import { hasAuthUser } from "@/components/subdomain/auth/utils";
-import { useSubdomainAuthModal } from "@/components/subdomain/auth/useSubdomainAuthModal";
+import { hasAuthUser } from "@/utils/auth";
+import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal";
 import { getDashboardUrl } from "@/utils/app-urls";
 
 type WorkspaceInfo = {

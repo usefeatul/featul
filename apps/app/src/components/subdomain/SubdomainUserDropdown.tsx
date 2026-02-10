@@ -12,7 +12,7 @@ import { useTheme } from "next-themes"
 import CreatePostModal from "./CreatePostModal"
 import { SubdomainUserMenu } from "./SubdomainUserMenu"
 import type { AuthUser } from "@/types/auth"
-import { hasAuthUser } from "@/components/subdomain/auth/utils"
+import { hasAuthUser } from "@/utils/auth"
 import { getCreateProjectUrl, getDashboardUrl } from "@/utils/app-urls"
 
 
