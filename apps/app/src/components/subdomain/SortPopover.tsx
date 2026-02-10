@@ -7,7 +7,17 @@ import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem }
 import { ChevronDownIcon } from "@featul/ui/icons/chevron-down"
 import ArrowUpDownIcon from "@featul/ui/icons/arrow-up-down"
 
-export function SortPopover({ slug, subdomain }: { slug: string; subdomain: string }) {
+export function SortPopover({
+  slug,
+  subdomain,
+  basePath = "/",
+  keepParams = ["page", "board"],
+}: {
+  slug: string
+  subdomain: string
+  basePath?: string
+  keepParams?: string[]
+}) {
   const router = useRouter()
   const search = useSearchParams()
   const orderParam = String(search.get("order") || "likes").toLowerCase()
@@ -15,16 +25,15 @@ export function SortPopover({ slug, subdomain }: { slug: string; subdomain: stri
   const [open, setOpen] = React.useState(false)
 
   function go(nextOrder: "newest" | "oldest" | "likes") {
-    const base = `/`
-    const u = new URL(base, "http://dummy")
-    const pageParam = search.get("page")
-    const boardParam = search.get("board")
-    if (pageParam) u.searchParams.set("page", pageParam)
-    if (boardParam) u.searchParams.set("board", boardParam)
+    const u = new URL(basePath, "http://dummy")
+    keepParams.forEach((key) => {
+      const value = search.get(key)
+      if (value) u.searchParams.set(key, value)
+    })
     u.searchParams.set("order", nextOrder)
     const q = u.searchParams.toString()
     setOpen(false)
-    router.push(`${base}${q ? `?${q}` : ""}`)
+    router.push(`${u.pathname}${q ? `?${q}` : ""}`)
   }
 
   const label = order === "newest" ? "Newest" : order === "oldest" ? "Oldest" : "Most liked"

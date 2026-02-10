@@ -11,27 +11,29 @@ export function PublicRequestPagination({
   page,
   pageSize,
   totalCount,
+  basePath = "/",
+  keepParams = ["board", "order"],
 }: {
   page: number
   pageSize: number
   totalCount: number
+  basePath?: string
+  keepParams?: string[]
 }) {
   const router = useRouter()
   const params = useSearchParams()
 
-  const base = `/`
-
   const { totalPages, prevHref, nextHref } = useMemo(() => {
     const tp = Math.max(1, Math.ceil(Math.max(totalCount, 0) / Math.max(pageSize, 1)))
     const makeHref = (p: number) => {
-      const u = new URL(base, "http://dummy")
+      const u = new URL(basePath, "http://dummy")
       u.searchParams.set("page", String(p))
-      const board = params.get("board")
-      const order = params.get("order")
-      if (board) u.searchParams.set("board", board)
-      if (order) u.searchParams.set("order", order)
-      const q = u.search ? `?${u.searchParams.toString()}` : ""
-      return `${base}${q}`
+      keepParams.forEach((key) => {
+        const value = params.get(key)
+        if (value) u.searchParams.set(key, value)
+      })
+      const query = u.searchParams.toString()
+      return `${u.pathname}${query ? `?${query}` : ""}`
     }
     const pPrev = Math.max(page - 1, 1)
     const pNext = Math.min(page + 1, tp)
@@ -40,7 +42,7 @@ export function PublicRequestPagination({
       prevHref: makeHref(pPrev),
       nextHref: makeHref(pNext),
     }
-  }, [base, page, pageSize, totalCount, params])
+  }, [basePath, page, pageSize, totalCount, keepParams, params])
 
   if (totalCount <= pageSize) return null
 

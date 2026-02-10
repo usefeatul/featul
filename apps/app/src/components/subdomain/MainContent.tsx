@@ -6,10 +6,11 @@ import type { RequestItemData } from "@/types/request";
 
 import { BoardsDropdown } from "./BoardsDropdown";
 import { PublicRequestPagination } from "./PublicRequestPagination";
-import { DomainSidebar } from "./DomainSidebar";
 import { SortPopover } from "./SortPopover";
 import { SearchAction } from "./SearchAction";
 import { SubmitIdeaCard } from "./SubmitIdeaCard";
+import { SubdomainListHeader } from "./SubdomainListHeader";
+import { SubdomainListLayout } from "./SubdomainListLayout";
 import PostCard from "@/components/subdomain/PostCard";
 import EmptyDomainPosts from "./EmptyPosts";
 
@@ -39,6 +40,10 @@ export function MainContent({
   linkPrefix?: string;
 }) {
   const search = useSearchParams();
+  const boardParam = search.get("board") || undefined;
+  const paginationBasePath = selectedBoard ? `/board/${selectedBoard}` : "/";
+  const paginationKeepParams = selectedBoard ? ["order"] : ["board", "order"];
+  const sortKeepParams = selectedBoard ? ["page"] : ["page", "board"];
   const [listItems, setListItems] = React.useState<Item[]>(items || []);
   React.useEffect(() => {
     setListItems(items || []);
@@ -75,101 +80,71 @@ export function MainContent({
   }, []);
 
   return (
-    <section>
-      <div
-        className={
-          sidebarPosition === "left"
-            ? "grid md:grid-cols-[0.3fr_0.7fr] gap-6 mb-6"
-            : "grid md:grid-cols-[0.7fr_0.3fr] gap-6 mb-6"
-        }
-      >
-        {sidebarPosition === "left" ? (
-          <aside className="hidden md:block mt-10 md:mt-0">
-            <DomainSidebar
-              subdomain={subdomain}
-              slug={slug}
-              initialBoards={initialBoards}
-              selectedBoard={selectedBoard}
-            />
-          </aside>
-        ) : null}
-        <div>
-          <div className="mb-4">
-            {sidebarPosition === "left" ? (
-              <div className="md:hidden flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-2">
-                  <SortPopover subdomain={subdomain} slug={slug} />
-                  <SearchAction slug={slug} />
-                </span>
-                <BoardsDropdown
-                  slug={slug}
-                  initialBoards={initialBoards}
-                  selectedBoard={selectedBoard}
-                />
-              </div>
-            ) : (
-              <div className="md:hidden flex items-center justify-between gap-2">
-                <BoardsDropdown
-                  slug={slug}
-                  initialBoards={initialBoards}
-                  selectedBoard={selectedBoard}
-                />
-                <span className="inline-flex items-center gap-2">
-                  <SortPopover subdomain={subdomain} slug={slug} />
-                  <SearchAction slug={slug} />
-                </span>
-              </div>
-            )}
-            <div
-              className={
-                sidebarPosition === "left"
-                  ? "hidden md:flex items-center justify-end"
-                  : "hidden md:flex items-center justify-start"
-              }
-            >
-              <BoardsDropdown
+    <SubdomainListLayout
+      subdomain={subdomain}
+      slug={slug}
+      sidebarPosition={sidebarPosition}
+      initialBoards={initialBoards}
+      selectedBoard={selectedBoard || boardParam}
+      sortBasePath={paginationBasePath}
+      sortKeepParams={sortKeepParams}
+    >
+      <div>
+        <SubdomainListHeader
+          sidebarPosition={sidebarPosition}
+          mobileActions={
+            <>
+              <SortPopover
+                subdomain={subdomain}
                 slug={slug}
-                initialBoards={initialBoards}
-                selectedBoard={selectedBoard}
+                basePath={paginationBasePath}
+                keepParams={sortKeepParams}
               />
-            </div>
-          </div>
-          <div className="md:hidden mb-4">
-            <SubmitIdeaCard subdomain={subdomain} slug={slug} />
-          </div>
-          <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
-            {items.length === 0 ? (
-              <EmptyDomainPosts subdomain={subdomain} slug={slug} />
-            ) : (
-              <div className="divide-y">
-                {listItems.map((p) => {
-                  // Check if the board for this post has hidePublicMemberIdentity enabled
-                  const postBoard = initialBoards?.find((b) => b.slug === p.boardSlug);
-                  const hideIdentity = postBoard?.hidePublicMemberIdentity ?? false;
-                  return (
-                    <PostCard key={p.id} item={p} onVoteChange={handleVoteChange} linkPrefix={linkPrefix} hidePublicMemberIdentity={hideIdentity} />
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          <PublicRequestPagination
-            page={page}
-            pageSize={pageSize}
-            totalCount={totalCount}
-          />
-        </div>
-        {sidebarPosition === "right" ? (
-          <aside className="hidden md:block mt-10 md:mt-0">
-            <DomainSidebar
-              subdomain={subdomain}
+              <SearchAction slug={slug} />
+            </>
+          }
+          mobileSecondary={
+            <BoardsDropdown
               slug={slug}
               initialBoards={initialBoards}
-              selectedBoard={selectedBoard}
+              selectedBoard={selectedBoard || boardParam}
             />
-          </aside>
-        ) : null}
+          }
+          desktopSecondary={
+            <BoardsDropdown
+              slug={slug}
+              initialBoards={initialBoards}
+              selectedBoard={selectedBoard || boardParam}
+            />
+          }
+        />
+        <div className="md:hidden mb-4">
+          <SubmitIdeaCard subdomain={subdomain} slug={slug} />
+        </div>
+        <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
+          {items.length === 0 ? (
+            <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+          ) : (
+            <div className="divide-y">
+              {listItems.map((p) => {
+                // Check if the board for this post has hidePublicMemberIdentity enabled
+                const postBoard = initialBoards?.find((b) => b.slug === p.boardSlug);
+                const hideIdentity = postBoard?.hidePublicMemberIdentity ?? false;
+                return (
+                  <PostCard key={p.id} item={p} onVoteChange={handleVoteChange} linkPrefix={linkPrefix} hidePublicMemberIdentity={hideIdentity} />
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <PublicRequestPagination
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalCount}
+          basePath={paginationBasePath}
+          keepParams={paginationKeepParams}
+        />
       </div>
-    </section>
+    </SubdomainListLayout>
   );
 }
