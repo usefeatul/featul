@@ -47,7 +47,7 @@ export default async function Layout({
                   ? "6xl"
                   : "5xl";
             return (
-              <Container maxWidth={maxW}>
+              <Container maxWidth={maxW} className="min-h-screen flex flex-col">
                 <DomainHeader
                   workspace={ws}
                   subdomain={subdomain}
@@ -55,8 +55,8 @@ export default async function Layout({
                   roadmapVisible={roadmapVisible}
                   initialUser={session?.user ?? null}
                 />
-                <div className="mt-6 pb-10 md:pb-0">{children}</div>
-                <div className="pb-12">
+                <div className="mt-6 pb-10 md:pb-0 flex-1">{children}</div>
+                <div className="pb-12 mt-6">
                   <PoweredBy />
                 </div>
               </Container>
