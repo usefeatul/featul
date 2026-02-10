@@ -11,6 +11,7 @@ import { SubmitIdeaCard } from "@/components/subdomain/SubmitIdeaCard"
 import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPagination"
 import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
 import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
+import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -65,7 +66,7 @@ export default async function RoadmapPage({
         <div className="lg:hidden mb-4">
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
-        <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
+        <SubdomainListCard>
           {(items || []).length === 0 ? (
             <EmptyDomainPosts subdomain={subdomain} slug={slug} />
           ) : (
@@ -78,7 +79,7 @@ export default async function RoadmapPage({
               ))}
             </div>
           )}
-        </div>
+        </SubdomainListCard>
         <PublicRequestPagination
           page={page}
           pageSize={PAGE_SIZE}

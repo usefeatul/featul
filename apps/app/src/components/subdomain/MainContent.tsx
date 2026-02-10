@@ -11,6 +11,7 @@ import { SearchAction } from "./SearchAction";
 import { SubmitIdeaCard } from "./SubmitIdeaCard";
 import { SubdomainListHeader } from "./SubdomainListHeader";
 import { SubdomainListLayout } from "./SubdomainListLayout";
+import { SubdomainListCard } from "./SubdomainListCard";
 import PostCard from "@/components/subdomain/PostCard";
 import EmptyDomainPosts from "./EmptyPosts";
 
@@ -121,7 +122,7 @@ export function MainContent({
         <div className="md:hidden mb-4">
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
-        <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
+        <SubdomainListCard>
           {items.length === 0 ? (
             <EmptyDomainPosts subdomain={subdomain} slug={slug} />
           ) : (
@@ -136,7 +137,7 @@ export function MainContent({
               })}
             </div>
           )}
-        </div>
+        </SubdomainListCard>
         <PublicRequestPagination
           page={page}
           pageSize={pageSize}

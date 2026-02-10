@@ -9,6 +9,8 @@ import type { ChangelogEntriesListResponse, ChangelogEntry } from "@/types/chang
 import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
 import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
 import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPagination"
+import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
+import { SubdomainListEmptyState } from "@/components/subdomain/SubdomainListEmptyState"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -57,11 +59,12 @@ export default async function ChangelogPage({
     >
       <div>
         <SubdomainListHeader title="Changelog" sidebarPosition={sidebarPosition} />
-        <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
+        <SubdomainListCard>
           {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-              <p>No changelog entries yet.</p>
-            </div>
+            <SubdomainListEmptyState
+              title="No changelog entries yet"
+              description="Check back soon for updates."
+            />
           ) : (
             <div className="divide-y">
               {entries.map((entry) => (
@@ -69,7 +72,7 @@ export default async function ChangelogPage({
               ))}
             </div>
           )}
-        </div>
+        </SubdomainListCard>
         <PublicRequestPagination
           page={page}
           pageSize={PAGE_SIZE}
