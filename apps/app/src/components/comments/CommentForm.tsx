@@ -134,8 +134,8 @@ export default function CommentForm({
           <Button
             type="button"
             size="xs"
-            variant="nav"
-            className="h-8 w-8 p-0 rounded-full dark:bg-black/40"
+            variant="card"
+            className="h-8 w-8 p-0 rounded-md dark:bg-black/40"
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -152,7 +152,7 @@ export default function CommentForm({
           <Button
             type="submit"
             size="xs"
-            variant="nav"
+            variant="card"
             disabled={
               (!content.trim() && !uploadedImage) || isPending || uploadingImage
             }
