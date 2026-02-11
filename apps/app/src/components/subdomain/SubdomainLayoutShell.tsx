@@ -76,7 +76,7 @@ export function SubdomainLayoutShell({
             initialUser={initialUser ?? null}
           />
           <div className="mt-6 pb-10 md:pb-0 flex-1">{children}</div>
-          <div className="pb-12 mt-6">
+          <div className="pb-6 mt-4">
             <PoweredBy />
           </div>
         </Container>
