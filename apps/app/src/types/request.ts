@@ -36,3 +36,52 @@ export interface RequestItemData extends RequestFlags {
   tags?: TagSummary[]
   reportCount?: number
 }
+
+export type RequestDetailData = {
+  id: string
+  title: string
+  content: string | null
+  image: string | null
+  upvotes: number
+  commentCount: number
+  roadmapStatus: string | null
+  isFeatured?: boolean
+  isLocked?: boolean
+  isPinned?: boolean
+  publishedAt: string | null
+  createdAt: string
+  boardName: string
+  boardSlug: string
+  hasVoted?: boolean
+  role?: RequestRole
+  isOwner?: boolean
+  isFeatul?: boolean
+  duplicateOfId?: string | null
+  mergedInto?: {
+    id: string
+    slug: string
+    title: string
+    roadmapStatus?: string | null
+    mergedAt?: string | null
+    boardName?: string
+    boardSlug?: string
+  } | null
+  mergedCount?: number
+  mergedSources?: Array<{
+    id: string
+    slug: string
+    title: string
+    roadmapStatus?: string | null
+    mergedAt?: string | null
+    boardName?: string
+    boardSlug?: string
+  }>
+  tags?: TagSummary[]
+  author?: {
+    name: string | null
+    image: string | null
+    email: string | null
+  } | null
+  metadata?: Record<string, unknown> | null
+  reportCount?: number
+}

@@ -15,7 +15,7 @@ import FlagsPicker from "./meta/FlagsPicker";
 import TagsPicker from "./meta/TagsPicker";
 import StatusIcon from "./StatusIcon";
 import RoleBadge from "../global/RoleBadge";
-import type { RequestDetailData } from "./RequestDetail";
+import type { RequestDetailData } from "@/types/request";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { CircleQuestionMarkIcon } from "@featul/ui/icons/circle-question-mark";
 

@@ -10,7 +10,7 @@ import {
   loadPostComments,
   loadWorkspaceBySlug,
 } from "@/lib/request-detail"
-import type { RequestDetailData } from "@/components/requests/RequestDetail"
+import type { RequestDetailData } from "@/types/request"
 import type { CommentData } from "@/types/comment"
 
 export type RequestDetailSearchParams = Record<string, string | string[] | undefined>

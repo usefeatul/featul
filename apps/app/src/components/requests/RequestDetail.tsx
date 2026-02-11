@@ -20,61 +20,15 @@ import { MergePopover } from "./MergePopover"
 import { DeletePostButton } from "./DeletePostButton"
 import { useIsMobile } from "@featul/ui/hooks/use-mobile"
 import EditPostModal from "../subdomain/request-detail/EditPostModal"
+import type { RequestDetailData } from "@/types/request"
 
-export type RequestDetailData = {
-  id: string
-  title: string
-  content: string | null
-  image: string | null
-  upvotes: number
-  commentCount: number
-  roadmapStatus: string | null
-  isFeatured?: boolean
-  isLocked?: boolean
-  isPinned?: boolean
-  publishedAt: string | null
-  createdAt: string
-  boardName: string
-  boardSlug: string
-  hasVoted?: boolean
-  role?: "admin" | "member" | "viewer" | null
-  isOwner?: boolean
-  isFeatul?: boolean
-  duplicateOfId?: string | null
-  mergedInto?: {
-    id: string
-    slug: string
-    title: string
-    roadmapStatus?: string | null
-    mergedAt?: string | null
-    boardName?: string
-    boardSlug?: string
-  } | null
-  mergedCount?: number
-  mergedSources?: Array<{
-    id: string
-    slug: string
-    title: string
-    roadmapStatus?: string | null
-    mergedAt?: string | null
-    boardName?: string
-    boardSlug?: string
-  }>
-  tags?: Array<{
-    id: string
-    name: string
-    slug: string
-    color?: string | null
-  }>
-  author?:
-  | {
-    name: string | null
-    image: string | null
-    email: string | null
-  }
-  | null
-  metadata?: Record<string, unknown> | null
-  reportCount?: number
+type RequestDetailProps = {
+  post: RequestDetailData
+  workspaceSlug: string
+  readonly?: boolean
+  initialComments?: CommentData[]
+  initialCollapsedIds?: string[]
+  navigation?: { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null }
 }
 
 export default function RequestDetail({
@@ -84,19 +38,15 @@ export default function RequestDetail({
   initialComments,
   initialCollapsedIds,
   navigation,
-}: {
-  post: RequestDetailData
-  workspaceSlug: string
-  readonly?: boolean
-  initialComments?: CommentData[]
-  initialCollapsedIds?: string[]
-  navigation?: { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null }
-}) {
+}: RequestDetailProps) {
   const { prevHref, nextHref, searchParams } = useRequestNavigation(workspaceSlug, navigation)
   const backHref = buildRequestsUrl(workspaceSlug, searchParams, {})
   const isMobile = useIsMobile()
   const [editOpen, setEditOpen] = useState(false)
   const canEdit = (post.role === "admin" || post.isOwner) && !readonly
+  const editButtonClassName = isMobile
+    ? "absolute right-0 -top-1 h-7 w-7 p-0 text-muted-foreground"
+    : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
 
   return (
     <section>
@@ -156,11 +106,7 @@ export default function RequestDetail({
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    className={
-                      isMobile
-                        ? "absolute right-0 -top-1 h-7 w-7 p-0 text-muted-foreground"
-                        : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
-                    }
+                    className={editButtonClassName}
                     onClick={() => setEditOpen(true)}
                     aria-label="Edit post"
                   >
