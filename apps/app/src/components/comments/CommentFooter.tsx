@@ -39,7 +39,7 @@ export default function CommentFooter({
           onClick={onToggleReply}
           isActive={showReplyForm}
           className={cn(
-            "rounded-full border border-border/50 px-3 py-1 h-[30px] transition-all duration-200 bg-muted/30",
+            "rounded-md border border-border/50 px-3 py-1 h-[30px] transition-all duration-200 bg-muted/30",
             showReplyForm
               ? "text-destructive hover:text-destructive hover:bg-muted/50"
               : "text-muted-foreground/70 hover:text-foreground hover:bg-muted/50"
