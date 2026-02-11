@@ -155,16 +155,16 @@ export default function RequestDetail({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
+                    size="icon-sm"
                     className={
                       isMobile
-                        ? "absolute right-0 -top-1 h-7 w-7 p-0"
-                        : "absolute right-0 -top-2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
+                        ? "absolute right-0 -top-1 h-7 w-7 p-0 text-muted-foreground"
+                        : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
                     }
                     onClick={() => setEditOpen(true)}
                     aria-label="Edit post"
                   >
-                    <EditIcon className="h-3 w-3 text-accent" />
+                    <EditIcon className="size-3.5" />
                   </Button>
                 ) : null}
                 {post.content ? (
