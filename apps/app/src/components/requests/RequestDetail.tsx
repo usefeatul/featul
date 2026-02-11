@@ -149,33 +149,35 @@ export default function RequestDetail({
               )}
             </header>
 
-            <div className="space-y-5 pt-4 relative group">
-              {canEdit ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className={
-                    isMobile
-                      ? "absolute right-0 -top-1 h-7 w-7 p-0"
-                      : "absolute right-0 -top-2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
-                  }
-                  onClick={() => setEditOpen(true)}
-                  aria-label="Edit post"
-                >
-                  <EditIcon className="h-3 w-3 text-accent" />
-                </Button>
-              ) : null}
-              {post.content ? (
-                <div className="prose text-sm text-accent dark:prose-invert break-all md:wrap-break-words whitespace-normal min-w-0">
-                  {post.content}
-                </div>
-              ) : null}
-              {post.image ? (
-                <div className="flex justify-start">
-                  <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
-                </div>
-              ) : null}
+            <div className="space-y-5 pt-4">
+              <div className="relative group space-y-5">
+                {canEdit ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className={
+                      isMobile
+                        ? "absolute right-0 -top-1 h-7 w-7 p-0"
+                        : "absolute right-0 -top-2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
+                    }
+                    onClick={() => setEditOpen(true)}
+                    aria-label="Edit post"
+                  >
+                    <EditIcon className="h-3 w-3 text-accent" />
+                  </Button>
+                ) : null}
+                {post.content ? (
+                  <div className="prose text-sm text-accent dark:prose-invert break-all md:wrap-break-words whitespace-normal min-w-0">
+                    {post.content}
+                  </div>
+                ) : null}
+                {post.image ? (
+                  <div className="flex justify-start">
+                    <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
+                  </div>
+                ) : null}
+              </div>
               {isMobile ? (
                 <div className="flex items-center justify-between gap-3 text-sm text-accent">
                   <div className="inline-flex items-center gap-3">
