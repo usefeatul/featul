@@ -148,13 +148,13 @@ export default function CommentVote({
   }
 
   return (
-    <div className="flex items-center gap-1 bg-muted/30 rounded-full p-0.5 px-1 border border-border/50 h-[30px]">
+    <div className="flex items-center gap-1 bg-muted/30 rounded-md p-0.5 px-1 border border-border/50 h-[30px]">
       <button
         type="button"
         onClick={() => handleVote("upvote")}
         disabled={isPending}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-full hover:bg-muted",
+          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-md hover:bg-muted",
           userVote === "upvote" ? "text-green-600" : "text-muted-foreground"
         )}
         title="Upvote"
@@ -182,7 +182,7 @@ export default function CommentVote({
         onClick={() => handleVote("downvote")}
         disabled={isPending}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-full hover:bg-muted",
+          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-md hover:bg-muted",
           userVote === "downvote" ? "text-red-600" : "text-muted-foreground"
         )}
         title="Downvote"
