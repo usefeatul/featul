@@ -12,7 +12,7 @@ const buttonVariants = cva(
           "relative bg-primary text-primary-foreground hover:bg-primary/90 ring-ring/60 hover:ring-ring border-border/80 dark:border-border/70 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(0,0,0,0.12)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.45)]"
         ),
         destructive: cn(
-          "bg-destructive text-white hover:bg-destructive/90 ring-destructive/50 hover:ring-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60"
+          "relative bg-destructive text-white hover:bg-destructive/90 ring-destructive/50 hover:ring-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 border-destructive/70 dark:border-destructive/50 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(0,0,0,0.12)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.45)]"
         ),
         outline: cn(
           "border bg-background shadow-xs hover:bg-muted hover:text-accent-foreground ring-border/60 hover:ring-accent/60 dark:bg-input/30 dark:border-input dark:hover:bg-input/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"

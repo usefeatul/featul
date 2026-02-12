@@ -10,7 +10,6 @@ export function LoadingButton({ loading = false, disabled, children, className, 
       aria-busy={loading}
       disabled={loading || disabled}
       className={className}
-      variant="quiet"
       {...props}
     >
       {loading ? <Loader2 className="size-4 animate-spin" /> : null}
