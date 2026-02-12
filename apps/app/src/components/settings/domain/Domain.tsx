@@ -4,7 +4,6 @@ import React from "react";
 //
 import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
-import { Button } from "@featul/ui/components/button";
 import RecordsTable from "./RecordsTable";
 import { useDomain, useDomainActions } from "../../../lib/domain-service";
 import type { DomainInfo } from "../../../types/domain";
@@ -14,6 +13,7 @@ import AddDomainDialog from "./AddDomainDialog";
 import { ArrowIcon } from "@featul/ui/icons/arrow";
 import { normalizePlan } from "@/lib/plan";
 import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
+import { LoadingButton } from "@/components/global/loading-button";
 export default function DomainSection({ slug, initialPlan, initialInfo, initialDefaultDomain }: { slug: string; initialPlan?: string; initialInfo?: DomainInfo; initialDefaultDomain?: string }) {
   const [open, setOpen] = React.useState(false);
   const { data, isLoading } = useDomain(slug, initialInfo !== undefined || initialDefaultDomain !== undefined || initialPlan !== undefined ? { info: (initialInfo || null) as DomainInfo, plan: String(initialPlan || "free"), defaultDomain: String(initialDefaultDomain || "") } : undefined);
@@ -55,14 +55,13 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
           ) : (
             <div className="flex items-center justify-between rounded-md  border p-3 mt-2 mb-3">
               <span className="text-sm">{`https://${slug}.featul.com`}</span>
-              <Button
+              <LoadingButton
                 type="button"
-                variant="quiet"
                 onClick={() => setOpen(true)}
                 disabled={isLoading || accessLoading || !canUse || !canEditDomain}
               >
                 Add domain
-              </Button>
+              </LoadingButton>
             </div>
           )}
 

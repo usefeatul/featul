@@ -2,11 +2,11 @@
 
 import React from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
-import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
+import { LoadingButton } from "@/components/global/loading-button"
 import PlanNotice from "../global/PlanNotice"
 import ModalCreateBoard from "../feedback/ModalCreateBoard"
 import { MoreVertical } from "lucide-react"
@@ -92,9 +92,9 @@ export default function ManageBoards({
                   <TableCell className="px-4 text-center">
                     <Popover open={menuOpenId === b.id} onOpenChange={(v) => setMenuOpenId(v ? String(b.id) : null)}>
                       <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="sm" aria-label="Board Type">
+                        <LoadingButton type="button" variant="ghost" size="sm" aria-label="Board Type">
                           <span className="text-sm">{Boolean(b.isPublic) ? "Public" : "Private"}</span>
-                        </Button>
+                        </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
@@ -107,9 +107,9 @@ export default function ManageBoards({
                   <TableCell className="px-2 text-center">
                     <Popover open={actionOpenId === b.id} onOpenChange={(v) => setActionOpenId(v ? String(b.id) : null)}>
                       <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="sm" aria-label="More" className="px-2">
+                        <LoadingButton type="button" variant="ghost" size="sm" aria-label="More" className="px-2">
                           <MoreVertical className="size-4 opacity-70" />
-                        </Button>
+                        </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
@@ -141,7 +141,7 @@ export default function ManageBoards({
       </div>
       <PlanNotice slug={slug} feature="boards" plan={plan} boardsCount={(otherBoards || []).length} />
       <div>
-        <Button type="button" variant="quiet" onClick={() => setCreateOpen(true)}>Create board</Button>
+        <LoadingButton type="button" variant="quiet" onClick={() => setCreateOpen(true)}>Create board</LoadingButton>
       </div>
       <ModalCreateBoard
         open={createOpen}

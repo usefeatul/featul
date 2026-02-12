@@ -178,7 +178,6 @@ export default function TeamSection({
           <div className="flex items-center justify-start">
             <Button
               type="button"
-              variant="quiet"
               onClick={() => setInviteOpen(true)}
               disabled={isLoading || inviteAccessLoading || !canInvite}
             >

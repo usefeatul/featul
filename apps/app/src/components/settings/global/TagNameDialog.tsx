@@ -3,8 +3,8 @@
 import React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
 import { Input } from "@featul/ui/components/input"
-import { Button } from "@featul/ui/components/button"
 import TagIcon from "@featul/ui/icons/tag"
+import { LoadingButton } from "@/components/global/loading-button"
 
 type TagNameDialogProps = {
   open: boolean
@@ -69,12 +69,12 @@ export function TagNameDialog({
           />
 
           <div className="flex justify-end gap-2 mt-4">
-            <Button type="button" variant="card" onClick={() => onOpenChange(false)}>
+            <LoadingButton type="button" variant="card" onClick={() => onOpenChange(false)}>
               Cancel
-            </Button>
-            <Button type="button" onClick={handleSubmit} disabled={disabled}>
+            </LoadingButton>
+            <LoadingButton type="button" loading={Boolean(saving)} onClick={handleSubmit} disabled={disabled}>
               {saving ? loadingLabel : actionLabel}
-            </Button>
+            </LoadingButton>
           </div>
         </div>
       </DialogContent>

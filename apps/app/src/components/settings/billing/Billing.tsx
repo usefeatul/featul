@@ -2,9 +2,9 @@
 
 import React from "react"
 import SectionCard from "../global/SectionCard"
-import { Button } from "@featul/ui/components/button"
 import { normalizePlan, type PlanKey } from "@/lib/plan"
 import { CreditCard } from "lucide-react"
+import { LoadingButton } from "@/components/global/loading-button"
 import UpgradePlanDialog from "./UpgradePlanDialog"
 import { formatPrice, getPlan } from "./billing-data"
 
@@ -63,9 +63,9 @@ function PlanSummaryCard({ planKey, onUpgradeClick }: PlanSummaryCardProps) {
         </span>
       </div>
       <div>
-        <Button variant="secondary" onClick={onUpgradeClick}>
+        <LoadingButton onClick={onUpgradeClick}>
           Upgrade Plan
-        </Button>
+        </LoadingButton>
       </div>
     </div>
   )

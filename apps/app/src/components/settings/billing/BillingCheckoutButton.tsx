@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react"
-import { Button } from "@featul/ui/components/button"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
+import { LoadingButton } from "@/components/global/loading-button"
 import type { BillingCycle, PlanOption } from "./billing-data"
 import { getCheckoutSlug } from "./billing-data"
 
@@ -75,19 +75,20 @@ export default function BillingCheckoutButton({
 
   if (isCurrent) {
     return (
-      <Button variant="outline" disabled className={cn("opacity-50", className)}>
+      <LoadingButton variant="outline" disabled className={cn("opacity-50", className)}>
         Current
-      </Button>
+      </LoadingButton>
     )
   }
 
   return (
-    <Button
+    <LoadingButton
       className={cn(className)}
+      loading={isCheckingOut}
       disabled={isCurrent || isCheckingOut}
       onClick={handleCheckout}
     >
-      {isCheckingOut ? "Loading..." : "Upgrade"}
-    </Button>
+      Upgrade
+    </LoadingButton>
   )
 }

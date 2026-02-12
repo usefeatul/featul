@@ -6,7 +6,7 @@ import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import type { DomainInfo } from "../../../types/domain";
 import { dnsStatusBadgeClass } from "../../../types/domain";
-import { Button } from "@featul/ui/components/button";
+import { LoadingButton } from "@/components/global/loading-button";
 
 
 export default function RecordsTable({ info }: { info: DomainInfo }) {
@@ -27,7 +27,7 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
           <TableCell className="px-3">
             <div className="flex items-center gap-2 min-w-0">
               <span className="truncate">{info.cnameName}</span>
-              <Button
+              <LoadingButton
                 type="button"
                 aria-label="Copy"
                 variant="card"
@@ -36,17 +36,19 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
                   try {
                     navigator.clipboard.writeText(info.cnameName);
                     toast.success("Copied");
-                  } catch {}
+                  } catch {
+                    toast.error("Failed to copy");
+                  }
                 }}
               >
                 <Copy className="size-3" />
-              </Button>
+              </LoadingButton>
             </div>
           </TableCell>
           <TableCell className="px-3">
             <div className="flex items-center gap-2 min-w-0">
               <span className="truncate">{info.cnameTarget}</span>
-              <Button
+              <LoadingButton
                 type="button"
                 aria-label="Copy"
                 variant="card"
@@ -55,11 +57,13 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
                   try {
                     navigator.clipboard.writeText(info.cnameTarget);
                     toast.success("Copied");
-                  } catch {}
+                  } catch {
+                    toast.error("Failed to copy");
+                  }
                 }}
               >
                 <Copy className="size-3" />
-              </Button>
+              </LoadingButton>
             </div>
           </TableCell>
           <TableCell className="px-3 text-center">
@@ -73,7 +77,7 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
           <TableCell className="px-3">
             <div className="flex items-center gap-2 min-w-0">
               <span className="truncate">{info.txtName}</span>
-              <Button
+              <LoadingButton
                 type="button"
                 aria-label="Copy"
                 variant="card"
@@ -82,17 +86,19 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
                   try {
                     navigator.clipboard.writeText(info.txtName);
                     toast.success("Copied");
-                  } catch {}
+                  } catch {
+                    toast.error("Failed to copy");
+                  }
                 }}
               >
                 <Copy className="size-3" />
-              </Button>
+              </LoadingButton>
             </div>
           </TableCell>
           <TableCell className="px-3">
             <div className="flex items-center gap-2 min-w-0">
               <span className="truncate">{info.txtValue}</span>
-              <Button
+              <LoadingButton
                 type="button"
                 aria-label="Copy"
                 variant="card"
@@ -101,11 +107,13 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
                   try {
                     navigator.clipboard.writeText(info.txtValue);
                     toast.success("Copied");
-                  } catch {}
+                  } catch {
+                    toast.error("Failed to copy");
+                  }
                 }}
               >
                 <Copy className="size-3" />
-              </Button>
+              </LoadingButton>
             </div>
           </TableCell>
           <TableCell className="px-3 text-center">

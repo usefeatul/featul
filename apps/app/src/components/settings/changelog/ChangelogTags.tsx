@@ -2,7 +2,6 @@
 
 import React from "react"
 import PlanNotice from "../global/PlanNotice"
-import { Button } from "@featul/ui/components/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { MoreVertical } from "lucide-react"
@@ -10,6 +9,7 @@ import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import ModalTags from "./ModalTags"
 import { toast } from "sonner"
+import { LoadingButton } from "@/components/global/loading-button"
 
 export interface ChangelogTag {
   id: string
@@ -65,9 +65,9 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
                   <TableCell className="px-4 text-center">
                     <Popover open={menuOpenId === t.id} onOpenChange={(v) => setMenuOpenId(v ? String(t.id) : null)}>
                       <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="icon-sm" aria-label="More">
+                        <LoadingButton type="button" variant="ghost" size="icon-sm" aria-label="More">
                           <MoreVertical className="size-4" />
-                        </Button>
+                        </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
@@ -99,7 +99,7 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
       </div>
       <PlanNotice slug={slug} feature="changelog_tags" plan={initialPlan} changelogTagsCount={(tagsData || []).length} />
       <div>
-        <Button type="button" variant="quiet" onClick={() => setTagModalOpen(true)}>Add tag</Button>
+        <LoadingButton type="button" onClick={() => setTagModalOpen(true)}>Add tag</LoadingButton>
       </div>
       <ModalTags
         open={tagModalOpen}
