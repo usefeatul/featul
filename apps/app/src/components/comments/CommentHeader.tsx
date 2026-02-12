@@ -54,7 +54,7 @@ export default function CommentHeader({
         {comment.isEdited && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant="nav" className="gap-1 px-1.5 py-0.5 text-[10px] leading-none text-accent">
+              <Badge variant="nav" className="gap-1 px-1 py-0.5 text-[10px] leading-none text-accent">
                 <EditIcon width={12} height={12} className="text-accent" />
                 Edited
               </Badge>

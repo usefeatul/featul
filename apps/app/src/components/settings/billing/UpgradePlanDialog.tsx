@@ -120,7 +120,7 @@ function PlanCard({
         <div className="flex items-center justify-between">
           <span className="font-semibold text-foreground text-lg">{plan.label}</span>
           {isCurrent && (
-            <Badge variant="secondary" className="text-[10px] px-2 h-5">
+            <Badge variant="secondary" className="text-xs px-2 h-5">
               Current
             </Badge>
           )}
