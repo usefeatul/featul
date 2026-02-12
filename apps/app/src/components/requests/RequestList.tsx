@@ -1,14 +1,13 @@
 "use client"
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import RequestItem from "./RequestItem"
 import type { RequestItemData } from "@/types/request"
 import EmptyRequests from "./EmptyRequests"
-import { useSelection, toggleSelectionId, selectAllForKey, removeSelectedIds } from "@/lib/selection-store"
 import { BulkDeleteConfirmDialog } from "./BulkDeleteConfirmDialog"
 import { SelectionToolbar } from "./SelectionToolbar"
 import { useBulkDeleteRequests } from "../../hooks/useBulkDeleteRequests"
-import { useBulkSelectionHotkeys } from "../../hooks/useBulkSelectionHotkeys"
+import { useSelectableList } from "@/hooks/useSelectableList"
 
 interface RequestListProps {
   items: RequestItemData[]
@@ -24,10 +23,7 @@ function RequestListBase(props: RequestListProps) {
   const [listItems, setListItems] = useState<RequestItemData[]>(items)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const listKey = workspaceSlug
-  const selection = useSelection(listKey)
-  const isSelecting = selection.isSelecting
-  const selectingRef = useRef(isSelecting)
-  const [hydrated, setHydrated] = useState(false)
+  const itemIds = useMemo(() => listItems.map((item) => item.id), [listItems])
 
   const { isPending, isRefetching, handleBulkDelete } = useBulkDeleteRequests({
     workspaceSlug,
@@ -39,53 +35,24 @@ function RequestListBase(props: RequestListProps) {
   })
 
   useEffect(() => {
-    selectingRef.current = isSelecting
-  }, [isSelecting])
-
-  useEffect(() => {
     setListItems(items)
   }, [items])
 
-  useEffect(() => {
-    setHydrated(true)
-  }, [])
-
-  const isSelectingForRender = hydrated ? isSelecting : initialIsSelecting ?? isSelecting
-  const selectedIdsForRender = hydrated
-    ? selection.selectedIds
-    : initialSelectedIds && Array.isArray(initialSelectedIds)
-      ? initialSelectedIds
-      : selection.selectedIds
-
-  useBulkSelectionHotkeys({
+  const {
+    allSelected,
+    isSelectingForRender,
+    selectedCount,
+    selectedIdsSet,
+    toggleAll,
+    toggleId,
+  } = useSelectableList({
     listKey,
-    isSelecting: isSelectingForRender,
+    itemIds,
+    initialIsSelecting,
+    initialSelectedIds,
     isPending,
-    selectedCount: selectedIdsForRender.length,
     setConfirmOpen,
-    selectingRef,
   })
-
-  const allSelected = useMemo(
-    () => listItems.length > 0 && listItems.every((i) => selectedIdsForRender.includes(i.id)),
-    [listItems, selectedIdsForRender],
-  )
-  const selectedCount = selectedIdsForRender.length
-
-  const toggleId = useCallback(
-    (id: string, checked?: boolean) => {
-      toggleSelectionId(listKey, id, checked)
-    },
-    [listKey]
-  )
-
-  const toggleAll = useCallback(() => {
-    if (allSelected) {
-      removeSelectedIds(listKey, listItems.map((i) => i.id))
-      return
-    }
-    selectAllForKey(listKey, listItems.map((i) => i.id))
-  }, [allSelected, listItems, listKey])
 
   if (listItems.length === 0) {
     if (isRefetching) {
@@ -113,7 +80,7 @@ function RequestListBase(props: RequestListProps) {
             workspaceSlug={workspaceSlug}
             linkBase={linkBase}
             isSelecting={isSelectingForRender}
-            isSelected={selectedIdsForRender.includes(p.id)}
+            isSelected={selectedIdsSet.has(p.id)}
             onToggle={(checked) => toggleId(p.id, checked)}
             disableLink={isSelectingForRender}
           />

@@ -5,6 +5,7 @@ import RequestList from "@/components/requests/RequestList";
 import PostCountSeed from "@/components/requests/PostCountSeed";
 import RequestPagination from "@/components/requests/RequestPagination";
 import { createPageMetadata } from "@/lib/seo";
+import { readInitialSelectionState } from "@/lib/selection-server";
 import { loadRequestsPageData, type RequestsSearchParams } from "./data";
 
 export const dynamic = "force-dynamic";
@@ -27,23 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function RequestsPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const cookieStore = await cookies();
-  const cookieName = `requests_isSelecting_${slug}`;
-  const cookieValue = cookieStore.get(cookieName)?.value;
-  const initialIsSelecting = cookieValue === "1" || cookieValue === "true";
-  const selectedCookieName = `requests_selected_${slug}`;
-  const selectedRaw = cookieStore.get(selectedCookieName)?.value;
-  let initialSelectedIds: string[] | undefined;
-  if (selectedRaw) {
-    try {
-      const decoded = decodeURIComponent(selectedRaw);
-      const parsed = JSON.parse(decoded);
-      if (Array.isArray(parsed)) {
-        initialSelectedIds = parsed.filter((v) => typeof v === "string") as string[];
-      }
-    } catch {
-      console.error("Failed to parse selected IDs");
-    }
-  }
+  const { initialIsSelecting, initialSelectedIds } = readInitialSelectionState(cookieStore, slug);
 
   let sp: RequestsSearchParams | undefined;
   if (searchParams) {

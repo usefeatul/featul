@@ -2,6 +2,14 @@
 
 import * as React from "react"
 import { useSyncExternalStore } from "react"
+import {
+  parseSelectedIdsValue,
+  parseSelectingValue,
+  selectedCookieName,
+  selectedStorageKey,
+  selectingCookieName,
+  selectingStorageKey,
+} from "@/lib/selection-keys"
 
 type Listener = () => void
 type SelectionState = { isSelecting: boolean; selected: Set<string> }
@@ -10,22 +18,6 @@ type SelectionSnapshot = { isSelecting: boolean; selectedIds: string[] }
 const selections = new Map<string, SelectionState>()
 const listeners = new Set<Listener>()
 const snapshots = new Map<string, SelectionSnapshot>()
-
-function selectingStorageKey(key: string): string {
-  return `requests:isSelecting:${key}`
-}
-
-function selectedStorageKey(key: string): string {
-  return `requests:selected:${key}`
-}
-
-function selectingCookieName(key: string): string {
-  return `requests_isSelecting_${key}`
-}
-
-function selectedCookieName(key: string): string {
-  return `requests_selected_${key}`
-}
 
 function readCookieValue(name: string): string | null {
   if (typeof document === "undefined") return null
@@ -44,15 +36,13 @@ function readCookieValue(name: string): string | null {
 function readSelectingInitial(key: string): boolean {
   try {
     const cookieValue = readCookieValue(selectingCookieName(key))
-    if (cookieValue === "1" || cookieValue === "true") return true
-    if (cookieValue === "0" || cookieValue === "false") return false
+    if (cookieValue !== null) return parseSelectingValue(cookieValue)
     if (typeof window !== "undefined") {
-      const v = window.localStorage.getItem(selectingStorageKey(key))
-      if (v === "1" || v === "true") {
-        return true
-      }
+      return parseSelectingValue(window.localStorage.getItem(selectingStorageKey(key)))
     }
-  } catch {}
+  } catch {
+    // ignore
+  }
   return false
 }
 
@@ -61,17 +51,17 @@ function readSelectedInitial(key: string): Set<string> {
   try {
     const rawCookie = readCookieValue(selectedCookieName(key))
     const raw = rawCookie ?? (typeof window !== "undefined" ? window.localStorage.getItem(selectedStorageKey(key)) : null)
-    if (!raw) return selected
-    const decoded = rawCookie ? decodeURIComponent(raw) : raw
-    const parsed = JSON.parse(decoded)
-    if (!Array.isArray(parsed)) return selected
+    const parsed = parseSelectedIdsValue(raw)
+    if (!parsed) return selected
     for (let i = 0; i < parsed.length; i++) {
       const id = parsed[i]
       if (typeof id === "string" && id) {
         selected.add(id)
       }
     }
-  } catch {}
+  } catch {
+    // ignore
+  }
   return selected
 }
 
@@ -87,7 +77,9 @@ function writeSelected(key: string, selected: Set<string>) {
       const maxAge = 60 * 60 * 24 * 30
       document.cookie = `${selectedCookieName(key)}=${encoded}; path=/; max-age=${maxAge}`
     }
-  } catch {}
+  } catch {
+    // ignore
+  }
 }
 
 function ensure(key: string): SelectionState {
@@ -142,7 +134,9 @@ export function setSelecting(key: string, selecting: boolean) {
       const value = selecting ? "1" : "0"
       document.cookie = `${selectingCookieName(key)}=${value}; path=/; max-age=${maxAge}`
     }
-  } catch {}
+  } catch {
+    // ignore
+  }
   notify()
 }
 
@@ -158,7 +152,7 @@ export function toggleSelectionId(key: string, id: string, checked?: boolean) {
 export function selectAllForKey(key: string, ids: string[]) {
   const s = ensure(key)
   ids.forEach((id) => s.selected.add(id))
-   writeSelected(key, s.selected)
+  writeSelected(key, s.selected)
   notify()
 }
 
