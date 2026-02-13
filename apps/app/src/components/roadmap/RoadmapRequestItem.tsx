@@ -15,6 +15,8 @@ export type RoadmapItemData = {
   title: string;
   slug: string;
   roadmapStatus: string | null;
+  boardName: string;
+  boardSlug?: string;
   upvotes: number;
   commentCount: number;
   authorImage?: string | null;
@@ -36,6 +38,7 @@ export default function RoadmapRequestItem({
     item.authorImage || randomAvatarUrl(authorSeed, "avataaars");
   const upvotes = Math.max(0, Number(item.upvotes || 0));
   const commentCount = Math.max(0, Number(item.commentCount || 0));
+  const boardLabel = item.boardName?.trim() || "Board";
 
   return (
     <div className="flex flex-col w-full min-w-0 overflow-hidden">
@@ -46,12 +49,17 @@ export default function RoadmapRequestItem({
         {item.title}
       </Link>
       <div className="mt-3 flex items-center justify-between gap-3 text-xs text-accent">
-        <Avatar className="size-6 ring-1 ring-border/70">
-          <AvatarImage src={avatarSrc} alt={authorLabel} />
-          <AvatarFallback className="text-[10px] font-medium">
-            {getInitials(authorLabel)}
-          </AvatarFallback>
-        </Avatar>
+        <div className="flex min-w-0 items-center gap-2">
+          <Avatar className="size-6 ring-1 ring-border/70 shrink-0">
+            <AvatarImage src={avatarSrc} alt={authorLabel} />
+            <AvatarFallback className="text-[10px] font-medium">
+              {getInitials(authorLabel)}
+            </AvatarFallback>
+          </Avatar>
+          <span className="max-w-[120px] truncate rounded border border-border bg-background px-1.5 py-0.5 text-[11px] text-accent">
+            {boardLabel}
+          </span>
+        </div>
         <div className="inline-flex items-center gap-3">
           <span className="inline-flex items-center gap-1.5">
             <Heart className="size-3.5" aria-hidden />

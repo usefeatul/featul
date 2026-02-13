@@ -35,6 +35,8 @@ const toRoadmapCardItem = (item: Item) => ({
   title: item.title,
   slug: item.slug,
   roadmapStatus: item.roadmapStatus,
+  boardName: item.boardName,
+  boardSlug: item.boardSlug,
   upvotes: item.upvotes,
   commentCount: item.commentCount,
   authorImage: item.authorImage,
