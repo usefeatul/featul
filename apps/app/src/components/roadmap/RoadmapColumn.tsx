@@ -4,7 +4,7 @@ import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
 import { MoveHorizontalIcon } from "@featul/ui/icons/horizontal";
-import { PlusIcon } from "@featul/ui/icons/plus";
+import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { motion, AnimatePresence } from "framer-motion";
@@ -89,7 +89,7 @@ export default function RoadmapColumn({
                     onCreate();
                   }}
                 >
-                  <PlusIcon className="size-3.5" size={14} />
+                  <FillPlusIcon className="size-3.5" size={14} />
                 </Button>
               ) : null}
               <div className="inline-flex h-6 min-w-6 items-center justify-center px-1.5 text-xs font-mono tabular-nums leading-none text-accent">
