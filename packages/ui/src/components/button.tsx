@@ -27,7 +27,7 @@ const buttonVariants = cva(
 
         quiet: cn("bg-primary text-primary-foreground hover:bg-primary/70"),
         nav: cn(
-          "relative border bg-card text-foreground border-border/80 dark:border-border/70 hover:bg-muted/30 hover:text-accent-foreground hover:border-accent/20 dark:bg-black/30 dark:hover:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(0,0,0,0.12)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.45)]"
+          "relative border bg-card text-foreground border-border dark:border-border hover:bg-muted/30 hover:text-accent-foreground hover:border-accent/20 dark:bg-background dark:hover:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(0,0,0,0.12)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.45)]"
         ),
         plain: cn(
           "bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50 "

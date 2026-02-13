@@ -1,2 +1,2 @@
 export const subdomainListItemClassName =
-  "px-6 py-6 transition-colors hover:bg-background dark:hover:bg-background"
+  "px-4 py-4 transition-colors hover:bg-background dark:hover:bg-background"
