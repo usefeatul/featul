@@ -1,48 +1,34 @@
-import React from 'react'
+import React from "react";
 
 interface MoveHorizontalIconProps {
-  className?: string
-  size?: number
+  className?: string;
+  size?: number;
 }
 
-export const MoveHorizontalIcon: React.FC<MoveHorizontalIconProps> = ({ className = '', size = 18 }) => {
+export const MoveHorizontalIcon: React.FC<MoveHorizontalIconProps> = ({
+  className = "",
+  size = 18,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      x="0px"
-      y="0px"
       width={size}
       height={size}
       viewBox="0 0 18 18"
       className={className}
     >
-      <polyline
-        points="7 5 3 9 7 13"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
+      <path d="M2.5 9L7.2 4.3V13.7L2.5 9Z" fill="currentColor" />
+      <rect
+        x="6.2"
+        y="7.2"
+        width="5.6"
+        height="3.6"
+        rx="1.8"
+        fill="currentColor"
       />
-      <line
-        x1="5"
-        y1="9"
-        x2="13"
-        y2="9"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <polyline
-        points="11 13 15 9 11 5"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
+      <path d="M15.5 9L10.8 13.7V4.3L15.5 9Z" fill="currentColor" />
     </svg>
-  )
-}
+  );
+};
 
-export default MoveHorizontalIcon
+export default MoveHorizontalIcon;
