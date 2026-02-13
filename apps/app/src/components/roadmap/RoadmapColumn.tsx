@@ -4,6 +4,8 @@ import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
 import { MoveHorizontalIcon } from "@featul/ui/icons/horizontal";
+import { PlusIcon } from "@featul/ui/icons/plus";
+import { Button } from "@featul/ui/components/button";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -13,6 +15,7 @@ export default function RoadmapColumn({
   count,
   collapsed,
   onToggle,
+  onCreate,
   children,
   disableMotion,
 }: {
@@ -21,6 +24,7 @@ export default function RoadmapColumn({
   count: number;
   collapsed?: boolean;
   onToggle?: (next: boolean) => void;
+  onCreate?: () => void;
   children: React.ReactNode;
   disableMotion?: boolean;
 }) {
@@ -70,7 +74,24 @@ export default function RoadmapColumn({
               <div className="truncate text-sm font-medium">{label}</div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="rounded-md border border-border bg-background px-2 py-0.5 text-xs font-mono tabular-nums text-accent">
+              {onCreate ? (
+                <Button
+                  type="button"
+                  variant="card"
+                  size="icon-sm"
+                  className="group h-6 w-6 rounded-md border-border bg-background px-0 text-accent hover:text-foreground"
+                  aria-label={`Create post in ${label}`}
+                  title={`Create post in ${label}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onCreate();
+                  }}
+                >
+                  <PlusIcon className="size-3.5" size={14} />
+                </Button>
+              ) : null}
+              <div className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-border bg-background px-2 text-xs font-mono tabular-nums leading-none text-accent">
                 {count}
               </div>
               <MoveHorizontalIcon className="size-3 text-accent" />

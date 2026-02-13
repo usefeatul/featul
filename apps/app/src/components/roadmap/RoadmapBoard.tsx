@@ -15,6 +15,7 @@ import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem";
 import { useQueryClient } from "@tanstack/react-query";
 import RoadmapColumn from "@/components/roadmap/RoadmapColumn";
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable";
+import { CreatePostModal } from "@/components/post/CreatePostModal";
 import {
   ROADMAP_STATUSES,
   statusLabel,
@@ -56,6 +57,7 @@ export default function RoadmapBoard({
   const [items, setItems] = React.useState<Item[]>(() => initialItems);
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [savingId, setSavingId] = React.useState<string | null>(null);
+  const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const [collapsedByStatus, setCollapsedByStatus] = React.useState<
     Record<string, boolean>
   >(() => {
@@ -176,6 +178,7 @@ export default function RoadmapBoard({
                     label={statusLabel(s)}
                     count={itemsForStatus?.length ?? 0}
                     collapsed={!!collapsedByStatus[s]}
+                    onCreate={() => setCreatePostOpen(true)}
                     onToggle={(next) =>
                       setCollapsedByStatus((prev) => ({ ...prev, [s]: next }))
                     }
@@ -225,6 +228,11 @@ export default function RoadmapBoard({
             </motion.div>
           ) : null}
         </DragOverlay>
+        <CreatePostModal
+          open={createPostOpen}
+          onOpenChange={setCreatePostOpen}
+          workspaceSlug={workspaceSlug}
+        />
       </DndContext>
     </section>
   );
