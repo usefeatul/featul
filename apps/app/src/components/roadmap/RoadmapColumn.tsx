@@ -56,7 +56,7 @@ export default function RoadmapColumn({
       >
         {collapsed ? (
           <>
-            <MoveVerticalIcon className="mx-auto block size-3 text-accent" />
+            <MoveHorizontalIcon className="mx-auto block size-4 text-accent" />
             <StatusIcon
               status={id}
               className="mx-auto block size-4.5 text-foreground/80"
@@ -89,13 +89,13 @@ export default function RoadmapColumn({
                     onCreate();
                   }}
                 >
-                  <FillPlusIcon className="size-3.5" size={14} />
+                  <FillPlusIcon className="size-4" size={16} />
                 </Button>
               ) : null}
               <div className="inline-flex h-6 min-w-6 items-center justify-center px-1.5 text-xs font-mono tabular-nums leading-none text-accent">
                 {count}
               </div>
-              <MoveHorizontalIcon className="size-3 text-accent" />
+              <MoveVerticalIcon className="size-4 text-accent" />
             </div>
           </>
         )}
