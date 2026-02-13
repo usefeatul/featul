@@ -61,7 +61,7 @@ export default function RoadmapColumn({
               status={id}
               className="mx-auto block size-4.5 text-foreground/80"
             />
-            <div className="mx-auto block rounded-md border border-border bg-background px-2 py-0.5 text-xs font-mono tabular-nums text-accent">
+            <div className="mx-auto block px-1 text-xs font-mono tabular-nums text-accent">
               {count}
             </div>
           </>
@@ -78,9 +78,9 @@ export default function RoadmapColumn({
               {onCreate ? (
                 <Button
                   type="button"
-                  variant="card"
+                  variant="plain"
                   size="icon-sm"
-                  className="group h-6 w-6 rounded-md border-border bg-background px-0 text-accent hover:text-foreground"
+                  className="group h-6 w-6 rounded-md border-0 !bg-transparent px-0 text-accent shadow-none hover:!bg-transparent hover:text-foreground"
                   aria-label={`Create post in ${label}`}
                   title={`Create post in ${label}`}
                   onClick={(e) => {
@@ -92,7 +92,7 @@ export default function RoadmapColumn({
                   <PlusIcon className="size-3.5" size={14} />
                 </Button>
               ) : null}
-              <div className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-border bg-background px-2 text-xs font-mono tabular-nums leading-none text-accent">
+              <div className="inline-flex h-6 min-w-6 items-center justify-center px-1.5 text-xs font-mono tabular-nums leading-none text-accent">
                 {count}
               </div>
               <MoveHorizontalIcon className="size-3 text-accent" />
