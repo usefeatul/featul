@@ -24,6 +24,14 @@ export function FlagRibbon({ isPinned, isFeatured, className = "" }: FlagRibbonP
 
     const Icon = isPinned && isFeatured ? StarPinIcon : isPinned ? PinIcon : StarIcon
     const title = isPinned && isFeatured ? "Pinned & Featured" : isPinned ? "Pinned" : "Featured"
+    const ribbonSurfaceClassName = cn(
+        "absolute inset-0 rounded-[1px] border border-border/80 dark:border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(0,0,0,0.12)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.45)]",
+        {
+            "bg-linear-to-r from-primary to-amber-500": isPinned && isFeatured,
+            "bg-primary": isPinned && !isFeatured,
+            "bg-amber-500": !isPinned && isFeatured
+        }
+    )
 
     return (
         <div
@@ -33,14 +41,7 @@ export function FlagRibbon({ isPinned, isFeatured, className = "" }: FlagRibbonP
             )}
             title={title}
         >
-            <div className={cn(
-                "absolute inset-0",
-                {
-                    "bg-linear-to-r from-primary to-amber-500": isPinned && isFeatured,
-                    "bg-primary": isPinned && !isFeatured,
-                    "bg-amber-500": !isPinned && isFeatured
-                }
-            )} />
+            <div className={ribbonSurfaceClassName} />
             <div className="relative z-10 text-white mb-px">
                 <Icon width={10} height={10} className="fill-current" />
             </div>
@@ -49,4 +50,3 @@ export function FlagRibbon({ isPinned, isFeatured, className = "" }: FlagRibbonP
 }
 
 export default FlagRibbon
-
