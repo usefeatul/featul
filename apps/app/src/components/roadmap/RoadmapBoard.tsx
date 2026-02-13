@@ -207,7 +207,7 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeId ? (
             <motion.div
-              className="rounded-lg border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-3 py-3 pointer-events-none"
+              className="rounded-md border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-3 py-3 pointer-events-none"
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}

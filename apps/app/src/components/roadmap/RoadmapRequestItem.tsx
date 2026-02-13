@@ -48,24 +48,22 @@ export default function RoadmapRequestItem({
       >
         {item.title}
       </Link>
-      <div className="mt-3 flex items-center justify-between gap-3 text-xs text-accent">
-        <div className="flex min-w-0 items-center gap-2">
-          <Avatar className="size-6 ring-1 ring-border/70 shrink-0">
-            <AvatarImage src={avatarSrc} alt={authorLabel} />
-            <AvatarFallback className="text-[10px] font-medium">
-              {getInitials(authorLabel)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="max-w-[120px] truncate rounded border border-border bg-background px-1.5 py-0.5 text-[11px] text-accent">
-            {boardLabel}
-          </span>
-        </div>
-        <div className="inline-flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5">
+      <div className="mt-3 flex h-6 items-center gap-2 text-xs text-accent">
+        <Avatar className="size-6 shrink-0 ring-1 ring-border/70">
+          <AvatarImage src={avatarSrc} alt={authorLabel} />
+          <AvatarFallback className="text-[10px] font-medium">
+            {getInitials(authorLabel)}
+          </AvatarFallback>
+        </Avatar>
+        <span className="inline-flex h-6 min-w-0 max-w-[120px] items-center truncate rounded-md border border-border bg-background px-1.5 text-[11px] leading-none text-accent">
+          {boardLabel}
+        </span>
+        <div className="ml-auto inline-flex h-6 shrink-0 items-center gap-2">
+          <span className="inline-flex h-6 items-center gap-1 leading-none">
             <Heart className="size-3.5" aria-hidden />
             <span className="tabular-nums">{upvotes}</span>
           </span>
-          <span className="inline-flex items-center gap-1.5">
+          <span className="inline-flex h-6 items-center gap-1 leading-none">
             <MessageCircle className="size-3.5" aria-hidden />
             <span className="tabular-nums">{commentCount}</span>
           </span>

@@ -29,7 +29,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`overflow-hidden rounded-lg border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 ${isOver ? "border-primary/60 ring-primary/30" : ""}`}
+      className={`overflow-hidden rounded-md border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 ${isOver ? "border-primary/60 ring-primary/30" : ""}`}
       layout
       initial={false}
       transition={{
@@ -94,7 +94,7 @@ export default function RoadmapColumn({
             {children}
             {isOver ? (
               <motion.li
-                className="mt-2 rounded-lg border-2 border-dashed border-primary/50"
+                className="mt-2 rounded-md border-2 border-dashed border-primary/50"
                 aria-hidden
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
