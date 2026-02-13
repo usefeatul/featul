@@ -29,7 +29,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`overflow-hidden rounded-md border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 ${isOver ? "border-primary/60 ring-primary/30" : ""}`}
+      className={`overflow-hidden rounded-md border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 ${isOver ? "border-green-500 ring-green-500/30" : ""}`}
       layout
       initial={false}
       transition={{
@@ -56,7 +56,7 @@ export default function RoadmapColumn({
               className="mx-auto block size-4.5 text-foreground/80"
             />
             <div className="text-[11px] uppercase text-accent">{label}</div>
-            <div className="mx-auto block rounded border border-border bg-background px-2 py-0.5 text-xs font-mono tabular-nums text-accent">
+            <div className="mx-auto block rounded-md border border-border bg-background px-2 py-0.5 text-xs font-mono tabular-nums text-accent">
               {count}
             </div>
           </>
@@ -70,7 +70,7 @@ export default function RoadmapColumn({
               <div className="truncate text-sm font-medium">{label}</div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="rounded border border-border bg-background px-2 py-0.5 text-xs font-mono tabular-nums text-accent">
+              <div className="rounded-md border border-border bg-background px-2 py-0.5 text-xs font-mono tabular-nums text-accent">
                 {count}
               </div>
               <MoveHorizontalIcon className="size-3 text-accent" />
@@ -94,7 +94,7 @@ export default function RoadmapColumn({
             {children}
             {isOver ? (
               <motion.li
-                className="mt-2 rounded-md border-2 border-dashed border-primary/50"
+                className="mt-2 rounded-md border-2 border-dashed border-green-500"
                 aria-hidden
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
