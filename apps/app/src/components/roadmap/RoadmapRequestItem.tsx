@@ -62,7 +62,7 @@ export default function RoadmapRequestItem({
             role={item.role}
             isOwner={item.isOwner}
             isFeatul={item.isFeatul}
-            className="!-bottom-1 !-right-1 bg-background dark:bg-background"
+            className="-bottom-1! -right-1! bg-background dark:bg-background"
           />
         </Avatar>
         <span className="inline-flex h-6 min-w-0 max-w-[120px] items-center truncate rounded-md border border-border bg-background px-1.5 text-[11px] leading-none text-accent">
