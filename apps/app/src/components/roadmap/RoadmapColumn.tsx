@@ -29,7 +29,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`overflow-hidden rounded-lg border border-border bg-card transition-colors duration-200 ${isOver ? "border-primary/60" : ""}`}
+      className={`overflow-hidden rounded-lg border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 ${isOver ? "border-primary/60 ring-primary/30" : ""}`}
       layout
       initial={false}
       transition={{

@@ -46,7 +46,7 @@ export default function RoadmapRequestItem({
         {item.title}
       </Link>
       <div className="mt-3 flex items-center justify-between gap-3 text-xs text-accent">
-        <Avatar className="size-6">
+        <Avatar className="size-6 ring-1 ring-border/70">
           <AvatarImage src={avatarSrc} alt={authorLabel} />
           <AvatarFallback className="text-[10px] font-medium">
             {getInitials(authorLabel)}
