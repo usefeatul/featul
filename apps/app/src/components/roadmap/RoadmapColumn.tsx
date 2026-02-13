@@ -47,6 +47,8 @@ export default function RoadmapColumn({
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
+        aria-label={collapsed ? `${label} column, ${count} posts` : undefined}
+        title={collapsed ? label : undefined}
         onClick={() => onToggle?.(!collapsed)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") onToggle?.(!collapsed);
@@ -59,7 +61,6 @@ export default function RoadmapColumn({
               status={id}
               className="mx-auto block size-4.5 text-foreground/80"
             />
-            <div className="text-[11px] uppercase text-accent">{label}</div>
             <div className="mx-auto block rounded-md border border-border bg-background px-2 py-0.5 text-xs font-mono tabular-nums text-accent">
               {count}
             </div>

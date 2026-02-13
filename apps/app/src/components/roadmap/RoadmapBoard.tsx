@@ -25,6 +25,7 @@ import {
   type RoadmapStatus,
 } from "@/lib/roadmap";
 import type { RequestItemData } from "@/types/request";
+import type { PostUser } from "@/types/post";
 
 type Item = RequestItemData;
 
@@ -48,10 +49,12 @@ const toRoadmapCardItem = (item: Item) => ({
 export default function RoadmapBoard({
   workspaceSlug,
   items: initialItems,
+  currentUser,
   initialCollapsedByStatus,
 }: {
   workspaceSlug: string;
   items: Item[];
+  currentUser?: PostUser;
   initialCollapsedByStatus?: Record<string, boolean>;
 }) {
   const [items, setItems] = React.useState<Item[]>(() => initialItems);
@@ -232,6 +235,7 @@ export default function RoadmapBoard({
           open={createPostOpen}
           onOpenChange={setCreatePostOpen}
           workspaceSlug={workspaceSlug}
+          user={currentUser}
         />
       </DndContext>
     </section>
