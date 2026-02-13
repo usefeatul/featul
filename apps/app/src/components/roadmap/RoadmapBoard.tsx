@@ -44,6 +44,9 @@ const toRoadmapCardItem = (item: Item) => ({
   authorImage: item.authorImage,
   authorName: item.authorName,
   authorId: item.authorId,
+  role: item.role,
+  isOwner: item.isOwner,
+  isFeatul: item.isFeatul,
 });
 
 export default function RoadmapBoard({
