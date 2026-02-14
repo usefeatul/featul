@@ -16,51 +16,13 @@ import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { FlagIcon } from "@featul/ui/icons/flag";
 import { Check, ChevronsUpDown } from "lucide-react";
-import type { ReportReason } from "@/types/request";
+import { REPORT_REASONS, type ReportReason } from "@/types/request";
 
 interface ReportPostDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   postId: string;
 }
-
-const REASONS: {
-  value: ReportReason;
-  label: string;
-  hint: string;
-  placeholder: string;
-}[] = [
-  {
-    value: "spam",
-    label: "Spam",
-    hint: "Ads, scams, or repetitive promotions.",
-    placeholder: "Share any links or details that look spammy.",
-  },
-  {
-    value: "harassment",
-    label: "Harassment",
-    hint: "Bullying, threats, or targeted abuse.",
-    placeholder: "Explain who was targeted and what happened.",
-  },
-  {
-    value: "inappropriate",
-    label: "Inappropriate content",
-    hint: "Graphic, explicit, or unsafe material.",
-    placeholder: "Tell us what part of the post is inappropriate.",
-  },
-  {
-    value: "off_topic",
-    label: "Off topic",
-    hint: "Doesn't belong in this workspace or board.",
-    placeholder: "Describe why this post is not relevant here.",
-  },
-  {
-    value: "other",
-    label: "Other",
-    hint: "Something else not listed above.",
-    placeholder: "Add any context that helps us review quickly.",
-  },
-];
 
 export default function ReportPostDialog({
   open,
@@ -71,7 +33,7 @@ export default function ReportPostDialog({
   const [reasonOpen, setReasonOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [isPending, startTransition] = useTransition();
-  const selectedReason = REASONS.find((r) => r.value === reason);
+  const selectedReason = REPORT_REASONS.find((r) => r.value === reason);
   const handleOpenChange = (nextOpen: boolean) => {
     onOpenChange(nextOpen);
     if (!nextOpen) {
@@ -122,7 +84,7 @@ export default function ReportPostDialog({
             <PopoverTrigger asChild>
               <Button
                 type="button"
-                variant="nav"
+                variant="plain"
                 role="combobox"
                 aria-expanded={reasonOpen}
                 className="h-auto min-h-11 w-full justify-between border border-border bg-background px-2 py-2 hover:bg-background"
@@ -140,12 +102,12 @@ export default function ReportPostDialog({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-[320px] max-w-[var(--radix-popover-trigger-width)] p-0"
+              className="w-[320px] max-w-var(--radix-popover-trigger-width) p-0"
               align="start"
               list
             >
               <PopoverList>
-                {REASONS.map((r) => (
+                {REPORT_REASONS.map((r) => (
                   <PopoverListItem
                     key={r.value}
                     onClick={() => {

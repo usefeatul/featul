@@ -12,6 +12,44 @@ export type RequestFlags = Partial<Record<RequestFlagKey, boolean>>
 
 export type RequestRole = "admin" | "member" | "viewer" | null
 export type ReportReason = "spam" | "harassment" | "inappropriate" | "off_topic" | "other"
+export type ReportReasonOption = {
+  value: ReportReason
+  label: string
+  hint: string
+  placeholder: string
+}
+export const REPORT_REASONS: ReportReasonOption[] = [
+  {
+    value: "spam",
+    label: "Spam",
+    hint: "Ads, scams, or repetitive promotions.",
+    placeholder: "Share any links or details that look spammy.",
+  },
+  {
+    value: "harassment",
+    label: "Harassment",
+    hint: "Bullying, threats, or targeted abuse.",
+    placeholder: "Explain who was targeted and what happened.",
+  },
+  {
+    value: "inappropriate",
+    label: "Inappropriate content",
+    hint: "Graphic, explicit, or unsafe material.",
+    placeholder: "Tell us what part of the post is inappropriate.",
+  },
+  {
+    value: "off_topic",
+    label: "Off topic",
+    hint: "Doesn't belong in this workspace or board.",
+    placeholder: "Describe why this post is not relevant here.",
+  },
+  {
+    value: "other",
+    label: "Other",
+    hint: "Something else not listed above.",
+    placeholder: "Add any context that helps us review quickly.",
+  },
+]
 
 export interface RequestItemData extends RequestFlags {
   id: string
