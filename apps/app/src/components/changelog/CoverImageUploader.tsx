@@ -4,7 +4,8 @@ import { useCallback, useState } from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import { ImageIcon } from "@featul/ui/icons/image";
-import { X, Loader2 } from "lucide-react";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { X } from "lucide-react";
 import { toast } from "sonner";
 
 interface CoverImageUploaderProps {
@@ -97,7 +98,7 @@ export function CoverImageUploader({
             />
             <Button variant="card" size="icon" className="h-7 w-7" asChild disabled={isUploading}>
                 {isUploading ? (
-                    <span><Loader2 className="size-4 animate-spin" /></span>
+                    <span><LoaderIcon className="size-4 animate-spin" /></span>
                 ) : (
                     <span><ImageIcon className="text-muted-foreground size-4" /></span>
                 )}
