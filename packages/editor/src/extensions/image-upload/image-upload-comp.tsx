@@ -1,11 +1,11 @@
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
+import { LoaderIcon } from "@featul/ui/icons/loader";
 import { cn } from "@featul/ui/lib/utils";
 import {
   CheckIcon,
   ImageIcon,
-  Loader2Icon,
   XIcon,
 } from "lucide-react";
 import type { ChangeEvent } from "react";
@@ -174,7 +174,7 @@ export const ImageUploadComp = ({
           {/* Dropzone or Uploading state */}
           {loading ? (
             <div className="flex min-h-[80px] flex-1 flex-col items-center justify-center">
-              <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+              <LoaderIcon className="size-5 animate-spin text-muted-foreground" />
               <p className="text-muted-foreground text-sm mt-2">Uploading...</p>
             </div>
           ) : (
@@ -251,7 +251,7 @@ export const ImageUploadComp = ({
                   variant="card"
                 >
                   {isValidatingUrl ? (
-                    <Loader2Icon className="size-4 animate-spin" />
+                    <LoaderIcon className="size-4 animate-spin" />
                   ) : (
                     <CheckIcon className="size-4" />
                   )}
