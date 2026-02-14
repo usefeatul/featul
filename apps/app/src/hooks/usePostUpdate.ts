@@ -5,6 +5,8 @@ import { useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { getPostTitleMinError } from "@/hooks/postSubmitGuard"
+import { readApiErrorMessage } from "@/hooks/postApiError"
 
 interface UsePostUpdateProps {
   postId: string
@@ -23,6 +25,11 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
 
     const normalizedTitle = title.trim()
     const normalizedContent = content.trim()
+    const titleError = getPostTitleMinError(normalizedTitle)
+    if (titleError) {
+      toast.error(titleError)
+      return
+    }
 
     startTransition(async () => {
       try {
@@ -49,8 +56,8 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
 
           router.refresh()
         } else {
-          const err = await res.json()
-          toast.error((err as { message?: string })?.message || "Failed to update post")
+          const message = await readApiErrorMessage(res, "Failed to update post", "title")
+          toast.error(message)
         }
       } catch (error) {
         console.error("Failed to update post:", error)

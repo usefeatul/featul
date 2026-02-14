@@ -7,6 +7,8 @@ import { toast } from "sonner"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import { useRouter } from "next/navigation"
 import type { BoardSummary, PostUser } from "@/types/post"
+import { getPostTitleMinError } from "@/hooks/postSubmitGuard"
+import { readApiErrorMessage } from "@/hooks/postApiError"
 
 interface UsePostSubmissionProps {
   workspaceSlug: string
@@ -35,6 +37,11 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
 
     const normalizedTitle = title.trim()
     const normalizedContent = content.trim()
+    const titleError = getPostTitleMinError(normalizedTitle)
+    if (titleError) {
+      toast.error(titleError)
+      return
+    }
 
     const fingerprint = await getBrowserFingerprint()
 
@@ -72,11 +79,11 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
             router.push(`/board/p/${data.post.slug}`)
           }
         } else {
-          const err = await res.json()
           if (res.status === 401) {
             toast.error("Anonymous posting is not allowed on this board")
           } else {
-            toast.error((err as { message?: string })?.message || "Failed to submit post")
+            const message = await readApiErrorMessage(res, "Failed to submit post", "title")
+            toast.error(message)
           }
         }
       } catch (error) {
