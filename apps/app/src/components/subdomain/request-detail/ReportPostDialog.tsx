@@ -16,13 +16,7 @@ import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { FlagIcon } from "@featul/ui/icons/flag";
 import { Check, ChevronsUpDown } from "lucide-react";
-
-type ReportReason =
-  | "spam"
-  | "harassment"
-  | "inappropriate"
-  | "off_topic"
-  | "other";
+import type { ReportReason } from "@/types/request";
 
 interface ReportPostDialogProps {
   open: boolean;
@@ -128,10 +122,10 @@ export default function ReportPostDialog({
             <PopoverTrigger asChild>
               <Button
                 type="button"
-                variant="outline"
+                variant="nav"
                 role="combobox"
                 aria-expanded={reasonOpen}
-                className="h-auto min-h-11 w-full justify-between px-3 py-2"
+                className="h-auto min-h-11 w-full justify-between border border-border bg-background px-2 py-2 hover:bg-background"
               >
                 <span className="min-w-0 text-left">
                   <span className="block text-sm font-medium leading-none">

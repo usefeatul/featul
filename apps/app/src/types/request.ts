@@ -11,6 +11,7 @@ export type RequestFlagKey = RequestFlagOption["key"]
 export type RequestFlags = Partial<Record<RequestFlagKey, boolean>>
 
 export type RequestRole = "admin" | "member" | "viewer" | null
+export type ReportReason = "spam" | "harassment" | "inappropriate" | "off_topic" | "other"
 
 export interface RequestItemData extends RequestFlags {
   id: string
