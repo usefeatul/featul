@@ -11,7 +11,7 @@ import { ROADMAP_STATUSES, statusLabel } from "@/lib/roadmap";
 import {
   toRoadmapCardItem,
   useRoadmapBoardState,
-} from "@/components/roadmap/useRoadmapBoardState";
+} from "@/hooks/useRoadmapBoardState";
 import type { RequestItemData } from "@/types/request";
 import type { PostUser } from "@/types/post";
 
