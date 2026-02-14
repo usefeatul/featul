@@ -8,7 +8,6 @@ import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem }
 import { DropdownIcon } from "@featul/ui/icons/dropdown"
 import MemberIcon from "@featul/ui/icons/member"
 import { LoadingButton } from "@/components/global/loading-button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
@@ -91,7 +90,6 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
           type="button"
           onClick={onSubmit}
           loading={loading}
-          loadingIcon={<LoaderIcon className="size-4 animate-spin" />}
           disabled={!email.trim()}
         >
           Send Invite

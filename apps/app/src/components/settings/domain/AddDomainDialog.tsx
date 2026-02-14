@@ -5,7 +5,6 @@ import { Input } from "@featul/ui/components/input"
 import { LoadingButton } from "@/components/global/loading-button"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import DomainIcon from "@featul/ui/icons/domain"
-import { LoaderIcon } from "@featul/ui/icons/loader"
 
 export default function AddDomainDialog({
   open,
@@ -50,7 +49,6 @@ export default function AddDomainDialog({
         </LoadingButton>
         <LoadingButton
           loading={Boolean(saving)}
-          loadingIcon={<LoaderIcon className="size-4 animate-spin" />}
           onClick={() => onSave(value)}
           disabled={Boolean(saving)}
         >

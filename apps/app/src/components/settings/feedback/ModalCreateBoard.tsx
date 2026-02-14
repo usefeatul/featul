@@ -5,7 +5,6 @@ import { Input } from "@featul/ui/components/input"
 import BoardDialogIcon from "@featul/ui/icons/board-dialog"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import { LoadingButton } from "@/components/global/loading-button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
 import { toSlug } from "@/lib/slug"
 
 export default function ModalCreateBoard({ open, onOpenChange, onSave, saving }: { open: boolean; onOpenChange: (v: boolean) => void; onSave: (params: { name: string; slug?: string }) => void; saving?: boolean }) {
@@ -52,7 +51,6 @@ export default function ModalCreateBoard({ open, onOpenChange, onSave, saving }:
         <LoadingButton
           type="button"
           loading={Boolean(saving)}
-          loadingIcon={<LoaderIcon className="size-4 animate-spin" />}
           onClick={() => onSave({ name: name.trim(), slug: slug ? toSlug(slug) : undefined })}
           disabled={!name.trim()}
         >

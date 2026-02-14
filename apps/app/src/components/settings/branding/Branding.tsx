@@ -23,7 +23,6 @@ import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
 import { setWorkspaceLogo } from "@/lib/branding-store";
 import { Input } from "@featul/ui/components/input";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 import { useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
@@ -324,7 +323,6 @@ export default function BrandingSection({
         <LoadingButton
           onClick={handleSave}
           loading={saving}
-          loadingIcon={<LoaderIcon className="size-4 animate-spin" />}
           disabled={loading || brandingAccessLoading || !canEditBranding}
         >
           Save
