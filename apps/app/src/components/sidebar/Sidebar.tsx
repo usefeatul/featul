@@ -15,6 +15,7 @@ import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
+import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
@@ -69,7 +70,9 @@ export default function Sidebar({
   );
   const [hotkeysActive, setHotkeysActive] = useState(false);
   const [createPostOpen, setCreatePostOpen] = useState(false);
+  const openCreatePost = React.useCallback(() => setCreatePostOpen(true), []);
   useSidebarHotkeys(hotkeysActive, middleNav, router);
+  useCreatePostHotkey({ onOpen: openCreatePost });
 
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
@@ -137,7 +140,7 @@ export default function Sidebar({
           className="w-full mb-1 group dark:bg-background flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
           variant="ghost"
           size="md"
-          onClick={() => setCreatePostOpen(true)}
+          onClick={openCreatePost}
         >
           <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
           <span className="transition-colors text-accent">Create Posts</span>
