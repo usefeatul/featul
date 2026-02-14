@@ -66,14 +66,19 @@
 .drag-handle::after {
   content: "";
   position: absolute;
-  left: 0.6rem;
+  left: 0.55rem;
   top: 50%;
   width: 2px;
-  height: 11px;
+  height: 2px;
   transform: translateY(-50%);
   border-radius: 9999px;
   background: currentColor;
-  box-shadow: 5px 0 currentColor;
+  box-shadow:
+    0 -4px currentColor,
+    0 4px currentColor,
+    5px -4px currentColor,
+    5px 0 currentColor,
+    5px 4px currentColor;
 }
 
 .drag-handle:hover {
