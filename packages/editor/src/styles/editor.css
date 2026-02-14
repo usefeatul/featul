@@ -17,6 +17,56 @@
   font-size: 0.95rem;
 }
 
+/* Required for floating drag-handle positioning */
+.tiptap {
+  position: relative;
+}
+
+/* Block drag handle (Tiptap DragHandle extension) */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border, #d1d5db);
+  background: var(--background, #ffffff);
+  color: var(--foreground, #111827);
+  cursor: grab;
+  z-index: 30;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  opacity: 1;
+  transition:
+    opacity 120ms ease,
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.drag-handle::before,
+.drag-handle::after {
+  content: "";
+  width: 2px;
+  height: 11px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.drag-handle:hover {
+  border-color: var(--border, #9ca3af);
+  background: var(--muted, #e5e7eb);
+  color: var(--foreground, #111827);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.14);
+}
+
+.drag-handle:active,
+.drag-handle[data-dragging="true"] {
+  cursor: grabbing;
+}
+
 /* Paragraph spacing */
 .ProseMirror p {
   margin-bottom: 1em;

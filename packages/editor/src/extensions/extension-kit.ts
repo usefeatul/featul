@@ -1,9 +1,12 @@
+import { offset } from "@floating-ui/dom";
 import { cn } from "@featul/ui/lib/utils";
 import { Color } from "@tiptap/extension-color";
+import { DragHandle } from "@tiptap/extension-drag-handle";
 import { FileHandler } from "@tiptap/extension-file-handler";
 import { Highlight } from "@tiptap/extension-highlight";
 import { Image } from "@tiptap/extension-image";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
+import { NodeRange } from "@tiptap/extension-node-range";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { TextStyleKit } from "@tiptap/extension-text-style";
@@ -144,6 +147,27 @@ export const ExtensionKit = ({
 
     // Slash command
     configureSlashCommand(),
+
+    // Enables selecting a range of nodes, required by drag-handle block reordering
+    NodeRange,
+
+    // Block drag handle for reordering content by drag-and-drop
+    DragHandle.configure({
+      computePositionConfig: {
+        // Center handle vertically on the current block for cleaner alignment
+        placement: "left",
+        // Keep a visible fixed gap between handle and line content
+        middleware: [offset(22)],
+      },
+      render: () => {
+        const element = document.createElement("div");
+        element.classList.add("drag-handle");
+        element.setAttribute("role", "button");
+        element.setAttribute("aria-label", "Drag to reorder block");
+        element.title = "Drag to reorder";
+        return element;
+      },
+    }),
 
     // Table extensions
     Table,
