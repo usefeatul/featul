@@ -156,8 +156,8 @@ export const ExtensionKit = ({
       computePositionConfig: {
         // Center handle vertically on the current block for cleaner alignment
         placement: "left",
-        // Keep a visible fixed gap between handle and line content
-        middleware: [offset(22)],
+        // Keep handle hit-area adjacent to content so it doesn't disappear on move-to-drag
+        middleware: [offset(0)],
       },
       render: () => {
         const element = document.createElement("div");
