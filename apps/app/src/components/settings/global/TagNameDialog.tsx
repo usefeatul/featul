@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@featul/ui/components/input"
 import TagIcon from "@featul/ui/icons/tag"
 import { LoadingButton } from "@/components/global/loading-button"
+import { LoaderIcon } from "@featul/ui/icons/loader"
 
 type TagNameDialogProps = {
   open: boolean
@@ -72,7 +73,13 @@ export function TagNameDialog({
             <LoadingButton type="button" variant="card" onClick={() => onOpenChange(false)}>
               Cancel
             </LoadingButton>
-            <LoadingButton type="button" loading={Boolean(saving)} onClick={handleSubmit} disabled={disabled}>
+            <LoadingButton
+              type="button"
+              loading={Boolean(saving)}
+              loadingIcon={<LoaderIcon className="size-4 animate-spin" />}
+              onClick={handleSubmit}
+              disabled={disabled}
+            >
               {saving ? loadingLabel : actionLabel}
             </LoadingButton>
           </div>

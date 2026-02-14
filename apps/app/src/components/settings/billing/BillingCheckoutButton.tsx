@@ -5,6 +5,7 @@ import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
 import { LoadingButton } from "@/components/global/loading-button"
+import { LoaderIcon } from "@featul/ui/icons/loader"
 import type { BillingCycle, PlanOption } from "./billing-data"
 import { getCheckoutSlug } from "./billing-data"
 
@@ -85,6 +86,7 @@ export default function BillingCheckoutButton({
     <LoadingButton
       className={cn(className)}
       loading={isCheckingOut}
+      loadingIcon={<LoaderIcon className="size-4 animate-spin" />}
       disabled={isCurrent || isCheckingOut}
       onClick={handleCheckout}
     >
