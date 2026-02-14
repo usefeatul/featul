@@ -12,6 +12,7 @@ import { usePostSubmission } from "../../hooks/usePostSubmission"
 import { usePostImageUpload } from "../../hooks/usePostImageUpload"
 import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "../post/SimilarPosts"
+import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
 
 interface CreatePostModalProps {
   open: boolean
@@ -70,6 +71,12 @@ export default function CreatePostModal({
   })
 
   const initials = user?.name ? getInitials(user.name) : "?"
+  const canSubmit = canSubmitPostForm({
+    title,
+    hasSelectedBoard: !!selectedBoard,
+    isPending,
+    uploadingImage,
+  })
 
   return (
     <SettingsDialogShell
@@ -102,7 +109,7 @@ export default function CreatePostModal({
 
         <PostFooter
           isPending={isPending}
-          disabled={!title || !content || !selectedBoard || isPending || uploadingImage}
+          disabled={!canSubmit}
           uploadedImage={uploadedImage}
           uploadingImage={uploadingImage}
           fileInputRef={fileInputRef}

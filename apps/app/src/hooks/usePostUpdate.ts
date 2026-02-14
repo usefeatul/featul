@@ -19,14 +19,17 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
   const queryClient = useQueryClient()
 
   const updatePost = async (selectedBoard: { slug: string } | null, image?: string | null, roadmapStatus?: string, tags?: string[]) => {
-    if (!title || !content || !selectedBoard) return
+    if (!selectedBoard) return
+
+    const normalizedTitle = title.trim()
+    const normalizedContent = content.trim()
 
     startTransition(async () => {
       try {
         const res = await client.post.update.$post({
           postId,
-          title,
-          content,
+          title: normalizedTitle,
+          content: normalizedContent,
           image: image,
           boardSlug: selectedBoard.slug,
           roadmapStatus: roadmapStatus || undefined,

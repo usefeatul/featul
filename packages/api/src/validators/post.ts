@@ -1,5 +1,21 @@
 import { z } from "zod"
 import { fingerprintSchema } from "./shared"
+import {
+  POST_CONTENT_MIN_LENGTH,
+  POST_TITLE_MAX_LENGTH,
+  POST_TITLE_MIN_LENGTH,
+} from "./postValidation"
+
+const postTitleSchema = z
+  .string()
+  .trim()
+  .min(POST_TITLE_MIN_LENGTH, `Title must be at least ${POST_TITLE_MIN_LENGTH} characters`)
+  .max(POST_TITLE_MAX_LENGTH, `Title must be at most ${POST_TITLE_MAX_LENGTH} characters`)
+
+const postContentSchema = z
+  .string()
+  .trim()
+  .min(POST_CONTENT_MIN_LENGTH)
 
 export const byIdSchema = z.object({ postId: z.string().min(1) })
 
@@ -22,8 +38,8 @@ export const votePostSchema = z.object({
 })
 
 export const createPostSchema = z.object({
-  title: z.string().min(1).max(100),
-  content: z.string().min(1),
+  title: postTitleSchema,
+  content: postContentSchema,
   image: z.string().url().optional(),
   workspaceSlug: z.string().min(1),
   boardSlug: z.string().min(1),
@@ -34,8 +50,8 @@ export const createPostSchema = z.object({
 
 export const updatePostSchema = z.object({
   postId: z.string().min(1),
-  title: z.string().min(1).max(100).optional(),
-  content: z.string().min(1).optional(),
+  title: postTitleSchema.optional(),
+  content: postContentSchema.optional(),
   image: z.string().url().optional().nullable(),
   boardSlug: z.string().min(1).optional(),
   roadmapStatus: z.string().min(1).max(64).optional(),

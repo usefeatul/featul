@@ -31,21 +31,18 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
     roadmapStatus?: string,
     tags?: string[]
   ) => {
-    if (!title || !content || !selectedBoard) return
+    if (!selectedBoard) return
 
-    const MAX_TITLE_LENGTH = 100
-    if (title.length > MAX_TITLE_LENGTH) {
-      toast.error(`Title must be at most ${MAX_TITLE_LENGTH} characters`)
-      return
-    }
+    const normalizedTitle = title.trim()
+    const normalizedContent = content.trim()
 
     const fingerprint = await getBrowserFingerprint()
 
     startTransition(async () => {
       try {
         const res = await client.post.create.$post({
-          title,
-          content,
+          title: normalizedTitle,
+          content: normalizedContent,
           image: image || undefined,
           workspaceSlug,
           boardSlug: selectedBoard.slug,

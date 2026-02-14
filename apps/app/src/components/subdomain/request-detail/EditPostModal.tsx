@@ -9,6 +9,7 @@ import { PostFooter } from "../../post/PostFooter";
 import { useCreatePostData } from "@/hooks/useCreatePostData";
 import { usePostUpdate } from "@/hooks/usePostUpdate";
 import { usePostImageUpload } from "@/hooks/usePostImageUpload";
+import { canSubmitPostForm } from "@/hooks/postSubmitGuard";
 import DocumentTextIcon from "@featul/ui/icons/document-text";
 
 interface EditablePost {
@@ -92,6 +93,12 @@ export default function EditPostModal({
   };
 
   const initials = user?.name ? getInitials(user.name) : "?";
+  const canSubmit = canSubmitPostForm({
+    title,
+    hasSelectedBoard: !!selectedBoard,
+    isPending,
+    uploadingImage,
+  });
 
   return (
     <SettingsDialogShell
@@ -123,9 +130,7 @@ export default function EditPostModal({
 
         <PostFooter
           isPending={isPending}
-          disabled={
-            !title || !content || !selectedBoard || isPending || uploadingImage
-          }
+          disabled={!canSubmit}
           uploadedImage={uploadedImage}
           uploadingImage={uploadingImage}
           fileInputRef={fileInputRef}
