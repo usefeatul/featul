@@ -56,7 +56,7 @@ export function TagNameDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className=" bg-card rounded-lg p-2 dark:bg-black/40 border border-border">
+        <div className=" bg-card rounded-xl p-2 dark:bg-black/40 border border-border">
           <DialogDescription className="text-sm mb-2 ">{description}</DialogDescription>
 
           <Input
