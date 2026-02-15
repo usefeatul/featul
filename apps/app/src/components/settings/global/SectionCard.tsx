@@ -17,12 +17,12 @@ export default function SectionCard({
         <div>
           <div className="text-lg font-heading">{title}</div>
           {description ? (
-            <div className="text-sm text-accent mt-1">{description}</div>
+            <div className="text-sm text-accent mt-1.5">{description}</div>
           ) : null}
         </div>
         {action && <div>{action}</div>}
       </div>
-      <div className="relative z-10 px-2 pb-2 pt-2">{children}</div>
+      <div className="relative z-10 px-4 pb-4 pt-4">{children}</div>
     </div>
   );
 }
