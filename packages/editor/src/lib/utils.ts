@@ -68,6 +68,12 @@ export function isTextSelected({ editor }: { editor: Editor | null }): boolean {
     },
   } = editor;
 
+  // Reordering can leave a non-text selection (e.g. NodeRangeSelection).
+  // Bubble menu should only appear for real text selections.
+  if (!isTextSelection(selection)) {
+    return false;
+  }
+
   // Sometimes check for `empty` is not enough.
   // Double-click an empty paragraph returns a node size of 2.
   // So we check also for an empty text size.
