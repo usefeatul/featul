@@ -185,17 +185,31 @@ mark[style]>strong {
 /* codeblocks */
 
 pre {
-  background: #0d0d0d;
-  color: #fff;
-  font-family: "JetBrainsMono", monospace;
-  padding: 0.75rem 1rem;
+  background: linear-gradient(180deg, #0f1525 0%, #0b111d 100%);
+  color: #e6edf3;
+  font-family:
+    "JetBrainsMono",
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  padding: 0.65rem 0.85rem;
   border-radius: 0.5rem;
+  border: 1px solid #273244;
+  overflow-x: auto;
 
   code {
     color: inherit;
     padding: 0;
     background: none;
-    font-size: 0.8rem;
+    font-size: inherit;
+    line-height: inherit;
   }
 
   .hljs-comment,
