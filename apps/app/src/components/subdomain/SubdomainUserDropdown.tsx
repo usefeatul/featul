@@ -13,7 +13,7 @@ import CreatePostModal from "./CreatePostModal"
 import { SubdomainUserMenu } from "./SubdomainUserMenu"
 import type { AuthUser } from "@/types/auth"
 import { hasAuthUser } from "@/utils/auth"
-import { getCreateProjectUrl, getDashboardUrl } from "@/utils/app-urls"
+import { getCreateProjectUrl, getWorkspaceDashboardUrl } from "@/utils/app-urls"
 
 
 export default function SubdomainUserDropdown({
@@ -65,9 +65,9 @@ export default function SubdomainUserDropdown({
 
   const onDashboard = React.useCallback(() => {
     setOpen(false)
-    const target = getDashboardUrl()
-    window.location.href = target
-  }, [])
+    const target = getWorkspaceDashboardUrl(subdomain)
+    window.open(target, "_blank", "noopener,noreferrer")
+  }, [subdomain])
 
   const onCreateProject = React.useCallback(() => {
     setOpen(false)

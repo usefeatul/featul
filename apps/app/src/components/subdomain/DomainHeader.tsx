@@ -16,7 +16,7 @@ import { useSession } from "@featul/auth/client";
 import type { AuthUser } from "@/types/auth";
 import { hasAuthUser } from "@/utils/auth";
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal";
-import { getDashboardUrl } from "@/utils/app-urls";
+import { getWorkspaceDashboardUrl } from "@/utils/app-urls";
 
 type WorkspaceInfo = {
   id: string;
@@ -85,7 +85,7 @@ export function DomainHeader({
       active = false;
     };
   }, [subdomain]);
-  const dashboardUrl = getDashboardUrl();
+  const dashboardUrl = getWorkspaceDashboardUrl(workspace.slug);
   React.useEffect(() => {
     if (isSignedIn && isAuthOpen) setAuthOpen(false);
   }, [isSignedIn, isAuthOpen, setAuthOpen]);
@@ -163,7 +163,12 @@ export function DomainHeader({
             <>
               <NotificationsBell />
               <Button asChild size="xs" variant="nav" aria-label="Dashboard">
-                <Link href={dashboardUrl} className="group inline-flex items-center">
+                <Link
+                  href={dashboardUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center"
+                >
                   <HomeIcon
                     className={cn(
                       "opacity-90 text-accent rounded-md size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
@@ -171,7 +176,7 @@ export function DomainHeader({
                   />
                 </Link>
               </Button>
-              <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+              <SubdomainUserDropdown subdomain={workspace.slug} initialUser={user || null} />
             </>
           ) : (
             <>
@@ -218,9 +223,11 @@ export function DomainHeader({
             <>
               <NotificationsBell />
               <Button asChild size="xs" variant="nav">
-                <Link href={dashboardUrl}>Dashboard</Link>
+                <Link href={dashboardUrl} target="_blank" rel="noopener noreferrer">
+                  Dashboard
+                </Link>
               </Button>
-              <SubdomainUserDropdown subdomain={subdomain} initialUser={user || null} />
+              <SubdomainUserDropdown subdomain={workspace.slug} initialUser={user || null} />
             </>
           ) : (
             <>
