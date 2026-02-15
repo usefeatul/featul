@@ -12,12 +12,12 @@ export default function SectionCard({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="relative mb-2 overflow-hidden rounded-sm border border-border bg-card dark:bg-black/50 text-foreground ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:border-border  dark:ring-offset-black ">
+    <div className="relative mb-2 overflow-hidden rounded-md border border-border bg-card dark:bg-black/50 text-foreground ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:border-border  dark:ring-offset-black ">
       <div className="relative z-10 flex items-center justify-between border-b border-border/70 p-4">
         <div>
           <div className="text-lg font-heading">{title}</div>
           {description ? (
-            <div className="text-sm text-accent mt-1.5">{description}</div>
+            <div className="text-sm text-accent font-light mt-1.5">{description}</div>
           ) : null}
         </div>
         {action && <div>{action}</div>}
