@@ -14,7 +14,10 @@ export default function AllowAnonymousToggle({
   const { value, onToggle } = useGlobalBoardToggle(
     slug,
     "allowAnonymous",
-    "Anonymous submissions setting updated",
+    (enabled) =>
+      enabled
+        ? "Anonymous submissions enabled."
+        : "Anonymous submissions disabled.",
     initialBoards
   )
 

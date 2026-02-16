@@ -14,7 +14,10 @@ export default function HidePublicMemberIdentityToggle({
   const { value, onToggle } = useGlobalBoardToggle(
     slug,
     "hidePublicMemberIdentity",
-    "Public member identity setting updated",
+    (enabled) =>
+      enabled
+        ? "Public member names hidden."
+        : "Public member names visible.",
     initialBoards
   )
 

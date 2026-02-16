@@ -14,7 +14,10 @@ export default function AllowCommentsToggle({
   const { value, onToggle } = useGlobalBoardToggle(
     slug,
     "allowComments",
-    "Comments setting updated",
+    (enabled) =>
+      enabled
+        ? "Comments enabled."
+        : "Comments disabled.",
     initialBoards
   )
 
