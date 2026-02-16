@@ -20,7 +20,11 @@ export default function WorkspaceIdCard({ workspaceId }: Props) {
         <SettingsCard
             icon={<Clipboard className="size-5 text-primary" />}
             title="Workspace ID"
-            description={<span>ID: <span className="font-medium text-black">{workspaceId || "N/A"}</span>. Use this unique identifier for API integrations.</span>}
+            description={
+                <span className="break-words">
+                    ID: <span className="font-semibold text-foreground break-all">{workspaceId || "N/A"}</span>. Use this unique identifier for API integrations.
+                </span>
+            }
             buttonLabel="Copy"
             onAction={handleCopy}
             disabled={!workspaceId}
