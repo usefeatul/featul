@@ -52,6 +52,7 @@ export function buildPostSelect<T extends Record<string, unknown>>(extra?: T) {
     createdAt: post.createdAt,
     boardName: board.name,
     boardSlug: board.slug,
+    allowComments: board.allowComments,
     duplicateOfId: post.duplicateOfId,
     metadata: post.metadata,
     author: {

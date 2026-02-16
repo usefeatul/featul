@@ -5,6 +5,7 @@ import { client } from "@featul/api/client"
 import type { UploadedImage } from "@/hooks/useImageUpload"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import type { CommentData } from "../types/comment"
+import { readApiErrorMessage } from "@/hooks/postApiError"
 
 interface UseCommentSubmitProps {
   postId: string
@@ -156,20 +157,14 @@ export function useCommentSubmit({
         } else if (res.status === 401) {
           toast.error("Please sign in to comment")
         } else if (res.status === 403) {
-          try {
-            const data = await res.json() as CreateCommentResponse
-            const apiMessage = data?.message || data?.error?.message
-
-            if (typeof apiMessage === "string" && apiMessage.length > 0) {
-              toast.error(apiMessage)
-            } else {
-              toast.error("Comments are disabled")
-            }
-          } catch {
-            toast.error("Comments are disabled")
-          }
+          const message = await readApiErrorMessage(
+            res,
+            "Comments are currently disabled on this board"
+          )
+          toast.error(message)
         } else {
-          toast.error("Failed to post comment")
+          const message = await readApiErrorMessage(res, "Failed to post comment")
+          toast.error(message)
         }
       } catch (error) {
         console.error("Failed to post comment:", error)

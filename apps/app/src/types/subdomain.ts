@@ -13,6 +13,7 @@ export type SubdomainRequestDetailData = {
   createdAt: string;
   boardName: string;
   boardSlug: string;
+  allowComments?: boolean;
   hasVoted?: boolean;
   hidePublicMemberIdentity?: boolean;
   role?: "admin" | "member" | "viewer" | null;

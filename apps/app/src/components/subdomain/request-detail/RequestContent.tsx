@@ -137,6 +137,7 @@ export function RequestContent({
           postId={post.id}
           initialCount={post.commentCount}
           workspaceSlug={workspaceSlug}
+          allowComments={post.allowComments}
           initialComments={initialComments}
           initialCollapsedIds={initialCollapsedIds}
           hidePublicMemberIdentity={showHiddenIdentity}

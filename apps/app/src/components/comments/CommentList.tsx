@@ -1,5 +1,5 @@
 import React from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import CommentForm from "./CommentForm"
 import CommentThread from "./CommentThread"
@@ -7,11 +7,17 @@ import { useSession } from "@featul/auth/client"
 import type { CommentData } from "../../types/comment"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import { useEffect, useState } from "react"
+import CommentsDisabledState from "./CommentsDisabledState"
+
+interface CommentListResponse {
+  comments: CommentData[]
+}
 
 interface CommentListProps {
   postId: string
   initialCount?: number
   workspaceSlug?: string
+  allowComments?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
   hidePublicMemberIdentity?: boolean
@@ -21,11 +27,11 @@ export default function CommentList({
   postId,
   initialCount = 0,
   workspaceSlug,
+  allowComments = true,
   initialComments,
   initialCollapsedIds,
   hidePublicMemberIdentity,
 }: CommentListProps) {
-  // const queryClient = useQueryClient();
   const { data: session } = useSession() as any
   const currentUserId = session?.user?.id || null
   const [fingerprint, setFingerprint] = useState<string | null>(null)
@@ -36,12 +42,7 @@ export default function CommentList({
 
   const queryKey = ["comments", postId]
 
-  const {
-    data: commentsData,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useQuery({
+  const { data: commentsData, isLoading, refetch } = useQuery<CommentListResponse>({
     queryKey,
     queryFn: async () => {
       const res = await client.comment.list.$get({
@@ -51,7 +52,8 @@ export default function CommentList({
       if (!res.ok) {
         throw new Error("Failed to fetch comments")
       }
-      return await res.json()
+      const data = (await res.json()) as { comments?: CommentData[] } | null
+      return { comments: Array.isArray(data?.comments) ? data.comments : [] }
     },
     staleTime: 30_000,
     gcTime: 300_000,
@@ -59,6 +61,7 @@ export default function CommentList({
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     initialData: initialComments ? { comments: initialComments } : undefined,
+    enabled: allowComments,
   })
 
   const comments = commentsData?.comments || []
@@ -66,6 +69,10 @@ export default function CommentList({
 
   const handleCommentSuccess = () => {
     refetch()
+  }
+
+  if (!allowComments) {
+    return <CommentsDisabledState />
   }
 
   return (

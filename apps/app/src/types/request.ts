@@ -91,6 +91,7 @@ export type RequestDetailData = {
   createdAt: string
   boardName: string
   boardSlug: string
+  allowComments?: boolean
   hasVoted?: boolean
   role?: RequestRole
   isOwner?: boolean

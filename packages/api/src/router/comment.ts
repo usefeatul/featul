@@ -202,7 +202,7 @@ export function createCommentRouter() {
 
         if (!targetPost.allowComments) {
           throw new HTTPException(403, {
-            message: "Comments are disabled for this board",
+            message: "Comments are currently disabled on this board",
           });
         }
 
