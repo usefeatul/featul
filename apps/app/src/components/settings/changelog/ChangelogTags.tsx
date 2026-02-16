@@ -98,7 +98,7 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
         </Table>
       </div>
       <PlanNotice slug={slug} feature="changelog_tags" plan={initialPlan} changelogTagsCount={(tagsData || []).length} />
-      <div>
+      <div className="mt-2 flex items-center justify-start">
         <LoadingButton type="button" onClick={() => setTagModalOpen(true)}>Add tag</LoadingButton>
       </div>
       <ModalTags

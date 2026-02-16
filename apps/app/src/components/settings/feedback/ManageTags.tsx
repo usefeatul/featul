@@ -113,7 +113,7 @@ export default function ManageTags({
         </Table>
       </div>
       <PlanNotice slug={slug} feature="tags" plan={plan} tagsCount={(tags || []).length} />
-      <div>
+      <div className="mt-2 flex items-center justify-start">
         <LoadingButton type="button" onClick={() => setCreateOpen(true)}>Create tag</LoadingButton>
       </div>
 

@@ -319,14 +319,18 @@ export default function BrandingSection({
           </div>
         </div>
 
-        <PlanNotice slug={slug} feature="branding" plan={plan} />
-        <LoadingButton
-          onClick={handleSave}
-          loading={saving}
-          disabled={loading || brandingAccessLoading || !canEditBranding}
-        >
-          Save
-        </LoadingButton>
+        <div className="pt-2 space-y-2">
+          <PlanNotice slug={slug} feature="branding" plan={plan} />
+          <div className="mt-2 flex items-center justify-start">
+            <LoadingButton
+              onClick={handleSave}
+              loading={saving}
+              disabled={loading || brandingAccessLoading || !canEditBranding}
+            >
+              Save
+            </LoadingButton>
+          </div>
+        </div>
       </div>
 
     </SectionCard>

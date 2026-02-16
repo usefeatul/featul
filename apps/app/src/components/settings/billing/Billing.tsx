@@ -62,7 +62,7 @@ function PlanSummaryCard({ planKey, onUpgradeClick }: PlanSummaryCardProps) {
           Current
         </span>
       </div>
-      <div>
+      <div className="pt-1">
         <LoadingButton onClick={onUpgradeClick}>
           Upgrade Plan
         </LoadingButton>

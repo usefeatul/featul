@@ -175,7 +175,7 @@ export default function TeamSection({
         <div className="pt-2 space-y-2">
           <div className="text-sm text-accent">Invite a new member to your workspace.</div>
                 <PlanNotice slug={slug} feature="team" plan={initialPlan} membersCount={(data.members || []).length} />
-          <div className="flex items-center justify-start">
+          <div className="mt-2 flex items-center justify-start">
             <Button
               type="button"
               onClick={() => setInviteOpen(true)}

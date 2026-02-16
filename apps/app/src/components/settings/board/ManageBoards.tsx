@@ -140,7 +140,7 @@ export default function ManageBoards({
         </Table>
       </div>
       <PlanNotice slug={slug} feature="boards" plan={plan} boardsCount={(otherBoards || []).length} />
-      <div>
+      <div className="mt-2 flex items-center justify-start">
         <LoadingButton type="button" variant="quiet" onClick={() => setCreateOpen(true)}>Create board</LoadingButton>
       </div>
       <ModalCreateBoard
