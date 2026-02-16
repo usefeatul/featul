@@ -7,7 +7,7 @@ import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
-import { normalizePlan } from "../shared/plan"
+import { normalizePlan, isDataImportsAllowed } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
 
 const dnsResolver = new Resolver()
@@ -21,6 +21,31 @@ async function hasResolvableTopLevelDomain(host: string) {
   } catch {
     return false
   }
+}
+
+async function requireWorkspaceManagerWithPlan(ctx: any, slug: string) {
+  const [ws] = await ctx.db
+    .select({ id: workspace.id, ownerId: workspace.ownerId, plan: workspace.plan })
+    .from(workspace)
+    .where(eq(workspace.slug, slug))
+    .limit(1)
+
+  if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+  const meId = ctx.session.user.id
+  let allowed = ws.ownerId === meId
+  if (!allowed) {
+    const [me] = await ctx.db
+      .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+      .from(workspaceMember)
+      .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
+      .limit(1)
+    const perms = (me?.permissions || {}) as Record<string, boolean>
+    if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
+  }
+  if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+
+  return ws
 }
 
 export function createWorkspaceRouter() {
@@ -703,6 +728,39 @@ export function createWorkspaceRouter() {
         // For now, we simulate success to resolve the type error and basic flow
 
         return c.json({ ok: true, importedCount: rows.length - 1 }) // Subtract header
+      }),
+
+    importFromCanny: privateProcedure
+      .input(checkSlugInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug)
+        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
+          throw new HTTPException(403, { message: "Canny import is available on Starter or Professional plans" })
+        }
+
+        return c.json({ ok: false, provider: "canny", message: "Canny import is coming soon" }, 501)
+      }),
+
+    importFromNolt: privateProcedure
+      .input(checkSlugInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug)
+        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
+          throw new HTTPException(403, { message: "Nolt import is available on Starter or Professional plans" })
+        }
+
+        return c.json({ ok: false, provider: "nolt", message: "Nolt import is coming soon" }, 501)
+      }),
+
+    importFromProductBoard: privateProcedure
+      .input(checkSlugInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug)
+        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
+          throw new HTTPException(403, { message: "ProductBoard import is available on Starter or Professional plans" })
+        }
+
+        return c.json({ ok: false, provider: "productboard", message: "ProductBoard import is coming soon" }, 501)
       }),
   })
 }

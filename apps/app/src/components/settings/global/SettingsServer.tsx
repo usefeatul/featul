@@ -199,6 +199,7 @@ function SectionRenderer({
       return (
         <DataSection
           slug={slug}
+          plan={initialPlan}
         />
       );
     default:

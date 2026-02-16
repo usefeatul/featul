@@ -3,14 +3,21 @@ import ImportFromCSV from "./cards/ImportFromCSV";
 import ImportFromCanny from "./cards/ImportFromCanny";
 import ImportFromProductBoard from "./cards/ImportFromProductBoard";
 import ImportFromNolt from "./cards/ImportFromNolt";
+import { isDataImportsAllowed } from "@/lib/plan";
 
-export default function DataImportSection() {
+type Props = {
+  plan?: string;
+};
+
+export default function DataImportSection({ plan }: Props) {
+  const allowProviderImports = isDataImportsAllowed(plan ?? "free");
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <ImportFromCSV />
-      <ImportFromCanny />
-      <ImportFromProductBoard />
-      <ImportFromNolt />
+      <ImportFromCanny allowImport={allowProviderImports} />
+      <ImportFromProductBoard allowImport={allowProviderImports} />
+      <ImportFromNolt allowImport={allowProviderImports} />
     </div>
   );
 }

@@ -19,7 +19,8 @@ type Feature =
   | "tags"
   | "changelog_tags"
   | "boards"
-  | "integrations";
+  | "integrations"
+  | "data_imports";
 
 function buildMessage(
   feature: Feature,
@@ -116,6 +117,17 @@ function buildMessage(
     return {
       title: "Integrations included in your plan",
       detail: "You can use all available integrations",
+    };
+  }
+  if (feature === "data_imports") {
+    if (plan === "free")
+      return {
+        title: "Third-party imports are only available on paid plans",
+        detail: "Upgrade to Starter or Professional",
+      };
+    return {
+      title: "Third-party imports included in your plan",
+      detail: "Canny, Nolt, and ProductBoard import are coming soon",
     };
   }
   return { title: `Your plan: ${plan}`, detail: "View plan details" };

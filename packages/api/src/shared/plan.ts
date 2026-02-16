@@ -10,6 +10,7 @@ export type PlanLimits = {
   allowHidePoweredBy: boolean
   allowAttachments: boolean
   allowIntegrations: boolean
+  allowDataImports: boolean
   maxTags: number | null
   maxChangelogTags: number | null
   maxChangelogEntries: number | null
@@ -24,6 +25,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     allowHidePoweredBy: false,
     allowAttachments: true,
     allowIntegrations: false,
+    allowDataImports: false,
     maxTags: 5,
     maxChangelogTags: 5,
     maxChangelogEntries: 10,
@@ -36,6 +38,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     allowHidePoweredBy: true,
     allowAttachments: true,
     allowIntegrations: true,
+    allowDataImports: true,
     maxTags: 10,
     maxChangelogTags: 10,
     maxChangelogEntries: 50,
@@ -48,6 +51,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     allowHidePoweredBy: true,
     allowAttachments: true,
     allowIntegrations: true,
+    allowDataImports: true,
     maxTags: 20,
     maxChangelogTags: 20,
     maxChangelogEntries: null,
@@ -67,6 +71,10 @@ export function getPlanLimits(plan: PlanKey | string): PlanLimits {
 
 export function isIntegrationsAllowed(plan: PlanKey | string): boolean {
   return getPlanLimits(plan).allowIntegrations
+}
+
+export function isDataImportsAllowed(plan: PlanKey | string): boolean {
+  return getPlanLimits(plan).allowDataImports
 }
 
 export function assertWithinLimit(
