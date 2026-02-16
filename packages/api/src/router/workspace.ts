@@ -3,11 +3,25 @@ import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation, user, subscription } from "@featul/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema, importCsvInputSchema, updateTimezoneInputSchema } from "../validators/workspace"
+import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
 import { normalizePlan } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
+
+const dnsResolver = new Resolver()
+
+async function hasResolvableTopLevelDomain(host: string) {
+  const tld = getTopLevelDomain(host)
+  if (!tld) return false
+  try {
+    const records = await dnsResolver.resolveNs(tld)
+    return records.length > 0
+  } catch {
+    return false
+  }
+}
 
 export function createWorkspaceRouter() {
   return j.router({
@@ -294,10 +308,19 @@ export function createWorkspaceRouter() {
         }
 
         const host = (() => {
-          try { return new URL(String(ws.domain)).host } catch { return String(ws.domain).replace(/^https?:\/\//, "") }
+          try {
+            return normalizeDomainHost(new URL(String(ws.domain)).hostname)
+          } catch {
+            return normalizeDomainHost(String(ws.domain).replace(/^https?:\/\//, ""))
+          }
         })()
 
-        const desired = input.enabled ? String(input.customDomain || `feedback.${host}`).toLowerCase() : null
+        const desired = input.enabled
+          ? normalizeDomainHost(String(input.customDomain || `feedback.${host}`))
+          : null
+        if (desired && !(await hasResolvableTopLevelDomain(desired))) {
+          throw new HTTPException(400, { message: "Invalid domain TLD" })
+        }
 
         await ctx.db
           .update(workspace)
@@ -352,7 +375,10 @@ export function createWorkspaceRouter() {
         }
 
         const url = new URL(input.domain)
-        const host = url.host.toLowerCase()
+        const host = normalizeDomainHost(url.hostname)
+        if (!(await hasResolvableTopLevelDomain(host))) {
+          throw new HTTPException(400, { message: "Invalid domain TLD" })
+        }
         const parts = host.split('.')
         if (parts.length < 2) throw new HTTPException(400, { message: "Invalid domain host" })
         const cnameName = parts[0]
@@ -403,13 +429,12 @@ export function createWorkspaceRouter() {
         let cnameValid = false
         let txtValid = false
         if (input.checkDns) {
-          const resolver = new Resolver()
           try {
-            const cnames = await resolver.resolveCname(d.host)
+            const cnames = await dnsResolver.resolveCname(d.host)
             cnameValid = cnames.includes(d.cnameTarget)
           } catch { }
           try {
-            const txts = await resolver.resolveTxt(d.txtName)
+            const txts = await dnsResolver.resolveTxt(d.txtName)
             txtValid = txts.some((arr) => arr.join('') === d.txtValue)
           } catch { }
         }
