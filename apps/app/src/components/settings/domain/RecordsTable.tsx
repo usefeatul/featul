@@ -2,12 +2,23 @@
 
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table";
-import { Copy } from "lucide-react";
-import { toast } from "sonner";
 import type { DomainInfo } from "../../../types/domain";
 import { dnsStatusBadgeClass } from "../../../types/domain";
-import { LoadingButton } from "@/components/global/loading-button";
+import CopyValueButton from "./CopyValueButton";
 
+function CopyableValue({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex min-w-0 items-center gap-1.5">
+      <code
+        title={value}
+        className="min-w-0 flex-1 truncate font-mono text-[12px] text-foreground/95"
+      >
+        {value}
+      </code>
+      <CopyValueButton value={value} label={label} />
+    </div>
+  );
+}
 
 export default function RecordsTable({ info }: { info: DomainInfo }) {
   if (!info) return null;
@@ -15,7 +26,7 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="px-3">Type</TableHead>
+          <TableHead className="px-3 w-20">Type</TableHead>
           <TableHead className="px-3">Name</TableHead>
           <TableHead className="px-3">Value</TableHead>
           <TableHead className="px-3 w-28 text-center">Status</TableHead>
@@ -23,48 +34,12 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
       </TableHeader>
       <TableBody>
         <TableRow>
-          <TableCell className="px-3">CNAME</TableCell>
+          <TableCell className="px-3 font-medium">CNAME</TableCell>
           <TableCell className="px-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="truncate">{info.cnameName}</span>
-              <LoadingButton
-                type="button"
-                aria-label="Copy"
-                variant="card"
-                size="xs"
-                onClick={() => {
-                  try {
-                    navigator.clipboard.writeText(info.cnameName);
-                    toast.success("Copied");
-                  } catch {
-                    toast.error("Failed to copy");
-                  }
-                }}
-              >
-                <Copy className="size-3" />
-              </LoadingButton>
-            </div>
+            <CopyableValue value={info.cnameName} label="CNAME name" />
           </TableCell>
           <TableCell className="px-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="truncate">{info.cnameTarget}</span>
-              <LoadingButton
-                type="button"
-                aria-label="Copy"
-                variant="card"
-                size="xs"
-                onClick={() => {
-                  try {
-                    navigator.clipboard.writeText(info.cnameTarget);
-                    toast.success("Copied");
-                  } catch {
-                    toast.error("Failed to copy");
-                  }
-                }}
-              >
-                <Copy className="size-3" />
-              </LoadingButton>
-            </div>
+            <CopyableValue value={info.cnameTarget} label="CNAME value" />
           </TableCell>
           <TableCell className="px-3 text-center">
             <span className={`text-xs font-medium ${dnsStatusBadgeClass(info.status || "pending")}`}>
@@ -73,48 +48,12 @@ export default function RecordsTable({ info }: { info: DomainInfo }) {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell className="px-3">TXT</TableCell>
+          <TableCell className="px-3 font-medium">TXT</TableCell>
           <TableCell className="px-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="truncate">{info.txtName}</span>
-              <LoadingButton
-                type="button"
-                aria-label="Copy"
-                variant="card"
-                size="xs"
-                onClick={() => {
-                  try {
-                    navigator.clipboard.writeText(info.txtName);
-                    toast.success("Copied");
-                  } catch {
-                    toast.error("Failed to copy");
-                  }
-                }}
-              >
-                <Copy className="size-3" />
-              </LoadingButton>
-            </div>
+            <CopyableValue value={info.txtName} label="TXT name" />
           </TableCell>
           <TableCell className="px-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="truncate">{info.txtValue}</span>
-              <LoadingButton
-                type="button"
-                aria-label="Copy"
-                variant="card"
-                size="xs"
-                onClick={() => {
-                  try {
-                    navigator.clipboard.writeText(info.txtValue);
-                    toast.success("Copied");
-                  } catch {
-                    toast.error("Failed to copy");
-                  }
-                }}
-              >
-                <Copy className="size-3" />
-              </LoadingButton>
-            </div>
+            <CopyableValue value={info.txtValue} label="TXT value" />
           </TableCell>
           <TableCell className="px-3 text-center">
             <span className={`text-xs font-medium ${dnsStatusBadgeClass(info.status || "pending")}`}>
