@@ -44,7 +44,7 @@ export function createPostRouter() {
         // Check permissions
         if (!userId) {
           if (!b.allowAnonymous) {
-            throw new HTTPException(401, { message: "Anonymous posting is not allowed on this board" })
+            throw new HTTPException(401, { message: "Please sign in to submit a post on this board" })
           }
           if (!fingerprint) {
             throw new HTTPException(400, { message: "Fingerprint required for anonymous posting" })

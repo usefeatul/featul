@@ -175,6 +175,7 @@ export function createBoardRouter() {
             isSystem: false,
             isPublic: input.isPublic ?? true,
             isVisible: true,
+            allowAnonymous: true,
           })
           .returning({ id: board.id, name: board.name, slug: board.slug, isPublic: board.isPublic })
 

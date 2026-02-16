@@ -15,11 +15,18 @@ interface UsePostSubmissionProps {
   onSuccess: () => void
   onCreated?: (post: { slug: string }) => void
   skipDefaultRedirect?: boolean
+  onAuthRequired?: () => void
 }
 
-type BoardRef = Pick<BoardSummary, "slug">
+type BoardRef = Pick<BoardSummary, "slug" | "allowAnonymous">
 
-export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDefaultRedirect }: UsePostSubmissionProps) {
+export function usePostSubmission({
+  workspaceSlug,
+  onSuccess,
+  onCreated,
+  skipDefaultRedirect,
+  onAuthRequired,
+}: UsePostSubmissionProps) {
   const [isPending, startTransition] = useTransition()
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -43,7 +50,14 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
       return
     }
 
-    const fingerprint = await getBrowserFingerprint()
+    const requiresSignIn = !user && selectedBoard.allowAnonymous === false
+    if (requiresSignIn) {
+      onAuthRequired?.()
+      toast.error("Please sign in to submit a post on this board")
+      return
+    }
+
+    const fingerprint = user ? undefined : await getBrowserFingerprint()
 
     startTransition(async () => {
       try {
@@ -80,7 +94,8 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
           }
         } else {
           if (res.status === 401) {
-            toast.error("Anonymous posting is not allowed on this board")
+            onAuthRequired?.()
+            toast.error("Please sign in to submit a post on this board")
           } else {
             const message = await readApiErrorMessage(res, "Failed to submit post", "title")
             toast.error(message)

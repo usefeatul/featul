@@ -42,6 +42,7 @@ export function useWorkspaceBoards({
           id: board.id,
           name: board.name,
           slug: board.slug,
+          allowAnonymous: board.allowAnonymous,
         }))
 
       if (canceled) return

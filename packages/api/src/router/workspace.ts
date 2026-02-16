@@ -240,6 +240,7 @@ export function createWorkspaceRouter() {
               sortOrder: 0,
               createdBy: ctx.session.user.id,
               isSystem: false,
+              allowAnonymous: true,
             },
             {
               workspaceId: ws.id,
@@ -248,6 +249,7 @@ export function createWorkspaceRouter() {
               sortOrder: 1,
               createdBy: ctx.session.user.id,
               isSystem: false,
+              allowAnonymous: true,
             },
             {
               workspaceId: ws.id,
@@ -257,6 +259,7 @@ export function createWorkspaceRouter() {
               createdBy: ctx.session.user.id,
               isSystem: true,
               systemType: "roadmap",
+              allowAnonymous: true,
             },
             {
               workspaceId: ws.id,
@@ -266,6 +269,7 @@ export function createWorkspaceRouter() {
               createdBy: ctx.session.user.id,
               isSystem: true,
               systemType: "changelog",
+              allowAnonymous: true,
             },
           ])
 
