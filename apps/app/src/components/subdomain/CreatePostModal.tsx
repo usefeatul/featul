@@ -15,6 +15,7 @@ import { SimilarPosts } from "../post/SimilarPosts"
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
 import SubdomainAuthModal from "./SubdomainAuthModal"
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal"
+import { useCloseThenOpenAuth } from "@/hooks/useCloseThenOpenAuth"
 
 interface CreatePostModalProps {
   open: boolean
@@ -37,6 +38,11 @@ export default function CreatePostModal({
     setMode: setAuthMode,
     openAuth,
   } = useSubdomainAuthModal()
+
+  const { closeThenOpenAuth } = useCloseThenOpenAuth({
+    closeCurrent: () => onOpenChange(false),
+    openAuth,
+  })
 
   const { user, boards, selectedBoard, setSelectedBoard } = useCreatePostData({
     open,
@@ -67,9 +73,7 @@ export default function CreatePostModal({
       onOpenChange(false)
       setUploadedImage(null)
     },
-    onAuthRequired: () => {
-      openAuth("sign-in")
-    },
+    onAuthRequired: () => closeThenOpenAuth("sign-in"),
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
