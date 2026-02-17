@@ -77,7 +77,7 @@ export const ColorPicker = ({
           size="icon"
           title="Reset color"
           type="button"
-          variant="ghost"
+          variant="plain"
         >
           <Undo2 className="size-4" />
         </Button>

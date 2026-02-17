@@ -1,30 +1,30 @@
 import { Button } from "@featul/ui/components/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 } from "@featul/ui/components/popover";
 import { Separator } from "@featul/ui/components/separator";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
 } from "@featul/ui/components/tooltip";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor } from "@tiptap/react";
 import {
-  CheckIcon,
-  ExternalLinkIcon,
-  Link,
-  Maximize2,
-  TrashIcon,
+	CheckIcon,
+	ExternalLinkIcon,
+	Link,
+	Maximize2,
+	TrashIcon,
 } from "lucide-react";
 import type { FormEventHandler } from "react";
 import { useEffect, useRef, useState } from "react";
 
 export type EditorLinkSelectorProps = {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
 };
 
 /**
@@ -41,214 +41,214 @@ export type EditorLinkSelectorProps = {
  * ```
  */
 export const EditorLinkSelector = ({
-  open,
-  onOpenChange,
+	open,
+	onOpenChange,
 }: EditorLinkSelectorProps) => {
-  const { editor } = useCurrentEditor();
-  const [url, setUrl] = useState<string>("");
-  const [openInNewTab, setOpenInNewTab] = useState(true);
-  const inputReference = useRef<HTMLInputElement>(null);
+	const { editor } = useCurrentEditor();
+	const [url, setUrl] = useState<string>("");
+	const [openInNewTab, setOpenInNewTab] = useState(true);
+	const inputReference = useRef<HTMLInputElement>(null);
 
-  const isValidUrl = (text: string): boolean => {
-    try {
-      new URL(text);
-      return true;
-    } catch {
-      return false;
-    }
-  };
+	const isValidUrl = (text: string): boolean => {
+		try {
+			new URL(text);
+			return true;
+		} catch {
+			return false;
+		}
+	};
 
-  const getUrlFromString = (text: string): string | null => {
-    if (isValidUrl(text)) {
-      return text;
-    }
-    try {
-      if (text.includes(".") && !text.includes(" ")) {
-        return new URL(`https://${text}`).toString();
-      }
+	const getUrlFromString = (text: string): string | null => {
+		if (isValidUrl(text)) {
+			return text;
+		}
+		try {
+			if (text.includes(".") && !text.includes(" ")) {
+				return new URL(`https://${text}`).toString();
+			}
 
-      return null;
-    } catch {
-      return null;
-    }
-  };
+			return null;
+		} catch {
+			return null;
+		}
+	};
 
-  useEffect(() => {
-    if (open) {
-      // Reset URL to current link href when popover opens
-      const linkAttributes = editor?.getAttributes("link") ?? {};
-      const href = linkAttributes.href ?? "";
-      const target = linkAttributes.target ?? "_blank";
-      setUrl(href);
-      setOpenInNewTab(target === "_blank");
-      inputReference.current?.focus();
-    }
-  }, [open, editor]);
+	useEffect(() => {
+		if (open) {
+			// Reset URL to current link href when popover opens
+			const linkAttributes = editor?.getAttributes("link") ?? {};
+			const href = linkAttributes.href ?? "";
+			const target = linkAttributes.target ?? "_blank";
+			setUrl(href);
+			setOpenInNewTab(target === "_blank");
+			inputReference.current?.focus();
+		}
+	}, [open, editor]);
 
-  if (!editor) {
-    return null;
-  }
+	if (!editor) {
+		return null;
+	}
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
+	const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+		event.preventDefault();
 
-    const href = getUrlFromString(url);
+		const href = getUrlFromString(url);
 
-    if (href) {
-      editor
-        .chain()
-        .focus()
-        .setLink({
-          href,
-          target: openInNewTab ? "_blank" : "_self",
-        })
-        .run();
-      onOpenChange?.(false);
-    }
-  };
+		if (href) {
+			editor
+				.chain()
+				.focus()
+				.setLink({
+					href,
+					target: openInNewTab ? "_blank" : "_self",
+				})
+				.run();
+			onOpenChange?.(false);
+		}
+	};
 
-  return (
-    <Popover modal onOpenChange={onOpenChange} open={open}>
-      <PopoverTrigger asChild>
-        <Button
-          className="gap-2 rounded-none border-none"
-          size="sm"
-          variant="ghost"
-        >
-          <Link size={12} />
-          <p
-            className={cn(
-              "text-xs underline decoration-text-muted underline-offset-4",
-              {
-                "text-primary": editor.isActive("link"),
-              }
-            )}
-          >
-            Link
-          </p>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-fit p-0" sideOffset={10}>
-        <form className="flex items-center gap-0.5 p-1" onSubmit={handleSubmit}>
-          <input
-            aria-label="Link URL"
-            className="min-w-[200px] flex-1 bg-background px-2 py-1 text-sm outline-none"
-            onChange={(event) => setUrl(event.target.value)}
-            placeholder="Paste or type link"
-            ref={inputReference}
-            type="text"
-            value={url}
-          />
-          {editor.getAttributes("link").href ? (
-            <>
-              <Button
-                className="h-8"
-                onClick={() => {
-                  const href = getUrlFromString(url);
-                  if (href) {
-                    editor
-                      .chain()
-                      .focus()
-                      .setLink({
-                        href,
-                        target: openInNewTab ? "_blank" : "_self",
-                      })
-                      .run();
-                    onOpenChange?.(false);
-                  }
-                }}
-                size="icon"
-                type="button"
-                variant="secondary"
-              >
-                <CheckIcon size={12} />
-              </Button>
-              <Button
-                className="flex h-8 items-center rounded-mdp-1 text-destructive transition-all hover:bg-destructive-foreground dark:hover:bg-destructive"
-                onClick={() => {
-                  editor.chain().focus().unsetLink().run();
-                  onOpenChange?.(false);
-                }}
-                size="icon"
-                type="button"
-                variant="outline"
-              >
-                <TrashIcon size={12} />
-              </Button>
-            </>
-          ) : (
-            <Button
-              className="h-8"
-              onClick={() => {
-                const href = getUrlFromString(url);
-                if (href) {
-                  editor
-                    .chain()
-                    .focus()
-                    .setLink({
-                      href,
-                      target: openInNewTab ? "_blank" : "_self",
-                    })
-                    .run();
-                  onOpenChange?.(false);
-                }
-              }}
-              size="icon"
-              type="button"
-              variant="secondary"
-            >
-              <CheckIcon size={12} />
-            </Button>
-          )}
-          <Separator
-            className="mx-1 h-full min-h-[1.5rem] w-[1px]"
-            orientation="vertical"
-          />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className={cn(
-                  "h-8 rounded-md  ",
-                  openInNewTab &&
-                    "bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary"
-                )}
-                onClick={() => setOpenInNewTab(!openInNewTab)}
-                size="icon"
-                type="button"
-                variant="ghost"
-              >
-                <Maximize2 size={12} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{openInNewTab ? "Opens in new tab" : "Opens in same tab"}</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip >
-            <TooltipTrigger asChild>
-              <Button
-                className="h-8 rounded-md  "
-                disabled={!url || !getUrlFromString(url)}
-                onClick={() => {
-                  const href =
-                    getUrlFromString(url) || editor.getAttributes("link").href;
-                  if (href) {
-                    window.open(href, "_blank", "noopener,noreferrer");
-                  }
-                }}
-                size="icon"
-                type="button"
-                variant="ghost"
-              >
-                <ExternalLinkIcon size={12} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Open link</p>
-            </TooltipContent>
-          </Tooltip>
-        </form>
-      </PopoverContent>
-    </Popover>
-  );
+	return (
+		<Popover modal onOpenChange={onOpenChange} open={open}>
+			<PopoverTrigger asChild>
+				<Button
+					className="h-8.5 min-w-[4.75rem] gap-1.5 rounded-md border-none px-2.5"
+					size="sm"
+					variant="plain"
+				>
+					<Link size={14} />
+					<span
+						className={cn(
+							"text-sm font-medium leading-none underline decoration-text-muted underline-offset-4",
+							{
+								"text-primary": editor.isActive("link"),
+							},
+						)}
+					>
+						Link
+					</span>
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent align="start" className="w-fit p-0" sideOffset={10}>
+				<form className="flex items-center gap-0.5 p-1" onSubmit={handleSubmit}>
+					<input
+						aria-label="Link URL"
+						className="min-w-[200px] flex-1 bg-background px-2 py-1 text-sm outline-none"
+						onChange={(event) => setUrl(event.target.value)}
+						placeholder="Paste or type link"
+						ref={inputReference}
+						type="text"
+						value={url}
+					/>
+					{editor.getAttributes("link").href ? (
+						<>
+							<Button
+								className="h-8"
+								onClick={() => {
+									const href = getUrlFromString(url);
+									if (href) {
+										editor
+											.chain()
+											.focus()
+											.setLink({
+												href,
+												target: openInNewTab ? "_blank" : "_self",
+											})
+											.run();
+										onOpenChange?.(false);
+									}
+								}}
+								size="icon"
+								type="button"
+								variant="plain"
+							>
+								<CheckIcon size={12} />
+							</Button>
+							<Button
+								className="flex h-8 items-center rounded-mdp-1 text-destructive transition-all hover:bg-destructive-foreground dark:hover:bg-destructive"
+								onClick={() => {
+									editor.chain().focus().unsetLink().run();
+									onOpenChange?.(false);
+								}}
+								size="icon"
+								type="button"
+								variant="plain"
+							>
+								<TrashIcon size={12} />
+							</Button>
+						</>
+					) : (
+						<Button
+							className="h-8"
+							onClick={() => {
+								const href = getUrlFromString(url);
+								if (href) {
+									editor
+										.chain()
+										.focus()
+										.setLink({
+											href,
+											target: openInNewTab ? "_blank" : "_self",
+										})
+										.run();
+									onOpenChange?.(false);
+								}
+							}}
+							size="icon"
+							type="button"
+							variant="plain"
+						>
+							<CheckIcon size={12} />
+						</Button>
+					)}
+					<Separator
+						className="mx-1 h-full min-h-[1.5rem] w-[1px]"
+						orientation="vertical"
+					/>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								className={cn(
+									"h-8 rounded-md  ",
+									openInNewTab &&
+										"bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary",
+								)}
+								onClick={() => setOpenInNewTab(!openInNewTab)}
+								size="icon"
+								type="button"
+								variant="plain"
+							>
+								<Maximize2 size={12} />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>{openInNewTab ? "Opens in new tab" : "Opens in same tab"}</p>
+						</TooltipContent>
+					</Tooltip>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								className="h-8 rounded-md  "
+								disabled={!url || !getUrlFromString(url)}
+								onClick={() => {
+									const href =
+										getUrlFromString(url) || editor.getAttributes("link").href;
+									if (href) {
+										window.open(href, "_blank", "noopener,noreferrer");
+									}
+								}}
+								size="icon"
+								type="button"
+								variant="plain"
+							>
+								<ExternalLinkIcon size={12} />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Open link</p>
+						</TooltipContent>
+					</Tooltip>
+				</form>
+			</PopoverContent>
+		</Popover>
+	);
 };

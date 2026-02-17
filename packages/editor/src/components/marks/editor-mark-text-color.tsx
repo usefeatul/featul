@@ -1,8 +1,8 @@
 import { Button } from "@featul/ui/components/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 } from "@featul/ui/components/popover";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor, useEditorState } from "@tiptap/react";
@@ -27,81 +27,83 @@ export type EditorMarkTextColorProps = Pick<EditorButtonProps, "hideName">;
  * ```
  */
 export const EditorMarkTextColor = ({
-  hideName = true,
+	hideName = true,
 }: EditorMarkTextColorProps) => {
-  const { editor } = useCurrentEditor();
+	const { editor } = useCurrentEditor();
 
-  const currentColor = useEditorState({
-    editor,
-    selector: (ctx) =>
-      ctx.editor?.getAttributes("textStyle")?.color || undefined,
-  });
+	const currentColor = useEditorState({
+		editor,
+		selector: (ctx) =>
+			ctx.editor?.getAttributes("textStyle")?.color || undefined,
+	});
 
-  const isActive = Boolean(currentColor);
+	const isActive = Boolean(currentColor);
 
-  const handleColorChange = useCallback(
-    (color: string) => {
-      if (!editor) {
-        return;
-      }
-      editor.chain().focus().setColor(color).run();
-    },
-    [editor]
-  );
+	const handleColorChange = useCallback(
+		(color: string) => {
+			if (!editor) {
+				return;
+			}
+			editor.chain().focus().setColor(color).run();
+		},
+		[editor],
+	);
 
-  const handleClearColor = useCallback(() => {
-    if (!editor) {
-      return;
-    }
-    editor.chain().focus().unsetColor().run();
-  }, [editor]);
+	const handleClearColor = useCallback(() => {
+		if (!editor) {
+			return;
+		}
+		editor.chain().focus().unsetColor().run();
+	}, [editor]);
 
-  if (!editor) {
-    return null;
-  }
+	if (!editor) {
+		return null;
+	}
 
-  // Check if Color extension is available
-  const hasColorExtension = editor.can().setColor("#000000");
+	// Check if Color extension is available
+	const hasColorExtension = editor.can().setColor("#000000");
 
-  if (!hasColorExtension) {
-    return null;
-  }
+	if (!hasColorExtension) {
+		return null;
+	}
 
-  return (
-    <Popover modal>
-      <PopoverTrigger asChild>
-        <Button
-          className={cn(
-            hideName ? "" : "w-full",
-            isActive &&
-              "bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary"
-          )}
-          size="sm"
-          type="button"
-          variant="ghost"
-        >
-          <Palette
-            className={cn(
-              "shrink-0",
-              isActive ? "text-primary" : "text-muted-foreground"
-            )}
-            size={12}
-          />
-          {!hideName && <span className="flex-1 text-left">Text Color</span>}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-80 p-0"
-        onOpenAutoFocus={(event) => event.preventDefault()}
-        side="top"
-      >
-        <ColorPicker
-          color={currentColor}
-          onChange={handleColorChange}
-          onClear={handleClearColor}
-        />
-      </PopoverContent>
-    </Popover>
-  );
+	return (
+		<Popover modal>
+			<PopoverTrigger asChild>
+				<Button
+					className={cn(
+						hideName
+							? "h-8.5 w-8.5 rounded-md px-0"
+							: "h-8.5 w-full rounded-md px-2.5",
+						isActive &&
+							"bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary",
+					)}
+					size="sm"
+					type="button"
+					variant="plain"
+				>
+					<Palette
+						className={cn(
+							"shrink-0",
+							isActive ? "text-primary" : "text-muted-foreground",
+						)}
+						size={14}
+					/>
+					{!hideName && <span className="flex-1 text-left">Text Color</span>}
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent
+				align="start"
+				className="w-80 p-0"
+				onOpenAutoFocus={(event) => event.preventDefault()}
+				side="top"
+			>
+				<ColorPicker
+					color={currentColor}
+					onChange={handleColorChange}
+					onClear={handleClearColor}
+				/>
+			</PopoverContent>
+		</Popover>
+	);
 };
