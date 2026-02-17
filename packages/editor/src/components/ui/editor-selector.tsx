@@ -83,7 +83,10 @@ export const EditorSelector = ({
 			</PopoverTrigger>
 			<PopoverContent
 				align="start"
-				className={cn("min-w-0 w-fit p-0 z-[100]", className)}
+				className={cn(
+					"min-w-0 w-fit p-0 z-[100] [&_[data-slot=button]]:!rounded-none",
+					className,
+				)}
 				list={true}
 				side="bottom"
 				sideOffset={8}
@@ -104,7 +107,7 @@ export const EditorSelector = ({
 								<PopoverListItem
 									key={index}
 									as="div"
-									className="flex items-center gap-2 px-2 py-1.5"
+									className="p-0 bg-transparent hover:bg-transparent dark:hover:bg-transparent [&>span]:hidden"
 									onClick={(e: React.MouseEvent) => {
 										e.stopPropagation();
 										onOpenChange(false);
@@ -116,7 +119,7 @@ export const EditorSelector = ({
 						: children && (
 								<PopoverListItem
 									as="div"
-									className="flex items-center gap-2 px-2 py-1.5"
+									className="p-0 bg-transparent hover:bg-transparent dark:hover:bg-transparent [&>span]:hidden"
 									onClick={(e: React.MouseEvent) => {
 										e.stopPropagation();
 										onOpenChange(false);

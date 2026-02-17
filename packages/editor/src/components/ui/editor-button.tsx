@@ -18,8 +18,10 @@ export const BubbleMenuButton = ({
 	return (
 		<Button
 			className={cn(
-				"flex h-8.5 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium",
-				hideName ? "w-8.5 justify-center px-0" : "w-full justify-between",
+				"flex h-8.5 items-center gap-1.5 px-2.5 text-xs font-medium",
+				hideName
+					? "w-8.5 justify-center px-0 rounded-md"
+					: "w-full justify-between rounded-none",
 				isActive()
 					? "text-foreground"
 					: "text-muted-foreground hover:text-foreground",

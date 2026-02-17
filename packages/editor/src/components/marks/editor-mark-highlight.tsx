@@ -78,8 +78,8 @@ export const EditorMarkHighlight = ({
 				<PopoverTrigger asChild>
 					<Button
 						className={cn(
-							"flex h-8.5 w-8.5 items-center justify-center rounded-md px-0",
-							isActive && "bg-primary/10 text-primary hover:bg-primary/20",
+							"flex h-8.5 w-8.5 items-center justify-center  px-0",
+							isActive && "text-primary",
 						)}
 						size="sm"
 						type="button"
@@ -130,7 +130,7 @@ export const EditorMarkHighlight = ({
 				<Button
 					className={cn(
 						"flex h-8.5 w-full items-center justify-between gap-1.5 rounded-md px-2.5",
-						isActive && "bg-primary/10 text-primary hover:bg-primary/20",
+						isActive && "text-primary",
 					)}
 					size="sm"
 					type="button"
