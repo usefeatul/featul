@@ -97,10 +97,28 @@
 
 /* Paragraph spacing */
 .ProseMirror p {
+  margin-top: 0;
   margin-bottom: 1em;
 }
 
 .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* Keep figure spacing visually equal above/below by removing paragraph gap before figure nodes */
+.ProseMirror p:has(+ .featul-figure-node) {
+  margin-bottom: 0;
+}
+
+/* Prevent prose paragraph top margin from adding extra gap after a figure node */
+.ProseMirror .featul-figure-node + p {
+  margin-top: 0;
+}
+
+/* Normalize typography plugin defaults inside figure nodes so wrapper spacing stays symmetric */
+.ProseMirror .featul-figure-node figure,
+.ProseMirror .featul-figure-node img {
+  margin-top: 0;
   margin-bottom: 0;
 }
 

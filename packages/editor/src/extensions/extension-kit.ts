@@ -165,6 +165,9 @@ export const ExtensionKit = ({
         element.setAttribute("role", "button");
         element.setAttribute("aria-label", "Drag to reorder block");
         element.title = "Drag to reorder";
+        // Prevent initial paint at (0,0) before the extension computes a valid position.
+        element.style.visibility = "hidden";
+        element.style.pointerEvents = "none";
         return element;
       },
     }),

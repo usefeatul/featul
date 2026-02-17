@@ -9,8 +9,8 @@ import {
 import { ImageIcon } from "@featul/ui/icons/image";
 import { cn } from "@featul/ui/lib/utils";
 import type { NodeViewProps } from "@tiptap/core";
-import { NodeViewWrapper } from "@tiptap/react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { EditorNodeViewWrapper } from "../../components/shared/node-view-wrapper";
 
 export const FigureView = ({
   node,
@@ -224,7 +224,7 @@ export const FigureView = ({
   };
 
   return (
-    <NodeViewWrapper className="my-5" data-drag-handle>
+    <EditorNodeViewWrapper className="featul-figure-node py-4" data-drag-handle>
       <Popover
         modal
         onOpenChange={(open) => {
@@ -396,6 +396,6 @@ export const FigureView = ({
           </PopoverContent>
         )}
       </Popover>
-    </NodeViewWrapper>
+    </EditorNodeViewWrapper>
   );
 };
