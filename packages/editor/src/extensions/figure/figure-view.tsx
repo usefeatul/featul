@@ -301,7 +301,7 @@ export const FigureView = ({
               </div>
             </div>
 
-            <div className="bg-card rounded-lg p-3 dark:bg-black border border-border flex flex-col gap-3">
+            <div className="bg-card rounded-xl p-3 dark:bg-black border border-border flex flex-col gap-3">
               {/* Width Controls - Only percent for now */}
               <div className="space-y-1">
                 <Label
