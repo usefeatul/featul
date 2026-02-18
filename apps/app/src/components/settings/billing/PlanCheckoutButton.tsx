@@ -93,7 +93,7 @@ export default function PlanCheckoutButton({
     <LoadingButton
       className={cn(
         className,
-        isProfessional && "!bg-orange-500 !text-white hover:!bg-orange-500 dark:!bg-orange-500 dark:hover:!bg-orange-500 !border-orange-500",
+        isProfessional && "bg-orange-400! text-white! hover:bg-orange-400! dark:bg-orange-400! dark:hover:bg-orange-400! border-orange-400!",
       )}
       loading={isCheckingOut}
       disabled={isCurrent || isCheckingOut}
