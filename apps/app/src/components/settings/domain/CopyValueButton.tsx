@@ -30,7 +30,7 @@ export default function CopyValueButton({
       type="button"
       aria-label={`Copy ${label}`}
       title={`Copy ${label}`}
-      variant="ghost"
+      variant="nav"
       size="icon-sm"
       className={
         className || "size-6 rounded-sm border border-border/60 p-0 hover:bg-muted/70"
