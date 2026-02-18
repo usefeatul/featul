@@ -28,7 +28,7 @@ export default function DomainActions({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <LoadingButton type="button" variant="ghost" size="icon-sm" aria-label="More" disabled={disabled}>
+        <LoadingButton type="button" variant="nav" size="icon-sm" aria-label="More" disabled={disabled}>
           <MoreVertical className="size-4" />
         </LoadingButton>
       </PopoverTrigger>

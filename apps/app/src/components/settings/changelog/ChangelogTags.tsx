@@ -65,7 +65,7 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
                   <TableCell className="pl-2 pr-3 text-right">
                     <Popover open={menuOpenId === t.id} onOpenChange={(v) => setMenuOpenId(v ? String(t.id) : null)}>
                       <PopoverTrigger asChild>
-                        <LoadingButton type="button" variant="card" size="icon-sm" aria-label="More" className="ml-auto">
+                        <LoadingButton type="button" variant="nav" size="icon-sm" aria-label="More" className="ml-auto">
                           <MoreVertical className="size-4" />
                         </LoadingButton>
                       </PopoverTrigger>

@@ -52,7 +52,9 @@ export default function ManageBoards({
         const arr = Array.isArray(prev) ? prev : []
         return arr.map((it) => (it.slug === boardSlug ? { ...it, isPublic } : it))
       })
-    } catch {}
+    } catch {
+      //
+    }
     try {
       const res = await client.board.updateSettings.$post({ slug, boardSlug, patch: { isPublic } })
       if (!res.ok) {
@@ -86,20 +88,20 @@ export default function ManageBoards({
                 <TableCell colSpan={3} className="px-4 py-6 text-accent">No boards</TableCell>
               </TableRow>
             ) : (
-              (otherBoards || []).map((b: any) => (
+              (otherBoards || []).map((b) => (
                 <TableRow key={b.id}>
                   <TableCell className="px-4 text-sm">{b.name}</TableCell>
                   <TableCell className="px-4 text-center">
                     <Popover open={menuOpenId === b.id} onOpenChange={(v) => setMenuOpenId(v ? String(b.id) : null)}>
                       <PopoverTrigger asChild>
-                        <LoadingButton type="button" variant="ghost" size="sm" aria-label="Board Type">
-                          <span className="text-sm">{Boolean(b.isPublic) ? "Public" : "Private"}</span>
+                        <LoadingButton type="button" variant="nav" size="sm" aria-label="Board Type">
+                          <span className="text-sm">{b.isPublic ? "Public" : "Private"}</span>
                         </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
-                          <PopoverListItem role="menuitemradio" aria-checked={Boolean(b.isPublic)} onClick={() => { setMenuOpenId(null); setVisibility(String(b.slug), true) }}>Public</PopoverListItem>
-                          <PopoverListItem role="menuitemradio" aria-checked={!Boolean(b.isPublic)} onClick={() => { setMenuOpenId(null); setVisibility(String(b.slug), false) }}>Private</PopoverListItem>
+                          <PopoverListItem role="menuitemradio" aria-checked={b.isPublic} onClick={() => { setMenuOpenId(null); setVisibility(String(b.slug), true) }}>Public</PopoverListItem>
+                          <PopoverListItem role="menuitemradio" aria-checked={!b.isPublic} onClick={() => { setMenuOpenId(null); setVisibility(String(b.slug), false) }}>Private</PopoverListItem>
                         </PopoverList>
                       </PopoverContent>
                     </Popover>
@@ -107,7 +109,7 @@ export default function ManageBoards({
                   <TableCell className="px-2 text-center">
                     <Popover open={actionOpenId === b.id} onOpenChange={(v) => setActionOpenId(v ? String(b.id) : null)}>
                       <PopoverTrigger asChild>
-                        <LoadingButton type="button" variant="ghost" size="sm" aria-label="More" className="px-2">
+                        <LoadingButton type="button" variant="nav" size="sm" aria-label="More" className="px-2">
                           <MoreVertical className="size-4 opacity-70" />
                         </LoadingButton>
                       </PopoverTrigger>
