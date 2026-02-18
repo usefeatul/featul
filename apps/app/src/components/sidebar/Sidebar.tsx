@@ -97,12 +97,12 @@ export default function Sidebar({
           <div className="text-md font-semibold ">Featul</div>
         </div>
         <WorkspaceSwitcher
-          className="mt-5.5"
+          className="mt-5.5 px-1"
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
         />
         <Timezone
-          className="mt-2"
+          className="mt-2 px-1"
           initialTimezone={initialTimezone}
           initialServerNow={initialServerNow}
         />

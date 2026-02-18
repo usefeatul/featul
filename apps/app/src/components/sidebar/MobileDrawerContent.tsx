@@ -57,8 +57,8 @@ export default function MobileDrawerContent({
             <FeatulLogoIcon className="size-6" size={24} />
             <div className="text-lg font-semibold">Featul</div>
           </div>
-          <WorkspaceSwitcher className="mt-5.5" initialWorkspace={initialWorkspace} initialWorkspaces={initialWorkspaces} />
-          <Timezone className="mt-2" initialTimezone={initialTimezone} initialServerNow={initialServerNow} />
+          <WorkspaceSwitcher className="mt-5.5 px-1" initialWorkspace={initialWorkspace} initialWorkspaces={initialWorkspaces} />
+          <Timezone className="mt-2 px-1" initialTimezone={initialTimezone} initialServerNow={initialServerNow} />
         </div>
 
         <SidebarSection title="REQUEST">
