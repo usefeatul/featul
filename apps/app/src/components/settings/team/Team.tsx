@@ -144,6 +144,7 @@ export default function TeamSection({
     <SectionCard title="Manage Members" description="Members have access to your workspace.">
       <div className="space-y-6">
         <div className="space-y-2">
+          <Label>Members</Label>
           <div className="rounded-md  border overflow-hidden">
             <Table>
               <TableHeader>
