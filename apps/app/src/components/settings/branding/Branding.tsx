@@ -80,6 +80,10 @@ export default function BrandingSection({
   const queryClient = useQueryClient();
   const [plan, setPlan] = React.useState<PlanKey>(normalizePlan(initialPlan || "free"));
   const { loading: brandingAccessLoading, canEditBranding } = useCanEditBranding(slug);
+  const workspaceNameInputSize = Math.max(
+    4,
+    Math.min(15, Math.max(workspaceName.length, 1)),
+  );
 
   React.useEffect(() => {
     let mounted = true;
@@ -248,7 +252,8 @@ export default function BrandingSection({
             <Input
               value={workspaceName}
               onChange={(e) => setWorkspaceName(e.target.value)}
-              className="h-9 w-[220px] text-right"
+              className="h-9 w-auto min-w-[4ch] px-2 text-right"
+              size={workspaceNameInputSize}
               maxLength={15}
             />
           </div>
