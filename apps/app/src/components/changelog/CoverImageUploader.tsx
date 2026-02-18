@@ -68,17 +68,16 @@ export function CoverImageUploader({
                                 if (file) handleUpload(file);
                             }}
                         />
-                        <Button variant="secondary" size="sm" className="h-7 px-2 text-xs" asChild>
+                        <Button size="sm" className="h-7 px-2 text-xs" asChild>
                             <span>Change</span>
                         </Button>
                     </label>
                     <Button
-                        variant="secondary"
                         size="icon"
                         className="h-7 w-7"
                         onClick={() => onCoverImageChange(null)}
                     >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="size-3.5" />
                     </Button>
                 </div>
             </div>
