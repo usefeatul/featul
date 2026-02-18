@@ -24,6 +24,7 @@ export default function PlanCheckoutButton({
 }: PlanCheckoutButtonProps) {
   const [isCheckingOut, setIsCheckingOut] = React.useState(false)
   const isFreePlan = plan.id === "free"
+  const isProfessional = plan.id === "professional"
 
   const handleCheckout = async () => {
     if (isCheckingOut) return
@@ -90,7 +91,10 @@ export default function PlanCheckoutButton({
 
   return (
     <LoadingButton
-      className={cn(className)}
+      className={cn(
+        className,
+        isProfessional && "!bg-orange-500 !text-white hover:!bg-orange-500 dark:!bg-orange-500 dark:hover:!bg-orange-500 !border-orange-500",
+      )}
       loading={isCheckingOut}
       disabled={isCurrent || isCheckingOut}
       onClick={handleCheckout}

@@ -90,7 +90,7 @@ function getPlanRibbon(planKey: PlanKey): { label: string; tone: "popular" | "va
 
 function getRibbonSpotlightClass(tone: "popular" | "value") {
   if (tone === "popular") {
-    return "bg-[radial-gradient(340px_240px_at_100%_0%,rgba(132,204,22,0.22),transparent_58%)] dark:bg-[radial-gradient(340px_240px_at_100%_0%,rgba(132,204,22,0.24),transparent_55%)]"
+    return "bg-[radial-gradient(340px_240px_at_100%_0%,var(--primary),transparent_58%)] opacity-30 dark:opacity-35"
   }
-  return "bg-[radial-gradient(340px_240px_at_100%_0%,rgba(245,158,11,0.24),transparent_58%)] dark:bg-[radial-gradient(340px_240px_at_100%_0%,rgba(245,158,11,0.26),transparent_55%)]"
+  return "bg-[radial-gradient(340px_240px_at_100%_0%,#f59e0b,transparent_58%)] opacity-30 dark:opacity-35"
 }
