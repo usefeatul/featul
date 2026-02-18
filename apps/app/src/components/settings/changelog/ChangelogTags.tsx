@@ -45,7 +45,7 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
           <TableHeader>
             <TableRow>
               <TableHead className="px-4">Tag</TableHead>
-              <TableHead className="px-4 w-24 text-center"></TableHead>
+              <TableHead className="pl-2 pr-3 w-14 text-right"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -62,10 +62,10 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
                       <span>{t.name}</span>
                     </span>
                   </TableCell>
-                  <TableCell className="px-4 text-center">
+                  <TableCell className="pl-2 pr-3 text-right">
                     <Popover open={menuOpenId === t.id} onOpenChange={(v) => setMenuOpenId(v ? String(t.id) : null)}>
                       <PopoverTrigger asChild>
-                        <LoadingButton type="button" variant="ghost" size="icon-sm" aria-label="More">
+                        <LoadingButton type="button" variant="card" size="icon-sm" aria-label="More" className="ml-auto">
                           <MoreVertical className="size-4" />
                         </LoadingButton>
                       </PopoverTrigger>

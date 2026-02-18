@@ -76,11 +76,16 @@ export default function ManageTags({
             ) : (
               (tags || []).map((t) => (
                 <TableRow key={t.id}>
-                  <TableCell className="px-4 text-sm">{t.name}</TableCell>
+                  <TableCell className="px-4 text-sm">
+                    <span className="inline-flex items-center gap-2">
+                      <span className="inline-block size-3 rounded-full bg-primary" />
+                      <span>{t.name}</span>
+                    </span>
+                  </TableCell>
                   <TableCell className="px-2 text-center">
                     <Popover open={actionOpenId === t.id} onOpenChange={(v) => setActionOpenId(v ? String(t.id) : null)}>
                       <PopoverTrigger asChild>
-                        <LoadingButton type="button" variant="ghost" size="sm" aria-label="More" className="px-2">
+                        <LoadingButton type="button" variant="nav" size="sm" aria-label="More" className="px-2">
                           <MoreVertical className="size-4 opacity-70" />
                         </LoadingButton>
                       </PopoverTrigger>

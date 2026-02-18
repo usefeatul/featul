@@ -111,7 +111,7 @@ export default function InviteRow({
           <div className="absolute right-0 top-1/2 -translate-y-1/2">
             <Popover open={menuFor === i.id} onOpenChange={(v) => setMenuFor(v ? i.id : null)}>
               <PopoverTrigger asChild>
-                <Button type="button" variant="ghost" size="icon-sm" aria-label="More">
+                <Button type="button" variant="nav" size="icon-sm" aria-label="More">
                   <MoreVertical className="size-4" />
                 </Button>
               </PopoverTrigger>
