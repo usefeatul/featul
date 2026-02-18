@@ -112,7 +112,7 @@ function PlanCard({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-xl border p-5 transition-all h-full bg-card",
+        "bg-card flex h-full flex-col rounded-xl border p-5 transition-all dark:bg-black/60",
         isCurrent ? "border-primary/50 shadow-sm ring-1 ring-primary/20" : "border-border hover:border-primary/30"
       )}
     >

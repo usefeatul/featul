@@ -245,14 +245,14 @@ export default function BrandingSection({
 
   return (
     <SectionCard title="Branding" description="Change your brand settings.">
-      <div className="space-y-6 ">
+      <div className="space-y-6">
         <div className="flex items-center justify-between ">
           <div className="text-sm">Workspace Name</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <Input
               value={workspaceName}
               onChange={(e) => setWorkspaceName(e.target.value)}
-              className="h-9 w-auto min-w-[4ch] px-2 text-right"
+              className="h-8 w-auto min-w-[4ch] px-2 text-right"
               size={workspaceNameInputSize}
               maxLength={15}
             />

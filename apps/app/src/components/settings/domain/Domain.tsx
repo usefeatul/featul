@@ -38,7 +38,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
 
         <div className="space-y-2">
           {info?.host ? (
-            <div className="flex items-center justify-between rounded-md  border p-3">
+            <div className="bg-background flex items-center justify-between rounded-md border p-3">
               <div className="flex items-center gap-2">
                 <span className="text-sm">{info.host}</span>
               </div>
@@ -53,7 +53,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-between rounded-md  border p-3 mt-2 mb-3">
+            <div className="bg-background mt-2 mb-3 flex items-center justify-between rounded-md border p-3">
               <span className="text-sm">{`https://${slug}.featul.com`}</span>
               <LoadingButton
                 type="button"

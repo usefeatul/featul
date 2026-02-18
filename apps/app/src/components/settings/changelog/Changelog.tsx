@@ -18,7 +18,7 @@ export default function ChangelogSection({
 }) {
   return (
     <SectionCard title="Changelog" description="Manage product updates and visibility.">
-      <div className="space-y-6">
+      <div className="space-y-2">
         <ChangelogVisibility slug={slug} initialIsVisible={initialIsVisible} />
         <ChangelogTags slug={slug} initialPlan={initialPlan} initialTags={initialTags} />
       </div>

@@ -142,7 +142,7 @@ export default function TeamSection({
 
   return (
     <SectionCard title="Manage Members" description="Members have access to your workspace.">
-      <div className="space-y-6">
+      <div className="space-y-2">
         <div className="space-y-2">
           <Label>Members</Label>
           <div className="rounded-md  border overflow-hidden">
@@ -168,7 +168,7 @@ export default function TeamSection({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 mt-3">
           <Label>Pending Invites</Label>
           <InvitesList slug={slug} invites={data.invites || []} loading={isLoading} onChanged={refresh} />
         </div>
