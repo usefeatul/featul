@@ -16,10 +16,13 @@ export default function CommentReplyButton({ onClick, isActive, className }: Com
     <Button
       onClick={onClick}
       type="button"
-      variant="plain"
+      variant="card"
       size="xs"
       className={cn(
-        "gap-1.5 min-w-[70px]",
+        "min-w-[72px] h-8 gap-1.5",
+        isActive
+          ? "text-destructive dark:text-destructive hover:text-destructive dark:hover:text-destructive"
+          : "text-accent hover:text-foreground",
         className
       )}
       aria-label={isActive ? "Cancel reply" : "Reply to comment"}

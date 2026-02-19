@@ -5,6 +5,8 @@ import { ThumbsUp, ThumbsDown } from "lucide-react"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
+import { Button } from "@featul/ui/components/button"
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 import { motion, AnimatePresence } from "framer-motion"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
@@ -130,7 +132,9 @@ export default function CommentVote({
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
-          } catch {}
+          } catch {
+            // ignore
+          }
         } else {
           // Revert on error
           setUpvotes(previousUpvotes)
@@ -148,14 +152,18 @@ export default function CommentVote({
   }
 
   return (
-    <div className="flex items-center gap-1 bg-muted/30 rounded-md p-0.5 px-1 border border-border/50 h-[30px]">
-      <button
+    <Toolbar size="sm" variant="plain" className="h-8 bg-card dark:bg-black/50 border-border">
+      <Button
         type="button"
+        variant="plain"
+        size="xs"
         onClick={() => handleVote("upvote")}
         disabled={isPending}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-md hover:bg-muted",
-          userVote === "upvote" ? "text-green-600" : "text-muted-foreground"
+          "h-8 min-w-[58px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
+          userVote === "upvote"
+            ? "text-green-600 dark:text-green-400"
+            : "text-accent hover:text-foreground"
         )}
         title="Upvote"
       >
@@ -173,17 +181,21 @@ export default function CommentVote({
             </motion.span>
           )}
         </AnimatePresence>
-      </button>
+      </Button>
 
-      <div className="w-px h-3 bg-border/50" />
+      <ToolbarSeparator />
 
-      <button
+      <Button
         type="button"
+        variant="plain"
+        size="xs"
         onClick={() => handleVote("downvote")}
         disabled={isPending}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-md hover:bg-muted",
-          userVote === "downvote" ? "text-red-600" : "text-muted-foreground"
+          "h-8 min-w-[40px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
+          userVote === "downvote"
+            ? "text-red-600 dark:text-red-400"
+            : "text-accent hover:text-foreground"
         )}
         title="Downvote"
       >
@@ -201,7 +213,7 @@ export default function CommentVote({
             </motion.span>
           )}
         </AnimatePresence>
-      </button>
-    </div>
+      </Button>
+    </Toolbar>
   )
 }

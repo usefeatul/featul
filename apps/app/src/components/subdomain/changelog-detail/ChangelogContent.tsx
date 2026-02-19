@@ -26,10 +26,10 @@ interface ChangelogContentProps {
 
 export function ChangelogContent({ entry }: ChangelogContentProps) {
     return (
-        <div className="w-full min-w-0 max-w-none justify-self-stretch rounded-md border bg-card p-6 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
+        <div className="w-full min-w-0 max-w-none justify-self-stretch rounded-md border bg-card dark:bg-background p-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
             {/* Cover Image */}
             {entry.coverImage ? (
-                <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted mb-6">
+                <div className="aspect-video w-full overflow-hidden rounded-md bg-muted mb-4">
                     <img
                         src={entry.coverImage}
                         alt={entry.title}
