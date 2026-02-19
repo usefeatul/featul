@@ -33,8 +33,8 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     id: "starter",
     label: "Starter",
     tagline: "For teams ready to grow",
-    monthlyPrice: 24,
-    yearlyPrice: 240,
+    monthlyPrice: 20,
+    yearlyPrice: 200,
     features: [
       { title: "Everything in Free", description: "All core feedback features included." },
       { title: "Premium branding", description: "Upload your logo and colors." },
@@ -47,8 +47,8 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     id: "professional",
     label: "Professional",
     tagline: "Built for teams that need unlimited everything",
-    monthlyPrice: 49,
-    yearlyPrice: 490,
+    monthlyPrice: 45,
+    yearlyPrice: 450,
     features: [
       { title: "Everything in Starter", description: "All starter features included." },
       { title: "Custom domains", description: "Use your own domain for professional branding." },
