@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { CommentCollapseIcon } from "@featul/ui/icons/comment-collapse"
+import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { cn } from "@featul/ui/lib/utils"
 
 export default function CommentCollapseToggle({
@@ -28,10 +28,11 @@ export default function CommentCollapseToggle({
       )}
       aria-label={isCollapsed ? "Expand replies" : "Collapse replies"}
     >
-      <CommentCollapseIcon
+      <ChevronLeftIcon
+        size={12}
         className={cn(
-          "size-3 transition-transform duration-200",
-          isCollapsed ? "rotate-0" : "rotate-90"
+          "transition-transform duration-200",
+          isCollapsed ? "rotate-180" : "-rotate-90"
         )}
       />
       <span className="font-medium">{label}</span>
