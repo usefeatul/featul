@@ -56,7 +56,8 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
 
 export function normalizePlan(raw: string): PlanKey {
   const s = String(raw || "free").trim().toLowerCase()
-  if (s === "pro" || s === "growth") return "starter"
+  if (s === "pro") return "professional"
+  if (s === "growth") return "starter"
   if (s === "enterprise" || s === "scale") return "professional"
   return (PLANS as ReadonlyArray<string>).includes(s) ? (s as PlanKey) : "free"
 }

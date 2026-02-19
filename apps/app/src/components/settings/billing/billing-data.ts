@@ -37,7 +37,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     yearlyPrice: 240,
     features: [
       { title: "Everything in Free", description: "All core feedback features included." },
-      { title: "Custom branding", description: "Upload your logo and colors." },
+      { title: "Premium branding", description: "Upload your logo and colors." },
       { title: "Integrations", description: "Connect Slack, Discord and more." },
       { title: "Migration imports", description: "Canny, Nolt, and ProductBoard imports (coming soon)." },
       { title: "More members", description: "Invite your team without friction." },

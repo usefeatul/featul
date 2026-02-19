@@ -38,7 +38,7 @@ const PLAN_ALIASES: Record<string, PlanTier> = {
   free: "free",
   starter: "starter",
   professional: "professional",
-  pro: "starter",
+  pro: "professional",
   growth: "starter",
   enterprise: "professional",
   scale: "professional",
