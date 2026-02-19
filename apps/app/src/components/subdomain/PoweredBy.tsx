@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
 import { useDomainBranding } from "./DomainBrandingProvider"
 
 export function PoweredBy() {
@@ -17,11 +18,11 @@ export function PoweredBy() {
         href={utmUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block rounded-md bg-muted px-2 py-1 text-xs border border-border/10 text-accent hover:bg-muted/80 transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 rounded-md border border-borde bg-background px-2.5 py-1 text-xs text-accent transition-colors hover:bg-muted/70"
       >
-        Powered by featul
+        <span>Powered by featul</span>
+        <FeatulLogoIcon className="size-3.5 shrink-0 text-accent" size={14} />
       </a>
     </div>
   )
 }
-
