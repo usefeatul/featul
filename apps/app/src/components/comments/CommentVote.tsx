@@ -192,7 +192,7 @@ export default function CommentVote({
         onClick={() => handleVote("downvote")}
         disabled={isPending}
         className={cn(
-          "h-8 min-w-[40px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
+          "h-8 min-w-[48px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
           userVote === "downvote"
             ? "text-red-600 dark:text-red-400"
             : "text-accent hover:text-foreground"

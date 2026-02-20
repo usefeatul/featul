@@ -12,17 +12,17 @@ export default function SectionCard({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="relative mb-2 overflow-hidden rounded-md border border-border bg-card dark:bg-black/50 text-foreground ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:border-border  dark:ring-offset-black ">
-      <div className="relative z-10 flex items-center justify-between border-b border-border/70 p-4">
-        <div>
-          <div className="text-lg font-heading">{title}</div>
+    <section className="mb-3 overflow-hidden rounded-md border border-border bg-card text-foreground ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:border-border dark:bg-black/50 dark:ring-offset-black">
+      <header className="flex flex-col gap-3 border-b border-border/70 px-4 py-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-lg font-heading leading-tight">{title}</h2>
           {description ? (
-            <div className="text-sm text-accent font-light mt-1.5">{description}</div>
+            <p className="mt-1 text-sm font-light leading-relaxed text-accent">{description}</p>
           ) : null}
         </div>
-        {action && <div>{action}</div>}
-      </div>
-      <div className="relative z-10 px-4 pb-4 pt-4">{children}</div>
-    </div>
+        {action ? <div className="shrink-0 sm:pl-4">{action}</div> : null}
+      </header>
+      <div className="px-4 py-4">{children}</div>
+    </section>
   );
 }
