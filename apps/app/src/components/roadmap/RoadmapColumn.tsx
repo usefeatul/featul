@@ -33,7 +33,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`overflow-hidden rounded-md border border-border bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 ${isOver ? "border-green-500 ring-green-500/30" : ""}`}
+      className={`overflow-hidden rounded-sm border border-border bg-card dark:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 ${isOver ? "border-green-500 ring-green-500/30" : ""}`}
       layout
       initial={false}
       transition={{
@@ -103,7 +103,7 @@ export default function RoadmapColumn({
       <AnimatePresence initial={false}>
         {!collapsed ? (
           <motion.ul
-            className="min-h-24 space-y-2 p-2.5"
+            className="min-h-24 space-y-2 bg-background p-2.5"
             initial={false}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

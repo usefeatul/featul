@@ -30,7 +30,7 @@ export default function RoadmapDraggable({
         transform: transform ? CSS.Translate.toString(transform) : undefined,
       }}
       className={
-        "overflow-hidden rounded-md border border-border bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-3 py-3 cursor-grab select-none active:cursor-grabbing " +
+        "overflow-hidden rounded-md  border border-border bg-card dark:bg-black/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-3 py-3 cursor-grab select-none active:cursor-grabbing " +
         (isDragging ? "opacity-0 " : "") +
         (className ? className : "")
       }
