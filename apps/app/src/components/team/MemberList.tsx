@@ -37,53 +37,51 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
   const items = data.members || []
 
   return (
-
-      <div className="rounded-sm border bg-card dark:bg-black/40 overflow-hidden ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-        <Table>
-          <TableHeader>
+    <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border [&_[data-slot=table-container]]:bg-transparent [&_[data-slot=table-container]]:border-0 [&_[data-slot=table-container]]:rounded-none">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="px-4">Member</TableHead>
+            <TableHead className="px-4 w-48 text-center">Role</TableHead>
+            <TableHead className="px-4 w-40">Joined</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.length === 0 && !isLoading ? (
             <TableRow>
-              <TableHead className="px-4">Member</TableHead>
-              <TableHead className="px-4 w-48 text-center">Role</TableHead>
-              <TableHead className="px-4 w-40">Joined</TableHead>
+              <TableCell colSpan={3} className="px-4 py-6 text-accent">No members</TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.length === 0 && !isLoading ? (
-              <TableRow>
-                <TableCell colSpan={3} className="px-4 py-6 text-accent">No members</TableCell>
+          ) : (
+            items.map((m) => (
+              <TableRow key={m.userId} className="cursor-pointer bg-card dark:bg-black/40 hover:bg-background dark:hover:bg-background">
+                <TableCell className="px-4">
+                  <Link href={`/workspaces/${slug}/members/${m.userId}`} className="flex items-center gap-3 min-w-0">
+                    <div className="relative">
+                      <Avatar className="size-8">
+                        <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
+                        <AvatarFallback>{getInitials(m.name || m.email || "")}</AvatarFallback>
+                      </Avatar>
+                      <RoleBadge role={m.role} isOwner={m.isOwner} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{m.name || m.email || m.userId}</div>
+                      <div className="text-xs text-accent truncate">{m.email}</div>
+                    </div>
+                  </Link>
+                </TableCell>
+                <TableCell className="px-4 w-48 text-center">
+                  <span className={cn("inline-block h-6 leading-6 text-xs px-2 rounded-sm capitalize", roleBadgeClass(m.role, m.isOwner))}>
+                    {m.isOwner ? "owner" : m.role}
+                  </span>
+                </TableCell>
+                <TableCell className="px-4 w-40">
+                  {m.joinedAt ? format(new Date(m.joinedAt), "MMM d") : "—"}
+                </TableCell>
               </TableRow>
-            ) : (
-              items.map((m) => (
-                <TableRow key={m.userId} className="cursor-pointer">
-                  <TableCell className="px-4">
-                    <Link href={`/workspaces/${slug}/members/${m.userId}`} className="flex items-center gap-3 min-w-0">
-                      <div className="relative">
-                        <Avatar className="size-8">
-                          <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
-                          <AvatarFallback>{getInitials(m.name || m.email || "")}</AvatarFallback>
-                        </Avatar>
-                        <RoleBadge role={m.role} isOwner={m.isOwner} />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-medium truncate">{m.name || m.email || m.userId}</div>
-                        <div className="text-xs text-accent truncate">{m.email}</div>
-                      </div>
-                    </Link>
-                  </TableCell>
-                  <TableCell className="px-4 w-48 text-center">
-                    <span className={cn("inline-block h-6 leading-6 text-xs px-2 rounded-sm capitalize", roleBadgeClass(m.role, m.isOwner))}>
-                      {m.isOwner ? "owner" : m.role}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-4 w-40">
-                    {m.joinedAt ? format(new Date(m.joinedAt), "MMM d") : "—"}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
   )
 }
