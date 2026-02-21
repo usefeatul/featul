@@ -45,7 +45,7 @@ export default function WorkspaceHeader() {
       <div className="flex items-center justify-between">
         {title ? (
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">{title}</h1>
+            <h1 className="text-xl font-heading leading-tight font-semibold">{title}</h1>
           </div>
         ) : (
           <div />
