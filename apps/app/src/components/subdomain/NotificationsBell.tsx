@@ -98,7 +98,7 @@ export default function NotificationsBell() {
         >
           <Bell className="size-4 text-foreground opacity-100 group-hover:text-primary transition-colors" />
           {unread > 0 ? (
-            <span className="absolute -top-1 -right-1 rounded-md  bg-muted ring-1 ring-border px-1.5 py-0.5 text-xs tabular-nums">
+            <span className="absolute -top-1 -right-1 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-background  tabular-nums">
               {unread}
             </span>
           ) : null}
