@@ -4,11 +4,18 @@ import React from "react";
 import { SettingsDialogShell } from "../global/SettingsDialogShell";
 import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CsvIcon } from "@featul/ui/icons/csv";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, CheckCircle, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
+import {
+  type ImportResult,
+  invalidateWorkspaceImportQueries,
+  parseImportResultPayload,
+  readImportErrorMessage,
+} from "./import-utils";
 
 type Props = {
   slug: string;
@@ -19,10 +26,11 @@ type Props = {
 type ImportState = "idle" | "uploading" | "success" | "error";
 
 export function ImportDialog({ slug, open, onOpenChange }: Props) {
+  const queryClient = useQueryClient();
   const [state, setState] = React.useState<ImportState>("idle");
   const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const [importedCount, setImportedCount] = React.useState(0);
+  const [result, setResult] = React.useState<ImportResult | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFileSelect = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +67,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
 
     setState("uploading");
     setError(null);
+    setResult(null);
     toast.loading("Importing your data...", { id: "import-csv" });
 
     try {
@@ -71,22 +80,25 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
         new Promise((resolve) => setTimeout(resolve, 1500)),
       ]);
 
-      const data = await res.json();
-      
-      if (!res.ok || !(data as any).ok) {
-        throw new Error((data as any).message || "Failed to import data");
+      const payload = await res.json().catch(() => null);
+      const normalized = parseImportResultPayload(payload);
+
+      if (!res.ok || !normalized) {
+        throw new Error(readImportErrorMessage(payload, "Failed to import data"));
       }
 
-      setImportedCount((data as any).importedCount || 0);
+      await invalidateWorkspaceImportQueries(queryClient, slug);
+
+      setResult(normalized);
       setState("success");
-      toast.success("Import complete!", { id: "import-csv" });
+      toast.success(`Import complete! ${normalized.importedCount} posts imported.`, { id: "import-csv" });
     } catch (err) {
       console.error("Import failed:", err);
       setError(err instanceof Error ? err.message : "Failed to import data. Please try again.");
       setState("error");
       toast.error("Import failed", { id: "import-csv" });
     }
-  }, [file, slug]);
+  }, [file, queryClient, slug]);
 
   const handleClose = React.useCallback(
     (newOpen: boolean) => {
@@ -94,7 +106,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
         setState("idle");
         setFile(null);
         setError(null);
-        setImportedCount(0);
+        setResult(null);
       }
       onOpenChange(newOpen);
     },
@@ -217,13 +229,58 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-center"
+                className="text-center space-y-1"
               >
                 <p className="text-sm font-medium text-foreground">Import complete!</p>
                 <p className="text-sm text-accent mt-0.5">
-                  Successfully imported {importedCount} posts.
+                  Imported {result?.importedCount ?? 0} posts.
                 </p>
+                <p className="text-xs text-accent">
+                  Created {result?.createdCount ?? 0}, updated {result?.updatedCount ?? 0}, skipped {result?.skippedCount ?? 0}.
+                </p>
+                {result?.errorCount ? (
+                  <p className="text-xs text-destructive">
+                    {result.errorCount} row errors were found.
+                  </p>
+                ) : null}
               </motion.div>
+
+              {result && (result.errors.length > 0 || result.warnings.length > 0) ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="w-full text-left space-y-2"
+                >
+                  {result.errors.length > 0 ? (
+                    <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2">
+                      <p className="text-xs font-medium text-destructive mb-1">Top errors</p>
+                      <ul className="space-y-1">
+                        {result.errors.slice(0, 5).map((issue, idx) => (
+                          <li key={`error-${idx}`} className="text-xs text-destructive/90">
+                            {issue.row ? `Row ${issue.row}: ` : ""}
+                            {issue.message}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {result.warnings.length > 0 ? (
+                    <div className="rounded-md border border-border bg-muted/30 p-2">
+                      <p className="text-xs font-medium text-foreground mb-1">Top warnings</p>
+                      <ul className="space-y-1">
+                        {result.warnings.slice(0, 5).map((issue, idx) => (
+                          <li key={`warning-${idx}`} className="text-xs text-accent">
+                            {issue.row ? `Row ${issue.row}: ` : ""}
+                            {issue.message}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </motion.div>
+              ) : null}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

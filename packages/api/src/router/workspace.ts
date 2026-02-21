@@ -9,6 +9,7 @@ import { normalizeStatus } from "../shared/status"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
 import { normalizePlan, isDataImportsAllowed } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
+import { runWorkspaceCsvImport } from "../services/workspace-csv-import"
 
 const dnsResolver = new Resolver()
 
@@ -645,6 +646,7 @@ export function createWorkspaceRouter() {
             status: post.roadmapStatus,
             upvotes: post.upvotes,
             boardName: board.name,
+            image: post.image,
             metadata: post.metadata,
             createdAt: post.createdAt,
             updatedAt: post.updatedAt,
@@ -660,7 +662,11 @@ export function createWorkspaceRouter() {
         // Build CSV
         const escapeCell = (val: string | null | undefined) => {
           if (val == null) return ""
-          const str = String(val).replace(/"/g, '""')
+          let str = String(val)
+          if (/^[\t\r\n ]*[=+\-@]/.test(str)) {
+            str = `'${str}`
+          }
+          str = str.replace(/"/g, '""')
           return str.includes(",") || str.includes('"') || str.includes("\n") ? `"${str}"` : str
         }
 
@@ -671,6 +677,7 @@ export function createWorkspaceRouter() {
           status: string | null
           upvotes: number | null
           boardName: string
+          image: string | null
           metadata: { attachments?: { name: string; url: string; type: string }[] } | null
           createdAt: Date | null
           updatedAt: Date | null
@@ -678,7 +685,7 @@ export function createWorkspaceRouter() {
           authorEmail: string | null
         }
 
-        const headers = ["ID", "Title", "Description", "Status", "Upvotes", "Board", "Author Name", "Author Email", "Attachments", "Created At", "Updated At"]
+        const headers = ["ID", "Title", "Description", "Status", "Upvotes", "Board", "Author Name", "Author Email", "Image", "Attachments", "Created At", "Updated At"]
         const rows = posts.map((p: PostRow) => {
           const attachments = p.metadata?.attachments?.map((a) => a.url).join("; ") || ""
           return [
@@ -690,6 +697,7 @@ export function createWorkspaceRouter() {
             escapeCell(p.boardName),
             escapeCell(p.authorName),
             escapeCell(p.authorEmail),
+            escapeCell(p.image),
             escapeCell(attachments),
             p.createdAt ? new Date(p.createdAt).toISOString() : "",
             p.updatedAt ? new Date(p.updatedAt).toISOString() : "",
@@ -726,12 +734,13 @@ export function createWorkspaceRouter() {
         }
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
-        // Basic CSV parsing (splitting by newline)
-        const rows = input.csvContent.split(/\r?\n/).filter((r) => r.trim().length > 0)
-        // TODO: Implement actual parsing and insertion logic
-        // For now, we simulate success to resolve the type error and basic flow
-
-        return c.json({ ok: true, importedCount: rows.length - 1 }) // Subtract header
+        const result = await runWorkspaceCsvImport({
+          db: ctx.db,
+          workspaceId: ws.id,
+          actorUserId: ctx.session.user.id,
+          csvContent: input.csvContent,
+        })
+        return c.json(result.summary, result.status)
       }),
 
     importFromCanny: privateProcedure

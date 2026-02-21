@@ -15,7 +15,7 @@ export default function DataSection({ slug, plan }: Props) {
   return (
     <SectionCard title="Data" description="Manage your workspace data.">
       <div className="space-y-4">
-        <DataImportSection plan={plan} />
+        <DataImportSection slug={slug} plan={plan} />
         <DataExportSection slug={slug} />
         <PlanNotice slug={slug} feature="data_imports" plan={plan} />
       </div>

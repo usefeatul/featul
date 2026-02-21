@@ -54,7 +54,7 @@ export const deleteWorkspaceInputSchema = z.object({
 
 export const importCsvInputSchema = z.object({
   slug: slugSchema,
-  csvContent: z.string(),
+  csvContent: z.string().max(10_000_000, "CSV payload too large"),
 })
 
 export const updateTimezoneInputSchema = z.object({
