@@ -5,6 +5,7 @@ import CommentReplyButton from "./actions/CommentReplyAction"
 interface CommentFooterProps {
   commentId: string
   postId: string
+  surface?: "workspace" | "public"
   upvotes: number
   downvotes: number
   userVote?: "upvote" | "downvote" | null
@@ -16,6 +17,7 @@ interface CommentFooterProps {
 export default function CommentFooter({
   commentId,
   postId,
+  surface = "workspace",
   upvotes,
   downvotes,
   userVote,
@@ -28,6 +30,7 @@ export default function CommentFooter({
       <CommentVote
         commentId={commentId}
         postId={postId}
+        surface={surface}
         initialUpvotes={upvotes}
         initialDownvotes={downvotes}
         initialUserVote={userVote}

@@ -13,10 +13,13 @@ const metadataSchema = z.object({
   editHistory: z.array(z.object({ content: z.string(), editedAt: z.string() })).optional(),
 })
 
+const commentSurfaceSchema = z.enum(["workspace", "public"])
+
 export const createCommentInputSchema = z.object({
   postId: z.string().min(1),
   content: z.string().max(5000).default(""),
   parentId: z.string().min(1).optional(),
+  isInternal: z.boolean().optional(),
   metadata: metadataSchema.optional(),
   fingerprint: fingerprintSchema,
 }).refine(
@@ -42,6 +45,7 @@ export const deleteCommentInputSchema = z.object({
 export const listCommentsInputSchema = z.object({
   postId: z.string().min(1),
   fingerprint: fingerprintSchema,
+  surface: commentSurfaceSchema.optional().default("workspace"),
 })
 
 export const voteCommentInputSchema = z.object({
@@ -78,3 +82,4 @@ export type ReportCommentInput = z.infer<typeof reportCommentInputSchema>
 export type PinCommentInput = z.infer<typeof pinCommentInputSchema>
 export type MentionsListInput = z.infer<typeof mentionsListInputSchema>
 export type MentionsMarkReadInput = z.infer<typeof mentionsMarkReadInputSchema>
+export type CommentSurface = z.infer<typeof commentSurfaceSchema>

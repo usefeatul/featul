@@ -14,6 +14,7 @@ import { getBrowserFingerprint } from "@/utils/fingerprint"
 interface CommentVoteProps {
   commentId: string
   postId: string
+  surface?: "workspace" | "public"
   initialUpvotes: number
   initialDownvotes: number
   initialUserVote?: "upvote" | "downvote" | null
@@ -22,6 +23,7 @@ interface CommentVoteProps {
 export default function CommentVote({ 
   commentId, 
   postId, 
+  surface = "workspace",
   initialUpvotes, 
   initialDownvotes,
   initialUserVote 
@@ -38,10 +40,10 @@ export default function CommentVote({
   }, [])
 
   const { data: commentsData } = useQuery({
-    queryKey: ["comments", postId],
+    queryKey: ["comments", postId, surface],
     enabled: false,
     queryFn: async () => {
-      const res = await client.comment.list.$get({ postId })
+      const res = await client.comment.list.$get({ postId, surface })
       if (!res.ok) throw new Error("Failed to fetch comments")
       return await res.json()
     },
@@ -68,10 +70,10 @@ export default function CommentVote({
   }, [commentsData, commentId])
 
   const { data: statusData } = useQuery({
-    queryKey: ["comment-vote-status", postId, commentId, visitorId],
+    queryKey: ["comment-vote-status", postId, commentId, visitorId, surface],
     enabled: !!visitorId,
     queryFn: async () => {
-      const res = await client.comment.list.$get({ postId, fingerprint: visitorId || undefined })
+      const res = await client.comment.list.$get({ postId, fingerprint: visitorId || undefined, surface })
       if (!res.ok) return null
       const json = await res.json()
       const found = json?.comments?.find((c: any) => c.id === commentId)

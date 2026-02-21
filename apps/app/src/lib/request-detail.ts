@@ -1,6 +1,7 @@
 import { db, workspace, board, post, user, postMerge } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { client } from "@featul/api/client";
+import { headers } from "next/headers";
 import { readInitialCollapsedCommentIds } from "@/lib/comments.server";
 import { avatarUrlFromFingerprint } from "@/lib/author-avatar";
 import type { CommentData } from "@/types/comment";
@@ -92,9 +93,21 @@ export function ensureAuthorAvatar<T extends { author: AuthorRecord; metadata?: 
 }
 
 export async function loadPostComments(
-  postId: string
+  postId: string,
+  surface: "workspace" | "public" = "workspace"
 ): Promise<{ initialComments: CommentData[]; initialCollapsedIds: string[] }> {
-  const commentsRes = await client.comment.list.$get({ postId });
+  const incomingHeaders = await headers();
+  const cookieHeader = incomingHeaders.get("cookie");
+  const commentsRes = await client.comment.list.$get(
+    { postId, surface },
+    cookieHeader
+      ? {
+        headers: {
+          cookie: cookieHeader,
+        },
+      }
+      : undefined
+  );
   const commentsJson = (await commentsRes
     .json()
     .catch(() => ({ comments: [] }))) as { comments?: CommentData[] };

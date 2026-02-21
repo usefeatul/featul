@@ -10,6 +10,7 @@ import { readApiErrorMessage } from "@/hooks/postApiError"
 interface UseCommentSubmitProps {
   postId: string
   parentId?: string
+  surface: "workspace" | "public"
   onSuccess?: () => void
   resetForm: () => void
 }
@@ -23,6 +24,7 @@ interface CreateCommentResponse {
 export function useCommentSubmit({
   postId,
   parentId,
+  surface,
   onSuccess,
   resetForm,
 }: UseCommentSubmitProps) {
@@ -32,7 +34,8 @@ export function useCommentSubmit({
   const handleSubmit = async (
     e: React.FormEvent,
     content: string,
-    uploadedImage: UploadedImage | null
+    uploadedImage: UploadedImage | null,
+    isInternal: boolean
   ) => {
     e.preventDefault()
     if ((!content.trim() && !uploadedImage) || isPending) return
@@ -57,6 +60,7 @@ export function useCommentSubmit({
           postId,
           content: content.trim() || "",
           ...(parentId ? { parentId } : {}),
+          isInternal,
           ...(metadata ? { metadata } : {}),
           fingerprint,
         })
@@ -100,6 +104,7 @@ export function useCommentSubmit({
                     ? createdComment.depth
                     : 0,
                 isPinned: createdComment.isPinned ?? null,
+                isInternal: createdComment.isInternal ?? false,
                 isEdited: createdComment.isEdited ?? null,
                 createdAt:
                   createdComment.createdAt ||
@@ -116,7 +121,7 @@ export function useCommentSubmit({
               }
 
               queryClient.setQueryData<{ comments: CommentData[] }>(
-                ["comments", postId],
+                ["comments", postId, surface],
                 (prev) => {
                   const base = prev?.comments || []
                   const exists = base.some(

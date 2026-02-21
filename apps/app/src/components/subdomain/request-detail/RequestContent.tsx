@@ -26,6 +26,8 @@ export function RequestContent({
   initialComments,
   initialCollapsedIds,
 }: RequestContentProps) {
+  const visibleCommentCount = initialComments?.length ?? post.commentCount
+
   const rawDisplayAuthor = getDisplayUser(
     post.author
       ? {
@@ -125,7 +127,8 @@ export function RequestContent({
           />
           <CommentCounter
             postId={post.id}
-            initialCount={post.commentCount}
+            initialCount={visibleCommentCount}
+            surface="public"
             className="hover:text-foreground transition-colors"
           />
         </div>
@@ -135,8 +138,9 @@ export function RequestContent({
       <div className="mt-6 pt-6">
         <CommentList
           postId={post.id}
-          initialCount={post.commentCount}
+          initialCount={visibleCommentCount}
           workspaceSlug={workspaceSlug}
+          surface="public"
           allowComments={post.allowComments}
           initialComments={initialComments}
           initialCollapsedIds={initialCollapsedIds}

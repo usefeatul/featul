@@ -6,6 +6,9 @@ import { Textarea } from "@featul/ui/components/textarea"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import { ImageIcon } from "@featul/ui/icons/image"
+import { LockIcon } from "@featul/ui/icons/lock"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip"
+import { cn } from "@featul/ui/lib/utils"
 import ContentImage from "@/components/global/ContentImage"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { useImageUpload } from "../../hooks/useImageUpload"
@@ -21,6 +24,8 @@ interface CommentFormProps {
   autoFocus?: boolean
   buttonText?: string
   workspaceSlug?: string
+  surface?: "workspace" | "public"
+  defaultInternal?: boolean
 }
 
 export default function CommentForm({
@@ -32,9 +37,14 @@ export default function CommentForm({
   autoFocus = false,
   buttonText = "Comment",
   workspaceSlug,
+  surface = "workspace",
+  defaultInternal = false,
 }: CommentFormProps) {
   const [content, setContent] = useState("")
+  const [isInternal, setIsInternal] = useState(defaultInternal)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const canMarkInternal = surface === "workspace" && Boolean(workspaceSlug)
+  const internalForced = Boolean(parentId && defaultInternal)
 
   const {
     uploadedImage,
@@ -58,18 +68,22 @@ export default function CommentForm({
   const resetForm = () => {
     setContent("")
     setUploadedImage(null)
+    setIsInternal(defaultInternal)
   }
 
   const { isPending, handleSubmit } = useCommentSubmit({
     postId,
     parentId,
+    surface,
     onSuccess,
     resetForm,
   })
 
   return (
     <form
-      onSubmit={(e) => handleSubmit(e, content, uploadedImage)}
+      onSubmit={(e) =>
+        handleSubmit(e, content, uploadedImage, internalForced || isInternal)
+      }
       className="space-y-2.5"
     >
       <div className="relative">
@@ -146,6 +160,39 @@ export default function CommentForm({
               <ImageIcon className="size-4 " />
             )}
           </Button>
+
+          {canMarkInternal && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="card"
+                  onClick={() => setIsInternal((prev) => !prev)}
+                  className={cn(
+                    "h-8 w-8 p-0 rounded-md dark:bg-black/40",
+                    isInternal && "bg-muted text-foreground border-border/80"
+                  )}
+                  disabled={isPending || uploadingImage || internalForced}
+                  aria-label={
+                    isInternal
+                      ? "Disable internal comment"
+                      : "Enable internal comment"
+                  }
+                  aria-pressed={isInternal}
+                >
+                  <LockIcon className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
+                {internalForced
+                  ? "Internal reply"
+                  : isInternal
+                    ? "Internal only"
+                    : "Make internal"}
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
 
         <div className="flex items-center gap-2">

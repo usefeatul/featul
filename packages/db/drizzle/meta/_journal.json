@@ -71,6 +71,13 @@
       "when": 1768855175562,
       "tag": "0009_mysterious_typhoid_mary",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1769000000000,
+      "tag": "0010_cuddly_lockup",
+      "breakpoints": true
     }
   ]
 }

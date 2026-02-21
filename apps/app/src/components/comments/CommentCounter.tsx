@@ -9,16 +9,22 @@ import { cn } from "@featul/ui/lib/utils"
 interface CommentCounterProps {
   postId: string
   initialCount?: number
+  surface?: "workspace" | "public"
   className?: string
 }
 
-export default function CommentCounter({ postId, initialCount = 0, className }: CommentCounterProps) {
+export default function CommentCounter({
+  postId,
+  initialCount = 0,
+  surface = "workspace",
+  className,
+}: CommentCounterProps) {
   const { data: commentsData } = useQuery({
-    queryKey: ["comments", postId],
+    queryKey: ["comments", postId, surface],
     // Subscribe to cache without triggering a fetch from this component
     enabled: false,
     queryFn: async () => {
-      const res = await client.comment.list.$get({ postId })
+      const res = await client.comment.list.$get({ postId, surface })
       if (!res.ok) throw new Error("Failed to fetch comments")
       return await res.json()
     },

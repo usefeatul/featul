@@ -17,6 +17,7 @@ interface CommentListProps {
   postId: string
   initialCount?: number
   workspaceSlug?: string
+  surface?: "workspace" | "public"
   allowComments?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
@@ -27,6 +28,7 @@ export default function CommentList({
   postId,
   initialCount = 0,
   workspaceSlug,
+  surface = "workspace",
   allowComments = true,
   initialComments,
   initialCollapsedIds,
@@ -40,7 +42,7 @@ export default function CommentList({
     getBrowserFingerprint().then(setFingerprint)
   }, [])
 
-  const queryKey = ["comments", postId]
+  const queryKey = ["comments", postId, surface]
 
   const { data: commentsData, isLoading, refetch } = useQuery<CommentListResponse>({
     queryKey,
@@ -48,6 +50,7 @@ export default function CommentList({
       const res = await client.comment.list.$get({
         postId,
         fingerprint: fingerprint || undefined,
+        surface,
       })
       if (!res.ok) {
         throw new Error("Failed to fetch comments")
@@ -82,6 +85,7 @@ export default function CommentList({
           postId={postId}
           onSuccess={handleCommentSuccess}
           workspaceSlug={workspaceSlug}
+          surface={surface}
         />
       </div>
       {commentCount === 0 && !isLoading ? (
@@ -99,6 +103,7 @@ export default function CommentList({
               currentUserId={currentUserId}
               onUpdate={handleCommentSuccess}
               workspaceSlug={workspaceSlug}
+              surface={surface}
               initialCollapsedIds={initialCollapsedIds}
               hidePublicMemberIdentity={hidePublicMemberIdentity}
             />

@@ -71,7 +71,7 @@ export async function loadRequestDetailPageData({
 
   const tags = await loadPostTags(rawPost.id)
   const hasVoted = await readHasVotedForPost(rawPost.id)
-  const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id)
+  const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id, "workspace")
   const navigation = await loadNavigation({
     workspaceSlug,
     postId: rawPost.id,

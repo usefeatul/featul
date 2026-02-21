@@ -14,6 +14,7 @@ export type CommentData = {
   replyCount: number
   depth: number
   isPinned: boolean | null
+  isInternal: boolean
   isEdited: boolean | null
   createdAt: string
   updatedAt: string

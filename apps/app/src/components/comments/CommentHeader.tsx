@@ -6,6 +6,7 @@ import CommentActions from "./actions/CommentActions"
 import { Badge } from "@featul/ui/components/badge"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { EditIcon } from "@featul/ui/icons/edit"
+import { LockIcon } from "@featul/ui/icons/lock"
 import { ReportIndicator } from "../requests/ReportIndicator"
 import type { CommentData } from "../../types/comment"
 
@@ -65,6 +66,19 @@ export default function CommentHeader({
           </Tooltip>
         )}
         {comment.isPinned && <PinnedBadge />}
+        {comment.isInternal && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="nav" className="gap-1 px-1 py-0.5 text-[10px] leading-none text-accent">
+                <LockIcon width={11} height={11} className="text-accent" />
+                Internal
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
+              Internal only
+            </TooltipContent>
+          </Tooltip>
+        )}
         {hasReplies && onToggleCollapse && (
           <CommentCollapseToggle
             isCollapsed={isCollapsed}

@@ -128,7 +128,7 @@ export default function RequestDetail({
                 <div className="flex items-center justify-between gap-3 text-sm text-accent">
                   <div className="inline-flex items-center gap-3">
                     <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-sm" />
-                    <CommentCounter postId={post.id} initialCount={post.commentCount} />
+                    <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
                   </div>
                   <Toolbar size="sm" variant="plain">
                     <Button
@@ -176,7 +176,7 @@ export default function RequestDetail({
               {isMobile ? null : (
                 <div className="flex items-center justify-end gap-3 text-xs text-accent">
                   <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" />
-                  <CommentCounter postId={post.id} initialCount={post.commentCount} />
+                  <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
                 </div>
               )}
               <div className="mt-2 pt-4">
@@ -184,6 +184,7 @@ export default function RequestDetail({
                   postId={post.id}
                   initialCount={post.commentCount}
                   workspaceSlug={workspaceSlug}
+                  surface="workspace"
                   allowComments={post.allowComments}
                   initialComments={initialComments}
                   initialCollapsedIds={initialCollapsedIds}

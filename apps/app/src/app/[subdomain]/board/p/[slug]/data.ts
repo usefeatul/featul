@@ -87,7 +87,7 @@ export async function loadPublicBoardRequestDetailPageData({
   const isOwner = !!rawPost.authorId && rawPost.authorId === ws.ownerId;
 
   const hasVoted = await readHasVotedForPost(rawPost.id);
-  const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id);
+  const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id, "public");
 
   const post: SubdomainRequestDetailData = {
     ...postWithAuthor,

@@ -28,6 +28,7 @@ interface CommentItemProps {
   isCollapsed?: boolean
   onToggleCollapse?: () => void
   workspaceSlug?: string
+  surface?: "workspace" | "public"
   hidePublicMemberIdentity?: boolean
 }
 
@@ -41,6 +42,7 @@ export default function CommentItem({
   isCollapsed = false,
   onToggleCollapse,
   workspaceSlug,
+  surface = "workspace",
   hidePublicMemberIdentity,
 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false)
@@ -128,6 +130,7 @@ export default function CommentItem({
           <CommentFooter
             commentId={comment.id}
             postId={comment.postId}
+            surface={surface}
             upvotes={comment.upvotes}
             downvotes={comment.downvotes}
             userVote={comment.userVote}
@@ -145,6 +148,8 @@ export default function CommentItem({
                   postId={comment.postId}
                   parentId={comment.id}
                   workspaceSlug={workspaceSlug}
+                  surface={surface}
+                  defaultInternal={Boolean(comment.isInternal)}
                   onSuccess={() => {
                     setShowReplyForm(false)
                     onReplySuccess?.()
