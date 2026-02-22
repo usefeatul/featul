@@ -2,9 +2,9 @@ import { createClient } from "jstack"
 import type { AppRouter } from "./index"
 
 function getBaseUrl() {
+  if (typeof window !== "undefined") return window.location.origin
   const envUrl = process.env.NEXT_PUBLIC_APP_URL
   if (envUrl) return envUrl
-  if (typeof window !== "undefined") return window.location.origin
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return `http://localhost:3000`
 }

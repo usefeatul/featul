@@ -3,6 +3,7 @@ import { auth } from "@featul/auth/auth"
 import { HTTPException } from "hono/http-exception"
 import { headers } from "next/headers"
 import { db } from "@featul/db"
+import { enforceTrustedBrowserOrigin } from "./shared/request-origin"
 // import { limitPublic, limitPrivate } from "./services/ratelimiter"
 
 
@@ -18,6 +19,7 @@ const authMiddleware = j.middleware(async ({ next, c }) => {
   if (!session || !session.user) {
     throw new HTTPException(401, { message: "Unauthorized" })
   }
+  enforceTrustedBrowserOrigin(req)
   return await next({ session })
 })
 
