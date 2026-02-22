@@ -17,6 +17,10 @@ export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageUpload = async (file: File) => {
+    if (!boardSlug) {
+      toast.error("Select a board before uploading an image.")
+      return
+    }
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       toast.error("Unsupported file type. Please use PNG, JPEG, WebP, or GIF.")
       return
@@ -34,6 +38,7 @@ export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
         workspaceSlug,
         file.name,
         file.type,
+        file.size,
         boardSlug
       )
 

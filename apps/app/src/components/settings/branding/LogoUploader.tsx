@@ -53,7 +53,7 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
     setUploading(true)
     const toastId = toast.loading("Uploading logo...")
     try {
-      const { uploadUrl, publicUrl } = await getLogoUploadUrl(slug, file.name, file.type)
+      const { uploadUrl, publicUrl } = await getLogoUploadUrl(slug, file.name, file.type, file.size)
       const res = await fetch(uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": file.type },

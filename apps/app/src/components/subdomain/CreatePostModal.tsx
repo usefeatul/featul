@@ -58,7 +58,7 @@ export default function CreatePostModal({
     handleFileSelect,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug)
+  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
 
   const {
     title,

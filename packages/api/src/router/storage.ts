@@ -5,6 +5,26 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { HTTPException } from "hono/http-exception"
 import { and, eq } from "drizzle-orm"
 import { workspace, workspaceMember, post, board } from "@featul/db"
+import { auth } from "@featul/auth"
+import { headers } from "next/headers"
+import {
+  SIGNED_UPLOAD_URL_TTL_SECONDS,
+  AVATAR_UPLOAD_POLICY,
+  POST_IMAGE_UPLOAD_POLICY,
+  COMMENT_IMAGE_UPLOAD_POLICY,
+  WORKSPACE_UPLOAD_POLICIES,
+  resolveWorkspaceUploadFolder,
+  validateUploadInput,
+} from "../shared/storage-upload"
+import {
+  limitStorageAvatar,
+  limitStorageWorkspace,
+  limitStoragePublicPostAnon,
+  limitStoragePublicPostUser,
+  limitStorageMemberPost,
+  limitStorageComment,
+  type RateLimitResult,
+} from "../services/ratelimiter"
 
 function getEnv(name: string): string {
   const v = process.env[name]
@@ -36,8 +56,67 @@ function createStorageContext(): StorageContext {
   return { s3, bucket, publicBase }
 }
 
-function sanitizeName(name: string): string {
-  return name.replace(/[^a-zA-Z0-9._-]/g, "-")
+function applyRateLimitHeaders(c: any, result: RateLimitResult): void {
+  const resetInSeconds = Math.max(0, Math.ceil((result.reset - Date.now()) / 1000))
+  c.header("X-RateLimit-Limit", String(result.limit))
+  c.header("X-RateLimit-Remaining", String(Math.max(0, result.remaining)))
+  c.header("X-RateLimit-Reset", String(resetInSeconds))
+
+  if (!result.success) {
+    c.header("Retry-After", String(Math.max(1, resetInSeconds)))
+    throw new HTTPException(429, { message: "Too many upload URL requests. Please try again shortly." })
+  }
+}
+
+async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
+  try {
+    const session = await auth.api.getSession({ headers: rawHeaders || (await headers()) })
+    return session?.user?.id || null
+  } catch {
+    return null
+  }
+}
+
+async function hasActiveWorkspaceMembership(ctx: any, workspaceId: string, userId: string): Promise<boolean> {
+  const [member] = await ctx.db
+    .select({ id: workspaceMember.id })
+    .from(workspaceMember)
+    .where(
+      and(
+        eq(workspaceMember.workspaceId, workspaceId),
+        eq(workspaceMember.userId, userId),
+        eq(workspaceMember.isActive, true)
+      )
+    )
+    .limit(1)
+
+  return Boolean(member?.id)
+}
+
+async function buildSignedUpload({
+  s3,
+  bucket,
+  publicBase,
+  key,
+  contentType,
+  contentLength,
+}: {
+  s3: S3Client
+  bucket: string
+  publicBase: string
+  key: string
+  contentType: string
+  contentLength: number
+}) {
+  const cmd = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: contentType,
+    ContentLength: contentLength,
+  })
+  const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: SIGNED_UPLOAD_URL_TTL_SECONDS })
+  const publicUrl = `${publicBase}/${key}`
+  return { uploadUrl, key, publicUrl }
 }
 
 export function createStorageRouter() {
@@ -45,135 +124,230 @@ export function createStorageRouter() {
     getAvatarUploadUrl: privateProcedure
       .input(getAvatarUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
+        const userId = String(ctx.session.user.id || "")
+        if (!userId) throw new HTTPException(401, { message: "Unauthorized" })
+        const avatarRateLimit = await limitStorageAvatar(userId)
+        applyRateLimitHeaders(c, avatarRateLimit)
+
+        const { safeFileName, normalizedContentType } = validateUploadInput({
+          fileName: input.fileName,
+          contentType: input.contentType,
+          fileSize: input.fileSize,
+          policy: AVATAR_UPLOAD_POLICY,
+        })
+
         const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
-        const safe = sanitizeName(input.fileName)
-        const userId = String(ctx.session.user.id || "")
-        const key = `users/${userId}/avatar/${id}-${safe}`
+        const key = `users/${userId}/avatar/${id}-${safeFileName}`
 
-        const cmd = new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          ContentType: input.contentType,
+        const payload = await buildSignedUpload({
+          s3,
+          bucket,
+          publicBase,
+          key,
+          contentType: normalizedContentType,
+          contentLength: input.fileSize,
         })
-        const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: 60 * 5 })
-        const publicUrl = `${publicBase}/${key}`
-        return c.json({ uploadUrl, key, publicUrl })
+        return c.json(payload)
       }),
 
     getUploadUrl: privateProcedure
       .input(getUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
+        const userId = String(ctx.session.user.id || "")
+        const workspaceRateLimit = await limitStorageWorkspace(userId)
+        applyRateLimitHeaders(c, workspaceRateLimit)
+
         const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
+          .select({ id: workspace.id, ownerId: workspace.ownerId, slug: workspace.slug })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
           .limit(1)
         if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+        const folder = resolveWorkspaceUploadFolder(input.folder)
+        const uploadPolicy = WORKSPACE_UPLOAD_POLICIES[folder]
+        const { safeFileName, normalizedContentType } = validateUploadInput({
+          fileName: input.fileName,
+          contentType: input.contentType,
+          fileSize: input.fileSize,
+          policy: uploadPolicy,
+        })
+
         let allowed = ws.ownerId === ctx.session.user.id
         if (!allowed) {
           const [me] = await ctx.db
             .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
             .from(workspaceMember)
-            .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+            .where(
+              and(
+                eq(workspaceMember.workspaceId, ws.id),
+                eq(workspaceMember.userId, ctx.session.user.id),
+                eq(workspaceMember.isActive, true)
+              )
+            )
             .limit(1)
           const perms = (me?.permissions || {}) as Record<string, boolean>
-          const isBrandingUpload = String(input.folder || "").startsWith("branding/")
+          const isBrandingUpload = folder.startsWith("branding/")
           if (me?.role === "admin" || me?.role === "member" || (isBrandingUpload && perms?.canConfigureBranding === true)) allowed = true
         }
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+
         const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
-        const safe = sanitizeName(input.fileName)
-        const folder = input.folder?.trim() || "branding/logo"
-        const key = `workspaces/${input.slug}/${folder}/${id}-${safe}`
+        const key = `workspaces/${ws.slug}/${folder}/${id}-${safeFileName}`
 
-        const cmd = new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          ContentType: input.contentType,
+        const payload = await buildSignedUpload({
+          s3,
+          bucket,
+          publicBase,
+          key,
+          contentType: normalizedContentType,
+          contentLength: input.fileSize,
         })
-        const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: 60 * 5 })
-        const publicUrl = `${publicBase}/${key}`
-        return c.json({ uploadUrl, key, publicUrl })
+        return c.json(payload)
       }),
 
     getPublicPostImageUploadUrl: publicProcedure
       .input(getPostImageUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
+        const userId = await getSessionUserId(c.req.raw.headers)
+        const publicPostRateLimit = userId
+          ? await limitStoragePublicPostUser(userId)
+          : await limitStoragePublicPostAnon(c.req.raw)
+        applyRateLimitHeaders(c, publicPostRateLimit)
+
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, slug: workspace.slug })
           .from(workspace)
           .where(eq(workspace.slug, input.workspaceSlug))
           .limit(1)
         if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
 
+        const [targetBoard] = await ctx.db
+          .select({ id: board.id, isPublic: board.isPublic, allowAnonymous: board.allowAnonymous })
+          .from(board)
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.slug, input.boardSlug)
+            )
+          )
+          .limit(1)
+        if (!targetBoard) throw new HTTPException(404, { message: "Board not found" })
+        if (!targetBoard.isPublic) {
+          throw new HTTPException(403, { message: "Private boards require workspace access for uploads" })
+        }
+        if (!userId && !targetBoard.allowAnonymous) {
+          throw new HTTPException(401, { message: "Please sign in to upload images on this board" })
+        }
+
+        const { safeFileName, normalizedContentType } = validateUploadInput({
+          fileName: input.fileName,
+          contentType: input.contentType,
+          fileSize: input.fileSize,
+          policy: POST_IMAGE_UPLOAD_POLICY,
+        })
+
         const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
-        const safe = sanitizeName(input.fileName)
-        const folder = "posts"
-        const key = `workspaces/${input.workspaceSlug}/${folder}/${id}-${safe}`
+        const key = `workspaces/${ws.slug}/posts/${id}-${safeFileName}`
 
-        const cmd = new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          ContentType: input.contentType,
+        const payload = await buildSignedUpload({
+          s3,
+          bucket,
+          publicBase,
+          key,
+          contentType: normalizedContentType,
+          contentLength: input.fileSize,
         })
-        const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: 60 * 5 })
-        const publicUrl = `${publicBase}/${key}`
-        return c.json({ uploadUrl, key, publicUrl })
+        return c.json(payload)
       }),
 
     getPostImageUploadUrl: privateProcedure
       .input(getPostImageUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
+        const userId = String(ctx.session.user.id || "")
+        const memberPostRateLimit = await limitStorageMemberPost(userId)
+        applyRateLimitHeaders(c, memberPostRateLimit)
+
         const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
+          .select({ id: workspace.id, ownerId: workspace.ownerId, slug: workspace.slug })
           .from(workspace)
           .where(eq(workspace.slug, input.workspaceSlug))
           .limit(1)
         if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+        const [targetBoard] = await ctx.db
+          .select({ id: board.id })
+          .from(board)
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.slug, input.boardSlug)
+            )
+          )
+          .limit(1)
+        if (!targetBoard) throw new HTTPException(404, { message: "Board not found" })
 
         let allowed = ws.ownerId === ctx.session.user.id
         if (!allowed) {
           const [me] = await ctx.db
             .select({ role: workspaceMember.role })
             .from(workspaceMember)
-            .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+            .where(
+              and(
+                eq(workspaceMember.workspaceId, ws.id),
+                eq(workspaceMember.userId, ctx.session.user.id),
+                eq(workspaceMember.isActive, true)
+              )
+            )
             .limit(1)
           if (me?.role === "admin" || me?.role === "member" || me?.role === "viewer") {
             allowed = true
           }
         }
-        
+
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+
+        const { safeFileName, normalizedContentType } = validateUploadInput({
+          fileName: input.fileName,
+          contentType: input.contentType,
+          fileSize: input.fileSize,
+          policy: POST_IMAGE_UPLOAD_POLICY,
+        })
 
         const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
-        const safe = sanitizeName(input.fileName)
-        const folder = "posts"
-        const key = `workspaces/${input.workspaceSlug}/${folder}/${id}-${safe}`
+        const key = `workspaces/${ws.slug}/posts/${id}-${safeFileName}`
 
-        const cmd = new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          ContentType: input.contentType,
+        const payload = await buildSignedUpload({
+          s3,
+          bucket,
+          publicBase,
+          key,
+          contentType: normalizedContentType,
+          contentLength: input.fileSize,
         })
-        const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: 60 * 5 })
-        const publicUrl = `${publicBase}/${key}`
-        return c.json({ uploadUrl, key, publicUrl })
+        return c.json(payload)
       }),
 
     getCommentImageUploadUrl: privateProcedure
       .input(getCommentImageUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
-        // Get workspace slug from postId
+        const userId = String(ctx.session.user.id || "")
+        const commentRateLimit = await limitStorageComment(userId)
+        applyRateLimitHeaders(c, commentRateLimit)
+
         const [targetPost] = await ctx.db
           .select({
             postId: post.id,
             workspaceSlug: workspace.slug,
             workspaceId: workspace.id,
             ownerId: workspace.ownerId,
+            boardIsPublic: board.isPublic,
+            allowComments: board.allowComments,
+            postIsLocked: post.isLocked,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
@@ -185,50 +359,43 @@ export function createStorageRouter() {
           throw new HTTPException(404, { message: "Post not found" })
         }
 
-        // Allow any authenticated user to upload comment images (they can comment, so they can upload)
-        // But we still check if they have access to the workspace
-        let allowed = targetPost.ownerId === ctx.session.user.id
-        if (!allowed) {
-          const [me] = await ctx.db
-            .select({ role: workspaceMember.role })
-            .from(workspaceMember)
-            .where(
-              and(
-                eq(workspaceMember.workspaceId, targetPost.workspaceId),
-                eq(workspaceMember.userId, ctx.session.user.id)
-              )
-            )
-            .limit(1)
-          // Allow if they're a member of the workspace, or if it's a public workspace (we'll allow authenticated users)
-          if (me?.role === "admin" || me?.role === "member" || me?.role === "viewer") {
-            allowed = true
-          }
+        if (!targetPost.allowComments) {
+          throw new HTTPException(403, { message: "Comments are currently disabled on this board" })
         }
 
-        // For public workspaces, allow any authenticated user
-        // For now, we'll allow authenticated users to upload comment images
-        // The comment creation endpoint will handle the actual permission check
-        if (!allowed) {
-          // Check if workspace is public by checking if board allows comments
-          // For simplicity, we'll allow authenticated users to upload
-          // The actual comment creation will validate permissions
-          allowed = true
+        if (targetPost.postIsLocked) {
+          throw new HTTPException(403, { message: "This post is locked" })
         }
+
+        let allowed = targetPost.ownerId === ctx.session.user.id
+        if (!allowed) {
+          allowed = await hasActiveWorkspaceMembership(ctx, targetPost.workspaceId, ctx.session.user.id)
+        }
+
+        if (!targetPost.boardIsPublic && !allowed) {
+          throw new HTTPException(403, { message: "Only workspace members can upload images for this post" })
+        }
+
+        const { safeFileName, normalizedContentType } = validateUploadInput({
+          fileName: input.fileName,
+          contentType: input.contentType,
+          fileSize: input.fileSize,
+          policy: COMMENT_IMAGE_UPLOAD_POLICY,
+        })
 
         const { s3, bucket, publicBase } = createStorageContext()
         const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`
-        const safe = sanitizeName(input.fileName)
-        const folder = "comments"
-        const key = `workspaces/${targetPost.workspaceSlug}/${folder}/${id}-${safe}`
+        const key = `workspaces/${targetPost.workspaceSlug}/comments/${id}-${safeFileName}`
 
-        const cmd = new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          ContentType: input.contentType,
+        const payload = await buildSignedUpload({
+          s3,
+          bucket,
+          publicBase,
+          key,
+          contentType: normalizedContentType,
+          contentLength: input.fileSize,
         })
-        const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: 60 * 5 })
-        const publicUrl = `${publicBase}/${key}`
-        return c.json({ uploadUrl, key, publicUrl })
+        return c.json(payload)
       }),
   })
 }

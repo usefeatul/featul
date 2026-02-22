@@ -38,3 +38,34 @@ const ratelimitInvite = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(
 export async function limitInvite(userId: string): Promise<RateLimitResult> {
   return await ratelimitInvite.limit(userId)
 }
+
+const ratelimitStorageAvatar = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(30, "60 s"), analytics: false, prefix: "rl:storage:avatar" })
+const ratelimitStorageWorkspace = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), analytics: false, prefix: "rl:storage:workspace" })
+const ratelimitStoragePublicPostAnon = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, "60 s"), analytics: false, prefix: "rl:storage:public-post:anon" })
+const ratelimitStoragePublicPostUser = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(45, "60 s"), analytics: false, prefix: "rl:storage:public-post:user" })
+const ratelimitStorageMemberPost = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), analytics: false, prefix: "rl:storage:member-post" })
+const ratelimitStorageComment = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), analytics: false, prefix: "rl:storage:comment" })
+
+export async function limitStorageAvatar(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStorageAvatar.limit(userId)
+}
+
+export async function limitStorageWorkspace(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStorageWorkspace.limit(userId)
+}
+
+export async function limitStoragePublicPostAnon(req: Request): Promise<RateLimitResult> {
+  return await ratelimitStoragePublicPostAnon.limit(getIp(req))
+}
+
+export async function limitStoragePublicPostUser(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStoragePublicPostUser.limit(userId)
+}
+
+export async function limitStorageMemberPost(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStorageMemberPost.limit(userId)
+}
+
+export async function limitStorageComment(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStorageComment.limit(userId)
+}

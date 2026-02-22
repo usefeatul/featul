@@ -28,6 +28,7 @@ export function CoverImageUploader({
                 slug: workspaceSlug,
                 fileName: file.name,
                 contentType: file.type,
+                fileSize: file.size,
                 folder: "changelog/covers",
             });
             const data = await res.json();

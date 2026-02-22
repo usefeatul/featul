@@ -26,7 +26,8 @@ export function useImageUpload(postId: string) {
       const { uploadUrl, publicUrl } = await getCommentImageUploadUrl(
         postId,
         file.name,
-        file.type
+        file.type,
+        file.size
       )
 
       const res = await fetch(uploadUrl, {

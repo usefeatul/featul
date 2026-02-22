@@ -4,12 +4,14 @@ export async function getPostImageUploadUrl(
   workspaceSlug: string,
   fileName: string,
   contentType: string,
-  boardSlug?: string
+  fileSize: number,
+  boardSlug: string
 ): Promise<{ uploadUrl: string; key: string; publicUrl: string }> {
   const res = await client.storage.getPublicPostImageUploadUrl.$post({
     workspaceSlug,
     fileName,
     contentType,
+    fileSize,
     boardSlug
   })
   if (!res.ok) {

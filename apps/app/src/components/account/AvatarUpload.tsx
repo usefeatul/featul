@@ -49,6 +49,7 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
             const res = await client.storage.getAvatarUploadUrl.$post({
                 fileName: file.name,
                 contentType: file.type,
+                fileSize: file.size,
             })
             const jsonData = await res.json() as { uploadUrl?: string; publicUrl?: string }
             const uploadUrl = jsonData.uploadUrl

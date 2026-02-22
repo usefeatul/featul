@@ -47,7 +47,7 @@ export default function EditPostModal({
     handleFileSelect,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug);
+  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug);
 
   const { title, setTitle, content, setContent, isPending, updatePost } =
     usePostUpdate({

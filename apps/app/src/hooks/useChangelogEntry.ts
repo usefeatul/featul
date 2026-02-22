@@ -44,6 +44,7 @@ export function useChangelogEntry({
             slug: workspaceSlug,
             fileName: file.name,
             contentType: file.type,
+            fileSize: file.size,
             folder: "changelog/content",
         });
         const data = await res.json();
