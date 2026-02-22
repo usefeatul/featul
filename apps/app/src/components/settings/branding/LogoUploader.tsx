@@ -5,6 +5,7 @@ import Image from "next/image"
 import { toast } from "sonner"
 import { getLogoUploadUrl, saveBranding } from "../../../lib/branding-service"
 import { setWorkspaceLogo } from "@/lib/branding-store"
+import { BRANDING_UPLOAD_CONTENT_TYPES, BRANDING_LOGO_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy"
 
 type Props = {
   slug: string
@@ -22,13 +23,6 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
   }, [value])
 
   const inputRef = React.useRef<HTMLInputElement | null>(null)
-  const allowed = React.useMemo(() => [
-    "image/png",
-    "image/jpeg",
-    "image/webp",
-    "image/svg+xml",
-  ], [])
-
   const pick = () => {
     if (disabled) return
     inputRef.current?.click()
@@ -39,11 +33,11 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
       toast.error("You don’t have permission to change logo")
       return
     }
-    if (!allowed.includes(file.type)) {
+    if (!BRANDING_UPLOAD_CONTENT_TYPES.includes(file.type as (typeof BRANDING_UPLOAD_CONTENT_TYPES)[number])) {
       toast.error("Unsupported file type")
       return
     }
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > BRANDING_LOGO_UPLOAD_MAX_BYTES) {
       toast.error("File too large")
       return
     }
@@ -117,7 +111,7 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
           loader={({ src }) => src}
         />
       ) : null}
-      <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={onInputChange} />
+      <input ref={inputRef} type="file" accept={BRANDING_UPLOAD_CONTENT_TYPES.join(",")} className="hidden" onChange={onInputChange} />
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { SIGNED_UPLOAD_INPUT_MAX_BYTES, WORKSPACE_UPLOAD_FOLDERS } from "../upload-policy"
 
 const fileNameSchema = z
   .string()
@@ -12,10 +13,10 @@ const contentTypeSchema = z
   .max(128)
   .regex(/^[a-z0-9][a-z0-9!#$&^_.+-]*\/[a-z0-9][a-z0-9!#$&^_.+-]*$/i, "Invalid content type")
 
-const fileSizeSchema = z.number().int().positive().max(10 * 1024 * 1024)
+const fileSizeSchema = z.number().int().positive().max(SIGNED_UPLOAD_INPUT_MAX_BYTES)
 
 const workspaceUploadFolderSchema = z
-  .enum(["branding/logo", "changelog/content", "changelog/covers"])
+  .enum(WORKSPACE_UPLOAD_FOLDERS)
   .optional()
 
 export const getUploadUrlInputSchema = z.object({

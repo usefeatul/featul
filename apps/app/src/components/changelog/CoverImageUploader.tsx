@@ -7,6 +7,7 @@ import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { X } from "lucide-react";
 import { toast } from "sonner";
+import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy";
 
 interface CoverImageUploaderProps {
     workspaceSlug: string;
@@ -22,6 +23,15 @@ export function CoverImageUploader({
     const [isUploading, setIsUploading] = useState(false);
 
     const handleUpload = useCallback(async (file: File) => {
+        if (!IMAGE_UPLOAD_CONTENT_TYPES.includes(file.type as (typeof IMAGE_UPLOAD_CONTENT_TYPES)[number])) {
+            toast.error("Unsupported file type. Please use PNG, JPEG, WebP, or GIF.");
+            return;
+        }
+        if (file.size > CHANGELOG_IMAGE_UPLOAD_MAX_BYTES) {
+            toast.error("Image too large. Maximum size is 5MB.");
+            return;
+        }
+
         setIsUploading(true);
         try {
             const res = await client.storage.getUploadUrl.$post({
@@ -62,7 +72,7 @@ export function CoverImageUploader({
                     <label className="cursor-pointer">
                         <input
                             type="file"
-                            accept="image/*"
+                            accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
                             className="hidden"
                             onChange={(e) => {
                                 const file = e.target.files?.[0];
@@ -89,7 +99,7 @@ export function CoverImageUploader({
         <label className="cursor-pointer">
             <input
                 type="file"
-                accept="image/*"
+                accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
                 className="hidden"
                 onChange={(e) => {
                     const file = e.target.files?.[0];

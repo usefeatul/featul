@@ -6,6 +6,7 @@ import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import type { JSONContent } from "@featul/editor";
 import type { FeedEditorRef } from "@/components/editor/editor";
+import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy";
 
 interface UseChangelogEntryProps {
     workspaceSlug: string;
@@ -40,6 +41,13 @@ export function useChangelogEntry({
 
     // Image upload handler
     const handleImageUpload = useCallback(async (file: File): Promise<string> => {
+        if (!IMAGE_UPLOAD_CONTENT_TYPES.includes(file.type as (typeof IMAGE_UPLOAD_CONTENT_TYPES)[number])) {
+            throw new Error("Unsupported file type");
+        }
+        if (file.size > CHANGELOG_IMAGE_UPLOAD_MAX_BYTES) {
+            throw new Error("Image too large. Maximum size is 5MB.");
+        }
+
         const res = await client.storage.getUploadUrl.$post({
             slug: workspaceSlug,
             fileName: file.name,

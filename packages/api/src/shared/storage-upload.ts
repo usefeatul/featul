@@ -1,46 +1,55 @@
 import { HTTPException } from "hono/http-exception"
+import {
+  SIGNED_UPLOAD_URL_TTL_SECONDS,
+  IMAGE_UPLOAD_CONTENT_TYPES,
+  BRANDING_UPLOAD_CONTENT_TYPES,
+  AVATAR_UPLOAD_MAX_BYTES,
+  POST_IMAGE_UPLOAD_MAX_BYTES,
+  COMMENT_IMAGE_UPLOAD_MAX_BYTES,
+  CHANGELOG_IMAGE_UPLOAD_MAX_BYTES,
+  BRANDING_LOGO_UPLOAD_MAX_BYTES,
+  type WorkspaceUploadFolder,
+} from "../upload-policy"
 
-export const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5
+export { SIGNED_UPLOAD_URL_TTL_SECONDS, type WorkspaceUploadFolder }
 
 export type UploadPolicy = {
   allowedContentTypes: Set<string>
   maxBytes: number
 }
 
-const IMAGE_CONTENT_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"])
-const BRANDING_CONTENT_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/svg+xml"])
+const IMAGE_CONTENT_TYPES = new Set<string>(IMAGE_UPLOAD_CONTENT_TYPES)
+const BRANDING_CONTENT_TYPES = new Set<string>(BRANDING_UPLOAD_CONTENT_TYPES)
 
 export const AVATAR_UPLOAD_POLICY: UploadPolicy = {
   allowedContentTypes: IMAGE_CONTENT_TYPES,
-  maxBytes: 5 * 1024 * 1024,
+  maxBytes: AVATAR_UPLOAD_MAX_BYTES,
 }
 
 export const POST_IMAGE_UPLOAD_POLICY: UploadPolicy = {
   allowedContentTypes: IMAGE_CONTENT_TYPES,
-  maxBytes: 5 * 1024 * 1024,
+  maxBytes: POST_IMAGE_UPLOAD_MAX_BYTES,
 }
 
 export const COMMENT_IMAGE_UPLOAD_POLICY: UploadPolicy = {
   allowedContentTypes: IMAGE_CONTENT_TYPES,
-  maxBytes: 5 * 1024 * 1024,
+  maxBytes: COMMENT_IMAGE_UPLOAD_MAX_BYTES,
 }
 
-export const WORKSPACE_UPLOAD_POLICIES = {
+export const WORKSPACE_UPLOAD_POLICIES: Record<WorkspaceUploadFolder, UploadPolicy> = {
   "branding/logo": {
     allowedContentTypes: BRANDING_CONTENT_TYPES,
-    maxBytes: 2 * 1024 * 1024,
+    maxBytes: BRANDING_LOGO_UPLOAD_MAX_BYTES,
   },
   "changelog/content": {
     allowedContentTypes: IMAGE_CONTENT_TYPES,
-    maxBytes: 5 * 1024 * 1024,
+    maxBytes: CHANGELOG_IMAGE_UPLOAD_MAX_BYTES,
   },
   "changelog/covers": {
     allowedContentTypes: IMAGE_CONTENT_TYPES,
-    maxBytes: 5 * 1024 * 1024,
+    maxBytes: CHANGELOG_IMAGE_UPLOAD_MAX_BYTES,
   },
-} as const
-
-export type WorkspaceUploadFolder = keyof typeof WORKSPACE_UPLOAD_POLICIES
+}
 
 const MIME_EXTENSIONS: Record<string, string[]> = {
   "image/png": [".png"],

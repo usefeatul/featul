@@ -15,6 +15,7 @@
     },
     "./client": "./src/client.ts",
     "./elysia": "./src/elysia.ts",
+    "./upload-policy": "./src/upload-policy.ts",
     "./shared": "./src:*"
   },
   "dependencies": {
