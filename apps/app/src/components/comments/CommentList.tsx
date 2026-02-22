@@ -8,16 +8,18 @@ import type { CommentData } from "../../types/comment"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import { useEffect, useState } from "react"
 import CommentsDisabledState from "./CommentsDisabledState"
-
-interface CommentListResponse {
-  comments: CommentData[]
-}
+import {
+  getCommentsQueryKey,
+  toCommentListResponse,
+  type CommentListResponse,
+  type CommentSurface,
+} from "@/lib/comment-shared"
 
 interface CommentListProps {
   postId: string
   initialCount?: number
   workspaceSlug?: string
-  surface?: "workspace" | "public"
+  surface?: CommentSurface
   allowComments?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
@@ -34,7 +36,7 @@ export default function CommentList({
   initialCollapsedIds,
   hidePublicMemberIdentity,
 }: CommentListProps) {
-  const { data: session } = useSession() as any
+  const { data: session } = useSession()
   const currentUserId = session?.user?.id || null
   const [fingerprint, setFingerprint] = useState<string | null>(null)
 
@@ -42,7 +44,7 @@ export default function CommentList({
     getBrowserFingerprint().then(setFingerprint)
   }, [])
 
-  const queryKey = ["comments", postId, surface]
+  const queryKey = getCommentsQueryKey(postId, surface)
 
   const { data: commentsData, isLoading, refetch } = useQuery<CommentListResponse>({
     queryKey,
@@ -55,8 +57,7 @@ export default function CommentList({
       if (!res.ok) {
         throw new Error("Failed to fetch comments")
       }
-      const data = (await res.json()) as { comments?: CommentData[] } | null
-      return { comments: Array.isArray(data?.comments) ? data.comments : [] }
+      return toCommentListResponse(await res.json())
     },
     staleTime: 30_000,
     gcTime: 300_000,

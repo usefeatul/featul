@@ -3,6 +3,7 @@ import type { CommentData } from "../../types/comment"
 import AnimatedReplies from "./AnimatedReplies"
 import CommentItem from "./CommentItem"
 import { updateCommentCollapseState } from "@/lib/comments.actions"
+import type { CommentSurface } from "@/lib/comment-shared"
 
 interface CommentThreadProps {
   postId: string
@@ -10,7 +11,7 @@ interface CommentThreadProps {
   currentUserId?: string | null
   onUpdate?: () => void
   workspaceSlug?: string
-  surface?: "workspace" | "public"
+  surface?: CommentSurface
   initialCollapsedIds?: string[]
   hidePublicMemberIdentity?: boolean
 }
@@ -88,7 +89,7 @@ interface ThreadItemProps {
   collapsedIds: Set<string>
   onToggleCollapse: (id: string) => void
   workspaceSlug?: string
-  surface?: "workspace" | "public"
+  surface?: CommentSurface
   hidePublicMemberIdentity?: boolean
 }
 

@@ -10,11 +10,17 @@ import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 import { motion, AnimatePresence } from "framer-motion"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
+import {
+  getCommentsQueryKey,
+  toCommentListResponse,
+  type CommentListResponse,
+  type CommentSurface,
+} from "@/lib/comment-shared"
 
 interface CommentVoteProps {
   commentId: string
   postId: string
-  surface?: "workspace" | "public"
+  surface?: CommentSurface
   initialUpvotes: number
   initialDownvotes: number
   initialUserVote?: "upvote" | "downvote" | null
@@ -39,20 +45,20 @@ export default function CommentVote({
     getBrowserFingerprint().then(setVisitorId)
   }, [])
 
-  const { data: commentsData } = useQuery({
-    queryKey: ["comments", postId, surface],
+  const { data: commentsData } = useQuery<CommentListResponse>({
+    queryKey: getCommentsQueryKey(postId, surface),
     enabled: false,
     queryFn: async () => {
       const res = await client.comment.list.$get({ postId, surface })
       if (!res.ok) throw new Error("Failed to fetch comments")
-      return await res.json()
+      return toCommentListResponse(await res.json())
     },
     staleTime: 30_000,
     gcTime: 300_000,
     placeholderData: (previousData) => previousData,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-  }) as any
+  })
 
   React.useEffect(() => {
     setUpvotes(initialUpvotes)
@@ -61,7 +67,7 @@ export default function CommentVote({
   }, [initialUpvotes, initialDownvotes, initialUserVote])
 
   React.useEffect(() => {
-    const target = commentsData?.comments?.find((c: any) => c.id === commentId)
+    const target = commentsData?.comments.find((c) => c.id === commentId)
     if (target) {
       setUpvotes(target.upvotes)
       setDownvotes(target.downvotes)
@@ -69,25 +75,29 @@ export default function CommentVote({
     }
   }, [commentsData, commentId])
 
-  const { data: statusData } = useQuery({
+  const { data: statusData } = useQuery<{
+    upvotes: number
+    downvotes: number
+    userVote: "upvote" | "downvote" | null
+  } | null>({
     queryKey: ["comment-vote-status", postId, commentId, visitorId, surface],
     enabled: !!visitorId,
     queryFn: async () => {
       const res = await client.comment.list.$get({ postId, fingerprint: visitorId || undefined, surface })
       if (!res.ok) return null
-      const json = await res.json()
-      const found = json?.comments?.find((c: any) => c.id === commentId)
+      const json = toCommentListResponse(await res.json())
+      const found = json.comments.find((c) => c.id === commentId)
       return found ? { 
         upvotes: found.upvotes, 
         downvotes: found.downvotes,
-        userVote: found.userVote 
+        userVote: found.userVote ?? null,
       } : null
     },
     staleTime: 10_000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     gcTime: 300_000,
-  }) as any
+  })
 
   React.useEffect(() => {
     if (statusData) {

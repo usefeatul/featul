@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { readInitialCollapsedCommentIds } from "@/lib/comments.server";
 import { avatarUrlFromFingerprint } from "@/lib/author-avatar";
 import type { CommentData } from "@/types/comment";
+import type { CommentSurface } from "@/lib/comment-shared";
 
 export type WorkspaceSummary = {
   id: string;
@@ -94,7 +95,7 @@ export function ensureAuthorAvatar<T extends { author: AuthorRecord; metadata?: 
 
 export async function loadPostComments(
   postId: string,
-  surface: "workspace" | "public" = "workspace"
+  surface: CommentSurface = "workspace"
 ): Promise<{ initialComments: CommentData[]; initialCollapsedIds: string[] }> {
   const incomingHeaders = await headers();
   const cookieHeader = incomingHeaders.get("cookie");

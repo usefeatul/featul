@@ -6,11 +6,17 @@ import type { UploadedImage } from "@/hooks/useImageUpload"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import type { CommentData } from "../types/comment"
 import { readApiErrorMessage } from "@/hooks/postApiError"
+import {
+  COMMENT_CREATED_EVENT,
+  getCommentsQueryKey,
+  type CommentCreatedEventDetail,
+  type CommentSurface,
+} from "@/lib/comment-shared"
 
 interface UseCommentSubmitProps {
   postId: string
   parentId?: string
-  surface: "workspace" | "public"
+  surface: CommentSurface
   onSuccess?: () => void
   resetForm: () => void
 }
@@ -121,7 +127,7 @@ export function useCommentSubmit({
               }
 
               queryClient.setQueryData<{ comments: CommentData[] }>(
-                ["comments", postId, surface],
+                getCommentsQueryKey(postId, surface),
                 (prev) => {
                   const base = prev?.comments || []
                   const exists = base.some(
@@ -142,9 +148,14 @@ export function useCommentSubmit({
           resetForm()
           toast.success(parentId ? "Reply posted" : "Comment posted")
           try {
+            const detail: CommentCreatedEventDetail = {
+              postId,
+              parentId: parentId || null,
+              surface,
+            }
             window.dispatchEvent(
-              new CustomEvent("comment:created", {
-                detail: { postId, parentId: parentId || null },
+              new CustomEvent<CommentCreatedEventDetail>(COMMENT_CREATED_EVENT, {
+                detail,
               })
             )
           } catch (e) {

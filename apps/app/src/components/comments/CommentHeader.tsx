@@ -9,6 +9,7 @@ import { EditIcon } from "@featul/ui/icons/edit"
 import { LockIcon } from "@featul/ui/icons/lock"
 import { ReportIndicator } from "../requests/ReportIndicator"
 import type { CommentData } from "../../types/comment"
+import type { CommentSurface } from "@/lib/comment-shared"
 
 interface CommentHeaderProps {
   comment: CommentData
@@ -21,6 +22,7 @@ interface CommentHeaderProps {
   onToggleCollapse?: () => void
   onEdit: () => void
   onDeleteSuccess?: () => void
+  surface?: CommentSurface
   hidePublicMemberIdentity?: boolean
 }
 
@@ -35,6 +37,7 @@ export default function CommentHeader({
   onToggleCollapse,
   onEdit,
   onDeleteSuccess,
+  surface = "workspace",
   hidePublicMemberIdentity,
 }: CommentHeaderProps) {
   // Guest check must match CommentItem: null/undefined or "Guest" are all considered guests
@@ -101,6 +104,7 @@ export default function CommentHeader({
             canDelete={canDelete}
             canPin={isOwner}
             isPinned={!!comment.isPinned}
+            surface={surface}
             onEdit={onEdit}
             onDeleteSuccess={onDeleteSuccess}
           />

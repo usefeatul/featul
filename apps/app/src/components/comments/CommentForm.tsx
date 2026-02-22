@@ -14,6 +14,7 @@ import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { useImageUpload } from "../../hooks/useImageUpload"
 import { useMentions } from "../../hooks/useMentions"
 import { useCommentSubmit } from "../../hooks/useCommentSubmit"
+import type { CommentSurface } from "@/lib/comment-shared"
 
 interface CommentFormProps {
   postId: string
@@ -24,7 +25,7 @@ interface CommentFormProps {
   autoFocus?: boolean
   buttonText?: string
   workspaceSlug?: string
-  surface?: "workspace" | "public"
+  surface?: CommentSurface
   defaultInternal?: boolean
 }
 
@@ -171,7 +172,7 @@ export default function CommentForm({
                   onClick={() => setIsInternal((prev) => !prev)}
                   className={cn(
                     "h-8 w-8 p-0 rounded-md dark:bg-black/40",
-                    isInternal && "bg-muted text-foreground border-border/80"
+                    isInternal && "bg-muted border-green-600/40 text-green-600 dark:text-green-400"
                   )}
                   disabled={isPending || uploadingImage || internalForced}
                   aria-label={
@@ -181,7 +182,12 @@ export default function CommentForm({
                   }
                   aria-pressed={isInternal}
                 >
-                  <LockIcon className="size-4" />
+                  <LockIcon
+                    className={cn(
+                      "size-4",
+                      isInternal && "text-green-600 dark:text-green-400"
+                    )}
+                  />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">

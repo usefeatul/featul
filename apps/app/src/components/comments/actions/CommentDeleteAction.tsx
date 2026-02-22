@@ -6,15 +6,27 @@ import { TrashIcon } from "@featul/ui/icons/trash"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { PopoverListItem } from "@featul/ui/components/popover"
+import {
+  COMMENT_DELETED_EVENT,
+  type CommentDeletedEventDetail,
+  type CommentSurface,
+} from "@/lib/comment-shared"
 
 interface CommentDeleteActionProps {
   commentId: string
   postId: string
+  surface: CommentSurface
   onSuccess?: () => void
   onCloseMenu?: () => void
 }
 
-export default function CommentDeleteAction({ commentId, postId, onSuccess, onCloseMenu }: CommentDeleteActionProps) {
+export default function CommentDeleteAction({
+  commentId,
+  postId,
+  surface,
+  onSuccess,
+  onCloseMenu,
+}: CommentDeleteActionProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isPending, startTransition] = useTransition()
   const queryClient = useQueryClient()
@@ -32,7 +44,12 @@ export default function CommentDeleteAction({ commentId, postId, onSuccess, onCl
           toast.success("Comment deleted")
 
           try {
-            window.dispatchEvent(new CustomEvent("comment:deleted", { detail: { postId } }))
+            const detail: CommentDeletedEventDetail = { postId, surface }
+            window.dispatchEvent(
+              new CustomEvent<CommentDeletedEventDetail>(COMMENT_DELETED_EVENT, {
+                detail,
+              })
+            )
           } catch {}
 
           try {

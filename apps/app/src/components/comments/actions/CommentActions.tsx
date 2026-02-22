@@ -14,10 +14,12 @@ import CommentReportAction from "./CommentReportAction"
 import CommentEditAction from "./CommentEditAction"
 import CommentPinAction from "./CommentPinAction"
 import CommentReportDialog from "./CommentReportDialog"
+import type { CommentSurface } from "@/lib/comment-shared"
 
 interface CommentActionsProps {
   commentId: string
   postId: string
+  surface?: CommentSurface
   isAuthor: boolean
   canDelete?: boolean
   canPin?: boolean
@@ -29,6 +31,7 @@ interface CommentActionsProps {
 export default function CommentActions({
   commentId,
   postId,
+  surface = "workspace",
   isAuthor,
   canDelete = false,
   canPin = false,
@@ -69,6 +72,7 @@ export default function CommentActions({
                   <CommentDeleteAction 
                     commentId={commentId}
                     postId={postId}
+                    surface={surface}
                     onSuccess={onDeleteSuccess}
                     onCloseMenu={() => setOpen(false)} 
                   />
@@ -80,6 +84,7 @@ export default function CommentActions({
                   <CommentDeleteAction 
                     commentId={commentId}
                     postId={postId}
+                    surface={surface}
                     onSuccess={onDeleteSuccess} 
                     onCloseMenu={() => setOpen(false)} 
                   />

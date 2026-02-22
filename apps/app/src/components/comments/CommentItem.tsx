@@ -17,6 +17,7 @@ import CommentEditor from "./CommentEditor"
 import CommentFooter from "./CommentFooter"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
 import type { CommentData } from "../../types/comment"
+import type { CommentSurface } from "@/lib/comment-shared"
 
 interface CommentItemProps {
   comment: CommentData
@@ -28,7 +29,7 @@ interface CommentItemProps {
   isCollapsed?: boolean
   onToggleCollapse?: () => void
   workspaceSlug?: string
-  surface?: "workspace" | "public"
+  surface?: CommentSurface
   hidePublicMemberIdentity?: boolean
 }
 
@@ -107,6 +108,7 @@ export default function CommentItem({
             onToggleCollapse={onToggleCollapse}
             onEdit={() => setIsEditing(true)}
             onDeleteSuccess={onUpdate}
+            surface={surface}
             hidePublicMemberIdentity={showHiddenIdentity}
           />
 
