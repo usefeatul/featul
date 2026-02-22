@@ -226,6 +226,7 @@ export function createCommentRouter() {
             roadmapStatus: post.roadmapStatus,
             isLocked: post.isLocked,
             boardId: board.id,
+            boardIsPublic: board.isPublic,
             allowComments: board.allowComments,
             workspaceId: workspace.id,
             workspaceOwnerId: workspace.ownerId,
@@ -268,6 +269,15 @@ export function createCommentRouter() {
             return Boolean(membership?.userId);
           },
         });
+
+        if (!targetPost.boardIsPublic) {
+          if (!userId) {
+            throw new HTTPException(401, { message: "Please sign in to comment in this workspace" });
+          }
+          if (!canUseInternal) {
+            throw new HTTPException(403, { message: "Only workspace members can comment in this board" });
+          }
+        }
 
         let resolvedIsInternal = Boolean(isInternal);
 

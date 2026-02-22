@@ -27,7 +27,7 @@ export function createPostRouter() {
 
         // Resolve Workspace
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, workspaceSlug))
           .limit(1)
@@ -35,14 +35,43 @@ export function createPostRouter() {
 
         // Resolve Board
         const [b] = await ctx.db
-          .select({ id: board.id, allowAnonymous: board.allowAnonymous })
+          .select({ id: board.id, allowAnonymous: board.allowAnonymous, isPublic: board.isPublic })
           .from(board)
           .where(and(eq(board.workspaceId, ws.id), eq(board.slug, boardSlug)))
           .limit(1)
         if (!b) throw new HTTPException(404, { message: "Board not found" })
 
-        // Check permissions
-        if (!userId) {
+        // Enforce server-side surface access:
+        // - private/workspace-only boards: active workspace members only
+        // - public boards: preserve anonymous + fingerprint rules
+        let isWorkspaceMember = false
+        if (userId) {
+          if (ws.ownerId === userId) {
+            isWorkspaceMember = true
+          } else {
+            const [member] = await ctx.db
+              .select({ id: workspaceMember.id })
+              .from(workspaceMember)
+              .where(
+                and(
+                  eq(workspaceMember.workspaceId, ws.id),
+                  eq(workspaceMember.userId, userId),
+                  eq(workspaceMember.isActive, true)
+                )
+              )
+              .limit(1)
+            isWorkspaceMember = Boolean(member?.id)
+          }
+        }
+
+        if (!b.isPublic) {
+          if (!userId) {
+            throw new HTTPException(401, { message: "Please sign in to submit a post in this workspace" })
+          }
+          if (!isWorkspaceMember) {
+            throw new HTTPException(403, { message: "Only workspace members can submit posts in this board" })
+          }
+        } else if (!userId) {
           if (!b.allowAnonymous) {
             throw new HTTPException(401, { message: "Please sign in to submit a post on this board" })
           }
