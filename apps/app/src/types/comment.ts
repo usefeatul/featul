@@ -5,7 +5,7 @@ export type CommentData = {
   content: string
   authorId: string | null
   authorName: string
-  authorEmail: string | null
+  authorEmail?: string | null
   authorImage: string
   isAnonymous: boolean | null
   status: string

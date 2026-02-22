@@ -116,7 +116,6 @@ export function createCommentRouter() {
             content: comment.content,
             authorId: comment.authorId,
             authorName: comment.authorName,
-            authorEmail: comment.authorEmail,
             isAnonymous: comment.isAnonymous,
             status: comment.status,
             upvotes: comment.upvotes,
@@ -188,7 +187,7 @@ export function createCommentRouter() {
           )}`;
         const formattedComments = comments.map((row: (typeof comments)[number]) => {
           const isOwner = row.workspaceOwnerId === row.authorId;
-          let avatarSeed = row.authorName || row.authorEmail || row.authorId;
+          let avatarSeed = row.authorName || row.authorId;
           const fingerprintFromMetadata = getFingerprintFromMetadata(row.metadata);
           if (row.isAnonymous && fingerprintFromMetadata) {
             avatarSeed = createHash("sha256")

@@ -139,7 +139,7 @@ export function createWorkspaceRouter() {
           .select({ status: post.roadmapStatus, count: sql<number>`count(*)` })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(board.isPublic, true)))
           .groupBy(post.roadmapStatus)
 
         const counts: Record<string, number> = {}
