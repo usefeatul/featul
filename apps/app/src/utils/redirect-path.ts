@@ -1,4 +1,4 @@
-const INTERNAL_REDIRECT_BASE = "https://internal.featul.local";
+const INTERNAL_REDIRECT_BASE = "https://app.featul.com";
 
 export function normalizeInternalRedirectPath(raw: string): string {
   const value = String(raw || "").trim();
