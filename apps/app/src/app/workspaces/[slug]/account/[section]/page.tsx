@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import AccountServer from "@/components/account/AccountServer"
 import { createPageMetadata } from "@/lib/seo"
 import { getAccountSectionMeta } from "@/config/account-sections"
-import { getServerSession, listServerSessions, listServerAccounts, listServerPasskeys, type SessionData } from "@featul/auth/session"
+import { getServerSession, listServerSessions, listServerAccounts, listServerPasskeys } from "@featul/auth/session"
 import { redirect } from "next/navigation"
 
 export const revalidate = 30
@@ -36,7 +36,7 @@ export default async function AccountSectionPage({ params }: Props) {
       slug={slug}
       selectedSection={section}
       initialUser={session.user}
-      initialMeSession={session as SessionData}
+      twoFactorEnabled={session.user?.twoFactorEnabled}
       initialSessions={initialSessions}
       initialAccounts={initialAccounts}
       initialPasskeys={initialPasskeys}

@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getSessionCookie } from "better-auth/cookies"
+import { normalizeInternalRedirectPath } from "@/utils/redirect-path"
 
 export function handleAuthRedirects(req: NextRequest) {
   const pathname = req.nextUrl.pathname
@@ -8,8 +9,9 @@ export function handleAuthRedirects(req: NextRequest) {
     const sessionCookie = getSessionCookie(req)
     if (sessionCookie) {
       const raw = req.nextUrl.searchParams.get("redirect") || ""
-      if (raw.startsWith("/")) {
-        const url = new URL(raw, req.url)
+      const safePath = normalizeInternalRedirectPath(raw)
+      if (safePath) {
+        const url = new URL(safePath, req.url)
         return NextResponse.redirect(url)
       }
       const last = req.cookies.get("lastWorkspaceSlug")?.value || ""
@@ -30,8 +32,9 @@ export function handleStartRedirect(req: NextRequest) {
     const sessionCookie = getSessionCookie(req)
     if (sessionCookie) {
       const raw = req.nextUrl.searchParams.get("redirect") || ""
-      if (raw.startsWith("/")) {
-        const url = new URL(raw, req.url)
+      const safePath = normalizeInternalRedirectPath(raw)
+      if (safePath) {
+        const url = new URL(safePath, req.url)
         return NextResponse.redirect(url)
       }
       const last = req.cookies.get("lastWorkspaceSlug")?.value || ""
@@ -57,4 +60,3 @@ export function enforceWorkspaceAuth(req: NextRequest) {
   }
   return null
 }
-

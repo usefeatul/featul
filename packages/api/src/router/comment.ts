@@ -26,6 +26,7 @@ import {
 } from "../validators/comment";
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
+import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
 
 async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
   try {
@@ -215,6 +216,7 @@ export function createCommentRouter() {
     create: publicProcedure
       .input(createCommentInputSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw);
         const { postId, content, parentId, metadata, fingerprint, isInternal } = input;
 
         const userId = await getSessionUserId(c.req.raw.headers);
@@ -665,6 +667,7 @@ export function createCommentRouter() {
     vote: publicProcedure
       .input(voteCommentInputSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw);
         const { commentId, voteType, fingerprint } = input;
 
         const userId = await getSessionUserId(c.req.raw.headers);

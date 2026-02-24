@@ -20,14 +20,16 @@ export async function getServerSession(): Promise<SessionData> {
 }
 
 export async function listServerSessions(): Promise<
-  { token: string; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[]
+  { id: string; isCurrent: boolean; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[]
 > {
   try {
     const s = await getServerSession();
     const userId = String(s?.user?.id || "").trim();
+    const currentToken = String((s as any)?.session?.token || "");
     if (!userId) return [];
     const rows = await db
       .select({
+        id: sessionTable.id,
         token: sessionTable.token,
         userAgent: sessionTable.userAgent,
         ipAddress: sessionTable.ipAddress,
@@ -38,7 +40,8 @@ export async function listServerSessions(): Promise<
       .where(eq(sessionTable.userId, userId))
       .orderBy(desc(sessionTable.createdAt));
     return rows.map((r) => ({
-      token: String(r.token),
+      id: String(r.id),
+      isCurrent: Boolean(currentToken) && String(r.token) === currentToken,
       userAgent: r.userAgent || null,
       ipAddress: r.ipAddress || null,
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : undefined,

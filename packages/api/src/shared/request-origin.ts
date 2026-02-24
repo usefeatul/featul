@@ -18,23 +18,56 @@ function toRegex(originPattern: string): RegExp | null {
   }
 }
 
-function getPrivilegedOriginPatterns(): string[] {
-  const explicit = String(process.env.API_TRUSTED_ORIGINS || "")
+function getOriginHost(value: string): string {
+  try {
+    return new URL(value).hostname.toLowerCase()
+  } catch {
+    return ""
+  }
+}
+
+function isLocalDevHost(host: string): boolean {
+  if (!host) return false
+  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".localhost")
+}
+
+function isLocalDevOrigin(value: string): boolean {
+  return isLocalDevHost(getOriginHost(value))
+}
+
+function splitOriginPatterns(value: string): string[] {
+  return String(value || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
-  if (explicit.length > 0) return explicit
+}
+
+function getPrivilegedOriginPatterns(): string[] {
+  const explicit = [
+    ...splitOriginPatterns(process.env.API_TRUSTED_ORIGINS || ""),
+    ...splitOriginPatterns(process.env.AUTH_TRUSTED_ORIGINS || ""),
+  ]
+  if (explicit.length > 0) return Array.from(new Set(explicit))
 
   const fallback: string[] = []
   const appUrl = String(process.env.NEXT_PUBLIC_APP_URL || "").trim()
   if (appUrl) {
     try {
-      fallback.push(new URL(appUrl).origin)
+      const parsed = new URL(appUrl)
+      fallback.push(parsed.origin)
+      if (isLocalDevHost(parsed.hostname)) {
+        const port = parsed.port ? `:${parsed.port}` : ""
+        fallback.push(`${parsed.protocol}//*.localhost${port}`)
+      }
     } catch { }
   }
   if (process.env.NODE_ENV !== "production") {
     fallback.push("http://localhost:3000")
     fallback.push("http://127.0.0.1:3000")
+    fallback.push("http://*.localhost:3000")
+    fallback.push("https://localhost:3000")
+    fallback.push("https://127.0.0.1:3000")
+    fallback.push("https://*.localhost:3000")
   }
   return Array.from(new Set(fallback))
 }
@@ -57,6 +90,18 @@ function parseOrigin(value: string): string | null {
   }
 }
 
+function isTrustedIncomingOrigin(incomingOrigin: string, requestOrigin: string): boolean {
+  if (incomingOrigin === requestOrigin) return true
+  if (isPrivilegedOrigin(incomingOrigin)) return true
+
+  // Local dev convenience: allow same-site localhost and *.localhost traffic.
+  if (isLocalDevOrigin(requestOrigin) && isLocalDevOrigin(incomingOrigin)) {
+    return true
+  }
+
+  return false
+}
+
 export function enforceTrustedBrowserOrigin(req: Request): void {
   if (!isMutatingMethod(req)) return
 
@@ -66,19 +111,18 @@ export function enforceTrustedBrowserOrigin(req: Request): void {
 
   const incomingOrigin = parseOrigin(origin)
   if (incomingOrigin) {
-    if (incomingOrigin === requestOrigin) return
-    if (isPrivilegedOrigin(incomingOrigin)) return
+    if (isTrustedIncomingOrigin(incomingOrigin, requestOrigin)) return
     throw new HTTPException(403, { message: "Invalid request origin" })
   }
 
   const refererOrigin = parseOrigin(referer)
   if (refererOrigin) {
-    if (refererOrigin === requestOrigin) return
-    if (isPrivilegedOrigin(refererOrigin)) return
+    if (isTrustedIncomingOrigin(refererOrigin, requestOrigin)) return
     throw new HTTPException(403, { message: "Invalid request origin" })
   }
 
   const secFetchSite = (req.headers.get("sec-fetch-site") || "").toLowerCase()
+  if (secFetchSite === "same-site" && isLocalDevOrigin(requestOrigin)) return
   if (secFetchSite && secFetchSite !== "same-origin" && secFetchSite !== "none") {
     throw new HTTPException(403, { message: "Missing trusted request origin" })
   }

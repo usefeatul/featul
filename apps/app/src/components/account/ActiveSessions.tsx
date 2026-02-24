@@ -4,41 +4,27 @@ import React from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
+import { client } from "@featul/api/client"
 import SettingsCard from "@/components/global/SettingsCard"
 import { CloudIcon } from "@featul/ui/icons/cloud"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
-import type { SessionItem, SessionData } from "@/types/session"
+import type { SessionItem } from "@/types/session"
 import { parseUserAgent } from "@/utils/user-agent"
 
 
 
-export default function ActiveSessions({ initialSessions, initialMeSession }: { initialSessions?: SessionItem[] | null, initialMeSession?: unknown }) {
+export default function ActiveSessions({ initialSessions }: { initialSessions?: SessionItem[] | null }) {
     const queryClient = useQueryClient()
     const [revoking, setRevoking] = React.useState<string | null>(null)
     const [expanded, setExpanded] = React.useState(false)
 
-    const { data: meSession } = useQuery<SessionData>({
-        queryKey: ["me-session"],
-        queryFn: async () => {
-            const s = await authClient.getSession()
-            return (s && typeof s === "object" && "data" in s) ? s.data as SessionData : null
-        },
-        staleTime: 60_000,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        initialData: () => (initialMeSession as SessionData) || undefined,
-        placeholderData: (prev) => prev,
-    })
-    const currentToken = String(meSession?.session?.token || meSession?.token || "")
-
     const { data: sessions, isFetching } = useQuery<SessionItem[] | null>({
         queryKey: ["sessions"],
         queryFn: async () => {
-            const list = await authClient.listSessions()
-            const arr = Array.isArray(list) ? list : ((list && typeof list === "object" && "data" in list) ? (list as unknown as { data: SessionItem[] }).data : [])
-            return arr
+            const res = await client.account.listSessions.$get()
+            const data = (await res.json().catch(() => null)) as { sessions?: SessionItem[] } | null
+            return Array.isArray(data?.sessions) ? data.sessions : []
         },
         staleTime: 60_000,
         refetchOnMount: false,
@@ -59,26 +45,28 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
         }
     }, [queryClient])
 
-    const revokeOne = React.useCallback(async (token: string) => {
+    const revokeOne = React.useCallback(async (sessionId: string, isCurrent: boolean) => {
         if (revoking) return
-        setRevoking(token)
+        setRevoking(sessionId)
         const toastId = toast.loading("Removing session...")
         try {
-            if (token && token === currentToken) {
+            const res = await client.account.revokeSession.$post({ sessionId })
+            const data = (await res.json().catch(() => null)) as { revokedCurrentSession?: boolean } | null
+
+            if (data?.revokedCurrentSession || isCurrent) {
                 await authClient.signOut()
                 toast.success("Signed out", { id: toastId })
                 window.location.reload()
             } else {
-                await authClient.revokeSession({ token })
                 toast.success("Session removed", { id: toastId })
+                queryClient.invalidateQueries({ queryKey: ["sessions"] })
             }
-            queryClient.invalidateQueries({ queryKey: ["sessions"] })
         } catch {
             toast.error("Failed to remove session", { id: toastId })
         } finally {
             setRevoking(null)
         }
-    }, [currentToken, revoking, queryClient])
+    }, [revoking, queryClient])
 
     return (
         <SettingsCard
@@ -96,7 +84,7 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
                     ) : (
                         <div className="flex flex-col gap-2">
                             {(sessions || []).slice(0, expanded ? undefined : 8).map((s) => {
-                                const isCurrent = s.token === currentToken
+                                const isCurrent = Boolean(s.isCurrent)
                                 const deviceName = parseUserAgent(s.userAgent)
 
                                 const ip = String(s.ipAddress || "-")
@@ -105,7 +93,7 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
                                     : "-"
 
                                 return (
-                                    <div key={s.token} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 bg-card gap-2">
+                                    <div key={s.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 bg-card gap-2">
                                         <div className="flex items-center gap-3 overflow-hidden">
                                             <div className="min-w-0 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                                                 <div className="flex items-center gap-2">
@@ -129,10 +117,10 @@ export default function ActiveSessions({ initialSessions, initialMeSession }: { 
                                                 variant="ghost"
                                                 size="sm"
                                                 className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 text-xs"
-                                                onClick={() => revokeOne(s.token)}
+                                                onClick={() => revokeOne(s.id, isCurrent)}
                                                 disabled={!!revoking}
                                             >
-                                                {revoking === s.token ? "Removing..." : "Remove"}
+                                                {revoking === s.id ? "Removing..." : "Remove"}
                                             </Button>
                                         </div>
                                     </div>
