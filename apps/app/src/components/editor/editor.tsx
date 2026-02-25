@@ -30,11 +30,7 @@ import {
   type JSONContent,
 } from "@featul/editor";
 import { EditorContent as TiptapEditorContent } from "@tiptap/react";
-import {
-  forwardRef,
-  type ForwardedRef,
-  useImperativeHandle,
-} from "react";
+import { forwardRef, type ForwardedRef, useImperativeHandle } from "react";
 
 /**
  * Feed Editor Menus and Content
@@ -82,7 +78,7 @@ function FeedEditorMenus() {
         <EditorClearFormatting />
       </EditorBubbleMenu>
 
-      <div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer [&_a]:text-primary [&_a]:font-medium [&_a]:underline [&_a]:decoration-primary/40 [&_a:hover]:decoration-primary [&_a[href*='github.com']]:rounded [&_a[href*='github.com']]:bg-primary/5 [&_a[href*='github.com']]:px-1 [&_a[href*='github.com']]:py-0.5 [&_a[href*='github.com']]:font-semibold">
         <TiptapEditorContent editor={editor as any} />
       </div>
 
@@ -124,7 +120,7 @@ export const FeedEditor = forwardRef(
       editable = true,
       onImageUpload,
     }: FeedEditorProps,
-    ref: ForwardedRef<FeedEditorRef>
+    ref: ForwardedRef<FeedEditorRef>,
   ) => {
     const editor = usefeatulEditor({
       content: initialContent,
@@ -149,7 +145,7 @@ export const FeedEditor = forwardRef(
           editor.commands.setContent(markdown, { contentType: "markdown" });
         },
       }),
-      [editor]
+      [editor],
     );
 
     if (!editor) {
@@ -163,10 +159,9 @@ export const FeedEditor = forwardRef(
         </div>
       </EditorContext.Provider>
     );
-  }
+  },
 );
 
 FeedEditor.displayName = "FeedEditor";
 
 export default FeedEditor;
-
