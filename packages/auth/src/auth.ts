@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import { organization, lastLoginMethod, emailOTP, twoFactor } from "better-auth/plugins"
+import { organization, lastLoginMethod, emailOTP, twoFactor, multiSession } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
 import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth"
 import { Polar } from "@polar-sh/sdk"
@@ -188,6 +188,7 @@ export const auth = betterAuth({
     twoFactor({
       issuer: "Featul",
     }),
+    multiSession(),
     ...(polarPlugin ? [polarPlugin] : []),
   ],
 

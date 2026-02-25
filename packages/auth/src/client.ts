@@ -4,6 +4,7 @@ import {
   organizationClient,
   lastLoginMethodClient,
   twoFactorClient,
+  multiSessionClient,
 } from "better-auth/client/plugins"
 import { emailOTPClient } from "better-auth/client/plugins"
 import { passkeyClient } from "@better-auth/passkey/client"
@@ -18,6 +19,7 @@ export const authClient = createAuthClient({
     emailOTPClient(),
     passkeyClient(),
     twoFactorClient(),
+    multiSessionClient(),
     polarClient(),
   ],
 })
@@ -32,4 +34,5 @@ export const {
   useListOrganizations,
   useActiveOrganization,
   passkey,
+  multiSession,
 } = authClient
