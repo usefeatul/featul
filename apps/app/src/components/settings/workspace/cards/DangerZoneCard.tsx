@@ -9,11 +9,13 @@ import {
     AlertDialogCancel,
     AlertDialogFooter,
 } from "@featul/ui/components/alert-dialog";
+import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { DangerDeleteIcon as DangerDelete } from "@featul/ui/icons/danger-delete";
+import { ClipboardIcon as Clipboard } from "@featul/ui/icons/clipboard";
 
 type Props = {
     slug: string;
@@ -25,6 +27,7 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
     const [open, setOpen] = React.useState(false);
     const [confirmName, setConfirmName] = React.useState("");
     const [isPending, startTransition] = React.useTransition();
+    const expectedName = String(workspaceName || "").trim();
 
     const handleDelete = React.useCallback(() => {
         if (!slug) return;
@@ -73,7 +76,17 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
         });
     }, [slug, confirmName, router]);
 
-    const expectedName = String(workspaceName || "").trim();
+    const handleCopyName = React.useCallback(async () => {
+        if (!expectedName) return;
+        try {
+            await navigator.clipboard.writeText(expectedName);
+            toast.success("Workspace name copied");
+        } catch (error) {
+            console.error("Failed to copy workspace name", error);
+            toast.error("Could not copy workspace name");
+        }
+    }, [expectedName]);
+
     const disableConfirm =
         isPending ||
         !expectedName ||
@@ -97,27 +110,45 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                 onOpenChange={(next) => {
                     if (isPending) return;
                     setOpen(next);
-                    if (!next) setConfirmName("");
+                    if (!next) {
+                        setConfirmName("");
+                    }
                 }}
                 title="Are you absolutely sure?"
             >
                 <div className="space-y-3 text-sm text-muted-foreground mb-2">
                     <span className="block">
-                        This will permanently delete{" "}
+                        Delete{" "}
                         <span className="font-semibold text-red-500">
                             {workspaceName || slug}
                         </span>{" "}
-                        and{" "}
+                        and all{" "}
                         <span className="font-semibold">
-                            all content within this workspace
+                            workspace content
                         </span>
                         .
                     </span>
                     {expectedName ? (
                         <span className="block">
-                            To confirm, type the workspace name{" "}
-                            <span className="font-mono text-red-500">{expectedName}</span>{" "}
-                            below.
+                            To confirm, type{" "}
+                            <span className="inline-flex items-center gap-1 align-middle whitespace-nowrap">
+                                <span className="font-mono text-red-500">
+                                    {expectedName}
+                                </span>
+                                <Button
+                                    type="button"
+                                    variant="nav"
+                                    size="icon-sm"
+                                    onClick={handleCopyName}
+                                    disabled={isPending}
+                                    className="size-6 rounded-md"
+                                    aria-label="Copy workspace name"
+                                    title="Copy workspace name"
+                                >
+                                    <Clipboard className="size-3.5" />
+                                </Button>
+                            </span>
+                            .
                         </span>
                     ) : (
                         <span className="block">
@@ -148,7 +179,7 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                             if (!disableConfirm) handleDelete();
                         }}
                         disabled={disableConfirm}
-                        className="h-8 px-4 text-sm bg-red-500 hover:bg-red-600 text-white"
+                        className="h-8 px-4 text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                     >
                         {isPending ? "Deleting..." : "Delete workspace"}
                     </AlertDialogAction>
