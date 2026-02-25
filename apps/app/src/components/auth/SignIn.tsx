@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@featul/auth/client";
 import { Button } from "@featul/ui/components/button";
@@ -10,6 +10,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
+import { LastUsedTag } from "@/components/auth/LastUsedTag";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
@@ -27,8 +28,13 @@ export default function SignIn({
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [lastUsedMethod, setLastUsedMethod] = useState<string | null>(null);
   const { safeRedirectParam, redirect } = useAuthRedirect(redirectTo);
   const styles = getAuthLayoutStyles(embedded);
+
+  useEffect(() => {
+    setLastUsedMethod(authClient.getLastUsedLoginMethod());
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -160,6 +166,7 @@ export default function SignIn({
         isLoading={isLoading}
         onGoogle={handleGoogleSignIn}
         onGithub={handleGithubSignIn}
+        lastUsedMethod={lastUsedMethod}
         className={styles.socialGapCls}
       />
 
@@ -211,11 +218,14 @@ export default function SignIn({
       </div>
 
       <LoadingButton
-        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        className="relative overflow-visible w-full bg-primary text-primary-foreground hover:bg-primary/90"
         type="submit"
         loading={isLoading}
       >
         Sign In
+        {lastUsedMethod === "email" ? (
+          <LastUsedTag tone="onPrimary" />
+        ) : null}
       </LoadingButton>
       {error && <p className="text-destructive text-xs mt-2 text-center">{error}</p>}
     </AuthLayout>
