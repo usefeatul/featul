@@ -5,71 +5,24 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
-import { Input } from "@featul/ui/components/input";
-import { Switch } from "@featul/ui/components/switch";
 import { NotraIcon } from "@featul/ui/icons/notra";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { NotraConnectionSection } from "@/components/changelog/notra/NotraConnectionSection";
+import { NotraCredentialsSection } from "@/components/changelog/notra/NotraCredentialsSection";
+import { NotraDialogActions } from "@/components/changelog/notra/NotraDialogActions";
+import { NotraImportOptionsSection } from "@/components/changelog/notra/NotraImportOptionsSection";
+import type {
+  ImportResponse,
+  NotraConnectionResponse,
+} from "@/types/notra";
+import {
+  readMessageFromResponse,
+  showImportSummaryToasts,
+} from "@/utils/notra-utils";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
-import { NotraSwitchRow } from "@/components/changelog/notra/NotraSwitchRow";
 
 type ImportNotraDialogProps = {
   workspaceSlug: string;
 };
-
-type ImportSummary = {
-  importedCount: number;
-  createdCount: number;
-  updatedCount: number;
-  skippedCount: number;
-  truncatedCount: number;
-  limitReached: boolean;
-};
-
-type ImportResponse =
-  | {
-      ok: true;
-      summary: ImportSummary;
-    }
-  | {
-      message?: string;
-    };
-
-type NotraConnectionResponse = {
-  connected: boolean;
-  organizationId: string | null;
-  canStore: boolean;
-};
-
-type MessagePayload = {
-  message?: unknown;
-};
-
-async function readMessageFromResponse(
-  response: Response,
-): Promise<string | null> {
-  const payload = (await response
-    .json()
-    .catch(() => null)) as MessagePayload | null;
-  const message = payload?.message;
-  return typeof message === "string" && message.trim() ? message : null;
-}
-
-function showImportSummaryToasts(summary: ImportSummary) {
-  toast.success(
-    `Synced ${summary.importedCount} entries (${summary.createdCount} created, ${summary.updatedCount} updated).`,
-  );
-  if (summary.skippedCount > 0) {
-    toast.success(`${summary.skippedCount} entries were skipped.`);
-  }
-  if (summary.truncatedCount > 0) {
-    toast.success(
-      `${summary.truncatedCount} items were truncated to fit import safety limits.`,
-    );
-  }
-  if (summary.limitReached) {
-    toast.error("Changelog entry limit reached for your current plan.");
-  }
-}
 
 export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
   const router = useRouter();
@@ -82,13 +35,17 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
   const [useStoredConnection, setUseStoredConnection] = React.useState(false);
   const [saveConnection, setSaveConnection] = React.useState(false);
   const [hasStoredConnection, setHasStoredConnection] = React.useState(false);
-  const [canStoreConnection, setCanStoreConnection] = React.useState(false);
+  const [canStoreConnection, setCanStoreConnection] = React.useState<
+    boolean | null
+  >(null);
   const [connectionNotice, setConnectionNotice] = React.useState<string | null>(
     null,
   );
   const [isLoadingConnection, setIsLoadingConnection] = React.useState(false);
+  const [hasLoadedConnection, setHasLoadedConnection] = React.useState(false);
   const [isPending, setIsPending] = React.useState(false);
-  const hasInitializedStoredConnectionPreference = React.useRef(false);
+  const lastConnectionLoadAt = React.useRef<number | null>(null);
+  const latestConnectionRequestId = React.useRef(0);
   const apiKeyInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const clearApiKeyInput = React.useCallback(() => {
@@ -98,6 +55,9 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
   }, []);
 
   const loadConnection = React.useCallback(async () => {
+    const requestId = latestConnectionRequestId.current + 1;
+    latestConnectionRequestId.current = requestId;
+
     setIsLoadingConnection(true);
     setConnectionNotice(null);
     try {
@@ -105,15 +65,21 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
         slug: workspaceSlug,
       });
       if (!response.ok) {
-        setHasStoredConnection(false);
-        setCanStoreConnection(false);
-        setConnectionNotice(
+        const message =
           (await readMessageFromResponse(response)) ||
-            "Unable to load saved Notra connection status.",
-        );
+          "Unable to load saved Notra connection status.";
+        if (latestConnectionRequestId.current !== requestId) {
+          return;
+        }
+        setHasStoredConnection(false);
+        setCanStoreConnection(null);
+        setConnectionNotice(message);
         return;
       }
       const payload = (await response.json()) as NotraConnectionResponse;
+      if (latestConnectionRequestId.current !== requestId) {
+        return;
+      }
       setHasStoredConnection(Boolean(payload.connected));
       setCanStoreConnection(Boolean(payload.canStore));
       if (payload.organizationId) {
@@ -121,21 +87,26 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
       }
       if (!payload.connected) {
         setUseStoredConnection(false);
-      } else if (!hasInitializedStoredConnectionPreference.current) {
-        setUseStoredConnection(true);
-        hasInitializedStoredConnectionPreference.current = true;
-      }
-      if (!payload.canStore) {
-        setConnectionNotice("Encrypted storage is unavailable on this server.");
       }
     } catch {
+      if (latestConnectionRequestId.current !== requestId) {
+        return;
+      }
       setHasStoredConnection(false);
-      setCanStoreConnection(false);
+      setCanStoreConnection(null);
       setConnectionNotice("Unable to load saved Notra connection status.");
     } finally {
-      setIsLoadingConnection(false);
+      if (latestConnectionRequestId.current === requestId) {
+        setIsLoadingConnection(false);
+        setHasLoadedConnection(true);
+        lastConnectionLoadAt.current = Date.now();
+      }
     }
   }, [workspaceSlug]);
+
+  React.useEffect(() => {
+    void loadConnection();
+  }, [loadConnection]);
 
   const closeDialog = React.useCallback(
     (nextOpen: boolean) => {
@@ -150,8 +121,14 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
 
   const openDialog = React.useCallback(() => {
     setOpen(true);
-    void loadConnection();
-  }, [loadConnection]);
+    const shouldRefresh =
+      !hasLoadedConnection ||
+      !lastConnectionLoadAt.current ||
+      Date.now() - lastConnectionLoadAt.current > 60_000;
+    if (shouldRefresh && !isLoadingConnection) {
+      void loadConnection();
+    }
+  }, [hasLoadedConnection, isLoadingConnection, loadConnection]);
 
   const handleDeleteStoredConnection = React.useCallback(async () => {
     setIsPending(true);
@@ -179,8 +156,9 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
 
     const safeOrganizationId = organizationId.trim();
     const safeApiKey = String(apiKeyInputRef.current?.value || "").trim();
+    const shouldUseStoredConnection = useStoredConnection && hasStoredConnection;
 
-    if (!useStoredConnection) {
+    if (!shouldUseStoredConnection) {
       if (!safeOrganizationId) {
         toast.error("Organization ID is required");
         return;
@@ -189,14 +167,11 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
         toast.error("API key is required");
         return;
       }
-    } else if (!hasStoredConnection) {
-      toast.error("No saved Notra connection found");
-      return;
     }
 
     setIsPending(true);
     try {
-      if (!useStoredConnection && saveConnection) {
+      if (!shouldUseStoredConnection && saveConnection) {
         const saveResponse = await client.changelog.notraConnectionSave.$post({
           slug: workspaceSlug,
           organizationId: safeOrganizationId,
@@ -205,7 +180,7 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
         if (!saveResponse.ok) {
           toast.error(
             (await readMessageFromResponse(saveResponse)) ||
-              "Failed to save Notra credentials",
+            "Failed to save Notra credentials",
           );
           return;
         }
@@ -214,9 +189,9 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
 
       const response = await client.changelog.importFromNotra.$post({
         slug: workspaceSlug,
-        organizationId: useStoredConnection ? undefined : safeOrganizationId,
-        apiKey: useStoredConnection ? undefined : safeApiKey,
-        useStoredConnection,
+        organizationId: shouldUseStoredConnection ? undefined : safeOrganizationId,
+        apiKey: shouldUseStoredConnection ? undefined : safeApiKey,
+        useStoredConnection: shouldUseStoredConnection,
         status: includeDrafts ? ["published", "draft"] : ["published"],
         mode: updateExisting ? "upsert" : "create_only",
         publishBehavior: preservePublishStatus ? "preserve" : "draft_only",
@@ -253,7 +228,12 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
     }
   };
 
-  const showStoredConnectionToggle = hasStoredConnection || isLoadingConnection;
+  const saveConnectionDescription =
+    hasLoadedConnection && canStoreConnection === false
+      ? "Unavailable on this server."
+      : "Store credentials for next sync.";
+  const isInitialConnectionLoad = isLoadingConnection && !hasLoadedConnection;
+  const isUsingStoredConnection = useStoredConnection && hasStoredConnection;
 
   return (
     <>
@@ -275,171 +255,52 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
         width="wide"
       >
         <form onSubmit={handleSubmit} className="space-y-4 px-1 pb-1">
-          <section className="space-y-2">
-            {showStoredConnectionToggle ? (
-              <div className="overflow-hidden rounded-md border border-border/70 bg-background">
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground">
-                      Use saved connection
-                    </p>
-                    <p className="text-xs text-accent">
-                      Use saved workspace credentials.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={useStoredConnection}
-                    onCheckedChange={(checked) => {
-                      hasInitializedStoredConnectionPreference.current = true;
-                      setUseStoredConnection(checked);
-                    }}
-                    disabled={
-                      isPending || isLoadingConnection || !hasStoredConnection
-                    }
-                  />
-                </div>
+          <NotraConnectionSection
+            hasStoredConnection={hasStoredConnection}
+            isUsingStoredConnection={isUsingStoredConnection}
+            isSwitchDisabled={
+              isPending || isInitialConnectionLoad || !hasStoredConnection
+            }
+            isLoadingConnection={isLoadingConnection}
+            organizationId={organizationId}
+            connectionNotice={connectionNotice}
+            showConnectionNotice={hasLoadedConnection}
+            onUseStoredConnectionChange={setUseStoredConnection}
+          />
 
-                <div className="border-t border-border/60 px-3 py-3">
-                  {isLoadingConnection ? (
-                    <p className="text-xs text-accent">
-                      Loading saved connection status...
-                    </p>
-                  ) : (
-                    <p className="text-xs text-accent">
-                      Saved org:{" "}
-                      <span className="font-mono text-foreground">
-                        {organizationId || "Unknown"}
-                      </span>
-                    </p>
-                  )}
-                </div>
-              </div>
-            ) : null}
-
-            {connectionNotice ? (
-              <p className="rounded-md border border-amber-400/40 px-2.5 py-2 text-xs text-amber-700 dark:border-amber-300/30 dark:text-amber-300">
-                {connectionNotice}
-              </p>
-            ) : null}
-          </section>
-
-          {!useStoredConnection ? (
-            <section className="overflow-hidden rounded-md border border-border/70 bg-background">
-              <div className="space-y-2 px-3 py-3">
-                <label
-                  htmlFor="notra-org-id"
-                  className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-                >
-                  Organization ID
-                </label>
-                <Input
-                  id="notra-org-id"
-                  value={organizationId}
-                  onChange={(event) => setOrganizationId(event.target.value)}
-                  placeholder="org_123"
-                  autoComplete="off"
-                  disabled={isPending}
-                />
-              </div>
-
-              <div className="space-y-2 border-t border-border/60 px-3 py-3">
-                <label
-                  htmlFor="notra-api-key"
-                  className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
-                >
-                  API Key
-                </label>
-                <Input
-                  id="notra-api-key"
-                  type="password"
-                  placeholder="notra_..."
-                  autoComplete="off"
-                  disabled={isPending}
-                  ref={apiKeyInputRef}
-                />
-                <p className="text-xs text-accent">
-                  Used for this sync unless saved.
-                </p>
-              </div>
-            </section>
+          {!isUsingStoredConnection ? (
+            <NotraCredentialsSection
+              organizationId={organizationId}
+              onOrganizationIdChange={setOrganizationId}
+              isPending={isPending}
+              apiKeyInputRef={apiKeyInputRef}
+            />
           ) : null}
 
-          <section className="overflow-hidden rounded-md border border-border/70 bg-background">
-            {!useStoredConnection ? (
-              <NotraSwitchRow
-                title="Save encrypted connection"
-                description="Store credentials for next sync."
-                checked={saveConnection}
-                onCheckedChange={setSaveConnection}
-                disabled={isPending || !canStoreConnection}
-              />
-            ) : null}
+          <NotraImportOptionsSection
+            isUsingStoredConnection={isUsingStoredConnection}
+            saveConnectionDescription={saveConnectionDescription}
+            saveConnection={saveConnection}
+            onSaveConnectionChange={setSaveConnection}
+            isSaveConnectionDisabled={
+              isPending || isInitialConnectionLoad || canStoreConnection !== true
+            }
+            includeDrafts={includeDrafts}
+            onIncludeDraftsChange={setIncludeDrafts}
+            updateExisting={updateExisting}
+            onUpdateExistingChange={setUpdateExisting}
+            preservePublishStatus={preservePublishStatus}
+            onPreservePublishStatusChange={setPreservePublishStatus}
+            isPending={isPending}
+          />
 
-            {!useStoredConnection && !canStoreConnection ? (
-              <p className="border-t border-amber-400/30 px-3 py-2 text-xs text-amber-700 dark:border-amber-300/30 dark:text-amber-300">
-                Saving encrypted credentials is unavailable in this environment.
-              </p>
-            ) : null}
-
-            <NotraSwitchRow
-              title="Include drafts"
-              description="Import draft and published posts."
-              checked={includeDrafts}
-              onCheckedChange={setIncludeDrafts}
-              disabled={isPending}
-              withTopBorder={!useStoredConnection}
-            />
-
-            <NotraSwitchRow
-              title="Update existing imports"
-              description="When off, existing imports are skipped."
-              checked={updateExisting}
-              onCheckedChange={setUpdateExisting}
-              disabled={isPending}
-              withTopBorder
-            />
-
-            <NotraSwitchRow
-              title="Preserve published status"
-              description="When off, imports stay drafts."
-              checked={preservePublishStatus}
-              onCheckedChange={setPreservePublishStatus}
-              disabled={isPending}
-              withTopBorder
-            />
-          </section>
-
-          <div className="flex items-center justify-between gap-2 pt-2">
-            <div>
-              {hasStoredConnection ? (
-                <Button
-                  type="button"
-                  variant="nav"
-                  onClick={handleDeleteStoredConnection}
-                  disabled={isPending}
-                  className="text-destructive hover:text-destructive"
-                >
-                  Remove Connection
-                </Button>
-              ) : null}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="card"
-                onClick={() => closeDialog(false)}
-                disabled={isPending}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isPending || isLoadingConnection}>
-                {isPending ? (
-                  <LoaderIcon className="size-4 animate-spin" />
-                ) : null}
-                Sync Now
-              </Button>
-            </div>
-          </div>
+          <NotraDialogActions
+            hasStoredConnection={hasStoredConnection}
+            isPending={isPending}
+            isSubmitDisabled={isPending || isInitialConnectionLoad}
+            onDeleteStoredConnection={handleDeleteStoredConnection}
+            onCancel={() => closeDialog(false)}
+          />
         </form>
       </SettingsDialogShell>
     </>
