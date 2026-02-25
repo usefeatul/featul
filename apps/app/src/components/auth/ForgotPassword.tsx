@@ -23,7 +23,7 @@ import {
   sendVerificationOtp,
   checkVerificationOtp,
   resetPassword as resetPasswordOtp,
-} from "../../utils/otp-utils";
+} from "../../utils/otp";
 
 export default function ForgotPassword() {
   const router = useRouter();

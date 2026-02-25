@@ -1,7 +1,7 @@
 import { getServerSession } from "@featul/auth/session"
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normalizeStatus } from "@/lib/workspace"
 import { toRequestItemData } from "@/lib/request-item"
-import { parseArrayParam } from "@/utils/request-filters"
+import { parseArrayParam } from "@/utils/request"
 import { parseSortOrder } from "@/types/sort"
 import type { RequestItemData } from "@/types/request"
 

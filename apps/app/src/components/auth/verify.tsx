@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";
-import { sendVerificationOtp, verifyEmail } from "../../utils/otp-utils";
+import { sendVerificationOtp, verifyEmail } from "../../utils/otp";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
@@ -100,8 +100,8 @@ export default function Verify() {
               href={
                 safeRedirectParam
                   ? `/auth/sign-in?redirect=${encodeURIComponent(
-                      safeRedirectParam
-                    )}`
+                    safeRedirectParam
+                  )}`
                   : "/auth/sign-in"
               }
             >

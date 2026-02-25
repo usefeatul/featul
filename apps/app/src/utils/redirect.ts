@@ -1,4 +1,4 @@
-import { normalizeInternalRedirectPath } from "@/utils/redirect-path";
+import { normalizeInternalRedirectPath } from "@/utils/path";
 
 const FALLBACK_REDIRECT = "/start";
 

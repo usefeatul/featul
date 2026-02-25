@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar";
-import { getInitials } from "@/utils/user-utils";
+import { getInitials } from "@/utils/user";
 
 import RoleBadge from "@/components/global/RoleBadge";
 import type { ChangelogEntry } from "@/types/changelog";

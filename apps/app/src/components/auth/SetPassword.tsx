@@ -22,8 +22,8 @@ import {
     sendVerificationOtp,
     checkVerificationOtp,
     resetPassword as resetPasswordOtp,
-} from "../../utils/otp-utils";
-import { normalizeInternalRedirectPath } from "@/utils/redirect-path";
+} from "../../utils/otp";
+import { normalizeInternalRedirectPath } from "@/utils/path";
 
 export default function SetPassword() {
     const router = useRouter();

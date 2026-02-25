@@ -3,7 +3,7 @@ import { TableRow, TableCell } from "@featul/ui/components/table";
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar";
 import RoleCell from "./RoleCell";
 import type { Member } from "../../../types/team";
-import { getInitials } from "@/utils/user-utils";
+import { getInitials } from "@/utils/user";
 
 interface MemberRowProps {
   m: Member;

@@ -2,7 +2,7 @@ import { db, board, post, user, workspaceMember, postTag, tag, postReport } from
 import { and, eq, sql } from "drizzle-orm"
 import { readHasVotedForPost } from "@/lib/vote.server"
 import { getPostNavigation, normalizeStatus } from "@/lib/workspace"
-import { parseArrayParam } from "@/utils/request-filters"
+import { parseArrayParam } from "@/utils/request"
 import {
   buildPostSelect,
   ensureAuthorAvatar,

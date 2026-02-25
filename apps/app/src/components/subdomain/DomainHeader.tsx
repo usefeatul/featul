@@ -16,7 +16,7 @@ import { useSession } from "@featul/auth/client";
 import type { AuthUser } from "@/types/auth";
 import { hasAuthUser } from "@/utils/auth";
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal";
-import { getWorkspaceDashboardUrl } from "@/utils/app-urls";
+import { getWorkspaceDashboardUrl } from "@/utils/urls";
 
 type WorkspaceInfo = {
   id: string;

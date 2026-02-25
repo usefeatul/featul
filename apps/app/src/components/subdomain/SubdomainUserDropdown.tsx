@@ -7,13 +7,13 @@ import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avata
 import { cn } from "@featul/ui/lib/utils"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
-import { getInitials, getDisplayUser } from "@/utils/user-utils"
+import { getInitials, getDisplayUser } from "@/utils/user"
 import { useTheme } from "next-themes"
 import CreatePostModal from "./CreatePostModal"
 import { SubdomainUserMenu } from "./SubdomainUserMenu"
 import type { AuthUser } from "@/types/auth"
 import { hasAuthUser } from "@/utils/auth"
-import { getCreateProjectUrl, getWorkspaceDashboardUrl } from "@/utils/app-urls"
+import { getCreateProjectUrl, getWorkspaceDashboardUrl } from "@/utils/urls"
 
 
 export default function SubdomainUserDropdown({
@@ -34,17 +34,17 @@ export default function SubdomainUserDropdown({
 
   React.useEffect(() => {
     let active = true
-    ;(async () => {
-      try {
-        if (initialUser?.image) return
-        const s = await authClient.getSession()
-        if (!active) return
-        const u = s?.data?.user || null
-        if (u?.image) setUser(u)
-      } catch {
-        if (active) setUser(null)
-      }
-    })()
+      ; (async () => {
+        try {
+          if (initialUser?.image) return
+          const s = await authClient.getSession()
+          if (!active) return
+          const u = s?.data?.user || null
+          if (u?.image) setUser(u)
+        } catch {
+          if (active) setUser(null)
+        }
+      })()
     return () => { active = false }
   }, [initialUser?.image])
 
@@ -100,13 +100,13 @@ export default function SubdomainUserDropdown({
             type="button"
             className="group flex items-center gap-2 rounded-mdbg-background/60 px-1.5 py-1 text-xs md:text-sm text-foreground shadow-xs hover:bg-muted/80"
           >
-              <Avatar className="size-5.5">
-                {d.image ? (
-                  <AvatarImage src={d.image} alt={d.name} loading="eager" />
-                ) : (
-                  <AvatarFallback>{initials}</AvatarFallback>
-                )}
-              </Avatar>
+            <Avatar className="size-5.5">
+              {d.image ? (
+                <AvatarImage src={d.image} alt={d.name} loading="eager" />
+              ) : (
+                <AvatarFallback>{initials}</AvatarFallback>
+              )}
+            </Avatar>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent

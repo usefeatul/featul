@@ -10,7 +10,7 @@ import { CloudIcon } from "@featul/ui/icons/cloud"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import type { SessionItem } from "@/types/session"
-import { parseUserAgent } from "@/utils/user-agent"
+import { parseUserAgent } from "@/utils/agent"
 
 
 

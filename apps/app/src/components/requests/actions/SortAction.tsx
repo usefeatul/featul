@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem }
 import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down"
 import { Button } from "@featul/ui/components/button"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { buildRequestsUrl } from "@/utils/request-filters"
+import { buildRequestsUrl } from "@/utils/request"
 import { type SortOrder, SORT_OPTIONS, parseSortOrder } from "@/types/sort"
 
 interface SortActionProps {

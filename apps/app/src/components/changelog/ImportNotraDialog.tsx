@@ -17,7 +17,7 @@ import type {
 import {
   readMessageFromResponse,
   showImportSummaryToasts,
-} from "@/utils/notra-utils";
+} from "@/utils/notra";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 
 type ImportNotraDialogProps = {

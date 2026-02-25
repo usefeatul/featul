@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/auth-redirect";
+import { normalizeRedirectParam, resolveAuthRedirect } from "@/utils/redirect";
 
 export function useAuthRedirect(redirectTo?: string) {
   const params = useSearchParams();

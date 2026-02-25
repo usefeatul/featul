@@ -12,7 +12,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "@featul/ui/components/command"
-import { buildRequestsUrl } from "@/utils/request-filters"
+import { buildRequestsUrl } from "@/utils/request"
 import { getSlugFromPath } from "@/config/nav"
 import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"

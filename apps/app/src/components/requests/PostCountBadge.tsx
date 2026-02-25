@@ -5,7 +5,7 @@ import { cn } from "@featul/ui/lib/utils"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
-import { parseArrayParam } from "@/utils/request-filters"
+import { parseArrayParam } from "@/utils/request"
 import { getSlugFromPath } from "@/config/nav"
 
 export default function PostCountBadge({ className = "" }: { className?: string }) {

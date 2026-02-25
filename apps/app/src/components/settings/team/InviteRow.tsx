@@ -6,7 +6,7 @@ import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem }
 import { cn } from "@featul/ui/lib/utils";
 import { MoreVertical } from "lucide-react";
 import type { Invite } from "../../../types/team";
-import { getInitials } from "@/utils/user-utils";
+import { getInitials } from "@/utils/user";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { roleBadgeClass } from "./role-badge";

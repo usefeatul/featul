@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getSessionCookie } from "better-auth/cookies"
-import { normalizeInternalRedirectPath } from "@/utils/redirect-path"
+import { normalizeInternalRedirectPath } from "@/utils/path"
 
 export function handleAuthRedirects(req: NextRequest) {
   const pathname = req.nextUrl.pathname

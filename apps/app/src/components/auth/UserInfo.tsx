@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { authClient } from "@featul/auth/client"
 import { Button } from "@featul/ui/components/button"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
-import { getDisplayUser, getInitials, type User } from "@/utils/user-utils"
+import { getDisplayUser, getInitials, type User } from "@/utils/user"
 
 export default function UserInfo({ user: userProp }: { user?: User }) {
   const router = useRouter()

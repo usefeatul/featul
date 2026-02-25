@@ -7,7 +7,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@featul/ui/components/avatar";
-import { getDisplayUser, getInitials } from "@/utils/user-utils";
+import { getDisplayUser, getInitials } from "@/utils/user";
 import { relativeTime } from "@/lib/time";
 import BoardPicker from "./meta/BoardPicker";
 import StatusPicker from "./meta/StatusPicker";
@@ -47,10 +47,10 @@ export default function RequestDetailSidebar({
   const displayAuthor = getDisplayUser(
     post.author
       ? {
-          name: post.author.name ?? undefined,
-          image: post.author.image ?? undefined,
-          email: post.author.email ?? undefined,
-        }
+        name: post.author.name ?? undefined,
+        image: post.author.image ?? undefined,
+        email: post.author.email ?? undefined,
+      }
       : undefined
   );
   const authorInitials = getInitials(displayAuthor.name);

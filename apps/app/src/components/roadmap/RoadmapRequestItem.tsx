@@ -8,7 +8,7 @@ import {
   AvatarImage,
 } from "@featul/ui/components/avatar";
 import RoleBadge from "@/components/global/RoleBadge";
-import { getInitials } from "@/utils/user-utils";
+import { getInitials } from "@/utils/user";
 import { randomAvatarUrl } from "@/utils/avatar";
 
 export type RoadmapItemData = {

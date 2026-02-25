@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
-import { getInitials, getDisplayUser } from "@/utils/user-utils"
+import { getInitials, getDisplayUser } from "@/utils/user"
 import { getSlugFromPath } from "@/config/nav"
 import { client } from "@featul/api/client"
 import { LogoutIcon } from "@featul/ui/icons/logout"

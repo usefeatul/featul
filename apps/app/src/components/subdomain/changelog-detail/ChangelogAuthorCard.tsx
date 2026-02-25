@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar";
-import { getInitials } from "@/utils/user-utils";
+import { getInitials } from "@/utils/user";
 import RoleBadge from "@/components/global/RoleBadge";
 import type { Role } from "@/types/team";
 

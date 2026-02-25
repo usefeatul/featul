@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { Button } from "@featul/ui/components/button"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl } from "@/utils/request-filters"
+import { parseArrayParam, buildRequestsUrl } from "@/utils/request"
 import { useFilterBarVisibility } from "@/hooks/useFilterBarVisibility"
 
 const STATUS_OPTIONS = [

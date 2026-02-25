@@ -3,7 +3,7 @@
 import React from "react"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import DocumentTextIcon from "@featul/ui/icons/document-text"
-import { getInitials } from "@/utils/user-utils"
+import { getInitials } from "@/utils/user"
 import { PostHeader } from "../post/PostHeader"
 import { PostContent } from "../post/PostContent"
 import { PostFooter } from "../post/PostFooter"

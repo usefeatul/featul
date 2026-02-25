@@ -4,7 +4,7 @@ import { createPageMetadata } from "@/lib/seo"
 import { getServerSession } from "@featul/auth/session"
 import { redirect } from "next/navigation"
 import { findFirstAccessibleWorkspaceSlug } from "@/lib/workspace"
-import { normalizeInternalRedirectPath } from "@/utils/redirect-path"
+import { normalizeInternalRedirectPath } from "@/utils/path"
 
 export const dynamic = "force-dynamic"
 

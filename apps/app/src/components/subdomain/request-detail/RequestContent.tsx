@@ -6,7 +6,7 @@ import CommentCounter from "../../comments/CommentCounter";
 import type { CommentData } from "../../../types/comment";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
-import { getDisplayUser } from "@/utils/user-utils";
+import { getDisplayUser } from "@/utils/user";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
 import ContentImage from "@/components/global/ContentImage";
 import { RequestActions } from "./RequestActions";

@@ -10,7 +10,7 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { roleBadgeClass } from "@/components/settings/team/role-badge"
 import { cn } from "@featul/ui/lib/utils"
-import { getInitials } from "@/utils/user-utils"
+import { getInitials } from "@/utils/user"
 import RoleBadge from "@/components/global/RoleBadge"
 
 interface Props {

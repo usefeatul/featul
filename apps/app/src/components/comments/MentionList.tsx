@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { cn } from "@featul/ui/lib/utils"
-import { getInitials } from "@/utils/user-utils"
+import { getInitials } from "@/utils/user"
 import { PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 
 export interface MentionCandidate {

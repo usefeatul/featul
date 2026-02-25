@@ -1,9 +1,9 @@
- "use client"
+"use client"
 
 import React from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
-import { getInitials } from "@/utils/user-utils"
+import { getInitials } from "@/utils/user"
 import { relativeTime } from "@/lib/time"
 import { motion, type HTMLMotionProps } from "framer-motion"
 

@@ -7,7 +7,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@featul/ui/components/avatar";
-import { getInitials } from "@/utils/user-utils";
+import { getInitials } from "@/utils/user";
 import { useRouter, useParams } from "next/navigation";
 import { authClient } from "@featul/auth/client";
 import { client } from "@featul/api/client";
@@ -114,11 +114,11 @@ export default function Invite({
         if (!targetSlug && all.length > 0) {
           targetSlug = all[0]?.slug || null;
         }
-      } catch {}
+      } catch { }
       if (targetSlug) {
         try {
           await authClient.organization.setActive({ organizationSlug: targetSlug });
-        } catch {}
+        } catch { }
       }
       toast.success("Invite accepted");
       if (targetSlug) router.replace(`/workspaces/${targetSlug}`);

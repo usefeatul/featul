@@ -9,7 +9,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { useQuery } from "@tanstack/react-query"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request-filters"
+import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
 
 export default function BoardsAction({ className = "" }: { className?: string }) {
   const router = useRouter()
@@ -36,7 +36,7 @@ export default function BoardsAction({ className = "" }: { className?: string })
   const selected = React.useMemo(() => parseArrayParam(sp.get("board")), [sp])
   const isAllSelected = React.useMemo(() => isAllSel(items.map((i: { slug: string }) => i.slug), selected), [items, selected])
 
-  React.useEffect(() => {}, [slug])
+  React.useEffect(() => { }, [slug])
 
   const toggle = (slugItem: string) => {
     const next = toggleValue(selected, slugItem)
