@@ -10,13 +10,19 @@ interface ChangelogRendererProps {
   className?: string;
 }
 
-export function ChangelogRenderer({ content, className }: ChangelogRendererProps) {
+export function ChangelogRenderer({
+  content,
+  className,
+}: ChangelogRendererProps) {
   const editor = useFeatulEditor({
     content,
     editable: false,
     editorProps: {
       attributes: {
-        class: cn("prose prose-sm dark:prose-invert max-w-none focus:outline-none", className),
+        class: cn(
+          "prose prose-sm dark:prose-invert max-w-none focus:outline-none",
+          className,
+        ),
       },
     },
   });
@@ -25,5 +31,5 @@ export function ChangelogRenderer({ content, className }: ChangelogRendererProps
     return null;
   }
 
-  return <EditorContent editor={editor} />;
+  return <EditorContent editor={editor as any} />;
 }

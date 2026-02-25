@@ -78,6 +78,13 @@
       "when": 1769000000000,
       "tag": "0010_cuddly_lockup",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1771988400000,
+      "tag": "0011_bright_notra",
+      "breakpoints": true
     }
   ]
 }
