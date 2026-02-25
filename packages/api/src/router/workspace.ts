@@ -3,11 +3,51 @@ import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation, user, subscription } from "@featul/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema, importCsvInputSchema, updateTimezoneInputSchema } from "../validators/workspace"
+import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
-import { normalizePlan } from "../shared/plan"
+import { normalizePlan, isDataImportsAllowed } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
+import { runWorkspaceCsvImport } from "../services/workspace-csv-import"
+
+const dnsResolver = new Resolver()
+
+async function hasResolvableTopLevelDomain(host: string) {
+  const tld = getTopLevelDomain(host)
+  if (!tld) return false
+  try {
+    const records = await dnsResolver.resolveNs(tld)
+    return records.length > 0
+  } catch {
+    return false
+  }
+}
+
+async function requireWorkspaceManagerWithPlan(ctx: any, slug: string) {
+  const [ws] = await ctx.db
+    .select({ id: workspace.id, ownerId: workspace.ownerId, plan: workspace.plan })
+    .from(workspace)
+    .where(eq(workspace.slug, slug))
+    .limit(1)
+
+  if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+  const meId = ctx.session.user.id
+  let allowed = ws.ownerId === meId
+  if (!allowed) {
+    const [me] = await ctx.db
+      .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+      .from(workspaceMember)
+      .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
+      .limit(1)
+    const perms = (me?.permissions || {}) as Record<string, boolean>
+    if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
+  }
+  if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+
+  return ws
+}
 
 export function createWorkspaceRouter() {
   return j.router({
@@ -99,7 +139,7 @@ export function createWorkspaceRouter() {
           .select({ status: post.roadmapStatus, count: sql<number>`count(*)` })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(board.isPublic, true)))
           .groupBy(post.roadmapStatus)
 
         const counts: Record<string, number> = {}
@@ -201,6 +241,7 @@ export function createWorkspaceRouter() {
               sortOrder: 0,
               createdBy: ctx.session.user.id,
               isSystem: false,
+              allowAnonymous: true,
             },
             {
               workspaceId: ws.id,
@@ -209,6 +250,7 @@ export function createWorkspaceRouter() {
               sortOrder: 1,
               createdBy: ctx.session.user.id,
               isSystem: false,
+              allowAnonymous: true,
             },
             {
               workspaceId: ws.id,
@@ -218,6 +260,7 @@ export function createWorkspaceRouter() {
               createdBy: ctx.session.user.id,
               isSystem: true,
               systemType: "roadmap",
+              allowAnonymous: true,
             },
             {
               workspaceId: ws.id,
@@ -227,6 +270,7 @@ export function createWorkspaceRouter() {
               createdBy: ctx.session.user.id,
               isSystem: true,
               systemType: "changelog",
+              allowAnonymous: true,
             },
           ])
 
@@ -294,10 +338,19 @@ export function createWorkspaceRouter() {
         }
 
         const host = (() => {
-          try { return new URL(String(ws.domain)).host } catch { return String(ws.domain).replace(/^https?:\/\//, "") }
+          try {
+            return normalizeDomainHost(new URL(String(ws.domain)).hostname)
+          } catch {
+            return normalizeDomainHost(String(ws.domain).replace(/^https?:\/\//, ""))
+          }
         })()
 
-        const desired = input.enabled ? String(input.customDomain || `feedback.${host}`).toLowerCase() : null
+        const desired = input.enabled
+          ? normalizeDomainHost(String(input.customDomain || `feedback.${host}`))
+          : null
+        if (desired && !(await hasResolvableTopLevelDomain(desired))) {
+          throw new HTTPException(400, { message: "Invalid domain TLD" })
+        }
 
         await ctx.db
           .update(workspace)
@@ -352,7 +405,10 @@ export function createWorkspaceRouter() {
         }
 
         const url = new URL(input.domain)
-        const host = url.host.toLowerCase()
+        const host = normalizeDomainHost(url.hostname)
+        if (!(await hasResolvableTopLevelDomain(host))) {
+          throw new HTTPException(400, { message: "Invalid domain TLD" })
+        }
         const parts = host.split('.')
         if (parts.length < 2) throw new HTTPException(400, { message: "Invalid domain host" })
         const cnameName = parts[0]
@@ -403,13 +459,12 @@ export function createWorkspaceRouter() {
         let cnameValid = false
         let txtValid = false
         if (input.checkDns) {
-          const resolver = new Resolver()
           try {
-            const cnames = await resolver.resolveCname(d.host)
+            const cnames = await dnsResolver.resolveCname(d.host)
             cnameValid = cnames.includes(d.cnameTarget)
           } catch { }
           try {
-            const txts = await resolver.resolveTxt(d.txtName)
+            const txts = await dnsResolver.resolveTxt(d.txtName)
             txtValid = txts.some((arr) => arr.join('') === d.txtValue)
           } catch { }
         }
@@ -591,6 +646,7 @@ export function createWorkspaceRouter() {
             status: post.roadmapStatus,
             upvotes: post.upvotes,
             boardName: board.name,
+            image: post.image,
             metadata: post.metadata,
             createdAt: post.createdAt,
             updatedAt: post.updatedAt,
@@ -606,7 +662,11 @@ export function createWorkspaceRouter() {
         // Build CSV
         const escapeCell = (val: string | null | undefined) => {
           if (val == null) return ""
-          const str = String(val).replace(/"/g, '""')
+          let str = String(val)
+          if (/^[\t\r\n ]*[=+\-@]/.test(str)) {
+            str = `'${str}`
+          }
+          str = str.replace(/"/g, '""')
           return str.includes(",") || str.includes('"') || str.includes("\n") ? `"${str}"` : str
         }
 
@@ -617,6 +677,7 @@ export function createWorkspaceRouter() {
           status: string | null
           upvotes: number | null
           boardName: string
+          image: string | null
           metadata: { attachments?: { name: string; url: string; type: string }[] } | null
           createdAt: Date | null
           updatedAt: Date | null
@@ -624,7 +685,7 @@ export function createWorkspaceRouter() {
           authorEmail: string | null
         }
 
-        const headers = ["ID", "Title", "Description", "Status", "Upvotes", "Board", "Author Name", "Author Email", "Attachments", "Created At", "Updated At"]
+        const headers = ["ID", "Title", "Description", "Status", "Upvotes", "Board", "Author Name", "Author Email", "Image", "Attachments", "Created At", "Updated At"]
         const rows = posts.map((p: PostRow) => {
           const attachments = p.metadata?.attachments?.map((a) => a.url).join("; ") || ""
           return [
@@ -636,6 +697,7 @@ export function createWorkspaceRouter() {
             escapeCell(p.boardName),
             escapeCell(p.authorName),
             escapeCell(p.authorEmail),
+            escapeCell(p.image),
             escapeCell(attachments),
             p.createdAt ? new Date(p.createdAt).toISOString() : "",
             p.updatedAt ? new Date(p.updatedAt).toISOString() : "",
@@ -672,12 +734,46 @@ export function createWorkspaceRouter() {
         }
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
-        // Basic CSV parsing (splitting by newline)
-        const rows = input.csvContent.split(/\r?\n/).filter((r) => r.trim().length > 0)
-        // TODO: Implement actual parsing and insertion logic
-        // For now, we simulate success to resolve the type error and basic flow
+        const result = await runWorkspaceCsvImport({
+          db: ctx.db,
+          workspaceId: ws.id,
+          actorUserId: ctx.session.user.id,
+          csvContent: input.csvContent,
+        })
+        return c.json(result.summary, result.status)
+      }),
 
-        return c.json({ ok: true, importedCount: rows.length - 1 }) // Subtract header
+    importFromCanny: privateProcedure
+      .input(checkSlugInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug)
+        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
+          throw new HTTPException(403, { message: "Canny import is available on Starter or Professional plans" })
+        }
+
+        return c.json({ ok: false, provider: "canny", message: "Canny import is coming soon" }, 501)
+      }),
+
+    importFromNolt: privateProcedure
+      .input(checkSlugInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug)
+        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
+          throw new HTTPException(403, { message: "Nolt import is available on Starter or Professional plans" })
+        }
+
+        return c.json({ ok: false, provider: "nolt", message: "Nolt import is coming soon" }, 501)
+      }),
+
+    importFromProductBoard: privateProcedure
+      .input(checkSlugInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug)
+        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
+          throw new HTTPException(403, { message: "ProductBoard import is available on Starter or Professional plans" })
+        }
+
+        return c.json({ ok: false, provider: "productboard", message: "ProductBoard import is coming soon" }, 501)
       }),
   })
 }

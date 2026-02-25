@@ -4,6 +4,7 @@ import { client } from "@featul/api/client";
 import type { DomainInfo } from "../types/domain";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { isDomainValid, suggestDomainFix } from "./validators";
 
 async function safeJson<T = unknown>(res: Response): Promise<T | null> {
   try {
@@ -226,7 +227,17 @@ export function useDomainActions({ slug, info, canUse, canEditDomain, onCreated 
       toast.error("Enter a domain");
       return;
     }
-    createMutation.mutate(v);
+    const normalized = v.toLowerCase();
+    if (!isDomainValid(normalized)) {
+      const suggestion = suggestDomainFix(normalized);
+      toast.error(
+        suggestion
+          ? `Invalid domain. Did you mean ${suggestion}?`
+          : "Enter a valid domain (example.com)"
+      );
+      return;
+    }
+    createMutation.mutate(normalized);
   };
 
   const handleVerify = () => {

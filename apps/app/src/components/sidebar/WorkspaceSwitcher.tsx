@@ -50,9 +50,9 @@ export default function WorkspaceSwitcher({
   return (
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger className="w-full cursor-pointer">
-          <div className="group flex items-center gap-2 rounded-md px-1.5 py-1.5 text-md hover:bg-muted dark:hover:bg-black/40 cursor-pointer">
-            <div className={cn("relative size-7  rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black overflow-hidden", currentLogo ? "bg-transparent" : "bg-card")}>
+        <DropdownMenuTrigger className="w-full cursor-pointer rounded-md">
+          <div className="group flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer transition-colors hover:bg-muted dark:hover:bg-black/40">
+            <div className={cn("relative size-7 rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black overflow-hidden", currentLogo ? "bg-transparent" : "bg-card")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}
@@ -64,11 +64,13 @@ export default function WorkspaceSwitcher({
                 />
               ) : null}
             </div>
-            <div className="flex flex-col items-start gap-1 overflow-hidden">
-              <span className="text-sm font-medium leading-none truncate text-foreground">{currentName}</span>
+            <div className="flex min-w-0 flex-col items-start gap-1 overflow-hidden">
+              <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
               <span className="text-xs text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
             </div>
-            <ChevronIcon className="ml-auto size-3 text-foreground/80 transition-colors" />
+            <span className="ml-auto inline-flex h-[19px] w-5 shrink-0 items-center justify-center rounded-sm border border-border bg-card text-xs font-extralight text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:bg-black/50 dark:text-accent dark:ring-offset-black">
+              <ChevronIcon className="size-3 text-accent" />
+            </span>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent

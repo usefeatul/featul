@@ -1,11 +1,12 @@
 import React from "react"
 import CommentVote from "./CommentVote"
 import CommentReplyButton from "./actions/CommentReplyAction"
-import { cn } from "@featul/ui/lib/utils"
+import type { CommentSurface } from "@/lib/comment-shared"
 
 interface CommentFooterProps {
   commentId: string
   postId: string
+  surface?: CommentSurface
   upvotes: number
   downvotes: number
   userVote?: "upvote" | "downvote" | null
@@ -17,6 +18,7 @@ interface CommentFooterProps {
 export default function CommentFooter({
   commentId,
   postId,
+  surface = "workspace",
   upvotes,
   downvotes,
   userVote,
@@ -29,6 +31,7 @@ export default function CommentFooter({
       <CommentVote
         commentId={commentId}
         postId={postId}
+        surface={surface}
         initialUpvotes={upvotes}
         initialDownvotes={downvotes}
         initialUserVote={userVote}
@@ -38,12 +41,6 @@ export default function CommentFooter({
         <CommentReplyButton
           onClick={onToggleReply}
           isActive={showReplyForm}
-          className={cn(
-            "rounded-full border border-border/50 px-3 py-1 h-[30px] transition-all duration-200 bg-muted/30",
-            showReplyForm
-              ? "text-destructive hover:text-destructive hover:bg-muted/50"
-              : "text-muted-foreground/70 hover:text-foreground hover:bg-muted/50"
-          )}
         />
       )}
     </div>

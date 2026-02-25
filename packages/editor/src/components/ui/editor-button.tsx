@@ -9,40 +9,40 @@ import type { EditorButtonProps } from "../../types";
  * Used in BubbleMenu and other UI components
  */
 export const BubbleMenuButton = ({
-  name,
-  isActive,
-  command,
-  icon: Icon,
-  hideName,
+	name,
+	isActive,
+	command,
+	icon: Icon,
+	hideName,
 }: EditorButtonProps) => {
-  return (
-    <Button
-      className={cn(
-        "flex items-center gap-2 h-8 px-2 text-sm font-medium",
-        hideName
-          ? "w-8 justify-center"
-          : "w-full justify-between",
-        isActive() ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-      )}
-      onClick={() => command()}
-      size="sm"
-      variant="ghost"
-    >
-      <Icon
-        className={cn(
-          "shrink-0",
-          isActive() ? "text-foreground" : "text-muted-foreground"
-        )}
-        size={14}
-      />
-      {!hideName && (
-        <span className="truncate flex-1 text-left">{name}</span>
-      )}
-      {isActive() && !hideName && (
-        <CheckIcon className="shrink-0 text-blue-600 ml-auto" size={14} />
-      )}
-    </Button>
-  );
+	return (
+		<Button
+			className={cn(
+				"flex h-8.5 items-center gap-1.5 px-2.5 text-xs font-medium",
+				hideName
+					? "w-8.5 justify-center px-0 rounded-md"
+					: "w-full justify-between rounded-none",
+				isActive()
+					? "text-foreground"
+					: "text-muted-foreground hover:text-foreground",
+			)}
+			onClick={() => command()}
+			size="sm"
+			variant="plain"
+		>
+			<Icon
+				className={cn(
+					"shrink-0",
+					isActive() ? "text-foreground" : "text-muted-foreground",
+				)}
+				size={14}
+			/>
+			{!hideName && <span className="truncate flex-1 text-left">{name}</span>}
+			{isActive() && !hideName && (
+				<CheckIcon className="shrink-0 text-blue-600 ml-auto" size={14} />
+			)}
+		</Button>
+	);
 };
 
 /**
@@ -60,21 +60,21 @@ export const BubbleMenuButton = ({
 export type EditorClearFormattingProps = Pick<EditorButtonProps, "hideName">;
 
 export const EditorClearFormatting = ({
-  hideName = true,
+	hideName = true,
 }: EditorClearFormattingProps) => {
-  const { editor } = useCurrentEditor();
+	const { editor } = useCurrentEditor();
 
-  if (!editor) {
-    return null;
-  }
+	if (!editor) {
+		return null;
+	}
 
-  return (
-    <BubbleMenuButton
-      command={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
-      hideName={hideName}
-      icon={RemoveFormattingIcon}
-      isActive={() => false}
-      name="Clear Formatting"
-    />
-  );
+	return (
+		<BubbleMenuButton
+			command={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
+			hideName={hideName}
+			icon={RemoveFormattingIcon}
+			isActive={() => false}
+			name="Clear Formatting"
+		/>
+	);
 };

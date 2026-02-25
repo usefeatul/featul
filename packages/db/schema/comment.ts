@@ -39,6 +39,7 @@ export const comment = pgTable(
     replyCount: integer("reply_count").default(0),
     depth: integer("depth").default(0),
     isPinned: boolean("is_pinned").default(false),
+    isInternal: boolean("is_internal").notNull().default(false),
     isEdited: boolean("is_edited").default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),

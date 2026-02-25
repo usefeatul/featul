@@ -1,9 +1,12 @@
+import { offset } from "@floating-ui/dom";
 import { cn } from "@featul/ui/lib/utils";
 import { Color } from "@tiptap/extension-color";
+import { DragHandle } from "@tiptap/extension-drag-handle";
 import { FileHandler } from "@tiptap/extension-file-handler";
 import { Highlight } from "@tiptap/extension-highlight";
 import { Image } from "@tiptap/extension-image";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
+import { NodeRange } from "@tiptap/extension-node-range";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { TextStyleKit } from "@tiptap/extension-text-style";
@@ -49,7 +52,10 @@ export const ExtensionKit = ({
   limit,
   placeholder,
   imageUpload,
-}: ExtensionKitOptions = {}) => [
+}: ExtensionKitOptions = {}) => {
+  let dragHandleElement: HTMLElement | null = null;
+
+  return [
     // Markdown extension for parsing and serializing markdown
     Markdown,
 
@@ -145,6 +151,38 @@ export const ExtensionKit = ({
     // Slash command
     configureSlashCommand(),
 
+    // Enables selecting a range of nodes, required by drag-handle block reordering
+    NodeRange,
+
+    // Block drag handle for reordering content by drag-and-drop
+    DragHandle.configure({
+      computePositionConfig: {
+        // Center handle vertically on the current block for cleaner alignment
+        placement: "left",
+        // Keep handle hit-area adjacent to content so it doesn't disappear on move-to-drag
+        middleware: [offset(0)],
+      },
+      onNodeChange: ({ node }) => {
+        if (!dragHandleElement) {
+          return;
+        }
+        dragHandleElement.dataset.visible = node ? "true" : "false";
+      },
+      render: () => {
+        const element = document.createElement("div");
+        dragHandleElement = element;
+        element.classList.add("drag-handle");
+        element.setAttribute("role", "button");
+        element.setAttribute("aria-label", "Drag to reorder block");
+        element.title = "Drag to reorder";
+        element.dataset.visible = "false";
+        // Prevent initial paint at (0,0) before the extension computes a valid position.
+        element.style.visibility = "hidden";
+        element.style.pointerEvents = "none";
+        return element;
+      },
+    }),
+
     // Table extensions
     Table,
     TableRow,
@@ -223,5 +261,6 @@ export const ExtensionKit = ({
     // Markdown input handling (paste and file drop)
     MarkdownInput,
   ];
+};
 
 export default ExtensionKit;

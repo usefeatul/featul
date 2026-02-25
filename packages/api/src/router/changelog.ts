@@ -1,21 +1,50 @@
-import { and, eq, desc, sql, getTableColumns } from "drizzle-orm"
-import { z } from "zod"
-import { j, publicProcedure, privateProcedure } from "../jstack"
-import { workspace, board, workspaceMember, changelogEntry, activityLog, user } from "@featul/db"
-import { HTTPException } from "hono/http-exception"
-import { normalizePlan, getPlanLimits, assertWithinLimit } from "../shared/plan"
-import { toSlug } from "../shared/slug"
-import { requireBoardManagerBySlug } from "../shared/access"
-import { getChangelogTags, findTagsByIds, createTagsMap, type ChangelogTag } from "../shared/changelog-types"
+import { and, eq, desc, sql, getTableColumns } from "drizzle-orm";
+import { z } from "zod";
+import { j, publicProcedure, privateProcedure } from "../jstack";
+import {
+  workspace,
+  board,
+  workspaceMember,
+  changelogEntry,
+  activityLog,
+  user,
+} from "@featul/db";
+import { HTTPException } from "hono/http-exception";
+import { getPlanLimits, assertWithinLimit } from "../shared/plan";
+import { toSlug } from "../shared/slug";
+import { requireBoardManagerBySlug } from "../shared/access";
+import {
+  getChangelogTags,
+  findTagsByIds,
+  createTagsMap,
+  type ChangelogTag,
+} from "../shared/changelog-types";
 import {
   bySlugSchema,
   createEntrySchema,
   updateEntrySchema,
   aiAssistSchema,
+  importNotraSchema,
+  getNotraConnectionSchema,
+  saveNotraConnectionSchema,
+  deleteNotraConnectionSchema,
 } from "../validators/changelog";
 import { sendOpenRouterChat } from "../services/openrouter";
+import {
+  deleteStoredNotraConnection,
+  getStoredNotraConnection,
+  NotraApiError,
+  NotraImportRateLimitError,
+  NotraStoredConnectionError,
+  runNotraImport,
+  storeNotraConnection,
+} from "../services/notra-import";
+import {
+  canEncryptSecrets,
+  SecretCryptoError,
+} from "../services/secret-crypto";
 
-type AiAction = "prompt" | "format" | "improve" | "summary"
+type AiAction = "prompt" | "format" | "improve" | "summary";
 
 const AI_SYSTEM_PROMPT = [
   "You are a product changelog writing assistant.",
@@ -30,8 +59,10 @@ function buildAiUserPrompt(input: {
   title?: string;
   contentMarkdown?: string;
 }) {
-  const titleLine = input.title?.trim() ? `Title: ${input.title.trim()}` : ""
-  const contentBlock = input.contentMarkdown ? `Content (Markdown):\n${input.contentMarkdown}` : ""
+  const titleLine = input.title?.trim() ? `Title: ${input.title.trim()}` : "";
+  const contentBlock = input.contentMarkdown
+    ? `Content (Markdown):\n${input.contentMarkdown}`
+    : "";
 
   switch (input.action) {
     case "prompt":
@@ -44,41 +75,53 @@ function buildAiUserPrompt(input: {
         titleLine ? `Current title (if helpful): ${titleLine}` : "",
         "Prompt:",
         input.prompt || "",
-      ].filter(Boolean).join("\n")
+      ]
+        .filter(Boolean)
+        .join("\n");
     case "format":
       return [
         "Fix formatting and structure without changing meaning.",
         "Return JSON with contentMarkdown only.",
         titleLine,
         contentBlock,
-      ].filter(Boolean).join("\n\n")
+      ]
+        .filter(Boolean)
+        .join("\n\n");
     case "improve":
       return [
         "Improve clarity and concision without changing meaning.",
         "Return JSON with contentMarkdown only.",
         titleLine,
         contentBlock,
-      ].filter(Boolean).join("\n\n")
+      ]
+        .filter(Boolean)
+        .join("\n\n");
     case "summary":
       return [
         "Write a concise 1-2 sentence summary (<= 512 characters).",
         "Return JSON with summary only.",
         titleLine,
         contentBlock,
-      ].filter(Boolean).join("\n\n")
+      ]
+        .filter(Boolean)
+        .join("\n\n");
     default:
-      return ""
+      return "";
   }
 }
 
 function parseAiJson(text: string) {
-  const start = text.indexOf("{")
-  const end = text.lastIndexOf("}")
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
   if (start === -1 || end === -1) {
-    throw new HTTPException(502, { message: "AI response was not valid JSON" })
+    throw new HTTPException(502, { message: "AI response was not valid JSON" });
   }
-  const slice = text.slice(start, end + 1)
-  return JSON.parse(slice) as { contentMarkdown?: unknown; summary?: unknown; title?: unknown }
+  const slice = text.slice(start, end + 1);
+  return JSON.parse(slice) as {
+    contentMarkdown?: unknown;
+    summary?: unknown;
+    title?: unknown;
+  };
 }
 
 export function createChangelogRouter() {
@@ -90,16 +133,28 @@ export function createChangelogRouter() {
           .select({ id: workspace.id })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.superjson({ visible: false })
+          .limit(1);
+        if (!ws) return c.superjson({ visible: false });
         const [b] = await ctx.db
-          .select({ id: board.id, isVisible: board.isVisible, isPublic: board.isPublic })
+          .select({
+            id: board.id,
+            isVisible: board.isVisible,
+            isPublic: board.isPublic,
+          })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        const v = Boolean(b?.isVisible) && Boolean(b?.isPublic)
-        c.header("Cache-Control", "public, max-age=30, stale-while-revalidate=120")
-        return c.superjson({ visible: v })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        const v = Boolean(b?.isVisible) && Boolean(b?.isPublic);
+        c.header(
+          "Cache-Control",
+          "public, max-age=30, stale-while-revalidate=120",
+        );
+        return c.superjson({ visible: v });
       }),
 
     settings: privateProcedure
@@ -109,33 +164,62 @@ export function createChangelogRouter() {
           .select({ id: workspace.id })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.superjson({ ok: false })
+          .limit(1);
+        if (!ws) return c.superjson({ ok: false });
 
         const [b] = await ctx.db
-          .select({ id: board.id, isVisible: board.isVisible, changelogTags: board.changelogTags })
+          .select({
+            id: board.id,
+            isVisible: board.isVisible,
+            changelogTags: board.changelogTags,
+          })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
 
-        const tags = getChangelogTags(b?.changelogTags).map(t => ({ ...t, count: 0 }))
-        return c.superjson({ ok: true, isVisible: Boolean(b?.isVisible), tags })
+        const tags = getChangelogTags(b?.changelogTags).map((t) => ({
+          ...t,
+          count: 0,
+        }));
+        return c.superjson({
+          ok: true,
+          isVisible: Boolean(b?.isVisible),
+          tags,
+        });
       }),
 
     toggleVisibility: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, isVisible: z.boolean() }))
+      .input(
+        z.object({ slug: bySlugSchema.shape.slug, isVisible: z.boolean() }),
+      )
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({ id: board.id })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
 
-        await ctx.db.update(board).set({ isVisible: input.isVisible, updatedAt: new Date() }).where(eq(board.id, b.id))
-        return c.superjson({ ok: true, isVisible: input.isVisible })
+        await ctx.db
+          .update(board)
+          .set({ isVisible: input.isVisible, updatedAt: new Date() })
+          .where(eq(board.id, b.id));
+        return c.superjson({ ok: true, isVisible: input.isVisible });
       }),
 
     tagsList: privateProcedure
@@ -145,35 +229,69 @@ export function createChangelogRouter() {
           .select({ id: workspace.id })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.superjson({ tags: [] })
+          .limit(1);
+        if (!ws) return c.superjson({ tags: [] });
         const [b] = await ctx.db
           .select({ id: board.id, changelogTags: board.changelogTags })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        const rows = getChangelogTags(b?.changelogTags).map(t => ({ ...t, count: 0 }))
-        return c.superjson({ tags: rows })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        const rows = getChangelogTags(b?.changelogTags).map((t) => ({
+          ...t,
+          count: 0,
+        }));
+        return c.superjson({ tags: rows });
       }),
 
     tagsCreate: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, name: z.string().min(1).max(64), color: z.string().optional() }))
+      .input(
+        z.object({
+          slug: bySlugSchema.shape.slug,
+          name: z.string().min(1).max(64),
+          color: z.string().optional(),
+        }),
+      )
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
         const [b] = await ctx.db
           .select({ id: board.id, changelogTags: board.changelogTags })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
-        const limits = getPlanLimits(String(ws.plan || "free"))
-        const currentTags = getChangelogTags(b.changelogTags)
-        const maxTags = limits.maxChangelogTags
-        assertWithinLimit(currentTags.length, maxTags, (max) => `Changelog tags limit reached (${max})`)
-        const slug = toSlug(input.name)
-        const id = globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`
-        const next = [...currentTags, { id, name: input.name.trim(), slug, color: input.color || null }]
-        await ctx.db.update(board).set({ changelogTags: next, updatedAt: new Date() }).where(eq(board.id, b.id))
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
+        const limits = getPlanLimits(String(ws.plan || "free"));
+        const currentTags = getChangelogTags(b.changelogTags);
+        const maxTags = limits.maxChangelogTags;
+        assertWithinLimit(
+          currentTags.length,
+          maxTags,
+          (max) => `Changelog tags limit reached (${max})`,
+        );
+        const slug = toSlug(input.name);
+        const id = globalThis.crypto?.randomUUID
+          ? globalThis.crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const next = [
+          ...currentTags,
+          { id, name: input.name.trim(), slug, color: input.color || null },
+        ];
+        await ctx.db
+          .update(board)
+          .set({ changelogTags: next, updatedAt: new Date() })
+          .where(eq(board.id, b.id));
 
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
@@ -187,24 +305,39 @@ export function createChangelogRouter() {
             slug,
             color: input.color || null,
           },
-        })
+        });
 
-        return c.superjson({ ok: true })
+        return c.superjson({ ok: true });
       }),
 
     tagsDelete: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, tagId: z.string().min(1) }))
+      .input(
+        z.object({ slug: bySlugSchema.shape.slug, tagId: z.string().min(1) }),
+      )
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
         const [b] = await ctx.db
           .select({ id: board.id, changelogTags: board.changelogTags })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
-        const currentTags = getChangelogTags(b.changelogTags)
-        const next = currentTags.filter(t => String(t.id) !== String(input.tagId))
-        await ctx.db.update(board).set({ changelogTags: next, updatedAt: new Date() }).where(eq(board.id, b.id))
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
+        const currentTags = getChangelogTags(b.changelogTags);
+        const next = currentTags.filter(
+          (t) => String(t.id) !== String(input.tagId),
+        );
+        await ctx.db
+          .update(board)
+          .set({ changelogTags: next, updatedAt: new Date() })
+          .where(eq(board.id, b.id));
 
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
@@ -215,22 +348,22 @@ export function createChangelogRouter() {
           entityId: String(input.tagId),
           title: null,
           metadata: {},
-        })
-        return c.superjson({ ok: true })
+        });
+        return c.superjson({ ok: true });
       }),
 
     aiAssist: privateProcedure
       .input(aiAssistSchema)
       .post(async ({ ctx, input, c }) => {
-        await requireBoardManagerBySlug(ctx, input.slug)
+        await requireBoardManagerBySlug(ctx, input.slug);
 
-        const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto")
+        const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto");
         const temperatureByAction: Record<AiAction, number> = {
           prompt: 0.6,
           format: 0.2,
           improve: 0.4,
           summary: 0.2,
-        }
+        };
 
         try {
           const result = await sendOpenRouterChat({
@@ -242,57 +375,300 @@ export function createChangelogRouter() {
             temperature: temperatureByAction[input.action],
             max_tokens: 900,
             response_format: { type: "json_object" },
-          })
+          });
 
-          const message = (result as any)?.choices?.[0]?.message?.content
+          const message = (result as any)?.choices?.[0]?.message?.content;
           if (!message || typeof message !== "string") {
-            throw new HTTPException(502, { message: "AI response was empty" })
+            throw new HTTPException(502, { message: "AI response was empty" });
           }
 
-          const data = parseAiJson(message)
+          const data = parseAiJson(message);
 
-          const contentMarkdown = typeof data.contentMarkdown === "string"
-            ? data.contentMarkdown.trim()
-            : undefined
-          const title = typeof data.title === "string"
-            ? data.title.trim().slice(0, 256)
-            : undefined
-          const summaryRaw = typeof data.summary === "string" ? data.summary.trim() : undefined
-          const summary = summaryRaw ? summaryRaw.slice(0, 512) : undefined
+          const contentMarkdown =
+            typeof data.contentMarkdown === "string"
+              ? data.contentMarkdown.trim()
+              : undefined;
+          const title =
+            typeof data.title === "string"
+              ? data.title.trim().slice(0, 256)
+              : undefined;
+          const summaryRaw =
+            typeof data.summary === "string" ? data.summary.trim() : undefined;
+          const summary = summaryRaw ? summaryRaw.slice(0, 512) : undefined;
 
-          return c.superjson({ ok: true, contentMarkdown, title, summary })
+          return c.superjson({ ok: true, contentMarkdown, title, summary });
         } catch (err) {
           if (err instanceof HTTPException) {
-            throw err
+            throw err;
           }
-          const message = err instanceof Error ? err.message : "Failed to generate AI response"
-          throw new HTTPException(500, { message })
+          const message =
+            err instanceof Error
+              ? err.message
+              : "Failed to generate AI response";
+          throw new HTTPException(500, { message });
         }
+      }),
+
+    notraConnectionGet: privateProcedure
+      .input(getNotraConnectionSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const connection = await getStoredNotraConnection(ctx.db, ws.id);
+        return c.superjson({
+          connected: Boolean(connection),
+          organizationId: connection?.organizationId || null,
+          canStore: canEncryptSecrets(),
+        });
+      }),
+
+    notraConnectionSave: privateProcedure
+      .input(saveNotraConnectionSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        if (!canEncryptSecrets()) {
+          throw new HTTPException(503, {
+            message:
+              "Credential encryption is not configured on this environment (missing NOTRA_CREDENTIALS_ENCRYPTION_KEY)",
+          });
+        }
+
+        let saveMode: "created" | "updated";
+        try {
+          saveMode = await storeNotraConnection({
+            db: ctx.db,
+            workspaceId: ws.id,
+            actorUserId: ctx.session.user.id,
+            organizationId: input.organizationId,
+            apiKey: input.apiKey,
+          });
+        } catch (error) {
+          if (error instanceof SecretCryptoError) {
+            throw new HTTPException(503, {
+              message: "Credential encryption is not available",
+            });
+          }
+          if (error instanceof NotraStoredConnectionError) {
+            throw new HTTPException(400, { message: error.message });
+          }
+          throw error;
+        }
+
+        await ctx.db.insert(activityLog).values({
+          workspaceId: ws.id,
+          userId: ctx.session.user.id,
+          action: "changelog_notra_connection_saved",
+          actionType: saveMode === "created" ? "create" : "update",
+          entity: "workspace_notra_connection",
+          entityId: String(ws.id),
+          title: "Notra connection saved",
+          metadata: {
+            mode: saveMode,
+          },
+        });
+
+        return c.superjson({ ok: true });
+      }),
+
+    notraConnectionDelete: privateProcedure
+      .input(deleteNotraConnectionSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const deleted = await deleteStoredNotraConnection(ctx.db, ws.id);
+        if (deleted) {
+          await ctx.db.insert(activityLog).values({
+            workspaceId: ws.id,
+            userId: ctx.session.user.id,
+            action: "changelog_notra_connection_deleted",
+            actionType: "delete",
+            entity: "workspace_notra_connection",
+            entityId: String(ws.id),
+            title: "Notra connection deleted",
+            metadata: {},
+          });
+        }
+        return c.superjson({ ok: true });
+      }),
+
+    importFromNotra: privateProcedure
+      .input(importNotraSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+
+        const [b] = await ctx.db
+          .select({ id: board.id })
+          .from(board)
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
+
+        const limits = getPlanLimits(String(ws.plan || "free"));
+        const [countResult] = await ctx.db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(changelogEntry)
+          .where(eq(changelogEntry.boardId, b.id));
+
+        const statuses = (
+          input.status && input.status.length > 0
+            ? Array.from(new Set(input.status))
+            : ["published", "draft"]
+        ) as Array<"draft" | "published">;
+        const mode = input.mode ?? "upsert";
+        const publishBehavior = input.publishBehavior ?? "draft_only";
+        const recordImportFailure = async (reason: string) => {
+          try {
+            await ctx.db.insert(activityLog).values({
+              workspaceId: ws.id,
+              userId: ctx.session.user.id,
+              action: "changelog_notra_import_failed",
+              actionType: "update",
+              entity: "changelog_entry",
+              entityId: String(b.id),
+              title: "Notra import failed",
+              metadata: {
+                reason,
+              },
+            });
+          } catch {
+            // Swallow logging failures to preserve the main error response.
+          }
+        };
+
+        let summary;
+        try {
+          summary = await runNotraImport({
+            db: ctx.db,
+            workspaceId: ws.id,
+            boardId: b.id,
+            actorUserId: ctx.session.user.id,
+            maxChangelogEntries: limits.maxChangelogEntries,
+            currentEntryCount: countResult?.count || 0,
+            status: statuses,
+            limit: input.limit ?? 50,
+            maxPages: input.maxPages ?? 10,
+            mode,
+            publishBehavior,
+            useStoredConnection: Boolean(input.useStoredConnection),
+            organizationId: input.organizationId,
+            apiKey: input.apiKey,
+          });
+        } catch (err) {
+          if (err instanceof NotraImportRateLimitError) {
+            c.header("Retry-After", String(Math.max(1, err.retryAfterSeconds)));
+            throw new HTTPException(429, {
+              message:
+                "Too many Notra import attempts. Please wait and try again.",
+            });
+          }
+          const failureReason =
+            err instanceof NotraStoredConnectionError
+              ? "stored_connection"
+              : err instanceof SecretCryptoError
+                ? "crypto"
+                : err instanceof NotraApiError
+                  ? `notra_api_${err.status}`
+                  : "unexpected";
+          await recordImportFailure(failureReason);
+          if (err instanceof NotraStoredConnectionError) {
+            throw new HTTPException(400, { message: err.message });
+          }
+          if (err instanceof SecretCryptoError) {
+            throw new HTTPException(503, {
+              message: "Credential encryption is not configured correctly",
+            });
+          }
+          if (err instanceof NotraApiError) {
+            if (err.status === 401 || err.status === 403) {
+              throw new HTTPException(400, {
+                message:
+                  "Notra authentication failed. Verify your API key and organization ID.",
+              });
+            }
+            if (err.status === 404) {
+              throw new HTTPException(400, {
+                message:
+                  "Notra organization was not found or is not accessible with this API key.",
+              });
+            }
+            throw new HTTPException(502, {
+              message: "Notra API request failed. Please try again.",
+            });
+          }
+          throw err;
+        }
+
+        await ctx.db.insert(activityLog).values({
+          workspaceId: ws.id,
+          userId: ctx.session.user.id,
+          action: "changelog_notra_imported",
+          actionType:
+            summary.createdCount > 0 && summary.updatedCount === 0
+              ? "create"
+              : "update",
+          entity: "changelog_entry",
+          entityId: String(b.id),
+          title: "Notra import",
+          metadata: {
+            fetchedCount: summary.fetchedCount,
+            createdCount: summary.createdCount,
+            updatedCount: summary.updatedCount,
+            skippedCount: summary.skippedCount,
+            truncatedCount: summary.truncatedCount,
+            limitReached: summary.limitReached,
+            mode,
+            publishBehavior,
+            usedStoredConnection: summary.usedStoredConnection,
+          },
+        });
+
+        return c.superjson({
+          ok: true,
+          summary,
+        });
       }),
 
     // Entry CRUD operations
     entriesCreate: privateProcedure
       .input(createEntrySchema)
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({ id: board.id })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
 
-        const limits = getPlanLimits(String(ws.plan || "free"))
+        const limits = getPlanLimits(String(ws.plan || "free"));
         const [countResult] = await ctx.db
           .select({ count: sql<number>`count(*)::int` })
           .from(changelogEntry)
-          .where(eq(changelogEntry.boardId, b.id))
-        const currentCount = countResult?.count || 0
-        assertWithinLimit(currentCount, limits.maxChangelogEntries, (max) => `Changelog entries limit reached (${max})`)
+          .where(eq(changelogEntry.boardId, b.id));
+        const currentCount = countResult?.count || 0;
+        assertWithinLimit(
+          currentCount,
+          limits.maxChangelogEntries,
+          (max) => `Changelog entries limit reached (${max})`,
+        );
 
-        const entrySlug = toSlug(input.title) + "-" + Date.now().toString(36)
-        const isPublished = input.status === "published"
+        const entrySlug = toSlug(input.title) + "-" + Date.now().toString(36);
+        const isPublished = input.status === "published";
 
         const [entry] = await ctx.db
           .insert(changelogEntry)
@@ -308,7 +684,7 @@ export function createChangelogRouter() {
             tags: input.tags || [],
             publishedAt: isPublished ? new Date() : null,
           })
-          .returning()
+          .returning();
 
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
@@ -322,40 +698,59 @@ export function createChangelogRouter() {
             status: entry.status,
             tags: entry.tags,
           },
-        })
+        });
 
-        return c.superjson({ ok: true, entry })
+        return c.superjson({ ok: true, entry });
       }),
 
     entriesUpdate: privateProcedure
       .input(updateEntrySchema)
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({ id: board.id })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
 
         const [existing] = await ctx.db
           .select()
           .from(changelogEntry)
-          .where(and(eq(changelogEntry.id, input.entryId), eq(changelogEntry.boardId, b.id)))
-          .limit(1)
-        if (!existing) throw new HTTPException(404, { message: "Changelog entry not found" })
+          .where(
+            and(
+              eq(changelogEntry.id, input.entryId),
+              eq(changelogEntry.boardId, b.id),
+            ),
+          )
+          .limit(1);
+        if (!existing)
+          throw new HTTPException(404, {
+            message: "Changelog entry not found",
+          });
 
-        const updates: Partial<typeof changelogEntry.$inferInsert> = {}
-        if (input.title !== undefined) updates.title = input.title.trim()
-        if (input.content !== undefined) updates.content = input.content as Record<string, unknown>
-        if (input.summary !== undefined) updates.summary = input.summary?.trim() || null
-        if (input.coverImage !== undefined) updates.coverImage = input.coverImage || null
-        if (input.tags !== undefined) updates.tags = input.tags
+        const updates: Partial<typeof changelogEntry.$inferInsert> = {};
+        if (input.title !== undefined) updates.title = input.title.trim();
+        if (input.content !== undefined)
+          updates.content = input.content as Record<string, unknown>;
+        if (input.summary !== undefined)
+          updates.summary = input.summary?.trim() || null;
+        if (input.coverImage !== undefined)
+          updates.coverImage = input.coverImage || null;
+        if (input.tags !== undefined) updates.tags = input.tags;
         if (input.status !== undefined) {
-          updates.status = input.status
+          updates.status = input.status;
           if (input.status === "published" && !existing.publishedAt) {
-            updates.publishedAt = new Date()
+            updates.publishedAt = new Date();
           }
         }
 
@@ -363,7 +758,7 @@ export function createChangelogRouter() {
           .update(changelogEntry)
           .set(updates)
           .where(eq(changelogEntry.id, input.entryId))
-          .returning()
+          .returning();
 
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
@@ -377,27 +772,43 @@ export function createChangelogRouter() {
             status: entry.status,
             tags: entry.tags,
           },
-        })
+        });
 
-        return c.superjson({ ok: true, entry })
+        return c.superjson({ ok: true, entry });
       }),
 
     entriesGet: publicProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, entrySlug: z.string().min(1) }))
+      .input(
+        z.object({
+          slug: bySlugSchema.shape.slug,
+          entrySlug: z.string().min(1),
+        }),
+      )
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.superjson({ entry: null })
+          .limit(1);
+        if (!ws) return c.superjson({ entry: null });
 
         const [b] = await ctx.db
-          .select({ id: board.id, isVisible: board.isVisible, isPublic: board.isPublic, changelogTags: board.changelogTags })
+          .select({
+            id: board.id,
+            isVisible: board.isVisible,
+            isPublic: board.isPublic,
+            changelogTags: board.changelogTags,
+          })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b || !b.isVisible || !b.isPublic) return c.superjson({ entry: null })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b || !b.isVisible || !b.isPublic)
+          return c.superjson({ entry: null });
 
         const [entry] = await ctx.db
           .select({
@@ -407,42 +818,49 @@ export function createChangelogRouter() {
           })
           .from(changelogEntry)
           .leftJoin(user, eq(changelogEntry.authorId, user.id))
-          .where(and(
-            eq(changelogEntry.boardId, b.id),
-            eq(changelogEntry.slug, input.entrySlug),
-            eq(changelogEntry.status, "published")
-          ))
-          .limit(1)
+          .where(
+            and(
+              eq(changelogEntry.boardId, b.id),
+              eq(changelogEntry.slug, input.entrySlug),
+              eq(changelogEntry.status, "published"),
+            ),
+          )
+          .limit(1);
 
-        if (!entry) return c.superjson({ entry: null })
+        if (!entry) return c.superjson({ entry: null });
 
         // Get author's role in the workspace
-        let authorRole: string | null = null
-        let isOwner = false
+        let authorRole: string | null = null;
+        let isOwner = false;
         if (entry.authorId) {
           const [member] = await ctx.db
             .select({ role: workspaceMember.role })
             .from(workspaceMember)
-            .where(and(
-              eq(workspaceMember.workspaceId, ws.id),
-              eq(workspaceMember.userId, entry.authorId)
-            ))
-            .limit(1)
-          authorRole = member?.role || null
+            .where(
+              and(
+                eq(workspaceMember.workspaceId, ws.id),
+                eq(workspaceMember.userId, entry.authorId),
+              ),
+            )
+            .limit(1);
+          authorRole = member?.role || null;
 
           // Check if author is workspace owner
           const [wsOwner] = await ctx.db
             .select({ ownerId: workspace.ownerId })
             .from(workspace)
             .where(eq(workspace.id, ws.id))
-            .limit(1)
-          isOwner = wsOwner?.ownerId === entry.authorId
+            .limit(1);
+          isOwner = wsOwner?.ownerId === entry.authorId;
         }
 
-        const allTags = getChangelogTags(b.changelogTags)
-        const entryTags = findTagsByIds(allTags, entry.tags)
+        const allTags = getChangelogTags(b.changelogTags);
+        const entryTags = findTagsByIds(allTags, entry.tags);
 
-        c.header("Cache-Control", "public, max-age=60, stale-while-revalidate=300")
+        c.header(
+          "Cache-Control",
+          "public, max-age=60, stale-while-revalidate=300",
+        );
         return c.superjson({
           entry: {
             ...entry,
@@ -454,51 +872,89 @@ export function createChangelogRouter() {
             },
             tags: entryTags,
           },
-        })
+        });
       }),
 
     entriesGetForEdit: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }))
+      .input(
+        z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }),
+      )
       .get(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({ id: board.id, changelogTags: board.changelogTags })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
 
         const [entry] = await ctx.db
           .select()
           .from(changelogEntry)
-          .where(and(eq(changelogEntry.id, input.entryId), eq(changelogEntry.boardId, b.id)))
-          .limit(1)
-        if (!entry) throw new HTTPException(404, { message: "Changelog entry not found" })
+          .where(
+            and(
+              eq(changelogEntry.id, input.entryId),
+              eq(changelogEntry.boardId, b.id),
+            ),
+          )
+          .limit(1);
+        if (!entry)
+          throw new HTTPException(404, {
+            message: "Changelog entry not found",
+          });
 
-        return c.superjson({ entry, availableTags: b.changelogTags || [] })
+        return c.superjson({ entry, availableTags: b.changelogTags || [] });
       }),
 
     entriesDelete: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }))
+      .input(
+        z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }),
+      )
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({ id: board.id })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
 
         const [existing] = await ctx.db
           .select({ id: changelogEntry.id, title: changelogEntry.title })
           .from(changelogEntry)
-          .where(and(eq(changelogEntry.id, input.entryId), eq(changelogEntry.boardId, b.id)))
-          .limit(1)
-        if (!existing) throw new HTTPException(404, { message: "Changelog entry not found" })
+          .where(
+            and(
+              eq(changelogEntry.id, input.entryId),
+              eq(changelogEntry.boardId, b.id),
+            ),
+          )
+          .limit(1);
+        if (!existing)
+          throw new HTTPException(404, {
+            message: "Changelog entry not found",
+          });
 
-        await ctx.db.delete(changelogEntry).where(eq(changelogEntry.id, input.entryId))
+        await ctx.db
+          .delete(changelogEntry)
+          .where(eq(changelogEntry.id, input.entryId));
 
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
@@ -509,29 +965,47 @@ export function createChangelogRouter() {
           entityId: String(input.entryId),
           title: existing.title,
           metadata: {},
-        })
+        });
 
-        return c.superjson({ ok: true })
+        return c.superjson({ ok: true });
       }),
 
     entriesPublish: privateProcedure
-      .input(z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }))
+      .input(
+        z.object({ slug: bySlugSchema.shape.slug, entryId: z.string().min(1) }),
+      )
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({ id: board.id })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
 
         const [existing] = await ctx.db
           .select()
           .from(changelogEntry)
-          .where(and(eq(changelogEntry.id, input.entryId), eq(changelogEntry.boardId, b.id)))
-          .limit(1)
-        if (!existing) throw new HTTPException(404, { message: "Changelog entry not found" })
+          .where(
+            and(
+              eq(changelogEntry.id, input.entryId),
+              eq(changelogEntry.boardId, b.id),
+            ),
+          )
+          .limit(1);
+        if (!existing)
+          throw new HTTPException(404, {
+            message: "Changelog entry not found",
+          });
 
         const [entry] = await ctx.db
           .update(changelogEntry)
@@ -540,7 +1014,7 @@ export function createChangelogRouter() {
             publishedAt: existing.publishedAt || new Date(),
           })
           .where(eq(changelogEntry.id, input.entryId))
-          .returning()
+          .returning();
 
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
@@ -553,39 +1027,57 @@ export function createChangelogRouter() {
           metadata: {
             status: entry.status,
           },
-        })
+        });
 
-        return c.superjson({ ok: true, entry })
+        return c.superjson({ ok: true, entry });
       }),
 
     entriesList: publicProcedure
-      .input(z.object({
-        slug: bySlugSchema.shape.slug,
-        limit: z.number().min(1).max(50).optional(),
-        offset: z.number().min(0).optional(),
-      }))
+      .input(
+        z.object({
+          slug: bySlugSchema.shape.slug,
+          limit: z.number().min(1).max(50).optional(),
+          offset: z.number().min(0).optional(),
+        }),
+      )
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
-          .limit(1)
-        if (!ws) return c.superjson({ entries: [], total: 0 })
+          .limit(1);
+        if (!ws) return c.superjson({ entries: [], total: 0 });
 
         const [b] = await ctx.db
-          .select({ id: board.id, isVisible: board.isVisible, isPublic: board.isPublic, changelogTags: board.changelogTags })
+          .select({
+            id: board.id,
+            isVisible: board.isVisible,
+            isPublic: board.isPublic,
+            changelogTags: board.changelogTags,
+          })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b || !b.isVisible || !b.isPublic) return c.superjson({ entries: [], total: 0 })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b || !b.isVisible || !b.isPublic)
+          return c.superjson({ entries: [], total: 0 });
 
-        const limit = input.limit || 10
-        const offset = input.offset || 0
+        const limit = input.limit || 10;
+        const offset = input.offset || 0;
 
         const [countResult] = await ctx.db
           .select({ count: sql<number>`count(*)::int` })
           .from(changelogEntry)
-          .where(and(eq(changelogEntry.boardId, b.id), eq(changelogEntry.status, "published")))
+          .where(
+            and(
+              eq(changelogEntry.boardId, b.id),
+              eq(changelogEntry.status, "published"),
+            ),
+          );
 
         const entries = await ctx.db
           .select({
@@ -595,74 +1087,113 @@ export function createChangelogRouter() {
           })
           .from(changelogEntry)
           .leftJoin(user, eq(changelogEntry.authorId, user.id))
-          .where(and(eq(changelogEntry.boardId, b.id), eq(changelogEntry.status, "published")))
+          .where(
+            and(
+              eq(changelogEntry.boardId, b.id),
+              eq(changelogEntry.status, "published"),
+            ),
+          )
           .orderBy(desc(changelogEntry.publishedAt))
           .limit(limit)
-          .offset(offset)
+          .offset(offset);
 
         // Get workspace owner
         const [wsOwner] = await ctx.db
           .select({ ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.id, ws.id))
-          .limit(1)
+          .limit(1);
 
         // Get all members for author role lookup
-        type EntryWithAuthor = (typeof entries)[number]
-        const authorIds = entries.map((e: EntryWithAuthor) => e.authorId).filter((id: string | null): id is string => Boolean(id))
-        type MemberRole = { userId: string; role: "admin" | "member" | "viewer" | null }
-        const members: MemberRole[] = authorIds.length > 0 ? await ctx.db
-          .select({ userId: workspaceMember.userId, role: workspaceMember.role })
-          .from(workspaceMember)
-          .where(eq(workspaceMember.workspaceId, ws.id)) : []
-        const memberRoleMap = new Map(members.map((m: MemberRole) => [m.userId, m.role]))
+        type EntryWithAuthor = (typeof entries)[number];
+        const authorIds = entries
+          .map((e: EntryWithAuthor) => e.authorId)
+          .filter((id: string | null): id is string => Boolean(id));
+        type MemberRole = {
+          userId: string;
+          role: "admin" | "member" | "viewer" | null;
+        };
+        const members: MemberRole[] =
+          authorIds.length > 0
+            ? await ctx.db
+                .select({
+                  userId: workspaceMember.userId,
+                  role: workspaceMember.role,
+                })
+                .from(workspaceMember)
+                .where(eq(workspaceMember.workspaceId, ws.id))
+            : [];
+        const memberRoleMap = new Map(
+          members.map((m: MemberRole) => [m.userId, m.role]),
+        );
 
-        const allTags = getChangelogTags(b.changelogTags)
-        const tagsMap = createTagsMap(allTags)
+        const allTags = getChangelogTags(b.changelogTags);
+        const tagsMap = createTagsMap(allTags);
         const entriesWithTags = entries.map((e: EntryWithAuthor) => ({
           ...e,
-          tags: e.tags.map((id: string) => tagsMap.get(id)).filter((t: ChangelogTag | undefined): t is ChangelogTag => t !== undefined),
+          tags: e.tags
+            .map((id: string) => tagsMap.get(id))
+            .filter(
+              (t: ChangelogTag | undefined): t is ChangelogTag =>
+                t !== undefined,
+            ),
           author: {
             name: e.authorName,
             image: e.authorImage,
             role: e.authorId ? memberRoleMap.get(e.authorId) || null : null,
             isOwner: e.authorId ? wsOwner?.ownerId === e.authorId : false,
           },
-        }))
+        }));
 
-        c.header("Cache-Control", "public, max-age=15, stale-while-revalidate=60")
-        return c.superjson({ entries: entriesWithTags, total: countResult?.count || 0 })
+        c.header(
+          "Cache-Control",
+          "public, max-age=15, stale-while-revalidate=60",
+        );
+        return c.superjson({
+          entries: entriesWithTags,
+          total: countResult?.count || 0,
+        });
       }),
 
     entriesListAll: privateProcedure
-      .input(z.object({
-        slug: bySlugSchema.shape.slug,
-        status: z.enum(["draft", "published"]).optional(),
-        limit: z.number().min(1).max(50).optional(),
-        offset: z.number().min(0).optional(),
-      }))
+      .input(
+        z.object({
+          slug: bySlugSchema.shape.slug,
+          status: z.enum(["draft", "published"]).optional(),
+          limit: z.number().min(1).max(50).optional(),
+          offset: z.number().min(0).optional(),
+        }),
+      )
       .get(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug)
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({ id: board.id, changelogTags: board.changelogTags })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
-          .limit(1)
-        if (!b) throw new HTTPException(404, { message: "Changelog board not found" })
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.systemType, "changelog"),
+            ),
+          )
+          .limit(1);
+        if (!b)
+          throw new HTTPException(404, {
+            message: "Changelog board not found",
+          });
 
-        const limit = input.limit || 20
-        const offset = input.offset || 0
+        const limit = input.limit || 20;
+        const offset = input.offset || 0;
 
-        const whereConditions = [eq(changelogEntry.boardId, b.id)]
+        const whereConditions = [eq(changelogEntry.boardId, b.id)];
         if (input.status) {
-          whereConditions.push(eq(changelogEntry.status, input.status))
+          whereConditions.push(eq(changelogEntry.status, input.status));
         }
 
         const [countResult] = await ctx.db
           .select({ count: sql<number>`count(*)::int` })
           .from(changelogEntry)
-          .where(and(...whereConditions))
+          .where(and(...whereConditions));
 
         const entries = await ctx.db
           .select()
@@ -670,17 +1201,26 @@ export function createChangelogRouter() {
           .where(and(...whereConditions))
           .orderBy(desc(changelogEntry.updatedAt))
           .limit(limit)
-          .offset(offset)
+          .offset(offset);
 
-        const allTags = getChangelogTags(b.changelogTags)
-        const tagsMap = createTagsMap(allTags)
-        type Entry = (typeof entries)[number]
+        const allTags = getChangelogTags(b.changelogTags);
+        const tagsMap = createTagsMap(allTags);
+        type Entry = (typeof entries)[number];
         const entriesWithTags = entries.map((e: Entry) => ({
           ...e,
-          tags: e.tags.map((id: string) => tagsMap.get(id)).filter((t: ChangelogTag | undefined): t is ChangelogTag => t !== undefined),
-        }))
+          tags: e.tags
+            .map((id: string) => tagsMap.get(id))
+            .filter(
+              (t: ChangelogTag | undefined): t is ChangelogTag =>
+                t !== undefined,
+            ),
+        }));
 
-        return c.superjson({ entries: entriesWithTags, total: countResult?.count || 0, availableTags: allTags })
+        return c.superjson({
+          entries: entriesWithTags,
+          total: countResult?.count || 0,
+          availableTags: allTags,
+        });
       }),
-  })
+  });
 }

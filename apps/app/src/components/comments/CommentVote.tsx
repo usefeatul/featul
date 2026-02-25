@@ -5,13 +5,22 @@ import { ThumbsUp, ThumbsDown } from "lucide-react"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
+import { Button } from "@featul/ui/components/button"
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 import { motion, AnimatePresence } from "framer-motion"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
+import {
+  getCommentsQueryKey,
+  toCommentListResponse,
+  type CommentListResponse,
+  type CommentSurface,
+} from "@/lib/comment-shared"
 
 interface CommentVoteProps {
   commentId: string
   postId: string
+  surface?: CommentSurface
   initialUpvotes: number
   initialDownvotes: number
   initialUserVote?: "upvote" | "downvote" | null
@@ -20,6 +29,7 @@ interface CommentVoteProps {
 export default function CommentVote({ 
   commentId, 
   postId, 
+  surface = "workspace",
   initialUpvotes, 
   initialDownvotes,
   initialUserVote 
@@ -35,20 +45,20 @@ export default function CommentVote({
     getBrowserFingerprint().then(setVisitorId)
   }, [])
 
-  const { data: commentsData } = useQuery({
-    queryKey: ["comments", postId],
+  const { data: commentsData } = useQuery<CommentListResponse>({
+    queryKey: getCommentsQueryKey(postId, surface),
     enabled: false,
     queryFn: async () => {
-      const res = await client.comment.list.$get({ postId })
+      const res = await client.comment.list.$get({ postId, surface })
       if (!res.ok) throw new Error("Failed to fetch comments")
-      return await res.json()
+      return toCommentListResponse(await res.json())
     },
     staleTime: 30_000,
     gcTime: 300_000,
     placeholderData: (previousData) => previousData,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-  }) as any
+  })
 
   React.useEffect(() => {
     setUpvotes(initialUpvotes)
@@ -57,7 +67,7 @@ export default function CommentVote({
   }, [initialUpvotes, initialDownvotes, initialUserVote])
 
   React.useEffect(() => {
-    const target = commentsData?.comments?.find((c: any) => c.id === commentId)
+    const target = commentsData?.comments.find((c) => c.id === commentId)
     if (target) {
       setUpvotes(target.upvotes)
       setDownvotes(target.downvotes)
@@ -65,25 +75,29 @@ export default function CommentVote({
     }
   }, [commentsData, commentId])
 
-  const { data: statusData } = useQuery({
-    queryKey: ["comment-vote-status", postId, commentId, visitorId],
+  const { data: statusData } = useQuery<{
+    upvotes: number
+    downvotes: number
+    userVote: "upvote" | "downvote" | null
+  } | null>({
+    queryKey: ["comment-vote-status", postId, commentId, visitorId, surface],
     enabled: !!visitorId,
     queryFn: async () => {
-      const res = await client.comment.list.$get({ postId, fingerprint: visitorId || undefined })
+      const res = await client.comment.list.$get({ postId, fingerprint: visitorId || undefined, surface })
       if (!res.ok) return null
-      const json = await res.json()
-      const found = json?.comments?.find((c: any) => c.id === commentId)
+      const json = toCommentListResponse(await res.json())
+      const found = json.comments.find((c) => c.id === commentId)
       return found ? { 
         upvotes: found.upvotes, 
         downvotes: found.downvotes,
-        userVote: found.userVote 
+        userVote: found.userVote ?? null,
       } : null
     },
     staleTime: 10_000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     gcTime: 300_000,
-  }) as any
+  })
 
   React.useEffect(() => {
     if (statusData) {
@@ -130,7 +144,9 @@ export default function CommentVote({
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
-          } catch {}
+          } catch {
+            // ignore
+          }
         } else {
           // Revert on error
           setUpvotes(previousUpvotes)
@@ -148,14 +164,18 @@ export default function CommentVote({
   }
 
   return (
-    <div className="flex items-center gap-1 bg-muted/30 rounded-full p-0.5 px-1 border border-border/50 h-[30px]">
-      <button
+    <Toolbar size="sm" variant="plain" className="h-8 bg-card dark:bg-black/50 border-border">
+      <Button
         type="button"
+        variant="plain"
+        size="xs"
         onClick={() => handleVote("upvote")}
         disabled={isPending}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-full hover:bg-muted",
-          userVote === "upvote" ? "text-green-600" : "text-muted-foreground"
+          "h-8 min-w-[58px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
+          userVote === "upvote"
+            ? "text-green-600 dark:text-green-400"
+            : "text-accent hover:text-foreground"
         )}
         title="Upvote"
       >
@@ -173,17 +193,21 @@ export default function CommentVote({
             </motion.span>
           )}
         </AnimatePresence>
-      </button>
+      </Button>
 
-      <div className="w-px h-3 bg-border/50" />
+      <ToolbarSeparator />
 
-      <button
+      <Button
         type="button"
+        variant="plain"
+        size="xs"
         onClick={() => handleVote("downvote")}
         disabled={isPending}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer p-1 rounded-full hover:bg-muted",
-          userVote === "downvote" ? "text-red-600" : "text-muted-foreground"
+          "h-8 min-w-[48px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
+          userVote === "downvote"
+            ? "text-red-600 dark:text-red-400"
+            : "text-accent hover:text-foreground"
         )}
         title="Downvote"
       >
@@ -201,7 +225,7 @@ export default function CommentVote({
             </motion.span>
           )}
         </AnimatePresence>
-      </button>
-    </div>
+      </Button>
+    </Toolbar>
   )
 }

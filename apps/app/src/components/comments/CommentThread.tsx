@@ -3,6 +3,7 @@ import type { CommentData } from "../../types/comment"
 import AnimatedReplies from "./AnimatedReplies"
 import CommentItem from "./CommentItem"
 import { updateCommentCollapseState } from "@/lib/comments.actions"
+import type { CommentSurface } from "@/lib/comment-shared"
 
 interface CommentThreadProps {
   postId: string
@@ -10,6 +11,7 @@ interface CommentThreadProps {
   currentUserId?: string | null
   onUpdate?: () => void
   workspaceSlug?: string
+  surface?: CommentSurface
   initialCollapsedIds?: string[]
   hidePublicMemberIdentity?: boolean
 }
@@ -20,6 +22,7 @@ export default function CommentThread({
   currentUserId,
   onUpdate,
   workspaceSlug,
+  surface = "workspace",
   initialCollapsedIds = [],
   hidePublicMemberIdentity,
 }: CommentThreadProps) {
@@ -67,6 +70,7 @@ export default function CommentThread({
           collapsedIds={collapsedIds}
           onToggleCollapse={toggleCollapse}
           workspaceSlug={workspaceSlug}
+          surface={surface}
           hidePublicMemberIdentity={hidePublicMemberIdentity}
         />
       ))}
@@ -85,6 +89,7 @@ interface ThreadItemProps {
   collapsedIds: Set<string>
   onToggleCollapse: (id: string) => void
   workspaceSlug?: string
+  surface?: CommentSurface
   hidePublicMemberIdentity?: boolean
 }
 
@@ -97,6 +102,7 @@ function ThreadItem({
   collapsedIds,
   onToggleCollapse,
   workspaceSlug,
+  surface = "workspace",
   hidePublicMemberIdentity,
 }: ThreadItemProps) {
   const replies = getReplies(comment.id)
@@ -116,6 +122,7 @@ function ThreadItem({
         isCollapsed={isCollapsed}
         onToggleCollapse={() => onToggleCollapse(comment.id)}
         workspaceSlug={workspaceSlug}
+        surface={surface}
         hidePublicMemberIdentity={hidePublicMemberIdentity}
       />
 
@@ -141,6 +148,7 @@ function ThreadItem({
                     collapsedIds={collapsedIds}
                     onToggleCollapse={onToggleCollapse}
                     workspaceSlug={workspaceSlug}
+                    surface={surface}
                     hidePublicMemberIdentity={hidePublicMemberIdentity}
                   />
                 </ReplyWrapper>

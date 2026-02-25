@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Button } from "@featul/ui/components/button";
 import {
   Popover,
   PopoverTrigger,
@@ -10,6 +9,7 @@ import {
   PopoverListItem,
 } from "@featul/ui/components/popover";
 import { MoreVertical } from "lucide-react";
+import { LoadingButton } from "@/components/global/loading-button";
 
 export default function DomainActions({
   verifying,
@@ -28,9 +28,9 @@ export default function DomainActions({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="ghost" size="icon-sm" aria-label="More" disabled={disabled}>
+        <LoadingButton type="button" variant="nav" size="icon-sm" aria-label="More" disabled={disabled}>
           <MoreVertical className="size-4" />
-        </Button>
+        </LoadingButton>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>

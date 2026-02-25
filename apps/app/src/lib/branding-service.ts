@@ -37,8 +37,8 @@ interface GetUploadUrlResponse {
   publicUrl: string
 }
 
-export async function getLogoUploadUrl(slug: string, fileName: string, contentType: string): Promise<{ uploadUrl: string; key: string; publicUrl: string }> {
-  const res = await client.storage.getUploadUrl.$post({ slug, fileName, contentType, folder: "branding/logo" })
+export async function getLogoUploadUrl(slug: string, fileName: string, contentType: string, fileSize: number): Promise<{ uploadUrl: string; key: string; publicUrl: string }> {
+  const res = await client.storage.getUploadUrl.$post({ slug, fileName, contentType, fileSize, folder: "branding/logo" })
   const data = await res.json() as GetUploadUrlResponse
   return { uploadUrl: data.uploadUrl, key: data.key, publicUrl: data.publicUrl }
 }

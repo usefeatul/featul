@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { domainUrlSchema, isDomainHostValid } from "./domain"
 
 export const slugSchema = z
   .string()
@@ -12,11 +13,7 @@ export const checkSlugInputSchema = z.object({
 
 export const createWorkspaceInputSchema = z.object({
   name: z.string().min(1).max(15),
-  domain: z
-    .string()
-    .trim()
-    .transform((v) => (v.startsWith("http://") || v.startsWith("https://") ? v : `https://${v}`))
-    .pipe(z.string().url()),
+  domain: domainUrlSchema,
   slug: slugSchema,
   timezone: z.string().min(1),
 })
@@ -24,16 +21,19 @@ export const createWorkspaceInputSchema = z.object({
 export const updateCustomDomainInputSchema = z.object({
   slug: slugSchema,
   enabled: z.boolean(),
-  customDomain: z.string().trim().optional(),
+  customDomain: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => (value && value.length > 0 ? value : undefined))
+    .refine((value) => value === undefined || isDomainHostValid(value), {
+      message: "Invalid domain host",
+    }),
 })
 
 export const createDomainInputSchema = z.object({
   slug: slugSchema,
-  domain: z
-    .string()
-    .trim()
-    .transform((v) => (v.startsWith("http://") || v.startsWith("https://") ? v : `https://${v}`))
-    .pipe(z.string().url()),
+  domain: domainUrlSchema,
 })
 
 export const verifyDomainInputSchema = z.object({
@@ -54,7 +54,7 @@ export const deleteWorkspaceInputSchema = z.object({
 
 export const importCsvInputSchema = z.object({
   slug: slugSchema,
-  csvContent: z.string(),
+  csvContent: z.string().max(10_000_000, "CSV payload too large"),
 })
 
 export const updateTimezoneInputSchema = z.object({

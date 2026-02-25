@@ -1,5 +1,6 @@
 export interface SessionItem {
-    token: string
+    id: string
+    isCurrent: boolean
     userAgent?: string | null
     ipAddress?: string | null
     createdAt?: string | Date

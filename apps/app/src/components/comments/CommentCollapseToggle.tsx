@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { ChevronDown } from "lucide-react"
+import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { cn } from "@featul/ui/lib/utils"
 
 export default function CommentCollapseToggle({
@@ -15,22 +15,27 @@ export default function CommentCollapseToggle({
   onToggle: () => void
   className?: string
 }) {
+  const label = isCollapsed
+    ? `${replyCount} ${replyCount === 1 ? "reply" : "replies"}`
+    : "Hide replies"
+
   return (
     <button
       onClick={onToggle}
       className={cn(
-        "inline-flex items-center gap-1 text-xs text-muted-foreground/60 hover:text-foreground transition-colors",
+        "inline-flex cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground",
         className
       )}
       aria-label={isCollapsed ? "Expand replies" : "Collapse replies"}
     >
-      <ChevronDown
+      <ChevronLeftIcon
+        size={12}
         className={cn(
-          "h-3 w-3 transition-transform duration-200",
-          !isCollapsed && "rotate-180"
+          "transition-transform duration-200",
+          isCollapsed ? "rotate-180" : "-rotate-90"
         )}
       />
-      {isCollapsed && <span className="font-medium">{replyCount} replies</span>}
+      <span className="font-medium">{label}</span>
     </button>
   )
 }

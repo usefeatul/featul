@@ -1,7 +1,20 @@
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { HTTPException } from "hono/http-exception"
 
 export type RateLimitResult = { success: boolean; remaining: number; reset: number; limit: number }
+
+export function applyRateLimitHeaders(c: any, result: RateLimitResult, errorMessage = "Too many requests. Please try again shortly."): void {
+  const resetInSeconds = Math.max(0, Math.ceil((result.reset - Date.now()) / 1000))
+  c.header("X-RateLimit-Limit", String(result.limit))
+  c.header("X-RateLimit-Remaining", String(Math.max(0, result.remaining)))
+  c.header("X-RateLimit-Reset", String(resetInSeconds))
+
+  if (!result.success) {
+    c.header("Retry-After", String(Math.max(1, resetInSeconds)))
+    throw new HTTPException(429, { message: errorMessage })
+  }
+}
 
 const url = String(process.env.UPSTASH_REDIS_REST_URL || "").trim()
 const token = String(process.env.UPSTASH_REDIS_REST_TOKEN || "").trim()
@@ -37,4 +50,30 @@ const ratelimitInvite = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(
 
 export async function limitInvite(userId: string): Promise<RateLimitResult> {
   return await ratelimitInvite.limit(userId)
+}
+
+const ratelimitStorageAvatar = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(30, "60 s"), analytics: false, prefix: "rl:storage:avatar" })
+const ratelimitStorageWorkspace = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), analytics: false, prefix: "rl:storage:workspace" })
+const ratelimitStoragePublicPostAnon = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, "60 s"), analytics: false, prefix: "rl:storage:public-post:anon" })
+const ratelimitStoragePublicPostUser = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(45, "60 s"), analytics: false, prefix: "rl:storage:public-post:user" })
+const ratelimitStorageComment = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), analytics: false, prefix: "rl:storage:comment" })
+
+export async function limitStorageAvatar(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStorageAvatar.limit(userId)
+}
+
+export async function limitStorageWorkspace(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStorageWorkspace.limit(userId)
+}
+
+export async function limitStoragePublicPostAnon(req: Request): Promise<RateLimitResult> {
+  return await ratelimitStoragePublicPostAnon.limit(getIp(req))
+}
+
+export async function limitStoragePublicPostUser(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStoragePublicPostUser.limit(userId)
+}
+
+export async function limitStorageComment(userId: string): Promise<RateLimitResult> {
+  return await ratelimitStorageComment.limit(userId)
 }

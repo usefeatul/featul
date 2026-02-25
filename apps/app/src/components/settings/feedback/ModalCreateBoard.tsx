@@ -2,9 +2,9 @@
 
 import React from "react"
 import { Input } from "@featul/ui/components/input"
-import { Button } from "@featul/ui/components/button"
 import BoardDialogIcon from "@featul/ui/icons/board-dialog"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
+import { LoadingButton } from "@/components/global/loading-button"
 import { toSlug } from "@/lib/slug"
 
 export default function ModalCreateBoard({ open, onOpenChange, onSave, saving }: { open: boolean; onOpenChange: (v: boolean) => void; onSave: (params: { name: string; slug?: string }) => void; saving?: boolean }) {
@@ -45,16 +45,17 @@ export default function ModalCreateBoard({ open, onOpenChange, onSave, saving }:
       </div>
  
       <div className="flex justify-end gap-2 mt-2.5">
-        <Button type="button" variant="card" onClick={() => onOpenChange(false)}>
+        <LoadingButton type="button" variant="card" onClick={() => onOpenChange(false)}>
           Cancel
-        </Button>
-        <Button
+        </LoadingButton>
+        <LoadingButton
           type="button"
+          loading={Boolean(saving)}
           onClick={() => onSave({ name: name.trim(), slug: slug ? toSlug(slug) : undefined })}
-          disabled={Boolean(saving) || !name.trim()}
+          disabled={!name.trim()}
         >
-          {saving ? "Creating..." : "Create"}
-        </Button>
+          Create
+        </LoadingButton>
       </div>
     </SettingsDialogShell>
   )

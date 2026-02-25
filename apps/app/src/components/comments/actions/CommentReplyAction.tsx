@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { Button } from "@featul/ui/components/button"
 import { cn } from "@featul/ui/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -12,11 +13,16 @@ interface CommentReplyButtonProps {
 
 export default function CommentReplyButton({ onClick, isActive, className }: CommentReplyButtonProps) {
   return (
-    <button
+    <Button
       onClick={onClick}
       type="button"
+      variant="card"
+      size="xs"
       className={cn(
-        "inline-flex items-center justify-center gap-1.5 text-xs py-2 px-2 transition-colors cursor-pointer font-medium min-w-[70px]",
+        "min-w-[72px] h-8 gap-1.5",
+        isActive
+          ? "text-destructive dark:text-destructive hover:text-destructive dark:hover:text-destructive"
+          : "text-accent hover:text-foreground",
         className
       )}
       aria-label={isActive ? "Cancel reply" : "Reply to comment"}
@@ -47,6 +53,6 @@ export default function CommentReplyButton({ onClick, isActive, className }: Com
           </motion.span>
         )}
       </AnimatePresence>
-    </button>
+    </Button>
   )
 }

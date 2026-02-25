@@ -86,7 +86,12 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
         <Button type="button" variant="card" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>
-        <LoadingButton type="button" onClick={onSubmit} loading={loading} disabled={!email.trim()}>
+        <LoadingButton
+          type="button"
+          onClick={onSubmit}
+          loading={loading}
+          disabled={!email.trim()}
+        >
           Send Invite
         </LoadingButton>
       </div>

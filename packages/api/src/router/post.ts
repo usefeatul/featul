@@ -1,5 +1,5 @@
 import { eq, and, sql, isNull, ilike, or, inArray } from "drizzle-orm"
-import { j, publicProcedure } from "../jstack"
+import { j, privateProcedure, publicProcedure } from "../jstack"
 import { vote, post, workspace, board, postTag, workspaceMember, postReport, postMerge, comment, activityLog, tag, user } from "@featul/db"
 import { votePostSchema, createPostSchema, updatePostSchema, byIdSchema, reportPostSchema, getSimilarSchema, mergePostSchema, mergeHerePostSchema, searchMergeCandidatesSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
@@ -7,12 +7,15 @@ import { auth } from "@featul/auth"
 import { headers } from "next/headers"
 import { mapPermissions } from "../shared/permissions"
 import { triggerPostWebhooks } from "../services/webhook"
+import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
+import { getRequestFingerprint } from "../shared/request-fingerprint"
 
 export function createPostRouter() {
   return j.router({
     create: publicProcedure
       .input(createPostSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw)
         const { title, content, image, workspaceSlug, boardSlug, fingerprint, roadmapStatus, tags } = input
 
         let userId: string | null = null
@@ -25,9 +28,13 @@ export function createPostRouter() {
           }
         } catch { }
 
+        const anonymousFingerprint = !userId
+          ? getRequestFingerprint(c.req.raw, fingerprint)
+          : undefined
+
         // Resolve Workspace
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, workspaceSlug))
           .limit(1)
@@ -35,18 +42,47 @@ export function createPostRouter() {
 
         // Resolve Board
         const [b] = await ctx.db
-          .select({ id: board.id, allowAnonymous: board.allowAnonymous })
+          .select({ id: board.id, allowAnonymous: board.allowAnonymous, isPublic: board.isPublic })
           .from(board)
           .where(and(eq(board.workspaceId, ws.id), eq(board.slug, boardSlug)))
           .limit(1)
         if (!b) throw new HTTPException(404, { message: "Board not found" })
 
-        // Check permissions
-        if (!userId) {
-          if (!b.allowAnonymous) {
-            throw new HTTPException(401, { message: "Anonymous posting is not allowed on this board" })
+        // Enforce server-side surface access:
+        // - private/workspace-only boards: active workspace members only
+        // - public boards: preserve anonymous + fingerprint rules
+        let isWorkspaceMember = false
+        if (userId) {
+          if (ws.ownerId === userId) {
+            isWorkspaceMember = true
+          } else {
+            const [member] = await ctx.db
+              .select({ id: workspaceMember.id })
+              .from(workspaceMember)
+              .where(
+                and(
+                  eq(workspaceMember.workspaceId, ws.id),
+                  eq(workspaceMember.userId, userId),
+                  eq(workspaceMember.isActive, true)
+                )
+              )
+              .limit(1)
+            isWorkspaceMember = Boolean(member?.id)
           }
-          if (!fingerprint) {
+        }
+
+        if (!b.isPublic) {
+          if (!userId) {
+            throw new HTTPException(401, { message: "Please sign in to submit a post in this workspace" })
+          }
+          if (!isWorkspaceMember) {
+            throw new HTTPException(403, { message: "Only workspace members can submit posts in this board" })
+          }
+        } else if (!userId) {
+          if (!b.allowAnonymous) {
+            throw new HTTPException(401, { message: "Please sign in to submit a post on this board" })
+          }
+          if (!anonymousFingerprint) {
             throw new HTTPException(400, { message: "Fingerprint required for anonymous posting" })
           }
         }
@@ -65,7 +101,7 @@ export function createPostRouter() {
           slug,
           authorId: userId || null,
           isAnonymous: !userId,
-          metadata: !userId ? { fingerprint } : undefined,
+          metadata: !userId ? { fingerprint: anonymousFingerprint } : undefined,
           roadmapStatus: roadmapStatus || "pending",
         }).returning()
 
@@ -101,7 +137,7 @@ export function createPostRouter() {
         await ctx.db.insert(vote).values({
           postId: newPost.id,
           userId: userId || null,
-          fingerprint: userId ? null : fingerprint || null,
+          fingerprint: userId ? null : anonymousFingerprint || null,
           type: 'upvote'
         })
 
@@ -168,24 +204,11 @@ export function createPostRouter() {
         return c.superjson({ post: newPost })
       }),
 
-    update: publicProcedure
+    update: privateProcedure
       .input(updatePostSchema)
       .post(async ({ ctx, input, c }) => {
         const { postId, title, content, image, boardSlug, roadmapStatus, tags } = input
-
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
-
-        if (!userId) {
-          throw new HTTPException(401, { message: "Unauthorized" })
-        }
+        const userId = ctx.session.user.id
 
         // Get existing post
         const [existingPost] = await ctx.db
@@ -377,24 +400,11 @@ export function createPostRouter() {
         return c.superjson({ post: updatedPost })
       }),
 
-    delete: publicProcedure
+    delete: privateProcedure
       .input(byIdSchema)
       .post(async ({ ctx, input, c }) => {
         const { postId } = input
-
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
-
-        if (!userId) {
-          throw new HTTPException(401, { message: "Unauthorized" })
-        }
+        const userId = ctx.session.user.id
 
         // Get existing post
         const [existingPost] = await ctx.db
@@ -477,24 +487,11 @@ export function createPostRouter() {
         return c.superjson({ success: true })
       }),
 
-    report: publicProcedure
+    report: privateProcedure
       .input(reportPostSchema)
       .post(async ({ ctx, input, c }) => {
         const { postId, reason, description } = input
-
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
-
-        if (!userId) {
-          throw new HTTPException(401, { message: "Unauthorized" })
-        }
+        const userId = ctx.session.user.id
 
         // Check if post exists
         const [existingPost] = await ctx.db
@@ -594,6 +591,7 @@ export function createPostRouter() {
     vote: publicProcedure
       .input(votePostSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw)
         const { postId, fingerprint } = input
 
         let userId: string | null = null
@@ -606,7 +604,11 @@ export function createPostRouter() {
           }
         } catch { }
 
-        if (!userId && !fingerprint) {
+        const effectiveFingerprint = !userId
+          ? getRequestFingerprint(c.req.raw, fingerprint)
+          : undefined
+
+        if (!userId && !effectiveFingerprint) {
           throw new HTTPException(400, { message: "Missing identification" })
         }
 
@@ -640,11 +642,11 @@ export function createPostRouter() {
             .from(vote)
             .where(and(eq(vote.postId, postId), eq(vote.userId, userId)))
             .limit(1)
-        } else if (fingerprint) {
+        } else if (effectiveFingerprint) {
           [existingVote] = await ctx.db
             .select()
             .from(vote)
-            .where(and(eq(vote.postId, postId), isNull(vote.userId), eq(vote.fingerprint, fingerprint)))
+            .where(and(eq(vote.postId, postId), isNull(vote.userId), eq(vote.fingerprint, effectiveFingerprint)))
             .limit(1)
         }
 
@@ -671,7 +673,7 @@ export function createPostRouter() {
               title: targetPost.title,
               metadata: {
                 roadmapStatus: targetPost.roadmapStatus,
-                fingerprint: userId ? null : fingerprint || null,
+                fingerprint: userId ? null : effectiveFingerprint || null,
               },
             })
           }
@@ -682,7 +684,7 @@ export function createPostRouter() {
           await ctx.db.insert(vote).values({
             postId,
             userId: userId || null,
-            fingerprint: userId ? null : fingerprint || null,
+            fingerprint: userId ? null : effectiveFingerprint || null,
             type: 'upvote'
           })
 
@@ -705,7 +707,7 @@ export function createPostRouter() {
               title: targetPost.title,
               metadata: {
                 roadmapStatus: targetPost.roadmapStatus,
-                fingerprint: userId ? null : fingerprint || null,
+                fingerprint: userId ? null : effectiveFingerprint || null,
               },
             })
           }
@@ -813,24 +815,11 @@ export function createPostRouter() {
         return c.superjson({ hasVoted })
       }),
 
-    merge: publicProcedure
+    merge: privateProcedure
       .input(mergePostSchema)
       .post(async ({ ctx, input, c }) => {
         const { postId, targetPostId, mergeType, reason } = input
-
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
-
-        if (!userId) {
-          throw new HTTPException(401, { message: "Unauthorized" })
-        }
+        const userId = ctx.session.user.id
 
         // Get both posts
         const [sourcePost] = await ctx.db
@@ -998,24 +987,11 @@ export function createPostRouter() {
         return c.superjson({ success: true, merge: mergeRecord })
       }),
 
-    mergeHere: publicProcedure
+    mergeHere: privateProcedure
       .input(mergeHerePostSchema)
       .post(async ({ ctx, input, c }) => {
         const { postId, sourcePostIds, reason } = input
-
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
-
-        if (!userId) {
-          throw new HTTPException(401, { message: "Unauthorized" })
-        }
+        const userId = ctx.session.user.id
 
         // Resolve target post
         const [targetPost] = await ctx.db

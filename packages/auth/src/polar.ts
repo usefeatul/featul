@@ -38,10 +38,6 @@ const PLAN_ALIASES: Record<string, PlanTier> = {
   free: "free",
   starter: "starter",
   professional: "professional",
-  pro: "starter",
-  growth: "starter",
-  enterprise: "professional",
-  scale: "professional",
 }
 
 function normalizePlan(input: unknown): PlanTier | null {

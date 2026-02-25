@@ -52,13 +52,15 @@ export default function Timezone({
   if (!timezone || !time) return null;
 
   return (
-    <div className={cn("px-3", className)}>
-      <div className="flex items-center justify-between">
+    <div className={cn(className)}>
+      <div className="flex items-center justify-between rounded-md px-3 py-2">
         <span className="text-xs text-accent">TIME</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="rounded-sm bg-card dark:bg-black/40 px-1.5 py-0.5 border border-border/80 ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:ring-offset-black text-xs font-light text-foreground">{time}</span>
+              <span className="ml-auto rounded-sm border border-border bg-card px-1.5 py-0.5 text-xs font-extralight tabular-nums text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:bg-black/50 dark:text-accent dark:ring-offset-black">
+                {time}
+              </span>
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={6} align="end">
               <span className="font-bold">Current workspace time</span> in the workspace's timezone. All dates, ranges, and graphs you see are matched to this timezone.

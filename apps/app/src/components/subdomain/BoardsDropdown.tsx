@@ -30,7 +30,7 @@ export function BoardsDropdown({ slug, initialBoards, selectedBoard }: { slug: s
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="nav" className="justify-start gap-2 dark:bg-black/40" disabled={loading}>
+        <Button type="button" variant="nav" className="justify-start gap-2" disabled={loading}>
           <ListIcon className="size-4" />
           <span className="truncate">{label}</span>
           <span className="ml-auto" />

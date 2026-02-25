@@ -87,6 +87,7 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                 title="Danger Zone"
                 description="Delete this workspace permanently. This action cannot be undone and will remove all content."
                 buttonLabel="Delete Workspace"
+                buttonVariant="destructive"
                 onAction={() => setOpen(true)}
                 disabled={isPending || !slug}
             />

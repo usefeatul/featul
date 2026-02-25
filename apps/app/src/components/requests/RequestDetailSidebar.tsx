@@ -15,7 +15,7 @@ import FlagsPicker from "./meta/FlagsPicker";
 import TagsPicker from "./meta/TagsPicker";
 import StatusIcon from "./StatusIcon";
 import RoleBadge from "../global/RoleBadge";
-import type { RequestDetailData } from "./RequestDetail";
+import type { RequestDetailData } from "@/types/request";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { CircleQuestionMarkIcon } from "@featul/ui/icons/circle-question-mark";
 
@@ -199,7 +199,7 @@ export default function RequestDetailSidebar({
                     {tags.map((t) => (
                       <span
                         key={t.id}
-                        className="rounded-sm bg-green-100 px-1.5 py-0.5 text-xs text-green-700"
+                        className="inline-flex items-center rounded-md border border-primary/25 bg-primary/10 px-2 py-0.5 text-xs font-medium leading-5 text-primary"
                       >
                         {t.name}
                       </span>

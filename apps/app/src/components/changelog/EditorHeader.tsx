@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 // import { Switch } from "@featul/ui/components/switch"; 
-import { ArrowLeft, Loader2, Save, MoreHorizontal, FileText, CheckCircle } from "lucide-react";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { ArrowLeft, Save, MoreHorizontal, FileText, CheckCircle } from "lucide-react";
 import {
     Popover,
     PopoverContent,
@@ -47,7 +48,7 @@ export function EditorHeader({
                                 disabled={isSaving}
                                 className="gap-2 text-sm"
                             >
-                                {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                                {isSaving ? <LoaderIcon className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                                 Save Changes
                             </PopoverListItem>
 

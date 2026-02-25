@@ -11,6 +11,7 @@ import { getInitials, getPrivacySafeDisplayUser } from "@/utils/user-utils"
 import { statusLabel } from "@/lib/roadmap"
 import RoleBadge from "@/components/global/RoleBadge"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
+import { subdomainListItemClassName } from "./subdomainListItemStyles"
 
 function toPlain(s?: string | null): string {
   if (!s) return ""
@@ -46,7 +47,7 @@ function PostCardBase({
   const displayImage = displayUser.image
 
   return (
-    <div className="py-6 px-6 relative group overflow-hidden transition-colors hover:bg-background dark:hover:bg-background">
+    <div className={`${subdomainListItemClassName} relative group overflow-hidden`}>
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
         <span className="sr-only">View post</span>

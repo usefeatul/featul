@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import React from "react";
 import { notFound } from "next/navigation";
-import { Container } from "@/components/global/container";
+import ToolsPageShell from "@/components/tools/global/tool-shell";
 import {
   getCategoryBySlug,
   getToolBySlugs,
@@ -50,30 +50,24 @@ export default async function ToolPage({ params }: Props) {
   });
 
   return (
-    <main className="min-h-screen pt-16 bg-background">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-        <section className="py-12 sm:py-16" data-component="ToolDetail">
-          <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
-            {/* JSON-LD for SEO: FAQ and Breadcrumbs */}
-            <script
-              id="tool-faq-jsonld"
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-            />
-            <script
-              id="tool-breadcrumb-jsonld"
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify(breadcrumbSchema),
-              }}
-            />
-            {/* Breadcrumb removed for a cleaner tool detail page. */}
-            {/* Page-level title and description omitted to avoid duplication; the tool component provides its own content. */}
-            {ToolComponent ? <ToolComponent /> : <ToolTemplate tool={tool} />}
-          </div>
-        </section>
-      </Container>
-    </main>
+    <ToolsPageShell dataComponent="ToolDetail" mainClassName="min-h-screen pt-16 bg-background">
+      {/* JSON-LD for SEO: FAQ and Breadcrumbs */}
+      <script
+        id="tool-faq-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        id="tool-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
+        }}
+      />
+      {/* Breadcrumb removed for a cleaner tool detail page. */}
+      {/* Page-level title and description omitted to avoid duplication; the tool component provides its own content. */}
+      {ToolComponent ? <ToolComponent /> : <ToolTemplate tool={tool} />}
+    </ToolsPageShell>
   );
 }
 

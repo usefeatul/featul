@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation"
 import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "./SimilarPosts"
 import type { TagSummary, PostUser } from "@/types/post"
+import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
 
 export function CreatePostModal({
   open,
@@ -45,7 +46,7 @@ export function CreatePostModal({
     handleFileSelect,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug)
+  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
 
   const {
     title,
@@ -118,6 +119,13 @@ export function CreatePostModal({
     )
   }
 
+  const canSubmit = canSubmitPostForm({
+    title,
+    hasSelectedBoard: !!selectedBoard,
+    isPending,
+    uploadingImage,
+  })
+
   return (
     <SettingsDialogShell
       open={open}
@@ -152,7 +160,7 @@ export function CreatePostModal({
 
         <PostFooter
           isPending={isPending}
-          disabled={!title || !content || !selectedBoard || isPending || uploadingImage}
+          disabled={!canSubmit}
           uploadedImage={uploadedImage}
           uploadingImage={uploadingImage}
           fileInputRef={fileInputRef}

@@ -1,9 +1,10 @@
 import { useState, useRef } from "react"
 import { toast } from "sonner"
 import { getPostImageUploadUrl } from "@/lib/post-service"
+import { IMAGE_UPLOAD_CONTENT_TYPES, POST_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy"
 
-export const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"]
-export const MAX_IMAGE_SIZE = 5 * 1024 * 1024
+export const ALLOWED_IMAGE_TYPES: string[] = [...IMAGE_UPLOAD_CONTENT_TYPES]
+export const MAX_IMAGE_SIZE = POST_IMAGE_UPLOAD_MAX_BYTES
 
 export interface UploadedImage {
   url: string
@@ -17,6 +18,10 @@ export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageUpload = async (file: File) => {
+    if (!boardSlug) {
+      toast.error("Select a board before uploading an image.")
+      return
+    }
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       toast.error("Unsupported file type. Please use PNG, JPEG, WebP, or GIF.")
       return
@@ -34,6 +39,7 @@ export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
         workspaceSlug,
         file.name,
         file.type,
+        file.size,
         boardSlug
       )
 

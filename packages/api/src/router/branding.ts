@@ -38,7 +38,7 @@ export function createBrandingRouter() {
       .input(updateBrandingInputSchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBrandingManagerBySlug(ctx, input.slug)
-        const limits = getPlanLimits(ws.plan as "free" | "pro" | "enterprise")
+        const limits = getPlanLimits(String(ws.plan || "free"))
 
         const update: Record<string, unknown> = {}
         if (!limits.allowBranding) {

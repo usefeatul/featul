@@ -7,17 +7,26 @@ import { toast } from "sonner"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import { useRouter } from "next/navigation"
 import type { BoardSummary, PostUser } from "@/types/post"
+import { getPostTitleMinError } from "@/hooks/postSubmitGuard"
+import { readApiErrorMessage } from "@/hooks/postApiError"
 
 interface UsePostSubmissionProps {
   workspaceSlug: string
   onSuccess: () => void
   onCreated?: (post: { slug: string }) => void
   skipDefaultRedirect?: boolean
+  onAuthRequired?: () => void
 }
 
-type BoardRef = Pick<BoardSummary, "slug">
+type BoardRef = Pick<BoardSummary, "slug" | "allowAnonymous">
 
-export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDefaultRedirect }: UsePostSubmissionProps) {
+export function usePostSubmission({
+  workspaceSlug,
+  onSuccess,
+  onCreated,
+  skipDefaultRedirect,
+  onAuthRequired,
+}: UsePostSubmissionProps) {
   const [isPending, startTransition] = useTransition()
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -31,21 +40,30 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
     roadmapStatus?: string,
     tags?: string[]
   ) => {
-    if (!title || !content || !selectedBoard) return
+    if (!selectedBoard) return
 
-    const MAX_TITLE_LENGTH = 100
-    if (title.length > MAX_TITLE_LENGTH) {
-      toast.error(`Title must be at most ${MAX_TITLE_LENGTH} characters`)
+    const normalizedTitle = title.trim()
+    const normalizedContent = content.trim()
+    const titleError = getPostTitleMinError(normalizedTitle)
+    if (titleError) {
+      toast.error(titleError)
       return
     }
 
-    const fingerprint = await getBrowserFingerprint()
+    const requiresSignIn = !user && selectedBoard.allowAnonymous === false
+    if (requiresSignIn) {
+      onAuthRequired?.()
+      toast.error("Please sign in to submit a post on this board")
+      return
+    }
+
+    const fingerprint = user ? undefined : await getBrowserFingerprint()
 
     startTransition(async () => {
       try {
         const res = await client.post.create.$post({
-          title,
-          content,
+          title: normalizedTitle,
+          content: normalizedContent,
           image: image || undefined,
           workspaceSlug,
           boardSlug: selectedBoard.slug,
@@ -75,11 +93,12 @@ export function usePostSubmission({ workspaceSlug, onSuccess, onCreated, skipDef
             router.push(`/board/p/${data.post.slug}`)
           }
         } else {
-          const err = await res.json()
           if (res.status === 401) {
-            toast.error("Anonymous posting is not allowed on this board")
+            onAuthRequired?.()
+            toast.error("Please sign in to submit a post on this board")
           } else {
-            toast.error((err as { message?: string })?.message || "Failed to submit post")
+            const message = await readApiErrorMessage(res, "Failed to submit post", "title")
+            toast.error(message)
           }
         }
       } catch (error) {

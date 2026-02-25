@@ -5,26 +5,21 @@
     "incremental": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "types": [
-      "@cloudflare/workers-types/2023-07-01"
-    ],
+    "types": ["@cloudflare/workers-types/2023-07-01"],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts",
     ".next/types/**/*.ts",
-    "**/*.d.ts",
-    ".next/dev/types/**/*.ts",
-    "next.config.ts"
+    "next.config.ts",
+    "sentry.server.config.ts",
+    "sentry.edge.config.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

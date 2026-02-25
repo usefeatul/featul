@@ -175,6 +175,7 @@ export function createBoardRouter() {
             isSystem: false,
             isPublic: input.isPublic ?? true,
             isVisible: true,
+            allowAnonymous: true,
           })
           .returning({ id: board.id, name: board.name, slug: board.slug, isPublic: board.isPublic })
 
@@ -375,7 +376,7 @@ export function createBoardRouter() {
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), sql`(${post.title} ilike ${wildcard} or ${post.content} ilike ${wildcard})`))
+          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(board.isPublic, true), sql`(${post.title} ilike ${wildcard} or ${post.content} ilike ${wildcard})`))
           .orderBy(sql`least(100, ${post.upvotes}) desc`, sql`${post.createdAt} desc`)
           .limit(15)
 
@@ -719,7 +720,7 @@ export function createBoardRouter() {
         const boardSlugs = (input.search ? [] : (input.boardSlugs || []).map((b: string) => String(b).trim().toLowerCase()).filter(Boolean))
         const tagSlugs = (input.tagSlugs || []).map((t: string) => String(t).trim().toLowerCase()).filter(Boolean)
 
-        const filters: SQLWrapper[] = [eq(board.workspaceId, ws.id), eq(board.isSystem, false)]
+        const filters: SQLWrapper[] = [eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(board.isPublic, true)]
         if (normalizedStatuses.length > 0) filters.push(inArray(post.roadmapStatus, normalizedStatuses))
         if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs))
         if ((input.search || '').trim()) {

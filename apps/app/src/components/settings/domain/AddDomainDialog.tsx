@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Input } from "@featul/ui/components/input"
-import { Button } from "@featul/ui/components/button"
+import { LoadingButton } from "@/components/global/loading-button"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import DomainIcon from "@featul/ui/icons/domain"
 
@@ -44,12 +44,16 @@ export default function AddDomainDialog({
         </div>
       </div>
       <div className="flex justify-end gap-2 pt-3">
-        <Button variant="card" onClick={() => onOpenChange(false)}>
+        <LoadingButton variant="card" onClick={() => onOpenChange(false)}>
           Cancel
-        </Button>
-        <Button variant="default" onClick={() => onSave(value)} disabled={Boolean(saving)}>
-          {saving ? "Saving..." : "Save"}
-        </Button>
+        </LoadingButton>
+        <LoadingButton
+          loading={Boolean(saving)}
+          onClick={() => onSave(value)}
+          disabled={Boolean(saving)}
+        >
+          Save
+        </LoadingButton>
       </div>
     </SettingsDialogShell>
   )

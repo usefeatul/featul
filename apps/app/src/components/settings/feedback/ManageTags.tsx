@@ -2,10 +2,10 @@
 
 import React from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
-import { Button } from "@featul/ui/components/button"
 import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
+import { LoadingButton } from "@/components/global/loading-button"
 import PlanNotice from "../global/PlanNotice"
 import ModalCreateTag from "./ModalCreateTag"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
@@ -76,13 +76,18 @@ export default function ManageTags({
             ) : (
               (tags || []).map((t) => (
                 <TableRow key={t.id}>
-                  <TableCell className="px-4 text-sm">{t.name}</TableCell>
+                  <TableCell className="px-4 text-sm">
+                    <span className="inline-flex items-center gap-2">
+                      <span className="inline-block size-3 rounded-full bg-primary" />
+                      <span>{t.name}</span>
+                    </span>
+                  </TableCell>
                   <TableCell className="px-2 text-center">
                     <Popover open={actionOpenId === t.id} onOpenChange={(v) => setActionOpenId(v ? String(t.id) : null)}>
                       <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="sm" aria-label="More" className="px-2">
+                        <LoadingButton type="button" variant="nav" size="sm" aria-label="More" className="px-2">
                           <MoreVertical className="size-4 opacity-70" />
-                        </Button>
+                        </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
@@ -113,8 +118,8 @@ export default function ManageTags({
         </Table>
       </div>
       <PlanNotice slug={slug} feature="tags" plan={plan} tagsCount={(tags || []).length} />
-      <div>
-        <Button type="button" variant="quiet" onClick={() => setCreateOpen(true)}>Create tag</Button>
+      <div className="mt-2 flex items-center justify-start">
+        <LoadingButton type="button" onClick={() => setCreateOpen(true)}>Create tag</LoadingButton>
       </div>
 
       <ModalCreateTag

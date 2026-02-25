@@ -1,7 +1,6 @@
 export const revalidate = 30
 
 import type { Metadata } from "next"
-import DomainPageLayout from "@/components/subdomain/DomainPageLayout"
 import DomainRoadmapItem from "@/components/subdomain/DomainRoadmapItem"
 import { getPlannedRoadmapPosts, getSidebarPositionBySlug, getWorkspacePostsCount } from "@/lib/workspace"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
@@ -10,6 +9,10 @@ import { SortPopover } from "@/components/subdomain/SortPopover"
 import { SearchAction } from "@/components/subdomain/SearchAction"
 import { SubmitIdeaCard } from "@/components/subdomain/SubmitIdeaCard"
 import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPagination"
+import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
+import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
+import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
+import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -36,53 +39,56 @@ export default async function RoadmapPage({
   const totalCount = await getWorkspacePostsCount(slug, { statuses: ["planned"], publicOnly: true })
   const sidebarPosition = await getSidebarPositionBySlug(slug)
   return (
-    <DomainPageLayout subdomain={subdomain} slug={slug} sidebarPosition={sidebarPosition}>
+    <SubdomainListLayout
+      subdomain={subdomain}
+      slug={slug}
+      sidebarPosition={sidebarPosition}
+      sortBasePath="/roadmap"
+      sortKeepParams={["page"]}
+    >
       <div>
-        {sidebarPosition === "left" ? (
-          <>
-            <div className="hidden lg:flex items-center justify-end mb-5">
-              <h1 className="text-lg font-semibold">Roadmap</h1>
-            </div>
-            <div className="lg:hidden mb-4">
-              <div className="flex items-center justify-end">
-                <h1 className="text-lg font-semibold">Roadmap</h1>
-              </div>
-              <div className="mt-2 inline-flex items-center gap-1">
-                <SortPopover subdomain={subdomain} slug={slug} />
-                <SearchAction slug={slug} />
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="lg:hidden flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-2">
-                <SortPopover subdomain={subdomain} slug={slug} />
-                <SearchAction slug={slug} />
-              </span>
-            </div>
-            <h1 className="text-lg font-semibold mb-5">Roadmap</h1>
-          </>
-        )}
+        <SubdomainListHeader
+          title="Roadmap"
+          sidebarPosition={sidebarPosition}
+          mobileTitlePosition={sidebarPosition === "left" ? "top" : "bottom"}
+          breakpoint="lg"
+          mobileActions={
+            <>
+              <SortPopover
+                subdomain={subdomain}
+                slug={slug}
+                basePath="/roadmap"
+                keepParams={["page"]}
+              />
+              <SearchAction slug={slug} />
+            </>
+          }
+        />
         <div className="lg:hidden mb-4">
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
-        <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4">
+        <SubdomainListCard>
           {(items || []).length === 0 ? (
             <EmptyDomainPosts subdomain={subdomain} slug={slug} />
           ) : (
-            <div className="divide-y">
+            <SubdomainListItems>
               {(items || []).map((it) => (
                 <DomainRoadmapItem
                   key={it.id}
                   item={{ id: it.id, title: it.title, slug: it.slug, roadmapStatus: it.roadmapStatus, content: it.content, boardSlug: it.boardSlug }}
                 />
               ))}
-            </div>
+            </SubdomainListItems>
           )}
-        </div>
-        <PublicRequestPagination page={page} pageSize={PAGE_SIZE} totalCount={totalCount} />
+        </SubdomainListCard>
+        <PublicRequestPagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          totalCount={totalCount}
+          basePath="/roadmap"
+          keepParams={["order"]}
+        />
       </div>
-    </DomainPageLayout>
+    </SubdomainListLayout>
   )
 }

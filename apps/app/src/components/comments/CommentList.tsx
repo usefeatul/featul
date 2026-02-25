@@ -1,5 +1,5 @@
 import React from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import CommentForm from "./CommentForm"
 import CommentThread from "./CommentThread"
@@ -7,11 +7,20 @@ import { useSession } from "@featul/auth/client"
 import type { CommentData } from "../../types/comment"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import { useEffect, useState } from "react"
+import CommentsDisabledState from "./CommentsDisabledState"
+import {
+  getCommentsQueryKey,
+  toCommentListResponse,
+  type CommentListResponse,
+  type CommentSurface,
+} from "@/lib/comment-shared"
 
 interface CommentListProps {
   postId: string
   initialCount?: number
   workspaceSlug?: string
+  surface?: CommentSurface
+  allowComments?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
   hidePublicMemberIdentity?: boolean
@@ -21,12 +30,13 @@ export default function CommentList({
   postId,
   initialCount = 0,
   workspaceSlug,
+  surface = "workspace",
+  allowComments = true,
   initialComments,
   initialCollapsedIds,
   hidePublicMemberIdentity,
 }: CommentListProps) {
-  // const queryClient = useQueryClient();
-  const { data: session } = useSession() as any
+  const { data: session } = useSession()
   const currentUserId = session?.user?.id || null
   const [fingerprint, setFingerprint] = useState<string | null>(null)
 
@@ -34,24 +44,20 @@ export default function CommentList({
     getBrowserFingerprint().then(setFingerprint)
   }, [])
 
-  const queryKey = ["comments", postId]
+  const queryKey = getCommentsQueryKey(postId, surface)
 
-  const {
-    data: commentsData,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useQuery({
+  const { data: commentsData, isLoading, refetch } = useQuery<CommentListResponse>({
     queryKey,
     queryFn: async () => {
       const res = await client.comment.list.$get({
         postId,
         fingerprint: fingerprint || undefined,
+        surface,
       })
       if (!res.ok) {
         throw new Error("Failed to fetch comments")
       }
-      return await res.json()
+      return toCommentListResponse(await res.json())
     },
     staleTime: 30_000,
     gcTime: 300_000,
@@ -59,6 +65,7 @@ export default function CommentList({
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     initialData: initialComments ? { comments: initialComments } : undefined,
+    enabled: allowComments,
   })
 
   const comments = commentsData?.comments || []
@@ -68,13 +75,18 @@ export default function CommentList({
     refetch()
   }
 
+  if (!allowComments) {
+    return <CommentsDisabledState />
+  }
+
   return (
     <div className="space-y-4">
-      <div className="rounded-md  border bg-card p-3.5">
+      <div className="rounded-md border bg-background dark:bg-background p-3.5">
         <CommentForm
           postId={postId}
           onSuccess={handleCommentSuccess}
           workspaceSlug={workspaceSlug}
+          surface={surface}
         />
       </div>
       {commentCount === 0 && !isLoading ? (
@@ -92,6 +104,7 @@ export default function CommentList({
               currentUserId={currentUserId}
               onUpdate={handleCommentSuccess}
               workspaceSlug={workspaceSlug}
+              surface={surface}
               initialCollapsedIds={initialCollapsedIds}
               hidePublicMemberIdentity={hidePublicMemberIdentity}
             />

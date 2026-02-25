@@ -6,15 +6,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@featul/ui/components/popover";
+import { ImageIcon } from "@featul/ui/icons/image";
 import { cn } from "@featul/ui/lib/utils";
 import type { NodeViewProps } from "@tiptap/core";
-import { NodeViewWrapper } from "@tiptap/react";
-import { ImageIcon } from "@featul/ui/icons/image";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { EditorNodeViewWrapper } from "../../components/shared/node-view-wrapper";
 
 export const FigureView = ({
   node,
   updateAttributes,
+  editor,
   selected,
 }: NodeViewProps) => {
   const { src, alt, caption, width, align } = node.attrs as {
@@ -29,10 +30,11 @@ export const FigureView = ({
   const [captionValue, setCaptionValue] = useState(caption || "");
   const [widthValue, setWidthValue] = useState(width || "100");
   const [alignValue, setAlignValue] = useState<"left" | "center" | "right">(
-    align || "center"
+    align || "center",
   );
   const [isResizing, setIsResizing] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const isEditable = editor.isEditable;
   const figureRef = useRef<HTMLElement>(null);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
@@ -52,33 +54,33 @@ export const FigureView = ({
 
   // Close popover when node is deselected
   useEffect(() => {
-    if (!selected) {
+    if (!selected || !isEditable) {
       setIsPopoverOpen(false);
     }
-  }, [selected]);
+  }, [selected, isEditable]);
 
   // Handle image click to toggle popover
   const handleImageClick = useCallback(
     (e: React.MouseEvent) => {
-      if (selected) {
+      if (isEditable && selected) {
         e.preventDefault();
         e.stopPropagation();
         setIsPopoverOpen((prev) => !prev);
       }
     },
-    [selected]
+    [isEditable, selected],
   );
 
   // Handle keyboard events for accessibility
   const handleImageKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (selected && (e.key === "Enter" || e.key === " ")) {
+      if (isEditable && selected && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault();
         e.stopPropagation();
         setIsPopoverOpen((prev) => !prev);
       }
     },
-    [selected]
+    [isEditable, selected],
   );
 
   const handleAltChange = useCallback(
@@ -87,7 +89,7 @@ export const FigureView = ({
       setAltValue(newAlt);
       updateAttributes({ alt: newAlt });
     },
-    [updateAttributes]
+    [updateAttributes],
   );
 
   const handleCaptionChange = useCallback(
@@ -96,7 +98,7 @@ export const FigureView = ({
       setCaptionValue(newCaption);
       updateAttributes({ caption: newCaption });
     },
-    [updateAttributes]
+    [updateAttributes],
   );
 
   const handleWidthChange = useCallback(
@@ -115,7 +117,7 @@ export const FigureView = ({
         updateAttributes({ width: newWidth });
       }
     },
-    [updateAttributes]
+    [updateAttributes],
   );
 
   const handleWidthBlur = useCallback(() => {
@@ -163,7 +165,7 @@ export const FigureView = ({
         updateAttributes({ align: newAlign });
       }, 0);
     },
-    [updateAttributes]
+    [updateAttributes],
   );
 
   // Resize handle drag handlers
@@ -176,7 +178,7 @@ export const FigureView = ({
       const currentWidth = Number.parseInt(widthValue, 10) || 100;
       startWidthRef.current = currentWidth;
     },
-    [widthValue]
+    [widthValue],
   );
 
   useEffect(() => {
@@ -193,7 +195,7 @@ export const FigureView = ({
       const deltaPercent = (deltaX / containerWidth) * 100;
       const newWidth = Math.max(
         10,
-        Math.min(100, startWidthRef.current + deltaPercent)
+        Math.min(100, startWidthRef.current + deltaPercent),
       );
 
       const roundedWidth = Math.round(newWidth);
@@ -222,23 +224,32 @@ export const FigureView = ({
   };
 
   return (
-    <NodeViewWrapper className="my-5" data-drag-handle>
-      <Popover modal onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
+    <EditorNodeViewWrapper className="featul-figure-node py-4" data-drag-handle>
+      <Popover
+        modal
+        onOpenChange={(open) => {
+          if (isEditable) {
+            setIsPopoverOpen(open);
+          }
+        }}
+        open={isEditable ? isPopoverOpen : false}
+      >
         <PopoverTrigger asChild>
-          {/* biome-ignore lint: PopoverTrigger with asChild handles interactivity, figure is semantically correct for image with caption */}
           <figure
             aria-label="Image settings"
             className={cn(
-              "relative cursor-pointer",
-              selected && "outline-2 outline-primary outline-offset-2"
+              "relative",
+              isEditable && "cursor-pointer",
+              isEditable &&
+                selected &&
+                "outline-2 outline-primary outline-offset-2",
             )}
             onClick={handleImageClick}
             onKeyDown={handleImageKeyDown}
             ref={figureRef}
             style={alignmentStyles}
-            tabIndex={selected ? 0 : -1}
+            tabIndex={isEditable && selected ? 0 : -1}
           >
-            {/* biome-ignore lint: Tiptap NodeView requires standard img element */}
             <img
               alt={altValue}
               className="h-auto w-full rounded-md  border border-muted"
@@ -246,7 +257,7 @@ export const FigureView = ({
             />
 
             {/* Resize handles - only shown when selected */}
-            {selected && (
+            {isEditable && selected && (
               <>
                 {/* Left handle */}
                 <button
@@ -274,104 +285,117 @@ export const FigureView = ({
           </figure>
         </PopoverTrigger>
 
-        {/* Toolbar in Popover - only shown when selected */}
-        <PopoverContent
-          align="start"
-          className="p-1 bg-muted dark:bg-black/40 rounded-2xl gap-1 w-80 shadow-none border-none"
-          onOpenAutoFocus={(event) => event.preventDefault()}
-          side="right"
-          sideOffset={18}
-        >
-          <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
-            <div className="flex items-center gap-2 text-sm font-normal">
-              <ImageIcon className="size-3.5 text-primary" />
-              Image Settings
-            </div>
-          </div>
-
-          <div className="bg-card rounded-lg p-3 dark:bg-black border border-border flex flex-col gap-3">
-            {/* Width Controls - Only percent for now */}
-            <div className="space-y-1">
-              <Label className="font-normal text-xs text-muted-foreground" htmlFor={widthId}>
-                Width (%)
-              </Label>
-              <Input
-                className="h-8 text-sm placeholder:text-muted-foreground"
-                id={widthId}
-                onBlur={handleWidthBlur}
-                onChange={handleWidthChange}
-                placeholder="100"
-                type="text"
-                value={widthValue}
-              />
-            </div>
-
-            {/* Alignment Controls */}
-            <div className="space-y-1">
-              <Label className="font-normal text-xs text-muted-foreground">Alignment</Label>
-              <div className="grid grid-cols-3 gap-1.5">
-                <Button
-                  className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
-                  data-active={alignValue === "left"}
-                  onClick={() => handleAlignChange("left")}
-                  type="button"
-                  variant="card"
-                  size="sm"
-                >
-                  Left
-                </Button>
-                <Button
-                  className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
-                  data-active={alignValue === "center"}
-                  onClick={() => handleAlignChange("center")}
-                  type="button"
-                  variant="card"
-                  size="sm"
-                >
-                  Center
-                </Button>
-                <Button
-                  className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
-                  data-active={alignValue === "right"}
-                  onClick={() => handleAlignChange("right")}
-                  type="button"
-                  variant="card"
-                  size="sm"
-                >
-                  Right
-                </Button>
+        {/* Toolbar in Popover - only shown in editable mode */}
+        {isEditable && (
+          <PopoverContent
+            align="start"
+            className="p-1 bg-muted dark:bg-black/40 rounded-2xl gap-1 w-80 shadow-none border-none"
+            onOpenAutoFocus={(event) => event.preventDefault()}
+            side="right"
+            sideOffset={18}
+          >
+            <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
+              <div className="flex items-center gap-2 text-sm font-normal">
+                <ImageIcon className="size-3.5 text-primary" />
+                Image Settings
               </div>
             </div>
 
-            <div className="space-y-1">
-              <Label className="font-normal text-xs text-muted-foreground" htmlFor={altId}>
-                Alt Text
-              </Label>
-              <Input
-                className="h-8 text-sm placeholder:text-muted-foreground"
-                id={altId}
-                onChange={handleAltChange}
-                placeholder="Describe the image..."
-                type="text"
-                value={altValue}
-              />
+            <div className="bg-card rounded-xl p-3 dark:bg-black border border-border flex flex-col gap-3">
+              {/* Width Controls - Only percent for now */}
+              <div className="space-y-1">
+                <Label
+                  className="font-normal text-xs text-muted-foreground"
+                  htmlFor={widthId}
+                >
+                  Width (%)
+                </Label>
+                <Input
+                  className="h-8 text-sm placeholder:text-muted-foreground"
+                  id={widthId}
+                  onBlur={handleWidthBlur}
+                  onChange={handleWidthChange}
+                  placeholder="100"
+                  type="text"
+                  value={widthValue}
+                />
+              </div>
+
+              {/* Alignment Controls */}
+              <div className="space-y-1">
+                <Label className="font-normal text-xs text-muted-foreground">
+                  Alignment
+                </Label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <Button
+                    className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                    data-active={alignValue === "left"}
+                    onClick={() => handleAlignChange("left")}
+                    type="button"
+                    variant="card"
+                    size="sm"
+                  >
+                    Left
+                  </Button>
+                  <Button
+                    className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                    data-active={alignValue === "center"}
+                    onClick={() => handleAlignChange("center")}
+                    type="button"
+                    variant="card"
+                    size="sm"
+                  >
+                    Center
+                  </Button>
+                  <Button
+                    className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                    data-active={alignValue === "right"}
+                    onClick={() => handleAlignChange("right")}
+                    type="button"
+                    variant="card"
+                    size="sm"
+                  >
+                    Right
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label
+                  className="font-normal text-xs text-muted-foreground"
+                  htmlFor={altId}
+                >
+                  Alt Text
+                </Label>
+                <Input
+                  className="h-8 text-sm placeholder:text-muted-foreground"
+                  id={altId}
+                  onChange={handleAltChange}
+                  placeholder="Describe the image..."
+                  type="text"
+                  value={altValue}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label
+                  className="font-normal text-xs text-muted-foreground"
+                  htmlFor={captionId}
+                >
+                  Caption
+                </Label>
+                <Input
+                  className="h-8 text-sm placeholder:text-muted-foreground"
+                  id={captionId}
+                  onChange={handleCaptionChange}
+                  placeholder="Add a caption..."
+                  type="text"
+                  value={captionValue}
+                />
+              </div>
             </div>
-            <div className="space-y-1">
-              <Label className="font-normal text-xs text-muted-foreground" htmlFor={captionId}>
-                Caption
-              </Label>
-              <Input
-                className="h-8 text-sm placeholder:text-muted-foreground"
-                id={captionId}
-                onChange={handleCaptionChange}
-                placeholder="Add a caption..."
-                type="text"
-                value={captionValue}
-              />
-            </div>
-          </div>
-        </PopoverContent>
+          </PopoverContent>
+        )}
       </Popover>
-    </NodeViewWrapper>
+    </EditorNodeViewWrapper>
   );
 };

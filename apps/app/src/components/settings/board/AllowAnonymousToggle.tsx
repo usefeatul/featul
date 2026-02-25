@@ -14,7 +14,10 @@ export default function AllowAnonymousToggle({
   const { value, onToggle } = useGlobalBoardToggle(
     slug,
     "allowAnonymous",
-    "Anonymous submissions setting updated",
+    (enabled) =>
+      enabled
+        ? "Anonymous submissions enabled."
+        : "Anonymous submissions disabled.",
     initialBoards
   )
 
@@ -22,7 +25,7 @@ export default function AllowAnonymousToggle({
     <div className="space-y-2">
       <div className="text-md font-medium">Allow Anonymous</div>
       <div className="text-sm text-accent">Let users submit feedback without logging in.</div>
-      <div className="rounded-md  border bg-card p-3 flex items-center justify-between">
+      <div className="bg-background flex items-center justify-between rounded-md border p-3">
         <div className="text-sm">Enable anonymous submissions</div>
         <Switch checked={value} onCheckedChange={onToggle} aria-label="Allow Anonymous" />
       </div>

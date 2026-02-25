@@ -23,15 +23,13 @@ import {
     checkVerificationOtp,
     resetPassword as resetPasswordOtp,
 } from "../../utils/otp-utils";
+import { normalizeInternalRedirectPath } from "@/utils/redirect-path";
 
 export default function SetPassword() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    // Validate redirect URL is internal only (security: prevent open redirects)
-    const rawRedirect = searchParams.get("redirect") || "/start";
-    const redirectUrl = rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
-        ? rawRedirect
-        : "/start";
+    const rawRedirect = searchParams.get("redirect") || "";
+    const redirectUrl = normalizeInternalRedirectPath(rawRedirect) || "/start";
     const [email, setEmail] = useState("");
     const [code, setCode] = useState("");
     const [password, setPassword] = useState("");

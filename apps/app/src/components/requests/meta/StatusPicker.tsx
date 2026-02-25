@@ -9,27 +9,24 @@ import { usePathname } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { getSlugFromPath } from "@/config/nav"
 import { cn } from "@featul/ui/lib/utils"
+import { normalizeRoadmapStatus, type RoadmapStatus } from "@/lib/roadmap"
 import StatusIcon from "../StatusIcon"
 
-const STATUSES = ["pending", "review", "planned", "progress", "completed", "closed"] as const
+const STATUSES: RoadmapStatus[] = ["pending", "review", "planned", "progress", "completed", "closed"]
 
-export default function StatusPicker({ postId, value, onChange, className }: { postId: string; value?: string; onChange: (v: string) => void; className?: string }) {
+export default function StatusPicker({ postId, value, onChange, className }: { postId: string; value?: string | null; onChange: (v: RoadmapStatus) => void; className?: string }) {
   const [open, setOpen] = React.useState(false)
   const [saving, setSaving] = React.useState(false)
   const pathname = usePathname() || "/"
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
   const queryClient = useQueryClient()
+  const currentStatus = normalizeRoadmapStatus(value || "pending")
 
-  const select = async (v: string) => {
+  const select = async (v: RoadmapStatus) => {
     if (saving) return
     setSaving(true)
-    const normalize = (s: string) => {
-      const raw = (s || "pending").trim().toLowerCase().replace(/[\s-]+/g, "")
-      const map: Record<string, string> = { pending:"pending", review:"review", inreviewing:"review", planned:"planned", progress:"progress", inprogress:"progress", completed:"completed", closed:"closed" }
-      return map[raw] || "pending"
-    }
-    const prevStatus = normalize(value || "pending")
-    const nextStatus = normalize(v || "pending")
+    const prevStatus = normalizeRoadmapStatus(value || "pending")
+    const nextStatus = normalizeRoadmapStatus(v)
     try {
       onChange(v)
       setOpen(false)
@@ -61,17 +58,17 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
             className
           )}
         >
-          <StatusIcon status={value || "pending"} className="size-4 mr-2" />
-          <span className="capitalize">{value || "pending"}</span>
+          <StatusIcon status={currentStatus} className="size-4 mr-2" />
+          <span className="capitalize">{currentStatus}</span>
           <DropdownIcon className="ml-1.5  size-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
           {STATUSES.map((s) => (
-            <PopoverListItem key={s} role="menuitemradio" aria-checked={(value || "").toLowerCase() === s} onClick={() => select(s)}>
+            <PopoverListItem key={s} role="menuitemradio" aria-checked={currentStatus === s} onClick={() => select(s)}>
               <span className="text-sm capitalize">{s.replace(/-/g, " ")}</span>
-              {(value || "").toLowerCase() === s ? <span className="ml-auto text-xs">✓</span> : null}
+              {currentStatus === s ? <span className="ml-auto text-xs">✓</span> : null}
             </PopoverListItem>
           ))}
         </PopoverList>

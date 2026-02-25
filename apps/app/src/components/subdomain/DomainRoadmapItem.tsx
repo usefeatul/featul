@@ -3,6 +3,7 @@
 import Link from "next/link"
 import StatusIcon from "@/components/requests/StatusIcon"
 import { statusLabel } from "@/lib/roadmap"
+import { subdomainListItemClassName } from "./subdomainListItemStyles"
 
 export type RoadmapItemData = {
   id: string
@@ -23,7 +24,7 @@ export default function DomainRoadmapItem({ item }: { item: RoadmapItemData & { 
     <Link
       href={href}
       aria-label={item.title}
-      className="block py-6 px-6 min-h-[140px] transition-colors hover:bg-background dark:hover:bg-background"
+      className={`${subdomainListItemClassName} block min-h-[140px]`}
     >
       <div className="flex items-start gap-3">
         <span className="text-lg font-semibold text-foreground flex-1">

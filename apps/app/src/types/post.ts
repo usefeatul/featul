@@ -2,6 +2,7 @@ export interface BoardSummary {
     id: string;
     name: string;
     slug: string;
+    allowAnonymous?: boolean;
 }
 
 export interface TagSummary {

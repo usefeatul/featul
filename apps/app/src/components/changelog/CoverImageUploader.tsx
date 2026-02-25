@@ -4,8 +4,10 @@ import { useCallback, useState } from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import { ImageIcon } from "@featul/ui/icons/image";
-import { X, Loader2 } from "lucide-react";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { X } from "lucide-react";
 import { toast } from "sonner";
+import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy";
 
 interface CoverImageUploaderProps {
     workspaceSlug: string;
@@ -21,12 +23,22 @@ export function CoverImageUploader({
     const [isUploading, setIsUploading] = useState(false);
 
     const handleUpload = useCallback(async (file: File) => {
+        if (!IMAGE_UPLOAD_CONTENT_TYPES.includes(file.type as (typeof IMAGE_UPLOAD_CONTENT_TYPES)[number])) {
+            toast.error("Unsupported file type. Please use PNG, JPEG, WebP, or GIF.");
+            return;
+        }
+        if (file.size > CHANGELOG_IMAGE_UPLOAD_MAX_BYTES) {
+            toast.error("Image too large. Maximum size is 5MB.");
+            return;
+        }
+
         setIsUploading(true);
         try {
             const res = await client.storage.getUploadUrl.$post({
                 slug: workspaceSlug,
                 fileName: file.name,
                 contentType: file.type,
+                fileSize: file.size,
                 folder: "changelog/covers",
             });
             const data = await res.json();
@@ -60,24 +72,23 @@ export function CoverImageUploader({
                     <label className="cursor-pointer">
                         <input
                             type="file"
-                            accept="image/*"
+                            accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
                             className="hidden"
                             onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) handleUpload(file);
                             }}
                         />
-                        <Button variant="secondary" size="sm" className="h-7 px-2 text-xs" asChild>
+                        <Button size="sm" className="h-7 px-2 text-xs" asChild>
                             <span>Change</span>
                         </Button>
                     </label>
                     <Button
-                        variant="secondary"
                         size="icon"
                         className="h-7 w-7"
                         onClick={() => onCoverImageChange(null)}
                     >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="size-3.5" />
                     </Button>
                 </div>
             </div>
@@ -88,7 +99,7 @@ export function CoverImageUploader({
         <label className="cursor-pointer">
             <input
                 type="file"
-                accept="image/*"
+                accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
                 className="hidden"
                 onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -97,7 +108,7 @@ export function CoverImageUploader({
             />
             <Button variant="card" size="icon" className="h-7 w-7" asChild disabled={isUploading}>
                 {isUploading ? (
-                    <span><Loader2 className="size-4 animate-spin" /></span>
+                    <span><LoaderIcon className="size-4 animate-spin" /></span>
                 ) : (
                     <span><ImageIcon className="text-muted-foreground size-4" /></span>
                 )}

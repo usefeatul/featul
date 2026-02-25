@@ -80,6 +80,10 @@ export default function BrandingSection({
   const queryClient = useQueryClient();
   const [plan, setPlan] = React.useState<PlanKey>(normalizePlan(initialPlan || "free"));
   const { loading: brandingAccessLoading, canEditBranding } = useCanEditBranding(slug);
+  const workspaceNameInputSize = Math.max(
+    4,
+    Math.min(15, Math.max(workspaceName.length, 1)),
+  );
 
   React.useEffect(() => {
     let mounted = true;
@@ -241,14 +245,15 @@ export default function BrandingSection({
 
   return (
     <SectionCard title="Branding" description="Change your brand settings.">
-      <div className="space-y-6 ">
+      <div className="space-y-6">
         <div className="flex items-center justify-between ">
           <div className="text-sm">Workspace Name</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <Input
               value={workspaceName}
               onChange={(e) => setWorkspaceName(e.target.value)}
-              className="h-9 w-[220px] text-right"
+              className="h-8 w-auto min-w-[4ch] px-2 text-right"
+              size={workspaceNameInputSize}
               maxLength={15}
             />
           </div>
@@ -319,10 +324,18 @@ export default function BrandingSection({
           </div>
         </div>
 
-        <PlanNotice slug={slug} feature="branding" plan={plan} />
-        <LoadingButton onClick={handleSave} loading={saving} disabled={loading || brandingAccessLoading || !canEditBranding}>
-          Save
-        </LoadingButton>
+        <div className="pt-2 space-y-2">
+          <PlanNotice slug={slug} feature="branding" plan={plan} />
+          <div className="mt-2 flex items-center justify-start">
+            <LoadingButton
+              onClick={handleSave}
+              loading={saving}
+              disabled={loading || brandingAccessLoading || !canEditBranding}
+            >
+              Save
+            </LoadingButton>
+          </div>
+        </div>
       </div>
 
     </SectionCard>

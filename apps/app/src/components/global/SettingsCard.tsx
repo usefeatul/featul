@@ -33,21 +33,21 @@ export default function SettingsCard({
   children,
 }: Props) {
   return (
-    <Card className="rounded-xl bg-muted/40 dark:bg-muted/20 overflow-hidden px-2 pt-2 pb-2 border border-border gap-0
+    <Card className="rounded-xl bg-background dark:bg-background overflow-hidden px-2 pt-2 pb-2 border border-border gap-0
     " variant="plain">
-      <div className="flex items-center justify-between py-2">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="flex items-center justify-center size-5 shrink-0">
             {icon}
           </div>
-          <span className="text-sm font-medium text-foreground leading-none mt-0.5">{title}</span>
+          <span className="mt-0.5 text-sm font-medium leading-none text-foreground">{title}</span>
           {isConnected && (
             <span className="text-xs px-2 py-0.5  rounded-md border border-border/80  bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
               Connected
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
           {children ? (
             children
           ) : (
@@ -84,12 +84,11 @@ export default function SettingsCard({
         </div>
       </div>
       {/* Description section */}
-      <div className="px-4 pt-3 pb-2 bg-card dark:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
-        <div className="text-sm text-accent leading-relaxed">
+      <div className="px-4 pt-3 pb-2 bg-card dark:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
+        <div className="text-sm text-accent leading-relaxed wrap-break-word">
           {description}
         </div>
       </div>
     </Card>
   );
 }
-

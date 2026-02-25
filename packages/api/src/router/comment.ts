@@ -13,7 +13,6 @@ import {
   activityLog,
 } from "@featul/db";
 import { auth } from "@featul/auth";
-import { headers } from "next/headers";
 import {
   createCommentInputSchema,
   updateCommentInputSchema,
@@ -27,6 +26,36 @@ import {
 } from "../validators/comment";
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
+import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
+
+async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
+  try {
+    const session = await auth.api.getSession({ headers: rawHeaders });
+    return session?.user?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+async function hasInternalCommentAccess({
+  userId,
+  workspaceOwnerId,
+  hasActiveMembership,
+}: {
+  userId: string | null;
+  workspaceOwnerId: string;
+  hasActiveMembership: (memberUserId: string) => Promise<boolean>;
+}): Promise<boolean> {
+  if (!userId) return false;
+  if (userId === workspaceOwnerId) return true;
+  return hasActiveMembership(userId);
+}
+
+function getFingerprintFromMetadata(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== "object") return null;
+  const value = (metadata as { fingerprint?: unknown }).fingerprint;
+  return typeof value === "string" && value ? value : null;
+}
 
 export function createCommentRouter() {
   return j.router({
@@ -34,7 +63,7 @@ export function createCommentRouter() {
     list: publicProcedure
       .input(listCommentsInputSchema)
       .get(async ({ ctx, input, c }) => {
-        const { postId, fingerprint } = input;
+        const { postId, fingerprint, surface } = input;
         const [targetPost] = await ctx.db
           .select({
             postId: post.id,
@@ -57,6 +86,28 @@ export function createCommentRouter() {
           return c.superjson({ comments: [] });
         }
 
+        const userId = await getSessionUserId(c.req.raw.headers);
+        const canViewInternal = await hasInternalCommentAccess({
+          userId,
+          workspaceOwnerId: targetPost.workspaceOwnerId,
+          hasActiveMembership: async (memberUserId) => {
+            const [membership] = await ctx.db
+              .select({ userId: workspaceMember.userId })
+              .from(workspaceMember)
+              .where(
+                and(
+                  eq(workspaceMember.workspaceId, targetPost.workspaceId),
+                  eq(workspaceMember.userId, memberUserId),
+                  eq(workspaceMember.isActive, true)
+                )
+              )
+              .limit(1);
+            return Boolean(membership?.userId);
+          },
+        });
+
+        const includeInternal = surface === "workspace" && canViewInternal;
+
         // Fetch all comments with author info and role
         const comments = await ctx.db
           .select({
@@ -66,7 +117,6 @@ export function createCommentRouter() {
             content: comment.content,
             authorId: comment.authorId,
             authorName: comment.authorName,
-            authorEmail: comment.authorEmail,
             isAnonymous: comment.isAnonymous,
             status: comment.status,
             upvotes: comment.upvotes,
@@ -74,6 +124,7 @@ export function createCommentRouter() {
             replyCount: comment.replyCount,
             depth: comment.depth,
             isPinned: comment.isPinned,
+            isInternal: comment.isInternal,
             isEdited: comment.isEdited,
             createdAt: comment.createdAt,
             updatedAt: comment.updatedAt,
@@ -99,26 +150,24 @@ export function createCommentRouter() {
             )
           )
           .where(
-            and(eq(comment.postId, postId), eq(comment.status, "published"))
+            includeInternal
+              ? and(eq(comment.postId, postId), eq(comment.status, "published"))
+              : and(
+                eq(comment.postId, postId),
+                eq(comment.status, "published"),
+                eq(comment.isInternal, false)
+              )
           )
           .orderBy(desc(comment.isPinned), desc(comment.createdAt));
 
         // Get user's votes if authenticated
         let userVotes = new Map<string, "upvote" | "downvote">();
-        let userId: string | null = null;
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          });
-          if (session?.user?.id) {
-            userId = session.user.id;
-            const votes = await ctx.db
-              .select({ commentId: commentReaction.commentId, type: commentReaction.type })
-              .from(commentReaction)
-              .where(eq(commentReaction.userId, userId));
-            votes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
-          }
-        } catch {
+        if (userId) {
+          const votes = await ctx.db
+            .select({ commentId: commentReaction.commentId, type: commentReaction.type })
+            .from(commentReaction)
+            .where(eq(commentReaction.userId, userId));
+          votes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
         }
         if (!userId && fingerprint) {
           const anonymousVotes = await ctx.db
@@ -137,25 +186,26 @@ export function createCommentRouter() {
           `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
             (seed || "anonymous").trim() || "anonymous"
           )}`;
-        const formattedComments = comments.map((c: any) => {
-          const isOwner = c.workspaceOwnerId === c.authorId;
-          let avatarSeed = c.authorName || c.authorEmail || c.authorId;
-          if (c.isAnonymous && c.metadata?.fingerprint) {
+        const formattedComments = comments.map((row: (typeof comments)[number]) => {
+          const isOwner = row.workspaceOwnerId === row.authorId;
+          let avatarSeed = row.authorName || row.authorId;
+          const fingerprintFromMetadata = getFingerprintFromMetadata(row.metadata);
+          if (row.isAnonymous && fingerprintFromMetadata) {
             avatarSeed = createHash("sha256")
-              .update(c.metadata.fingerprint)
+              .update(fingerprintFromMetadata)
               .digest("hex");
           }
 
           return {
-            ...c,
+            ...row,
             authorImage:
-              c.userImage ||
+              row.userImage ||
               toAvatar(avatarSeed),
-            authorName: c.userName || c.authorName || "Anonymous",
-            userVote: userVotes.get(c.id) || null,
-            role: isOwner ? null : c.memberRole || null, // null means owner (handled separately)
+            authorName: row.userName || row.authorName || "Anonymous",
+            userVote: userVotes.get(row.id) || null,
+            role: isOwner ? null : row.memberRole || null, // null means owner (handled separately)
             isOwner: Boolean(isOwner),
-            reportCount: c.reportCount ? Number(c.reportCount) : 0,
+            reportCount: row.reportCount ? Number(row.reportCount) : 0,
           };
         });
 
@@ -166,19 +216,10 @@ export function createCommentRouter() {
     create: publicProcedure
       .input(createCommentInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const { postId, content, parentId, metadata, fingerprint } = input;
+        enforceTrustedBrowserOrigin(c.req.raw);
+        const { postId, content, parentId, metadata, fingerprint, isInternal } = input;
 
-        let userId: string | null = null;
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          });
-          if (session?.user?.id) {
-            userId = session.user.id;
-          }
-        } catch {
-          // User is not authenticated
-        }
+        const userId = await getSessionUserId(c.req.raw.headers);
 
         const [targetPost] = await ctx.db
           .select({
@@ -187,8 +228,10 @@ export function createCommentRouter() {
             roadmapStatus: post.roadmapStatus,
             isLocked: post.isLocked,
             boardId: board.id,
+            boardIsPublic: board.isPublic,
             allowComments: board.allowComments,
             workspaceId: workspace.id,
+            workspaceOwnerId: workspace.ownerId,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
@@ -202,13 +245,43 @@ export function createCommentRouter() {
 
         if (!targetPost.allowComments) {
           throw new HTTPException(403, {
-            message: "Comments are disabled for this board",
+            message: "Comments are currently disabled on this board",
           });
         }
 
         if (targetPost.isLocked) {
           throw new HTTPException(403, { message: "This post is locked" });
         }
+
+        const canUseInternal = await hasInternalCommentAccess({
+          userId,
+          workspaceOwnerId: targetPost.workspaceOwnerId,
+          hasActiveMembership: async (memberUserId) => {
+            const [membership] = await ctx.db
+              .select({ userId: workspaceMember.userId })
+              .from(workspaceMember)
+              .where(
+                and(
+                  eq(workspaceMember.workspaceId, targetPost.workspaceId),
+                  eq(workspaceMember.userId, memberUserId),
+                  eq(workspaceMember.isActive, true)
+                )
+              )
+              .limit(1);
+            return Boolean(membership?.userId);
+          },
+        });
+
+        if (!targetPost.boardIsPublic) {
+          if (!userId) {
+            throw new HTTPException(401, { message: "Please sign in to comment in this workspace" });
+          }
+          if (!canUseInternal) {
+            throw new HTTPException(403, { message: "Only workspace members can comment in this board" });
+          }
+        }
+
+        let resolvedIsInternal = Boolean(isInternal);
 
         // Get user info if authenticated
         let authorName: string | null = null;
@@ -235,6 +308,7 @@ export function createCommentRouter() {
               id: comment.id,
               depth: comment.depth,
               postId: comment.postId,
+              isInternal: comment.isInternal,
             })
             .from(comment)
             .where(eq(comment.id, parentId))
@@ -253,6 +327,7 @@ export function createCommentRouter() {
           }
 
           depth = (parentComment.depth || 0) + 1;
+          resolvedIsInternal = resolvedIsInternal || Boolean(parentComment.isInternal);
 
           // Update parent comment reply count
           await ctx.db
@@ -261,6 +336,12 @@ export function createCommentRouter() {
               replyCount: sql`${comment.replyCount} + 1`,
             })
             .where(eq(comment.id, parentId));
+        }
+
+        if (resolvedIsInternal && !canUseInternal) {
+          throw new HTTPException(403, {
+            message: "Only workspace members can create internal comments",
+          });
         }
 
         const commentMetadata = {
@@ -279,6 +360,7 @@ export function createCommentRouter() {
             authorEmail,
             depth,
             status: "published",
+            isInternal: resolvedIsInternal,
             metadata: Object.keys(commentMetadata).length > 0 ? commentMetadata : null,
             isAnonymous: !userId,
           })
@@ -299,6 +381,7 @@ export function createCommentRouter() {
               roadmapStatus: targetPost.roadmapStatus,
               parentId: newComment.parentId,
               isAnonymous: !userId,
+              isInternal: resolvedIsInternal,
             },
           });
         }
@@ -369,7 +452,7 @@ export function createCommentRouter() {
               const nextMeta = {
                 ...(newComment.metadata || {}),
                 mentions: validNames,
-              } as any;
+              };
               await ctx.db
                 .update(comment)
                 .set({ metadata: nextMeta })
@@ -584,19 +667,10 @@ export function createCommentRouter() {
     vote: publicProcedure
       .input(voteCommentInputSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw);
         const { commentId, voteType, fingerprint } = input;
 
-        let userId: string | null = null;
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          });
-          if (session?.user?.id) {
-            userId = session.user.id;
-          }
-        } catch {
-          // User is not authenticated
-        }
+        const userId = await getSessionUserId(c.req.raw.headers);
 
         const [targetComment] = await ctx.db
           .select({

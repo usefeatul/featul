@@ -19,7 +19,7 @@ export default function Pricing() {
             </div>
 
           <div className="mt-12 md:mt-16">
-            {/* Top row: 3 cards (Free, Growth, Scale) */}
+            {/* Top row: 3 cards (Free, Starter, Professional) */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {topPlans.map((plan) => (
                   <Card key={plan.key} className="border border-border/60 bg-background shadow-none hover:border-primary/50 transition-colors">
@@ -29,7 +29,7 @@ export default function Pricing() {
                       <CardDescription className="mt-2 text-sm text-accent">{plan.note}</CardDescription>
                     </CardHeader>
                     <div className="border-y border-border/60 px-5 py-4">
-                      <Button asChild className="w-full" variant={plan.key === 'pro' ? 'default' : 'outline'}>
+                      <Button asChild className="w-full" variant={plan.key === 'professional' ? 'default' : 'outline'}>
                         <Link href={plan.href}>{plan.ctaLabel}</Link>
                       </Button>
                     </div>

@@ -12,6 +12,10 @@ import { usePostSubmission } from "../../hooks/usePostSubmission"
 import { usePostImageUpload } from "../../hooks/usePostImageUpload"
 import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "../post/SimilarPosts"
+import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
+import SubdomainAuthModal from "./SubdomainAuthModal"
+import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal"
+import { useCloseThenOpenAuth } from "@/hooks/useCloseThenOpenAuth"
 
 interface CreatePostModalProps {
   open: boolean
@@ -26,6 +30,20 @@ export default function CreatePostModal({
   workspaceSlug,
   boardSlug,
 }: CreatePostModalProps) {
+  const {
+    isOpen: isAuthOpen,
+    mode: authMode,
+    redirectTo: authRedirect,
+    setOpen: setAuthOpen,
+    setMode: setAuthMode,
+    openAuth,
+  } = useSubdomainAuthModal()
+
+  const { closeThenOpenAuth } = useCloseThenOpenAuth({
+    closeCurrent: () => onOpenChange(false),
+    openAuth,
+  })
+
   const { user, boards, selectedBoard, setSelectedBoard } = useCreatePostData({
     open,
     workspaceSlug,
@@ -40,7 +58,7 @@ export default function CreatePostModal({
     handleFileSelect,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug)
+  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
 
   const {
     title,
@@ -54,7 +72,8 @@ export default function CreatePostModal({
     onSuccess: () => {
       onOpenChange(false)
       setUploadedImage(null)
-    }
+    },
+    onAuthRequired: () => closeThenOpenAuth("sign-in"),
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,51 +89,67 @@ export default function CreatePostModal({
   })
 
   const initials = user?.name ? getInitials(user.name) : "?"
+  const canSubmit = canSubmitPostForm({
+    title,
+    hasSelectedBoard: !!selectedBoard,
+    isPending,
+    uploadingImage,
+  })
 
   return (
-    <SettingsDialogShell
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Create post"
-      // description="Share an idea or request"
-      width="widest"
-      offsetY="10%"
-      icon={<DocumentTextIcon className="size-3.5" />}
-    >
-      <form onSubmit={handleSubmit} className="flex flex-col h-full pb-3">
-        <PostHeader
-          user={user}
-          initials={initials}
-          boards={boards}
-          selectedBoard={selectedBoard}
-          onSelectBoard={setSelectedBoard}
-        />
+    <>
+      <SettingsDialogShell
+        open={open}
+        onOpenChange={onOpenChange}
+        title="Create post"
+        // description="Share an idea or request"
+        width="widest"
+        offsetY="10%"
+        icon={<DocumentTextIcon className="size-3.5" />}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col h-full pb-3">
+          <PostHeader
+            user={user}
+            initials={initials}
+            boards={boards}
+            selectedBoard={selectedBoard}
+            onSelectBoard={setSelectedBoard}
+          />
 
-        <PostContent
-          title={title}
-          setTitle={setTitle}
-          content={content}
-          setContent={setContent}
-          uploadedImage={uploadedImage}
-          uploadingImage={uploadingImage}
-          handleRemoveImage={handleRemoveImage}
-        />
+          <PostContent
+            title={title}
+            setTitle={setTitle}
+            content={content}
+            setContent={setContent}
+            uploadedImage={uploadedImage}
+            uploadingImage={uploadingImage}
+            handleRemoveImage={handleRemoveImage}
+          />
 
-        <PostFooter
-          isPending={isPending}
-          disabled={!title || !content || !selectedBoard || isPending || uploadingImage}
-          uploadedImage={uploadedImage}
-          uploadingImage={uploadingImage}
-          fileInputRef={fileInputRef}
-          handleFileSelect={handleFileSelect}
-          ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
-        />
+          <PostFooter
+            isPending={isPending}
+            disabled={!canSubmit}
+            uploadedImage={uploadedImage}
+            uploadingImage={uploadingImage}
+            fileInputRef={fileInputRef}
+            handleFileSelect={handleFileSelect}
+            ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
+          />
 
-        <SimilarPosts
-          posts={similarPosts}
-          onLinkClick={() => onOpenChange(false)}
-        />
-      </form>
-    </SettingsDialogShell>
+          <SimilarPosts
+            posts={similarPosts}
+            onLinkClick={() => onOpenChange(false)}
+          />
+        </form>
+      </SettingsDialogShell>
+
+      <SubdomainAuthModal
+        open={isAuthOpen}
+        onOpenChange={setAuthOpen}
+        mode={authMode}
+        onModeChange={setAuthMode}
+        redirectTo={authRedirect}
+      />
+    </>
   )
 }

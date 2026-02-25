@@ -1,6 +1,3 @@
-import { db, workspace, workspaceDomain } from "@featul/db"
-import { eq, and } from "drizzle-orm"
-
 function toRegex(originPattern: string): RegExp | null {
   try {
     const trimmed = originPattern.trim()
@@ -14,28 +11,32 @@ function toRegex(originPattern: string): RegExp | null {
   }
 }
 
-export async function isTrustedOrigin(origin: string): Promise<boolean> {
-  if (process.env.NODE_ENV === "production" && !origin.startsWith("https://")) {
-    return false
-  }
+function getConfiguredOriginPatterns(): string[] {
   const raw = process.env.AUTH_TRUSTED_ORIGINS || ""
-  const patterns = raw.split(",").map((s) => s.trim()).filter(Boolean)
+  return raw.split(",").map((s) => s.trim()).filter(Boolean)
+}
+
+function isOriginAllowedByConfig(origin: string): boolean {
+  const patterns = getConfiguredOriginPatterns()
   for (const p of patterns) {
     const r = toRegex(p)
     if (r && r.test(origin)) return true
   }
+  return false
+}
+
+export async function isTrustedOrigin(origin: string): Promise<boolean> {
+  if (!origin) return false
   try {
     const u = new URL(origin)
-    const host = u.hostname
-    if (!host) return false
-    const [byDefault] = await db.select({ id: workspace.id }).from(workspace).where(eq(workspace.domain, host)).limit(1)
-    if (byDefault?.id) return true
-    const [byCustom] = await db.select({ id: workspace.id }).from(workspace).where(eq(workspace.customDomain, host)).limit(1)
-    if (byCustom?.id) return true
-    const [verified] = await db.select({ status: workspaceDomain.status }).from(workspaceDomain).where(and(eq(workspaceDomain.host, host), eq(workspaceDomain.status, "verified"))).limit(1)
-    if (verified?.status === "verified") return true
-  } catch {}
-  return false
+    if (!u.hostname) return false
+  } catch {
+    return false
+  }
+  if (process.env.NODE_ENV === "production" && !origin.startsWith("https://")) {
+    return false
+  }
+  return isOriginAllowedByConfig(origin)
 }
 
 export function corsHeaders(origin: string): HeadersInit {
@@ -43,14 +44,13 @@ export function corsHeaders(origin: string): HeadersInit {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "content-type, authorization, x-requested-with, accept",
+    "Access-Control-Allow-Headers": "content-type, authorization, x-requested-with, accept, x-csrf-token",
     "Vary": "Origin",
   }
 }
 
 export async function buildTrustedOrigins(request: Request): Promise<string[]> {
-  const raw = process.env.AUTH_TRUSTED_ORIGINS || ""
-  const list = raw.split(",").map((s) => s.trim()).filter(Boolean)
+  const list = getConfiguredOriginPatterns()
   const origin = request.headers.get("origin") || ""
   if (origin && (await isTrustedOrigin(origin))) list.push(origin)
   return Array.from(new Set(list))

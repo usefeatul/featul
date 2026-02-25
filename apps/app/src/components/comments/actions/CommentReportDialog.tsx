@@ -37,6 +37,7 @@ const REPORT_REASONS = [
   { value: "off_topic", label: "Off-topic" },
   { value: "other", label: "Other" },
 ] as const
+type ReportReason = (typeof REPORT_REASONS)[number]["value"]
 
 export default function CommentReportDialog({
   open,
@@ -44,7 +45,7 @@ export default function CommentReportDialog({
   commentId,
 }: CommentReportDialogProps) {
   const [isPending, startTransition] = useTransition()
-  const [reason, setReason] = useState<string>("")
+  const [reason, setReason] = useState<ReportReason | "">("")
   const [description, setDescription] = useState("")
   const [reasonOpen, setReasonOpen] = useState(false)
 
@@ -56,7 +57,7 @@ export default function CommentReportDialog({
       try {
         const res = await client.comment.report.$post({
           commentId,
-          reason: reason as any,
+          reason,
           description,
         })
 

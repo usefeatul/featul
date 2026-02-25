@@ -27,14 +27,14 @@ export function SettingsDialogShell({
 }: SettingsDialogShellProps) {
   const styleWidth =
     width === "xxl"
-      ? { width: "min(92vw, 1120px)", maxWidth: "none" as const }
+      ? { width: "min(92vw, 1070px)", maxWidth: "none" as const }
       : width === "xl"
-      ? { width: "min(92vw, 780px)", maxWidth: "none" as const }
+      ? { width: "min(92vw, 750px)", maxWidth: "none" as const }
       : width === "widest"
-      ? { width: "min(92vw, 680px)", maxWidth: "none" as const }
+      ? { width: "min(92vw, 650px)", maxWidth: "none" as const }
       : width === "wide"
-      ? { width: "min(92vw, 520px)", maxWidth: "none" as const }
-      : { width: "min(92vw, 450px)", maxWidth: "none" as const }
+      ? { width: "min(92vw, 490px)", maxWidth: "none" as const }
+      : { width: "min(92vw, 420px)", maxWidth: "none" as const }
 
   const topValue = typeof offsetY === "number" ? `${offsetY}%` : offsetY
   const positionStyle: React.CSSProperties & { ["--tw-translate-y"]?: string } = {
@@ -51,7 +51,7 @@ export function SettingsDialogShell({
             {title}
           </DialogTitle>
         </DialogHeader>
-        <div className="bg-card rounded-lg p-2 dark:bg-black/60 border border-border">
+        <div className="bg-card rounded-xl p-2 dark:bg-black/60 border border-border">
           {description ? (
             <DialogDescription className="text-sm mb-2">
               {description}

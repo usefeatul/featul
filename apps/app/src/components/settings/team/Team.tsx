@@ -142,8 +142,9 @@ export default function TeamSection({
 
   return (
     <SectionCard title="Manage Members" description="Members have access to your workspace.">
-      <div className="space-y-6">
+      <div className="space-y-2">
         <div className="space-y-2">
+          <Label>Members</Label>
           <div className="rounded-md  border overflow-hidden">
             <Table>
               <TableHeader>
@@ -167,7 +168,7 @@ export default function TeamSection({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 mt-3">
           <Label>Pending Invites</Label>
           <InvitesList slug={slug} invites={data.invites || []} loading={isLoading} onChanged={refresh} />
         </div>
@@ -175,10 +176,9 @@ export default function TeamSection({
         <div className="pt-2 space-y-2">
           <div className="text-sm text-accent">Invite a new member to your workspace.</div>
                 <PlanNotice slug={slug} feature="team" plan={initialPlan} membersCount={(data.members || []).length} />
-          <div className="flex items-center justify-start">
+          <div className="mt-2 flex items-center justify-start">
             <Button
               type="button"
-              variant="quiet"
               onClick={() => setInviteOpen(true)}
               disabled={isLoading || inviteAccessLoading || !canInvite}
             >

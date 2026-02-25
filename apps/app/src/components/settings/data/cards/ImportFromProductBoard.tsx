@@ -4,16 +4,25 @@ import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 
 type Props = {
   onImport?: () => void;
+  allowImport?: boolean;
 };
 
-export default function ImportFromProductBoard({ onImport }: Props) {
+export default function ImportFromProductBoard({
+  onImport,
+  allowImport = false,
+}: Props) {
   return (
     <SettingsCard
       icon={<ProductBoardIcon className="w-5 h-5" />}
       title="Import from ProductBoard"
-      description="Import your posts, boards, and comments directly from ProductBoard."
-      buttonLabel="Import"
+      description={
+        allowImport
+          ? "Import your posts, boards, and comments directly from ProductBoard. Coming soon."
+          : "Import your posts, boards, and comments directly from ProductBoard. Paid plans only. Coming soon."
+      }
+      buttonLabel={allowImport ? "Soon" : "Paid (Soon)"}
       onAction={onImport}
+      disabled
     />
   );
 }

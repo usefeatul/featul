@@ -1,14 +1,13 @@
 "use client"
 
 import React from "react"
-import { Button } from "@featul/ui/components/button"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
-import type { BillingCycle, PlanOption } from "./billing-data"
-import { getCheckoutSlug } from "./billing-data"
+import { LoadingButton } from "@/components/global/loading-button"
+import { type BillingCycle, type PlanOption, getCheckoutSlug } from "./billing-data"
 
-type BillingCheckoutButtonProps = {
+type PlanCheckoutButtonProps = {
   plan: PlanOption
   billingCycle: BillingCycle
   isCurrent: boolean
@@ -16,14 +15,16 @@ type BillingCheckoutButtonProps = {
   className?: string
 }
 
-export default function BillingCheckoutButton({
+export default function PlanCheckoutButton({
   plan,
   billingCycle,
   isCurrent,
   workspaceId,
   className,
-}: BillingCheckoutButtonProps) {
+}: PlanCheckoutButtonProps) {
   const [isCheckingOut, setIsCheckingOut] = React.useState(false)
+  const isFreePlan = plan.id === "free"
+  const isProfessional = plan.id === "professional"
 
   const handleCheckout = async () => {
     if (isCheckingOut) return
@@ -65,8 +66,7 @@ export default function BillingCheckoutButton({
       }
       window.location.href = url
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to start checkout"
+      const message = err instanceof Error ? err.message : "Failed to start checkout"
       toast.error(message)
     } finally {
       setIsCheckingOut(false)
@@ -75,19 +75,31 @@ export default function BillingCheckoutButton({
 
   if (isCurrent) {
     return (
-      <Button variant="outline" disabled className={cn("opacity-50", className)}>
+      <LoadingButton variant="nav" disabled className={cn("opacity-50", className)}>
         Current
-      </Button>
+      </LoadingButton>
+    )
+  }
+
+  if (isFreePlan) {
+    return (
+      <LoadingButton variant="nav" disabled className={cn("opacity-50", className)}>
+        Free plan
+      </LoadingButton>
     )
   }
 
   return (
-    <Button
-      className={cn(className)}
+    <LoadingButton
+      className={cn(
+        className,
+        isProfessional && "bg-orange-400! text-white! hover:bg-orange-400! dark:bg-orange-400! dark:hover:bg-orange-400! border-orange-400!",
+      )}
+      loading={isCheckingOut}
       disabled={isCurrent || isCheckingOut}
       onClick={handleCheckout}
     >
-      {isCheckingOut ? "Loading..." : "Upgrade"}
-    </Button>
+      Choose plan
+    </LoadingButton>
   )
 }

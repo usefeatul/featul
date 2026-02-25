@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
+import { usePostEditAccess } from "@/hooks/usePostEditAccess"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { getInitials, getPrivacySafeDisplayUser } from "@/utils/user-utils"
 import { relativeTime } from "@/lib/time"
@@ -9,6 +9,7 @@ import BoardPicker from "../requests/meta/BoardPicker"
 import StatusPicker from "../requests/meta/StatusPicker"
 import FlagsPicker from "../requests/meta/FlagsPicker"
 import StatusIcon from "../requests/StatusIcon"
+import { Badge } from "@featul/ui/components/badge"
 import { PoweredBy } from "./PoweredBy"
 import RoleBadge from "../global/RoleBadge"
 
@@ -27,6 +28,7 @@ export type PostSidebarProps = {
     role?: "admin" | "member" | "viewer" | null
     isOwner?: boolean
     isFeatul?: boolean
+    viewerCanEdit?: boolean
     hidePublicMemberIdentity?: boolean
     author?: {
       name: string | null
@@ -38,9 +40,8 @@ export type PostSidebarProps = {
 }
 
 export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
-  // Permission check: Only owner (creator) can edit
-  const { isOwner } = useWorkspaceRole(workspaceSlug)
-  const canEdit = isOwner
+  // Permission check: allow server-evaluated access (owner/admin/permissions) and fall back to client role
+  const { canEdit } = usePostEditAccess({ workspaceSlug, viewerCanEdit: post.viewerCanEdit })
 
   const [meta, setMeta] = React.useState({
     roadmapStatus: post.roadmapStatus || undefined,
@@ -75,8 +76,8 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
 
   return (
-    <aside className="hidden md:block space-y-4">
-      <div className="rounded-xl bg-card p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
+    <aside className="hidden md:block space-y-4 min-w-0">
+      <div className="rounded-xl bg-card dark:bg-background p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
         {/* Header: User & Time */}
         <div className="flex items-center gap-3 mb-6">
           <div className="relative">
@@ -132,23 +133,32 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
 
           {/* Flags */}
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground font-medium">Flags</span>
+            <div className="flex items-start gap-3 min-w-0">
+              <span className="text-sm text-muted-foreground font-medium leading-6 shrink-0">Flags</span>
               {canEdit ? (
                 <FlagsPicker
                   postId={post.id}
                   value={meta}
                   onChange={(v) => setMeta((m) => ({ ...m, ...v }))}
+                  className="ml-auto shrink-0"
                 />
               ) : (
-                <div className="flex gap-1 ">
+                <div className="ml-auto flex-1 min-w-0 flex flex-wrap justify-end gap-1.5">
                   {[
                     meta.isPinned ? "Pinned" : null,
                     meta.isLocked ? "Locked" : null,
                     meta.isFeatured ? "Featured" : null,
-                  ].filter(Boolean).map(f => (
-                    <span key={f} className="text-xs bg-muted px-1.5 py-0.5 rounded-md border text-muted-foreground ">{f}</span>
-                  ))}
+                  ]
+                    .filter(Boolean)
+                    .map((f) => (
+                      <Badge
+                        key={f}
+                        variant="nav"
+                        className="bg-muted dark:bg-black/50 text-muted-foreground border border-border px-2 py-0.5 text-xs font-medium rounded-md"
+                      >
+                        {f}
+                      </Badge>
+                    ))}
                 </div>
               )}
             </div>

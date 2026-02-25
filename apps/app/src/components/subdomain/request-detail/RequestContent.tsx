@@ -26,6 +26,8 @@ export function RequestContent({
   initialComments,
   initialCollapsedIds,
 }: RequestContentProps) {
+  const visibleCommentCount = initialComments?.length ?? post.commentCount
+
   const rawDisplayAuthor = getDisplayUser(
     post.author
       ? {
@@ -41,7 +43,7 @@ export function RequestContent({
   const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
 
   return (
-    <div className="rounded-md border bg-card p-6 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
+    <div className="min-w-0 rounded-md border bg-card dark:bg-background p-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
       {/* Status & Actions */}
       <div className="flex items-center justify-between mb-4">
         <div className="inline-flex items-center gap-2">
@@ -125,7 +127,8 @@ export function RequestContent({
           />
           <CommentCounter
             postId={post.id}
-            initialCount={post.commentCount}
+            initialCount={visibleCommentCount}
+            surface="public"
             className="hover:text-foreground transition-colors"
           />
         </div>
@@ -135,8 +138,10 @@ export function RequestContent({
       <div className="mt-6 pt-6">
         <CommentList
           postId={post.id}
-          initialCount={post.commentCount}
+          initialCount={visibleCommentCount}
           workspaceSlug={workspaceSlug}
+          surface="public"
+          allowComments={post.allowComments}
           initialComments={initialComments}
           initialCollapsedIds={initialCollapsedIds}
           hidePublicMemberIdentity={showHiddenIdentity}

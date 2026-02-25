@@ -5,7 +5,7 @@ export type CommentData = {
   content: string
   authorId: string | null
   authorName: string
-  authorEmail: string | null
+  authorEmail?: string | null
   authorImage: string
   isAnonymous: boolean | null
   status: string
@@ -14,6 +14,7 @@ export type CommentData = {
   replyCount: number
   depth: number
   isPinned: boolean | null
+  isInternal: boolean
   isEdited: boolean | null
   createdAt: string
   updatedAt: string

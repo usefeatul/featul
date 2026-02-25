@@ -39,7 +39,7 @@ export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: strin
   )
 
   return (
-    <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card p-4 min-h-[160px]">
+    <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card dark:bg-background p-4 min-h-[160px]">
       <div className="mb-2 text-sm font-medium flex items-center gap-2">
         <DocumentTextIcon className="size-4 text-muted-foreground" />
         Boards

@@ -24,12 +24,14 @@ export default function RoleCell({
 }: RoleCellProps) {
   return (
     <TableCell className="px-4 w-48">
-      <div className="relative h-6">
-        <span className={cn("text-xs px-2 py-0.5 rounded-sm  capitalize absolute left-1/2 -translate-x-1/2", roleBadgeClass(m.role, m.isOwner))}>{m.isOwner ? "owner" : m.role}</span>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2">
+      <div className="grid min-h-8 grid-cols-[2rem_1fr_2rem] items-center">
+        <span className={cn("col-start-2 text-xs px-2 py-0.5 rounded-sm capitalize justify-self-center", roleBadgeClass(m.role, m.isOwner))}>
+          {m.isOwner ? "owner" : m.role}
+        </span>
+        <div className="col-start-3 justify-self-end">
           <Popover open={menuFor === m.userId} onOpenChange={(v) => setMenuFor(v ? m.userId : null)}>
             <PopoverTrigger asChild>
-              <Button type="button" variant="ghost" size="icon-sm" disabled={m.isOwner === true} aria-label="More">
+              <Button type="button" variant="nav" size="icon-sm" disabled={m.isOwner === true} aria-label="More">
                 <MoreVertical className="size-4" />
               </Button>
             </PopoverTrigger>

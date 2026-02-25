@@ -1,13 +1,12 @@
 "use client"
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 import ChangelogItem from "./ChangelogItem"
-import { useSelection, toggleSelectionId, selectAllForKey, removeSelectedIds } from "@/lib/selection-store"
 import { ChangelogBulkDeleteDialog } from "./ChangelogBulkDeleteDialog"
 import { SelectionToolbar } from "@/components/requests/SelectionToolbar"
 import { useBulkDeleteChangelog } from "../../hooks/useBulkDeleteChangelog"
-import { useBulkSelectionHotkeys } from "@/hooks/useBulkSelectionHotkeys"
+import { useSelectableList } from "@/hooks/useSelectableList"
 import EmptyChangelog from "./EmptyChangelog"
 
 interface ChangelogListProps {
@@ -22,10 +21,7 @@ export function ChangelogList({ items, workspaceSlug, initialTotalCount, initial
     const [listItems, setListItems] = useState<ChangelogEntryWithTags[]>(items)
     const [confirmOpen, setConfirmOpen] = useState(false)
     const listKey = `changelog-${workspaceSlug}`
-    const selection = useSelection(listKey)
-    const isSelecting = selection.isSelecting
-    const selectingRef = useRef(isSelecting)
-    const [hydrated, setHydrated] = useState(false)
+    const itemIds = useMemo(() => listItems.map((item) => item.id), [listItems])
 
     const { isPending, isRefetching, handleBulkDelete } = useBulkDeleteChangelog({
         workspaceSlug,
@@ -37,56 +33,24 @@ export function ChangelogList({ items, workspaceSlug, initialTotalCount, initial
     })
 
     useEffect(() => {
-        selectingRef.current = isSelecting
-    }, [isSelecting])
-
-    useEffect(() => {
         setListItems(items)
     }, [items])
 
-    useEffect(() => {
-        setHydrated(true)
-    }, [])
-
-    const isSelectingForRender = hydrated ? isSelecting : initialIsSelecting ?? isSelecting
-    const selectedIdsForRender = useMemo(() =>
-        hydrated
-            ? selection.selectedIds
-            : initialSelectedIds && Array.isArray(initialSelectedIds)
-                ? initialSelectedIds
-                : selection.selectedIds,
-        [hydrated, selection.selectedIds, initialSelectedIds]
-    )
-
-    useBulkSelectionHotkeys({
+    const {
+        allSelected,
+        isSelectingForRender,
+        selectedCount,
+        selectedIdsSet,
+        toggleAll,
+        toggleId,
+    } = useSelectableList({
         listKey,
-        isSelecting: isSelectingForRender,
+        itemIds,
+        initialIsSelecting,
+        initialSelectedIds,
         isPending,
-        selectedCount: selectedIdsForRender.length,
         setConfirmOpen,
-        selectingRef,
     })
-
-    const allSelected = useMemo(
-        () => listItems.length > 0 && listItems.every((i) => selectedIdsForRender.includes(i.id)),
-        [listItems, selectedIdsForRender],
-    )
-    const selectedCount = selectedIdsForRender.length
-
-    const toggleId = useCallback(
-        (id: string, checked?: boolean) => {
-            toggleSelectionId(listKey, id, checked)
-        },
-        [listKey]
-    )
-
-    const toggleAll = useCallback(() => {
-        if (allSelected) {
-            removeSelectedIds(listKey, listItems.map((i) => i.id))
-            return
-        }
-        selectAllForKey(listKey, listItems.map((i) => i.id))
-    }, [allSelected, listItems, listKey])
 
     if (listItems.length === 0 && !isRefetching) {
         return <EmptyChangelog workspaceSlug={workspaceSlug} />
@@ -110,7 +74,7 @@ export function ChangelogList({ items, workspaceSlug, initialTotalCount, initial
                         item={entry}
                         workspaceSlug={workspaceSlug}
                         isSelecting={isSelectingForRender}
-                        isSelected={selectedIdsForRender.includes(entry.id)}
+                        isSelected={selectedIdsSet.has(entry.id)}
                         onToggle={(checked) => toggleId(entry.id, checked)}
                     />
                 ))}

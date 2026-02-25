@@ -5,10 +5,18 @@ import { client } from "@featul/api/client"
 import type { UploadedImage } from "@/hooks/useImageUpload"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
 import type { CommentData } from "../types/comment"
+import { readApiErrorMessage } from "@/hooks/postApiError"
+import {
+  COMMENT_CREATED_EVENT,
+  getCommentsQueryKey,
+  type CommentCreatedEventDetail,
+  type CommentSurface,
+} from "@/lib/comment-shared"
 
 interface UseCommentSubmitProps {
   postId: string
   parentId?: string
+  surface: CommentSurface
   onSuccess?: () => void
   resetForm: () => void
 }
@@ -22,6 +30,7 @@ interface CreateCommentResponse {
 export function useCommentSubmit({
   postId,
   parentId,
+  surface,
   onSuccess,
   resetForm,
 }: UseCommentSubmitProps) {
@@ -31,7 +40,8 @@ export function useCommentSubmit({
   const handleSubmit = async (
     e: React.FormEvent,
     content: string,
-    uploadedImage: UploadedImage | null
+    uploadedImage: UploadedImage | null,
+    isInternal: boolean
   ) => {
     e.preventDefault()
     if ((!content.trim() && !uploadedImage) || isPending) return
@@ -56,6 +66,7 @@ export function useCommentSubmit({
           postId,
           content: content.trim() || "",
           ...(parentId ? { parentId } : {}),
+          isInternal,
           ...(metadata ? { metadata } : {}),
           fingerprint,
         })
@@ -99,6 +110,7 @@ export function useCommentSubmit({
                     ? createdComment.depth
                     : 0,
                 isPinned: createdComment.isPinned ?? null,
+                isInternal: createdComment.isInternal ?? false,
                 isEdited: createdComment.isEdited ?? null,
                 createdAt:
                   createdComment.createdAt ||
@@ -115,7 +127,7 @@ export function useCommentSubmit({
               }
 
               queryClient.setQueryData<{ comments: CommentData[] }>(
-                ["comments", postId],
+                getCommentsQueryKey(postId, surface),
                 (prev) => {
                   const base = prev?.comments || []
                   const exists = base.some(
@@ -136,9 +148,14 @@ export function useCommentSubmit({
           resetForm()
           toast.success(parentId ? "Reply posted" : "Comment posted")
           try {
+            const detail: CommentCreatedEventDetail = {
+              postId,
+              parentId: parentId || null,
+              surface,
+            }
             window.dispatchEvent(
-              new CustomEvent("comment:created", {
-                detail: { postId, parentId: parentId || null },
+              new CustomEvent<CommentCreatedEventDetail>(COMMENT_CREATED_EVENT, {
+                detail,
               })
             )
           } catch (e) {
@@ -156,20 +173,14 @@ export function useCommentSubmit({
         } else if (res.status === 401) {
           toast.error("Please sign in to comment")
         } else if (res.status === 403) {
-          try {
-            const data = await res.json() as CreateCommentResponse
-            const apiMessage = data?.message || data?.error?.message
-
-            if (typeof apiMessage === "string" && apiMessage.length > 0) {
-              toast.error(apiMessage)
-            } else {
-              toast.error("Comments are disabled")
-            }
-          } catch {
-            toast.error("Comments are disabled")
-          }
+          const message = await readApiErrorMessage(
+            res,
+            "Comments are currently disabled on this board"
+          )
+          toast.error(message)
         } else {
-          toast.error("Failed to post comment")
+          const message = await readApiErrorMessage(res, "Failed to post comment")
+          toast.error(message)
         }
       } catch (error) {
         console.error("Failed to post comment:", error)

@@ -7,16 +7,9 @@ import SettingsCard from "@/components/global/SettingsCard"
 import { KeyIcon } from "@featul/ui/icons/key"
 import TwoFactorAuth from "@/components/account/TwoFactorAuth"
 import ActiveSessions from "@/components/account/ActiveSessions"
+import type { SessionItem } from "@/types/session"
 
-type SessionItem = {
-  token: string
-  userAgent?: string | null
-  ipAddress?: string | null
-  createdAt?: string | Date
-  expiresAt?: string | Date
-}
-
-export default function Security({ initialMeSession, initialSessions, twoFactorEnabled, initialAccounts }: { initialMeSession?: unknown; initialSessions?: SessionItem[] | null; twoFactorEnabled?: boolean; initialAccounts?: { id: string; accountId: string; providerId: string }[] }) {
+export default function Security({ initialSessions, twoFactorEnabled, initialAccounts }: { initialSessions?: SessionItem[] | null; twoFactorEnabled?: boolean; initialAccounts?: { id: string; accountId: string; providerId: string }[] }) {
   const router = useRouter()
   const pathname = usePathname() || "/"
 
@@ -44,9 +37,8 @@ export default function Security({ initialMeSession, initialSessions, twoFactorE
         </div>
 
         {/* Active Sessions */}
-        <ActiveSessions initialSessions={initialSessions} initialMeSession={initialMeSession} />
+        <ActiveSessions initialSessions={initialSessions} />
       </div>
     </SectionCard>
   )
 }
-

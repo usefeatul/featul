@@ -1,17 +1,28 @@
-import React from "react"
+import React from "react";
 
-export default function SectionCard({ title, description, children, action }: { title: string; description?: string; children?: React.ReactNode; action?: React.ReactNode }) {
+export default function SectionCard({
+  title,
+  description,
+  children,
+  action,
+}: {
+  title: string;
+  description?: string;
+  children?: React.ReactNode;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="bg-card dark:bg-black/40 rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black  border border-border shadow-md">
-      <div className="p-4 border-b border-background flex items-center justify-between">
-        <div>
-          <div className="text-lg font-heading">{title}</div>
-          {description ? <div className="text-sm text-accent mt-1">{description}</div> : null}
+    <section className="mb-3 overflow-hidden rounded-md border border-border bg-card text-foreground ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:border-border dark:bg-black/50 dark:ring-offset-black">
+      <header className="flex flex-col gap-3 border-b border-border/70 px-4 py-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-lg font-heading leading-tight">{title}</h2>
+          {description ? (
+            <p className="mt-1 text-sm font-light leading-relaxed text-accent">{description}</p>
+          ) : null}
         </div>
-        {action && <div>{action}</div>}
-      </div>
-      <div className="p-4">{children}</div>
-    </div>
-  )
+        {action ? <div className="shrink-0 sm:pl-4">{action}</div> : null}
+      </header>
+      <div className="px-4 py-4">{children}</div>
+    </section>
+  );
 }
-

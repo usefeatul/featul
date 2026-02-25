@@ -2,7 +2,6 @@
 
 import React from "react"
 import PlanNotice from "../global/PlanNotice"
-import { Button } from "@featul/ui/components/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { MoreVertical } from "lucide-react"
@@ -10,6 +9,7 @@ import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import ModalTags from "./ModalTags"
 import { toast } from "sonner"
+import { LoadingButton } from "@/components/global/loading-button"
 
 export interface ChangelogTag {
   id: string
@@ -45,7 +45,7 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
           <TableHeader>
             <TableRow>
               <TableHead className="px-4">Tag</TableHead>
-              <TableHead className="px-4 w-24 text-center"></TableHead>
+              <TableHead className="pl-2 pr-3 w-14 text-right"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -62,12 +62,12 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
                       <span>{t.name}</span>
                     </span>
                   </TableCell>
-                  <TableCell className="px-4 text-center">
+                  <TableCell className="pl-2 pr-3 text-right">
                     <Popover open={menuOpenId === t.id} onOpenChange={(v) => setMenuOpenId(v ? String(t.id) : null)}>
                       <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="icon-sm" aria-label="More">
+                        <LoadingButton type="button" variant="nav" size="icon-sm" aria-label="More" className="ml-auto">
                           <MoreVertical className="size-4" />
-                        </Button>
+                        </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
@@ -98,8 +98,8 @@ export default function ChangelogTags({ slug, initialPlan, initialTags }: { slug
         </Table>
       </div>
       <PlanNotice slug={slug} feature="changelog_tags" plan={initialPlan} changelogTagsCount={(tagsData || []).length} />
-      <div>
-        <Button type="button" variant="quiet" onClick={() => setTagModalOpen(true)}>Add tag</Button>
+      <div className="mt-2 flex items-center justify-start">
+        <LoadingButton type="button" onClick={() => setTagModalOpen(true)}>Add tag</LoadingButton>
       </div>
       <ModalTags
         open={tagModalOpen}

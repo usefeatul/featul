@@ -8,13 +8,14 @@ import { buildBottomNav, getSlugFromPath } from "../../config/nav";
 import {
   useSidebarHotkeys,
   getShortcutForLabel,
-} from "../../utils/useSidebarHotkeys";
+} from "@/hooks/useSidebarHotkeys";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import UserDropdown from "@/components/account/UserDropdown";
 import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
+import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
@@ -69,7 +70,9 @@ export default function Sidebar({
   );
   const [hotkeysActive, setHotkeysActive] = useState(false);
   const [createPostOpen, setCreatePostOpen] = useState(false);
+  const openCreatePost = React.useCallback(() => setCreatePostOpen(true), []);
   useSidebarHotkeys(hotkeysActive, middleNav, router);
+  useCreatePostHotkey({ onOpen: openCreatePost });
 
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
@@ -83,7 +86,7 @@ export default function Sidebar({
       onFocus={() => setHotkeysActive(true)}
       onBlur={() => setHotkeysActive(false)}
       className={cn(
-        "hidden lg:flex w-full lg:w-60 flex-col bg-background",
+        "hidden lg:flex w-full lg:w-60 lg:shrink-0 flex-col bg-background",
         "lg:sticky lg:top-2 lg:h-[calc(100vh-1rem)] lg:overflow-hidden",
         className
       )}
@@ -94,12 +97,12 @@ export default function Sidebar({
           <div className="text-md font-semibold ">Featul</div>
         </div>
         <WorkspaceSwitcher
-          className="mt-5.5"
+          className="mt-5.5 px-1"
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
         />
         <Timezone
-          className="mt-2"
+          className="mt-2 px-1"
           initialTimezone={initialTimezone}
           initialServerNow={initialServerNow}
         />
@@ -137,7 +140,7 @@ export default function Sidebar({
           className="w-full mb-1 group dark:bg-background flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
           variant="ghost"
           size="md"
-          onClick={() => setCreatePostOpen(true)}
+          onClick={openCreatePost}
         >
           <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
           <span className="transition-colors text-accent">Create Posts</span>

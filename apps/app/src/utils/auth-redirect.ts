@@ -1,3 +1,5 @@
+import { normalizeInternalRedirectPath } from "@/utils/redirect-path";
+
 const FALLBACK_REDIRECT = "/start";
 
 function isAllowedRedirectHost(hostname: string) {
@@ -24,7 +26,9 @@ function isAllowedRedirectHost(hostname: string) {
 
 export function normalizeRedirectParam(raw: string) {
   if (!raw) return "";
-  if (raw.startsWith("/")) return raw;
+  const internalPath = normalizeInternalRedirectPath(raw);
+  if (internalPath) return internalPath;
+  if (raw.startsWith("/")) return "";
   try {
     const url = new URL(raw);
     return isAllowedRedirectHost(url.hostname) ? url.toString() : "";

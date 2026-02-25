@@ -20,11 +20,12 @@ export interface FeedbackBoardSettings {
 }
 
 export type ToggleKey = keyof Pick<FeedbackBoardSettings, "allowAnonymous" | "allowComments" | "hidePublicMemberIdentity">
+export type ToggleSuccessMessage = string | ((enabled: boolean) => string)
 
 export function useGlobalBoardToggle(
   slug: string,
   key: ToggleKey,
-  successMessage?: string,
+  successMessage?: ToggleSuccessMessage,
   initialBoards?: FeedbackBoardSettings[]
 ) {
   const queryClient = useQueryClient()
@@ -75,7 +76,11 @@ export function useGlobalBoardToggle(
         throw new Error(err?.message || "Update failed")
       }
       await refetch()
-      toast.success(successMessage || "Setting updated")
+      toast.success(
+        typeof successMessage === "function"
+          ? successMessage(v)
+          : (successMessage || "Setting updated"),
+      )
     } catch (e: unknown) {
       await refetch()
       toast.error((e as { message?: string })?.message || "Failed to update setting")

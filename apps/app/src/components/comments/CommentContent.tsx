@@ -39,7 +39,7 @@ export default function CommentContent({ content, metadata }: CommentContentProp
   return (
     <>
       {content && (
-        <div className="text-sm text-foreground/90 whitespace-pre-wrap break-words leading-7 font-normal">
+        <div className="text-sm text-foreground/90 whitespace-pre-wrap wrap-break-word leading-7 font-normal">
           {renderText()}
         </div>
       )}

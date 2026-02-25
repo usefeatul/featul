@@ -2,11 +2,10 @@
 
 import React from "react"
 import SectionCard from "../global/SectionCard"
-import { Button } from "@featul/ui/components/button"
-import { normalizePlan, type PlanKey } from "@/lib/plan"
-import { CreditCard } from "lucide-react"
-import UpgradePlanDialog from "./UpgradePlanDialog"
-import { formatPrice, getPlan } from "./billing-data"
+import { normalizePlan } from "@/lib/plan"
+import BillingCycleSegment from "./BillingCycleSegment"
+import PlanOptionCard from "./PlanOptionCard"
+import { type BillingCycle, PLAN_ORDER, formatPrice, getPlan } from "./billing-data"
 
 type BillingSectionProps = {
   currentPlan?: string
@@ -15,58 +14,36 @@ type BillingSectionProps = {
 
 export default function BillingSection({ currentPlan, workspaceId }: BillingSectionProps) {
   const normalizedPlan = normalizePlan(String(currentPlan || "free"))
-  const [dialogOpen, setDialogOpen] = React.useState(false)
+  const activePlan = getPlan(normalizedPlan)
+  const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
 
   return (
-    <>
-      <SectionCard
-        title="Manage your plan"
-        description="Update your payment information or switch plans."
-      >
-        <PlanSummaryCard planKey={normalizedPlan} onUpgradeClick={() => setDialogOpen(true)} />
-      </SectionCard>
-
-      <UpgradePlanDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        currentPlan={normalizedPlan}
-        workspaceId={workspaceId}
-      />
-    </>
-  )
-}
-
-type PlanSummaryCardProps = {
-  planKey: PlanKey
-  onUpgradeClick: () => void
-}
-
-function PlanSummaryCard({ planKey, onUpgradeClick }: PlanSummaryCardProps) {
-  const plan = getPlan(planKey)
-
-  return (
-    <div className="space-y-3 text-foreground">
-      <div className="flex items-center justify-between rounded-md border border-border/70 bg-background px-3 py-2.5">
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-muted/80 text-foreground">
-            <CreditCard className="size-4" />
+    <SectionCard
+      title="Subscription"
+      description="Choose the plan that fits your workspace."
+    >
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border/70 bg-background px-3 py-2.5">
+          <div className="text-sm text-foreground">
+            <span className="text-muted-foreground">Current:</span>{" "}
+            <span className="font-medium">{activePlan.label}</span>{" "}
+            <span className="text-muted-foreground">({formatPrice(activePlan, billingCycle)})</span>
           </div>
-          <div className="space-y-0.5">
-            <div className="text-sm font-medium text-foreground">
-              {plan.label} Plan
-            </div>
-            <div className="text-xs text-accent">{formatPrice(plan, "monthly")}</div>
-          </div>
+          <BillingCycleSegment billingCycle={billingCycle} onChange={setBillingCycle} />
         </div>
-        <span className="text-xs px-2 py-0.5 rounded-md border border-border/70 bg-muted/70 text-foreground">
-          Current
-        </span>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          {PLAN_ORDER.map((planKey) => (
+            <PlanOptionCard
+              key={planKey}
+              planKey={planKey}
+              currentPlan={normalizedPlan}
+              billingCycle={billingCycle}
+              workspaceId={workspaceId}
+            />
+          ))}
+        </div>
       </div>
-      <div>
-        <Button variant="secondary" onClick={onUpgradeClick}>
-          Upgrade Plan
-        </Button>
-      </div>
-    </div>
+    </SectionCard>
   )
 }

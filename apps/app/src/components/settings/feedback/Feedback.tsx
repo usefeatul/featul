@@ -19,8 +19,10 @@ export default function FeedbackSection({
 }) {
   return (
     <SectionCard title="Feedback" description="Configure boards and feedback">
+      <div className="space-y-2">
         <RoadmapVisibility slug={slug} initialBoards={initialBoards} />
         <ManageTags slug={slug} plan={plan} initialTags={initialTags} />
+      </div>
     </SectionCard>
   )
 }

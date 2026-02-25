@@ -34,7 +34,8 @@
         "SENTRY_AUTH_TOKEN",
         "PASSKEY_RP_ID",
         "PASSKEY_RP_NAME",
-        "PASSKEY_ORIGIN"
+        "PASSKEY_ORIGIN",
+        "API_TRUSTED_ORIGINS"
       ]
     },
     "lint": {

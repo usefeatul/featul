@@ -32,7 +32,12 @@ export default function TimezoneCard({ slug, initialTimezone }: Props) {
             <SettingsCard
                 icon={<Timezone className="size-5 text-primary" />}
                 title="Timezone"
-                description={<span>Current timezone: <span className="font-medium text-black">{friendlyTZ(timezone)}</span>. All workspace graphs, ranges and timestamps will be matched to this timezone.</span>}
+                description={
+                    <span className="break-words">
+                        Current timezone:{" "}
+                        <span className="font-semibold text-foreground">{friendlyTZ(timezone)}</span>. All workspace graphs, ranges and timestamps will be matched to this timezone.
+                    </span>
+                }
                 buttonLabel="Change"
                 onAction={() => setDialogOpen(true)}
             />
