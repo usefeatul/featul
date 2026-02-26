@@ -43,7 +43,7 @@ export default function UserDropdownQuickSwitch({
               void onSwitchAccount(account.userId);
             }}
             disabled={Boolean(switchingAccountUserId)}
-            className="size-5 rounded-full p-0 bg-background ring-1 ring-border/80 transition-colors hover:ring-primary hover:bg-background focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+            className="size-5 rounded-full p-0 bg-background ring-1 ring-border/60 transition-colors hover:ring-primary hover:bg-primary focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
             aria-label={`Switch to ${account.name}`}
             title={account.name}
           >

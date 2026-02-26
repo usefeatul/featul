@@ -6,10 +6,11 @@ import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth"
 import { Polar } from "@polar-sh/sdk"
 import { db, user, session, account, verification, passkeyTable, twoFactorTable } from "@featul/db"
 import { sendVerificationOtpEmail, sendWelcome } from "./email"
-import { createAuthMiddleware, APIError } from "better-auth/api"
+import { createAuthEndpoint, createAuthMiddleware, APIError, sessionMiddleware } from "better-auth/api"
 import { getPasswordError } from "./password"
 import { syncPolarSubscription } from "./polar"
 import { getValidatedTrustedOrigins } from "./trusted-origins"
+import { setSessionCookie } from "better-auth/cookies"
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
@@ -32,6 +33,31 @@ function resolveCookieDomain() {
 
 const cookieDomain = resolveCookieDomain()
 const trustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS")
+
+const multiSessionBootstrapPlugin = {
+  id: "multi-session-bootstrap",
+  endpoints: {
+    bootstrapCurrentDeviceSession: createAuthEndpoint(
+      "/multi-session/bootstrap-current",
+      {
+        method: "POST",
+        requireHeaders: true,
+        use: [sessionMiddleware],
+      },
+      async (ctx) => {
+        if (!ctx.context.session?.session?.token || !ctx.context.session?.user) {
+          throw new APIError("UNAUTHORIZED")
+        }
+
+        // Re-issue the current session cookie so multi-session hooks can seed
+        // a missing per-device cookie for legacy sessions.
+        await setSessionCookie(ctx, ctx.context.session as any)
+
+        return ctx.json({ success: true })
+      },
+    ),
+  },
+}
 
 const polarAccessToken = (process.env.POLAR_ACCESS_TOKEN || "").trim()
 const polarWebhookSecret = (process.env.POLAR_WEBHOOK_SECRET || "").trim()
@@ -191,6 +217,7 @@ export const auth = betterAuth({
       issuer: "Featul",
     }),
     multiSession(),
+    multiSessionBootstrapPlugin,
     ...(polarPlugin ? [polarPlugin] : []),
   ],
 

@@ -128,6 +128,21 @@ export function createAccountRouter() {
                 return c.superjson({ accounts })
             }),
 
+        bootstrapDeviceSession: privateProcedure
+            .post(async ({ c }) => {
+                const rawHeaders = getRawHeaders(c)
+                const bootstrapResult = (await (auth.api as any).bootstrapCurrentDeviceSession({
+                    headers: rawHeaders,
+                    returnHeaders: true,
+                })) as { headers?: Headers }
+
+                if (bootstrapResult.headers instanceof Headers) {
+                    appendSetCookieHeaders(c, bootstrapResult.headers)
+                }
+
+                return c.superjson({ success: true })
+            }),
+
         switchDeviceAccount: privateProcedure
             .input(switchDeviceAccountInputSchema)
             .post(async ({ ctx, input, c }) => {
