@@ -20,9 +20,8 @@ import { TickIcon } from "@featul/ui/icons/tick";
 import { getInitials } from "@/utils/user";
 
 export type UserDropdownAccount = {
-  sessionToken: string;
+  userId: string;
   name: string;
-  email: string;
   image: string;
   isCurrent: boolean;
 };
@@ -30,19 +29,19 @@ export type UserDropdownAccount = {
 type UserDropdownMenuProps = {
   showAccounts: boolean;
   accounts: UserDropdownAccount[];
-  switchingToken: string | null;
+  switchingAccountUserId: string | null;
   loading: boolean;
   onAccount: () => void;
   onSettings: () => void;
   onSignOut: () => void;
   onOpenAddAccount: () => void;
-  onSwitchAccount: (sessionToken: string) => void;
+  onSwitchAccount: (userId: string) => void;
 };
 
 export default function UserDropdownMenu({
   showAccounts,
   accounts,
-  switchingToken,
+  switchingAccountUserId,
   loading,
   onAccount,
   onSettings,
@@ -88,16 +87,15 @@ export default function UserDropdownMenu({
               </div>
             ) : null}
             {accounts.map((account) => {
-              const initials = getInitials(
-                account.name || account.email || "A",
-              );
-              const disabled = account.isCurrent || Boolean(switchingToken);
+              const initials = getInitials(account.name || "A");
+              const disabled =
+                account.isCurrent || Boolean(switchingAccountUserId);
               return (
                 <DropdownMenuItem
-                  key={account.sessionToken}
+                  key={account.userId}
                   onSelect={(event) => {
                     event.preventDefault();
-                    void onSwitchAccount(account.sessionToken);
+                    void onSwitchAccount(account.userId);
                   }}
                   disabled={disabled}
                   className="px-2 py-2 rounded-md flex items-center gap-2 group"
@@ -111,7 +109,7 @@ export default function UserDropdownMenu({
                   <div className="min-w-0 flex-1 truncate transition-colors group-hover:text-foreground">
                     {account.name}
                   </div>
-                  {switchingToken === account.sessionToken ? (
+                  {switchingAccountUserId === account.userId ? (
                     <LoaderIcon className="size-4 animate-spin text-accent" />
                   ) : account.isCurrent ? (
                     <TickIcon
@@ -128,7 +126,7 @@ export default function UserDropdownMenu({
               event.preventDefault();
               onOpenAddAccount();
             }}
-            disabled={Boolean(switchingToken)}
+            disabled={Boolean(switchingAccountUserId)}
             className="px-2 py-2 rounded-md flex items-center gap-2 group"
           >
             <PlusIcon className="size-4 text-foreground transition-colors group-hover:text-primary" />
@@ -142,7 +140,7 @@ export default function UserDropdownMenu({
       <DropdownMenuItem
         onSelect={onSignOut}
         className="px-2 py-2 rounded-md flex items-center gap-2 group"
-        aria-disabled={loading || Boolean(switchingToken)}
+        aria-disabled={loading || Boolean(switchingAccountUserId)}
       >
         <LogoutIcon className="size-4 text-foreground group-hover:opacity-100 group-hover:text-red-500 transition-colors" />
         <span className="transition-colors group-hover:text-foreground">

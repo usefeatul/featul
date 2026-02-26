@@ -1,21 +1,12 @@
 import { HTTPException } from "hono/http-exception"
+import {
+  getValidatedTrustedOrigins,
+  isConfiguredTrustedOrigin,
+} from "@featul/auth/trusted-origins"
 
 function isMutatingMethod(req: Request): boolean {
   const method = String(req.method || "").toUpperCase()
   return method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE"
-}
-
-function toRegex(originPattern: string): RegExp | null {
-  try {
-    const trimmed = originPattern.trim()
-    if (!trimmed) return null
-    const hasWildcard = trimmed.includes("*")
-    if (!hasWildcard) return new RegExp(`^${trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`)
-    const esc = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\*/g, ".*")
-    return new RegExp(`^${esc}$`)
-  } catch {
-    return null
-  }
 }
 
 function getOriginHost(value: string): string {
@@ -35,32 +26,38 @@ function isLocalDevOrigin(value: string): boolean {
   return isLocalDevHost(getOriginHost(value))
 }
 
-function splitOriginPatterns(value: string): string[] {
-  return String(value || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-}
-
-function getPrivilegedOriginPatterns(): string[] {
-  const explicit = [
-    ...splitOriginPatterns(process.env.API_TRUSTED_ORIGINS || ""),
-    ...splitOriginPatterns(process.env.AUTH_TRUSTED_ORIGINS || ""),
-  ]
-  if (explicit.length > 0) return Array.from(new Set(explicit))
-
+function buildFallbackOriginPatterns(): string[] {
   const fallback: string[] = []
   const appUrl = String(process.env.NEXT_PUBLIC_APP_URL || "").trim()
+
   if (appUrl) {
+    let parsed: URL | null = null
     try {
-      const parsed = new URL(appUrl)
+      parsed = new URL(appUrl)
+    } catch {
+      if (process.env.NODE_ENV === "production") {
+        throw new Error("NEXT_PUBLIC_APP_URL must be a valid absolute URL in production")
+      }
+    }
+
+    if (parsed) {
+      if (process.env.NODE_ENV === "production") {
+        if (parsed.protocol !== "https:") {
+          throw new Error("NEXT_PUBLIC_APP_URL must use https:// in production")
+        }
+        if (isLocalDevHost(parsed.hostname)) {
+          throw new Error("NEXT_PUBLIC_APP_URL cannot target localhost in production")
+        }
+      }
+
       fallback.push(parsed.origin)
       if (isLocalDevHost(parsed.hostname)) {
         const port = parsed.port ? `:${parsed.port}` : ""
         fallback.push(`${parsed.protocol}//*.localhost${port}`)
       }
-    } catch { }
+    }
   }
+
   if (process.env.NODE_ENV !== "production") {
     fallback.push("http://localhost:3000")
     fallback.push("http://127.0.0.1:3000")
@@ -69,17 +66,21 @@ function getPrivilegedOriginPatterns(): string[] {
     fallback.push("https://127.0.0.1:3000")
     fallback.push("https://*.localhost:3000")
   }
+
   return Array.from(new Set(fallback))
 }
 
-function isPrivilegedOrigin(origin: string): boolean {
-  const patterns = getPrivilegedOriginPatterns()
-  for (const pattern of patterns) {
-    const regex = toRegex(pattern)
-    if (regex && regex.test(origin)) return true
-  }
-  return false
+function getPrivilegedOriginPatterns(): string[] {
+  const explicit = [
+    ...getValidatedTrustedOrigins("API_TRUSTED_ORIGINS"),
+    ...getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS"),
+  ]
+
+  if (explicit.length > 0) return Array.from(new Set(explicit))
+  return buildFallbackOriginPatterns()
 }
+
+const privilegedOriginPatterns = getPrivilegedOriginPatterns()
 
 function parseOrigin(value: string): string | null {
   if (!value || value === "null") return null
@@ -92,7 +93,7 @@ function parseOrigin(value: string): string | null {
 
 function isTrustedIncomingOrigin(incomingOrigin: string, requestOrigin: string): boolean {
   if (incomingOrigin === requestOrigin) return true
-  if (isPrivilegedOrigin(incomingOrigin)) return true
+  if (isConfiguredTrustedOrigin(incomingOrigin, privilegedOriginPatterns)) return true
 
   // Local dev convenience: allow same-site localhost and *.localhost traffic.
   if (isLocalDevOrigin(requestOrigin) && isLocalDevOrigin(incomingOrigin)) {

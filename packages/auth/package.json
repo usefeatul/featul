@@ -20,6 +20,7 @@
     "./password": "./src/password.ts",
     "./session": "./src/session.ts",
     "./email": "./src/email.ts",
+    "./trusted-origins": "./src/trusted-origins.ts",
     "./trust": "./src/trust.ts",
     "./*": "./src/*"
   },

@@ -40,16 +40,14 @@ type SessionUser = {
 
 type CurrentSessionState = {
   user: SessionUser | null;
-  sessionToken: string | null;
   userId: string | null;
 };
 
 type DeviceAccount = {
-  sessionToken: string;
   userId: string;
   name: string;
-  email: string;
   image: string;
+  isCurrent: boolean;
 };
 
 type WorkspaceLite = {
@@ -76,9 +74,9 @@ export default function UserDropdown({
 
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [switchingToken, setSwitchingToken] = React.useState<string | null>(
-    null,
-  );
+  const [switchingAccountUserId, setSwitchingAccountUserId] = React.useState<
+    string | null
+  >(null);
   const [authModalOpen, setAuthModalOpen] = React.useState(false);
   const [authMode, setAuthMode] = React.useState<AuthMode>("sign-in");
   const [authRedirectTo, setAuthRedirectTo] = React.useState(pathname);
@@ -89,19 +87,14 @@ export default function UserDropdown({
       const s = await authClient.getSession();
       const payload = s && typeof s === "object" && "data" in s ? s.data : s;
       const user = (payload as any)?.user || null;
-      const sessionToken =
-        typeof (payload as any)?.session?.token === "string"
-          ? String((payload as any).session.token)
-          : null;
       const userId =
         typeof (payload as any)?.user?.id === "string"
           ? String((payload as any).user.id)
           : null;
-      return { user, sessionToken, userId };
+      return { user, userId };
     },
     initialData: () => ({
       user: (initialUser as SessionUser) || null,
-      sessionToken: null,
       userId: null,
     }),
     placeholderData: (prev) => prev as any,
@@ -116,32 +109,36 @@ export default function UserDropdown({
   const { data: deviceAccounts = [] } = useQuery<DeviceAccount[]>({
     queryKey: ["multi-session", "sidebar"],
     queryFn: async () => {
-      const res = await authClient.multiSession.listDeviceSessions({});
-      const payload =
-        res && typeof res === "object" && "data" in res ? res.data : res;
-      if (!Array.isArray(payload)) return [];
-      return payload
+      const response = await client.account.listDeviceAccounts.$get();
+      if (!response.ok) return [];
+
+      const payload = (await response.json().catch(() => null)) as {
+        accounts?: Array<{
+          userId?: string;
+          name?: string;
+          image?: string;
+          isCurrent?: boolean;
+        }>;
+      } | null;
+
+      const items = Array.isArray(payload?.accounts) ? payload.accounts : [];
+      return items
         .map((item) => {
-          const sessionToken = String(
-            (item as any)?.session?.token || "",
-          ).trim();
-          if (!sessionToken) return null;
-          const user = ((item as any)?.user || {}) as SessionUser;
-          const userId = String(user.id || "").trim();
-          const email = String(user.email || "").trim();
-          const name =
-            String(user.name || email.split("@")[0] || "Account").trim() ||
-            "Account";
-          const image = typeof user.image === "string" ? user.image : "";
+          const userId = String(item?.userId || "").trim();
+          if (!userId) return null;
+
+          const name = String(item?.name || "Account").trim() || "Account";
+          const image = typeof item?.image === "string" ? item.image : "";
+          const isCurrent = Boolean(item?.isCurrent);
+
           return {
-            sessionToken,
             userId,
             name,
-            email,
             image,
+            isCurrent,
           } satisfies DeviceAccount;
         })
-        .filter((v): v is DeviceAccount => Boolean(v));
+        .filter((value): value is DeviceAccount => Boolean(value));
     },
     enabled: true,
     placeholderData: (prev) => prev || [],
@@ -154,12 +151,7 @@ export default function UserDropdown({
   const user = currentSession?.user || null;
   const displayUser = getDisplayUser(user || undefined);
   const initials = getInitials(displayUser.name || "U");
-
-  const currentSessionToken = String(currentSession?.sessionToken || "");
-  const currentUserId = String(currentSession?.userId || "");
-  const currentEmail = String(currentSession?.user?.email || "")
-    .trim()
-    .toLowerCase();
+  const currentUserId = String(currentSession?.userId || "").trim();
 
   const openAuthModal = React.useCallback(
     (mode: AuthMode) => {
@@ -180,101 +172,63 @@ export default function UserDropdown({
   });
 
   const accounts = React.useMemo<UserDropdownAccount[]>(() => {
-    const merged = [...deviceAccounts];
-    const currentDisplay = getDisplayUser(currentSession?.user || undefined);
+    const seenUserIds = new Set<string>();
+    const next: UserDropdownAccount[] = [];
 
-    const hasCurrentInList = merged.some((account) => {
-      const sameToken =
-        Boolean(currentSessionToken) &&
-        account.sessionToken === currentSessionToken;
-      const sameUser =
-        Boolean(currentUserId) && account.userId === currentUserId;
-      const sameEmail =
-        Boolean(currentEmail) && account.email.toLowerCase() === currentEmail;
-      return sameToken || sameUser || sameEmail;
-    });
-
-    if (!hasCurrentInList && currentSession?.user) {
-      merged.unshift({
-        sessionToken:
-          currentSessionToken ||
-          `current-${currentUserId || currentEmail || "session"}`,
-        userId: currentUserId,
-        name: currentDisplay.name || "Account",
-        email: currentDisplay.email || "",
-        image: currentDisplay.image || "",
+    for (const account of deviceAccounts) {
+      if (!account.userId || seenUserIds.has(account.userId)) continue;
+      seenUserIds.add(account.userId);
+      next.push({
+        userId: account.userId,
+        name: account.name,
+        image: account.image,
+        isCurrent: account.isCurrent,
       });
     }
 
-    const next = merged.map((account) => {
-      const sameToken =
-        Boolean(currentSessionToken) &&
-        account.sessionToken === currentSessionToken;
-      const sameUser =
-        Boolean(currentUserId) && account.userId === currentUserId;
-      const sameEmail =
-        Boolean(currentEmail) && account.email.toLowerCase() === currentEmail;
+    const hasCurrentAccount = next.some((account) => account.isCurrent);
+    if (!hasCurrentAccount && currentSession?.user) {
+      next.unshift({
+        userId: currentUserId || "__current__",
+        name: displayUser.name || "Account",
+        image: displayUser.image || "",
+        isCurrent: true,
+      });
+    }
 
-      return {
-        sessionToken: account.sessionToken,
-        name: account.name,
-        email: account.email,
-        image: account.image,
-        isCurrent: sameToken || sameUser || sameEmail,
-      };
-    });
-
-    return next.sort((a, b) => Number(b.isCurrent) - Number(a.isCurrent));
-  }, [
-    deviceAccounts,
-    currentSession,
-    currentSessionToken,
-    currentUserId,
-    currentEmail,
-  ]);
+    return next.sort((left, right) => Number(right.isCurrent) - Number(left.isCurrent));
+  }, [deviceAccounts, currentUserId, currentSession?.user, displayUser.name, displayUser.image]);
 
   const showAccounts = accounts.length > 0 || Boolean(currentSession?.user);
 
+  const getWorkspaceSlugs = React.useCallback(async () => {
+    const response = await client.workspace.listMine.$get();
+    const payload = (await response.json().catch(() => null)) as {
+      workspaces?: WorkspaceLite[];
+    } | null;
+    const workspaces = Array.isArray(payload?.workspaces) ? payload.workspaces : [];
+    return workspaces
+      .map((workspace) => String(workspace?.slug || "").trim())
+      .filter(Boolean);
+  }, []);
+
   const onSwitchAccount = React.useCallback(
-    async (sessionToken: string) => {
-      if (switchingToken || !sessionToken) return;
-      if (currentSessionToken && sessionToken === currentSessionToken) {
+    async (userId: string) => {
+      if (switchingAccountUserId || !userId) return;
+      if (accounts.some((account) => account.userId === userId && account.isCurrent)) {
         setOpen(false);
         return;
       }
 
-      setSwitchingToken(sessionToken);
+      setSwitchingAccountUserId(userId);
       const toastId = toast.loading("Switching account...");
       try {
-        const result = await authClient.multiSession.setActive({
-          sessionToken,
+        const response = await client.account.switchDeviceAccount.$post({
+          userId,
         });
-        const error = (result as any)?.error;
-        if (error) {
-          throw new Error(String(error.message || "Failed to switch account"));
+        if (!response.ok) {
+          throw new Error("Failed to switch account");
         }
-
-        const payload =
-          result && typeof result === "object" && "data" in result
-            ? result.data
-            : result;
-        const switchedUser = ((payload as any)?.user ||
-          null) as SessionUser | null;
-        const switchedToken =
-          typeof (payload as any)?.session?.token === "string"
-            ? String((payload as any).session.token)
-            : sessionToken;
-        const switchedUserId =
-          typeof (payload as any)?.user?.id === "string"
-            ? String((payload as any).user.id)
-            : null;
-
-        queryClient.setQueryData(["me", "sidebar"], {
-          user: switchedUser,
-          sessionToken: switchedToken,
-          userId: switchedUserId,
-        } satisfies CurrentSessionState);
-        queryClient.setQueryData(["me"], { user: switchedUser });
 
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ["me"] }),
@@ -285,17 +239,7 @@ export default function UserDropdown({
           }),
         ]);
 
-        const mineRes = await client.workspace.listMine.$get();
-        const mineData = (await mineRes.json().catch(() => null)) as {
-          workspaces?: WorkspaceLite[];
-        } | null;
-
-        const workspaces = Array.isArray(mineData?.workspaces)
-          ? mineData.workspaces
-          : [];
-        const accessibleSlugs = workspaces
-          .map((w) => String(w?.slug || "").trim())
-          .filter(Boolean);
+        const accessibleSlugs = await getWorkspaceSlugs();
         const targetSlug = accessibleSlugs.includes(slug)
           ? slug
           : accessibleSlugs[0] || "";
@@ -311,20 +255,16 @@ export default function UserDropdown({
       } catch {
         toast.error("Failed to switch account", { id: toastId });
       } finally {
-        setSwitchingToken(null);
+        setSwitchingAccountUserId(null);
       }
     },
-    [switchingToken, currentSessionToken, router, slug, queryClient],
+    [switchingAccountUserId, accounts, getWorkspaceSlugs, router, slug, queryClient],
   );
 
   const getFirstWorkspaceSlug = React.useCallback(async () => {
-    const res = await client.workspace.listMine.$get();
-    const data = (await res.json().catch(() => null)) as {
-      workspaces?: WorkspaceLite[];
-    } | null;
-    const list = Array.isArray(data?.workspaces) ? data.workspaces : [];
-    return String(list[0]?.slug || "").trim();
-  }, []);
+    const slugs = await getWorkspaceSlugs();
+    return slugs[0] || "";
+  }, [getWorkspaceSlugs]);
 
   const onAccount = React.useCallback(async () => {
     setOpen(false);
@@ -363,7 +303,7 @@ export default function UserDropdown({
   }, [router, slug, getFirstWorkspaceSlug]);
 
   const onSignOut = React.useCallback(async () => {
-    if (loading || switchingToken) return;
+    if (loading || switchingAccountUserId) return;
 
     setLoading(true);
     try {
@@ -375,7 +315,7 @@ export default function UserDropdown({
     } finally {
       setLoading(false);
     }
-  }, [router, loading, switchingToken]);
+  }, [router, loading, switchingAccountUserId]);
 
   React.useEffect(() => {
     if (!authModalOpen) {
@@ -420,7 +360,7 @@ export default function UserDropdown({
           <UserDropdownMenu
             showAccounts={showAccounts}
             accounts={accounts}
-            switchingToken={switchingToken}
+            switchingAccountUserId={switchingAccountUserId}
             loading={loading}
             onAccount={onAccount}
             onSettings={onSettings}
@@ -433,7 +373,7 @@ export default function UserDropdown({
 
       <UserDropdownQuickSwitch
         accounts={accounts}
-        switchingToken={switchingToken}
+        switchingAccountUserId={switchingAccountUserId}
         onSwitchAccount={onSwitchAccount}
       />
 

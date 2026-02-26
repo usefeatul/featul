@@ -7,3 +7,7 @@ export const deleteAccountInputSchema = z.object({
 export const revokeSessionInputSchema = z.object({
     sessionId: z.string().min(1),
 })
+
+export const switchDeviceAccountInputSchema = z.object({
+    userId: z.string().min(1),
+})

@@ -1,42 +1,25 @@
-function toRegex(originPattern: string): RegExp | null {
-  try {
-    const trimmed = originPattern.trim()
-    if (!trimmed) return null
-    const hasWildcard = trimmed.includes("*")
-    if (!hasWildcard) return new RegExp(`^${trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`)
-    const esc = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\*/g, ".*")
-    return new RegExp(`^${esc}$`)
-  } catch {
-    return null
-  }
-}
+import { getValidatedTrustedOrigins, isConfiguredTrustedOrigin } from "./trusted-origins"
 
-function getConfiguredOriginPatterns(): string[] {
-  const raw = process.env.AUTH_TRUSTED_ORIGINS || ""
-  return raw.split(",").map((s) => s.trim()).filter(Boolean)
-}
-
-function isOriginAllowedByConfig(origin: string): boolean {
-  const patterns = getConfiguredOriginPatterns()
-  for (const p of patterns) {
-    const r = toRegex(p)
-    if (r && r.test(origin)) return true
-  }
-  return false
-}
+const configuredTrustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS")
 
 export async function isTrustedOrigin(origin: string): Promise<boolean> {
-  if (!origin) return false
+  const value = String(origin || "").trim()
+  if (!value) return false
+
+  let normalizedOrigin: string
   try {
-    const u = new URL(origin)
-    if (!u.hostname) return false
+    const url = new URL(value)
+    if (!url.hostname) return false
+    normalizedOrigin = url.origin
   } catch {
     return false
   }
-  if (process.env.NODE_ENV === "production" && !origin.startsWith("https://")) {
+
+  if (process.env.NODE_ENV === "production" && !normalizedOrigin.startsWith("https://")) {
     return false
   }
-  return isOriginAllowedByConfig(origin)
+
+  return isConfiguredTrustedOrigin(normalizedOrigin, configuredTrustedOrigins)
 }
 
 export function corsHeaders(origin: string): HeadersInit {
@@ -50,7 +33,7 @@ export function corsHeaders(origin: string): HeadersInit {
 }
 
 export async function buildTrustedOrigins(request: Request): Promise<string[]> {
-  const list = getConfiguredOriginPatterns()
+  const list = [...configuredTrustedOrigins]
   const origin = request.headers.get("origin") || ""
   if (origin && (await isTrustedOrigin(origin))) list.push(origin)
   return Array.from(new Set(list))

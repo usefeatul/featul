@@ -9,6 +9,7 @@ import { sendVerificationOtpEmail, sendWelcome } from "./email"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { getPasswordError } from "./password"
 import { syncPolarSubscription } from "./polar"
+import { getValidatedTrustedOrigins } from "./trusted-origins"
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
@@ -30,6 +31,7 @@ function resolveCookieDomain() {
 }
 
 const cookieDomain = resolveCookieDomain()
+const trustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS")
 
 const polarAccessToken = (process.env.POLAR_ACCESS_TOKEN || "").trim()
 const polarWebhookSecret = (process.env.POLAR_WEBHOOK_SECRET || "").trim()
@@ -169,7 +171,7 @@ export const auth = betterAuth({
     },
   },
 
-  trustedOrigins: (process.env.AUTH_TRUSTED_ORIGINS || "").split(",").map((s) => s.trim()).filter(Boolean),
+  trustedOrigins,
 
   plugins: [
     organization(),
