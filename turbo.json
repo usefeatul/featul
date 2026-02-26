@@ -35,7 +35,10 @@
         "PASSKEY_RP_ID",
         "PASSKEY_RP_NAME",
         "PASSKEY_ORIGIN",
-        "API_TRUSTED_ORIGINS"
+        "API_TRUSTED_ORIGINS",
+        "FLAGS",
+        "FLAGS_SECRET",
+        "NOTRA_CREDENTIALS_ENCRYPTION_KEY"
       ]
     },
     "lint": {
