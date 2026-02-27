@@ -31,6 +31,7 @@
     "@polar-sh/sdk": "^0.42.2",
     "@react-email/components": "^1.0.1",
     "@react-email/render": "^2.0.0",
+    "@upstash/redis": "^1.35.7",
     "better-auth": "1.4.18"
   },
   "devDependencies": {

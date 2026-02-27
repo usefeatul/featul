@@ -11,6 +11,7 @@ import { getPasswordError } from "./password"
 import { syncPolarSubscription } from "./polar"
 import { getValidatedTrustedOrigins } from "./trusted-origins"
 import { setSessionCookie } from "better-auth/cookies"
+import { getAuthRateLimitStorage } from "./rate-limit-storage"
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
@@ -33,6 +34,7 @@ function resolveCookieDomain() {
 
 const cookieDomain = resolveCookieDomain()
 const trustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS")
+const authRateLimitStorage = getAuthRateLimitStorage()
 
 const multiSessionBootstrapPlugin = {
   id: "multi-session-bootstrap",
@@ -197,9 +199,32 @@ export const auth = betterAuth({
       sameSite: "none",
       secure: true,
     },
+    ipAddress: {
+      ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for", "x-real-ip"],
+      ipv6Subnet: 64,
+    },
   },
 
   trustedOrigins,
+
+  rateLimit: {
+    customStorage: authRateLimitStorage,
+    window: 60,
+    max: 100,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 60, max: 5 },
+      "/request-password-reset": { window: 300, max: 3 },
+      "/reset-password": { window: 300, max: 5 },
+      "/email-otp/send-verification-otp": { window: 60, max: 5 },
+      "/email-otp/request-password-reset": { window: 300, max: 3 },
+      "/email-otp/reset-password": { window: 300, max: 5 },
+      "/two-factor/verify-otp": { window: 60, max: 5 },
+      "/two-factor/verify-totp": { window: 60, max: 5 },
+      "/two-factor/verify-backup-code": { window: 60, max: 5 },
+      "/passkey/verify-authentication": { window: 60, max: 10 },
+    },
+  },
 
   plugins: [
     organization(),
