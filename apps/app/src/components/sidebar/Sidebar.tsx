@@ -20,6 +20,7 @@ import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { CreatePostModal } from "../post/CreatePostModal";
+import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
 const secondaryNav: NavItem[] = buildBottomNav();
 export default function Sidebar({
@@ -31,33 +32,35 @@ export default function Sidebar({
   initialDomainInfo,
   initialWorkspaces,
   initialUser,
+  initialDeviceAccounts,
 }: {
   className?: string;
   initialCounts?: Record<string, number>;
   initialTimezone?: string | null;
   initialServerNow?: number;
   initialWorkspace:
-  | {
-    id: string;
-    name: string;
-    slug: string;
-    logo?: string | null;
-    plan?: "free" | "starter" | "professional" | null;
-  }
-  | undefined;
-  initialDomainInfo?: { domain: { status: string; host?: string } | null } | undefined;
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        logo?: string | null;
+        plan?: "free" | "starter" | "professional" | null;
+      }
+    | undefined;
+  initialDomainInfo?:
+    | { domain: { status: string; host?: string } | null }
+    | undefined;
   initialWorkspaces:
-  | {
-    id: string;
-    name: string;
-    slug: string;
-    logo?: string | null;
-    plan?: "free" | "starter" | "professional" | null;
-  }[]
-  | undefined;
-  initialUser:
-  | { name?: string; email?: string; image?: string | null }
-  | undefined;
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        logo?: string | null;
+        plan?: "free" | "starter" | "professional" | null;
+      }[]
+    | undefined;
+  initialUser: UserIdentity | undefined;
+  initialDeviceAccounts?: DeviceAccount[] | undefined;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -66,7 +69,7 @@ export default function Sidebar({
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
     initialCounts,
-    initialDomainInfo || null
+    initialDomainInfo || null,
   );
   const [hotkeysActive, setHotkeysActive] = useState(false);
   const [createPostOpen, setCreatePostOpen] = useState(false);
@@ -88,7 +91,7 @@ export default function Sidebar({
       className={cn(
         "hidden lg:flex w-full lg:w-60 lg:shrink-0 flex-col bg-background",
         "lg:sticky lg:top-2 lg:h-[calc(100vh-1rem)] lg:overflow-hidden",
-        className
+        className,
       )}
     >
       <div className="p-2">
@@ -159,7 +162,10 @@ export default function Sidebar({
             mutedIcon
           />
         ))}
-        <UserDropdown initialUser={initialUser} />
+        <UserDropdown
+          initialUser={initialUser}
+          initialDeviceAccounts={initialDeviceAccounts}
+        />
       </SidebarSection>
     </aside>
   );

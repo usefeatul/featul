@@ -5,104 +5,34 @@ import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@featul/auth/client";
 import { client } from "@featul/api/client";
 import { getDisplayUser, getInitials } from "@/utils/user";
-import type { UserDropdownAccount } from "./UserDropdownMenu";
-
-export type SessionUser = {
-  id?: string;
-  name?: string;
-  email?: string;
-  image?: string | null;
-};
-
-type CurrentSessionState = {
-  user: SessionUser | null;
-  userId: string | null;
-};
-
-type DeviceAccount = {
-  userId: string;
-  name: string;
-  image: string;
-  isCurrent: boolean;
-};
+import { accountQueryKeys } from "./query-keys";
+import {
+  buildAccountsList,
+  normalizeDeviceAccountsPayload,
+} from "./device-account-utils";
+import type {
+  CurrentSessionState,
+  DeviceAccount,
+  SessionUser,
+  UserIdentity,
+} from "./types";
 
 type UseUserDropdownDataProps = {
-  initialUser?: { name?: string; email?: string; image?: string | null };
+  initialUser?: UserIdentity;
+  initialDeviceAccounts?: DeviceAccount[];
 };
 
-function normalizeDeviceAccountsPayload(payload: unknown): DeviceAccount[] {
-  const accounts = Array.isArray((payload as { accounts?: unknown[] } | null)?.accounts)
-    ? ((payload as { accounts?: unknown[] }).accounts as unknown[])
-    : [];
+export function useUserDropdownData({
+  initialUser,
+  initialDeviceAccounts = [],
+}: UseUserDropdownDataProps) {
+  const normalizedInitialDeviceAccounts = React.useMemo(
+    () => normalizeDeviceAccountsPayload({ accounts: initialDeviceAccounts }),
+    [initialDeviceAccounts],
+  );
 
-  return accounts
-    .map((item) => {
-      const value = (item || {}) as {
-        userId?: string;
-        name?: string;
-        image?: string;
-        isCurrent?: boolean;
-      };
-
-      const userId = String(value.userId || "").trim();
-      if (!userId) return null;
-
-      const name = String(value.name || "Account").trim() || "Account";
-      const image = typeof value.image === "string" ? value.image : "";
-      const isCurrent = Boolean(value.isCurrent);
-
-      return {
-        userId,
-        name,
-        image,
-        isCurrent,
-      } satisfies DeviceAccount;
-    })
-    .filter((value): value is DeviceAccount => Boolean(value));
-}
-
-function buildAccountsList({
-  deviceAccounts,
-  currentSession,
-  currentUserId,
-  fallbackName,
-  fallbackImage,
-}: {
-  deviceAccounts: DeviceAccount[];
-  currentSession: CurrentSessionState | undefined;
-  currentUserId: string;
-  fallbackName: string;
-  fallbackImage: string;
-}): UserDropdownAccount[] {
-  const seenUserIds = new Set<string>();
-  const accounts: UserDropdownAccount[] = [];
-
-  for (const account of deviceAccounts) {
-    if (!account.userId || seenUserIds.has(account.userId)) continue;
-    seenUserIds.add(account.userId);
-    accounts.push({
-      userId: account.userId,
-      name: account.name,
-      image: account.image,
-      isCurrent: account.isCurrent,
-    });
-  }
-
-  if (!accounts.some((account) => account.isCurrent) && currentSession?.user) {
-    accounts.unshift({
-      userId: currentUserId || "__current__",
-      name: fallbackName || "Account",
-      image: fallbackImage || "",
-      isCurrent: true,
-    });
-  }
-
-  return accounts.sort((left, right) => Number(right.isCurrent) - Number(left.isCurrent));
-}
-
-export function useUserDropdownData({ initialUser }: UseUserDropdownDataProps) {
   const { data: currentSession } = useQuery<CurrentSessionState>({
-    queryKey: ["me", "sidebar"],
+    queryKey: accountQueryKeys.meSidebar,
     queryFn: async () => {
       const session = await authClient.getSession();
       const payload =
@@ -131,18 +61,23 @@ export function useUserDropdownData({ initialUser }: UseUserDropdownDataProps) {
     enabled: true,
   });
 
-  const { data: deviceAccounts = [] } = useQuery<DeviceAccount[]>({
-    queryKey: ["multi-session", "sidebar"],
+  const { data: deviceAccounts = normalizedInitialDeviceAccounts } = useQuery<
+    DeviceAccount[]
+  >({
+    queryKey: accountQueryKeys.deviceAccountsSidebar,
     queryFn: async () => {
       const response = await client.account.listDeviceAccounts.$get();
-      if (!response.ok) return [];
+      if (!response.ok) {
+        throw new Error("Failed to load device accounts");
+      }
       const payload = await response.json().catch(() => null);
       return normalizeDeviceAccountsPayload(payload);
     },
+    initialData: normalizedInitialDeviceAccounts,
     enabled: true,
-    placeholderData: (prev) => prev || [],
+    placeholderData: (prev) => prev || normalizedInitialDeviceAccounts,
     staleTime: 30_000,
-    refetchOnMount: false,
+    refetchOnMount: "always",
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });

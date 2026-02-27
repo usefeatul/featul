@@ -17,13 +17,7 @@ import { PlusIcon } from "@featul/ui/icons/plus";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { getInitials } from "@/utils/user";
-
-export type UserDropdownAccount = {
-  userId: string;
-  name: string;
-  image: string;
-  isCurrent: boolean;
-};
+import type { UserDropdownAccount } from "./types";
 
 type UserDropdownMenuProps = {
   showAccounts: boolean;

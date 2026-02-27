@@ -8,6 +8,7 @@ import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { buildBottomNav, getSlugFromPath } from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
+import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
 export default function MobileSidebar({
   className = "",
@@ -18,36 +19,44 @@ export default function MobileSidebar({
   initialDomainInfo,
   initialWorkspaces,
   initialUser,
+  initialDeviceAccounts,
 }: {
   className?: string;
   initialCounts?: Record<string, number>;
   initialTimezone?: string | null;
   initialServerNow?: number;
   initialWorkspace:
-  | {
-    id: string;
-    name: string;
-    slug: string;
-    logo?: string | null;
-    customDomain?: string | null;
-    plan?: "free" | "starter" | "professional" | null;
-  }
-  | undefined;
-  initialDomainInfo?: { domain: { status: string; host?: string } | null } | undefined;
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        logo?: string | null;
+        customDomain?: string | null;
+        plan?: "free" | "starter" | "professional" | null;
+      }
+    | undefined;
+  initialDomainInfo?:
+    | { domain: { status: string; host?: string } | null }
+    | undefined;
   initialWorkspaces:
-  | {
-    id: string;
-    name: string;
-    slug: string;
-    logo?: string | null;
-    plan?: "free" | "starter" | "professional" | null;
-  }[]
-  | undefined;
-  initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        logo?: string | null;
+        plan?: "free" | "starter" | "professional" | null;
+      }[]
+    | undefined;
+  initialUser?: UserIdentity | undefined;
+  initialDeviceAccounts?: DeviceAccount[] | undefined;
 }) {
   const pathname = usePathname() || "/";
   const slug = getSlugFromPath(pathname);
-  const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(slug, initialCounts, initialDomainInfo || null);
+  const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
+    slug,
+    initialCounts,
+    initialDomainInfo || null,
+  );
   const secondaryNav = buildBottomNav();
   const [open, setOpen] = React.useState(false);
 
@@ -65,6 +74,7 @@ export default function MobileSidebar({
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
           initialUser={initialUser}
+          initialDeviceAccounts={initialDeviceAccounts}
           onLinkClick={() => setOpen(false)}
         />
       </Drawer>

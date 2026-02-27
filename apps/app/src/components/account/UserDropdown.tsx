@@ -31,13 +31,17 @@ import UserDropdownMenu from "./UserDropdownMenu";
 import UserDropdownQuickSwitch from "./UserDropdownQuickSwitch";
 import { useUserDropdownData } from "./useUserDropdownData";
 import { useWorkspaceNavigation } from "./useWorkspaceNavigation";
+import { accountQueryKeys } from "./query-keys";
+import type { DeviceAccount, UserIdentity } from "./types";
 
 export default function UserDropdown({
   className = "",
   initialUser,
+  initialDeviceAccounts,
 }: {
   className?: string;
-  initialUser?: { name?: string; email?: string; image?: string | null };
+  initialUser?: UserIdentity;
+  initialDeviceAccounts?: DeviceAccount[];
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -60,12 +64,14 @@ export default function UserDropdown({
   const [authRedirectTo, setAuthRedirectTo] = React.useState(pathname);
   const nextAuthRedirectRef = React.useRef<string | null>(null);
 
-  const { currentSession, displayUser, initials, accounts, showAccounts } =
-    useUserDropdownData({ initialUser });
-  const {
-    navigateAfterSwitch,
-    navigateToAccountProfile,
-  } = useWorkspaceNavigation(slug);
+  const { displayUser, initials, accounts, showAccounts } = useUserDropdownData(
+    {
+      initialUser,
+      initialDeviceAccounts,
+    },
+  );
+  const { navigateAfterSwitch, navigateToAccountProfile } =
+    useWorkspaceNavigation(slug);
 
   const openAuthModal = React.useCallback(
     (mode: AuthMode) => {
@@ -91,7 +97,11 @@ export default function UserDropdown({
   const onSwitchAccount = React.useCallback(
     async (userId: string) => {
       if (switchingAccountUserId || !userId) return;
-      if (accounts.some((account) => account.userId === userId && account.isCurrent)) {
+      if (
+        accounts.some(
+          (account) => account.userId === userId && account.isCurrent,
+        )
+      ) {
         setOpen(false);
         return;
       }
@@ -107,11 +117,15 @@ export default function UserDropdown({
         }
 
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["me"] }),
-          queryClient.invalidateQueries({ queryKey: ["me", "sidebar"] }),
-          queryClient.invalidateQueries({ queryKey: ["workspaces"] }),
+          queryClient.invalidateQueries({ queryKey: accountQueryKeys.me }),
           queryClient.invalidateQueries({
-            queryKey: ["multi-session", "sidebar"],
+            queryKey: accountQueryKeys.meSidebar,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: accountQueryKeys.workspaces,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: accountQueryKeys.deviceAccountsSidebar,
           }),
         ]);
 
@@ -149,9 +163,11 @@ export default function UserDropdown({
 
   React.useEffect(() => {
     if (!authModalOpen) {
-      void queryClient.invalidateQueries({ queryKey: ["me", "sidebar"] });
       void queryClient.invalidateQueries({
-        queryKey: ["multi-session", "sidebar"],
+        queryKey: accountQueryKeys.meSidebar,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: accountQueryKeys.deviceAccountsSidebar,
       });
     }
   }, [authModalOpen, queryClient]);
@@ -171,50 +187,53 @@ export default function UserDropdown({
   }, [closeThenOpenAuth]);
 
   return (
-    <div className={cn("relative w-full", className)}>
-      <div className="min-w-0">
-        <DropdownMenu open={open} onOpenChange={setOpen}>
-          <DropdownMenuTrigger asChild className="w-full cursor-pointer">
-            <button
-              suppressHydrationWarning
-              type="button"
-              className="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40"
-            >
-              <div className="ml-1 overflow-hidden">
-                <Avatar className="size-5.5">
-                  {displayUser.image ? (
-                    <AvatarImage
-                      src={displayUser.image}
-                      alt={displayUser.name}
-                    />
-                  ) : null}
-                  <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
-              </div>
-              <span className="truncate transition-colors">
-                {displayUser.name || "Account"}
-              </span>
-            </button>
-          </DropdownMenuTrigger>
+    <div className={cn("w-full", className)}>
+      <div className="flex items-center gap-1">
+        <div className="min-w-0 flex-1">
+          <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild className="w-full cursor-pointer">
+              <button
+                suppressHydrationWarning
+                type="button"
+                className="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40"
+              >
+                <div className="ml-1 overflow-hidden">
+                  <Avatar className="size-5.5">
+                    {displayUser.image ? (
+                      <AvatarImage
+                        src={displayUser.image}
+                        alt={displayUser.name}
+                      />
+                    ) : null}
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                </div>
+                <span className="truncate transition-colors">
+                  {displayUser.name || "Account"}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
 
-          <UserDropdownMenu
-            showAccounts={showAccounts}
-            accounts={accounts}
-            switchingAccountUserId={switchingAccountUserId}
-            loading={loading}
-            onAccount={onAccount}
-            onSignOut={onSignOut}
-            onOpenAddAccount={onOpenAddAccount}
-            onSwitchAccount={onSwitchAccount}
-          />
-        </DropdownMenu>
+            <UserDropdownMenu
+              showAccounts={showAccounts}
+              accounts={accounts}
+              switchingAccountUserId={switchingAccountUserId}
+              loading={loading}
+              onAccount={onAccount}
+              onSignOut={onSignOut}
+              onOpenAddAccount={onOpenAddAccount}
+              onSwitchAccount={onSwitchAccount}
+            />
+          </DropdownMenu>
+        </div>
+
+        <UserDropdownQuickSwitch
+          accounts={accounts}
+          switchingAccountUserId={switchingAccountUserId}
+          onSwitchAccount={onSwitchAccount}
+          onOpenMenu={() => setOpen(true)}
+        />
       </div>
-
-      <UserDropdownQuickSwitch
-        accounts={accounts}
-        switchingAccountUserId={switchingAccountUserId}
-        onSwitchAccount={onSwitchAccount}
-      />
 
       <Dialog open={authModalOpen} onOpenChange={setAuthModalOpen}>
         <DialogContent
