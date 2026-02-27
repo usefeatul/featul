@@ -65,7 +65,6 @@ export default function UserDropdown({
   const {
     navigateAfterSwitch,
     navigateToAccountProfile,
-    navigateToBrandingSettings,
   } = useWorkspaceNavigation(slug);
 
   const openAuthModal = React.useCallback(
@@ -132,11 +131,6 @@ export default function UserDropdown({
     setOpen(false);
     await navigateToAccountProfile();
   }, [navigateToAccountProfile]);
-
-  const onSettings = React.useCallback(async () => {
-    setOpen(false);
-    await navigateToBrandingSettings();
-  }, [navigateToBrandingSettings]);
 
   const onSignOut = React.useCallback(async () => {
     if (loading || switchingAccountUserId) return;
@@ -209,7 +203,6 @@ export default function UserDropdown({
             switchingAccountUserId={switchingAccountUserId}
             loading={loading}
             onAccount={onAccount}
-            onSettings={onSettings}
             onSignOut={onSignOut}
             onOpenAddAccount={onOpenAddAccount}
             onSwitchAccount={onSwitchAccount}
