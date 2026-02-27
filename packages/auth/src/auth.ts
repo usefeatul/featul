@@ -9,6 +9,7 @@ import { sendVerificationOtpEmail, sendWelcome } from "./email"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { getPasswordError } from "./password"
 import { syncPolarSubscription } from "./polar"
+import { getAuthRateLimitStorage } from "./rate-limit-storage"
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
@@ -30,6 +31,7 @@ function resolveCookieDomain() {
 }
 
 const cookieDomain = resolveCookieDomain()
+const authRateLimitStorage = getAuthRateLimitStorage()
 
 const polarAccessToken = (process.env.POLAR_ACCESS_TOKEN || "").trim()
 const polarWebhookSecret = (process.env.POLAR_WEBHOOK_SECRET || "").trim()
@@ -167,9 +169,32 @@ export const auth = betterAuth({
       sameSite: "none",
       secure: true,
     },
+    ipAddress: {
+      ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for", "x-real-ip"],
+      ipv6Subnet: 64,
+    },
   },
 
   trustedOrigins: (process.env.AUTH_TRUSTED_ORIGINS || "").split(",").map((s) => s.trim()).filter(Boolean),
+
+  rateLimit: {
+    customStorage: authRateLimitStorage,
+    window: 60,
+    max: 100,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 60, max: 5 },
+      "/request-password-reset": { window: 300, max: 3 },
+      "/reset-password": { window: 300, max: 5 },
+      "/email-otp/send-verification-otp": { window: 60, max: 5 },
+      "/email-otp/request-password-reset": { window: 300, max: 3 },
+      "/email-otp/reset-password": { window: 300, max: 5 },
+      "/two-factor/verify-otp": { window: 60, max: 5 },
+      "/two-factor/verify-totp": { window: 60, max: 5 },
+      "/two-factor/verify-backup-code": { window: 60, max: 5 },
+      "/passkey/verify-authentication": { window: 60, max: 10 },
+    },
+  },
 
   plugins: [
     organization(),
