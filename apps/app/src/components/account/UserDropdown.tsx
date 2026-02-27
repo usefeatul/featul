@@ -33,6 +33,7 @@ import { useUserDropdownData } from "./useUserDropdownData";
 import { useWorkspaceNavigation } from "./useWorkspaceNavigation";
 import { accountQueryKeys } from "./query-keys";
 import type { DeviceAccount, UserIdentity } from "./types";
+import { MAX_DEVICE_ACCOUNTS } from "./constants";
 
 export default function UserDropdown({
   className = "",
@@ -174,17 +175,36 @@ export default function UserDropdown({
 
   const onOpenAddAccount = React.useCallback(() => {
     void (async () => {
+      if (accounts.length >= MAX_DEVICE_ACCOUNTS) {
+        toast.error(`You can connect up to ${MAX_DEVICE_ACCOUNTS} accounts`);
+        return;
+      }
+
       try {
-        await client.account.bootstrapDeviceSession.$post();
-      } catch {
-        // Non-blocking: still allow adding another account.
+        const response = await client.account.bootstrapDeviceSession.$post();
+        if (!response.ok) {
+          const payload = (await response.json().catch(() => null)) as {
+            message?: string;
+          } | null;
+          throw new Error(
+            payload?.message ||
+              `You can connect up to ${MAX_DEVICE_ACCOUNTS} accounts`,
+          );
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : `You can connect up to ${MAX_DEVICE_ACCOUNTS} accounts`;
+        toast.error(message);
+        return;
       }
       // Add-account should always land on a workspace accessible to the new
       // active account, not the previous account's current workspace.
       nextAuthRedirectRef.current = "/start";
       closeThenOpenAuth("sign-in");
     })();
-  }, [closeThenOpenAuth]);
+  }, [accounts.length, closeThenOpenAuth]);
 
   return (
     <div className={cn("w-full", className)}>

@@ -18,6 +18,7 @@ import { LoaderIcon } from "@featul/ui/icons/loader";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { getInitials } from "@/utils/user";
 import type { UserDropdownAccount } from "./types";
+import { MAX_DEVICE_ACCOUNTS } from "./constants";
 
 type UserDropdownMenuProps = {
   showAccounts: boolean;
@@ -40,6 +41,10 @@ export default function UserDropdownMenu({
   onOpenAddAccount,
   onSwitchAccount,
 }: UserDropdownMenuProps) {
+  const isAtAccountLimit = accounts.length >= MAX_DEVICE_ACCOUNTS;
+  const isAddAccountDisabled =
+    Boolean(switchingAccountUserId) || isAtAccountLimit;
+
   return (
     <DropdownMenuContent
       className="w-40 max-w-[85vw] p-1.5"
@@ -104,9 +109,10 @@ export default function UserDropdownMenu({
             <DropdownMenuItem
               onSelect={(event) => {
                 event.preventDefault();
+                if (isAddAccountDisabled) return;
                 onOpenAddAccount();
               }}
-              disabled={Boolean(switchingAccountUserId)}
+              disabled={isAddAccountDisabled}
               className="mt-1 h-8 rounded-md px-2.5 flex items-center gap-2 whitespace-nowrap group"
             >
               <PlusIcon className="size-4 text-foreground transition-colors group-hover:text-primary" />
