@@ -27,12 +27,15 @@ import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
 import type { AuthMode } from "@/types/auth";
 import { useCloseThenOpenAuth } from "@/hooks/useCloseThenOpenAuth";
+import AccountActionsPopover, {
+  type AccountActionsPopoverHandle,
+} from "./AccountActionsPopover";
 import UserDropdownMenu from "./UserDropdownMenu";
 import UserDropdownQuickSwitch from "./UserDropdownQuickSwitch";
 import { useUserDropdownData } from "./useUserDropdownData";
 import { useWorkspaceNavigation } from "./useWorkspaceNavigation";
 import { accountQueryKeys } from "./query-keys";
-import type { DeviceAccount, UserIdentity } from "./types";
+import type { DeviceAccount, UserDropdownAccount, UserIdentity } from "./types";
 import { MAX_DEVICE_ACCOUNTS } from "./constants";
 
 export default function UserDropdown({
@@ -60,10 +63,15 @@ export default function UserDropdown({
   const [switchingAccountUserId, setSwitchingAccountUserId] = React.useState<
     string | null
   >(null);
+  const [removingAccountUserId, setRemovingAccountUserId] = React.useState<
+    string | null
+  >(null);
   const [authModalOpen, setAuthModalOpen] = React.useState(false);
   const [authMode, setAuthMode] = React.useState<AuthMode>("sign-in");
   const [authRedirectTo, setAuthRedirectTo] = React.useState(pathname);
   const nextAuthRedirectRef = React.useRef<string | null>(null);
+  const accountActionsPopoverRef =
+    React.useRef<AccountActionsPopoverHandle | null>(null);
 
   const { displayUser, initials, accounts, showAccounts } = useUserDropdownData(
     {
@@ -97,7 +105,7 @@ export default function UserDropdown({
 
   const onSwitchAccount = React.useCallback(
     async (userId: string) => {
-      if (switchingAccountUserId || !userId) return;
+      if (switchingAccountUserId || removingAccountUserId || !userId) return;
       if (
         accounts.some(
           (account) => account.userId === userId && account.isCurrent,
@@ -108,6 +116,7 @@ export default function UserDropdown({
       }
 
       setSwitchingAccountUserId(userId);
+      accountActionsPopoverRef.current?.close();
       const toastId = toast.loading("Switching account...");
       try {
         const response = await client.account.switchDeviceAccount.$post({
@@ -139,7 +148,60 @@ export default function UserDropdown({
         setSwitchingAccountUserId(null);
       }
     },
-    [switchingAccountUserId, accounts, navigateAfterSwitch, queryClient],
+    [
+      switchingAccountUserId,
+      removingAccountUserId,
+      accounts,
+      navigateAfterSwitch,
+      queryClient,
+    ],
+  );
+
+  const onRemoveAccount = React.useCallback(
+    async (account: UserDropdownAccount) => {
+      if (switchingAccountUserId || removingAccountUserId) return;
+      if (!account?.userId || account.isCurrent) return;
+
+      setRemovingAccountUserId(account.userId);
+      const toastId = toast.loading("Removing account...");
+      try {
+        const response = await client.account.removeDeviceAccount.$post({
+          userId: account.userId,
+        });
+
+        if (!response.ok) {
+          const payload = (await response.json().catch(() => null)) as {
+            message?: string;
+          } | null;
+          throw new Error(payload?.message || "Failed to remove account");
+        }
+
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: accountQueryKeys.deviceAccountsSidebar,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: accountQueryKeys.meSidebar,
+          }),
+        ]);
+
+        toast.success("Account removed", { id: toastId });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to remove account";
+        toast.error(message, { id: toastId });
+      } finally {
+        setRemovingAccountUserId(null);
+      }
+    },
+    [switchingAccountUserId, removingAccountUserId, queryClient],
+  );
+
+  const onOpenAccountActions = React.useCallback(
+    (event: React.MouseEvent<HTMLElement>, account: UserDropdownAccount) => {
+      accountActionsPopoverRef.current?.open(event, account);
+    },
+    [],
   );
 
   const onAccount = React.useCallback(async () => {
@@ -148,7 +210,7 @@ export default function UserDropdown({
   }, [navigateToAccountProfile]);
 
   const onSignOut = React.useCallback(async () => {
-    if (loading || switchingAccountUserId) return;
+    if (loading || switchingAccountUserId || removingAccountUserId) return;
 
     setLoading(true);
     try {
@@ -160,7 +222,7 @@ export default function UserDropdown({
     } finally {
       setLoading(false);
     }
-  }, [router, loading, switchingAccountUserId]);
+  }, [router, loading, switchingAccountUserId, removingAccountUserId]);
 
   React.useEffect(() => {
     if (!authModalOpen) {
@@ -206,11 +268,21 @@ export default function UserDropdown({
     })();
   }, [accounts.length, closeThenOpenAuth]);
 
+  const isBusy = Boolean(switchingAccountUserId || removingAccountUserId);
+
   return (
     <div className={cn("w-full", className)}>
       <div className="flex items-center gap-1">
         <div className="min-w-0 flex-1">
-          <DropdownMenu open={open} onOpenChange={setOpen}>
+          <DropdownMenu
+            open={open}
+            onOpenChange={(nextOpen) => {
+              setOpen(nextOpen);
+              if (!nextOpen) {
+                accountActionsPopoverRef.current?.close();
+              }
+            }}
+          >
             <DropdownMenuTrigger asChild className="w-full cursor-pointer">
               <button
                 suppressHydrationWarning
@@ -238,11 +310,13 @@ export default function UserDropdown({
               showAccounts={showAccounts}
               accounts={accounts}
               switchingAccountUserId={switchingAccountUserId}
+              removingAccountUserId={removingAccountUserId}
               loading={loading}
               onAccount={onAccount}
               onSignOut={onSignOut}
               onOpenAddAccount={onOpenAddAccount}
               onSwitchAccount={onSwitchAccount}
+              onOpenAccountActions={onOpenAccountActions}
             />
           </DropdownMenu>
         </div>
@@ -250,10 +324,21 @@ export default function UserDropdown({
         <UserDropdownQuickSwitch
           accounts={accounts}
           switchingAccountUserId={switchingAccountUserId}
+          removingAccountUserId={removingAccountUserId}
           onSwitchAccount={onSwitchAccount}
           onOpenMenu={() => setOpen(true)}
+          onOpenAccountActions={onOpenAccountActions}
         />
       </div>
+
+      <AccountActionsPopover
+        ref={accountActionsPopoverRef}
+        accounts={accounts}
+        isBusy={isBusy}
+        removingAccountUserId={removingAccountUserId}
+        onSwitchAccount={onSwitchAccount}
+        onRemoveAccount={onRemoveAccount}
+      />
 
       <Dialog open={authModalOpen} onOpenChange={setAuthModalOpen}>
         <DialogContent

@@ -24,26 +24,33 @@ type UserDropdownMenuProps = {
   showAccounts: boolean;
   accounts: UserDropdownAccount[];
   switchingAccountUserId: string | null;
+  removingAccountUserId: string | null;
   loading: boolean;
   onAccount: () => void;
   onSignOut: () => void;
   onOpenAddAccount: () => void;
   onSwitchAccount: (userId: string) => void;
+  onOpenAccountActions: (
+    event: React.MouseEvent<HTMLElement>,
+    account: UserDropdownAccount,
+  ) => void;
 };
 
 export default function UserDropdownMenu({
   showAccounts,
   accounts,
   switchingAccountUserId,
+  removingAccountUserId,
   loading,
   onAccount,
   onSignOut,
   onOpenAddAccount,
   onSwitchAccount,
+  onOpenAccountActions,
 }: UserDropdownMenuProps) {
+  const isBusy = Boolean(switchingAccountUserId || removingAccountUserId);
   const isAtAccountLimit = accounts.length >= MAX_DEVICE_ACCOUNTS;
-  const isAddAccountDisabled =
-    Boolean(switchingAccountUserId) || isAtAccountLimit;
+  const isAddAccountDisabled = isBusy || isAtAccountLimit;
 
   return (
     <DropdownMenuContent
@@ -73,8 +80,7 @@ export default function UserDropdownMenu({
               ) : null}
               {accounts.map((account) => {
                 const initials = getInitials(account.name || "A");
-                const disabled =
-                  account.isCurrent || Boolean(switchingAccountUserId);
+                const disabled = account.isCurrent || isBusy;
                 return (
                   <DropdownMenuItem
                     key={account.userId}
@@ -85,7 +91,20 @@ export default function UserDropdownMenu({
                     disabled={disabled}
                     className="h-8 rounded-md px-2.5 flex items-center gap-2 group"
                   >
-                    <Avatar className="size-4">
+                    <Avatar
+                      className="size-4"
+                      onContextMenu={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (isBusy) return;
+                        onOpenAccountActions(event, account);
+                      }}
+                      title={
+                        account.isCurrent
+                          ? account.name
+                          : `${account.name} (right-click for actions)`
+                      }
+                    >
                       {account.image ? (
                         <AvatarImage src={account.image} alt={account.name} />
                       ) : null}
@@ -94,7 +113,8 @@ export default function UserDropdownMenu({
                     <div className="min-w-0 flex-1 truncate transition-colors group-hover:text-foreground">
                       {account.name}
                     </div>
-                    {switchingAccountUserId === account.userId ? (
+                    {switchingAccountUserId === account.userId ||
+                    removingAccountUserId === account.userId ? (
                       <LoaderIcon className="size-4 animate-spin text-accent" />
                     ) : account.isCurrent ? (
                       <TickIcon
@@ -127,7 +147,7 @@ export default function UserDropdownMenu({
       <DropdownMenuItem
         onSelect={onSignOut}
         className="h-9 rounded-md px-2.5 flex items-center gap-2 group"
-        aria-disabled={loading || Boolean(switchingAccountUserId)}
+        aria-disabled={loading || isBusy}
       >
         <LogoutIcon className="size-4 text-foreground group-hover:opacity-100 group-hover:text-red-500 transition-colors" />
         <span className="transition-colors group-hover:text-foreground">

@@ -3,6 +3,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { user, session, board, workspace } from "@featul/db";
 import {
   deleteAccountInputSchema,
+  removeDeviceAccountInputSchema,
   revokeSessionInputSchema,
   switchDeviceAccountInputSchema,
 } from "../validators/account";
@@ -276,6 +277,58 @@ export function createAccountRouter() {
         return c.superjson({
           success: true,
           switchedToUserId: targetUserId,
+        });
+      }),
+
+    removeDeviceAccount: privateProcedure
+      .input(removeDeviceAccountInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const targetUserId = String(input.userId || "").trim();
+        if (!targetUserId) {
+          throw new HTTPException(400, { message: "User id is required" });
+        }
+
+        const currentUserId = String(ctx.session.user.id || "").trim();
+        if (targetUserId === currentUserId) {
+          throw new HTTPException(400, {
+            message: "Cannot remove the current active account",
+          });
+        }
+
+        const rawHeaders = getRawHeaders(c);
+        const listResult = await auth.api
+          .listDeviceSessions({
+            headers: rawHeaders,
+          })
+          .catch(() => []);
+        const deviceSessions = parseDeviceSessions(listResult);
+
+        const target = deviceSessions.find(
+          (entry) => String(entry?.user?.id || "").trim() === targetUserId,
+        );
+        const targetSessionToken = String(target?.session?.token || "").trim();
+
+        if (!targetSessionToken) {
+          throw new HTTPException(404, {
+            message: "Connected account not found",
+          });
+        }
+
+        const revokeResult = (await (auth.api as any).revokeDeviceSession({
+          headers: rawHeaders,
+          body: {
+            sessionToken: targetSessionToken,
+          },
+          returnHeaders: true,
+        })) as { headers?: Headers };
+
+        if (revokeResult.headers instanceof Headers) {
+          appendSetCookieHeaders(c, revokeResult.headers);
+        }
+
+        return c.superjson({
+          success: true,
+          removedUserId: targetUserId,
         });
       }),
 
