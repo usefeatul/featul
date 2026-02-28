@@ -12,7 +12,7 @@ export default function CategoryList() {
         const Icon = getCategoryIcon(cat.slug)
         return (
           <Link key={cat.slug} href={`/tools/categories/${cat.slug}`} className="group block">
-            <Card className="h-full overflow-hidden transition group hover:shadow-sm hover:ring-border bg-background flex flex-col">
+            <Card className="h-full overflow-hidden transition group hover:shadow-sm hover:ring-border flex flex-col">
               <CardHeader className="p-6 sm:p-8 flex-1">
                 <Icon className="size-5 text-black group-hover:text-primary mb-3" />
                 <CardTitle className="font-medium text-lg">{cat.name}</CardTitle>
