@@ -19,14 +19,16 @@ export default function UseCaseCardList() {
           className="group block"
         >
           <Card className="h-full overflow-hidden py-4 transition group hover:shadow-sm hover:ring-border flex flex-col">
-            <CardHeader className="p-5 sm:p-6">
+            <CardHeader className="flex-1 p-5 sm:p-6">
               <Lightbulb className="size-5 text-black group-hover:text-primary mb-3" />
-              <CardTitle className="font-medium text-lg">{useCase.name}</CardTitle>
-              <CardDescription className="mt-1 line-clamp-3 text-accent">
-                {useCase.description}
+              <CardTitle className="min-h-[3.5rem] line-clamp-2 text-lg font-medium leading-snug">
+                {useCase.cardTitle ?? useCase.name}
+              </CardTitle>
+              <CardDescription className="mt-1.5 min-h-[2.75rem] line-clamp-2 text-accent">
+                {useCase.cardDescription ?? useCase.description}
               </CardDescription>
             </CardHeader>
-            <CardFooter className="px-5 sm:px-6 pt-0 items-center justify-between">
+            <CardFooter className="mt-auto items-center justify-between px-5 pt-0 sm:px-6">
               <span className="text-xs text-muted-foreground font-mono tabular-nums">
                 {useCase.badge}
               </span>
