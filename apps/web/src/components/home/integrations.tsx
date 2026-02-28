@@ -11,60 +11,60 @@ import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
 
 type IntegrationItem = {
+  slug: string;
   name: string;
   description: string;
   status: "Available" | "Coming soon";
-  href: string;
   icon: ComponentType<{ className?: string; size?: number }>;
 };
 
 const integrations: IntegrationItem[] = [
   {
+    slug: "slack",
     name: "Slack",
     description:
       "Get instant Slack alerts when new requests are submitted.",
     status: "Available",
-    href: "/docs/branding-setup/integrations",
     icon: SlackIcon,
   },
   {
+    slug: "discord",
     name: "Discord",
     description:
       "Send feedback notifications directly into your Discord channels.",
     status: "Available",
-    href: "/docs/branding-setup/integrations",
     icon: DiscordIcon,
   },
   {
+    slug: "notra",
     name: "Notra",
     description:
       "Import Notra changelog entries to keep product updates synced.",
     status: "Available",
-    href: "/docs/getting-started/publish-updates",
     icon: NotraIcon,
   },
   {
+    slug: "nolt",
     name: "Nolt",
     description:
       "Import requests and comments from Nolt into featul.",
     status: "Coming soon",
-    href: "/docs/branding-setup/integrations",
     icon: NoltIcon,
   },
   {
+    slug: "canny",
     name: "Canny",
     description:
       "Bring feature requests and comments over from Canny.",
     status: "Coming soon",
-    href: "/docs/branding-setup/integrations",
     icon: CannyIcon,
   },
   {
+    slug: "productboard",
     name: "ProductBoard",
     description:
       "Migrate posts, boards, and comments from ProductBoard.",
     status: "Coming soon",
-    href: "/docs/branding-setup/integrations",
     icon: ProductBoardIcon,
   },
 ];
@@ -109,7 +109,7 @@ export default function Integrations() {
                     }`}
                   >
                     <Link
-                      href={item.href}
+                      href={`/integrations/${item.slug}`}
                       className="inline-flex h-8 min-w-[88px] items-center justify-center rounded-md border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-foreground/10"
                     >
                       Learn more

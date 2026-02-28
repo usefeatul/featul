@@ -22,12 +22,12 @@ export default function Pricing() {
       <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
         <section className="py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-            <div className="text-center max-w-2xl mx-auto">
+            <div className="text-center max-w-4xl mx-auto">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
-                Transparent, minimal pricing
+                <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
               </h2>
               <p className="text-accent mt-4 text-base sm:text-lg">
-                Generous free tier. Simple plans. Developer‑first.
+                Start free, scale as you grow. Simple plans for customer‑driven teams.
               </p>
             </div>
 

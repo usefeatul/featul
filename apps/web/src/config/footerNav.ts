@@ -16,6 +16,7 @@ export const footerNavigationConfig: FooterNavigationConfig = {
       items: [
         { name: 'Pricing', href: '/pricing' },
         { name: 'Docs', href: '/docs' },
+        { name: 'Integrations', href: '/integrations' },
       ],
     },
     {
