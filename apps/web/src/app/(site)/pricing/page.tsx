@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Faq from "@/components/home/faq"
 import Pricing from "@/components/home/pricing"
+import { SectionStack } from "@/components/layout/section-stack"
 import { createPageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
@@ -12,8 +13,12 @@ export const metadata: Metadata = createPageMetadata({
 export default function PricingPage() {
   return (
     <main className="min-h-screen pt-16">
-      <Pricing />
-      <Faq />
+      <div className="mx-auto max-w-6xl">
+        <SectionStack>
+          <Pricing />
+          <Faq />
+        </SectionStack>
+      </div>
     </main>
   )
 }
