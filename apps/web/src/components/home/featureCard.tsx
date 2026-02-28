@@ -1,8 +1,8 @@
 import { Card } from "@featul/ui/components/card";
 import { Container } from "../global/container";
-import { LoveIcon } from "@featul/ui/icons/love";
-import FaceIcon from "@featul/ui/icons/face";
-import FoundedIcon from "@featul/ui/icons/founded";
+import { DomainIcon } from "@featul/ui/icons/domain";
+import { CsvIcon } from "@featul/ui/icons/csv";
+import { MemberIcon } from "@featul/ui/icons/member";
 
 export default function FeatureCard({ withinContainer = true }: { withinContainer?: boolean }) {
   const content = (
@@ -10,29 +10,26 @@ export default function FeatureCard({ withinContainer = true }: { withinContaine
       <div>
         <div className="mt-2 sm:mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
           <Card className="overflow-hidden p-4 sm:p-6 flex flex-col items-start gap-2">
-            <LoveIcon className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1 sm:p-1.5" />
-            <h3 className="text-foreground text-base sm:text-lg font-semibold">Human-coded</h3>
+            <DomainIcon className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1 sm:p-1.5" />
+            <h3 className="text-foreground text-base sm:text-lg font-semibold">Custom domain and branding</h3>
             <p className="text-accent text-balance text-sm sm:text-base sm:max-w-[40ch]">
-              Hand-built and maintained by seasoned engineers. Secure, reliable,
-              and fast—crafted with care, not vibes.
+              Launch with your domain, logo, colors, and theme.
             </p>
           </Card>
 
           <Card className="group overflow-hidden p-4 sm:p-6 flex flex-col items-start gap-2">
-            <FaceIcon className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1 sm:p-1.5" />
-            <h3 className="text-foreground text-base sm:text-lg font-semibold">Advanced bot detection</h3>
+            <MemberIcon className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1 sm:p-1.5" opacity={1} />
+            <h3 className="text-foreground text-base sm:text-lg font-semibold">Team roles and invites</h3>
             <p className="text-accent text-balance text-sm sm:text-base sm:max-w-[40ch]">
-              In an AI-heavy web, keeping bots out matters. We aim for
-              top-tier detection to keep your analytics trustworthy.
+              Invite teammates, set roles, and collaborate in one workspace.
             </p>
           </Card>
 
           <Card className="group overflow-hidden p-4 sm:p-6 flex flex-col items-start gap-2">
-            <FoundedIcon className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1 sm:p-1.5" />
-            <h3 className="text-foreground text-base sm:text-lg font-semibold">Founded in 2024</h3>
+            <CsvIcon className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md  bg-foreground/5 text-primary ring-1 ring-foreground/10 p-1 sm:p-1.5" />
+            <h3 className="text-foreground text-base sm:text-lg font-semibold">CSV import and export</h3>
             <p className="text-accent text-balance text-sm sm:text-base sm:max-w-[40ch]">
-              Since 2024, featul has grown into a customer feedback platform,
-              processing hundreds of feedback submissions.
+              Import and export feedback data whenever you need.
             </p>
             <div className="mask-b-from-50 -mx-2 -mt-2 px-2 pt-2"></div>
           </Card>

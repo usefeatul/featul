@@ -40,8 +40,8 @@ export default function FeaturesSection() {
                     Feedback Dashboard
                   </h3>
                   <CardAccent>
-                    Your central hub for all customer feedback. Filter by status,
-                    sort by votes, and prioritize what matters most.
+                    Review every request in one place, filter by status and board,
+                    and sort by votes to prioritize what to build next.
                   </CardAccent>
                 </div>
                 <div className="relative flex-1 min-h-[200px] sm:min-h-[280px] md:min-h-[320px] rounded-md overflow-hidden border border-border/50 shadow-sm">
@@ -67,7 +67,8 @@ export default function FeaturesSection() {
                     Changelog
                   </h3>
                   <CardAccent>
-                    Publish updates and notify users when features ship. Close the feedback loop.
+                    Publish product updates, organize them with tags, and keep
+                    customers informed when features ship.
                   </CardAccent>
                 </div>
                 <div className="relative flex-1 min-h-[140px] sm:min-h-[180px] mt-auto rounded-md overflow-hidden border border-border/50 shadow-sm">
@@ -75,7 +76,7 @@ export default function FeaturesSection() {
                     src="/image/dashboard.png"
                     alt="Changelog interface showing product updates"
                     fill
-                    className="object-cover object-top"
+                    className="object-cover object-center"
                   />
                 </div>
               </Card>
@@ -93,7 +94,8 @@ export default function FeaturesSection() {
                     Public Roadmap
                   </h3>
                   <CardAccent>
-                    Show what's planned, in progress, and shipped. Keep your community in the loop.
+                    Share what is planned, in progress, and completed so users can
+                    track progress and stay aligned with your roadmap.
                   </CardAccent>
                 </div>
                 <div className="relative flex-1 min-h-[140px] sm:min-h-[180px] mt-auto rounded-md overflow-hidden border border-border/50 shadow-sm">
@@ -101,7 +103,7 @@ export default function FeaturesSection() {
                     src="/image/dashboard.png"
                     alt="Public roadmap showing planned, in-progress, and completed features"
                     fill
-                    className="object-cover object-top"
+                    className="object-cover object-right-top"
                   />
                 </div>
               </Card>

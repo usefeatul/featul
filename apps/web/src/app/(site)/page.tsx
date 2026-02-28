@@ -6,10 +6,10 @@ import Faq from "@/components/home/faq";
 import StatsSection from "@/components/home/cta";
 import Setup from "@/components/home/setup";
 import Create from "@/components/home/create";
+import Integrations from "@/components/home/integrations";
 import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/featureTwo";
 import { ConversionHero } from "@/components/home/conversion-hero";
-import Benefits from "@/components/home/benefits";
 import { SectionStack } from "@/components/layout/section-stack";
 
 export const metadata: Metadata = createPageMetadata({
@@ -28,9 +28,9 @@ export default function Home() {
           <ConversionHero />
           <Listening />
           <FeaturesSection />
+          <Integrations />
           <Setup />
           <Create />
-          <Benefits />
           <Faq />
           <StatsSection />
         </SectionStack>
