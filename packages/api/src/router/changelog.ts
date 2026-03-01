@@ -597,6 +597,20 @@ export function createChangelogRouter() {
                   "Notra organization was not found or is not accessible with this API key.",
               });
             }
+            if (err.status === 429) {
+              if (err.retryAfterSeconds && err.retryAfterSeconds > 0) {
+                c.header("Retry-After", String(err.retryAfterSeconds));
+              }
+              throw new HTTPException(429, {
+                message: "Notra rate limit reached. Please wait and try again.",
+              });
+            }
+            if (err.status === 503) {
+              throw new HTTPException(503, {
+                message:
+                  "Notra service is temporarily unavailable. Please try again.",
+              });
+            }
             throw new HTTPException(502, {
               message: "Notra API request failed. Please try again.",
             });

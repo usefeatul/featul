@@ -94,9 +94,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
-        <link rel="alternate" href={`${SITE_URL}/`} {...({ hreflang: "en-US" } as Record<string, string>)} />
-        <link rel="alternate" href={`${SITE_URL}/`} {...({ hreflang: "en" } as Record<string, string>)} />
-        <link rel="alternate" href={`${SITE_URL}/`} {...({ hreflang: "x-default" } as Record<string, string>)} />
+        <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "en-US" } as Record<string, string>)} />
+        <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "en" } as Record<string, string>)} />
+        <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "x-default" } as Record<string, string>)} />
         <Script
           src="https://cdn.seline.com/seline.js"
           data-token={process.env.NEXT_PUBLIC_SELINE_TOKEN}

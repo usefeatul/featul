@@ -4,15 +4,18 @@ import {
   changelogEntry,
   workspaceNotraConnection,
 } from "@featul/db";
-import type { NotraPost } from "./notra";
 import {
+  createNotraClient,
   listNotraPostsPage,
-  markdownToTiptapDoc,
   NotraApiError,
+} from "./notra-client";
+import type { NotraClientFactory, NotraPost } from "./notra-client";
+import {
+  markdownToTiptapDoc,
   resolveNotraMarkdown,
   toNotraChangelogSlug,
   toPlainText,
-} from "./notra";
+} from "./notra-content";
 import {
   decryptSecret,
   encryptSecret,
@@ -296,7 +299,7 @@ async function resolveCredentials(input: {
   };
 }
 
-function mapRemotePost(input: {
+export function mapNotraPostToChangelogEntry(input: {
   post: NotraPost;
   publishBehavior: PublishBehavior;
 }): {
@@ -380,6 +383,7 @@ export async function runNotraImport(input: {
   useStoredConnection: boolean;
   organizationId?: string;
   apiKey?: string;
+  notraClientFactory?: NotraClientFactory;
 }): Promise<NotraImportSummary> {
   await assertNotraImportRateLimit(
     input.db,
@@ -394,6 +398,8 @@ export async function runNotraImport(input: {
     organizationId: input.organizationId,
     apiKey: input.apiKey,
   });
+  const clientFactory = input.notraClientFactory ?? createNotraClient;
+  const notraClient = clientFactory(credentials.apiKey);
 
   let currentCount = input.currentEntryCount;
   let page = 1;
@@ -406,11 +412,12 @@ export async function runNotraImport(input: {
 
   while (page <= input.maxPages) {
     const remote = await listNotraPostsPage({
-      apiKey: credentials.apiKey,
+      client: notraClient,
       organizationId: credentials.organizationId,
       page,
       limit: input.limit,
       status: input.status,
+      contentType: ["changelog"],
     });
 
     fetchedCount += remote.posts.length;
@@ -442,7 +449,7 @@ export async function runNotraImport(input: {
     );
 
     for (const post of remote.posts) {
-      const mapped = mapRemotePost({
+      const mapped = mapNotraPostToChangelogEntry({
         post,
         publishBehavior: input.publishBehavior,
       });

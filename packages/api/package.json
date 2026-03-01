@@ -6,7 +6,8 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "DATABASE_URL=${DATABASE_URL:-postgres://user:pass@localhost:5432/test} bun test"
   },
   "exports": {
     ".": {
@@ -19,14 +20,15 @@
     "./shared": "./src:*"
   },
   "dependencies": {
-    "@openrouter/sdk": "^0.5.1",
     "@aws-sdk/client-s3": "^3.721.0",
     "@aws-sdk/s3-request-presigner": "^3.721.0",
     "@featul/auth": "workspace:*",
     "@featul/db": "workspace:*",
+    "@openrouter/sdk": "^0.5.1",
     "@paralleldrive/cuid2": "^3.0.6",
     "@upstash/ratelimit": "^2.0.7",
     "@upstash/redis": "^1.35.7",
+    "@usenotra/sdk": "^0.0.3",
     "drizzle-orm": "^0.39.0",
     "elysia": "^1.4.18",
     "jstack": "^1.1.1",
