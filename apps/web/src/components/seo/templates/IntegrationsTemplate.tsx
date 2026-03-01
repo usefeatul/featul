@@ -18,18 +18,39 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@featul/ui/components/accordion";
+import { Button } from "@featul/ui/components/button";
 import type { IntegrationPageData } from "@/lib/data/programmatic/generators";
 import type { RelatedLink } from "@/lib/seo/interlink";
 import { SITE_URL } from "@/config/seo";
 import { ArrowLeft } from "lucide-react";
+import type { ComponentType } from "react";
+import { SlackIcon } from "@featul/ui/icons/slack";
+import { DiscordIcon } from "@featul/ui/icons/discord";
+import { NotraIcon } from "@featul/ui/icons/notra";
+import { NoltIcon } from "@featul/ui/icons/nolt";
+import { CannyIcon } from "@featul/ui/icons/canny";
+import { ProductBoardIcon } from "@featul/ui/icons/productboard";
+import { IntegrationIcon } from "@featul/ui/icons/integration";
 
 interface Props {
     data: IntegrationPageData;
     relatedLinks: RelatedLink[];
 }
 
+type IconProps = { className?: string; size?: number };
+
+const INTEGRATION_ICONS: Record<string, ComponentType<IconProps>> = {
+    slack: SlackIcon,
+    discord: DiscordIcon,
+    notra: NotraIcon,
+    nolt: NoltIcon,
+    canny: CannyIcon,
+    productboard: ProductBoardIcon,
+};
+
 export function IntegrationsTemplate({ data, relatedLinks }: Props) {
     const { meta, integration, sections, faqs } = data;
+    const IntegrationLogo = INTEGRATION_ICONS[integration.slug] ?? IntegrationIcon;
 
     // Build FAQ Schema
     const faqSchema = {
@@ -104,13 +125,19 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                         </h1>
                         <p className="text-accent mt-4 max-w-3xl">{sections.intro}</p>
 
-                        <div className="mt-6">
+                        <div className="mt-6 flex flex-wrap items-center gap-2">
                             <Link
                                 href="https://app.featul.com/auth/sign-in"
                                 className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                             >
                                 Connect {integration.name}
                             </Link>
+                            <Button asChild variant="nav">
+                                <Link href={integration.website} target="_blank" rel="noopener noreferrer">
+                                    <IntegrationLogo className="size-4" />
+                                    Visit {integration.name}
+                                </Link>
+                            </Button>
                         </div>
 
                         <div className="mt-12 border-y border-border/70">

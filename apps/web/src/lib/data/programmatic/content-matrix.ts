@@ -35,6 +35,7 @@ export interface CompetitorEntry {
 export interface IntegrationEntry {
     slug: string;
     name: string;
+    website: string;
     category: "communication" | "project-management" | "analytics" | "automation";
     description: string;
     benefits: string[];
@@ -706,6 +707,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "slack",
         name: "Slack",
+        website: "https://slack.com",
         category: "communication",
         description: "Get instant notifications and triage feedback directly in Slack",
         benefits: [
@@ -718,6 +720,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "discord",
         name: "Discord",
+        website: "https://discord.com",
         category: "communication",
         description: "Engage your community and capture feedback from Discord channels",
         benefits: [
@@ -730,6 +733,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "notra",
         name: "Notra",
+        website: "https://usenotra.com",
         category: "project-management",
         description: "Import changelog entries from Notra and keep product updates in sync",
         benefits: [
@@ -742,6 +746,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "nolt",
         name: "Nolt",
+        website: "https://nolt.io",
         category: "project-management",
         description: "Migrate feedback requests and comments from Nolt into Featul",
         benefits: [
@@ -754,6 +759,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "canny",
         name: "Canny",
+        website: "https://canny.io",
         category: "project-management",
         description: "Import Canny requests and discussions into your Featul workspace",
         benefits: [
@@ -766,6 +772,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "productboard",
         name: "ProductBoard",
+        website: "https://www.productboard.com",
         category: "project-management",
         description: "Migrate ProductBoard posts, boards, and comments into Featul",
         benefits: [

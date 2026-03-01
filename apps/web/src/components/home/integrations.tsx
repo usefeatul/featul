@@ -9,6 +9,8 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
+import { buttonVariants } from "@featul/ui/components/button";
+import { cn } from "@featul/ui/lib/utils";
 
 type IntegrationItem = {
   slug: string;
@@ -87,40 +89,37 @@ export default function Integrations() {
             {integrations.map((item) => {
               const Icon = item.icon;
               return (
-                <Card
+                <Link
                   key={item.name}
-                  className="p-4 sm:p-4 flex flex-col border border-foreground/10 bg-white"
+                  href={`/integrations/${item.slug}`}
+                  className="group block h-full"
+                  aria-label={`Learn more about ${item.name}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="inline-flex size-9 items-center justify-center rounded-md bg-foreground/5 ring-1 ring-foreground/10">
-                      <Icon className="size-5" />
+                  <Card className="p-4 sm:p-4 flex h-full flex-col border border-foreground/10 bg-white transition group-hover:shadow-sm group-hover:ring-border">
+                    <div className="flex items-center gap-3">
+                      <div className="inline-flex size-9 items-center justify-center rounded-md bg-foreground/5 ring-1 ring-foreground/10">
+                        <Icon className="size-5" />
+                      </div>
+                      <h3 className="text-foreground text-base font-semibold">
+                        {item.name}
+                      </h3>
                     </div>
-                    <h3 className="text-foreground text-base font-semibold">
-                      {item.name}
-                    </h3>
-                  </div>
-                  <p className="text-accent mt-2 text-sm leading-5">
-                    {item.description}
-                  </p>
-                  <div className="mt-3 border-t border-dashed border-foreground/15" />
-                  <div
-                    className={`mt-3 flex items-center gap-2 ${
-                      item.status === "Coming soon" ? "justify-between" : "justify-start"
-                    }`}
-                  >
-                    <Link
-                      href={`/integrations/${item.slug}`}
-                      className="inline-flex h-8 min-w-[88px] items-center justify-center rounded-md border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-foreground/10"
-                    >
-                      Learn more
-                    </Link>
-                    {item.status === "Coming soon" ? (
-                      <span className="inline-flex h-8 min-w-[88px] items-center justify-center rounded-md border border-border bg-foreground/5 px-3 py-1.5 text-xs font-medium text-accent">
-                        {item.status}
+                    <p className="text-accent mt-2 text-sm leading-5">
+                      {item.description}
+                    </p>
+                    <div className="mt-3 border-t border-dashed border-foreground/15" />
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className={cn(buttonVariants({ variant: "nav", size: "xs" }), "text-foreground")}>
+                        Learn more
                       </span>
-                    ) : null}
-                  </div>
-                </Card>
+                      {item.status === "Coming soon" ? (
+                        <span className="ml-auto inline-flex h-8 min-w-[88px] items-center justify-center rounded-md border border-border bg-foreground/5 px-3 py-1.5 text-xs font-medium text-accent">
+                          {item.status}
+                        </span>
+                      ) : null}
+                    </div>
+                  </Card>
+                </Link>
               );
             })}
           </div>

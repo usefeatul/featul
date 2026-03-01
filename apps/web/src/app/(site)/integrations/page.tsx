@@ -10,6 +10,7 @@ import {
   CardDescription,
   CardFooter,
 } from "@featul/ui/components/card";
+import { buttonVariants } from "@featul/ui/components/button";
 import { SlackIcon } from "@featul/ui/icons/slack";
 import { DiscordIcon } from "@featul/ui/icons/discord";
 import { NotraIcon } from "@featul/ui/icons/notra";
@@ -18,6 +19,7 @@ import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { IntegrationIcon } from "@featul/ui/icons/integration";
 import type { ComponentType } from "react";
+import { cn } from "@featul/ui/lib/utils";
 
 type IconProps = { className?: string; size?: number };
 
@@ -29,6 +31,8 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
   canny: CannyIcon,
   productboard: ProductBoardIcon,
 };
+
+const COMING_SOON_SLUGS = new Set(["nolt", "canny", "productboard"]);
 
 export const metadata: Metadata = createPageMetadata({
   title: "Integrations - Connect Featul with your tools",
@@ -56,13 +60,15 @@ export default function IntegrationsIndexPage() {
             <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {INTEGRATIONS.map((integration) => {
                 const Icon = ICONS[integration.slug] ?? IntegrationIcon;
+                const isComingSoon = COMING_SOON_SLUGS.has(integration.slug);
                 return (
                   <Link
                     key={integration.slug}
                     href={`/integrations/${integration.slug}`}
-                    className="group block"
+                    className="group block h-full"
+                    aria-label={`Learn more about ${integration.name}`}
                   >
-                    <Card className="h-full overflow-hidden py-4 transition group hover:shadow-sm hover:ring-border flex flex-col">
+                    <Card className="h-full overflow-hidden py-4 transition group-hover:shadow-sm group-hover:ring-border flex flex-col">
                       <CardHeader className="flex-1 p-5 sm:p-6">
                         <div className="mb-3 flex items-center gap-3">
                           <span className="inline-flex size-9 items-center justify-center rounded-md border border-border/70 bg-background">
@@ -74,10 +80,18 @@ export default function IntegrationsIndexPage() {
                           {integration.description}
                         </CardDescription>
                       </CardHeader>
-                      <CardFooter className="mt-auto items-center justify-between px-5 pt-0 sm:px-6">
-                        <span className="rounded-md border border-border px-2 py-1 text-xs text-accent uppercase tracking-wide">
-                          {integration.category}
-                        </span>
+                      <CardFooter className="mt-auto flex-col items-start gap-3 px-5 pt-0 sm:px-6">
+                        <div className="w-full border-t border-dashed border-foreground/15" />
+                        <div className="flex w-full items-center gap-2">
+                          <span className={cn(buttonVariants({ variant: "nav", size: "xs" }), "text-foreground")}>
+                            Learn more
+                          </span>
+                          {isComingSoon ? (
+                            <span className="ml-auto inline-flex h-8 min-w-[88px] items-center justify-center rounded-md border border-border bg-foreground/5 px-3 py-1.5 text-xs font-medium text-accent">
+                              Coming soon
+                            </span>
+                          ) : null}
+                        </div>
                       </CardFooter>
                     </Card>
                   </Link>
