@@ -9,17 +9,24 @@ import {
   TOC_ITEM_HEIGHT,
   TOC_INDENT_OFFSET,
 } from "@/lib/toc-path"
-import { useEffect, useState, useRef, useLayoutEffect, useMemo } from "react"
+import { useId, useLayoutEffect, useMemo } from "react"
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { useActiveHeading } from "@/hooks/use-active-heading"
 
 interface DocsTocProps {
   items: TocItem[]
 }
 
+const TOC_TRACK_TOP_TRIM = 0
+const TOC_TRACK_BOTTOM_TRIM = 13
+
 export function DocsToc({ items }: DocsTocProps) {
-  const [activeId, setActiveId] = useState<string | null>(items[0]?.id ?? null)
-  const navRef = useRef<HTMLDivElement>(null)
-  const itemRefs = useRef<Map<string, HTMLAnchorElement>>(new Map())
+  const activeId = useActiveHeading(items, '[data-docs-scroll-container="true"]')
+  const rawClipPathId = useId()
+  const clipPathId = useMemo(
+    () => `docs-toc-track-${rawClipPathId.replace(/:/g, "")}`,
+    [rawClipPathId]
+  )
 
   // Find active index
   const activeIndex = useMemo(() => {
@@ -42,9 +49,12 @@ export function DocsToc({ items }: DocsTocProps) {
 
   // Update progress when active item changes
   useLayoutEffect(() => {
-    const progress = getProgressForIndex(activeIndex, itemPositions, pathLength)
+    const isLastItemActive = activeIndex === items.length - 1
+    const progress = isLastItemActive
+      ? 1
+      : getProgressForIndex(activeIndex, itemPositions, pathLength)
     targetProgress.set(progress)
-  }, [activeIndex, itemPositions, pathLength, targetProgress])
+  }, [activeIndex, itemPositions, items.length, pathLength, targetProgress])
 
   // Convert progress to stroke-dashoffset
   const strokeDashoffset = useTransform(
@@ -52,40 +62,6 @@ export function DocsToc({ items }: DocsTocProps) {
     [0, 1],
     [pathLength, 0]
   )
-
-  useEffect(() => {
-    if (!items?.length) return
-
-    const headings = items
-      .map((i) => document.getElementById(i.id))
-      .filter((el): el is HTMLElement => !!el)
-
-    const container = document.querySelector<HTMLElement>(
-      '[data-docs-scroll-container="true"]'
-    )
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((entry) => entry.isIntersecting)
-        if (visible.length === 0) return
-
-        const topMost = visible.sort(
-          (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
-        )[0]
-        if (!topMost) return
-
-        setActiveId(topMost.target.id)
-      },
-      {
-        root: container ?? null,
-        rootMargin: "0px 0px -60% 0px",
-        threshold: [0, 0.1, 0.5, 1],
-      }
-    )
-
-    headings.forEach((h) => observer.observe(h))
-    return () => observer.disconnect()
-  }, [items])
 
   if (!items?.length) return null
 
@@ -110,11 +86,13 @@ export function DocsToc({ items }: DocsTocProps) {
   }
 
   const totalHeight = getTocHeight(items.length)
+  const clipHeight = totalHeight - TOC_TRACK_TOP_TRIM - TOC_TRACK_BOTTOM_TRIM
+  const trackClipPath = clipHeight > 0 ? `url(#${clipPathId})` : undefined
 
   return (
     <nav aria-label="On this page" className="text-xs text-accent">
       <div className="text-md font-bold text-foreground mb-3">On this page</div>
-      <div ref={navRef} className="relative" style={{ paddingLeft: TOC_INDENT_OFFSET + 8 }}>
+      <div className="relative" style={{ paddingLeft: TOC_INDENT_OFFSET + 8 }}>
         {/* SVG for zig-zag border track */}
         <svg
           className="absolute top-0 left-0 pointer-events-none"
@@ -122,6 +100,19 @@ export function DocsToc({ items }: DocsTocProps) {
           height={totalHeight}
           style={{ overflow: "visible" }}
         >
+          {trackClipPath && (
+            <defs>
+              <clipPath id={clipPathId}>
+                <rect
+                  x={-4}
+                  y={TOC_TRACK_TOP_TRIM}
+                  width={TOC_INDENT_OFFSET + 13}
+                  height={clipHeight}
+                />
+              </clipPath>
+            </defs>
+          )}
+
           {/* Background track */}
           <path
             d={pathD}
@@ -131,6 +122,7 @@ export function DocsToc({ items }: DocsTocProps) {
             className="text-border/50"
             strokeLinecap="round"
             strokeLinejoin="round"
+            clipPath={trackClipPath}
           />
           {/* Animated progress indicator */}
           <motion.path
@@ -143,6 +135,7 @@ export function DocsToc({ items }: DocsTocProps) {
             strokeLinejoin="round"
             strokeDasharray={pathLength}
             style={{ strokeDashoffset }}
+            clipPath={trackClipPath}
           />
         </svg>
 
@@ -160,9 +153,6 @@ export function DocsToc({ items }: DocsTocProps) {
                 }}
               >
                 <a
-                  ref={(el) => {
-                    if (el) itemRefs.current.set(item.id, el)
-                  }}
                   href={`#${item.id}`}
                   onClick={(e) => handleClick(e, item.id)}
                   className={cn(
