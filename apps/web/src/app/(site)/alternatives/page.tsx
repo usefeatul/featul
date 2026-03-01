@@ -5,8 +5,7 @@ import { createPageMetadata } from "@/lib/seo";
 import { VerticalLines } from "@/components/vertical-lines";
 
 export const metadata = createPageMetadata({
-  title:
-    "Alternatives - Compare featul with Canny, Featurebase, Nolt, Upvoty, UserJot",
+  title: "Best featul Alternatives for Feedback & Roadmaps",
   description:
     "Side‑by‑side comparisons covering features, privacy, and hosting differences to help you choose confidently.",
   path: "/alternatives",

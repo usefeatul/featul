@@ -5,7 +5,7 @@ import UseCaseCardList from "@/components/use-cases/global/use-case-card-list"
 import { createPageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Use Cases - How teams use featul for product feedback",
+  title: "Use Cases for Product Feedback & Roadmaps",
   description:
     "Explore practical use cases for featul, from centralizing product feedback to running a transparent public roadmap and changelog.",
   path: "/use-cases",

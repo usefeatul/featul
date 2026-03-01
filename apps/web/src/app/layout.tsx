@@ -9,6 +9,7 @@ import { buildSiteNavigationSchema, buildSoftwareApplicationSchema } from "@/lib
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { VerticalLines } from "@/components/vertical-lines";
+import { createAlternates } from "@/lib/seo";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
     template: TITLE_TEMPLATE,
   },
   description: DEFAULT_DESCRIPTION,
+  alternates: createAlternates("/"),
   keywords: DEFAULT_KEYWORDS,
   openGraph: {
     type: "website",
@@ -92,6 +94,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
+        <link rel="alternate" href={`${SITE_URL}/`} {...({ hreflang: "en-US" } as Record<string, string>)} />
+        <link rel="alternate" href={`${SITE_URL}/`} {...({ hreflang: "en" } as Record<string, string>)} />
+        <link rel="alternate" href={`${SITE_URL}/`} {...({ hreflang: "x-default" } as Record<string, string>)} />
         <Script
           src="https://cdn.seline.com/seline.js"
           data-token={process.env.NEXT_PUBLIC_SELINE_TOKEN}

@@ -13,6 +13,7 @@ export const metadata: Metadata = createPageMetadata({
 export default function PricingPage() {
   return (
     <main className="min-h-screen pt-16">
+      <h1 className="sr-only">Pricing for customer feedback, roadmap, and changelog software</h1>
       <div className="mx-auto max-w-6xl">
         <SectionStack>
           <Pricing />
