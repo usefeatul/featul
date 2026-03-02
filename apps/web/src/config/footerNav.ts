@@ -27,6 +27,7 @@ export const footerNavigationConfig: FooterNavigationConfig = {
         { name: 'Nolt', href: '/alternatives/nolt' },
         { name: 'Canny', href: '/alternatives/canny' },
         { name: 'Upvoty', href: '/alternatives/upvoty' },
+        { name: 'Other alternatives', href: '/alternatives' },
       ],
     },
     {
