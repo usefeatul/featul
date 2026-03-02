@@ -11,6 +11,7 @@ import { LoadingButton } from "@/components/global/loading-button"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
+import { readApiErrorMessage } from "@/hooks/postApiError"
 import type { Role } from "../../../types/team"
 
 const ROLES: Role[] = ["admin", "member", "viewer"]
@@ -36,8 +37,8 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
     try {
       const res = await client.team.invite.$post({ slug, email: value, role })
       if (!res.ok) {
-        const err = (await res.json().catch(() => null)) as { message?: string } | null
-        throw new Error(err?.message || "Invite failed")
+        const message = await readApiErrorMessage(res, "Failed to invite member")
+        throw new Error(message)
       }
       toast.success("Invite sent")
       setEmail("")

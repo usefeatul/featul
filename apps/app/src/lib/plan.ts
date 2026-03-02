@@ -17,7 +17,7 @@ export type PlanLimits = {
 
 const LIMITS: Record<PlanKey, PlanLimits> = {
   free: {
-    maxMembers: 1,
+    maxMembers: 3,
     maxNonSystemBoards: 5,
     monthlyPostLimit: 100,
     allowBranding: false,
@@ -29,7 +29,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     maxChangelogTags: 5,
   },
   starter: {
-    maxMembers: 15,
+    maxMembers: 5,
     maxNonSystemBoards: 10,
     monthlyPostLimit: 1000,
     allowBranding: true,
@@ -41,7 +41,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     maxChangelogTags: 10,
   },
   professional: {
-    maxMembers: null,
+    maxMembers: 10,
     maxNonSystemBoards: null,
     monthlyPostLimit: null,
     allowBranding: true,

@@ -49,7 +49,7 @@ export default async function SettingsSectionPage({ params }: Props) {
       initialWorkspaceId={initialWorkspaceId}
       initialWorkspaceName={initialWorkspaceName}
       initialTimezone={initialTimezone}
-      initialTeam={initialTeam as any}
+      initialTeam={initialTeam}
       initialChangelogTags={initialChangelogTags}
       initialBrandingConfig={initialBrandingConfig}
       initialDomainInfo={initialDomainInfo}

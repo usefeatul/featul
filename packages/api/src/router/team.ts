@@ -14,12 +14,13 @@ import {
   acceptInviteInputSchema,
   addExistingMemberInputSchema,
 } from "../validators/team"
-import { getPlanLimits, assertWithinLimit } from "../shared/plan"
+import { getPlanLimits, normalizePlan, type PlanKey } from "../shared/plan"
 import { limitInvite } from "../services/ratelimiter"
 import { mapPermissions } from "../shared/permissions"
+import type { AuthenticatedRouterContext as TeamRouterContext } from "../types/router-context"
 
 async function getWorkspaceMemberEmails(
-  ctx: any,
+  ctx: TeamRouterContext,
   workspaceId: string,
   ownerId: string
 ): Promise<Set<string>> {
@@ -54,7 +55,7 @@ async function getWorkspaceMemberEmails(
   return memberEmails
 }
 
-async function getWorkspaceBySlugOrThrow(ctx: any, slug: string) {
+async function getWorkspaceBySlugOrThrow(ctx: TeamRouterContext, slug: string) {
   const [ws] = await ctx.db
     .select({ id: workspace.id, ownerId: workspace.ownerId, name: workspace.name, slug: workspace.slug, plan: workspace.plan })
     .from(workspace)
@@ -68,7 +69,7 @@ async function getWorkspaceBySlugOrThrow(ctx: any, slug: string) {
   return ws
 }
 
-async function requireCanManageMembers(ctx: any, ws: { id: string; ownerId: string }) {
+async function requireCanManageMembers(ctx: TeamRouterContext, ws: { id: string; ownerId: string }) {
   const meId = ctx.session.user.id
   const [me] = await ctx.db
     .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
@@ -84,14 +85,32 @@ async function requireCanManageMembers(ctx: any, ws: { id: string; ownerId: stri
   return { meId, me }
 }
 
-async function assertMemberLimitNotReached(ctx: any, wsId: string, plan: string) {
-  const limits = getPlanLimits(plan)
+const PLAN_LABELS: Record<PlanKey, string> = {
+  free: "Free",
+  starter: "Starter",
+  professional: "Professional",
+}
+
+function getMemberLimitMessage(plan: string, maxMembers: number): string {
+  const normalized = normalizePlan(plan)
+  const label = PLAN_LABELS[normalized]
+  return `${label} plan allows up to ${maxMembers} members.`
+}
+
+async function assertMemberLimitNotReached(ctx: TeamRouterContext, wsId: string, plan: string) {
+  const normalizedPlan = normalizePlan(plan)
+  const limits = getPlanLimits(normalizedPlan)
   const [mc] = await ctx.db
     .select({ count: sql<number>`count(*)` })
     .from(workspaceMember)
     .where(and(eq(workspaceMember.workspaceId, wsId), eq(workspaceMember.isActive, true)))
     .limit(1)
-  assertWithinLimit(Number(mc?.count || 0), limits.maxMembers, () => "Member limit reached for current plan")
+  const current = Number(mc?.count || 0)
+  if (typeof limits.maxMembers === "number" && current >= limits.maxMembers) {
+    throw new HTTPException(403, {
+      message: getMemberLimitMessage(normalizedPlan, limits.maxMembers),
+    })
+  }
 }
 
 
@@ -360,7 +379,6 @@ export function createTeamRouter() {
       .post(async ({ ctx, input, c }) => {
         const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
         await requireCanManageMembers(ctx, ws)
-        await assertMemberLimitNotReached(ctx, ws.id, String(ws.plan || "free"))
 
         await ctx.db.delete(workspaceInvite).where(eq(workspaceInvite.id, input.inviteId))
         return c.json({ ok: true })
@@ -434,13 +452,11 @@ export function createTeamRouter() {
             .from(workspace)
             .where(eq(workspace.id, inv.workspaceId))
             .limit(1)
-          const limits = getPlanLimits(String(wsp?.plan || "free"))
-          const [mc] = await ctx.db
-            .select({ count: sql<number>`count(*)` })
-            .from(workspaceMember)
-            .where(and(eq(workspaceMember.workspaceId, inv.workspaceId), eq(workspaceMember.isActive, true)))
-            .limit(1)
-          if (typeof limits.maxMembers === "number" && Number(mc?.count || 0) >= limits.maxMembers) throw new HTTPException(403, { message: "Member limit reached for current plan" })
+          await assertMemberLimitNotReached(
+            ctx,
+            inv.workspaceId,
+            String(wsp?.plan || "free")
+          )
           await ctx.db.insert(workspaceMember).values({
             workspaceId: inv.workspaceId,
             userId: me.id,

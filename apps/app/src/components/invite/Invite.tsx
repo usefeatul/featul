@@ -12,6 +12,8 @@ import { useRouter, useParams } from "next/navigation";
 import { authClient } from "@featul/auth/client";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
+import { readApiErrorMessage } from "@/hooks/postApiError";
+import type { InviteByTokenResponse, InviteUser } from "@/types/invite";
 
 type InviteProps = {
   token?: string;
@@ -24,6 +26,7 @@ type InviteProps = {
   onAccept?: () => void;
   onDecline?: () => void;
 };
+
 export default function Invite({
   token: tokenProp,
   workspaceName: wsNameProp,
@@ -36,8 +39,9 @@ export default function Invite({
   onDecline,
 }: InviteProps) {
   const router = useRouter();
-  const routeParams = useParams() as any;
-  const tokenParam = typeof routeParams?.token === "string" ? routeParams.token : undefined;
+  const routeParams = useParams<{ token?: string | string[] }>();
+  const tokenRaw = routeParams?.token;
+  const tokenParam = typeof tokenRaw === "string" ? tokenRaw : undefined;
 
   const [busy, setBusy] = React.useState<boolean>(!!busyProp);
   const [loading, setLoading] = React.useState<boolean>(!!loadingProp);
@@ -45,7 +49,7 @@ export default function Invite({
   const [workspaceName, setWorkspaceName] = React.useState<string | null>(wsNameProp ?? null);
   const [workspaceLogo, setWorkspaceLogo] = React.useState<string | null>(wsLogoProp ?? null);
   const [inviterName, setInviterName] = React.useState<string | null>(inviterProp ?? null);
-  const [user, setUser] = React.useState<any>(userProp ?? null);
+  const [user, setUser] = React.useState<InviteUser | null>(userProp ?? null);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -67,12 +71,12 @@ export default function Invite({
       if (iRes.status === "fulfilled") {
         const res = iRes.value as Response;
         if (!res.ok) {
-          if ((res as any)?.status === 403) setError("This invite is for a different email. Please sign in with the invited address.");
-          else if ((res as any)?.status === 410) setError("This invite has expired. Ask your admin to send a new one.");
-          else if ((res as any)?.status === 404) setError("Invalid invite link.");
+          if (res.status === 403) setError("This invite is for a different email. Please sign in with the invited address.");
+          else if (res.status === 410) setError("This invite has expired. Ask your admin to send a new one.");
+          else if (res.status === 404) setError("Invalid invite link.");
           else setError("Could not load invite.");
         } else {
-          const { invite } = (await res.json()) as { invite?: { workspaceName?: string | null; workspaceLogo?: string | null; invitedByName?: string | null } };
+          const { invite } = (await res.json()) as InviteByTokenResponse;
           if (invite) {
             setWorkspaceName(invite.workspaceName || null);
             setWorkspaceLogo(invite.workspaceLogo || null);
@@ -101,7 +105,10 @@ export default function Invite({
     setBusy(true);
     try {
       const res = await client.team.acceptInvite.$post({ token });
-      if (!res.ok) throw new Error("Invite failed");
+      if (!res.ok) {
+        const message = await readApiErrorMessage(res, "Invite failed");
+        throw new Error(message);
+      }
       let targetSlug: string | null = null;
       try {
         const mineRes = await client.workspace.listMine.$get();
@@ -123,8 +130,8 @@ export default function Invite({
       toast.success("Invite accepted");
       if (targetSlug) router.replace(`/workspaces/${targetSlug}`);
       else router.replace("/start");
-    } catch (e) {
-      toast.error("Invite failed");
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Invite failed");
     } finally {
       setBusy(false);
     }
@@ -136,11 +143,14 @@ export default function Invite({
     setBusy(true);
     try {
       const res = await client.team.declineInvite.$post({ token });
-      if (!res.ok) throw new Error("Decline failed");
+      if (!res.ok) {
+        const message = await readApiErrorMessage(res, "Decline failed");
+        throw new Error(message);
+      }
       toast.success("Invite declined");
       router.replace("/start");
-    } catch (e) {
-      toast.error("Invite failed");
+    } catch (e: unknown) {
+      toast.error((e as { message?: string })?.message || "Invite failed");
     } finally {
       setBusy(false);
     }
