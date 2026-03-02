@@ -27,6 +27,27 @@ interface CreateCommentResponse {
   error?: { message?: string };
 }
 
+const LOCKED_POST_ERROR = "Post is locked"
+
+function isLockedPostMessage(message: string | null | undefined): boolean {
+  if (!message) return false
+  return /post\s+is\s+locked/i.test(message)
+}
+
+function getUnknownErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message || ""
+  if (typeof error === "string") return error
+  if (!error || typeof error !== "object") return ""
+
+  const maybeMessage = (error as { message?: unknown }).message
+  if (typeof maybeMessage === "string") return maybeMessage
+
+  const nestedError = (error as { error?: { message?: unknown } }).error
+  if (typeof nestedError?.message === "string") return nestedError.message
+
+  return ""
+}
+
 export function useCommentSubmit({
   postId,
   parentId,
@@ -177,14 +198,21 @@ export function useCommentSubmit({
             res,
             "Comments are currently disabled on this board"
           )
-          toast.error(message)
+          toast.error(
+            isLockedPostMessage(message) ? LOCKED_POST_ERROR : message
+          )
         } else {
           const message = await readApiErrorMessage(res, "Failed to post comment")
           toast.error(message)
         }
       } catch (error) {
         console.error("Failed to post comment:", error)
-        toast.error("Failed to post comment")
+        const message = getUnknownErrorMessage(error)
+        toast.error(
+          isLockedPostMessage(message)
+            ? LOCKED_POST_ERROR
+            : "Failed to post comment"
+        )
       }
     })
   }
