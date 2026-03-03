@@ -4,6 +4,15 @@ div[data-youtube-video] {
   max-width: 100%;
 }
 
+/* Keep spacing between embedded video blocks and the next editable line */
+.ProseMirror div[data-youtube-video] {
+  margin-bottom: 1em;
+}
+
+.ProseMirror div[data-youtube-video]:last-child {
+  margin-bottom: 0;
+}
+
 div[data-youtube-video] > iframe {
   display: block;
   width: 100% !important;
