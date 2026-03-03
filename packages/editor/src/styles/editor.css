@@ -1,13 +1,27 @@
-@media only screen and (max-width: 480px) {
-  div[data-youtube-video]>iframe {
-    max-height: 50px;
-  }
+/* Keep YouTube embeds responsive in both editor and read-only renderer */
+div[data-youtube-video] {
+  width: 100%;
+  max-width: 100%;
 }
 
-@media only screen and (max-width: 720px) {
-  div[data-youtube-video]>iframe {
-    max-height: 100px;
-  }
+div[data-youtube-video] > iframe {
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+}
+
+/* Make Twitter embeds use the full content width */
+div[data-twitter] {
+  width: 100%;
+  max-width: 100%;
+}
+
+div[data-twitter] :where(.react-tweet-theme) {
+  width: 100%;
+  max-width: 100% !important;
+  min-width: 0 !important;
 }
 
 /* Base editor spacing */
