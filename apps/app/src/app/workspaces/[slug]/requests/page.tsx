@@ -6,6 +6,7 @@ import PostCountSeed from "@/components/requests/PostCountSeed";
 import RequestPagination from "@/components/requests/RequestPagination";
 import { createPageMetadata } from "@/lib/seo";
 import { readInitialSelectionState } from "@/lib/selection-server";
+import { resolveSearchParams } from "@/utils/search-params";
 import { loadRequestsPageData, type RequestsSearchParams } from "./data";
 
 export const dynamic = "force-dynamic";
@@ -30,14 +31,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
   const cookieStore = await cookies();
   const { initialIsSelecting, initialSelectedIds } = readInitialSelectionState(cookieStore, slug);
 
-  let sp: RequestsSearchParams | undefined;
-  if (searchParams) {
-    try {
-      sp = await searchParams;
-    } catch {
-      sp = undefined;
-    }
-  }
+  const sp = await resolveSearchParams(searchParams);
 
   const data = await loadRequestsPageData({ slug, searchParams: sp });
   if (!data) return notFound();

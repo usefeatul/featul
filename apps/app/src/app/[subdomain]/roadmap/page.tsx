@@ -13,6 +13,10 @@ import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
 import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
 import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
 import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
+import {
+  parsePositiveIntSearchParam,
+  resolveSearchParams,
+} from "@/utils/search-params"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -29,9 +33,9 @@ export default async function RoadmapPage({
   searchParams?: Promise<{ page?: string; order?: "newest" | "oldest" }>
 }) {
   const { subdomain } = await params
-  const sp = (await searchParams) || {}
+  const sp = (await resolveSearchParams(searchParams)) ?? {}
   const slug = subdomain
-  const page = Math.max(1, Number(sp.page ?? "1") || 1)
+  const page = parsePositiveIntSearchParam(sp.page)
   const offset = (page - 1) * PAGE_SIZE
   const order = sp.order === "oldest" ? "oldest" : "newest"
 

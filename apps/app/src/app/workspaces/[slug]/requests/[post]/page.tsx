@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import RequestDetail from "@/components/requests/RequestDetail"
+import { resolveSearchParams } from "@/utils/search-params"
 import { loadRequestDetailPageData, type RequestDetailSearchParams } from "./data"
 
 export const revalidate = 0
@@ -11,19 +12,12 @@ export const metadata = createPageMetadata({
   description: "Request details",
 })
 
-type Props = { params: Promise<{ slug: string; post: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }
+type Props = { params: Promise<{ slug: string; post: string }>; searchParams?: Promise<RequestDetailSearchParams> }
 
 export default async function RequestDetailPage({ params, searchParams }: Props) {
   const { slug, post: postSlug } = await params
 
-  let sp: RequestDetailSearchParams | undefined
-  if (searchParams) {
-    try {
-      sp = await searchParams
-    } catch {
-      sp = undefined
-    }
-  }
+  const sp = await resolveSearchParams(searchParams)
 
   const data = await loadRequestDetailPageData({
     workspaceSlug: slug,

@@ -3,6 +3,11 @@ import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normaliz
 import { toRequestItemData } from "@/lib/request-item"
 import { parseArrayParam } from "@/utils/request"
 import { parseSortOrder } from "@/types/sort"
+import {
+  getSingleSearchParam,
+  normalizeSlugList,
+  parsePositiveIntSearchParam,
+} from "@/utils/search-params"
 import type { RequestItemData } from "@/types/request"
 
 const PAGE_SIZE = 20
@@ -32,18 +37,6 @@ export type RequestsPageData = {
   isWorkspaceOwner: boolean
 }
 
-/** Extract a single string value from a string or string array */
-function pickSingle(value?: string | string[]): string | null {
-  if (typeof value === "string") return value
-  if (Array.isArray(value)) return value[0] ?? null
-  return null
-}
-
-/** Normalize and filter slug arrays */
-function normalizeSlugArray(items: string[]): string[] {
-  return items.map((s) => s.trim().toLowerCase()).filter(Boolean)
-}
-
 export async function loadRequestsPageData({
   slug,
   searchParams,
@@ -69,15 +62,15 @@ export async function loadRequestsPageData({
   const isOwner = userId === ws.ownerId
 
   // Parse filter parameters
-  const statusRaw = parseArrayParam(pickSingle(sp.status))
-  const boardRaw = parseArrayParam(pickSingle(sp.board))
-  const tagRaw = parseArrayParam(pickSingle(sp.tag))
+  const statusRaw = parseArrayParam(getSingleSearchParam(sp.status))
+  const boardRaw = parseArrayParam(getSingleSearchParam(sp.board))
+  const tagRaw = parseArrayParam(getSingleSearchParam(sp.tag))
   const order = parseSortOrder(typeof sp.order === "string" ? sp.order : undefined)
   const search = typeof sp.search === "string" ? sp.search : ""
 
   // Pagination
   const pageSize = PAGE_SIZE
-  const page = Math.max(Number(pickSingle(sp.page)) || 1, 1)
+  const page = parsePositiveIntSearchParam(sp.page)
   const offset = (page - 1) * pageSize
 
   // Process status filter (use defaults if none provided)
@@ -87,8 +80,8 @@ export async function loadRequestsPageData({
   }
 
   // Process board/tag filters (clear boards when searching)
-  const boardSlugs = search ? [] : normalizeSlugArray(boardRaw)
-  const tagSlugs = normalizeSlugArray(tagRaw)
+  const boardSlugs = search ? [] : normalizeSlugList(boardRaw)
+  const tagSlugs = normalizeSlugList(tagRaw)
 
   // Fetch data
   const [rows, totalCount] = await Promise.all([

@@ -3,6 +3,11 @@ import { and, eq, sql } from "drizzle-orm"
 import { readHasVotedForPost } from "@/lib/vote.server"
 import { getPostNavigation, normalizeStatus } from "@/lib/workspace"
 import { parseArrayParam } from "@/utils/request"
+import { parseSortOrder } from "@/types/sort"
+import {
+  getSingleSearchParam,
+  normalizeSlugList,
+} from "@/utils/search-params"
 import {
   buildPostSelect,
   ensureAuthorAvatar,
@@ -192,21 +197,17 @@ async function loadNavigation({
 }): Promise<RequestDetailNavigation> {
   const sp = searchParams ?? {}
 
-  const statusRaw = parseArrayParam(
-    typeof sp.status === "string" ? sp.status : Array.isArray(sp.status) ? sp.status[0] ?? null : null
-  )
-  const boardRaw = parseArrayParam(
-    typeof sp.board === "string" ? sp.board : Array.isArray(sp.board) ? sp.board[0] ?? null : null
-  )
-  const tagRaw = parseArrayParam(typeof sp.tag === "string" ? sp.tag : Array.isArray(sp.tag) ? sp.tag[0] ?? null : null)
-  const order = typeof sp.order === "string" && sp.order ? sp.order : "newest"
+  const statusRaw = parseArrayParam(getSingleSearchParam(sp.status))
+  const boardRaw = parseArrayParam(getSingleSearchParam(sp.board))
+  const tagRaw = parseArrayParam(getSingleSearchParam(sp.tag))
+  const order = parseSortOrder(getSingleSearchParam(sp.order))
   const search = typeof sp.search === "string" ? sp.search : ""
 
   const navigation = await getPostNavigation(workspaceSlug, postId, {
     statuses: statusRaw.map(normalizeStatus),
-    boardSlugs: boardRaw.map((b: string) => b.trim().toLowerCase()).filter(Boolean),
-    tagSlugs: tagRaw.map((t: string) => t.trim().toLowerCase()).filter(Boolean),
-    order: order === "oldest" ? "oldest" : order === "likes" ? "likes" : "newest",
+    boardSlugs: normalizeSlugList(boardRaw),
+    tagSlugs: normalizeSlugList(tagRaw),
+    order,
     search,
   })
 
