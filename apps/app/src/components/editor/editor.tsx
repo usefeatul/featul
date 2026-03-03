@@ -1,34 +1,35 @@
 "use client";
 
 import {
-  EditorBubbleMenu,
-  EditorClearFormatting,
-  EditorContext,
-  EditorLinkSelector,
-  EditorMarkBold,
-  EditorMarkCode,
-  EditorMarkHighlight,
-  EditorMarkItalic,
-  EditorMarkStrike,
-  EditorMarkSubscript,
-  EditorMarkSuperscript,
-  EditorMarkTextColor,
-  EditorMarkUnderline,
-  EditorNodeBulletList,
-  EditorNodeCode,
-  EditorNodeHeading1,
-  EditorNodeHeading2,
-  EditorNodeHeading3,
-  EditorNodeOrderedList,
-  EditorNodeQuote,
-  EditorNodeTaskList,
-  EditorNodeText,
-  EditorSelector,
-  EditorTableMenus,
-  useCurrentEditor,
-  useFeatulEditor as usefeatulEditor,
-  type JSONContent,
+	EditorBubbleMenu,
+	EditorClearFormatting,
+	EditorContext,
+	EditorLinkSelector,
+	EditorMarkBold,
+	EditorMarkCode,
+	EditorMarkHighlight,
+	EditorMarkItalic,
+	EditorMarkStrike,
+	EditorMarkSubscript,
+	EditorMarkSuperscript,
+	EditorMarkTextColor,
+	EditorMarkUnderline,
+	EditorNodeBulletList,
+	EditorNodeCode,
+	EditorNodeHeading1,
+	EditorNodeHeading2,
+	EditorNodeHeading3,
+	EditorNodeOrderedList,
+	EditorNodeQuote,
+	EditorNodeTaskList,
+	EditorNodeText,
+	EditorSelector,
+	EditorTableMenus,
+	useCurrentEditor,
+	useFeatulEditor as usefeatulEditor,
+	type JSONContent,
 } from "@featul/editor";
+import type { Editor as TiptapEditor } from "@tiptap/core";
 import { EditorContent as TiptapEditorContent } from "@tiptap/react";
 import { forwardRef, type ForwardedRef, useImperativeHandle } from "react";
 
@@ -39,69 +40,70 @@ import { forwardRef, type ForwardedRef, useImperativeHandle } from "react";
  * It relies on the editor instance from context (EditorContext / useFeatulEditor).
  */
 function FeedEditorMenus() {
-  const { editor } = useCurrentEditor();
+	const { editor } = useCurrentEditor();
+	const contentEditor = editor as unknown as TiptapEditor | null;
 
-  if (!editor) {
-    return null;
-  }
+	if (!contentEditor) {
+		return null;
+	}
 
-  return (
-    <>
-      <EditorBubbleMenu>
-        <EditorSelector title="Text">
-          <EditorNodeText />
-          <EditorNodeHeading1 />
-          <EditorNodeHeading2 />
-          <EditorNodeHeading3 />
-          <EditorNodeBulletList />
-          <EditorNodeOrderedList />
-          <EditorNodeTaskList />
-          <EditorNodeQuote />
-          <EditorNodeCode />
-        </EditorSelector>
+	return (
+		<>
+			<EditorBubbleMenu>
+				<EditorSelector title="Text">
+					<EditorNodeText />
+					<EditorNodeHeading1 />
+					<EditorNodeHeading2 />
+					<EditorNodeHeading3 />
+					<EditorNodeBulletList />
+					<EditorNodeOrderedList />
+					<EditorNodeTaskList />
+					<EditorNodeQuote />
+					<EditorNodeCode />
+				</EditorSelector>
 
-        <EditorSelector title="Format">
-          <EditorMarkBold />
-          <EditorMarkItalic />
-          <EditorMarkUnderline />
-          <EditorMarkStrike />
-          <EditorMarkCode />
-          <EditorMarkSuperscript />
-          <EditorMarkSubscript />
-        </EditorSelector>
+				<EditorSelector title="Format">
+					<EditorMarkBold />
+					<EditorMarkItalic />
+					<EditorMarkUnderline />
+					<EditorMarkStrike />
+					<EditorMarkCode />
+					<EditorMarkSuperscript />
+					<EditorMarkSubscript />
+				</EditorSelector>
 
-        <EditorMarkTextColor />
-        <EditorMarkHighlight />
+				<EditorMarkTextColor />
+				<EditorMarkHighlight />
 
-        <EditorLinkSelector />
+				<EditorLinkSelector />
 
-        <EditorClearFormatting />
-      </EditorBubbleMenu>
+				<EditorClearFormatting />
+			</EditorBubbleMenu>
 
-      <div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer [&_a]:text-primary [&_a]:font-medium [&_a]:underline [&_a]:decoration-primary/40 [&_a:hover]:decoration-primary [&_a[href*='github.com']]:rounded [&_a[href*='github.com']]:bg-primary/5 [&_a[href*='github.com']]:px-1 [&_a[href*='github.com']]:py-0.5 [&_a[href*='github.com']]:font-semibold">
-        <TiptapEditorContent editor={editor as any} />
-      </div>
+			<div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer [&_a]:text-primary [&_a]:font-medium [&_a]:underline [&_a]:decoration-primary/40 [&_a:hover]:decoration-primary [&_a[href*='github.com']]:rounded [&_a[href*='github.com']]:bg-primary/5 [&_a[href*='github.com']]:px-1 [&_a[href*='github.com']]:py-0.5 [&_a[href*='github.com']]:font-semibold">
+				<TiptapEditorContent editor={contentEditor} />
+			</div>
 
-      <EditorTableMenus />
-    </>
-  );
+			<EditorTableMenus />
+		</>
+	);
 }
 
 export interface FeedEditorRef {
-  focus: () => void;
-  getContent: () => JSONContent | undefined;
-  getMarkdown: () => string | undefined;
-  setContentFromMarkdown: (markdown: string) => void;
+	focus: () => void;
+	getContent: () => JSONContent | undefined;
+	getMarkdown: () => string | undefined;
+	setContentFromMarkdown: (markdown: string) => void;
 }
 
 export interface FeedEditorProps {
-  initialContent?: JSONContent;
-  placeholder?: string;
-  className?: string;
-  onUpdate?: (content: JSONContent) => void;
-  editable?: boolean;
-  /** Upload handler for images (slash command, drag & drop, paste) */
-  onImageUpload?: (file: File) => Promise<string>;
+	initialContent?: JSONContent;
+	placeholder?: string;
+	className?: string;
+	onUpdate?: (content: JSONContent) => void;
+	editable?: boolean;
+	/** Upload handler for images (slash command, drag & drop, paste) */
+	onImageUpload?: (file: File) => Promise<string>;
 }
 
 /**
@@ -111,55 +113,55 @@ export interface FeedEditorProps {
  * Exposes an imperative ref with `focus` and `getContent`.
  */
 export const FeedEditor = forwardRef(
-  (
-    {
-      initialContent,
-      placeholder = 'start typing or press "/" for command',
-      className,
-      onUpdate,
-      editable = true,
-      onImageUpload,
-    }: FeedEditorProps,
-    ref: ForwardedRef<FeedEditorRef>,
-  ) => {
-    const editor = usefeatulEditor({
-      content: initialContent,
-      placeholder,
-      editable,
-      imageUpload: onImageUpload ? { upload: onImageUpload } : undefined,
-      onUpdate: ({ editor }) => {
-        onUpdate?.(editor.getJSON());
-      },
-    });
+	(
+		{
+			initialContent,
+			placeholder = 'start typing or press "/" for command',
+			className,
+			onUpdate,
+			editable = true,
+			onImageUpload,
+		}: FeedEditorProps,
+		ref: ForwardedRef<FeedEditorRef>,
+	) => {
+		const editor = usefeatulEditor({
+			content: initialContent,
+			placeholder,
+			editable,
+			imageUpload: onImageUpload ? { upload: onImageUpload } : undefined,
+			onUpdate: ({ editor }) => {
+				onUpdate?.(editor.getJSON());
+			},
+		});
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        focus: () => {
-          editor?.chain().focus().run();
-        },
-        getContent: () => editor?.getJSON(),
-        getMarkdown: () => editor?.getMarkdown(),
-        setContentFromMarkdown: (markdown: string) => {
-          if (!editor) return;
-          editor.commands.setContent(markdown, { contentType: "markdown" });
-        },
-      }),
-      [editor],
-    );
+		useImperativeHandle(
+			ref,
+			() => ({
+				focus: () => {
+					editor?.chain().focus().run();
+				},
+				getContent: () => editor?.getJSON(),
+				getMarkdown: () => editor?.getMarkdown(),
+				setContentFromMarkdown: (markdown: string) => {
+					if (!editor) return;
+					editor.commands.setContent(markdown, { contentType: "markdown" });
+				},
+			}),
+			[editor],
+		);
 
-    if (!editor) {
-      return null;
-    }
+		if (!editor) {
+			return null;
+		}
 
-    return (
-      <EditorContext.Provider value={{ editor }}>
-        <div className={className}>
-          <FeedEditorMenus />
-        </div>
-      </EditorContext.Provider>
-    );
-  },
+		return (
+			<EditorContext.Provider value={{ editor }}>
+				<div className={className}>
+					<FeedEditorMenus />
+				</div>
+			</EditorContext.Provider>
+		);
+	},
 );
 
 FeedEditor.displayName = "FeedEditor";

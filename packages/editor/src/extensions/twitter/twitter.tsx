@@ -1,63 +1,69 @@
 /** biome-ignore-all lint/style/useConsistentTypeDefinitions: <> */
 import { mergeAttributes, Node, nodePasteRule } from "@tiptap/core";
 import {
-  NodeViewWrapper,
-  ReactNodeViewRenderer,
-  type ReactNodeViewRendererOptions,
+	NodeViewWrapper,
+	ReactNodeViewRenderer,
+	type ReactNodeViewRendererOptions,
 } from "@tiptap/react";
 import { Tweet } from "react-tweet";
 export const TWITTER_REGEX_GLOBAL =
-  /(https?:\/\/)?(www\.)?x\.com\/([a-zA-Z0-9_]{1,15})(\/status\/(\d+))?(\/\S*)?/g;
+	/(https?:\/\/)?(www\.)?x\.com\/([a-zA-Z0-9_]{1,15})(\/status\/(\d+))?(\/\S*)?/g;
 export const TWITTER_REGEX =
-  /^https?:\/\/(www\.)?x\.com\/([a-zA-Z0-9_]{1,15})(\/status\/(\d+))?(\/\S*)?$/;
+	/^https?:\/\/(www\.)?x\.com\/([a-zA-Z0-9_]{1,15})(\/status\/(\d+))?(\/\S*)?$/;
 
 export const isValidTwitterUrl = (url: string) => url.match(TWITTER_REGEX);
 
 const TweetComponent = ({
-  node,
+	node,
 }: {
-  node: Partial<ReactNodeViewRendererOptions>;
+	node: Partial<ReactNodeViewRendererOptions>;
 }) => {
-  const url = (node?.attrs as Record<string, string>)?.src;
-  const tweetId = url?.split("/").pop();
+	const attrs = node?.attrs;
+	const url =
+		attrs &&
+		typeof attrs === "object" &&
+		"src" in attrs &&
+		typeof attrs.src === "string"
+			? attrs.src
+			: null;
+	const tweetId = url?.split("/").pop();
 
-  if (!tweetId) {
-    return null;
-  }
+	if (!tweetId) {
+		return null;
+	}
 
-  return (
-    <NodeViewWrapper className="my-5">
-      <div data-twitter="">
-        <Tweet id={tweetId} />
-      </div>
-    </NodeViewWrapper>
-  );
+	return (
+		<NodeViewWrapper className="my-5">
+			<div data-twitter="">
+				<Tweet id={tweetId} />
+			</div>
+		</NodeViewWrapper>
+	);
 };
 
 export interface TwitterOptions {
-  /**
-   * Controls if the paste handler for tweets should be added.
-   * @default true
-   * @example false
-   */
-  addPasteHandler: boolean;
+	/**
+	 * Controls if the paste handler for tweets should be added.
+	 * @default true
+	 * @example false
+	 */
+	addPasteHandler: boolean;
 
-  // biome-ignore lint/suspicious/noExplicitAny: <>
-  HTMLAttributes: Record<string, any>;
+	HTMLAttributes: Record<string, string>;
 
-  /**
-   * Controls if the twitter node should be inline or not.
-   * @default false
-   * @example true
-   */
-  inline: boolean;
+	/**
+	 * Controls if the twitter node should be inline or not.
+	 * @default false
+	 * @example true
+	 */
+	inline: boolean;
 
-  /**
-   * The origin of the tweet.
-   * @default ''
-   * @example 'https://tiptap.dev'
-   */
-  origin: string;
+	/**
+	 * The origin of the tweet.
+	 * @default ''
+	 * @example 'https://tiptap.dev'
+	 */
+	origin: string;
 }
 
 /**
@@ -66,106 +72,106 @@ export interface TwitterOptions {
 type SetTweetOptions = { src: string };
 
 declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    twitter: {
-      /**
-       * Insert a tweet
-       * @param options The tweet attributes
-       * @example editor.commands.setTweet({ src: 'https://x.com/seanpk/status/1800145949580517852' })
-       */
-      setTweet: (options: SetTweetOptions) => ReturnType;
-    };
-  }
+	interface Commands<ReturnType> {
+		twitter: {
+			/**
+			 * Insert a tweet
+			 * @param options The tweet attributes
+			 * @example editor.commands.setTweet({ src: 'https://x.com/seanpk/status/1800145949580517852' })
+			 */
+			setTweet: (options: SetTweetOptions) => ReturnType;
+		};
+	}
 }
 
 /**
  * This extension adds support for tweets.
  */
 export const Twitter = Node.create<TwitterOptions>({
-  name: "twitter",
+	name: "twitter",
 
-  addOptions() {
-    return {
-      addPasteHandler: true,
-      HTMLAttributes: {},
-      inline: false,
-      origin: "",
-    };
-  },
+	addOptions() {
+		return {
+			addPasteHandler: true,
+			HTMLAttributes: {},
+			inline: false,
+			origin: "",
+		};
+	},
 
-  addNodeView() {
-    return ReactNodeViewRenderer(TweetComponent, {
-      attrs: this.options.HTMLAttributes,
-    });
-  },
+	addNodeView() {
+		return ReactNodeViewRenderer(TweetComponent, {
+			attrs: this.options.HTMLAttributes,
+		});
+	},
 
-  inline() {
-    return this.options.inline;
-  },
+	inline() {
+		return this.options.inline;
+	},
 
-  group() {
-    return this.options.inline ? "inline" : "block";
-  },
+	group() {
+		return this.options.inline ? "inline" : "block";
+	},
 
-  draggable: true,
+	draggable: true,
 
-  addAttributes() {
-    return {
-      src: {
-        default: null,
-        parseHTML: (element) => element.getAttribute("data-src"),
-        renderHTML: (attributes) => {
-          if (!attributes.src) {
-            return {};
-          }
-          return {
-            "data-src": attributes.src,
-          };
-        },
-      },
-    };
-  },
+	addAttributes() {
+		return {
+			src: {
+				default: null,
+				parseHTML: (element) => element.getAttribute("data-src"),
+				renderHTML: (attributes) => {
+					if (!attributes.src) {
+						return {};
+					}
+					return {
+						"data-src": attributes.src,
+					};
+				},
+			},
+		};
+	},
 
-  parseHTML() {
-    return [
-      {
-        tag: "div[data-twitter]",
-      },
-    ];
-  },
+	parseHTML() {
+		return [
+			{
+				tag: "div[data-twitter]",
+			},
+		];
+	},
 
-  addCommands() {
-    return {
-      setTweet:
-        (options: SetTweetOptions) =>
-        ({ commands }) => {
-          if (!isValidTwitterUrl(options.src)) {
-            return false;
-          }
+	addCommands() {
+		return {
+			setTweet:
+				(options: SetTweetOptions) =>
+				({ commands }) => {
+					if (!isValidTwitterUrl(options.src)) {
+						return false;
+					}
 
-          return commands.insertContent({
-            type: this.name,
-            attrs: options,
-          });
-        },
-    };
-  },
+					return commands.insertContent({
+						type: this.name,
+						attrs: options,
+					});
+				},
+		};
+	},
 
-  addPasteRules() {
-    if (!this.options.addPasteHandler) {
-      return [];
-    }
+	addPasteRules() {
+		if (!this.options.addPasteHandler) {
+			return [];
+		}
 
-    return [
-      nodePasteRule({
-        find: TWITTER_REGEX_GLOBAL,
-        type: this.type,
-        getAttributes: (match) => ({ src: match.input }),
-      }),
-    ];
-  },
+		return [
+			nodePasteRule({
+				find: TWITTER_REGEX_GLOBAL,
+				type: this.type,
+				getAttributes: (match) => ({ src: match.input }),
+			}),
+		];
+	},
 
-  renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes({ "data-twitter": "" }, HTMLAttributes)];
-  },
+	renderHTML({ HTMLAttributes }) {
+		return ["div", mergeAttributes({ "data-twitter": "" }, HTMLAttributes)];
+	},
 });
