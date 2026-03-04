@@ -85,6 +85,13 @@
       "when": 1771988400000,
       "tag": "0011_bright_notra",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1771992000000,
+      "tag": "0012_github_issue_sync",
+      "breakpoints": true
     }
   ]
 }

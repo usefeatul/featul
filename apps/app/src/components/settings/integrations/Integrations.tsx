@@ -5,6 +5,7 @@ import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
 import SlackCard from "./SlackCard";
 import DiscordCard from "./DiscordCard";
+import GitHubCard from "./GitHubCard";
 import SuggestIntegrationCard from "./SuggestIntegrationCard";
 import { useIntegrations, type Integration } from "@/hooks/useIntegrations";
 import { isIntegrationsAllowed } from "@/lib/plan";
@@ -16,7 +17,7 @@ type Props = {
 };
 
 /**
- * Integrations settings section with Discord and Slack webhook support
+ * Integrations settings section with webhook and GitHub sync integrations
  */
 export default function IntegrationsSection({ slug, plan, initialIntegrations }: Props) {
   const [pendingIntegration, setPendingIntegration] = React.useState<string | null>(null);
@@ -119,9 +120,8 @@ export default function IntegrationsSection({ slug, plan, initialIntegrations }:
             || !discordActionsEnabled
           }
         />
-        <div className="md:col-span-1">
-          <SuggestIntegrationCard />
-        </div>
+        <GitHubCard slug={slug} />
+        <SuggestIntegrationCard />
       </div>
 
       <div className="mt-4">
