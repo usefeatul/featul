@@ -103,7 +103,7 @@ export default function InviteRow({
           </Avatar>
           <div className="min-w-0">
             <div className="font-medium truncate">{i.email}</div>
-            <div className="text-xs font-light text-accent">{expiryLabel}</div>
+            <div className="text-xs text-accent">{expiryLabel}</div>
           </div>
         </div>
       </TableCell>
