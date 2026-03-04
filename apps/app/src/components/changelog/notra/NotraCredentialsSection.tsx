@@ -30,6 +30,7 @@ export function NotraCredentialsSection({
           value={organizationId}
           onChange={(event) => onOrganizationIdChange(event.target.value)}
           placeholder="org_123"
+          className="placeholder:text-accent"
           autoComplete="off"
           disabled={isPending}
         />
@@ -46,6 +47,7 @@ export function NotraCredentialsSection({
           id="notra-api-key"
           type="password"
           placeholder="notra_..."
+          className="placeholder:text-accent"
           autoComplete="off"
           disabled={isPending}
           ref={apiKeyInputRef}
