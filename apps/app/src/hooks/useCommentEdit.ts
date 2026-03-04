@@ -41,7 +41,9 @@ export function useCommentEdit({ commentId, initialContent, onUpdate }: UseComme
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
-          } catch {}
+          } catch {
+            // Non-blocking: stats refresh is best-effort after comment edits.
+          }
         } else {
           toast.error("Failed to update comment")
         }

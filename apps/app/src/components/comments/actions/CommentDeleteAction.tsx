@@ -50,12 +50,16 @@ export default function CommentDeleteAction({
                 detail,
               })
             )
-          } catch {}
+          } catch {
+            // Non-blocking: local event dispatch failure should not block deletion UX.
+          }
 
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
-          } catch {}
+          } catch {
+            // Non-blocking: membership widgets can recover on next refresh.
+          }
 
           onSuccess?.()
         } else {

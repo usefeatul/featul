@@ -22,6 +22,15 @@ type Props = {
     workspaceName?: string;
 };
 
+type DeleteWorkspaceResponse = {
+    ok?: boolean;
+    message?: string;
+};
+
+type ListWorkspacesResponse = {
+    workspaces?: Array<{ slug?: string }>;
+};
+
 export default function DangerZoneCard({ slug, workspaceName }: Props) {
     const router = useRouter();
     const [open, setOpen] = React.useState(false);
@@ -37,10 +46,11 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                     slug,
                     confirmName: confirmName.trim(),
                 });
-                const data = await res.json().catch(() => ({} as any));
+                const data = (await res
+                    .json()
+                    .catch(() => null)) as DeleteWorkspaceResponse | null;
                 if (!res.ok || !data?.ok) {
-                    const message =
-                        (data as any)?.message || "Failed to delete workspace";
+                    const message = data?.message || "Failed to delete workspace";
                     toast.error(message);
                     return;
                 }
@@ -51,10 +61,16 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                 let nextSlug: string | null = null;
                 try {
                     const listRes = await client.workspace.listMine.$get();
-                    const listData = await listRes.json().catch(() => ({} as any));
-                    const workspaces = ((listData as any).workspaces ||
-                        []) as { slug: string }[];
-                    const remaining = workspaces.filter((w) => w.slug !== slug);
+                    const listData = (await listRes
+                        .json()
+                        .catch(() => null)) as ListWorkspacesResponse | null;
+                    const workspaces = Array.isArray(listData?.workspaces)
+                        ? listData.workspaces
+                        : [];
+                    const remaining = workspaces.filter(
+                        (w): w is { slug: string } =>
+                            typeof w?.slug === "string" && w.slug !== slug,
+                    );
                     nextSlug = remaining[0]?.slug || null;
                 } catch {
                     nextSlug = null;

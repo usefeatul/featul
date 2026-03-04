@@ -6,7 +6,7 @@ type Props = {
   onSuggest?: () => void;
 };
 
-export default function SuggestIntegrationCard({ onSuggest }: Props) {
+export default function SuggestIntegrationCard({ onSuggest: _onSuggest }: Props) {
   return (
     <SettingsCard
       icon={<IntegrationIcon className="size-5 text-primary" />}

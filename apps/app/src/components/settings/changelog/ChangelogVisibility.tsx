@@ -6,14 +6,30 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 
+type ChangelogSettingsResponse = {
+  isVisible?: boolean
+}
+
+type ChangelogSettingsCache = {
+  isVisible: boolean
+}
+
+function readErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message) return error.message
+  if (typeof error === "string" && error.trim()) return error
+  return fallback
+}
+
 export default function ChangelogVisibility({ slug, initialIsVisible }: { slug: string; initialIsVisible?: boolean }) {
   const queryClient = useQueryClient()
-  const { data = { isVisible: Boolean(initialIsVisible) } } = useQuery({
+  const { data = { isVisible: Boolean(initialIsVisible) } } = useQuery<ChangelogSettingsCache>({
     queryKey: ["changelog-settings", slug],
     queryFn: async () => {
       const res = await client.changelog.settings.$get({ slug })
-      const d = await res.json()
-      return { isVisible: Boolean((d as any)?.isVisible) }
+      const data = (await res
+        .json()
+        .catch(() => null)) as ChangelogSettingsResponse | null
+      return { isVisible: Boolean(data?.isVisible) }
     },
     initialData: initialIsVisible !== undefined ? { isVisible: Boolean(initialIsVisible) } : undefined,
     staleTime: 300000,
@@ -22,16 +38,13 @@ export default function ChangelogVisibility({ slug, initialIsVisible }: { slug: 
     refetchOnMount: false,
   })
 
-  const visible = Boolean((data as any)?.isVisible)
+  const visible = Boolean(data?.isVisible)
 
   const handleToggleVisible = async (v: boolean) => {
     try {
-      try {
-        queryClient.setQueryData(["changelog-settings", slug], (prev: any) => ({
-          ...(prev || {}),
-          isVisible: v,
-        }))
-      } catch {}
+      queryClient.setQueryData<ChangelogSettingsCache>(["changelog-settings", slug], {
+        isVisible: v,
+      })
       const res = await client.changelog.toggleVisibility.$post({ slug, isVisible: v })
       if (!res.ok) {
         const err = (await res.json().catch(() => null)) as { message?: string } | null
@@ -39,18 +52,14 @@ export default function ChangelogVisibility({ slug, initialIsVisible }: { slug: 
       }
       const msg = v ? "Changelog is now visible on your public site" : "Changelog is hidden from your public site"
       toast.success(msg)
-      queryClient.setQueryData(["changelog-settings", slug], (prev: any) => ({
-        ...(prev || {}),
+      queryClient.setQueryData<ChangelogSettingsCache>(["changelog-settings", slug], {
         isVisible: v,
-      }))
+      })
     } catch (e: unknown) {
-      try {
-        queryClient.setQueryData(["changelog-settings", slug], (prev: any) => ({
-          ...(prev || {}),
-          isVisible: !v,
-        }))
-      } catch {}
-      const m = (e as { message?: string })?.message || "Couldn't update changelog visibility"
+      queryClient.setQueryData<ChangelogSettingsCache>(["changelog-settings", slug], {
+        isVisible: !v,
+      })
+      const m = readErrorMessage(e, "Couldn't update changelog visibility")
       toast.error(m)
     }
   }

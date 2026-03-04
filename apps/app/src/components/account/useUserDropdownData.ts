@@ -22,6 +22,27 @@ type UseUserDropdownDataProps = {
   initialDeviceAccounts?: DeviceAccount[];
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function toSessionUser(payload: unknown): SessionUser | null {
+  if (!isRecord(payload)) return null;
+  const userRaw = payload.user;
+  if (!isRecord(userRaw)) return null;
+
+  const id = typeof userRaw.id === "string" ? userRaw.id : undefined;
+  const name = typeof userRaw.name === "string" ? userRaw.name : undefined;
+  const email =
+    typeof userRaw.email === "string" ? userRaw.email : undefined;
+  const image =
+    typeof userRaw.image === "string" || userRaw.image === null
+      ? userRaw.image
+      : undefined;
+
+  return { id, name, email, image };
+}
+
 export function useUserDropdownData({
   initialUser,
   initialDeviceAccounts = [],
@@ -36,23 +57,19 @@ export function useUserDropdownData({
     queryFn: async () => {
       const session = await authClient.getSession();
       const payload =
-        session && typeof session === "object" && "data" in session
-          ? session.data
+        isRecord(session) && "data" in session
+          ? (session as { data?: unknown }).data
           : session;
-
-      const user = (payload as any)?.user || null;
-      const userId =
-        typeof (payload as any)?.user?.id === "string"
-          ? String((payload as any).user.id)
-          : null;
+      const user = toSessionUser(payload);
+      const userId = user?.id ?? null;
 
       return { user, userId };
     },
     initialData: () => ({
-      user: (initialUser as SessionUser) || null,
+      user: initialUser ? ({ ...initialUser } as SessionUser) : null,
       userId: null,
     }),
-    placeholderData: (prev) => prev as any,
+    placeholderData: (prev) => prev,
     staleTime: 60_000,
     gcTime: 900_000,
     refetchOnMount: "always",

@@ -8,6 +8,16 @@ import { toast } from "sonner"
 import { isSlugValid } from "@/lib/validators"
 import { Link2, Mail } from "lucide-react"
 
+type CheckSlugResponse = {
+  available?: boolean
+}
+
+function readErrorMessage(error: unknown): string | null {
+  if (error instanceof Error && error.message) return error.message
+  if (typeof error === "string" && error.trim()) return error
+  return null
+}
+
 export default function ReserveForm() {
   const [email, setEmail] = React.useState("")
   const [slug, setSlug] = React.useState("")
@@ -17,34 +27,47 @@ export default function ReserveForm() {
   const [cooldownUntil, setCooldownUntil] = React.useState<number | null>(null)
   const [now, setNow] = React.useState<number>(Date.now())
   const [limitReached, setLimitReached] = React.useState(false)
+  const latestCheckId = React.useRef(0)
 
   React.useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(id)
   }, [])
 
-  const check = async (s: string) => {
-    const v = (s || "").trim().toLowerCase()
+  React.useEffect(() => {
+    const v = slug.trim().toLowerCase()
+    const checkId = ++latestCheckId.current
+
     if (!isSlugValid(v)) {
       setAvailable(null)
+      setChecking(false)
       return
     }
+
     setChecking(true)
-    try {
-      const res = await client.reservation.checkSlug.$post({ slug: v })
-      const data = await res.json()
-      setAvailable(Boolean(data?.available))
-    } catch {
-      setAvailable(null)
-    } finally {
-      setChecking(false)
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const res = await client.reservation.checkSlug.$post({ slug: v })
+        const data = (await res.json().catch(() => null)) as CheckSlugResponse | null
+        if (latestCheckId.current !== checkId) return
+        setAvailable(Boolean(data?.available))
+      } catch {
+        if (latestCheckId.current !== checkId) return
+        setAvailable(null)
+      } finally {
+        if (latestCheckId.current === checkId) {
+          setChecking(false)
+        }
+      }
+    }, 250)
+
+    return () => {
+      window.clearTimeout(timeoutId)
     }
-  }
+  }, [slug])
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value
-    setSlug(v)
-    check(v)
+    setSlug(e.target.value)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,11 +82,11 @@ export default function ReserveForm() {
       if (!em || !em.includes("@")) throw new Error("Invalid email")
       const res = await client.reservation.reserve.$post({ slug: s, email: em })
       if (!res.ok) {
-        if ((res as any)?.status === 429) {
+        if (res.status === 429) {
           setCooldownUntil(Date.now() + 60_000)
           throw new Error("Too many requests. Please wait a minute.")
         }
-        if ((res as any)?.status === 403) {
+        if (res.status === 403) {
           setLimitReached(true)
           throw new Error("You have reached the maximum of 3 reservations.")
         }
@@ -76,8 +99,8 @@ export default function ReserveForm() {
       setAvailable(null)
       setChecking(false)
       setLimitReached(false)
-    } catch (e) {
-      toast.error((e as any)?.message || "Reservation failed")
+    } catch (e: unknown) {
+      toast.error(readErrorMessage(e) || "Reservation failed")
     } finally {
       setBusy(false)
     }

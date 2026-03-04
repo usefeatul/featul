@@ -55,6 +55,7 @@ export default function StepWizardForm({
 }: StepWizardFormProps) {
   const [step, setStep] = React.useState(0)
   const steps = React.useMemo(() => ["domain", "name", "slug", "timezone"], [])
+  const reservedWorkspaceUrl = slugLocked ? `${slugLocked}.featul.com` : null
 
   const canNext = React.useMemo(() => {
     if (step === 0) return domain.length > 0 && domainValid
@@ -135,6 +136,11 @@ export default function StepWizardForm({
                 <AlertCircle className="absolute right-3 size-4 text-destructive" />
               )}
             </div>
+            {reservedWorkspaceUrl && (
+              <p className="mt-1.5 text-xs text-accent">
+                Reserved URL <span className="font-medium text-primary">{reservedWorkspaceUrl}</span> will be used.
+              </p>
+            )}
             {!domainValid && domain.length > 0 && (
               <div className="text-xs text-destructive flex items-center gap-1 mt-1.5">
                 <span>Invalid domain</span>
@@ -172,6 +178,11 @@ export default function StepWizardForm({
               autoFocus
               maxLength={15}
             />
+            {reservedWorkspaceUrl && (
+              <p className="mt-1.5 text-xs text-accent">
+                URL is locked to <span className="font-medium text-primary">{reservedWorkspaceUrl}</span>.
+              </p>
+            )}
           </div>
         )}
 

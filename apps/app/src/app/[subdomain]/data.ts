@@ -61,12 +61,11 @@ async function getSystemBoardVisibility(
     .where(
       and(
         eq(board.workspaceId, workspaceId),
-        eq(board.systemType, systemType as any)
+        eq(board.systemType, systemType)
       )
     )
     .limit(1);
 
   return Boolean(b?.isVisible) && Boolean(b?.isPublic);
 }
-
 

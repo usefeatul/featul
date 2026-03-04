@@ -18,7 +18,8 @@ export default function RoadmapDraggable({
 }) {
   const { setNodeRef, listeners, attributes, transform } = useDraggable({ id });
   const sanitizedAttributes = React.useMemo(() => {
-    const { ["aria-describedby"]: _omit, ...rest } = (attributes as any) || {};
+    if (!attributes) return {};
+    const { ["aria-describedby"]: _omit, ...rest } = attributes;
     return rest;
   }, [attributes]);
   return (

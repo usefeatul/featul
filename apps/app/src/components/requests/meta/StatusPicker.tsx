@@ -13,6 +13,7 @@ import { normalizeRoadmapStatus, type RoadmapStatus } from "@/lib/roadmap"
 import StatusIcon from "../StatusIcon"
 
 const STATUSES: RoadmapStatus[] = ["pending", "review", "planned", "progress", "completed", "closed"]
+type StatusCounts = Record<string, number>
 
 export default function StatusPicker({ postId, value, onChange, className }: { postId: string; value?: string | null; onChange: (v: RoadmapStatus) => void; className?: string }) {
   const [open, setOpen] = React.useState(false)
@@ -31,9 +32,9 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
       onChange(v)
       setOpen(false)
       if (slug) {
-        queryClient.setQueryData(["status-counts", slug], (prev: any) => {
+        queryClient.setQueryData<StatusCounts>(["status-counts", slug], (prev) => {
           if (!prev) return prev
-          const copy: Record<string, number> = { ...prev }
+          const copy: StatusCounts = { ...prev }
           if (prevStatus && typeof copy[prevStatus] === "number") copy[prevStatus] = Math.max(0, (copy[prevStatus] || 0) - 1)
           copy[nextStatus] = ((copy[nextStatus] || 0) + 1)
           return copy

@@ -16,7 +16,6 @@ type Props = {
 
 export default function LogoUploader({ slug, value = "", onChange, disabled = false }: Props) {
   const [preview, setPreview] = React.useState<string>(value || "")
-  const [uploading, setUploading] = React.useState(false)
 
   React.useEffect(() => {
     setPreview(value || "")
@@ -44,7 +43,6 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
     const reader = new FileReader()
     reader.onload = () => setPreview(typeof reader.result === "string" ? reader.result : "")
     reader.readAsDataURL(file)
-    setUploading(true)
     const toastId = toast.loading("Uploading logo...")
     try {
       const { uploadUrl, publicUrl } = await getLogoUploadUrl(slug, file.name, file.type, file.size)
@@ -63,8 +61,6 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
     } catch (error: unknown) {
       const message = error instanceof Error && error.message ? error.message : "Failed to upload"
       toast.error(message, { id: toastId })
-    } finally {
-      setUploading(false)
     }
   }
 

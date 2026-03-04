@@ -11,6 +11,10 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import type { PostDeletedEventDetail } from "@/types/events"
 
+type DeletePostErrorResponse = {
+  message?: string
+}
+
 export interface DeletePostButtonProps {
   postId: string
   workspaceSlug?: string
@@ -35,12 +39,16 @@ export function DeletePostButton({ postId, workspaceSlug, backHref, className }:
               const detail: PostDeletedEventDetail = { postId, workspaceSlug, status: null }
               window.dispatchEvent(new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail }))
             }
-          } catch {}
+          } catch {
+            // Non-blocking: post list refresh can still happen without the custom event.
+          }
 
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
-          } catch {}
+          } catch {
+            // Non-blocking: related stats panels will refresh on next mount.
+          }
 
           const target = backHref || (workspaceSlug ? "/" : null)
           if (target) {
@@ -51,10 +59,12 @@ export function DeletePostButton({ postId, workspaceSlug, backHref, className }:
             router.refresh()
           }
         } else {
-          const err = await res.json().catch(() => null)
-          toast.error(((err as any)?.message as string) || "Failed to delete post")
+          const err = (await res
+            .json()
+            .catch(() => null)) as DeletePostErrorResponse | null
+          toast.error(err?.message || "Failed to delete post")
         }
-      } catch (error) {
+      } catch {
         toast.error("Failed to delete post")
       } finally {
         setConfirmOpen(false)

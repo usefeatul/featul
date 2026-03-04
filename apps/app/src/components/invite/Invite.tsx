@@ -93,7 +93,7 @@ export default function Invite({
     return () => {
       mounted = false;
     };
-  }, [tokenParam, router]);
+  }, [tokenParam, tokenProp, router]);
 
   const name = (user?.name || user?.email?.split("@")[0] || "").trim();
   const email = (user?.email || "").trim();
@@ -121,11 +121,15 @@ export default function Invite({
         if (!targetSlug && all.length > 0) {
           targetSlug = all[0]?.slug || null;
         }
-      } catch { }
+      } catch {
+        // Non-blocking: falling back to /start when workspace resolution fails.
+      }
       if (targetSlug) {
         try {
           await authClient.organization.setActive({ organizationSlug: targetSlug });
-        } catch { }
+        } catch {
+          // Non-blocking: redirect still succeeds even if org activation request fails.
+        }
       }
       toast.success("Invite accepted");
       if (targetSlug) router.replace(`/workspaces/${targetSlug}`);

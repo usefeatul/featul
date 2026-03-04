@@ -4,12 +4,20 @@ export function parseArrayParam(v: string | null): string[] {
     const arr = JSON.parse(v);
     return Array.isArray(arr) ? arr : [];
   } catch {
-    return [];
+    // Backward compatibility with previously encoded values.
+    try {
+      if (!v) return [];
+      const decoded = decodeURIComponent(v);
+      const arr = JSON.parse(decoded);
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
   }
 }
 
 export function encodeArray(arr: string[]): string {
-  return encodeURIComponent(JSON.stringify(arr));
+  return JSON.stringify(arr);
 }
 
 export function toggleValue(selected: string[], value: string): string[] {
@@ -40,6 +48,7 @@ export function buildRequestsUrl(
     page: number;
   }>,
 ): string {
+  const params = new URLSearchParams();
   const status = overrides.status
     ? encodeArray(overrides.status)
     : prev.get("status") || encodeArray([]);
@@ -53,7 +62,14 @@ export function buildRequestsUrl(
   const search = overrides.search ?? prev.get("search") ?? "";
   const page =
     overrides.page != null ? String(overrides.page) : prev.get("page") || "1";
-  return `/workspaces/${slug}/requests?status=${status}&board=${board}&tag=${tag}&order=${order}&search=${search}&page=${page}`;
+  params.set("status", status);
+  params.set("board", board);
+  params.set("tag", tag);
+  params.set("order", order);
+  params.set("search", search);
+  params.set("page", page);
+
+  return `/workspaces/${slug}/requests?${params.toString()}`;
 }
 
 export function buildWorkspaceUrl(
@@ -62,7 +78,9 @@ export function buildWorkspaceUrl(
   overrides: Partial<{ page: number }>,
 ): string {
   const page = resolvePage(prev, overrides.page);
-  return `/workspaces/${slug}?page=${page}`;
+  const params = new URLSearchParams();
+  params.set("page", page);
+  return `/workspaces/${slug}?${params.toString()}`;
 }
 
 export function buildChangelogUrl(
@@ -71,5 +89,7 @@ export function buildChangelogUrl(
   overrides: Partial<{ page: number }>,
 ): string {
   const page = resolvePage(prev, overrides.page);
-  return `/workspaces/${slug}/changelog?page=${page}`;
+  const params = new URLSearchParams();
+  params.set("page", page);
+  return `/workspaces/${slug}/changelog?${params.toString()}`;
 }

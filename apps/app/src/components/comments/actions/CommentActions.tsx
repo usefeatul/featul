@@ -7,7 +7,6 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverList,
-  PopoverListItem,
 } from "@featul/ui/components/popover"
 import CommentDeleteAction from "./CommentDeleteAction"
 import CommentReportAction from "./CommentReportAction"

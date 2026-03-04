@@ -12,8 +12,6 @@ import {
 import { toast } from "sonner";
 import { Switch } from "@featul/ui/components/switch";
 import {
-  BRANDING_COLORS,
-  findColorByPrimary,
   applyBrandPrimary,
 } from "../../../types/colors";
 import ColorPicker from "./ColorPicker";
@@ -46,13 +44,8 @@ export default function BrandingSection({
   initialWorkspaceName,
 }: BrandingSectionProps) {
   const initialPrimary = initialConfig?.primaryColor || "#3b82f6";
-  const initialFound = findColorByPrimary(initialPrimary) || BRANDING_COLORS[1];
   const [logoUrl, setLogoUrl] = React.useState(String(initialConfig?.logoUrl || ""));
   const [primaryColor, setPrimaryColor] = React.useState(initialPrimary);
-  const [accentColor, setAccentColor] = React.useState(
-    String(initialConfig?.accentColor || (initialFound && initialFound.accent) || "#60a5fa"),
-  );
-  const [colorKey, setColorKey] = React.useState<string>(initialFound ? initialFound.key : "blue");
   const [theme, setTheme] = React.useState<"light" | "dark" | "system">(
     initialConfig?.theme === "light" || initialConfig?.theme === "dark" || initialConfig?.theme === "system"
       ? initialConfig.theme
@@ -93,10 +86,7 @@ export default function BrandingSection({
         if (mounted && conf0) {
           setLogoUrl(conf0.logoUrl || "");
           const currentPrimary = conf0.primaryColor || "#3b82f6";
-          const found = findColorByPrimary(currentPrimary) || BRANDING_COLORS[1];
           setPrimaryColor(currentPrimary);
-          setAccentColor(conf0.accentColor || (found && found.accent) || "#60a5fa");
-          setColorKey(found ? found.key : "blue");
           if (conf0.theme === "light" || conf0.theme === "dark" || conf0.theme === "system") setTheme(conf0.theme);
           setHidePoweredBy(
             typeof initialHidePoweredBy === "boolean"
@@ -118,10 +108,7 @@ export default function BrandingSection({
           if (mounted && conf) {
             setLogoUrl(conf.logoUrl || "");
             const currentPrimary = conf.primaryColor || "#3b82f6";
-            const found = findColorByPrimary(currentPrimary) || BRANDING_COLORS[1];
             setPrimaryColor(currentPrimary);
-            setAccentColor(conf.accentColor || (found && found.accent) || "#60a5fa");
-            setColorKey(found ? found.key : "blue");
             if (conf.theme === "light" || conf.theme === "dark" || conf.theme === "system") setTheme(conf.theme);
             setHidePoweredBy(
               typeof initialHidePoweredBy === "boolean"
@@ -180,7 +167,7 @@ export default function BrandingSection({
     return () => {
       mounted = false;
     };
-  }, [slug]);
+  }, [slug, initialConfig, initialHidePoweredBy, initialPlan, initialWorkspaceName]);
 
   const handleSave = async () => {
     if (saving) return;
@@ -275,9 +262,7 @@ export default function BrandingSection({
             <ColorPicker
               valueHex={primaryColor}
               onSelect={(c) => {
-                setColorKey(c.key);
                 setPrimaryColor(c.primary);
-                setAccentColor(c.accent);
                 applyBrandPrimary(c.primary);
               }}
               disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}

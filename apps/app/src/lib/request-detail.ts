@@ -187,7 +187,7 @@ export async function loadMergedPostData({
         title: target.title,
         roadmapStatus: target.roadmapStatus,
         mergedAt: mergeRow?.createdAt
-          ? new Date(mergeRow.createdAt as any).toISOString()
+          ? new Date(mergeRow.createdAt).toISOString()
           : null,
         boardName: target.boardName,
         boardSlug: target.boardSlug,
@@ -219,7 +219,7 @@ export async function loadMergedPostData({
       slug: r.slug,
       title: r.title,
       roadmapStatus: r.roadmapStatus ?? null,
-      mergedAt: r.mergedAt ? new Date(r.mergedAt as any).toISOString() : null,
+      mergedAt: r.mergedAt ? new Date(r.mergedAt).toISOString() : null,
       boardName: r.boardName,
       boardSlug: r.boardSlug,
     }));
