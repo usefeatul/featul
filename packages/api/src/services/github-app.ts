@@ -1,4 +1,4 @@
-import { createSign } from "node:crypto"
+import { createPrivateKey, createSign, KeyObject } from "node:crypto"
 import { HTTPException } from "hono/http-exception"
 
 type GithubRepository = {
@@ -35,10 +35,48 @@ function readRequiredEnv(name: string): string {
   return value
 }
 
-function getAppPrivateKey(): string {
+function stripWrappingQuotes(value: string): string {
+  const trimmed = value.trim()
+  if (
+    (trimmed.startsWith("\"") && trimmed.endsWith("\""))
+    || (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim()
+  }
+  return trimmed
+}
+
+function maybeDecodeBase64Pem(value: string): string {
+  const normalized = value.trim()
+  if (normalized.includes("BEGIN ")) return normalized
+  if (!/^[A-Za-z0-9+/=\s]+$/.test(normalized)) return normalized
+  try {
+    const decoded = Buffer.from(normalized, "base64").toString("utf8").trim()
+    if (decoded.includes("BEGIN ")) return decoded
+    return normalized
+  } catch {
+    return normalized
+  }
+}
+
+function normalizePrivateKey(raw: string): string {
+  const withoutQuotes = stripWrappingQuotes(raw)
+  const withNewlines = withoutQuotes.includes("\\n") ? withoutQuotes.replace(/\\n/g, "\n") : withoutQuotes
+  const decodedMaybe = maybeDecodeBase64Pem(withNewlines)
+  return decodedMaybe.replace(/\r\n/g, "\n").trim()
+}
+
+function getAppPrivateKeyObject(): KeyObject {
   const raw = readRequiredEnv("GITHUB_APP_PRIVATE_KEY")
-  // Support both real multiline private key and escaped newlines.
-  return raw.includes("\\n") ? raw.replace(/\\n/g, "\n") : raw
+  const normalized = normalizePrivateKey(raw)
+  try {
+    return createPrivateKey({ key: normalized, format: "pem" })
+  } catch {
+    throw new HTTPException(500, {
+      message:
+        "Invalid GITHUB_APP_PRIVATE_KEY format. Use full PEM (BEGIN...END) with real newlines or escaped \\n.",
+    })
+  }
 }
 
 export function isGithubAppConfigured(): boolean {
@@ -50,7 +88,7 @@ export function isGithubAppConfigured(): boolean {
 
 function createGithubAppJwt(now = Math.floor(Date.now() / 1000)): string {
   const appId = readRequiredEnv("GITHUB_APP_ID")
-  const privateKey = getAppPrivateKey()
+  const privateKey = getAppPrivateKeyObject()
 
   const header = {
     alg: "RS256",
@@ -69,7 +107,14 @@ function createGithubAppJwt(now = Math.floor(Date.now() / 1000)): string {
   const signer = createSign("RSA-SHA256")
   signer.update(body)
   signer.end()
-  const signature = signer.sign(privateKey)
+  let signature: Buffer
+  try {
+    signature = signer.sign(privateKey)
+  } catch {
+    throw new HTTPException(500, {
+      message: "Failed to sign GitHub App JWT. Verify GITHUB_APP_PRIVATE_KEY and GITHUB_APP_ID.",
+    })
+  }
   return `${body}.${toBase64Url(signature)}`
 }
 
