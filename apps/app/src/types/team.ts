@@ -1,4 +1,5 @@
 export type Role = "admin" | "member" | "viewer";
+export type DateValue = string | Date;
 
 export interface Member {
   userId: string;
@@ -16,7 +17,7 @@ export interface Invite {
   email: string;
   role: Role;
   invitedBy: string;
-  expiresAt: string;
-  acceptedAt?: string | null;
-  createdAt: string;
+  expiresAt: DateValue;
+  acceptedAt?: DateValue | null;
+  createdAt: DateValue;
 }
