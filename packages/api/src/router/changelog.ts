@@ -1213,7 +1213,12 @@ export function createChangelogRouter() {
           .select()
           .from(changelogEntry)
           .where(and(...whereConditions))
-          .orderBy(desc(changelogEntry.updatedAt))
+          .orderBy(
+            desc(
+              sql`coalesce(${changelogEntry.publishedAt}, ${changelogEntry.createdAt})`,
+            ),
+            desc(changelogEntry.createdAt),
+          )
           .limit(limit)
           .offset(offset);
 

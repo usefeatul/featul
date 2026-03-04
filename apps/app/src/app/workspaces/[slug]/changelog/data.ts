@@ -110,7 +110,10 @@ export async function getChangelogListData(
         .from(changelogEntry)
         .leftJoin(user, eq(changelogEntry.authorId, user.id))
         .where(and(...whereConditions))
-        .orderBy(desc(changelogEntry.updatedAt))
+        .orderBy(
+            desc(sql`coalesce(${changelogEntry.publishedAt}, ${changelogEntry.createdAt})`),
+            desc(changelogEntry.createdAt)
+        )
         .limit(limit)
         .offset(offset);
 
