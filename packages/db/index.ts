@@ -39,7 +39,5 @@ export const {
   changelogEntry,
   activityLog,
   workspaceIntegration,
-  workspaceGithubConnection,
-  githubIssueLink,
   workspaceNotraConnection,
 } = schema;
