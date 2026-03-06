@@ -1,5 +1,5 @@
 import MemberDetail from "@/components/team/MemberDetail"
-import { fetchMemberActivity, fetchMemberStats } from "@/lib/team-client"
+import { loadMemberActivity, loadMemberStats } from "@/lib/member-server"
 import { requireSignedInUser } from "@/lib/server-auth"
 import { getSettingsInitialData } from "@/lib/workspace"
 
@@ -13,8 +13,8 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
   const initialMember = initialMembers.find((member) => member.userId === userId)
   const [{ stats: initialStats, topPosts: initialTopPosts }, initialActivity] =
     await Promise.all([
-      fetchMemberStats(slug, userId),
-      fetchMemberActivity(slug, userId),
+      loadMemberStats(slug, userId, user.id),
+      loadMemberActivity(slug, userId, user.id),
     ])
 
   return (
