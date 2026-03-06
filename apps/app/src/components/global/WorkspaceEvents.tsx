@@ -2,10 +2,12 @@
 
 import React from "react"
 import { useQueryClient } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
 import type { PostDeletedEventDetail } from "@/types/events"
 
 export function WorkspaceEvents({ slug }: { slug: string }) {
     const queryClient = useQueryClient()
+    const router = useRouter()
 
     const normalizeStatus = React.useCallback((value: string | null | undefined): string | null => {
         const raw = (value || "").trim().toLowerCase()
@@ -61,6 +63,38 @@ export function WorkspaceEvents({ slug }: { slug: string }) {
             window.removeEventListener("post:deleted", handlePostDeleted)
         }
     }, [slug, queryClient, normalizeStatus])
+
+    React.useEffect(() => {
+        if (!slug) return
+        if (typeof window === "undefined") return
+
+        const isEditableElement = (element: HTMLElement | null) => {
+            if (!element) return false
+            const role = element.getAttribute("role") || ""
+            const tag = element.tagName
+            return role === "textbox" || tag === "INPUT" || tag === "TEXTAREA" || element.isContentEditable
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.defaultPrevented || event.altKey) return
+
+            const target = event.target instanceof HTMLElement ? event.target : null
+            const activeElement = document.activeElement instanceof HTMLElement ? document.activeElement : null
+            if (isEditableElement(target) || isEditableElement(activeElement)) return
+
+            const key = event.key.toLowerCase()
+
+            if ((event.metaKey || event.ctrlKey) && !event.shiftKey && key === "g") {
+                event.preventDefault()
+                router.push(`/workspaces/${slug}`)
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown)
+        }
+    }, [router, slug])
 
     return null
 }

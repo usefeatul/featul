@@ -18,27 +18,28 @@ export function useWorkspaceNavigation(currentSlug: string) {
     return mapWorkspaceSlugs(workspaces.map((workspace) => workspace.slug));
   }, []);
 
+  const resolveWorkspaceSlug = React.useCallback(async () => {
+    if (currentSlug) return currentSlug;
+
+    try {
+      const workspaceSlugs = await getWorkspaceSlugs();
+      return workspaceSlugs[0] || "";
+    } catch {
+      return "";
+    }
+  }, [currentSlug, getWorkspaceSlugs]);
+
   const pushWorkspaceRoute = React.useCallback(
     async (path: "account/profile" | "settings/branding") => {
-      if (currentSlug) {
-        router.push(`/workspaces/${currentSlug}/${path}`);
-        return;
-      }
+      const targetSlug = await resolveWorkspaceSlug();
 
-      try {
-        const workspaceSlugs = await getWorkspaceSlugs();
-        const firstSlug = workspaceSlugs[0] || "";
-
-        if (firstSlug) {
-          router.push(`/workspaces/${firstSlug}/${path}`);
-        } else {
-          router.push("/workspaces/new");
-        }
-      } catch {
+      if (targetSlug) {
+        router.push(`/workspaces/${targetSlug}/${path}`);
+      } else {
         router.push("/workspaces/new");
       }
     },
-    [currentSlug, getWorkspaceSlugs, router],
+    [resolveWorkspaceSlug, router],
   );
 
   const navigateToAccountProfile = React.useCallback(async () => {

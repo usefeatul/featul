@@ -27,10 +27,11 @@ export function DocsSidebar() {
 
     const navRect = navRef.current.getBoundingClientRect();
     const itemRect = activeEl.getBoundingClientRect();
+    const indicatorInset = 7;
 
     setIndicatorStyle({
-      top: itemRect.top - navRect.top,
-      height: itemRect.height,
+      top: itemRect.top - navRect.top + indicatorInset,
+      height: Math.max(itemRect.height - indicatorInset * 2, 0),
       opacity: 1,
     });
   };
@@ -51,7 +52,7 @@ export function DocsSidebar() {
       {/* Logo header - clean and simple */}
       <Link
         href="/"
-        className="group flex items-center gap-3 mb-12"
+        className="group mb-12 flex items-center gap-3 pl-3"
       >
         <FeatulLogoIcon className="size-5 text-foreground" />
         <span className="text-sm bg-card border border-border rounded-md px-2 py-0.5 font-medium text-foreground">

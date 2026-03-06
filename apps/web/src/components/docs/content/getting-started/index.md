@@ -33,6 +33,7 @@ Distribute your workspace URL through:
 
 ## Next Steps
 
+- [Learn the keyboard shortcuts](/docs/getting-started/shortcuts) used across the workspace app
 - [Create additional boards](/docs/getting-started/create-boards) for different feedback types
 - [Invite team members](/docs/getting-started/invite-members) to manage feedback together
 - [Plan your roadmap](/docs/getting-started/plan-roadmap) to share upcoming features

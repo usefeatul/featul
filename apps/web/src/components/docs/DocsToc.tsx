@@ -18,7 +18,7 @@ interface DocsTocProps {
 }
 
 const TOC_TRACK_TOP_TRIM = 0
-const TOC_TRACK_BOTTOM_TRIM = 13
+const TOC_TRACK_BOTTOM_TRIM = 9
 
 export function DocsToc({ items }: DocsTocProps) {
   const activeId = useActiveHeading(items, '[data-docs-scroll-container="true"]')

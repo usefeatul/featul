@@ -82,6 +82,11 @@ export default function UserDropdown({
   const { navigateAfterSwitch, navigateToAccountProfile } =
     useWorkspaceNavigation(slug);
 
+  const closeDropdown = React.useCallback(() => {
+    setOpen(false);
+    accountActionsPopoverRef.current?.close();
+  }, []);
+
   const openAuthModal = React.useCallback(
     (mode: AuthMode) => {
       const currentPath =
@@ -205,9 +210,9 @@ export default function UserDropdown({
   );
 
   const onAccount = React.useCallback(async () => {
-    setOpen(false);
+    closeDropdown();
     await navigateToAccountProfile();
-  }, [navigateToAccountProfile]);
+  }, [closeDropdown, navigateToAccountProfile]);
 
   const onSignOut = React.useCallback(async () => {
     if (loading || switchingAccountUserId || removingAccountUserId) return;
