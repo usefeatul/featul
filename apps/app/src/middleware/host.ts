@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server"
-import { NextResponse } from "next/server"
+import { reroute } from "./reroute"
 
 export const reservedSubdomains = new Set(["www", "app", "featul", "feedgot", "staging"])
 
@@ -18,32 +18,7 @@ export function getHostInfo(req: NextRequest) {
 export function rewriteSubdomain(req: NextRequest, ctx: ReturnType<typeof getHostInfo>) {
   const { pathname, subdomain } = ctx
   if (subdomain && !reservedSubdomains.has(subdomain)) {
-    if (pathname === "/") {
-      const url = req.nextUrl.clone()
-      url.pathname = `/${subdomain}/${subdomain}`
-      return NextResponse.rewrite(url)
-    }
-    if (pathname === "/roadmap") {
-      const url = req.nextUrl.clone()
-      url.pathname = `/${subdomain}/roadmap`
-      return NextResponse.rewrite(url)
-    }
-    if (pathname === "/changelog") {
-      const url = req.nextUrl.clone()
-      url.pathname = `/${subdomain}/changelog`
-      return NextResponse.rewrite(url)
-    }
-    if (pathname.startsWith("/changelog/")) {
-      const url = req.nextUrl.clone()
-      url.pathname = `/${subdomain}${pathname}`
-      return NextResponse.rewrite(url)
-    }
-    if (pathname.startsWith("/board/")) {
-      const url = req.nextUrl.clone()
-      url.pathname = `/${subdomain}${pathname}`
-      return NextResponse.rewrite(url)
-    }
-    return NextResponse.next()
+    return reroute(req, subdomain, pathname)
   }
   return null
 }
