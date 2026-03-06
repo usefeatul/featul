@@ -44,5 +44,5 @@ These shortcuts work while viewing a single request inside the workspace app.
 
 | Shortcut | What it does |
 | --- | --- |
-| `Arrow Left` or `Z` | Opens the previous request. |
-| `Arrow Right` or `X` | Opens the next request. |
+| `Z` | Opens the previous request. |
+| `X` | Opens the next request. |
