@@ -1,40 +1,35 @@
 import React from "react"
 import { useQuery } from "@tanstack/react-query"
-import { client } from "@featul/api/client"
 import { buildTopNav, buildMiddleNav } from "@/config/nav"
+import {
+  fetchWorkspaceBySlug,
+  fetchWorkspaceDomainInfo,
+  fetchWorkspaceStatusCounts,
+  workspaceQueryKeys,
+  type WorkspaceDomainInfo,
+  type WorkspaceSummary,
+} from "@/lib/workspace-client"
 
 export function useWorkspaceNav(
   slug: string,
+  initialWorkspace?: WorkspaceSummary | null,
   initialCounts?: Record<string, number> | null,
-  initialDomainInfo?: { domain: { status: string; host?: string } | null } | null,
+  initialDomainInfo?: WorkspaceDomainInfo | null,
 ) {
   const primaryNav = React.useMemo(() => buildTopNav(slug), [slug])
-  const { data: wsInfo } = useQuery<{ id: string; name: string; slug: string; logo?: string | null; domain?: string | null; customDomain?: string | null } | null>({
-    queryKey: ["workspace", slug],
-    queryFn: async () => {
-      if (!slug) return null
-      const res = await client.workspace.bySlug.$get({ slug })
-      const data = (await res.json()) as { workspace: { id: string; name: string; slug: string; logo?: string | null; domain?: string | null; customDomain?: string | null } | null }
-      // log the workspace data
-      // console.log("[client] workspace.bySlug", { slug, workspace: data.workspace })
-      return data.workspace
-    },
+  const { data: wsInfo } = useQuery<WorkspaceSummary | null>({
+    queryKey: workspaceQueryKeys.bySlug(slug),
+    queryFn: () => fetchWorkspaceBySlug(slug),
     enabled: !!slug,
     staleTime: 60_000,
     gcTime: 300_000,
     refetchOnMount: false,
-    initialData: null,
+    initialData: initialWorkspace ?? undefined,
   })
   const customDomain = wsInfo?.customDomain ?? null
-  const { data: domainInfo } = useQuery<{ domain: { status: string; host?: string } | null } | null>({
-    queryKey: ["workspace-domain-info", slug],
-    queryFn: async () => {
-      if (!slug) return null
-      const res = await client.workspace.domainInfo.$get({ slug })
-      const data = (await res.json()) as { domain: { status: string; host?: string } | null }
-      // console.log("[client] workspace.domainInfo", { slug, data })
-      return data
-    },
+  const { data: domainInfo } = useQuery<WorkspaceDomainInfo | null>({
+    queryKey: workspaceQueryKeys.domainInfo(slug),
+    queryFn: () => fetchWorkspaceDomainInfo(slug),
     enabled: !!slug,
     staleTime: 30_000,
     gcTime: 120_000,
@@ -45,13 +40,8 @@ export function useWorkspaceNav(
   // console.log("[client] verifiedCustomDomain", { slug, customDomain, status: domainInfo?.domain?.status, host: domainInfo?.domain?.host, verifiedCustomDomain })
   const middleNav = React.useMemo(() => buildMiddleNav(slug, verifiedCustomDomain), [slug, verifiedCustomDomain])
   const { data: statusCounts } = useQuery<Record<string, number> | null>({
-    queryKey: ["status-counts", slug],
-    queryFn: async () => {
-      if (!slug) return null
-      const res = await client.workspace.statusCounts.$get({ slug })
-      const data = (await res.json()) as { counts?: Record<string, number> }
-      return data?.counts || null
-    },
+    queryKey: workspaceQueryKeys.statusCounts(slug),
+    queryFn: () => fetchWorkspaceStatusCounts(slug),
     enabled: !!slug,
     staleTime: 300_000,
     gcTime: 300_000,

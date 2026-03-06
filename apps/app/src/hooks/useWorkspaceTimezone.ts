@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
+import { safeJson } from "@/lib/api-response";
+import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace-client";
 
 export function useWorkspaceTimezone(slug: string, initialTimezone?: string) {
     const queryClient = useQueryClient();
@@ -9,10 +11,8 @@ export function useWorkspaceTimezone(slug: string, initialTimezone?: string) {
     const { data: timezone } = useQuery<string>({
         queryKey: ["workspace-timezone", slug],
         queryFn: async () => {
-            if (!slug) return "UTC";
-            const res = await client.workspace.bySlug.$get({ slug });
-            const data = await res.json();
-            return data?.workspace?.timezone || "UTC";
+            const workspace = await fetchWorkspaceBySlug(slug);
+            return workspace?.timezone || "UTC";
         },
         enabled: !!slug,
         staleTime: 5 * 60 * 1000, // 5 minutes - timezone changes are rare
@@ -29,10 +29,10 @@ export function useWorkspaceTimezone(slug: string, initialTimezone?: string) {
                 slug,
                 timezone: newTimezone,
             });
-            const data = await res.json().catch(() => ({}));
+            const data = (await safeJson<{ ok?: boolean; message?: string }>(res)) ?? {};
 
             if (!res.ok || !("ok" in data) || !data.ok) {
-                const message = (data as { message?: string })?.message || "Failed to update timezone";
+                const message = data.message || "Failed to update timezone";
                 throw new Error(message);
             }
 
@@ -60,7 +60,7 @@ export function useWorkspaceTimezone(slug: string, initialTimezone?: string) {
         onSuccess: () => {
             toast.success("Timezone updated");
             // Invalidate workspace query to refetch fresh data
-            queryClient.invalidateQueries({ queryKey: ["workspace", slug] });
+            queryClient.invalidateQueries({ queryKey: workspaceQueryKeys.bySlug(slug) });
         },
     });
 

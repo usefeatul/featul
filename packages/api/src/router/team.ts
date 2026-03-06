@@ -117,6 +117,35 @@ async function assertMemberLimitNotReached(ctx: TeamRouterContext, wsId: string,
 
 export function createTeamRouter() {
   return j.router({
+    viewerByWorkspaceSlug: privateProcedure
+      .input(byWorkspaceInputSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
+        const meId = ctx.session.user.id
+
+        if (ws.ownerId === meId) {
+          c.header("Cache-Control", "private, max-age=60, stale-while-revalidate=300")
+          return c.json({ role: "admin", isOwner: true })
+        }
+
+        const [me] = await ctx.db
+          .select({ role: workspaceMember.role })
+          .from(workspaceMember)
+          .where(
+            and(
+              eq(workspaceMember.workspaceId, ws.id),
+              eq(workspaceMember.userId, meId),
+              eq(workspaceMember.isActive, true)
+            )
+          )
+          .limit(1)
+
+        if (!me) throw new HTTPException(403, { message: "Forbidden" })
+
+        c.header("Cache-Control", "private, max-age=60, stale-while-revalidate=300")
+        return c.json({ role: me.role, isOwner: false })
+      }),
+
     membersByWorkspaceSlug: privateProcedure
       .input(byWorkspaceInputSchema)
       .get(async ({ ctx, input, c }) => {
@@ -131,7 +160,13 @@ export function createTeamRouter() {
         const [me] = await ctx.db
           .select({ id: workspaceMember.id, role: workspaceMember.role, permissions: workspaceMember.permissions })
           .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
+          .where(
+            and(
+              eq(workspaceMember.workspaceId, ws.id),
+              eq(workspaceMember.userId, meId),
+              eq(workspaceMember.isActive, true)
+            )
+          )
           .limit(1)
         const allowed = me || ws.ownerId === meId
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })

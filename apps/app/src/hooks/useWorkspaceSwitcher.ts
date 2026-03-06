@@ -3,18 +3,16 @@
 import React from "react"
 import { useRouter, usePathname, useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query"
-import { client } from "@featul/api/client"
 import { useWorkspaceLogo } from "@/lib/branding-store"
+import {
+  fetchUserWorkspaces,
+  fetchWorkspaceBySlug,
+  prefetchWorkspaceStatusCounts,
+  workspaceQueryKeys,
+  type WorkspaceSummary,
+} from "@/lib/workspace-client"
 
-export type Ws = {
-  id: string
-  name: string
-  slug: string
-  logo?: string | null
-  domain?: string | null
-  customDomain?: string | null
-  plan?: "free" | "starter" | "professional" | null
-}
+export type Ws = WorkspaceSummary
 
 export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null, initialWorkspaces?: Ws[]) {
   const router = useRouter()
@@ -23,12 +21,8 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
   const queryClient = useQueryClient()
 
   const { data: workspaces = [] } = useQuery<Ws[]>({
-    queryKey: ["workspaces"],
-    queryFn: async () => {
-      const res = await client.workspace.listMine.$get()
-      const data = await res.json()
-      return (data?.workspaces || []) as Ws[]
-    },
+    queryKey: workspaceQueryKeys.list(),
+    queryFn: fetchUserWorkspaces,
     initialData: initialWorkspaces || [],
     staleTime: 300_000,
     gcTime: 300_000,
@@ -38,14 +32,8 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
   })
 
   const { data: wsInfo } = useQuery<Ws | null>({
-    queryKey: ["workspace", slug],
-    queryFn: async () => {
-      if (!slug) return null
-      const res = await client.workspace.bySlug.$get({ slug })
-      const d = await res.json()
-      const w = (d as { workspace?: Ws | null })?.workspace
-      return (w || null) as Ws | null
-    },
+    queryKey: workspaceQueryKeys.bySlug(slug),
+    queryFn: () => fetchWorkspaceBySlug(slug),
     enabled: !!slug,
     staleTime: 60_000,
     gcTime: 300_000,
@@ -213,16 +201,7 @@ function prefetchWorkspaceRoute(
 
   // Prefetch workspace-specific data
   try {
-    queryClient.prefetchQuery({
-      queryKey: ["status-counts", targetSlug],
-      queryFn: async () => {
-        const res = await client.workspace.statusCounts.$get({ slug: targetSlug })
-        const data = await res.json()
-        return (data?.counts || null) as Record<string, number> | null
-      },
-      staleTime: 300_000,
-      gcTime: 300_000,
-    })
+    void prefetchWorkspaceStatusCounts(queryClient, targetSlug)
   } catch (error) {
     console.error("Failed to prefetch status counts for:", targetSlug, error)
   }

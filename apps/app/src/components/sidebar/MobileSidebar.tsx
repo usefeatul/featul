@@ -54,6 +54,7 @@ export default function MobileSidebar({
   const slug = getSlugFromPath(pathname);
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
+    initialWorkspace || null,
     initialCounts,
     initialDomainInfo || null,
   );

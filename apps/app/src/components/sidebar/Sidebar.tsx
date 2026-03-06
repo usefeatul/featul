@@ -68,6 +68,7 @@ export default function Sidebar({
 
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
+    initialWorkspace || null,
     initialCounts,
     initialDomainInfo || null,
   );

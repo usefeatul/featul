@@ -22,9 +22,9 @@ import SidebarPositionPicker from "./SidebarPositionPicker";
 import { setWorkspaceLogo } from "@/lib/branding-store";
 import { Input } from "@featul/ui/components/input";
 import { useQueryClient } from "@tanstack/react-query";
-import { client } from "@featul/api/client";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
+import { fetchWorkspaceBySlug } from "@/lib/workspace-client";
 import type { BrandingConfig } from "../../../types/branding";
 import { updateWorkspaceLogoInCache, updateWorkspaceNameInCache } from "./branding-cache";
 
@@ -136,14 +136,12 @@ export default function BrandingSection({
           }
         } else {
           try {
-            const res = await client.workspace.bySlug.$get({ slug });
-            const d = await res.json();
-            const w = (d as { workspace?: { name?: string; plan?: string } })?.workspace;
-            const n = String(w?.name || "");
+            const workspace = await fetchWorkspaceBySlug(slug);
+            const n = String(workspace?.name || "");
             if (mounted) {
               setWorkspaceName(n);
               originalNameRef.current = n;
-              setPlan(normalizePlan(String(w?.plan || "free")));
+              setPlan(normalizePlan(String(workspace?.plan || "free")));
             }
           } catch {
             if (mounted) {

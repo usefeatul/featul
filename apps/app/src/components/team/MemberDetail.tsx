@@ -2,62 +2,55 @@
 
 import React from "react"
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query"
-import { client } from "@featul/api/client"
 import type { Member } from "@/types/team"
 import type { ActivityItem, PaginatedActivity } from "@/types/activity"
 import { MemberHeader } from "@/components/team/MemberHeader"
 import { MemberActivity } from "@/components/team/MemberActivity"
 import { MemberTopPosts } from "@/components/team/MemberTopPosts"
-
-interface TopPost {
-  id: string
-  title: string
-  slug: string
-  upvotes: number
-  status?: string | null
-}
+import {
+  EMPTY_MEMBER_STATS,
+  fetchMemberActivity,
+  fetchMemberStats,
+  fetchWorkspaceMembers,
+  teamQueryKeys,
+  type MemberStats,
+  type MemberTopPost,
+} from "@/lib/team-client"
 
 interface Props {
   slug: string
   userId: string
+  initialMembers?: Member[]
   initialMember?: Member
-  initialStats?: { posts: number; comments: number; upvotes: number }
-  initialTopPosts?: TopPost[]
+  initialStats?: MemberStats
+  initialTopPosts?: MemberTopPost[]
   initialActivity: PaginatedActivity
 }
 
-export default function MemberDetail({ slug, userId, initialMember, initialStats, initialTopPosts = [], initialActivity }: Props) {
-  const { data: membersData } = useQuery({
-    queryKey: ["members", slug],
-    queryFn: async () => {
-      const res = await client.team.membersByWorkspaceSlug.$get({ slug })
-      const d = await res.json()
-      return { members: (d?.members || []) as Member[] }
-    },
+export default function MemberDetail({ slug, userId, initialMembers, initialMember, initialStats, initialTopPosts = [], initialActivity }: Props) {
+  const { data: members = [] } = useQuery<Member[]>({
+    queryKey: teamQueryKeys.members(slug),
+    queryFn: () => fetchWorkspaceMembers(slug),
+    initialData: initialMembers,
     staleTime: 30_000,
+    refetchOnMount: false,
   })
   const member = React.useMemo(() => {
-    const list = membersData?.members || []
-    return initialMember || list.find((m) => m.userId === userId)
-  }, [membersData?.members, initialMember, userId])
+    return initialMember || members.find((m) => m.userId === userId)
+  }, [members, initialMember, userId])
 
   const { data: statsData, isLoading: isStatsLoading, isFetching: isStatsFetching } = useQuery({
-    queryKey: ["member-stats", slug, userId],
-    queryFn: async () => {
-      const res = await client.member.statsByWorkspaceSlug.$get({ slug, userId })
-      const d = await res.json() as { stats?: { posts: number; comments: number; upvotes: number }; topPosts?: TopPost[] }
-      return {
-        stats: d?.stats || { posts: 0, comments: 0, upvotes: 0 },
-        topPosts: (d?.topPosts || []) as TopPost[],
-      }
-    },
-    placeholderData: { stats: initialStats || { posts: 0, comments: 0, upvotes: 0 }, topPosts: initialTopPosts },
+    queryKey: teamQueryKeys.memberStats(slug, userId),
+    queryFn: () => fetchMemberStats(slug, userId),
+    initialData: initialStats
+      ? { stats: initialStats, topPosts: initialTopPosts }
+      : undefined,
     staleTime: 30_000,
     refetchOnMount: false,
   })
 
-  const stats = statsData?.stats || initialStats || { posts: 0, comments: 0, upvotes: 0 }
-  const topPosts: TopPost[] = statsData?.topPosts || initialTopPosts || []
+  const stats = statsData?.stats || initialStats || EMPTY_MEMBER_STATS
+  const topPosts: MemberTopPost[] = statsData?.topPosts || initialTopPosts || []
 
   const {
     data: activityData,
@@ -67,16 +60,14 @@ export default function MemberDetail({ slug, userId, initialMember, initialStats
     isLoading: isActivityLoading,
     isFetching: isActivityFetching,
   } = useInfiniteQuery({
-    queryKey: ["member-activity", slug, userId],
+    queryKey: teamQueryKeys.memberActivity(slug, userId),
     queryFn: async ({ pageParam }) => {
       const cursor = typeof pageParam === "string" && pageParam.length > 0 ? pageParam : undefined
-      const res = await client.member.activityByWorkspaceSlug.$get({ slug, userId, limit: 20, cursor })
-      const d = await res.json() as PaginatedActivity
-      return d
+      return fetchMemberActivity(slug, userId, cursor)
     },
     getNextPageParam: (lastPage) => (lastPage?.nextCursor ?? undefined) as string | undefined,
     initialPageParam: "",
-    placeholderData: { pages: [initialActivity], pageParams: [""] },
+    initialData: { pages: [initialActivity], pageParams: [""] },
     staleTime: 30_000,
     refetchOnMount: false,
   })

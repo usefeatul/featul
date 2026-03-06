@@ -2,19 +2,11 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { client } from "@featul/api/client";
+import { fetchUserWorkspaces } from "@/lib/workspace-client";
 
-type WorkspaceLite = {
-  slug?: string;
-};
-
-function mapWorkspaceSlugs(payload: unknown): string[] {
-  const workspaces = Array.isArray((payload as { workspaces?: WorkspaceLite[] } | null)?.workspaces)
-    ? ((payload as { workspaces?: WorkspaceLite[] }).workspaces as WorkspaceLite[])
-    : [];
-
-  return workspaces
-    .map((workspace) => String(workspace?.slug || "").trim())
+function mapWorkspaceSlugs(slugs: Array<string | undefined>): string[] {
+  return slugs
+    .map((slug) => String(slug || "").trim())
     .filter(Boolean);
 }
 
@@ -22,9 +14,8 @@ export function useWorkspaceNavigation(currentSlug: string) {
   const router = useRouter();
 
   const getWorkspaceSlugs = React.useCallback(async () => {
-    const response = await client.workspace.listMine.$get();
-    const payload = await response.json().catch(() => null);
-    return mapWorkspaceSlugs(payload);
+    const workspaces = await fetchUserWorkspaces();
+    return mapWorkspaceSlugs(workspaces.map((workspace) => workspace.slug));
   }, []);
 
   const pushWorkspaceRoute = React.useCallback(

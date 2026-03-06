@@ -1,9 +1,10 @@
 import { client } from "@featul/api/client"
+import { readJson, safeJson } from "@/lib/api-response"
 import type { BrandingConfig, BrandingResponse } from "../types/branding"
 
 export async function loadBrandingBySlug(slug: string): Promise<BrandingConfig | null> {
   const res = await client.branding.byWorkspaceSlug.$get({ slug })
-  const data = (await res.json()) as BrandingResponse
+  const data = await readJson<BrandingResponse>(res)
   return data?.config || null
 }
 
@@ -21,13 +22,8 @@ export async function saveBranding(slug: string, input: BrandingConfig & { logoU
     layoutStyle: input.layoutStyle,
     sidebarPosition: input.sidebarPosition,
   })
-  let message: string | undefined
-  try {
-    const data = await res.json() as SaveBrandingResponse
-    message = data?.message
-  } catch {
-    // response might not be json
-  }
+  const data = await safeJson<SaveBrandingResponse>(res)
+  const message = data?.message
   return { ok: res.ok, message }
 }
 
@@ -39,7 +35,7 @@ interface GetUploadUrlResponse {
 
 export async function getLogoUploadUrl(slug: string, fileName: string, contentType: string, fileSize: number): Promise<{ uploadUrl: string; key: string; publicUrl: string }> {
   const res = await client.storage.getUploadUrl.$post({ slug, fileName, contentType, fileSize, folder: "branding/logo" })
-  const data = await res.json() as GetUploadUrlResponse
+  const data = await readJson<GetUploadUrlResponse>(res)
   return { uploadUrl: data.uploadUrl, key: data.key, publicUrl: data.publicUrl }
 }
 
@@ -50,13 +46,6 @@ interface UpdateWorkspaceNameResponse {
 
 export async function updateWorkspaceName(slug: string, name: string): Promise<{ ok: boolean; message?: string; name?: string }> {
   const res = await client.workspace.updateName.$post({ slug, name })
-  let message: string | undefined
-  let responseData: UpdateWorkspaceNameResponse | undefined
-  try {
-    responseData = await res.json() as UpdateWorkspaceNameResponse
-    message = responseData?.message
-  } catch {
-    // response might not be json
-  }
-  return { ok: res.ok, message, name: responseData?.name }
+  const responseData = await safeJson<UpdateWorkspaceNameResponse>(res)
+  return { ok: res.ok, message: responseData?.message, name: responseData?.name }
 }
