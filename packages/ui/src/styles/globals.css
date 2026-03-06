@@ -212,3 +212,13 @@
 :root[data-debug-outline="true"] *:hover {
   outline-color: rgba(255, 140, 0, 0.32);
 }
+
+/* Hide native scrollbars while preserving scroll behavior. */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
