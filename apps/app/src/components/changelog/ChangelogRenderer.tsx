@@ -1,9 +1,6 @@
 "use client";
 
-import { useFeatulEditor } from "@featul/editor";
-import type { Editor as TiptapEditor } from "@tiptap/core";
-import type { JSONContent } from "@tiptap/core";
-import { EditorContent } from "@tiptap/react";
+import { EditorContent, useFeatulEditor, type JSONContent } from "@featul/editor";
 import { cn } from "@featul/ui/lib/utils";
 
 interface ChangelogRendererProps {
@@ -27,7 +24,7 @@ export function ChangelogRenderer({
 			},
 		},
 	});
-	const editor = editorInstance as unknown as TiptapEditor | null;
+	const editor = editorInstance;
 
 	if (!editor) {
 		return null;

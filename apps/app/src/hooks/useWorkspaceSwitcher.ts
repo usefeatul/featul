@@ -86,6 +86,10 @@ const DYNAMIC_ROUTE_CONFIG = {
 
 type RouteFeature = keyof typeof DYNAMIC_ROUTE_CONFIG
 
+function isRouteFeature(value: string): value is RouteFeature {
+  return value in DYNAMIC_ROUTE_CONFIG
+}
+
 /**
  * Extracts the sub-path after the workspace slug.
  */
@@ -98,7 +102,8 @@ function extractSubPath(pathname: string, currentSlug: string): string {
  */
 function parseSubPath(subPath: string) {
   const parts = subPath.split("/").filter(Boolean)
-  const feature = parts[0] as RouteFeature | undefined
+  const firstSegment = parts[0]
+  const feature = firstSegment && isRouteFeature(firstSegment) ? firstSegment : undefined
   const secondSegment = parts[1]
 
   return { parts, feature, secondSegment }
@@ -108,15 +113,11 @@ function parseSubPath(subPath: string) {
  * Determines if a route should be sanitized (stripped of dynamic IDs).
  */
 function shouldSanitizeRoute(
-  feature: string | undefined,
+  feature: RouteFeature,
   secondSegment: string | undefined,
   parts: string[]
 ): boolean {
-  if (!feature || !(feature in DYNAMIC_ROUTE_CONFIG)) {
-    return false
-  }
-
-  const config = DYNAMIC_ROUTE_CONFIG[feature as RouteFeature]
+  const config = DYNAMIC_ROUTE_CONFIG[feature]
 
   // If we have more parts than allowed depth, check if it's a preserved path
   if (parts.length > config.stripAfterDepth + 1) {
@@ -175,8 +176,8 @@ export function getWorkspaceRedirectPath(
   const { parts, feature, secondSegment } = parseSubPath(subPath)
 
   // Sanitize routes with dynamic segments that may not exist in target workspace
-  if (shouldSanitizeRoute(feature, secondSegment, parts)) {
-    targetPath = buildSafePath(targetSlug, feature!)
+  if (feature && shouldSanitizeRoute(feature, secondSegment, parts)) {
+    targetPath = buildSafePath(targetSlug, feature)
   }
 
   // Append query parameters if any

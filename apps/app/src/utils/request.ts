@@ -2,14 +2,14 @@ export function parseArrayParam(v: string | null): string[] {
   try {
     if (!v) return [];
     const arr = JSON.parse(v);
-    return Array.isArray(arr) ? arr : [];
+    return Array.isArray(arr) ? arr.filter((item): item is string => typeof item === "string") : [];
   } catch {
     // Backward compatibility with previously encoded values.
     try {
       if (!v) return [];
       const decoded = decodeURIComponent(v);
       const arr = JSON.parse(decoded);
-      return Array.isArray(arr) ? arr : [];
+      return Array.isArray(arr) ? arr.filter((item): item is string => typeof item === "string") : [];
     } catch {
       return [];
     }

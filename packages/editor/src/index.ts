@@ -1,4 +1,5 @@
 export type { Editor, JSONContent } from "@tiptap/react";
+export { EditorContent } from "@tiptap/react";
 export type {
   EditorBubbleMenuProps,
   EditorLinkSelectorProps,

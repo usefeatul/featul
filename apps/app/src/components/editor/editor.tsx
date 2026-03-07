@@ -16,6 +16,7 @@ import {
 	EditorMarkUnderline,
 	EditorNodeBulletList,
 	EditorNodeCode,
+	EditorContent as TiptapEditorContent,
 	EditorNodeHeading1,
 	EditorNodeHeading2,
 	EditorNodeHeading3,
@@ -27,10 +28,9 @@ import {
 	EditorTableMenus,
 	useCurrentEditor,
 	useFeatulEditor as usefeatulEditor,
+	type Editor as TiptapEditor,
 	type JSONContent,
 } from "@featul/editor";
-import type { Editor as TiptapEditor } from "@tiptap/core";
-import { EditorContent as TiptapEditorContent } from "@tiptap/react";
 import { forwardRef, type ForwardedRef, useImperativeHandle } from "react";
 
 /**
@@ -41,7 +41,7 @@ import { forwardRef, type ForwardedRef, useImperativeHandle } from "react";
  */
 function FeedEditorMenus() {
 	const { editor } = useCurrentEditor();
-	const contentEditor = editor as unknown as TiptapEditor | null;
+	const contentEditor: TiptapEditor | null = editor;
 
 	if (!contentEditor) {
 		return null;
