@@ -15,14 +15,14 @@
       "types": "./src/index.ts"
     },
     "./client": "./src/client.ts",
+    "./shared/*": "./src/shared/*.ts",
     "./elysia": "./src/elysia.ts",
     "./upload-policy": "./src/upload-policy.ts",
     "./services/github-webhook": "./src/services/github-webhook.ts",
     "./services/github-sync": "./src/services/github-sync.ts",
     "./services/github-app": "./src/services/github-app.ts",
     "./services/github-status-suggest": "./src/services/github-status-suggest.ts",
-    "./services/github-setup-state": "./src/services/github-setup-state.ts",
-    "./shared": "./src:*"
+    "./services/github-setup-state": "./src/services/github-setup-state.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.721.0",

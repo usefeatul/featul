@@ -2,7 +2,7 @@ import { HTTPException } from "hono/http-exception"
 import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation, user, subscription } from "@featul/db"
-import { createWorkspaceInputSchema, checkSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema, importCsvInputSchema, updateTimezoneInputSchema } from "../validators/workspace"
+import { createWorkspaceInputSchema, checkSlugInputSchema, workspaceSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema, importCsvInputSchema, updateTimezoneInputSchema } from "../validators/workspace"
 import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
@@ -10,6 +10,7 @@ import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
 import { normalizePlan, isDataImportsAllowed } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
 import { runWorkspaceCsvImport } from "../services/workspace-csv-import"
+import { isReservedWorkspaceSlug } from "../shared/workspace-slug"
 
 const dnsResolver = new Resolver()
 
@@ -55,7 +56,7 @@ export function createWorkspaceRouter() {
       return c.json({ message: "pong" })
     }),
     bySlug: publicProcedure
-      .input(checkSlugInputSchema)
+      .input(workspaceSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
           .select({ id: workspace.id, name: workspace.name, slug: workspace.slug, domain: workspace.domain, customDomain: workspace.customDomain, logo: workspace.logo, timezone: workspace.timezone, plan: workspace.plan })
@@ -70,6 +71,7 @@ export function createWorkspaceRouter() {
       .input(checkSlugInputSchema)
       .post(async ({ ctx, input, c }) => {
         const slug = input.slug.toLowerCase()
+        if (isReservedWorkspaceSlug(slug)) return c.json({ available: false, reason: "reserved" })
         const existing = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
@@ -126,7 +128,7 @@ export function createWorkspaceRouter() {
     }),
 
     statusCounts: publicProcedure
-      .input(checkSlugInputSchema)
+      .input(workspaceSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
           .select({ id: workspace.id })
@@ -158,6 +160,9 @@ export function createWorkspaceRouter() {
       .input(createWorkspaceInputSchema)
       .post(async ({ ctx, input, c }) => {
         const slug = input.slug.toLowerCase()
+        if (isReservedWorkspaceSlug(slug)) {
+          throw new HTTPException(403, { message: "Slug is reserved" })
+        }
         const exists = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)

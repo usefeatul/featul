@@ -16,6 +16,8 @@ import {
   isSlugValid,
   isTimezoneValid,
   suggestDomainFix,
+  isReservedWorkspaceName,
+  isReservedWorkspaceSlug,
 } from "../../lib/validators"
 
 interface StepWizardFormProps {
@@ -56,6 +58,8 @@ export default function StepWizardForm({
   const [step, setStep] = React.useState(0)
   const steps = React.useMemo(() => ["domain", "name", "slug", "timezone"], [])
   const reservedWorkspaceUrl = slugLocked ? `${slugLocked}.featul.com` : null
+  const nameReserved = isReservedWorkspaceName(name)
+  const slugReserved = isReservedWorkspaceSlug(slug)
 
   const canNext = React.useMemo(() => {
     if (step === 0) return domain.length > 0 && domainValid
@@ -178,6 +182,11 @@ export default function StepWizardForm({
               autoFocus
               maxLength={15}
             />
+            {nameReserved && (
+              <p className="text-xs text-destructive">
+                This workspace name is reserved.
+              </p>
+            )}
             {reservedWorkspaceUrl && (
               <p className="mt-1.5 text-xs text-accent">
                 URL is locked to <span className="font-medium text-primary">{reservedWorkspaceUrl}</span>.
@@ -227,13 +236,18 @@ export default function StepWizardForm({
                 ) : null}
               </div>
             </div>
-            {slug && !isSlugValid(slug) && (
+            {slug && !slugReserved && !isSlugValid(slug) && (
               <p className="text-xs text-destructive">
-                Use lowercase letters, numbers, and dashes (min 5 chars).
+                Use lowercase letters only (min 5 chars).
               </p>
             )}
-            {!slugLocked && slugAvailable === false && (
-              <p className="text-xs text-destructive">This URL is already taken.</p>
+            {!slugLocked && slugReserved && (
+              <p className="text-xs text-destructive">This URL is reserved.</p>
+            )}
+            {!slugLocked && !slugReserved && slugAvailable === false && (
+              <p className="text-xs text-destructive">
+                This URL is already taken.
+              </p>
             )}
           </div>
         )}

@@ -8,6 +8,7 @@ import {
   isDomainValid,
   cleanSlug,
   slugifyFromName,
+  isReservedWorkspaceSlug,
 } from "../lib/validators";
 
 function extractNameFromDomain(domain: string): string {
@@ -87,11 +88,19 @@ export function useWizardLogic() {
   useEffect(() => {
     if (!slug || slug.length < 5) {
       setSlugAvailable(null);
+      setSlugChecking(false);
       return;
     }
 
     if (slugLocked) {
       setSlugAvailable(true);
+      setSlugChecking(false);
+      return;
+    }
+
+    if (isReservedWorkspaceSlug(slug)) {
+      setSlugAvailable(false);
+      setSlugChecking(false);
       return;
     }
 

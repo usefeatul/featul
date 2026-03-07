@@ -4,10 +4,7 @@ import { j, publicProcedure, privateProcedure } from "../jstack"
 import { workspace, workspaceSlugReservation } from "@featul/db"
 import { reserveSlugInputSchema, tokenInputSchema, checkSlugPublicInputSchema } from "../validators/reservation"
 import { sendReservationEmail } from "@featul/auth/email"
-
-const BLOCKED_SLUGS = new Set([
-  "admin","api","featul","feedback","www","app","support","help","mail","blog","status","docs","pricing","signup","signin","start","invite","reserve","verify","staging"
-])
+import { isReservedWorkspaceSlug } from "../shared/workspace-slug"
 const MAX_RESERVATIONS_PER_EMAIL = 3
 
 export function createReservationRouter() {
@@ -16,6 +13,7 @@ export function createReservationRouter() {
       .input(checkSlugPublicInputSchema)
       .post(async ({ ctx, input, c }) => {
         const slug = input.slug.trim().toLowerCase()
+        if (isReservedWorkspaceSlug(slug)) return c.superjson({ available: false, reason: "reserved" })
         const [ws] = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
@@ -38,7 +36,7 @@ export function createReservationRouter() {
       .post(async ({ ctx, input, c }) => {
         const email = input.email.trim().toLowerCase()
         const slug = input.slug.trim().toLowerCase()
-        if (BLOCKED_SLUGS.has(slug)) throw new HTTPException(403, { message: "Slug not allowed" })
+        if (isReservedWorkspaceSlug(slug)) throw new HTTPException(403, { message: "Slug not allowed" })
 
         const [ws] = await ctx.db
           .select({ id: workspace.id })
