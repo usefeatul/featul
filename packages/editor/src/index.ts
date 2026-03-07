@@ -83,6 +83,8 @@ export type {
   EditorIcon,
   EditorSlashMenuProps,
   ImageUploadOptions,
+  MentionSuggestionItem,
+  MentionSuggestionSource,
   MediaItem,
   SlashNodeAttrs,
   SuggestionItem,

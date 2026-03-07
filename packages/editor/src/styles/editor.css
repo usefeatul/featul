@@ -221,6 +221,19 @@ mark[style]>strong {
   background-color: var(--color-sidebar) !important;
 }
 
+/* Mention chip styling to match github-link badge treatment */
+.ProseMirror [data-type="mention"],
+.ProseMirror .mention,
+.prose [data-type="mention"],
+.prose .mention {
+  color: var(--primary);
+  background-color: color-mix(in oklab, var(--primary) 8%, transparent);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 /* codeblocks */
 
 pre {

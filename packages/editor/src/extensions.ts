@@ -1,4 +1,9 @@
-export type { ImageUploadOptions, MediaItem } from "./types";
+export type {
+    ImageUploadOptions,
+    MediaItem,
+    MentionSuggestionItem,
+    MentionSuggestionSource,
+} from "./types";
 // Extensions
 /** biome-ignore-all lint/performance/noBarrelFile: <> */
 
@@ -27,4 +32,3 @@ export { TableRowMenu } from "./extensions/table/menus/table-row/table-row-menu"
 export { TwitterUpload } from "./extensions/twitter/twitter-upload";
 export { Twitter } from "./extensions/twitter/twitter";
 export { YouTubeUpload } from "./extensions/youtube/youtube-upload";
-

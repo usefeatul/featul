@@ -30,8 +30,15 @@ import {
 	useFeatulEditor as usefeatulEditor,
 	type Editor as TiptapEditor,
 	type JSONContent,
+	type MentionSuggestionItem,
 } from "@featul/editor";
-import { forwardRef, type ForwardedRef, useImperativeHandle } from "react";
+import {
+	forwardRef,
+	type ForwardedRef,
+	useCallback,
+	useImperativeHandle,
+	useRef,
+} from "react";
 
 /**
  * Feed Editor Menus and Content
@@ -102,6 +109,7 @@ export interface FeedEditorProps {
 	className?: string;
 	onUpdate?: (content: JSONContent) => void;
 	editable?: boolean;
+	mentionSuggestions?: MentionSuggestionItem[];
 	/** Upload handler for images (slash command, drag & drop, paste) */
 	onImageUpload?: (file: File) => Promise<string>;
 }
@@ -120,15 +128,26 @@ export const FeedEditor = forwardRef(
 			className,
 			onUpdate,
 			editable = true,
+			mentionSuggestions,
 			onImageUpload,
 		}: FeedEditorProps,
 		ref: ForwardedRef<FeedEditorRef>,
 	) => {
+		const mentionSuggestionsRef = useRef<MentionSuggestionItem[]>(
+			mentionSuggestions ?? [],
+		);
+		mentionSuggestionsRef.current = mentionSuggestions ?? [];
+		const getMentionSuggestions = useCallback(
+			() => mentionSuggestionsRef.current,
+			[],
+		);
+
 		const editor = usefeatulEditor({
 			content: initialContent,
 			placeholder,
 			editable,
 			imageUpload: onImageUpload ? { upload: onImageUpload } : undefined,
+			mentionSuggestions: getMentionSuggestions,
 			onUpdate: ({ editor }) => {
 				onUpdate?.(editor.getJSON());
 			},

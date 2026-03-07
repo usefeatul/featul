@@ -1,4 +1,4 @@
-import { and, eq, desc, sql, getTableColumns } from "drizzle-orm";
+import { and, eq, desc, sql, getTableColumns, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { j, publicProcedure, privateProcedure } from "../jstack";
 import {
@@ -6,6 +6,7 @@ import {
   board,
   workspaceMember,
   changelogEntry,
+  changelogMention,
   activityLog,
   user,
 } from "@featul/db";
@@ -122,6 +123,74 @@ function parseAiJson(text: string) {
     summary?: unknown;
     title?: unknown;
   };
+}
+
+function extractMentionedUserIdsFromContent(content: unknown): string[] {
+  const ids = new Set<string>();
+
+  const visit = (node: unknown) => {
+    if (!node || typeof node !== "object") {
+      return;
+    }
+
+    const record = node as Record<string, unknown>;
+    if (record.type === "mention") {
+      const attrs =
+        record.attrs && typeof record.attrs === "object"
+          ? (record.attrs as Record<string, unknown>)
+          : null;
+      const id = attrs?.id;
+      if (typeof id === "string" && id.trim()) {
+        ids.add(id.trim());
+      }
+    }
+
+    const children = record.content;
+    if (Array.isArray(children)) {
+      for (const child of children) {
+        visit(child);
+      }
+    }
+  };
+
+  visit(content);
+  return Array.from(ids);
+}
+
+async function resolveValidMentionUserIds(params: {
+  ctx: any;
+  workspaceId: string;
+  ownerId: string;
+  mentionUserIds: string[];
+}): Promise<string[]> {
+  const { ctx, workspaceId, ownerId, mentionUserIds } = params;
+
+  if (mentionUserIds.length === 0) {
+    return [];
+  }
+
+  const uniqueMentionUserIds = Array.from(new Set(mentionUserIds));
+  const activeMembers: Array<{ userId: string }> = await ctx.db
+    .select({ userId: workspaceMember.userId })
+    .from(workspaceMember)
+    .where(
+      and(
+        eq(workspaceMember.workspaceId, workspaceId),
+        eq(workspaceMember.isActive, true),
+        inArray(workspaceMember.userId, uniqueMentionUserIds),
+      ),
+    );
+
+  const validMentionUserIds = new Set(
+    activeMembers.map((member: { userId: string }) => member.userId),
+  );
+
+  // Owners can exist outside workspaceMember, but they are still valid mentions.
+  if (uniqueMentionUserIds.includes(ownerId)) {
+    validMentionUserIds.add(ownerId);
+  }
+
+  return Array.from(validMentionUserIds);
 }
 
 export function createChangelogRouter() {
@@ -700,6 +769,26 @@ export function createChangelogRouter() {
           })
           .returning();
 
+        const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+        if (mentionUserIds.length > 0) {
+          const validMentionUserIds = await resolveValidMentionUserIds({
+            ctx,
+            workspaceId: ws.id,
+            ownerId: ws.ownerId,
+            mentionUserIds,
+          });
+
+          if (validMentionUserIds.length > 0) {
+            await ctx.db.insert(changelogMention).values(
+              validMentionUserIds.map((mentionedUserId: string) => ({
+                entryId: entry.id,
+                mentionedUserId,
+                mentionedBy: ctx.session.user.id,
+              })),
+            );
+          }
+        }
+
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
@@ -773,6 +862,61 @@ export function createChangelogRouter() {
           .set(updates)
           .where(eq(changelogEntry.id, input.entryId))
           .returning();
+
+        if (input.content !== undefined) {
+          const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+
+          const validMentionUserIds = await resolveValidMentionUserIds({
+            ctx,
+            workspaceId: ws.id,
+            ownerId: ws.ownerId,
+            mentionUserIds,
+          });
+
+          const existingMentions: Array<{ id: string; mentionedUserId: string }> =
+            await ctx.db
+            .select({
+              id: changelogMention.id,
+              mentionedUserId: changelogMention.mentionedUserId,
+            })
+            .from(changelogMention)
+            .where(eq(changelogMention.entryId, input.entryId));
+
+          const existingByUserId = new Map(
+            existingMentions.map((mention: { id: string; mentionedUserId: string }) => [
+              mention.mentionedUserId,
+              mention,
+            ]),
+          );
+          const nextUserIdSet = new Set(validMentionUserIds);
+
+          const mentionIdsToDelete = existingMentions
+            .filter(
+              (mention: { id: string; mentionedUserId: string }) =>
+                !nextUserIdSet.has(mention.mentionedUserId),
+            )
+            .map((mention: { id: string; mentionedUserId: string }) => mention.id);
+
+          if (mentionIdsToDelete.length > 0) {
+            await ctx.db
+              .delete(changelogMention)
+              .where(inArray(changelogMention.id, mentionIdsToDelete));
+          }
+
+          const mentionUserIdsToAdd = validMentionUserIds.filter(
+            (mentionedUserId: string) => !existingByUserId.has(mentionedUserId),
+          );
+
+          if (mentionUserIdsToAdd.length > 0) {
+            await ctx.db.insert(changelogMention).values(
+              mentionUserIdsToAdd.map((mentionedUserId) => ({
+                entryId: input.entryId,
+                mentionedUserId,
+                mentionedBy: ctx.session.user.id,
+              })),
+            );
+          }
+        }
 
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,

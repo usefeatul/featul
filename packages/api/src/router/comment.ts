@@ -11,6 +11,8 @@ import {
   workspace,
   workspaceMember,
   activityLog,
+  changelogEntry,
+  changelogMention,
 } from "@featul/db";
 import { auth } from "@featul/auth";
 import {
@@ -1040,16 +1042,22 @@ export function createCommentRouter() {
       .get(async ({ ctx, input, c }) => {
         const userId = ctx.session.user.id;
         const limit = Math.min(Math.max(Number(input?.limit || 50), 1), 100);
-        const rows = await ctx.db
+
+        const commentRows: Array<{
+          id: string;
+          isRead: boolean;
+          createdAt: Date;
+          postSlug: string;
+          postTitle: string;
+          authorName: string;
+          authorImage: string | null;
+        }> = await ctx.db
           .select({
             id: commentMention.id,
             isRead: commentMention.isRead,
             createdAt: commentMention.createdAt,
-            commentId: comment.id,
-            commentContent: comment.content,
             postSlug: post.slug,
             postTitle: post.title,
-            workspaceSlug: workspace.slug,
             authorName: comment.authorName,
             authorImage: user.image,
           })
@@ -1062,13 +1070,85 @@ export function createCommentRouter() {
           .where(eq(commentMention.mentionedUserId, userId))
           .orderBy(desc(commentMention.createdAt))
           .limit(limit);
-        return c.superjson({ notifications: rows });
+
+        const changelogRows: Array<{
+          id: string;
+          isRead: boolean;
+          createdAt: Date;
+          entrySlug: string;
+          entryTitle: string;
+          authorName: string;
+          authorImage: string | null;
+        }> = await ctx.db
+          .select({
+            id: changelogMention.id,
+            isRead: changelogMention.isRead,
+            createdAt: changelogMention.createdAt,
+            entrySlug: changelogEntry.slug,
+            entryTitle: changelogEntry.title,
+            authorName: user.name,
+            authorImage: user.image,
+          })
+          .from(changelogMention)
+          .innerJoin(changelogEntry, eq(changelogMention.entryId, changelogEntry.id))
+          .innerJoin(user, eq(changelogMention.mentionedBy, user.id))
+          .where(eq(changelogMention.mentionedUserId, userId))
+          .orderBy(desc(changelogMention.createdAt))
+          .limit(limit);
+
+        const notifications = [
+          ...commentRows.map((row: {
+            id: string;
+            isRead: boolean;
+            createdAt: Date;
+            postSlug: string;
+            postTitle: string;
+            authorName: string;
+            authorImage: string | null;
+          }) => ({
+            id: `comment:${row.id}`,
+            type: "feedback" as const,
+            isRead: row.isRead,
+            createdAt: row.createdAt,
+            path: `/board/p/${row.postSlug}`,
+            postSlug: row.postSlug,
+            postTitle: row.postTitle,
+            authorName: row.authorName,
+            authorImage: row.authorImage,
+          })),
+          ...changelogRows.map((row: {
+            id: string;
+            isRead: boolean;
+            createdAt: Date;
+            entrySlug: string;
+            entryTitle: string;
+            authorName: string;
+            authorImage: string | null;
+          }) => ({
+            id: `changelog:${row.id}`,
+            type: "changelog" as const,
+            isRead: row.isRead,
+            createdAt: row.createdAt,
+            path: `/changelog/p/${row.entrySlug}`,
+            entrySlug: row.entrySlug,
+            entryTitle: row.entryTitle,
+            authorName: row.authorName,
+            authorImage: row.authorImage,
+          })),
+        ]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .slice(0, limit);
+
+        return c.superjson({ notifications });
       }),
 
     // Count unread mention notifications
     mentionsCount: privateProcedure.get(async ({ ctx, c }) => {
       const userId = ctx.session.user.id;
-      const [{ count }] = await ctx.db
+      const [commentUnread] = await ctx.db
         .select({ count: sql<number>`count(*)` })
         .from(commentMention)
         .where(
@@ -1077,7 +1157,20 @@ export function createCommentRouter() {
             eq(commentMention.isRead, false)
           )
         );
-      return c.superjson({ unread: Number(count || 0) });
+
+      const [changelogUnread] = await ctx.db
+        .select({ count: sql<number>`count(*)` })
+        .from(changelogMention)
+        .where(
+          and(
+            eq(changelogMention.mentionedUserId, userId),
+            eq(changelogMention.isRead, false),
+          ),
+        );
+
+      const unread =
+        Number(commentUnread?.count || 0) + Number(changelogUnread?.count || 0);
+      return c.superjson({ unread });
     }),
 
     // Mark a mention notification as read
@@ -1085,16 +1178,52 @@ export function createCommentRouter() {
       .input(mentionsMarkReadInputSchema)
       .post(async ({ ctx, input, c }) => {
         const userId = ctx.session.user.id;
-        const { id } = input;
-        await ctx.db
-          .update(commentMention)
-          .set({ isRead: true })
-          .where(
-            and(
-              eq(commentMention.id, id),
-              eq(commentMention.mentionedUserId, userId)
-            )
-          );
+        const rawId = input.id;
+        const [prefix, parsedMentionId] = rawId.split(":", 2);
+        const kind = parsedMentionId ? prefix : "comment";
+        const mentionId = parsedMentionId ?? rawId;
+
+        if (kind === "changelog") {
+          await ctx.db
+            .update(changelogMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(changelogMention.id, mentionId),
+                eq(changelogMention.mentionedUserId, userId),
+              ),
+            );
+        } else if (kind === "comment") {
+          await ctx.db
+            .update(commentMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(commentMention.id, mentionId),
+                eq(commentMention.mentionedUserId, userId),
+              ),
+            );
+        } else {
+          await ctx.db
+            .update(commentMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(commentMention.id, mentionId),
+                eq(commentMention.mentionedUserId, userId),
+              ),
+            );
+          await ctx.db
+            .update(changelogMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(changelogMention.id, mentionId),
+                eq(changelogMention.mentionedUserId, userId),
+              ),
+            );
+        }
+
         return c.superjson({ success: true });
       }),
 
@@ -1109,6 +1238,15 @@ export function createCommentRouter() {
             eq(commentMention.mentionedUserId, userId),
             eq(commentMention.isRead, false)
           )
+        );
+      await ctx.db
+        .update(changelogMention)
+        .set({ isRead: true })
+        .where(
+          and(
+            eq(changelogMention.mentionedUserId, userId),
+            eq(changelogMention.isRead, false),
+          ),
         );
       return c.superjson({ success: true });
     }),

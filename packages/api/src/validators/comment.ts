@@ -66,7 +66,7 @@ export const pinCommentInputSchema = z.object({
 })
 
 export const mentionsListInputSchema = z.object({
-  limit: z.number().min(1).max(100).optional(),
+  limit: z.coerce.number().min(1).max(100).optional(),
 })
 
 export const mentionsMarkReadInputSchema = z.object({

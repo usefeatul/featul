@@ -6,6 +6,7 @@ import {
 } from "@tiptap/react";
 import { ExtensionKit } from "../extensions/extension-kit";
 import { handleCommandNavigation } from "../extensions/slash-command/menu-list";
+import type { MentionSuggestionSource } from "../types";
 
 type EditorExtensions = NonNullable<UseEditorOptions["extensions"]>;
 
@@ -15,6 +16,7 @@ export type EditorProviderProps = Omit<
 > & {
 	limit?: number;
 	placeholder?: string;
+	mentionSuggestions?: MentionSuggestionSource;
 	extensions?: EditorExtensions;
 };
 
@@ -22,10 +24,11 @@ export const EditorProvider = ({
 	extensions,
 	limit,
 	placeholder,
+	mentionSuggestions,
 	onUpdate,
 	...props
 }: EditorProviderProps) => {
-	const defaultExtensions = ExtensionKit({ limit, placeholder });
+	const defaultExtensions = ExtensionKit({ limit, placeholder, mentionSuggestions });
 
 	return (
 		<TiptapEditorProvider
@@ -73,10 +76,16 @@ export function useFeatulEditor(options: useFeatulEditorOptions) {
 		limit,
 		placeholder,
 		imageUpload,
+		mentionSuggestions,
 		extensions = [],
 		...restOptions
 	} = options;
-	const defaultExtensions = ExtensionKit({ limit, placeholder, imageUpload });
+	const defaultExtensions = ExtensionKit({
+		limit,
+		placeholder,
+		imageUpload,
+		mentionSuggestions,
+	});
 
 	const editor = useEditor({
 		immediatelyRender: false,
@@ -97,5 +106,6 @@ export type useFeatulEditorOptions = Omit<UseEditorOptions, "extensions"> & {
 	limit?: number;
 	placeholder?: string;
 	imageUpload?: import("../types").ImageUploadOptions;
+	mentionSuggestions?: MentionSuggestionSource;
 	extensions?: EditorExtensions;
 };

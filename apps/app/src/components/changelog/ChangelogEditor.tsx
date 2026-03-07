@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FeedEditor } from "@/components/editor/editor";
-import type { JSONContent } from "@featul/editor";
+import type { JSONContent, MentionSuggestionItem } from "@featul/editor";
 import TextareaAutosize from "react-textarea-autosize";
 import { useEditorHeaderActions } from "./EditorHeaderContext";
 import { CoverImageUploader } from "./CoverImageUploader";
@@ -14,6 +14,7 @@ import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import ChangelogAiBar from "./ChangelogAiBar";
+import { fetchWorkspaceMembers } from "@/lib/team-client";
 
 const ENABLE_CHANGELOG_AI = false;
 
@@ -41,6 +42,7 @@ export function ChangelogEditor({
 }: ChangelogEditorProps) {
     const router = useRouter();
     const { setActions, clearActions } = useEditorHeaderActions();
+    const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
 
     const {
         editorRef,
@@ -60,6 +62,44 @@ export function ChangelogEditor({
         handleImageUpload,
         handleSave,
     } = useChangelogEntry({ workspaceSlug, mode, entryId, initialData });
+
+    useEffect(() => {
+        let isCancelled = false;
+
+        const loadMentionSuggestions = async () => {
+            const members = await fetchWorkspaceMembers(workspaceSlug);
+            if (isCancelled) {
+                return;
+            }
+
+            const mapped = members
+                .filter((member) => member.userId)
+                .map((member) => {
+                    const fallbackLabel =
+                        member.email?.split("@")[0] ||
+                        member.userId.slice(0, 8);
+
+                    return {
+                        id: member.userId,
+                        label: member.name || fallbackLabel,
+                        email: member.email ?? null,
+                        avatarUrl: member.image ?? null,
+                    } satisfies MentionSuggestionItem;
+                });
+
+            setMentionSuggestions(mapped);
+        };
+
+        loadMentionSuggestions().catch(() => {
+            if (!isCancelled) {
+                setMentionSuggestions([]);
+            }
+        });
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [workspaceSlug]);
 
     // Register actions with the header context
     useEffect(() => {
@@ -151,6 +191,7 @@ export function ChangelogEditor({
                         initialContent={initialData?.content}
                         placeholder="Start typing or press '/' for commands"
                         className="min-h-[400px]"
+                        mentionSuggestions={mentionSuggestions}
                         onImageUpload={handleImageUpload}
                         onUpdate={() => setIsDirty(true)}
                     />

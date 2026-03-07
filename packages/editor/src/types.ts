@@ -82,3 +82,21 @@ export type ImageUploadOptions = {
     /** Function to fetch media */
     fetchMedia?: () => Promise<MediaItem[]>;
 };
+
+/**
+ * Mention suggestion item used by @mention autocomplete
+ */
+export type MentionSuggestionItem = {
+    id: string;
+    label: string;
+    email?: string | null;
+    avatarUrl?: string | null;
+};
+
+/**
+ * Mention source used by the editor.
+ * Can be a static list or a callback for dynamic/async-safe reads.
+ */
+export type MentionSuggestionSource =
+    | MentionSuggestionItem[]
+    | (() => MentionSuggestionItem[]);

@@ -9,6 +9,7 @@ import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { NodeRange } from "@tiptap/extension-node-range";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
+import TextAlign from "@tiptap/extension-text-align";
 import { TextStyleKit } from "@tiptap/extension-text-style";
 import Typography from "@tiptap/extension-typography";
 import { Youtube } from "@tiptap/extension-youtube";
@@ -19,6 +20,7 @@ import { CodeBlock } from "./code-block/code-block";
 import { Figure } from "./figure/figure";
 import { ImageUpload } from "./image-upload/image-upload";
 import { MarkdownInput } from "./markdown-input/markdown-input";
+import { configureMention } from "./mention/mention";
 import { configureSlashCommand } from "./slash-command/slash-command";
 import { Table } from "./table/table";
 import { TableCell } from "./table/table-cell";
@@ -30,7 +32,7 @@ import { YouTubeUpload } from "./youtube/youtube-upload";
 import "../styles/task-list.css";
 import "../styles/editor.css";
 
-import type { ImageUploadOptions } from "../types";
+import type { ImageUploadOptions, MentionSuggestionSource } from "../types";
 
 /**
  * Extension kit configuration options
@@ -42,6 +44,8 @@ export type ExtensionKitOptions = {
   placeholder?: string;
   /** Image upload configuration */
   imageUpload?: ImageUploadOptions;
+  /** Mention suggestions shown after typing '@' */
+  mentionSuggestions?: MentionSuggestionSource;
 };
 
 /**
@@ -52,6 +56,7 @@ export const ExtensionKit = ({
   limit,
   placeholder,
   imageUpload,
+  mentionSuggestions,
 }: ExtensionKitOptions = {}) => {
   let dragHandleElement: HTMLElement | null = null;
 
@@ -93,6 +98,15 @@ export const ExtensionKit = ({
           class: cn("rounded-md  bg-muted px-1.5 py-1 font-medium font-mono"),
           spellcheck: "false",
         },
+      },
+      link: {
+        autolink: true,
+        defaultProtocol: "https",
+        HTMLAttributes: {
+          rel: "noopener noreferrer nofollow",
+          target: "_blank",
+        },
+        openOnClick: false,
       },
       horizontalRule: {
         HTMLAttributes: {
@@ -147,6 +161,17 @@ export const ExtensionKit = ({
     // Subscript and superscript
     Superscript,
     Subscript,
+
+    // Mention support for @-references
+    configureMention({
+      suggestions: mentionSuggestions,
+      className: cn("mention"),
+    }),
+
+    // Text alignment for paragraphs and headings
+    TextAlign.configure({
+      types: ["heading", "paragraph"],
+    }),
 
     // Slash command
     configureSlashCommand(),
