@@ -8,25 +8,43 @@ import { YouTubeUploadView } from "./youtube-view";
  * When a URL is submitted, it replaces itself with an actual YouTube embed
  */
 export const YouTubeUpload = Node.create({
-  name: "youtubeUpload",
+	name: "youtubeUpload",
 
-  group: "block",
+	group: "block",
 
-  atom: true,
+	atom: true,
 
-  addNodeView() {
-    return ReactNodeViewRenderer(YouTubeUploadView);
-  },
+	addAttributes() {
+		return {
+			src: {
+				default: null,
+				parseHTML: (element: HTMLElement) => element.getAttribute("data-src"),
+				renderHTML: (attributes: { src?: string | null }) => {
+					if (!attributes.src) {
+						return {};
+					}
 
-  parseHTML() {
-    return [
-      {
-        tag: 'div[data-type="youtube-upload"]',
-      },
-    ];
-  },
+					return {
+						"data-src": attributes.src,
+					};
+				},
+			},
+		};
+	},
 
-  renderHTML() {
-    return ["div", { "data-type": "youtube-upload" }];
-  },
+	addNodeView() {
+		return ReactNodeViewRenderer(YouTubeUploadView);
+	},
+
+	parseHTML() {
+		return [
+			{
+				tag: 'div[data-type="youtube-upload"]',
+			},
+		];
+	},
+
+	renderHTML({ HTMLAttributes }) {
+		return ["div", { "data-type": "youtube-upload", ...HTMLAttributes }];
+	},
 });

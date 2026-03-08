@@ -8,25 +8,43 @@ import { TwitterUploadView } from "./twitter-view";
  * When a URL is submitted, it replaces itself with an actual Twitter embed
  */
 export const TwitterUpload = Node.create({
-  name: "twitterUpload",
+	name: "twitterUpload",
 
-  group: "block",
+	group: "block",
 
-  atom: true,
+	atom: true,
 
-  addNodeView() {
-    return ReactNodeViewRenderer(TwitterUploadView);
-  },
+	addAttributes() {
+		return {
+			src: {
+				default: null,
+				parseHTML: (element: HTMLElement) => element.getAttribute("data-src"),
+				renderHTML: (attributes: { src?: string | null }) => {
+					if (!attributes.src) {
+						return {};
+					}
 
-  parseHTML() {
-    return [
-      {
-        tag: 'div[data-type="twitter-upload"]',
-      },
-    ];
-  },
+					return {
+						"data-src": attributes.src,
+					};
+				},
+			},
+		};
+	},
 
-  renderHTML() {
-    return ["div", { "data-type": "twitter-upload" }];
-  },
+	addNodeView() {
+		return ReactNodeViewRenderer(TwitterUploadView);
+	},
+
+	parseHTML() {
+		return [
+			{
+				tag: 'div[data-type="twitter-upload"]',
+			},
+		];
+	},
+
+	renderHTML({ HTMLAttributes }) {
+		return ["div", { "data-type": "twitter-upload", ...HTMLAttributes }];
+	},
 });

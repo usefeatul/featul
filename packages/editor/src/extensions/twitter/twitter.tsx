@@ -6,12 +6,11 @@ import {
 	type ReactNodeViewRendererOptions,
 } from "@tiptap/react";
 import { Tweet } from "react-tweet";
-export const TWITTER_REGEX_GLOBAL =
-	/(https?:\/\/)?(www\.)?x\.com\/([a-zA-Z0-9_]{1,15})(\/status\/(\d+))?(\/\S*)?/g;
-export const TWITTER_REGEX =
-	/^https?:\/\/(www\.)?x\.com\/([a-zA-Z0-9_]{1,15})(\/status\/(\d+))?(\/\S*)?$/;
-
-export const isValidTwitterUrl = (url: string) => url.match(TWITTER_REGEX);
+import {
+	extractTweetId,
+	normalizeTwitterUrl,
+	TWITTER_URL_GLOBAL_REGEX,
+} from "./twitter-utils";
 
 const TweetComponent = ({
 	node,
@@ -26,7 +25,7 @@ const TweetComponent = ({
 		typeof attrs.src === "string"
 			? attrs.src
 			: null;
-	const tweetId = url?.split("/").pop();
+	const tweetId = url ? extractTweetId(url) : null;
 
 	if (!tweetId) {
 		return null;
@@ -145,13 +144,16 @@ export const Twitter = Node.create<TwitterOptions>({
 			setTweet:
 				(options: SetTweetOptions) =>
 				({ commands }) => {
-					if (!isValidTwitterUrl(options.src)) {
+					const normalizedUrl = normalizeTwitterUrl(options.src);
+					if (!normalizedUrl) {
 						return false;
 					}
 
 					return commands.insertContent({
 						type: this.name,
-						attrs: options,
+						attrs: {
+							src: normalizedUrl,
+						},
 					});
 				},
 		};
@@ -164,9 +166,17 @@ export const Twitter = Node.create<TwitterOptions>({
 
 		return [
 			nodePasteRule({
-				find: TWITTER_REGEX_GLOBAL,
+				find: TWITTER_URL_GLOBAL_REGEX,
 				type: this.type,
-				getAttributes: (match) => ({ src: match.input }),
+				getAttributes: (match) => {
+					const matchText = Array.isArray(match) ? match[0] : null;
+					const normalizedUrl =
+						typeof matchText === "string"
+							? normalizeTwitterUrl(matchText)
+							: null;
+
+					return normalizedUrl ? { src: normalizedUrl } : {};
+				},
 			}),
 		];
 	},
