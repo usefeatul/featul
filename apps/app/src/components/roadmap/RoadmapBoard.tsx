@@ -63,7 +63,7 @@ export default function RoadmapBoard({
               return (
                 <div
                   key={s}
-                  className={`w-full md:flex-none ${collapsedByStatus[s] ? "md:w-20" : "md:w-[308px]"}`}
+                  className={`w-full md:flex-none ${collapsedByStatus[s] ? "md:w-20" : "md:w-[320px] lg:w-[340px]"}`}
                 >
                   <RoadmapColumn
                     id={s}

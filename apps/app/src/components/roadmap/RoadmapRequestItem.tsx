@@ -42,6 +42,7 @@ export default function RoadmapRequestItem({
   const avatarSrc =
     item.authorImage || randomAvatarUrl(authorSeed, "avataaars");
   const commentCount = Math.max(0, Number(item.commentCount || 0));
+  const boardLabel = item.boardName?.trim() || "Board";
   const preview = buildRoadmapPreview(item.content, item.boardName);
   const dateLabel =
     formatRoadmapCardDate(item.publishedAt || item.createdAt) || "No date";
@@ -53,7 +54,7 @@ export default function RoadmapRequestItem({
         <div className="flex items-start gap-3">
           <Link
             href={href}
-            className="min-w-0 flex-1 line-clamp-2 text-base font-semibold leading-6 text-foreground hover:text-primary"
+            className="min-w-0 flex-1 text-base font-semibold leading-6 text-foreground hover:text-primary whitespace-normal break-words"
           >
             {item.title}
           </Link>
@@ -64,7 +65,7 @@ export default function RoadmapRequestItem({
             />
           </span>
         </div>
-        <p className="mt-2 line-clamp-2 text-sm leading-5 text-accent/90">
+        <p className="mt-2 text-sm leading-5 text-accent/90 whitespace-normal break-words">
           {preview}
         </p>
       </div>
@@ -72,6 +73,7 @@ export default function RoadmapRequestItem({
         toneFooterClass={tone.footer}
         authorLabel={authorLabel}
         avatarSrc={avatarSrc}
+        boardLabel={boardLabel}
         dateLabel={dateLabel}
         commentCount={commentCount}
         role={item.role}
