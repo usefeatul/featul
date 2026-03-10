@@ -54,7 +54,7 @@ export default function RoadmapRequestItem({
         <div className="flex items-start gap-3">
           <Link
             href={href}
-            className="min-w-0 flex-1 text-base font-semibold leading-6 text-foreground hover:text-primary whitespace-normal break-words"
+            className="min-w-0 flex-1 line-clamp-2 text-base font-semibold leading-6 text-foreground hover:text-primary"
           >
             {item.title}
           </Link>
@@ -65,7 +65,7 @@ export default function RoadmapRequestItem({
             />
           </span>
         </div>
-        <p className="mt-2 text-sm leading-5 text-accent/90 whitespace-normal break-words">
+        <p className="mt-2 line-clamp-3 text-sm leading-5 text-accent/90">
           {preview}
         </p>
       </div>
