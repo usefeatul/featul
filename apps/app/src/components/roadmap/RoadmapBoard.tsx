@@ -100,7 +100,7 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className="pointer-events-none overflow-hidden rounded-2xl border border-border/80 bg-card shadow-[0_12px_28px_rgba(15,23,42,0.16)]"
+              className="pointer-events-none overflow-hidden rounded-xl border border-border/80 bg-card shadow-[0_12px_28px_rgba(15,23,42,0.16)]"
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}
