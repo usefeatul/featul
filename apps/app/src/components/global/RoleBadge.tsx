@@ -27,7 +27,7 @@ function getRoleColor(role?: Role | null, isOwner?: boolean, isFeatul?: boolean)
 
 function getTooltipClasses(role?: Role | null, isOwner?: boolean, isFeatul?: boolean): string {
   if (isFeatul) return "bg-amber-500 dark:bg-amber-600 text-white border-transparent";
-  if (isOwner) return "bg-primary text-white border-transparent";
+  if (isOwner) return "bg-primary text-black dark:text-white border-transparent";
   if (role === "admin")
     return "bg-orange-500 dark:bg-orange-600 text-white border-transparent";
   if (role === "viewer")
