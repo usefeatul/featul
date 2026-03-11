@@ -100,7 +100,7 @@ function TooltipContent({
 				<BaseTooltip.Popup
 					data-slot="tooltip-content"
 					className={cn(
-						"bg-zinc-800 text-white dark:bg-white dark:text-black border-2 border-border shadow-xs outline-hidden animate-in fade-in-0 zoom-in-95 data-ending-style:opacity-0 data-starting-style:opacity-0 z-50 w-fit max-w-3xs whitespace-normal wrap-break-word leading-relaxed rounded-sm px-1.5 py-1 text-sm font-light",
+						"bg-zinc-800 text-white dark:bg-zinc-800 dark:text-white border-2 border-border shadow-xs outline-hidden animate-in fade-in-0 zoom-in-95 data-ending-style:opacity-0 data-starting-style:opacity-0 z-50 w-fit max-w-3xs whitespace-normal wrap-break-word leading-relaxed rounded-sm px-1.5 py-1 text-sm font-light",
 						className,
 					)}
 					{...props}
