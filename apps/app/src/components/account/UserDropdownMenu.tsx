@@ -58,6 +58,7 @@ export default function UserDropdownMenu({
       side="bottom"
       align="center"
       sideOffset={8}
+      withBackdrop
     >
       <DropdownMenuItem
         onSelect={onAccount}
