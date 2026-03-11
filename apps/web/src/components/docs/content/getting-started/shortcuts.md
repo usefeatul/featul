@@ -46,3 +46,16 @@ These shortcuts work while viewing a single request inside the workspace app.
 | --- | --- |
 | `Z` | Opens the previous request. |
 | `X` | Opens the next request. |
+
+## Roadmap navigation shortcuts
+
+These shortcuts work on the workspace roadmap board and jump horizontally between roadmap status columns.
+
+| Shortcut | What it does |
+| --- | --- |
+| `[` | Jump to the previous roadmap column. |
+| `]` | Jump to the next roadmap column. |
+| `Shift + Left Arrow` | Jump to the previous roadmap column. |
+| `Shift + Right Arrow` | Jump to the next roadmap column. |
+| `Shift + Home` | Jump to the first roadmap column. |
+| `Shift + End` | Jump to the last roadmap column. |
