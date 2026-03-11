@@ -63,7 +63,11 @@ export default function Timezone({
               </span>
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={6} align="end">
-              <span className="font-bold">Current workspace time</span> in the workspace's timezone. All dates, ranges, and graphs you see are matched to this timezone.
+              <span className="font-bold">Current workspace time</span>{" "}
+              <span className="text-white/75 dark:text-black/65">
+                in the workspace&apos;s timezone. All dates, ranges, and graphs
+                you see are matched to this timezone.
+              </span>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
