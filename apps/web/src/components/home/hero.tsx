@@ -7,8 +7,8 @@ import { PreviewSwitchPill } from "@/components/home/preview-switch";
 import { DotPattern } from "@/components/dot-pattern";
 import { usePreviewHint } from "../../hooks/usePreviewHint";
 
-const PREVIEW_WIDTH = 1847;
-const PREVIEW_HEIGHT = 1109;
+const PREVIEW_WIDTH = 1850;
+const PREVIEW_HEIGHT = 1115;
 
 export function Hero() {
   const [active, setActive] = useState<"dashboard" | "roadmap" | "changelog">(
@@ -42,10 +42,9 @@ export function Hero() {
                     alt={`featul ${active} preview – product dashboard screenshot showing feedback management interface`}
                     fill
                     priority
-                    placeholder="blur"
-                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA40lEQVR4nGNgQAJmVta/bWxs/zMwMDAwMjL+Z2Rk/M/IyPifmZn5PxMT039WVtb/7Ozs/zk4OP5zcnL+5+Li+s/Nzf2fh4fnPy8v739+fv7/AgIC/4WEhP4LCwv/FxER+S8qKvpfTEzsv7i4+H8JCYn/kpKS/6WkpP5LS0v/l5GR+S8rK/tfTk7uv7y8/H8FBYX/ioqK/5WUlP4rKyv/V1FR+a+qqvpfTU3tv7q6+n8NDY3/mpqa/7W0tP5ra2v/19HR+a+rq/tfT0/vv76+/n8DA4P/hoaG/42Mjf4bGxv/BwB2mFqQvpnLTAAAAABJRU5ErkJggg=="
+                    quality={100}
                     sizes={`(max-width: 1280px) 100vw, ${PREVIEW_WIDTH}px`}
-                    className="object-contain"
+                    className="object-contain object-top"
                   />
                 </div>
               </div>
