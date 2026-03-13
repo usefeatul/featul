@@ -19,7 +19,7 @@ export default function AlternativesIndexPage() {
   return (
     <main className="min-h-screen pt-16">
       <Hero />
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18 pb-14 sm:pb-20">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14 pb-14 sm:pb-20">
         <section className="mt-4">
           <div className="border-b border-border/70 pb-6 sm:pb-8">
             <p className="text-accent text-[11px] font-medium uppercase tracking-[0.14em]">

@@ -73,16 +73,19 @@ const integrations: IntegrationItem[] = [
 
 export default function Integrations() {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-      <section data-component="Integrations" className="py-12 sm:py-16">
+    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+      <section data-component="Integrations" className="my-6 sm:my-8 py-8 sm:py-12">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="max-w-3xl text-left">
             <h2 className="text-foreground text-2xl sm:text-3xl lg:text-3xl font-semibold">
               Integrate with your favorite tools
             </h2>
-            <p className="text-accent mt-3 text-sm sm:text-base">
-              Connect notifications and imports to centralize feedback workflows.
-            </p>
+            <div className="mt-3 flex items-start gap-2">
+              <AccentBar width={8} />
+              <p className="text-accent text-sm sm:text-base">
+                Connect notifications and imports to centralize feedback workflows.
+              </p>
+            </div>
           </div>
 
           <div className="mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">

@@ -15,7 +15,7 @@ export default function FooterSection() {
       <div className="mx-auto max-w-6xl">
         <LinearSeparator />
       </div>
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18 py-10 md:py-14">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14 py-10 md:py-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="grid items-start gap-10 md:grid-cols-5">
             <div className="md:col-span-2">

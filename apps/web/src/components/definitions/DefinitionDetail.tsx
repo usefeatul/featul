@@ -39,8 +39,8 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
   const isMobile = useIsMobile();
   return (
     <main className="min-h-screen pt-16">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-        <section className="py-12 sm:py-16" data-component="DefinitionDetail">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+        <section className="py-8 sm:py-12" data-component="DefinitionDetail">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <div className="mb-4 flex items-center gap-3">
               <Link

@@ -18,7 +18,7 @@ export default async function BlogPage() {
   const posts = res?.posts ?? []
   return (
     <main className="min-h-screen pt-16">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
         <section className="py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <div className="text-center">

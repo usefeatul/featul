@@ -8,9 +8,9 @@ import Image from "next/image";
 
 export default function Create() {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-      <section>
-        <div className="bg-background py-16 sm:py-24">
+    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+      <section className="my-6 sm:my-8">
+        <div className="bg-background py-4 sm:py-6">
           <div className="mx-auto w-full px-1 sm:px-6 max-w-5xl ">
             <div>
               <h2 className="text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">

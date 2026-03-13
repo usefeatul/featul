@@ -13,8 +13,8 @@ import Link from "next/link";
 export function ConversionHero() {
   const isMobile = useIsMobile();
   return (
-    <section className="relative" data-component="ConversionHero">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+    <section className="relative my-6 sm:my-8" data-component="ConversionHero">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full px-1 sm:px-6">
           <div className="pt-6 pb-8 sm:pt-8 sm:pb-14">
             <h2 className="text-foreground text-balance max-w-5xl sm:max-w-6xl text-xl sm:text-2xl md:text-3xl font-semibold leading-snug">

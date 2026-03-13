@@ -10,8 +10,8 @@ import Image from "next/image";
 export default function FeaturesSection() {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-      <section>
-        <div className="bg-background py-16 sm:py-24">
+      <section className="my-4 sm:my-6">
+        <div className="bg-background py-4 sm:py-6">
           <div className="mx-auto w-full max-w-5xl px-1 sm:px-6">
             <div>
               <h2 className="text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">

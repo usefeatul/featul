@@ -7,7 +7,7 @@ export default function AnnouncementBanner() {
     <div className="fixed top-0 left-0 right-0 z-60 w-full border-b border-primary/25 bg-primary text-primary-foreground">
       <Container
         maxWidth="6xl"
-        className="relative px-3 sm:px-12 lg:px-16 xl:px-18"
+        className="relative px-3 sm:px-10 lg:px-12 xl:px-14"
       >
         <div className="pointer-events-none absolute inset-0 mx-auto max-w-6xl bg-[linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%),linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%)] bg-[length:1px_100%] bg-[position:left_top,right_top] bg-no-repeat px-1 sm:px-6" />
         <div className="mx-auto flex h-10 w-full max-w-6xl items-center justify-center gap-1.5 px-1 sm:gap-2 sm:px-6 text-xs sm:text-[13px]">

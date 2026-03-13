@@ -12,7 +12,7 @@ export function AlternativeHero({ alt }: { alt: Alternative }) {
 
   return (
     <section className="bg-background py-10 sm:py-24">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div className="order-last lg:order-last hidden sm:block">

@@ -19,7 +19,7 @@ export default function Pricing() {
 
   return (
     <section className="bg-background" data-component="Pricing">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
         <section className="py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
             <div className="text-center max-w-4xl mx-auto">

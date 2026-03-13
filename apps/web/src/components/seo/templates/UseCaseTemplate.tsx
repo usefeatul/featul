@@ -61,7 +61,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
             />
 
-            <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18 relative">
+            <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14 relative">
                 <VerticalLines className="absolute z-0" />
 
                 {/* Hero Section */}

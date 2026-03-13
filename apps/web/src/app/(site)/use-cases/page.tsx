@@ -15,8 +15,8 @@ export default function UseCasesIndexPage() {
   const totalUseCases = USE_CASES.length
   return (
     <main className="min-[height:calc(100vh-64px)] pt-16 bg-background">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-        <section className="py-12 sm:py-16" data-component="UseCasesIndex">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+        <section className="py-8 sm:py-12" data-component="UseCasesIndex">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <p className="text-sm text-accent">
               Use cases • {totalUseCases} guide{totalUseCases > 1 ? "s" : ""}

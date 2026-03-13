@@ -44,8 +44,8 @@ export const metadata: Metadata = createPageMetadata({
 export default function IntegrationsIndexPage() {
   return (
     <main className="min-[height:calc(100vh-64px)] pt-16 bg-background">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-        <section className="py-12 sm:py-16" data-component="IntegrationsIndex">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+        <section className="py-8 sm:py-12" data-component="IntegrationsIndex">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <div className="max-w-3xl">
               <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">
