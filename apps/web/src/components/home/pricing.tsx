@@ -40,7 +40,6 @@ export default function Pricing() {
                 <PricingPlanCard
                   key={planKey}
                   planKey={planKey}
-                  currentPlan="free"
                   billingCycle={billingCycle}
                 />
               ))}
@@ -54,26 +53,25 @@ export default function Pricing() {
 
 function PricingPlanCard({
   planKey,
-  currentPlan,
   billingCycle,
 }: {
   planKey: PricingPlanKey
-  currentPlan: PricingPlanKey
   billingCycle: BillingCycle
 }) {
   const plan = getPricingPlan(planKey)
-  const isCurrent = currentPlan === planKey
   const ribbon = getPlanRibbon(planKey)
+  const buttonVariant = planKey === "free" ? "outline" : "default"
+  const ctaLabel = getPlanCtaLabel(planKey)
+  const buttonClassName = cn(
+    "h-9 w-full text-sm",
+    planKey === "starter" && "bg-primary text-primary-foreground hover:bg-primary/90",
+    planKey === "professional" && "bg-orange-500 text-white hover:bg-orange-500/90",
+  )
 
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-md border bg-card p-4",
-        planKey === "free"
-          ? "border-border/70"
-          : isCurrent
-            ? "border-primary/60"
-            : "border-border/70",
+        "relative flex h-full flex-col overflow-hidden rounded-md border border-border/70 bg-card p-4",
       )}
     >
       {ribbon ? (
@@ -111,18 +109,8 @@ function PricingPlanCard({
       </ul>
 
       <div className="relative z-10">
-        <Button
-          asChild
-          variant={planKey === "free" ? "outline" : "default"}
-          disabled={planKey === "free"}
-          className={cn(
-            "h-9 w-full text-sm",
-            planKey === "free" && "opacity-50",
-            planKey === "starter" && "bg-primary text-primary-foreground hover:bg-primary/90",
-            planKey === "professional" && "bg-orange-500 text-white hover:bg-orange-500/90",
-          )}
-        >
-          <Link href={plan.href}>{planKey === "free" ? "Current" : "Choose plan"}</Link>
+        <Button asChild variant={buttonVariant} className={buttonClassName}>
+          <Link href={plan.href}>{ctaLabel}</Link>
         </Button>
       </div>
     </div>
@@ -199,6 +187,12 @@ function getPlanRibbon(planKey: PricingPlanKey): { label: string; tone: "popular
   if (planKey === "starter") return { label: "Most popular", tone: "popular" }
   if (planKey === "professional") return { label: "Best value", tone: "value" }
   return null
+}
+
+function getPlanCtaLabel(planKey: PricingPlanKey): string {
+  if (planKey === "free") return "Get Free"
+  if (planKey === "starter") return "Get Starter"
+  return "Get Pro"
 }
 
 function getRibbonSpotlightClass(tone: "popular" | "value") {
