@@ -44,15 +44,15 @@ export function ConversionHero() {
               they’ll love. No complex setup, no privacy concerns just results.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <HotkeyLink
-                className="w-full sm:w-auto size-9 px-3 rounded-md"
-                label="Add to your website"
-              />
+              <HotkeyLink className="w-full sm:w-auto "
+              label="Add to your website"
+               />
+
               <Button
                 asChild
-                variant="outline"
-                size="sm"
-                className="w-full sm:w-auto h-9 px-3 rounded-md  text-accent"
+                variant="nav"
+                size="lg"
+                className="w-full sm:w-auto rounded-md text-accent"
               >
                 <Link href="#demo" aria-label="Get a demo">
                   <span className="inline-flex items-center gap-1.5">

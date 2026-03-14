@@ -22,7 +22,7 @@ export function HeroContent() {
       </p>
       <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4">
         <HotkeyLink
-          className="w-full sm:w-auto min-h-[40px] font-light min-w-[40px]"
+          className="w-full sm:w-auto"
           label="Add to your website"
         />
         <LiveDemo className="w-full sm:w-auto min-h-[40px] text-accent min-w-[40px]" />
