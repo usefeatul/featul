@@ -61,6 +61,7 @@ export function HotkeyLink({
         onKeyDown={handleKeyDown}
         aria-keyshortcuts={hotkey.toUpperCase()}
         data-sln-event="cta: get started free clicked"
+        className="flex items-center gap-2 font-heading"
         aria-label={
           typeof (children ?? label ?? "Get started Free") === "string"
             ? ((children ?? label ?? "Get started Free") as string)
@@ -73,7 +74,7 @@ export function HotkeyLink({
         </span>
         <kbd
           aria-hidden
-          className=" rounded-sm font-light bg-white/20 px-1.5 py-0.5 text-xs leading-4"
+          className=" rounded-sm font-heading text-heading bg-white/20 px-1.5 py-0.5 text-xs"
         >
           {hotkey.toUpperCase()}
         </kbd>
