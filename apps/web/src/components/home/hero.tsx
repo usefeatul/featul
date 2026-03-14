@@ -7,8 +7,8 @@ import { PreviewSwitchPill } from "@/components/home/preview-switch";
 import { DotPattern } from "@/components/dot-pattern";
 import { usePreviewHint } from "../../hooks/usePreviewHint";
 
-const PREVIEW_WIDTH = 1850;
-const PREVIEW_HEIGHT = 1115;
+const PREVIEW_WIDTH = 1762;
+const PREVIEW_HEIGHT = 1124;
 
 export function Hero() {
   const [active, setActive] = useState<"dashboard" | "roadmap" | "changelog">(
