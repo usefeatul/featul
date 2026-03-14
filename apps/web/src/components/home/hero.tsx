@@ -29,7 +29,7 @@ export function Hero() {
       {/* <DotPattern className="z-0" /> */}
       <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="pt-10 pb-24 sm:pt-16 sm:pb-32 mt-8">
+          <div className="pt-8 pb-16 sm:pt-12 sm:pb-24 mt-4">
             <HeroContent />
             <div className="relative">
               <div className="relative mt-4 z-0 w-full overflow-hidden bg-card rounded-md border border-border shadow-2xl shadow-zinc-950/50 translate-y-[3px] outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background">
