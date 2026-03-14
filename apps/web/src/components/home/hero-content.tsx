@@ -25,7 +25,7 @@ export function HeroContent() {
           className="w-full sm:w-auto min-h-[40px] font-light min-w-[40px]"
           label="Add to your website"
         />
-        <LiveDemo className="w-full sm:w-auto min-h-[40px] font-light text-accent min-w-[40px]" />
+        <LiveDemo className="w-full sm:w-auto min-h-[40px] text-accent min-w-[40px]" />
       </div>
       <div
         className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs  text-accent"

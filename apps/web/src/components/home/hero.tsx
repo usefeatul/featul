@@ -16,7 +16,7 @@ export function Hero() {
   );
 
   // Subtle pill highlight that appears briefly and hides after first switch
-  const showPillHint = usePreviewHint(active);
+  const showPillHint = usePreviewHint();
 
   const imageSrc = {
     dashboard: "/image/dashboard.png",
