@@ -16,7 +16,7 @@ export default function AnnouncementBanner() {
           </span>
           <Link
             href="/tools/categories"
-            className="inline-flex min-w-0 items-center gap-1 font-light leading-none transition-opacity hover:opacity-85"
+            className="inline-flex min-w-0 items-center gap-1  leading-none transition-opacity hover:opacity-85"
           >
             <span className="truncate sm:hidden max-w-[220px]">
               Free product & SaaS calculators
@@ -25,7 +25,7 @@ export default function AnnouncementBanner() {
               Plan faster with our free product and SaaS calculators
             </span>
             <span className="hidden text-primary-foreground/70 sm:inline">|</span>
-            <span className="hidden sm:inline font-extralight">Try it</span>
+            <span className="hidden sm:inline font-heading">Try it</span>
             <ArrowIcon className="size-3.5 sm:size-4" aria-hidden />
           </Link>
         </div>
