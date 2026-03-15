@@ -19,11 +19,8 @@ import {
   getPasswordError,
 } from "@featul/auth/password";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
-import {
-  sendVerificationOtp,
-  checkVerificationOtp,
-  resetPassword as resetPasswordOtp,
-} from "../../utils/otp";
+import { resetPassword as resetPasswordOtp } from "../../utils/otp";
+import { useOtpVerification } from "@/hooks/useOtpVerification";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -37,65 +34,21 @@ export default function ForgotPassword() {
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState<"request" | "otp" | "password">("request");
   const styles = getAuthLayoutStyles(false);
-
-  const sendResetCode = async () => {
-    setIsSending(true);
-    setError("");
-    setSubmitted(false);
-    try {
-      const { error } = await sendVerificationOtp(email, "forget-password");
-      if (error) {
-        setError(error.message || "Failed to send reset code");
-        toast.error(error.message || "Failed to send reset code");
-        return;
-      }
-      setStep("otp");
-      toast.success("Reset code sent");
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Failed to send reset code";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const verifyOtp = async () => {
-    setIsVerifying(true);
-    setError("");
-    setSubmitted(true);
-
-    if (code.trim().length !== 6) {
-      setError("Please enter the 6-digit code.");
-      setIsVerifying(false);
-      return;
-    }
-
-    try {
-      const { error } = await checkVerificationOtp({
-        email: email.trim(),
-        otp: code.trim(),
-        type: "forget-password",
-      });
-
-      if (error) {
-        setError(error.message || "Invalid or expired code");
-        toast.error(error.message || "Invalid or expired code");
-        return;
-      }
-
-      // OTP is valid, proceed to password step
-      setStep("password");
-      setSubmitted(false);
-      setError("");
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Invalid or expired code";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setIsVerifying(false);
-    }
-  };
+  const { sendCode: sendResetCode, verifyCode: verifyOtp } = useOtpVerification({
+    email,
+    code,
+    sendNextStep: "otp",
+    verifyNextStep: "password",
+    sendErrorMessage: "Failed to send reset code",
+    sendSuccessMessage: "Reset code sent",
+    verifyErrorMessage: "Invalid or expired code",
+    resetSubmittedOnSend: true,
+    setError,
+    setSubmitted,
+    setStep,
+    setIsSending,
+    setIsVerifying,
+  });
 
   const resetPassword = async () => {
     setIsResetting(true);
