@@ -1,3 +1,5 @@
+import { sanitizeBlogHtml } from "@/lib/security"
+
 export type TocItem = {
   id: string
   text: string
@@ -18,12 +20,13 @@ function slugify(input: string) {
  * Parses h2/h3 headings from HTML, injects id attributes, and returns ToC.
  */
 export function generateToc(html?: string | null): { html: string; items: TocItem[] } {
-  if (!html) return { html: "", items: [] }
+  const safeHtml = sanitizeBlogHtml(html)
+  if (!safeHtml) return { html: "", items: [] }
 
   const items: TocItem[] = []
   const usedIds = new Set<string>()
 
-  const withIds = html.replace(/<h([2-3])(\b[^>]*)>([\s\S]*?)<\/h\1>/g, (full, levelStr, attrs = "", inner) => {
+  const withIds = safeHtml.replace(/<h([2-3])(\b[^>]*)>([\s\S]*?)<\/h\1>/g, (full, levelStr, attrs = "", inner) => {
     const level = Number(levelStr) as 2 | 3
     const text = inner.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
 

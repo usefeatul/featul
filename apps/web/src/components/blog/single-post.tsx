@@ -22,8 +22,8 @@ function estimateReadingTime(html?: string | null) {
 
 export function SinglePost({ post }: SinglePostProps) {
   const date = post.publishedAt ? new Date(post.publishedAt) : null;
-  const reading = estimateReadingTime(post.content);
   const { html, items } = generateToc(post.content);
+  const reading = estimateReadingTime(html);
   const author =
     post.author ??
     (post.authors && post.authors.length > 0 ? post.authors[0] : null);

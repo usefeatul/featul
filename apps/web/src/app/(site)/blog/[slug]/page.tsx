@@ -8,6 +8,7 @@ import CTA from "@/components/home/cta"
 import { createArticleMetadata } from "@/lib/seo"
 import { SITE_URL } from "@/config/seo"
 import { buildBlogPostingSchema, buildBlogBreadcrumbSchema } from "@/lib/structured-data"
+import { serializeJsonLd } from "@/lib/security"
 import Script from "next/script"
 
 export const revalidate = 30
@@ -40,14 +41,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             id="blog-posting-jsonld"
             type="application/ld+json"
             strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBlogPostingSchema({ siteUrl: SITE_URL, slug, post })) }}
-          />
+          >
+            {serializeJsonLd(buildBlogPostingSchema({ siteUrl: SITE_URL, slug, post }))}
+          </Script>
           <Script
             id="blog-breadcrumb-jsonld"
             type="application/ld+json"
             strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBlogBreadcrumbSchema({ siteUrl: SITE_URL, slug, title: post.title })) }}
-          />
+          >
+            {serializeJsonLd(buildBlogBreadcrumbSchema({ siteUrl: SITE_URL, slug, title: post.title }))}
+          </Script>
           <SinglePost post={post} />
         </div>
       </Container>

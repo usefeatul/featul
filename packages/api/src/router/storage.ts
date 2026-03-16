@@ -22,6 +22,11 @@ import {
 } from "../shared/storage-upload"
 import { getSessionUserId, hasWorkspaceContentAccess, canUploadWorkspaceAsset } from "../shared/storage-access"
 
+function isAnonymousPublicPostImageUploadEnabled(): boolean {
+  const raw = String(process.env.ALLOW_ANONYMOUS_PUBLIC_POST_IMAGE_UPLOADS || "").trim().toLowerCase()
+  return raw === "1" || raw === "true" || raw === "yes"
+}
+
 export function createStorageRouter() {
   return j.router({
     getAvatarUploadUrl: privateProcedure
@@ -127,8 +132,15 @@ export function createStorageRouter() {
         if (!targetBoard.isPublic) {
           throw new HTTPException(403, { message: "Private boards require workspace access for uploads" })
         }
-        if (!userId && !targetBoard.allowAnonymous) {
-          throw new HTTPException(401, { message: "Please sign in to upload images on this board" })
+        if (!userId) {
+          if (!targetBoard.allowAnonymous) {
+            throw new HTTPException(401, { message: "Please sign in to upload images on this board" })
+          }
+
+          // Secure-by-default: prevent anonymous signed URL abuse unless explicitly allowed.
+          if (!isAnonymousPublicPostImageUploadEnabled()) {
+            throw new HTTPException(401, { message: "Please sign in to upload images on this board" })
+          }
         }
 
         const { safeFileName, normalizedContentType } = validateUploadInput({

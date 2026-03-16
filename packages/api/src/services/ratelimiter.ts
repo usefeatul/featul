@@ -54,7 +54,7 @@ export async function limitInvite(userId: string): Promise<RateLimitResult> {
 
 const ratelimitStorageAvatar = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(30, "60 s"), analytics: false, prefix: "rl:storage:avatar" })
 const ratelimitStorageWorkspace = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), analytics: false, prefix: "rl:storage:workspace" })
-const ratelimitStoragePublicPostAnon = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, "60 s"), analytics: false, prefix: "rl:storage:public-post:anon" })
+const ratelimitStoragePublicPostAnon = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, "60 s"), analytics: false, prefix: "rl:storage:public-post:anon" })
 const ratelimitStoragePublicPostUser = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(45, "60 s"), analytics: false, prefix: "rl:storage:public-post:user" })
 const ratelimitStorageComment = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), analytics: false, prefix: "rl:storage:comment" })
 

@@ -1,5 +1,6 @@
 import { cn } from "@featul/ui/lib/utils";
 import type { HTMLAttributes } from "react";
+import { sanitizeBlogHtml } from "@/lib/security";
 
 type ProseProps = HTMLAttributes<HTMLElement> & {
   as?: "article";
@@ -7,6 +8,7 @@ type ProseProps = HTMLAttributes<HTMLElement> & {
 };
 
 export function Prose({ children, html, className }: ProseProps) {
+  const safeHtml = html ? sanitizeBlogHtml(html) : "";
   return (
     <article
       className={cn(
@@ -15,7 +17,7 @@ export function Prose({ children, html, className }: ProseProps) {
       )}
       data-component="BlogProse"
     >
-      {html ? <div dangerouslySetInnerHTML={{ __html: html }} /> : children}
+      {safeHtml ? <div dangerouslySetInnerHTML={{ __html: safeHtml }} /> : children}
     </article>
   );
 }
