@@ -11,8 +11,9 @@ import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { Button } from "@featul/ui/components/button"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl } from "@/utils/request"
+import { buildRequestsUrl } from "@/utils/request"
 import { useFilterBarVisibility } from "@/hooks/useFilterBarVisibility"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
 
 const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
@@ -29,10 +30,10 @@ export default function FilterSummary({ className = "" }: { className?: string }
   const router = useRouter()
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
 
-  const status = React.useMemo(() => parseArrayParam(sp.get("status")).map((s) => String(s).toLowerCase()), [sp])
-  const boards = React.useMemo(() => parseArrayParam(sp.get("board")), [sp])
-  const tags = React.useMemo(() => parseArrayParam(sp.get("tag")), [sp])
-  const order = React.useMemo(() => (sp.get("order") || "newest").toLowerCase(), [sp])
+  const { status, board: boards, tag: tags, order } = React.useMemo(
+    () => parseRequestFiltersFromSearchParams(sp),
+    [sp]
+  )
   const count = status.length + boards.length + tags.length + (order === "oldest" ? 1 : 0)
   const hasAnyFilters = count > 0
   const { isVisible, handleClearAll } = useFilterBarVisibility({

@@ -2,12 +2,7 @@ import { db, board, post, user, workspaceMember, postTag, tag, postReport } from
 import { and, eq, sql } from "drizzle-orm"
 import { readHasVotedForPost } from "@/lib/vote.server"
 import { getPostNavigation, normalizeStatus } from "@/lib/workspace"
-import { parseArrayParam } from "@/utils/request"
-import { parseSortOrder } from "@/types/sort"
-import {
-  getSingleSearchParam,
-  normalizeSlugList,
-} from "@/utils/search-params"
+import { normalizeSlugList } from "@/utils/search-params"
 import {
   buildPostSelect,
   ensureAuthorAvatar,
@@ -17,6 +12,7 @@ import {
 } from "@/lib/request-detail"
 import type { RequestDetailData } from "@/types/request"
 import type { CommentData } from "@/types/comment"
+import { parseRequestFiltersFromRecord } from "@/utils/request-filters"
 
 export type RequestDetailSearchParams = Record<string, string | string[] | undefined>
 
@@ -197,11 +193,8 @@ async function loadNavigation({
 }): Promise<RequestDetailNavigation> {
   const sp = searchParams ?? {}
 
-  const statusRaw = parseArrayParam(getSingleSearchParam(sp.status))
-  const boardRaw = parseArrayParam(getSingleSearchParam(sp.board))
-  const tagRaw = parseArrayParam(getSingleSearchParam(sp.tag))
-  const order = parseSortOrder(getSingleSearchParam(sp.order))
-  const search = typeof sp.search === "string" ? sp.search : ""
+  const { status: statusRaw, board: boardRaw, tag: tagRaw, order, search } =
+    parseRequestFiltersFromRecord(sp)
 
   const navigation = await getPostNavigation(workspaceSlug, postId, {
     statuses: statusRaw.map(normalizeStatus),

@@ -9,7 +9,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { useQuery } from "@tanstack/react-query"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
 
 type BoardItem = {
   id: string
@@ -58,7 +59,10 @@ export default function BoardsAction({ className = "" }: { className?: string })
     refetchOnReconnect: false,
   })
 
-  const selected = React.useMemo(() => parseArrayParam(sp.get("board")), [sp])
+  const selected = React.useMemo(
+    () => parseRequestFiltersFromSearchParams(sp).board,
+    [sp]
+  )
   const isAllSelected = React.useMemo(() => isAllSel(items.map((i) => i.slug), selected), [items, selected])
 
   const toggle = (slugItem: string) => {

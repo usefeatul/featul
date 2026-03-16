@@ -5,18 +5,16 @@ import { cn } from "@featul/ui/lib/utils"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
-import { parseArrayParam } from "@/utils/request"
 import { getSlugFromPath } from "@/config/nav"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
 
 export default function PostCountBadge({ className = "" }: { className?: string }) {
   const pathname = usePathname() || "/"
   const sp = useSearchParams()
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
 
-  const statuses = parseArrayParam(sp.get("status"))
-  const boards = parseArrayParam(sp.get("board"))
-  const tags = parseArrayParam(sp.get("tag"))
-  const search = sp.get("search") || ""
+  const { status: statuses, board: boards, tag: tags, search } =
+    React.useMemo(() => parseRequestFiltersFromSearchParams(sp), [sp])
 
   const queryClient = useQueryClient()
   const queryKey: (string | string[])[] = ["post-count", slug, statuses, boards, tags, search]

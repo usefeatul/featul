@@ -9,7 +9,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
 
 type TagItem = {
   id: string
@@ -69,7 +70,10 @@ export default function TagsAction({ className = "" }: { className?: string }) {
     refetchOnReconnect: false,
   })
 
-  const selected = React.useMemo(() => parseArrayParam(sp.get("tag")), [sp])
+  const selected = React.useMemo(
+    () => parseRequestFiltersFromSearchParams(sp).tag,
+    [sp]
+  )
   const isAllSelected = React.useMemo(() => isAllSel(items.map((i) => i.slug), selected), [items, selected])
 
   React.useEffect(() => {

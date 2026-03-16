@@ -1,14 +1,12 @@
 import { getServerSession } from "@featul/auth/session"
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normalizeStatus } from "@/lib/workspace"
 import { toRequestItemData } from "@/lib/request-item"
-import { parseArrayParam } from "@/utils/request"
-import { parseSortOrder } from "@/types/sort"
 import {
-  getSingleSearchParam,
   normalizeSlugList,
   parsePositiveIntSearchParam,
 } from "@/utils/search-params"
 import type { RequestItemData } from "@/types/request"
+import { parseRequestFiltersFromRecord } from "@/utils/request-filters"
 
 const PAGE_SIZE = 20
 
@@ -62,11 +60,8 @@ export async function loadRequestsPageData({
   const isOwner = userId === ws.ownerId
 
   // Parse filter parameters
-  const statusRaw = parseArrayParam(getSingleSearchParam(sp.status))
-  const boardRaw = parseArrayParam(getSingleSearchParam(sp.board))
-  const tagRaw = parseArrayParam(getSingleSearchParam(sp.tag))
-  const order = parseSortOrder(typeof sp.order === "string" ? sp.order : undefined)
-  const search = typeof sp.search === "string" ? sp.search : ""
+  const { status: statusRaw, board: boardRaw, tag: tagRaw, order, search } =
+    parseRequestFiltersFromRecord(sp)
 
   // Pagination
   const pageSize = PAGE_SIZE

@@ -7,7 +7,8 @@ import { Button } from "@featul/ui/components/button"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
 
 const options = [
   { label: "Pending", value: "pending" },
@@ -26,7 +27,10 @@ export default function StatusAction({ className = "" }: { className?: string })
 
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
 
-  const selected = React.useMemo(() => parseArrayParam(sp.get("status")).map((s) => String(s).toLowerCase()), [sp])
+  const selected = React.useMemo(
+    () => parseRequestFiltersFromSearchParams(sp).status,
+    [sp]
+  )
   const allValues = React.useMemo(() => options.map((o) => o.value), [])
   const isAllSelected = React.useMemo(() => isAllSel(allValues, selected), [selected, allValues])
 

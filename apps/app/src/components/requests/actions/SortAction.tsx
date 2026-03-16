@@ -6,7 +6,8 @@ import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down"
 import { Button } from "@featul/ui/components/button"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { buildRequestsUrl } from "@/utils/request"
-import { type SortOrder, SORT_OPTIONS, parseSortOrder } from "@/types/sort"
+import { type SortOrder, SORT_OPTIONS } from "@/types/sort"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
 
 interface SortActionProps {
   className?: string
@@ -23,7 +24,10 @@ export default function SortAction({ className = "" }: SortActionProps) {
     return parts[2] || ""
   }, [pathname])
 
-  const currentOrder = parseSortOrder(searchParams.get("order"))
+  const currentOrder = React.useMemo(
+    () => parseRequestFiltersFromSearchParams(searchParams).order,
+    [searchParams]
+  )
 
   const handleOrderChange = React.useCallback((newOrder: SortOrder) => {
     const href = buildRequestsUrl(slug, searchParams, { order: newOrder })
