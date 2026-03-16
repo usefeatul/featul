@@ -10,6 +10,7 @@ import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { VerticalLines } from "@/components/vertical-lines";
 import { createAlternates } from "@/lib/seo";
+import { serializeJsonLd } from "@/lib/security";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -108,7 +109,7 @@ export default function RootLayout({
           type="application/ld+json"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
+            __html: serializeJsonLd(
               buildSiteNavigationSchema(
                 SITE_URL,
                 [
@@ -126,7 +127,7 @@ export default function RootLayout({
           id="software-app-jsonld"
           type="application/ld+json"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildSoftwareApplicationSchema(SITE_URL)) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildSoftwareApplicationSchema(SITE_URL)) }}
         />
       </head>
       <body>

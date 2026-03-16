@@ -16,6 +16,7 @@ import { VerticalLines } from "@/components/vertical-lines";
 import type { ComparisonPageData } from "@/lib/data/programmatic/generators";
 import type { RelatedLink } from "@/lib/seo/interlink";
 import { SITE_URL } from "@/config/seo";
+import { serializeJsonLd } from "@/lib/security";
 
 interface Props {
     data: ComparisonPageData;
@@ -53,13 +54,13 @@ export function ComparisonTemplate({ data, relatedLinks }: Props) {
                 id="comparison-faq-jsonld"
                 type="application/ld+json"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
             />
             <Script
                 id="comparison-breadcrumb-jsonld"
                 type="application/ld+json"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
             />
 
             <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14 relative">

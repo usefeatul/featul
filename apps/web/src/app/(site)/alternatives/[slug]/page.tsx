@@ -13,6 +13,7 @@ import {
   getAlternativeBySlug,
   getAlternativeSlugs,
 } from "@/config/alternatives";
+import { serializeJsonLd } from "@/lib/security";
 
 import { SectionStack } from "@/components/layout/section-stack";
 import { SITE_URL } from "@/config/seo";
@@ -56,7 +57,7 @@ export default async function AlternativePage({
         type="application/ld+json"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
+          __html: serializeJsonLd(
             buildAlternativesBreadcrumbSchema({ siteUrl: SITE_URL, slug, name: alt.name })
           ),
         }}

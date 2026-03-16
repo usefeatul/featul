@@ -10,6 +10,7 @@ import {
 import { TOOL_COMPONENTS } from "@/types/registry";
 import ToolTemplate from "@/components/tools/global/template";
 import { createArticleMetadata } from "@/lib/seo";
+import { serializeJsonLd } from "@/lib/security";
 import { SITE_URL } from "@/config/seo";
 import {
   buildToolFaqSchema,
@@ -55,13 +56,13 @@ export default async function ToolPage({ params }: Props) {
       <script
         id="tool-faq-jsonld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <script
         id="tool-breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbSchema),
+          __html: serializeJsonLd(breadcrumbSchema),
         }}
       />
       {/* Breadcrumb removed for a cleaner tool detail page. */}

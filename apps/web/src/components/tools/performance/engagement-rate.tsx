@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { serializeJsonLd } from "@/lib/security";
 import {
   Card,
   CardContent,
@@ -152,7 +153,7 @@ export default function EngagementRateTool() {
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify({
+        {serializeJsonLd({
           "@context": "https://schema.org",
           "@type": "FAQPage",
           mainEntity: [

@@ -12,6 +12,7 @@
 import Link from "next/link";
 import Script from "next/script";
 import { Container } from "@/components/global/container";
+import { serializeJsonLd } from "@/lib/security";
 import {
     Accordion,
     AccordionContent,
@@ -94,19 +95,19 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                 id="integration-faq-jsonld"
                 type="application/ld+json"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
             />
             <Script
                 id="integration-breadcrumb-jsonld"
                 type="application/ld+json"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
             />
             <Script
                 id="integration-software-jsonld"
                 type="application/ld+json"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(softwareSchema) }}
             />
 
             <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
