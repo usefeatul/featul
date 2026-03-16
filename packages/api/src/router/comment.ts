@@ -70,6 +70,7 @@ export function createCommentRouter() {
           .select({
             postId: post.id,
             boardId: board.id,
+            boardIsPublic: board.isPublic,
             allowComments: board.allowComments,
             workspaceId: workspace.id,
             workspaceOwnerId: workspace.ownerId,
@@ -109,6 +110,10 @@ export function createCommentRouter() {
         });
 
         const includeInternal = surface === "workspace" && canViewInternal;
+
+        if (!targetPost.boardIsPublic && !canViewInternal) {
+          throw new HTTPException(403, { message: "Only workspace members can view comments on this board" });
+        }
 
         // Fetch all comments with author info and role
         const comments = await ctx.db

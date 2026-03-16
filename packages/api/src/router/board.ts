@@ -12,6 +12,22 @@ import { toSlug } from "../shared/slug"
 import { requireBoardManagerBySlug } from "../shared/access"
 import { createHash } from "crypto"
 
+async function hasWorkspaceAccess(ctx: any, workspaceId: string, ownerId: string, userId: string): Promise<boolean> {
+  if (ownerId === userId) return true
+  const [member] = await ctx.db
+    .select({ id: workspaceMember.id })
+    .from(workspaceMember)
+    .where(
+      and(
+        eq(workspaceMember.workspaceId, workspaceId),
+        eq(workspaceMember.userId, userId),
+        eq(workspaceMember.isActive, true)
+      )
+    )
+    .limit(1)
+  return Boolean(member?.id)
+}
+
 export function createBoardRouter() {
   return j.router({
     settingsByWorkspaceSlug: privateProcedure
@@ -388,20 +404,24 @@ export function createBoardRouter() {
       .input(byBoardInputSchema)
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
           .limit(1)
         if (!ws) return c.superjson({ posts: [] })
 
         const [b] = await ctx.db
-          .select({ id: board.id })
+          .select({ id: board.id, isPublic: board.isPublic })
           .from(board)
           .where(and(eq(board.workspaceId, ws.id), eq(board.slug, input.boardSlug)))
           .limit(1)
         if (!b) return c.superjson({ posts: [] })
 
-        const userId = ctx.session?.user?.id
+        const userId = String(ctx.session.user.id || "")
+        const canAccessWorkspace = await hasWorkspaceAccess(ctx, ws.id, ws.ownerId, userId)
+        if (!b.isPublic && !canAccessWorkspace) {
+          throw new HTTPException(403, { message: "Forbidden" })
+        }
 
         let postsList
         if (userId) {
@@ -489,7 +509,32 @@ export function createBoardRouter() {
     postDetail: privateProcedure
       .input(byIdSchema)
       .get(async ({ ctx, input, c }) => {
-        const userId = ctx.session?.user?.id
+        const userId = String(ctx.session.user.id || "")
+        const [targetPostAccess] = await ctx.db
+          .select({
+            postId: post.id,
+            workspaceId: workspace.id,
+            workspaceOwnerId: workspace.ownerId,
+            boardIsPublic: board.isPublic,
+          })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .innerJoin(workspace, eq(board.workspaceId, workspace.id))
+          .where(eq(post.id, input.postId))
+          .limit(1)
+
+        if (!targetPostAccess) return c.superjson({ post: null })
+
+        const canAccessWorkspace = await hasWorkspaceAccess(
+          ctx,
+          targetPostAccess.workspaceId,
+          targetPostAccess.workspaceOwnerId,
+          userId
+        )
+        if (!targetPostAccess.boardIsPublic && !canAccessWorkspace) {
+          throw new HTTPException(403, { message: "Forbidden" })
+        }
+
         let p: typeof post.$inferSelect & {
           authorName: string | null
           authorEmail: string | null
@@ -665,8 +710,16 @@ export function createBoardRouter() {
             avatarSeed = createHash("sha256").update(formattedPost.metadata.fingerprint).digest("hex")
         }
 
-        const postWithAvatar = { ...formattedPost, authorImage: formattedPost.authorImage || toAvatar(avatarSeed) }
-        return c.superjson({ post: postWithAvatar, board: b || null, tags: tagsList, comments: commentsList, author })
+        const postWithAvatar = {
+          ...formattedPost,
+          authorImage: formattedPost.authorImage || toAvatar(avatarSeed),
+          authorEmail: canAccessWorkspace ? formattedPost.authorEmail : null,
+        }
+        const comments = canAccessWorkspace
+          ? commentsList
+          : commentsList.map((item: (typeof commentsList)[number]) => ({ ...item, authorEmail: null }))
+
+        return c.superjson({ post: postWithAvatar, board: b || null, tags: tagsList, comments, author })
       }),
 
     tagsByWorkspaceSlug: publicProcedure
