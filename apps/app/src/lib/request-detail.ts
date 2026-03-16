@@ -1,4 +1,4 @@
-import { db, workspace, board, post, user, postMerge } from "@featul/db";
+import { db, board, post, user, postMerge } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { client } from "@featul/api/client";
 import { headers } from "next/headers";
@@ -6,12 +6,12 @@ import { readInitialCollapsedCommentIds } from "@/lib/comments.server";
 import { avatarUrlFromFingerprint } from "@/lib/author-avatar";
 import type { CommentData } from "@/types/comment";
 import type { CommentSurface } from "@/lib/comment-shared";
+import {
+  getWorkspaceSummaryBySlug,
+  type WorkspaceSummaryBySlug,
+} from "@/lib/workspace-slug";
 
-export type WorkspaceSummary = {
-  id: string;
-  name: string;
-  ownerId: string;
-};
+export type WorkspaceSummary = WorkspaceSummaryBySlug;
 
 type AuthorRecord = {
   name: string | null;
@@ -28,13 +28,7 @@ type MetadataWithFingerprint =
 export async function loadWorkspaceBySlug(
   slug: string
 ): Promise<WorkspaceSummary | null> {
-  const [ws] = await db
-    .select({ id: workspace.id, name: workspace.name, ownerId: workspace.ownerId })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-
-  return ws ?? null;
+  return getWorkspaceSummaryBySlug(slug);
 }
 
 export function buildPostSelect<T extends Record<string, unknown>>(extra?: T) {

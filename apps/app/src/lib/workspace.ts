@@ -23,6 +23,21 @@ import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
 import type { FeedbackTag } from "../components/settings/feedback/ManageTags";
 import type { ChangelogTag } from "../components/settings/changelog/ChangelogTags";
 import type { Integration } from "@/hooks/useIntegrations";
+import {
+  getBrandingBySlug,
+  getBrandingColorsBySlug,
+  getSidebarPositionBySlug,
+} from "@/lib/workspace-branding";
+import {
+  getWorkspaceBySlugRecord,
+  getWorkspaceIdBySlug,
+} from "@/lib/workspace-slug";
+
+export {
+  getBrandingBySlug,
+  getBrandingColorsBySlug,
+  getSidebarPositionBySlug,
+};
 
 export async function findFirstAccessibleWorkspaceSlug(
   userId: string
@@ -48,75 +63,6 @@ export async function findFirstAccessibleWorkspaceSlug(
     .limit(1);
 
   return memberWs?.slug || null;
-}
-
-export async function getBrandingColorsBySlug(
-  slug: string
-): Promise<{ primary: string }> {
-  let primary = "#3b82f6";
-  const [row] = await db
-    .select({ primaryColor: brandingConfig.primaryColor })
-    .from(workspace)
-    .leftJoin(brandingConfig, eq(brandingConfig.workspaceId, workspace.id))
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-  if (row?.primaryColor) primary = row.primaryColor;
-  return { primary };
-}
-
-export async function getBrandingBySlug(
-  slug: string
-): Promise<{
-  primary: string;
-  theme: "light" | "dark" | "system";
-  sidebarPosition?: "left" | "right";
-  layoutStyle?: "compact" | "comfortable" | "spacious";
-  hidePoweredBy?: boolean;
-}> {
-  let primary = "#3b82f6";
-  let theme: "light" | "dark" | "system" = "system";
-  let sidebarPosition: "left" | "right" | undefined;
-  let layoutStyle: "compact" | "comfortable" | "spacious" | undefined;
-  const [row] = await db
-    .select({
-      primaryColor: brandingConfig.primaryColor,
-      theme: brandingConfig.theme,
-      sidebarPosition: brandingConfig.sidebarPosition,
-      layoutStyle: brandingConfig.layoutStyle,
-      hidePoweredBy: brandingConfig.hidePoweredBy,
-      wsPrimary: workspace.primaryColor,
-      wsTheme: workspace.theme,
-    })
-    .from(workspace)
-    .leftJoin(brandingConfig, eq(brandingConfig.workspaceId, workspace.id))
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-  if (row?.primaryColor) primary = row.primaryColor;
-  else if (row?.wsPrimary) primary = row.wsPrimary;
-  if (row?.theme) theme = row.theme as "light" | "dark" | "system";
-  else if (row?.wsTheme) theme = row.wsTheme as "light" | "dark" | "system";
-  if (row?.sidebarPosition === "left" || row?.sidebarPosition === "right")
-    sidebarPosition = row.sidebarPosition;
-  if (
-    row?.layoutStyle === "compact" ||
-    row?.layoutStyle === "comfortable" ||
-    row?.layoutStyle === "spacious"
-  )
-    layoutStyle = row.layoutStyle;
-  const hidePoweredBy = Boolean(row?.hidePoweredBy);
-  return { primary, theme, sidebarPosition, layoutStyle, hidePoweredBy };
-}
-
-export async function getSidebarPositionBySlug(
-  slug: string
-): Promise<"left" | "right"> {
-  const [row] = await db
-    .select({ sidebarPosition: brandingConfig.sidebarPosition })
-    .from(workspace)
-    .leftJoin(brandingConfig, eq(brandingConfig.workspaceId, workspace.id))
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-  return row?.sidebarPosition === "left" ? "left" : "right";
 }
 
 export function normalizeStatus(s: string): string {
@@ -241,36 +187,29 @@ export async function getWorkspaceBySlug(
   customDomain?: string | null;
   plan?: "free" | "starter" | "professional" | null;
 } | null> {
-  const [ws] = await db
-    .select({
-      id: workspace.id,
-      name: workspace.name,
-      slug: workspace.slug,
-      ownerId: workspace.ownerId,
-      logo: workspace.logo,
-      domain: workspace.domain,
-      customDomain: workspace.customDomain,
-      plan: workspace.plan,
-    })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-  return ws || null;
+  const ws = await getWorkspaceBySlugRecord(slug);
+  if (!ws) return null;
+  return {
+    id: ws.id,
+    name: ws.name,
+    slug: ws.slug,
+    ownerId: ws.ownerId,
+    logo: ws.logo,
+    domain: ws.domain,
+    customDomain: ws.customDomain,
+    plan: ws.plan,
+  };
 }
 
 export async function getWorkspaceDomainInfoBySlug(
   slug: string
 ): Promise<{ domain: { status: string; host?: string } | null } | null> {
-  const [ws] = await db
-    .select({ id: workspace.id })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-  if (!ws) return { domain: null };
+  const workspaceId = await getWorkspaceIdBySlug(slug);
+  if (!workspaceId) return { domain: null };
   const [d] = await db
     .select({ status: workspaceDomain.status, host: workspaceDomain.host })
     .from(workspaceDomain)
-    .where(eq(workspaceDomain.workspaceId, ws.id))
+    .where(eq(workspaceDomain.workspaceId, workspaceId))
     .limit(1);
   if (!d) return { domain: null };
   return { domain: { status: d.status, host: d.host } };
@@ -279,11 +218,7 @@ export async function getWorkspaceDomainInfoBySlug(
 export async function getWorkspaceTimezoneBySlug(
   slug: string
 ): Promise<string | null> {
-  const [ws] = await db
-    .select({ timezone: workspace.timezone })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1);
+  const ws = await getWorkspaceBySlugRecord(slug);
   return ws?.timezone || null;
 }
 
@@ -603,18 +538,14 @@ export async function getBoardByWorkspaceSlug(
   slug: string,
   boardSlug: string
 ): Promise<{ name: string; slug: string } | null> {
-  const [ws] = await db
-    .select({ id: workspace.id })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-  if (!ws?.id) return null;
+  const workspaceId = await getWorkspaceIdBySlug(slug);
+  if (!workspaceId) return null;
   const [b] = await db
     .select({ name: board.name, slug: board.slug })
     .from(board)
     .where(
       and(
-        eq(board.workspaceId, ws.id),
+        eq(board.workspaceId, workspaceId),
         eq(board.isSystem, false),
         eq(board.slug, boardSlug)
       )
@@ -642,19 +573,7 @@ export async function getSettingsInitialData(
   initialFeedbackTags?: FeedbackTag[];
   initialIntegrations?: Integration[];
 }> {
-  const [ws] = await db
-    .select({
-      id: workspace.id,
-      plan: workspace.plan,
-      name: workspace.name,
-      logo: workspace.logo,
-      ownerId: workspace.ownerId,
-      domain: workspace.domain,
-      timezone: workspace.timezone,
-    })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1);
+  const ws = await getWorkspaceBySlugRecord(slug);
   if (!ws?.id) return {};
 
   const feedbackBoardSelect = {
