@@ -17,7 +17,7 @@ interface MemberActivityProps {
 
 export function MemberActivity({ items, hasNextPage, isFetchingNextPage, onLoadMore, isLoading }: MemberActivityProps) {
   return (
-    <div className="lg:col-span-2 lg:pr-4 lg:border-r lg:border-border/60">
+    <div className="lg:pr-4 lg:border-r lg:border-border/60">
       <div className="flex items-center justify-between mb-3">
         <div className="font-semibold">Activity</div>
       </div>

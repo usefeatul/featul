@@ -21,7 +21,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading }: MemberTopPostsProp
       {isLoading && !hasPosts ? (
         <LoadingSpinner label="Loading top posts..." />
       ) : !hasPosts ? (
-        <div className="flex items-center justify-center py-6 text-sm text-accent text-center">
+        <div className="flex items-center justify-center py-6 text-xs text-accent text-center">
           No posts yet
         </div>
       ) : (
@@ -29,7 +29,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading }: MemberTopPostsProp
           {topPosts.map((p) => (
             <div
               key={p.id}
-              className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-sm gap-3"
+              className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-xs gap-3"
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {p.status ? <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" /> : null}
