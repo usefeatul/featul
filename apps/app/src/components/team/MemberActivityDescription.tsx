@@ -78,7 +78,7 @@ function renderTitledActivityRow(item: ActivityItem, status: unknown, config: Ac
     <span className="flex items-center gap-2 min-w-0">
       <span>{config.label}</span>
       {showStatus ? renderStatusWithLabel(status) : null}
-      {includeTitle && item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
+      {includeTitle && item.title ? <span className={TITLE_CLASS} title={item.title}>{item.title}</span> : null}
     </span>
   )
 }
@@ -132,7 +132,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
             {renderStatusWithLabel(toStatus)}
           </>
         ) : null}
-        {item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
+        {item.title ? <span className={TITLE_CLASS} title={item.title}>{item.title}</span> : null}
       </span>
     )
   }
@@ -153,7 +153,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
       <span className="flex items-center gap-2 min-w-0">
         <span>{label}</span>
         {renderStatusWithLabel(status)}
-        {item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
+        {item.title ? <span className={TITLE_CLASS} title={item.title}>{item.title}</span> : null}
         {renderInlineTagSummary(tags)}
       </span>
     )
@@ -164,7 +164,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
       <span className="flex items-center gap-2 min-w-0">
         <span>created post</span>
         {renderStatusWithLabel(status)}
-        {item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
+        {item.title ? <span className={TITLE_CLASS} title={item.title}>{item.title}</span> : null}
         {renderInlineTagSummary(tags)}
       </span>
     )

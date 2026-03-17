@@ -24,6 +24,7 @@ export interface ActivityItem {
     id: string;
     type: string;
     entity?: string;
+    entityId?: string;
     title?: string;
     summary?: string;
     status?: string;
