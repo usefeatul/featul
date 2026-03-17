@@ -42,6 +42,34 @@ function humanizeActivityType(type: string) {
   return type.replace(/_/g, " ").trim()
 }
 
+function toTitleCase(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
+}
+
+function formatActivityStatusLabel(status: unknown) {
+  const raw = String(status || "").trim().toLowerCase()
+  if (!raw) return null
+  if (raw === "progress") return "Progress"
+  if (raw === "review") return "Review"
+  return toTitleCase(raw.replace(/[_-]+/g, " "))
+}
+
+function renderStatusWithLabel(status: unknown) {
+  const label = formatActivityStatusLabel(status)
+  if (!label) return null
+
+  return (
+    <span className="inline-flex items-center gap-1 shrink-0">
+      <StatusIcon status={String(status)} className="size-3.5 shrink-0" />
+      <span className="text-[11px] text-accent">{label}</span>
+    </span>
+  )
+}
+
 function renderTitledActivityRow(item: ActivityItem, status: unknown, config: ActivityCopyConfig) {
   const showStatus = config.showStatus ?? true
   const includeTitle = config.includeTitle ?? true
@@ -49,7 +77,7 @@ function renderTitledActivityRow(item: ActivityItem, status: unknown, config: Ac
   return (
     <span className="flex items-center gap-2 min-w-0">
       <span>{config.label}</span>
-      {showStatus && status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+      {showStatus ? renderStatusWithLabel(status) : null}
       {includeTitle && item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
     </span>
   )
@@ -95,13 +123,13 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
         {fromStatus ? (
           <>
             <span>from</span>
-            <StatusIcon status={String(fromStatus)} className="size-3.5 shrink-0" />
+            {renderStatusWithLabel(fromStatus)}
           </>
         ) : null}
         {toStatus ? (
           <>
             <span>to</span>
-            <StatusIcon status={String(toStatus)} className="size-3.5 shrink-0" />
+            {renderStatusWithLabel(toStatus)}
           </>
         ) : null}
         {item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
@@ -124,7 +152,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
     return (
       <span className="flex items-center gap-2 min-w-0">
         <span>{label}</span>
-        {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+        {renderStatusWithLabel(status)}
         {item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
         {renderInlineTagSummary(tags)}
       </span>
@@ -135,7 +163,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
     return (
       <span className="flex items-center gap-2 min-w-0">
         <span>created post</span>
-        {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+        {renderStatusWithLabel(status)}
         {item.title ? <span className={TITLE_CLASS}>{item.title}</span> : null}
         {renderInlineTagSummary(tags)}
       </span>

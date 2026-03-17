@@ -1096,7 +1096,11 @@ export function createChangelogRouter() {
           });
 
         const [existing] = await ctx.db
-          .select({ id: changelogEntry.id, title: changelogEntry.title })
+          .select({
+            id: changelogEntry.id,
+            title: changelogEntry.title,
+            status: changelogEntry.status,
+          })
           .from(changelogEntry)
           .where(
             and(
@@ -1122,7 +1126,9 @@ export function createChangelogRouter() {
           entity: "changelog_entry",
           entityId: String(input.entryId),
           title: existing.title,
-          metadata: {},
+          metadata: {
+            status: existing.status,
+          },
         });
 
         return c.superjson({ ok: true });
