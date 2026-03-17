@@ -42,7 +42,7 @@ function renderActivityDescription(it: ActivityItem) {
             </>
           )}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -72,7 +72,7 @@ function renderActivityDescription(it: ActivityItem) {
             <span>{label}</span>
             {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
             {it.title ? (
-              <span className="text-foreground font-medium truncate">
+              <span className="text-foreground font-medium min-w-0 flex-1 truncate">
                 {it.title}
               </span>
             ) : null}
@@ -108,7 +108,7 @@ function renderActivityDescription(it: ActivityItem) {
             <span>created post</span>
             {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
             {it.title ? (
-              <span className="text-foreground font-medium truncate">
+              <span className="text-foreground font-medium min-w-0 flex-1 truncate">
                 {it.title}
               </span>
             ) : null}
@@ -143,7 +143,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>deleted post</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -157,7 +157,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>voted for</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -171,7 +171,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>removed vote from</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -185,7 +185,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>moved post</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -199,7 +199,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>merged post into</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -213,7 +213,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>reported post</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -229,7 +229,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>added a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -242,7 +242,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>updated a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -255,7 +255,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>deleted a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -268,7 +268,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>voted on a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -281,7 +281,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>removed vote from a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -294,7 +294,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>reported a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -307,7 +307,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>pinned a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -320,7 +320,7 @@ function renderActivityDescription(it: ActivityItem) {
           <span>unpinned a comment on</span>
           {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -335,7 +335,7 @@ function renderActivityDescription(it: ActivityItem) {
         <span className="flex items-center gap-2 min-w-0">
           <span>created changelog entry</span>
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -347,7 +347,7 @@ function renderActivityDescription(it: ActivityItem) {
         <span className="flex items-center gap-2 min-w-0">
           <span>updated changelog entry</span>
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -359,7 +359,7 @@ function renderActivityDescription(it: ActivityItem) {
         <span className="flex items-center gap-2 min-w-0">
           <span>deleted changelog entry</span>
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -371,7 +371,7 @@ function renderActivityDescription(it: ActivityItem) {
         <span className="flex items-center gap-2 min-w-0">
           <span>published changelog entry</span>
           {it.title ? (
-            <span className="text-foreground font-medium truncate">
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
               {it.title}
             </span>
           ) : null}
@@ -477,11 +477,13 @@ export function MemberActivity({ items, hasNextPage, isFetchingNextPage, onLoadM
         ) : (
           items.map((it) => (
             <li key={`${it.type}-${it.id}-${String(it.createdAt)}`} className="py-3">
-              <div className="text-xs text-accent flex items-start gap-2 min-w-0">
-                <span className="font-medium">
+              <div className="text-xs text-accent flex items-center gap-2 min-w-0">
+                <span className="font-medium shrink-0">
                   {format(new Date(it.createdAt), "LLL d")}
                 </span>
-                {renderActivityDescription(it)}
+                <span className="min-w-0 flex-1">
+                  {renderActivityDescription(it)}
+                </span>
               </div>
             </li>
           ))

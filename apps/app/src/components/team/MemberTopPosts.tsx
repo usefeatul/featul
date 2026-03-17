@@ -31,11 +31,11 @@ export function MemberTopPosts({ slug, topPosts, isLoading }: MemberTopPostsProp
               key={p.id}
               className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-sm gap-3"
             >
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 {p.status ? <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" /> : null}
                 <Link
                   href={`/workspaces/${slug}/requests/${p.slug}`}
-                  className="truncate text-foreground hover:text-primary"
+                  className="min-w-0 flex-1 truncate text-foreground hover:text-primary"
                 >
                   {p.title}
                 </Link>
@@ -43,7 +43,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading }: MemberTopPostsProp
               <UpvoteButton
                 postId={p.id}
                 upvotes={Number(p.upvotes || 0)}
-                className="text-xs"
+                className="text-xs shrink-0"
               />
             </div>
           ))}
