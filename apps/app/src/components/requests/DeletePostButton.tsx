@@ -78,7 +78,7 @@ export function DeletePostButton({ postId, workspaceSlug, backHref, className }:
         type="button"
         variant="nav"
         size="icon-sm"
-        className={`rounded-none border-none shadow-none hover:text-destructive dark:hover:text-destructive/50 hover:bg-destructive/5 focus-visible:ring-0 focus-visible:ring-offset-0 ${className || ""}`}
+        className={`rounded-none border-none shadow-none hover:bg-muted dark:hover:bg-black/40 focus-visible:ring-0 focus-visible:ring-offset-0 ${className || ""}`}
         aria-label="Delete"
         onClick={() => setConfirmOpen(true)}
         disabled={isPending}

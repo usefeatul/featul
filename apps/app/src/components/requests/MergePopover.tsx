@@ -79,7 +79,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
             type="button"
             variant="nav"
             size="icon-sm"
-            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-destructive/5"
+            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-muted dark:hover:bg-black/40"
             aria-label="Merge"
           >
             <MergeIcon className="size-3.5" />
