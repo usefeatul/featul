@@ -12,6 +12,7 @@ import CommentDeleteAction from "./CommentDeleteAction"
 import CommentReportAction from "./CommentReportAction"
 import CommentEditAction from "./CommentEditAction"
 import CommentPinAction from "./CommentPinAction"
+import CommentVisibilityAction from "./CommentVisibilityAction"
 import CommentReportDialog from "./CommentReportDialog"
 import type { CommentSurface } from "@/lib/comment-shared"
 
@@ -23,6 +24,8 @@ interface CommentActionsProps {
   canDelete?: boolean
   canPin?: boolean
   isPinned?: boolean
+  isInternal?: boolean
+  canToggleVisibility?: boolean
   onEdit?: () => void
   onDeleteSuccess?: () => void
 }
@@ -35,6 +38,8 @@ export default function CommentActions({
   canDelete = false,
   canPin = false,
   isPinned = false,
+  isInternal = false,
+  canToggleVisibility = false,
   onEdit,
   onDeleteSuccess,
 }: CommentActionsProps) {
@@ -67,6 +72,14 @@ export default function CommentActions({
                 {onEdit && (
                   <CommentEditAction onEdit={onEdit} onCloseMenu={() => setOpen(false)} />
                 )}
+                {canToggleVisibility && (
+                  <CommentVisibilityAction
+                    commentId={commentId}
+                    isInternal={isInternal}
+                    onSuccess={onDeleteSuccess}
+                    onCloseMenu={() => setOpen(false)}
+                  />
+                )}
                 {canDelete && (
                   <CommentDeleteAction 
                     commentId={commentId}
@@ -79,6 +92,14 @@ export default function CommentActions({
               </>
             ) : (
               <>
+                {canToggleVisibility && (
+                  <CommentVisibilityAction
+                    commentId={commentId}
+                    isInternal={isInternal}
+                    onSuccess={onDeleteSuccess}
+                    onCloseMenu={() => setOpen(false)}
+                  />
+                )}
                 {canDelete && (
                   <CommentDeleteAction 
                     commentId={commentId}

@@ -17,6 +17,7 @@ interface CommentHeaderProps {
   isAuthor: boolean
   isOwner: boolean
   canDelete: boolean
+  canToggleVisibility?: boolean
   hasReplies: boolean
   isCollapsed: boolean
   onToggleCollapse?: () => void
@@ -32,6 +33,7 @@ export default function CommentHeader({
   isAuthor,
   isOwner,
   canDelete,
+  canToggleVisibility = false,
   hasReplies,
   isCollapsed,
   onToggleCollapse,
@@ -102,8 +104,10 @@ export default function CommentHeader({
             postId={comment.postId}
             isAuthor={isAuthor}
             canDelete={canDelete}
+            canToggleVisibility={canToggleVisibility}
             canPin={isOwner}
             isPinned={!!comment.isPinned}
+            isInternal={Boolean(comment.isInternal)}
             surface={surface}
             onEdit={onEdit}
             onDeleteSuccess={onDeleteSuccess}

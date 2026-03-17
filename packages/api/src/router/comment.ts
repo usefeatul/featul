@@ -23,6 +23,7 @@ import {
   voteCommentInputSchema,
   reportCommentInputSchema,
   pinCommentInputSchema,
+  setCommentVisibilityInputSchema,
   mentionsListInputSchema,
   mentionsMarkReadInputSchema,
 } from "../validators/comment";
@@ -565,6 +566,135 @@ export function createCommentRouter() {
         }
 
         return c.superjson({ comment: updatedComment });
+      }),
+
+    // Set comment visibility (internal/external)
+    setVisibility: privateProcedure
+      .input(setCommentVisibilityInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const { commentId, isInternal } = input;
+        const userId = ctx.session.user.id;
+
+        const [target] = await ctx.db
+          .select({
+            id: comment.id,
+            postId: post.id,
+            parentId: comment.parentId,
+            authorId: comment.authorId,
+            currentIsInternal: comment.isInternal,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
+            workspaceOwnerId: workspace.ownerId,
+            workspaceId: workspace.id,
+          })
+          .from(comment)
+          .innerJoin(post, eq(comment.postId, post.id))
+          .innerJoin(board, eq(post.boardId, board.id))
+          .innerJoin(workspace, eq(board.workspaceId, workspace.id))
+          .where(eq(comment.id, commentId))
+          .limit(1);
+
+        if (!target) {
+          throw new HTTPException(404, { message: "Comment not found" });
+        }
+
+        const isAuthor = target.authorId === userId;
+        const isWorkspaceOwner = target.workspaceOwnerId === userId;
+
+        if (!isAuthor && !isWorkspaceOwner) {
+          throw new HTTPException(403, {
+            message: "You can only update visibility for your own comments",
+          });
+        }
+
+        const [membership] = await ctx.db
+          .select({ userId: workspaceMember.userId })
+          .from(workspaceMember)
+          .where(
+            and(
+              eq(workspaceMember.workspaceId, target.workspaceId),
+              eq(workspaceMember.userId, userId),
+              eq(workspaceMember.isActive, true)
+            )
+          )
+          .limit(1);
+
+        if (!isWorkspaceOwner && !membership?.userId) {
+          throw new HTTPException(403, {
+            message: "Only active workspace members can update comment visibility",
+          });
+        }
+
+        if (!isInternal && target.parentId) {
+          const [parent] = await ctx.db
+            .select({ isInternal: comment.isInternal })
+            .from(comment)
+            .where(eq(comment.id, target.parentId))
+            .limit(1);
+
+          if (parent?.isInternal) {
+            throw new HTTPException(400, {
+              message: "Replies to internal comments must remain internal",
+            });
+          }
+        }
+
+        if (!isInternal) {
+          const [childInternalCount] = await ctx.db
+            .select({ count: sql<number>`count(*)` })
+            .from(comment)
+            .where(
+              and(
+                eq(comment.parentId, commentId),
+                eq(comment.status, "published"),
+                eq(comment.isInternal, true)
+              )
+            );
+
+          if (Number(childInternalCount?.count || 0) > 0) {
+            throw new HTTPException(400, {
+              message: "Convert internal replies before making this comment external",
+            });
+          }
+        }
+
+        if (Boolean(target.currentIsInternal) === Boolean(isInternal)) {
+          return c.superjson({
+            id: target.id,
+            isInternal: Boolean(target.currentIsInternal),
+          });
+        }
+
+        const [updated] = await ctx.db
+          .update(comment)
+          .set({
+            isInternal,
+            moderatedBy: userId,
+            moderatedAt: new Date(),
+          })
+          .where(eq(comment.id, commentId))
+          .returning({ id: comment.id, isInternal: comment.isInternal });
+
+        await ctx.db.insert(activityLog).values({
+          workspaceId: target.workspaceId,
+          userId,
+          action: isInternal ? "comment_marked_internal" : "comment_marked_external",
+          actionType: "update",
+          entity: "comment",
+          entityId: String(commentId),
+          title: target.postTitle,
+          metadata: {
+            postId: target.postId,
+            postTitle: target.postTitle,
+            roadmapStatus: target.roadmapStatus,
+            isInternal,
+          },
+        });
+
+        return c.superjson({
+          id: updated?.id,
+          isInternal: Boolean(updated?.isInternal),
+        });
       }),
 
     // Delete a comment

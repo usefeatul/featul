@@ -48,9 +48,11 @@ export default function CommentItem({
 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false)
 
-  const { isOwner } = useWorkspaceRole(workspaceSlug || "")
+  const { isOwner, role } = useWorkspaceRole(workspaceSlug || "")
   const isAuthor = currentUserId ? comment.authorId === currentUserId : false
   const canDelete = isAuthor || (workspaceSlug ? isOwner : false)
+  const canUseInternalComments = Boolean(workspaceSlug && (isOwner || role !== null))
+  const canToggleVisibility = surface === "workspace" && canDelete && canUseInternalComments
   const canReply = depth < 3 // Limit nesting to 3 levels
 
   const {
@@ -103,6 +105,7 @@ export default function CommentItem({
             isAuthor={isAuthor}
             isOwner={isOwner}
             canDelete={canDelete}
+            canToggleVisibility={canToggleVisibility}
             hasReplies={hasReplies}
             isCollapsed={isCollapsed || false}
             onToggleCollapse={onToggleCollapse}
