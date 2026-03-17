@@ -44,6 +44,7 @@ export default function RequestDetail({
   const isMobile = useIsMobile()
   const [editOpen, setEditOpen] = useState(false)
   const canEdit = (post.role === "admin" || post.isOwner) && !readonly
+  const normalizedContent = post.content?.replace(/\n{2,}/g, "\n")
   const editButtonClassName = isMobile
     ? "absolute right-0 -top-1 h-7 w-7 p-0 text-muted-foreground"
     : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
@@ -71,7 +72,7 @@ export default function RequestDetail({
                       </Toolbar>
                     </div>
                   </div>
-                  <h1 className="text-lg font-semibold leading-tight wrap-break-words text-foreground">
+                  <h1 className="text-lg font-semibold leading-tight wrap-break-word text-foreground">
                     {post.title}
                   </h1>
                 </div>
@@ -79,7 +80,7 @@ export default function RequestDetail({
                 <div className="flex flex-col gap-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1 min-w-0 flex-1">
-                      <h1 className="text-lg font-semibold leading-snug wrap-break-words text-foreground md:text-xl">
+                      <h1 className="text-lg font-semibold leading-snug wrap-break-word text-foreground md:text-xl">
                         {post.title}
                       </h1>
                     </div>
@@ -113,9 +114,9 @@ export default function RequestDetail({
                     <EditIcon className="size-3.5" />
                   </Button>
                 ) : null}
-                {post.content ? (
-                  <div className="prose text-sm text-accent dark:prose-invert break-all md:wrap-break-words whitespace-normal min-w-0">
-                    {post.content}
+                {normalizedContent ? (
+                  <div className="prose text-sm text-accent dark:prose-invert wrap-break-word whitespace-pre-wrap leading-6 min-w-0">
+                    {normalizedContent}
                   </div>
                 ) : null}
                 {post.image ? (
