@@ -30,6 +30,7 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
+import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
 
 async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
   try {
@@ -378,7 +379,7 @@ export function createCommentRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: targetPost.workspaceId,
             userId,
-            action: "comment_created",
+            action: ACTIVITY_ACTIONS.COMMENT_CREATED,
             actionType: "create",
             entity: "comment",
             entityId: String(newComment.id),
@@ -552,7 +553,7 @@ export function createCommentRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: postInfo.workspaceId,
             userId,
-            action: "comment_updated",
+            action: ACTIVITY_ACTIONS.COMMENT_UPDATED,
             actionType: "update",
             entity: "comment",
             entityId: String(commentId),
@@ -678,7 +679,7 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: target.workspaceId,
           userId,
-          action: isInternal ? "comment_marked_internal" : "comment_marked_external",
+          action: isInternal ? ACTIVITY_ACTIONS.COMMENT_MARKED_INTERNAL : ACTIVITY_ACTIONS.COMMENT_MARKED_EXTERNAL,
           actionType: "update",
           entity: "comment",
           entityId: String(commentId),
@@ -785,7 +786,7 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: postInfo.workspaceId,
           userId,
-          action: "comment_deleted",
+          action: ACTIVITY_ACTIONS.COMMENT_DELETED,
           actionType: "delete",
           entity: "comment",
           entityId: String(commentId),
@@ -887,7 +888,7 @@ export function createCommentRouter() {
               await ctx.db.insert(activityLog).values({
                 workspaceId: postInfo.workspaceId,
                 userId,
-                action: "comment_vote_removed",
+                action: ACTIVITY_ACTIONS.COMMENT_VOTE_REMOVED,
                 actionType: "delete",
                 entity: "comment",
                 entityId: String(commentId),
@@ -929,7 +930,7 @@ export function createCommentRouter() {
               await ctx.db.insert(activityLog).values({
                 workspaceId: postInfo.workspaceId,
                 userId,
-                action: "comment_vote_changed",
+                action: ACTIVITY_ACTIONS.COMMENT_VOTE_CHANGED,
                 actionType: "update",
                 entity: "comment",
                 entityId: String(commentId),
@@ -973,7 +974,7 @@ export function createCommentRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: postInfo.workspaceId,
               userId,
-              action: "comment_voted",
+              action: ACTIVITY_ACTIONS.COMMENT_VOTED,
               actionType: "create",
               entity: "comment",
               entityId: String(commentId),
@@ -1054,7 +1055,7 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: postInfo.workspaceId,
           userId,
-          action: "comment_reported",
+          action: ACTIVITY_ACTIONS.COMMENT_REPORTED,
           actionType: "create",
           entity: "comment",
           entityId: String(commentId),
@@ -1152,7 +1153,7 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: target.workspaceId,
           userId,
-          action: isPinned ? "comment_pinned" : "comment_unpinned",
+          action: isPinned ? ACTIVITY_ACTIONS.COMMENT_PINNED : ACTIVITY_ACTIONS.COMMENT_UNPINNED,
           actionType: "update",
           entity: "comment",
           entityId: String(commentId),

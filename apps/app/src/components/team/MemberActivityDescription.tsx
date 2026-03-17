@@ -1,5 +1,7 @@
 import React from "react"
+import { ACTIVITY_ACTIONS, type ActivityAction } from "@featul/api/shared/activity-actions"
 import StatusIcon from "@/components/requests/StatusIcon"
+import { formatActivityStatusLabel, getActivityStatus } from "@/lib/activity-status"
 import type { ActivityItem, TagSummary } from "@/types/activity"
 
 const TITLE_CLASS = "text-foreground font-medium min-w-0 flex-1 truncate"
@@ -10,52 +12,36 @@ type ActivityCopyConfig = {
   includeTitle?: boolean
 }
 
-const ACTIVITY_COPY: Record<string, ActivityCopyConfig> = {
-  post_deleted: { label: "deleted post" },
-  post_voted: { label: "voted for" },
-  post_vote_removed: { label: "removed vote from" },
-  post_board_updated: { label: "moved post" },
-  post_merged: { label: "merged post into" },
-  post_reported: { label: "reported post" },
-  comment_created: { label: "added a comment on" },
-  comment_updated: { label: "updated a comment on" },
-  comment_deleted: { label: "deleted a comment on" },
-  comment_voted: { label: "voted on a comment on" },
-  comment_vote_removed: { label: "removed vote from a comment on" },
-  comment_vote_changed: { label: "changed vote on a comment on" },
-  comment_marked_internal: { label: "marked comment as internal on" },
-  comment_marked_external: { label: "marked comment as external on" },
-  comment_reported: { label: "reported a comment on" },
-  comment_pinned: { label: "pinned a comment on" },
-  comment_unpinned: { label: "unpinned a comment on" },
-  changelog_entry_created: { label: "created changelog entry", showStatus: true },
-  changelog_entry_updated: { label: "updated changelog entry", showStatus: true },
-  changelog_entry_deleted: { label: "deleted changelog entry", showStatus: true },
-  changelog_entry_published: { label: "published changelog entry", showStatus: true },
-  changelog_notra_connection_saved: { label: "saved Notra connection", showStatus: true, includeTitle: false },
-  changelog_notra_connection_deleted: { label: "deleted Notra connection", showStatus: true, includeTitle: false },
-  changelog_notra_import_failed: { label: "Notra import failed", showStatus: true, includeTitle: false },
-  changelog_notra_imported: { label: "imported changelog from Notra", showStatus: true, includeTitle: false },
+const ACTIVITY_COPY: Partial<Record<ActivityAction, ActivityCopyConfig>> = {
+  [ACTIVITY_ACTIONS.POST_DELETED]: { label: "deleted post" },
+  [ACTIVITY_ACTIONS.POST_VOTED]: { label: "voted for" },
+  [ACTIVITY_ACTIONS.POST_VOTE_REMOVED]: { label: "removed vote from" },
+  [ACTIVITY_ACTIONS.POST_BOARD_UPDATED]: { label: "moved post" },
+  [ACTIVITY_ACTIONS.POST_MERGED]: { label: "merged post into" },
+  [ACTIVITY_ACTIONS.POST_REPORTED]: { label: "reported post" },
+  [ACTIVITY_ACTIONS.COMMENT_CREATED]: { label: "added a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_UPDATED]: { label: "updated a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_DELETED]: { label: "deleted a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_VOTED]: { label: "voted on a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_VOTE_REMOVED]: { label: "removed vote from a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_VOTE_CHANGED]: { label: "changed vote on a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_MARKED_INTERNAL]: { label: "marked comment as internal on" },
+  [ACTIVITY_ACTIONS.COMMENT_MARKED_EXTERNAL]: { label: "marked comment as external on" },
+  [ACTIVITY_ACTIONS.COMMENT_REPORTED]: { label: "reported a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_PINNED]: { label: "pinned a comment on" },
+  [ACTIVITY_ACTIONS.COMMENT_UNPINNED]: { label: "unpinned a comment on" },
+  [ACTIVITY_ACTIONS.CHANGELOG_ENTRY_CREATED]: { label: "created changelog entry", showStatus: true },
+  [ACTIVITY_ACTIONS.CHANGELOG_ENTRY_UPDATED]: { label: "updated changelog entry", showStatus: true },
+  [ACTIVITY_ACTIONS.CHANGELOG_ENTRY_DELETED]: { label: "deleted changelog entry", showStatus: true },
+  [ACTIVITY_ACTIONS.CHANGELOG_ENTRY_PUBLISHED]: { label: "published changelog entry", showStatus: true },
+  [ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_SAVED]: { label: "saved Notra connection", showStatus: true, includeTitle: false },
+  [ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_DELETED]: { label: "deleted Notra connection", showStatus: true, includeTitle: false },
+  [ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORT_FAILED]: { label: "Notra import failed", showStatus: true, includeTitle: false },
+  [ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORTED]: { label: "imported changelog from Notra", showStatus: true, includeTitle: false },
 }
 
 function humanizeActivityType(type: string) {
   return type.replace(/_/g, " ").trim()
-}
-
-function toTitleCase(value: string) {
-  return value
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ")
-}
-
-function formatActivityStatusLabel(status: unknown) {
-  const raw = String(status || "").trim().toLowerCase()
-  if (!raw) return null
-  if (raw === "progress") return "Progress"
-  if (raw === "review") return "Review"
-  return toTitleCase(raw.replace(/[_-]+/g, " "))
 }
 
 function renderStatusWithLabel(status: unknown) {
@@ -107,13 +93,13 @@ function renderInlineTagSummary(tags: TagSummary[]) {
 }
 
 export function MemberActivityDescription({ item }: { item: ActivityItem }) {
-  const status = item.status || item.metadata?.status || item.metadata?.roadmapStatus || item.metadata?.toStatus
+  const status = getActivityStatus(item)
   const tags: TagSummary[] =
     (Array.isArray(item.metadata?.tags) && item.metadata?.tags) ||
     (Array.isArray(item.metadata?.tagSummaries) && item.metadata?.tagSummaries) ||
     []
 
-  if (item.type === "post_meta_updated") {
+  if (item.type === ACTIVITY_ACTIONS.POST_META_UPDATED) {
     const fromStatus = item.metadata?.fromStatus
     const toStatus = item.metadata?.toStatus || status
 
@@ -137,7 +123,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
     )
   }
 
-  if (item.type === "post_updated") {
+  if (item.type === ACTIVITY_ACTIONS.POST_UPDATED) {
     const hasTagsChange = Boolean(item.metadata?.hasTagsChange)
     const hasTagsAdded = Boolean(item.metadata?.hasTagsAdded)
     const hasTagsRemoved = Boolean(item.metadata?.hasTagsRemoved)
@@ -159,7 +145,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
     )
   }
 
-  if (item.type === "post_created") {
+  if (item.type === ACTIVITY_ACTIONS.POST_CREATED) {
     return (
       <span className="flex items-center gap-2 min-w-0">
         <span>created post</span>
@@ -170,14 +156,14 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
     )
   }
 
-  const mapped = ACTIVITY_COPY[item.type]
+  const mapped = ACTIVITY_COPY[item.type as ActivityAction]
   if (mapped) return renderTitledActivityRow(item, status, mapped)
 
   if (item.entity === "tag") {
     const label = item.title || item.metadata?.slug || "tag"
     const color = item.metadata?.color || null
 
-    if (item.type === "tag_created") {
+    if (item.type === ACTIVITY_ACTIONS.TAG_CREATED) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created tag</span>
@@ -189,7 +175,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
       )
     }
 
-    if (item.type === "tag_deleted") {
+    if (item.type === ACTIVITY_ACTIONS.TAG_DELETED) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>deleted tag</span>
@@ -205,7 +191,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
     const label = item.title || item.metadata?.slug || "tag"
     const color = item.metadata?.color || null
 
-    if (item.type === "changelog_tag_created") {
+    if (item.type === ACTIVITY_ACTIONS.CHANGELOG_TAG_CREATED) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created changelog tag</span>
@@ -217,7 +203,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
       )
     }
 
-    if (item.type === "changelog_tag_deleted") {
+    if (item.type === ACTIVITY_ACTIONS.CHANGELOG_TAG_DELETED) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>deleted changelog tag</span>

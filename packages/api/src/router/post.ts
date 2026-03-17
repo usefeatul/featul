@@ -9,6 +9,7 @@ import { mapPermissions } from "../shared/permissions"
 import { triggerPostWebhooks } from "../services/webhook"
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
 import { getRequestFingerprint } from "../shared/request-fingerprint"
+import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
 
 export function createPostRouter() {
   return j.router({
@@ -146,7 +147,7 @@ export function createPostRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId,
-          action: "post_created",
+          action: ACTIVITY_ACTIONS.POST_CREATED,
           actionType: "create",
           entity: "post",
           entityId: String(newPost.id),
@@ -374,7 +375,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: boardRow.workspaceId,
             userId,
-            action: "post_updated",
+            action: ACTIVITY_ACTIONS.POST_UPDATED,
             actionType: "update",
             entity: "post",
             entityId: String(updatedPost.id),
@@ -471,7 +472,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: boardRow.workspaceId,
             userId,
-            action: "post_deleted",
+            action: ACTIVITY_ACTIONS.POST_DELETED,
             actionType: "delete",
             entity: "post",
             entityId: String(postId),
@@ -538,7 +539,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: boardRow.workspaceId,
             userId,
-            action: "post_reported",
+            action: ACTIVITY_ACTIONS.POST_REPORTED,
             actionType: "create",
             entity: "post",
             entityId: String(postId),
@@ -666,7 +667,7 @@ export function createPostRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: boardRow.workspaceId,
               userId,
-              action: "post_vote_removed",
+              action: ACTIVITY_ACTIONS.POST_VOTE_REMOVED,
               actionType: "delete",
               entity: "post",
               entityId: String(postId),
@@ -700,7 +701,7 @@ export function createPostRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: boardRow.workspaceId,
               userId,
-              action: "post_voted",
+              action: ACTIVITY_ACTIONS.POST_VOTED,
               actionType: "create",
               entity: "post",
               entityId: String(postId),
@@ -1006,7 +1007,7 @@ export function createPostRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId,
-          action: "post_merged",
+          action: ACTIVITY_ACTIONS.POST_MERGED,
           actionType: "update",
           entity: "post",
           entityId: String(targetPost.id),
@@ -1156,7 +1157,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: ws.id,
             userId,
-            action: "post_merged",
+            action: ACTIVITY_ACTIONS.POST_MERGED,
             actionType: "update",
             entity: "post",
             entityId: String(targetPost.id),

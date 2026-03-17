@@ -11,6 +11,7 @@ import { normalizePlan, getPlanLimits, assertWithinLimit } from "../shared/plan"
 import { toSlug } from "../shared/slug"
 import { requireBoardManagerBySlug } from "../shared/access"
 import { createHash } from "crypto"
+import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
 
 async function hasWorkspaceAccess(ctx: any, workspaceId: string, ownerId: string, userId: string): Promise<boolean> {
   if (ownerId === userId) return true
@@ -271,7 +272,7 @@ export function createBoardRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "tag_created",
+          action: ACTIVITY_ACTIONS.TAG_CREATED,
           actionType: "create",
           entity: "tag",
           entityId: String(created.id),
@@ -319,7 +320,7 @@ export function createBoardRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "tag_deleted",
+          action: ACTIVITY_ACTIONS.TAG_DELETED,
           actionType: "delete",
           entity: "tag",
           entityId: String(t.id),
@@ -856,7 +857,7 @@ export function createBoardRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "post_meta_updated",
+          action: ACTIVITY_ACTIONS.POST_META_UPDATED,
           actionType: "update",
           entity: "post",
           entityId: String(input.postId),
@@ -924,7 +925,7 @@ export function createBoardRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "post_board_updated",
+          action: ACTIVITY_ACTIONS.POST_BOARD_UPDATED,
           actionType: "update",
           entity: "post",
           entityId: String(input.postId),

@@ -7,6 +7,7 @@ import type { ActivityItem, PaginatedActivity } from "@/types/activity"
 import { MemberHeader } from "@/components/team/MemberHeader"
 import { MemberActivity } from "@/components/team/MemberActivity"
 import { MemberTopPosts } from "@/components/team/MemberTopPosts"
+import { cn } from "@featul/ui/lib/utils"
 import {
   EMPTY_MEMBER_STATS,
   fetchMemberActivity,
@@ -78,6 +79,12 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
     return pages.flatMap((p) => p?.items || [])
   }, [activityData?.pages, initialActivity])
 
+  const tabButtonClass = (tab: "activity" | "top-posts") =>
+    cn(
+      "px-3 py-1.5 text-xs rounded-sm transition-colors",
+      mobileTab === tab ? "bg-muted text-foreground" : "text-accent hover:text-foreground",
+    )
+
   return (
     <div className="rounded-sm border bg-card dark:bg-black/40 p-4 lg:p-6 space-y-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
       <MemberHeader member={member} userId={userId} stats={stats} />
@@ -86,14 +93,14 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
         <div className="lg:hidden inline-flex rounded-md border border-border p-1">
           <button
             type="button"
-            className={`px-3 py-1.5 text-xs rounded-sm ${mobileTab === "activity" ? "bg-muted text-foreground" : "text-accent"}`}
+            className={tabButtonClass("activity")}
             onClick={() => setMobileTab("activity")}
           >
             Activity
           </button>
           <button
             type="button"
-            className={`px-3 py-1.5 text-xs rounded-sm ${mobileTab === "top-posts" ? "bg-muted text-foreground" : "text-accent"}`}
+            className={tabButtonClass("top-posts")}
             onClick={() => setMobileTab("top-posts")}
           >
             Top posts
@@ -101,7 +108,7 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2.8fr)_minmax(0,1fr)] gap-4">
-          <div className={mobileTab === "activity" ? "block" : "hidden lg:block"}>
+          <div className={cn(mobileTab === "activity" ? "block" : "hidden lg:block")}>
             <MemberActivity
               workspaceSlug={slug}
               items={items}
@@ -111,7 +118,12 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
               isLoading={isActivityLoading || isActivityFetching}
             />
           </div>
-          <div className={mobileTab === "top-posts" ? "block lg:sticky lg:top-24 lg:self-start lg:flex lg:justify-center" : "hidden lg:block lg:sticky lg:top-24 lg:self-start lg:flex lg:justify-center"}>
+          <div
+            className={cn(
+              "lg:sticky lg:top-24 lg:self-start lg:flex lg:justify-center",
+              mobileTab === "top-posts" ? "block" : "hidden lg:block",
+            )}
+          >
             <MemberTopPosts
               slug={slug}
               topPosts={topPosts}

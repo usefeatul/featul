@@ -23,6 +23,7 @@ import {
   hasSecretKeyVersion,
   SecretCryptoError,
 } from "./secret-crypto";
+import { IMPORT_RATE_LIMIT_ACTIONS } from "../shared/activity-actions";
 
 type StatusFilter = "draft" | "published";
 type PublishBehavior = "preserve" | "draft_only";
@@ -152,10 +153,6 @@ const NOTRA_PROVIDER = "notra";
 const IMPORT_RATE_LIMIT_WINDOW_MS = 60_000;
 const IMPORT_RATE_LIMIT_MAX_PER_USER = 3;
 const IMPORT_RATE_LIMIT_MAX_PER_WORKSPACE = 6;
-const IMPORT_RATE_LIMIT_ACTIONS = [
-  "changelog_notra_imported",
-  "changelog_notra_import_failed",
-] as const;
 const NOTRA_MARKDOWN_SOURCE_MAX_CHARS = 200_000;
 const NOTRA_HTML_SOURCE_MAX_CHARS = 400_000;
 const NOTRA_MARKDOWN_STORED_MAX_CHARS = 120_000;

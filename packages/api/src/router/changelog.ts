@@ -44,6 +44,7 @@ import {
   canEncryptSecrets,
   SecretCryptoError,
 } from "../services/secret-crypto";
+import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
 
 type AiAction = "prompt" | "format" | "improve" | "summary";
 
@@ -365,7 +366,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_tag_created",
+          action: ACTIVITY_ACTIONS.CHANGELOG_TAG_CREATED,
           actionType: "create",
           entity: "changelog_tag",
           entityId: String(id),
@@ -411,7 +412,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_tag_deleted",
+          action: ACTIVITY_ACTIONS.CHANGELOG_TAG_DELETED,
           actionType: "delete",
           entity: "changelog_tag",
           entityId: String(input.tagId),
@@ -525,7 +526,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_notra_connection_saved",
+          action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_SAVED,
           actionType: saveMode === "created" ? "create" : "update",
           entity: "workspace_notra_connection",
           entityId: String(ws.id),
@@ -547,7 +548,7 @@ export function createChangelogRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: ws.id,
             userId: ctx.session.user.id,
-            action: "changelog_notra_connection_deleted",
+            action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_DELETED,
             actionType: "delete",
             entity: "workspace_notra_connection",
             entityId: String(ws.id),
@@ -596,7 +597,7 @@ export function createChangelogRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: ws.id,
               userId: ctx.session.user.id,
-              action: "changelog_notra_import_failed",
+              action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORT_FAILED,
               actionType: "update",
               entity: "changelog_entry",
               entityId: String(b.id),
@@ -690,7 +691,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_notra_imported",
+          action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORTED,
           actionType:
             summary.createdCount > 0 && summary.updatedCount === 0
               ? "create"
@@ -792,7 +793,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_created",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_CREATED,
           actionType: "create",
           entity: "changelog_entry",
           entityId: String(entry.id),
@@ -921,7 +922,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_updated",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_UPDATED,
           actionType: "update",
           entity: "changelog_entry",
           entityId: String(entry.id),
@@ -1121,7 +1122,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_deleted",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_DELETED,
           actionType: "delete",
           entity: "changelog_entry",
           entityId: String(input.entryId),
@@ -1183,7 +1184,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_published",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_PUBLISHED,
           actionType: "update",
           entity: "changelog_entry",
           entityId: String(entry.id),
