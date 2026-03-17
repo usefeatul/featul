@@ -54,6 +54,8 @@ function renderActivityDescription(it: ActivityItem) {
       const hasTagsChange = Boolean(it.metadata?.hasTagsChange)
       const hasTagsAdded = Boolean(it.metadata?.hasTagsAdded)
       const hasTagsRemoved = Boolean(it.metadata?.hasTagsRemoved)
+      const visibleTags = Array.isArray(tags) ? tags.slice(0, 2) : []
+      const remainingTagCount = Math.max(0, tags.length - visibleTags.length)
 
       let label = "updated post"
       if (hasTagsChange) {
@@ -67,34 +69,28 @@ function renderActivityDescription(it: ActivityItem) {
       }
 
       return (
-        <span className="flex flex-col gap-2 min-w-0">
-          <span className="flex items-center gap-2 min-w-0">
-            <span>{label}</span>
-            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
-            {it.title ? (
-              <span className="text-foreground font-medium min-w-0 flex-1 truncate">
-                {it.title}
-              </span>
-            ) : null}
-          </span>
-          {Array.isArray(tags) && tags.length > 0 ? (
-            <span className="mt-0.5 flex flex-wrap gap-2 text-sm text-accent">
-              {tags.map((t) => (
+        <span className="flex items-center gap-2 min-w-0">
+          <span>{label}</span>
+          {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+          {it.title ? (
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
+              {it.title}
+            </span>
+          ) : null}
+          {visibleTags.length > 0 ? (
+            <span className="flex items-center gap-1.5 shrink-0 text-sm text-accent">
+              {visibleTags.map((t) => (
                 <span
                   key={String(t.id || t.slug || t.name)}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/70  ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5 max-w-[120px]"
                 >
-                  {t.color ? (
-                    <span
-                      className="inline-block size-2 rounded-full"
-                      style={{ backgroundColor: t.color }}
-                    />
-                  ) : null}
-                  <span className="truncate max-w-[160px]">
-                    {t.name || t.slug || "tag"}
-                  </span>
+                  <span className="inline-block size-2 rounded-full bg-primary" />
+                  <span className="truncate">{t.name || t.slug || "tag"}</span>
                 </span>
               ))}
+              {remainingTagCount > 0 ? (
+                <span className="text-xs text-accent shrink-0">+{remainingTagCount}</span>
+              ) : null}
             </span>
           ) : null}
         </span>
@@ -102,35 +98,32 @@ function renderActivityDescription(it: ActivityItem) {
     }
 
     if (it.type === "post_created") {
+      const visibleTags = Array.isArray(tags) ? tags.slice(0, 2) : []
+      const remainingTagCount = Math.max(0, tags.length - visibleTags.length)
+
       return (
-        <span className="flex flex-col gap-2 min-w-0">
-          <span className="flex items-center gap-2 min-w-0">
-            <span>created post</span>
-            {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
-            {it.title ? (
-              <span className="text-foreground font-medium min-w-0 flex-1 truncate">
-                {it.title}
-              </span>
-            ) : null}
-          </span>
-          {Array.isArray(tags) && tags.length > 0 ? (
-            <span className="mt-0.5 flex flex-wrap gap-2 text-sm text-accent">
-              {tags.map((t) => (
+        <span className="flex items-center gap-2 min-w-0">
+          <span>created post</span>
+          {status ? <StatusIcon status={String(status)} className="size-3.5 shrink-0" /> : null}
+          {it.title ? (
+            <span className="text-foreground font-medium min-w-0 flex-1 truncate">
+              {it.title}
+            </span>
+          ) : null}
+          {visibleTags.length > 0 ? (
+            <span className="flex items-center gap-1.5 shrink-0 text-sm text-accent">
+              {visibleTags.map((t) => (
                 <span
                   key={String(t.id || t.slug || t.name)}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/70  ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5 max-w-[120px]"
                 >
-                  {t.color ? (
-                    <span
-                      className="inline-block size-2 rounded-full"
-                      style={{ backgroundColor: t.color }}
-                    />
-                  ) : null}
-                  <span className="truncate max-w-[160px]">
-                    {t.name || t.slug || "tag"}
-                  </span>
+                  <span className="inline-block size-2 rounded-full bg-primary" />
+                  <span className="truncate">{t.name || t.slug || "tag"}</span>
                 </span>
               ))}
+              {remainingTagCount > 0 ? (
+                <span className="text-xs text-accent shrink-0">+{remainingTagCount}</span>
+              ) : null}
             </span>
           ) : null}
         </span>
