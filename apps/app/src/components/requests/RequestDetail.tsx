@@ -135,7 +135,7 @@ export default function RequestDetail({
                       asChild
                       variant="nav"
                       size="sm"
-                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-muted dark:hover:bg-black/40"
+                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
                       disabled={!prevHref}
                     >
                       {prevHref ? (
@@ -155,7 +155,7 @@ export default function RequestDetail({
                       asChild
                       variant="nav"
                       size="sm"
-                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-muted dark:hover:bg-black/40"
+                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
                       disabled={!nextHref}
                     >
                       {nextHref ? (
