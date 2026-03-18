@@ -68,7 +68,13 @@ export function createWorkspaceRouter() {
           .limit(1)
         c.header("Cache-Control", "public, max-age=30, stale-while-revalidate=300")
         if (!ws) return c.json({ workspace: null })
-        return c.superjson({ workspace: ws })
+
+        return c.superjson({
+          workspace: {
+            ...ws,
+            plan: await getWorkspaceAccessPlan(ws.id),
+          },
+        })
       }),
     checkSlug: privateProcedure
       .input(checkSlugInputSchema)
@@ -125,7 +131,14 @@ export function createWorkspaceRouter() {
 
       const all = [...owned, ...member]
       const map = new Map<string, typeof all[0]>()
-      for (const w of all) map.set(w.slug, w)
+      await Promise.all(
+        all.map(async (w) => {
+          map.set(w.slug, {
+            ...w,
+            plan: await getWorkspaceAccessPlan(w.id),
+          })
+        })
+      )
       c.header("Cache-Control", "private, max-age=30, stale-while-revalidate=300")
       return c.superjson({ workspaces: Array.from(map.values()) })
     }),
