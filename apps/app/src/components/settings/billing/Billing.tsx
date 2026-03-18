@@ -148,11 +148,11 @@ export default function BillingSection({
       <div className="space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border border-border/70 bg-background px-3 py-3">
           <div className="min-w-0 space-y-1">
-            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm">
-              <span className="text-accent">Current:</span>
-              <span className="font-medium text-foreground">{activePlan.label}</span>
-              <span className="text-accent">${currentAmount}</span>
-              <span className="text-accent">{currentSuffix}</span>
+            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm text-foreground">
+              <span>Current:</span>
+              <span className="font-heading font-medium text-accent">{activePlan.label}</span>
+              <span className="font-heading text-accent">${currentAmount}</span>
+              <span className="font-heading text-accent">{currentSuffix}</span>
             </div>
           </div>
           <BillingCycleSegment billingCycle={billingCycle} onChange={setBillingCycle} />
