@@ -14,8 +14,27 @@ import {
   activityLog,
 } from "@featul/db"
 import { memberByWorkspaceInputSchema, memberActivityInputSchema } from "../validators/member"
+import type { AuthenticatedRouterContext as MemberRouterContext } from "../types/router-context"
 
-async function getWorkspaceBySlugOrThrow(ctx: any, slug: string) {
+type ActivityRow = {
+  id: string
+  type: string
+  title: string | null
+  entity: string
+  entityId: string
+  createdAt: Date | string | null
+  metadata: unknown
+}
+
+function readActivityStatus(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== "object") return null
+  const candidate = metadata as { status?: unknown; roadmapStatus?: unknown }
+  if (typeof candidate.status === "string" && candidate.status.trim()) return candidate.status
+  if (typeof candidate.roadmapStatus === "string" && candidate.roadmapStatus.trim()) return candidate.roadmapStatus
+  return null
+}
+
+async function getWorkspaceBySlugOrThrow(ctx: MemberRouterContext, slug: string) {
   const [ws] = await ctx.db
     .select({ id: workspace.id, ownerId: workspace.ownerId, slug: workspace.slug })
     .from(workspace)
@@ -25,7 +44,7 @@ async function getWorkspaceBySlugOrThrow(ctx: any, slug: string) {
   return ws
 }
 
-async function requireIsMember(ctx: any, wsId: string) {
+async function requireIsMember(ctx: MemberRouterContext, wsId: string) {
   const meId = ctx.session.user.id
   const [me] = await ctx.db
     .select({ id: workspaceMember.id })
@@ -127,24 +146,14 @@ export function createMemberRouter() {
           .limit(limit + 1)
 
         const hasMore = rows.length > limit
-        const limited = rows.slice(0, limit).map((row: {
-          id: string
-          type: string
-          title: string | null
-          entity: string
-          entityId: string
-          createdAt: Date | null
-          metadata: Record<string, any> | null
-        }) => ({
+        const limited = rows.slice(0, limit).map((row: ActivityRow) => ({
           ...row,
-          status:
-            (row.metadata as any)?.status ??
-            (row.metadata as any)?.roadmapStatus ??
-            null,
+          status: readActivityStatus(row.metadata),
         }))
+        const lastCreatedAt = limited[limited.length - 1]?.createdAt
         const nextCursor =
-          hasMore && limited.length > 0
-            ? new Date(limited[limited.length - 1].createdAt as any).toISOString()
+          hasMore && lastCreatedAt
+            ? new Date(lastCreatedAt).toISOString()
             : null
 
         c.header("Cache-Control", "private, max-age=60, stale-while-revalidate=300")

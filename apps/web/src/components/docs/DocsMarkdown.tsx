@@ -132,7 +132,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const isInline = !className
             if (isInline) {
               return (
-                <code className="rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary">
+                <code className="mr-1 rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary">
                   {children}
                 </code>
               )
@@ -149,7 +149,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             </pre>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="my-4 rounded-lg bg-primary px-2 py-1 text-sm text-white border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black [&>p]:m-0 [&>p]:text-white">
+            <blockquote className="my-5 rounded-2xl border border-border bg-card/80 px-5 py-4 text-sm shadow-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white backdrop-blur-sm dark:ring-offset-black [&_p]:my-0 [&_p]:text-accent [&_ul]:my-3 [&_ul]:space-y-2 [&_ol]:my-3 [&_ol]:space-y-2 [&_li]:text-accent [&_strong]:text-foreground">
               {children}
             </blockquote>
           ),

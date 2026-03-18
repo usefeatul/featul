@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { MessageCircle, Heart } from "lucide-react";
+import StatusIcon from "@/components/requests/StatusIcon";
+import RoadmapRequestItemFooter from "@/components/roadmap/RoadmapRequestItemFooter";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@featul/ui/components/avatar";
-import RoleBadge from "@/components/global/RoleBadge";
-import { getInitials } from "@/utils/user";
+  buildRoadmapPreview,
+  formatRoadmapCardDate,
+  getRoadmapStatusTone,
+} from "@/components/roadmap/card";
 import { randomAvatarUrl } from "@/utils/avatar";
 
 export type RoadmapItemData = {
@@ -16,9 +15,11 @@ export type RoadmapItemData = {
   title: string;
   slug: string;
   roadmapStatus: string | null;
+  content?: string | null;
   boardName: string;
   boardSlug?: string;
-  upvotes: number;
+  createdAt?: string | null;
+  publishedAt?: string | null;
   commentCount: number;
   authorImage?: string | null;
   authorName?: string | null;
@@ -40,45 +41,45 @@ export default function RoadmapRequestItem({
   const authorSeed = item.authorId || item.id || item.slug;
   const avatarSrc =
     item.authorImage || randomAvatarUrl(authorSeed, "avataaars");
-  const upvotes = Math.max(0, Number(item.upvotes || 0));
   const commentCount = Math.max(0, Number(item.commentCount || 0));
   const boardLabel = item.boardName?.trim() || "Board";
+  const preview = buildRoadmapPreview(item.content, item.boardName);
+  const dateLabel =
+    formatRoadmapCardDate(item.publishedAt || item.createdAt) || "No date";
+  const tone = getRoadmapStatusTone(item.roadmapStatus);
 
   return (
-    <div className="flex flex-col w-full min-w-0 overflow-visible">
-      <Link
-        href={href}
-        className="min-w-0 line-clamp-2 text-sm font-medium leading-5 text-foreground hover:text-primary"
-      >
-        {item.title}
-      </Link>
-      <div className="mt-3 flex items-center gap-2 text-xs text-accent">
-        <Avatar className="relative size-6 shrink-0 overflow-visible bg-card ring-1 ring-border/70 dark:bg-black/50">
-          <AvatarImage src={avatarSrc} alt={authorLabel} />
-          <AvatarFallback className="text-[10px] font-medium">
-            {getInitials(authorLabel)}
-          </AvatarFallback>
-          <RoleBadge
-            role={item.role}
-            isOwner={item.isOwner}
-            isFeatul={item.isFeatul}
-            className="-bottom-1! -right-1! bg-background dark:bg-background"
-          />
-        </Avatar>
-        <span className="inline-flex h-6 min-w-0 max-w-[120px] items-center truncate rounded-md border border-border bg-background px-1.5 text-[11px] leading-none text-accent">
-          {boardLabel}
-        </span>
-        <div className="ml-auto inline-flex h-6 shrink-0 items-center gap-2">
-          <span className="inline-flex h-6 items-center gap-1 leading-none">
-            <Heart className="size-3.5" aria-hidden />
-            <span className="tabular-nums">{upvotes}</span>
-          </span>
-          <span className="inline-flex h-6 items-center gap-1 leading-none">
-            <MessageCircle className="size-3.5" aria-hidden />
-            <span className="tabular-nums">{commentCount}</span>
+    <div className="flex min-h-[158px] w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
+      <div className="px-4 pb-4 pt-4">
+        <div className="flex items-start gap-3">
+          <Link
+            href={href}
+            className="min-w-0 flex-1 line-clamp-2 text-base font-semibold leading-6 text-foreground hover:text-primary"
+          >
+            {item.title}
+          </Link>
+          <span className="inline-flex shrink-0 items-center justify-center">
+            <StatusIcon
+              status={item.roadmapStatus || undefined}
+              className={`size-5 ${tone.icon}`}
+            />
           </span>
         </div>
+        <p className="mt-2 line-clamp-3 text-sm leading-5 text-accent/90">
+          {preview}
+        </p>
       </div>
+      <RoadmapRequestItemFooter
+        toneFooterClass={tone.footer}
+        authorLabel={authorLabel}
+        avatarSrc={avatarSrc}
+        boardLabel={boardLabel}
+        dateLabel={dateLabel}
+        commentCount={commentCount}
+        role={item.role}
+        isOwner={item.isOwner}
+        isFeatul={item.isFeatul}
+      />
     </div>
   );
 }

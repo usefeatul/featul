@@ -9,70 +9,71 @@ export type Board = {
     type?: string | null
 }
 
+function sortBoards(list: Board[]) {
+    return [...list].sort((a, b) => a.name.localeCompare(b.name))
+}
+
+function normalizeBoards(list: Board[]): Board[] {
+    return sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
+}
+
+function readCachedBoards(raw: string | null): Board[] {
+    if (!raw) return []
+    const parsed = JSON.parse(raw) as { boards?: Board[]; data?: Board[] } | null
+    if (!parsed || typeof parsed !== "object") return []
+    const maybeBoards = Array.isArray(parsed.boards)
+        ? parsed.boards
+        : Array.isArray(parsed.data)
+            ? parsed.data
+            : []
+    return normalizeBoards(maybeBoards)
+}
+
 export function useBoards({ slug, initialBoards }: { slug: string; initialBoards?: Board[] }) {
-    function sortBoards(list: Board[]) {
-        return [...list].sort((a, b) => a.name.localeCompare(b.name))
-    }
 
-    const [boards, setBoards] = React.useState<Board[]>(() => {
-        const list = Array.isArray(initialBoards) ? initialBoards : []
-        const filtered = list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog")
-        return sortBoards(filtered)
-    })
-
+    const [boards, setBoards] = React.useState<Board[]>(() => normalizeBoards(Array.isArray(initialBoards) ? initialBoards : []))
     const [loading, setLoading] = React.useState(() => !(Array.isArray(initialBoards) && initialBoards.length > 0))
 
     React.useEffect(() => {
         let mounted = true
         const key = `boards:${slug}`
+        const initialList = normalizeBoards(Array.isArray(initialBoards) ? initialBoards : [])
 
-        // Try loading from cache first
-        try {
-            const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null
-            if (raw) {
-                const cached = JSON.parse(raw)
-                // Handle potentially different cache structures if needed, but assuming simpler standard here
-                const list = ((cached?.boards || cached?.data) || []) as Board[]
-                const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
+        setBoards(initialList)
+        setLoading(initialList.length === 0)
 
-                if (mounted) {
-                    // If we have cached data and no initial data, show it immediately
-                    if (boards.length === 0) {
-                        setBoards(filtered)
-                        // Don't set loading to false yet if we want to refresh in bg, 
-                        // BUT usually we want to show content fast. 
-                        // BoardsDropdown sets loading=false here.
-                        setLoading(false)
-                    }
+        if (initialList.length === 0) {
+            try {
+                const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null
+                const cachedBoards = readCachedBoards(raw)
+                if (mounted && cachedBoards.length > 0) {
+                    setBoards(cachedBoards)
+                    setLoading(false)
                 }
+            } catch {
+                // Ignore cache errors
             }
-        } catch {
-            // Ignore cache errors
         }
 
-        // Fetch fresh data
         ; (async () => {
             try {
                 const res = await client.board.byWorkspaceSlug.$get({ slug })
-                const data = await res.json()
-                const list = (data?.boards || []) as Board[]
-                const filtered = sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
+                const data = (await res.json().catch(() => null)) as { boards?: Board[] } | null
+                const fetchedBoards = normalizeBoards(Array.isArray(data?.boards) ? data.boards : [])
 
                 if (mounted) {
-                    setBoards(filtered)
+                    setBoards(fetchedBoards)
                     setLoading(false)
                 }
 
-                // Update cache
                 try {
                     if (typeof window !== "undefined") {
-                        localStorage.setItem(key, JSON.stringify({ boards: filtered, ts: Date.now() }))
+                        localStorage.setItem(key, JSON.stringify({ boards: fetchedBoards, ts: Date.now() }))
                     }
                 } catch {
                     // Ignore cache write errors
                 }
             } catch {
-                // If error and we have no boards, stop loading?
                 if (mounted) setLoading(false)
             }
         })()
@@ -80,8 +81,7 @@ export function useBoards({ slug, initialBoards }: { slug: string; initialBoards
         return () => {
             mounted = false
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [slug]) // Dependencies
+    }, [slug, initialBoards])
 
     return { boards, loading }
 }

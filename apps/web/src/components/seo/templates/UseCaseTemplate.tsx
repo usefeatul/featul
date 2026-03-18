@@ -15,6 +15,7 @@ import { VerticalLines } from "@/components/vertical-lines";
 import type { UseCasePageData } from "@/lib/data/programmatic/generators";
 import type { RelatedLink } from "@/lib/seo/interlink";
 import { SITE_URL } from "@/config/seo";
+import { serializeJsonLd } from "@/lib/security";
 
 interface Props {
     data: UseCasePageData;
@@ -52,16 +53,16 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 id="usecase-faq-jsonld"
                 type="application/ld+json"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
             />
             <Script
                 id="usecase-breadcrumb-jsonld"
                 type="application/ld+json"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
             />
 
-            <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18 relative">
+            <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14 relative">
                 <VerticalLines className="absolute z-0" />
 
                 {/* Hero Section */}

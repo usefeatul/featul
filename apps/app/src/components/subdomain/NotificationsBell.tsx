@@ -31,10 +31,12 @@ export default function NotificationsBell() {
     client.comment.mentionsCount
       .$get()
       .then(async (res) => {
-        const d = (await res.json().catch(() => null)) as {
-          unread?: number;
-        } | null;
-        if (active) setUnread(Number(d?.unread ?? 0));
+        const raw = (await res.json().catch(() => null)) as
+          | { unread?: number; json?: { unread?: number } }
+          | null;
+        const payload =
+          raw && typeof raw === "object" && "json" in raw ? raw.json : raw;
+        if (active) setUnread(Number(payload?.unread ?? 0));
       })
       .catch(() => { });
     return () => {
@@ -44,9 +46,12 @@ export default function NotificationsBell() {
 
   const loadNotifications = React.useCallback(async () => {
     try {
-      const res = await client.comment.mentionsList.$get({ limit: 50 });
-      const d = await res.json();
-      const payload = d as { notifications?: NotificationItem[] } | null;
+      const res = await client.comment.mentionsList.$get();
+      const raw = (await res.json().catch(() => null)) as
+        | { notifications?: NotificationItem[]; json?: { notifications?: NotificationItem[] } }
+        | null;
+      const payload =
+        raw && typeof raw === "object" && "json" in raw ? raw.json : raw;
       setNotifications(
         Array.isArray(payload?.notifications) ? payload.notifications : []
       );

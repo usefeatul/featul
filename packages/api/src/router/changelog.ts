@@ -1,4 +1,4 @@
-import { and, eq, desc, sql, getTableColumns } from "drizzle-orm";
+import { and, eq, desc, sql, getTableColumns, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { j, publicProcedure, privateProcedure } from "../jstack";
 import {
@@ -6,13 +6,14 @@ import {
   board,
   workspaceMember,
   changelogEntry,
+  changelogMention,
   activityLog,
   user,
 } from "@featul/db";
 import { HTTPException } from "hono/http-exception";
 import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug } from "../shared/slug";
-import { requireBoardManagerBySlug } from "../shared/access";
+import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
 import {
   getChangelogTags,
   findTagsByIds,
@@ -43,6 +44,7 @@ import {
   canEncryptSecrets,
   SecretCryptoError,
 } from "../services/secret-crypto";
+import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
 
 type AiAction = "prompt" | "format" | "improve" | "summary";
 
@@ -122,6 +124,74 @@ function parseAiJson(text: string) {
     summary?: unknown;
     title?: unknown;
   };
+}
+
+function extractMentionedUserIdsFromContent(content: unknown): string[] {
+  const ids = new Set<string>();
+
+  const visit = (node: unknown) => {
+    if (!node || typeof node !== "object") {
+      return;
+    }
+
+    const record = node as Record<string, unknown>;
+    if (record.type === "mention") {
+      const attrs =
+        record.attrs && typeof record.attrs === "object"
+          ? (record.attrs as Record<string, unknown>)
+          : null;
+      const id = attrs?.id;
+      if (typeof id === "string" && id.trim()) {
+        ids.add(id.trim());
+      }
+    }
+
+    const children = record.content;
+    if (Array.isArray(children)) {
+      for (const child of children) {
+        visit(child);
+      }
+    }
+  };
+
+  visit(content);
+  return Array.from(ids);
+}
+
+async function resolveValidMentionUserIds(params: {
+  ctx: any;
+  workspaceId: string;
+  ownerId: string;
+  mentionUserIds: string[];
+}): Promise<string[]> {
+  const { ctx, workspaceId, ownerId, mentionUserIds } = params;
+
+  if (mentionUserIds.length === 0) {
+    return [];
+  }
+
+  const uniqueMentionUserIds = Array.from(new Set(mentionUserIds));
+  const activeMembers: Array<{ userId: string }> = await ctx.db
+    .select({ userId: workspaceMember.userId })
+    .from(workspaceMember)
+    .where(
+      and(
+        eq(workspaceMember.workspaceId, workspaceId),
+        eq(workspaceMember.isActive, true),
+        inArray(workspaceMember.userId, uniqueMentionUserIds),
+      ),
+    );
+
+  const validMentionUserIds = new Set(
+    activeMembers.map((member: { userId: string }) => member.userId),
+  );
+
+  // Owners can exist outside workspaceMember, but they are still valid mentions.
+  if (uniqueMentionUserIds.includes(ownerId)) {
+    validMentionUserIds.add(ownerId);
+  }
+
+  return Array.from(validMentionUserIds);
 }
 
 export function createChangelogRouter() {
@@ -272,7 +342,7 @@ export function createChangelogRouter() {
           throw new HTTPException(404, {
             message: "Changelog board not found",
           });
-        const limits = getPlanLimits(String(ws.plan || "free"));
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const currentTags = getChangelogTags(b.changelogTags);
         const maxTags = limits.maxChangelogTags;
         assertWithinLimit(
@@ -296,7 +366,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_tag_created",
+          action: ACTIVITY_ACTIONS.CHANGELOG_TAG_CREATED,
           actionType: "create",
           entity: "changelog_tag",
           entityId: String(id),
@@ -342,7 +412,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_tag_deleted",
+          action: ACTIVITY_ACTIONS.CHANGELOG_TAG_DELETED,
           actionType: "delete",
           entity: "changelog_tag",
           entityId: String(input.tagId),
@@ -456,7 +526,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_notra_connection_saved",
+          action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_SAVED,
           actionType: saveMode === "created" ? "create" : "update",
           entity: "workspace_notra_connection",
           entityId: String(ws.id),
@@ -478,7 +548,7 @@ export function createChangelogRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: ws.id,
             userId: ctx.session.user.id,
-            action: "changelog_notra_connection_deleted",
+            action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_DELETED,
             actionType: "delete",
             entity: "workspace_notra_connection",
             entityId: String(ws.id),
@@ -509,7 +579,7 @@ export function createChangelogRouter() {
             message: "Changelog board not found",
           });
 
-        const limits = getPlanLimits(String(ws.plan || "free"));
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const [countResult] = await ctx.db
           .select({ count: sql<number>`count(*)::int` })
           .from(changelogEntry)
@@ -527,7 +597,7 @@ export function createChangelogRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: ws.id,
               userId: ctx.session.user.id,
-              action: "changelog_notra_import_failed",
+              action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORT_FAILED,
               actionType: "update",
               entity: "changelog_entry",
               entityId: String(b.id),
@@ -597,6 +667,20 @@ export function createChangelogRouter() {
                   "Notra organization was not found or is not accessible with this API key.",
               });
             }
+            if (err.status === 429) {
+              if (err.retryAfterSeconds && err.retryAfterSeconds > 0) {
+                c.header("Retry-After", String(err.retryAfterSeconds));
+              }
+              throw new HTTPException(429, {
+                message: "Notra rate limit reached. Please wait and try again.",
+              });
+            }
+            if (err.status === 503) {
+              throw new HTTPException(503, {
+                message:
+                  "Notra service is temporarily unavailable. Please try again.",
+              });
+            }
             throw new HTTPException(502, {
               message: "Notra API request failed. Please try again.",
             });
@@ -607,7 +691,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_notra_imported",
+          action: ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORTED,
           actionType:
             summary.createdCount > 0 && summary.updatedCount === 0
               ? "create"
@@ -655,7 +739,7 @@ export function createChangelogRouter() {
             message: "Changelog board not found",
           });
 
-        const limits = getPlanLimits(String(ws.plan || "free"));
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const [countResult] = await ctx.db
           .select({ count: sql<number>`count(*)::int` })
           .from(changelogEntry)
@@ -686,10 +770,30 @@ export function createChangelogRouter() {
           })
           .returning();
 
+        const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+        if (mentionUserIds.length > 0) {
+          const validMentionUserIds = await resolveValidMentionUserIds({
+            ctx,
+            workspaceId: ws.id,
+            ownerId: ws.ownerId,
+            mentionUserIds,
+          });
+
+          if (validMentionUserIds.length > 0) {
+            await ctx.db.insert(changelogMention).values(
+              validMentionUserIds.map((mentionedUserId: string) => ({
+                entryId: entry.id,
+                mentionedUserId,
+                mentionedBy: ctx.session.user.id,
+              })),
+            );
+          }
+        }
+
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_created",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_CREATED,
           actionType: "create",
           entity: "changelog_entry",
           entityId: String(entry.id),
@@ -760,10 +864,65 @@ export function createChangelogRouter() {
           .where(eq(changelogEntry.id, input.entryId))
           .returning();
 
+        if (input.content !== undefined) {
+          const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+
+          const validMentionUserIds = await resolveValidMentionUserIds({
+            ctx,
+            workspaceId: ws.id,
+            ownerId: ws.ownerId,
+            mentionUserIds,
+          });
+
+          const existingMentions: Array<{ id: string; mentionedUserId: string }> =
+            await ctx.db
+            .select({
+              id: changelogMention.id,
+              mentionedUserId: changelogMention.mentionedUserId,
+            })
+            .from(changelogMention)
+            .where(eq(changelogMention.entryId, input.entryId));
+
+          const existingByUserId = new Map(
+            existingMentions.map((mention: { id: string; mentionedUserId: string }) => [
+              mention.mentionedUserId,
+              mention,
+            ]),
+          );
+          const nextUserIdSet = new Set(validMentionUserIds);
+
+          const mentionIdsToDelete = existingMentions
+            .filter(
+              (mention: { id: string; mentionedUserId: string }) =>
+                !nextUserIdSet.has(mention.mentionedUserId),
+            )
+            .map((mention: { id: string; mentionedUserId: string }) => mention.id);
+
+          if (mentionIdsToDelete.length > 0) {
+            await ctx.db
+              .delete(changelogMention)
+              .where(inArray(changelogMention.id, mentionIdsToDelete));
+          }
+
+          const mentionUserIdsToAdd = validMentionUserIds.filter(
+            (mentionedUserId: string) => !existingByUserId.has(mentionedUserId),
+          );
+
+          if (mentionUserIdsToAdd.length > 0) {
+            await ctx.db.insert(changelogMention).values(
+              mentionUserIdsToAdd.map((mentionedUserId) => ({
+                entryId: input.entryId,
+                mentionedUserId,
+                mentionedBy: ctx.session.user.id,
+              })),
+            );
+          }
+        }
+
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_updated",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_UPDATED,
           actionType: "update",
           entity: "changelog_entry",
           entityId: String(entry.id),
@@ -938,7 +1097,11 @@ export function createChangelogRouter() {
           });
 
         const [existing] = await ctx.db
-          .select({ id: changelogEntry.id, title: changelogEntry.title })
+          .select({
+            id: changelogEntry.id,
+            title: changelogEntry.title,
+            status: changelogEntry.status,
+          })
           .from(changelogEntry)
           .where(
             and(
@@ -959,12 +1122,14 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_deleted",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_DELETED,
           actionType: "delete",
           entity: "changelog_entry",
           entityId: String(input.entryId),
           title: existing.title,
-          metadata: {},
+          metadata: {
+            status: existing.status,
+          },
         });
 
         return c.superjson({ ok: true });
@@ -1019,7 +1184,7 @@ export function createChangelogRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId: ctx.session.user.id,
-          action: "changelog_entry_published",
+          action: ACTIVITY_ACTIONS.CHANGELOG_ENTRY_PUBLISHED,
           actionType: "update",
           entity: "changelog_entry",
           entityId: String(entry.id),
@@ -1199,7 +1364,12 @@ export function createChangelogRouter() {
           .select()
           .from(changelogEntry)
           .where(and(...whereConditions))
-          .orderBy(desc(changelogEntry.updatedAt))
+          .orderBy(
+            desc(
+              sql`coalesce(${changelogEntry.publishedAt}, ${changelogEntry.createdAt})`,
+            ),
+            desc(changelogEntry.createdAt),
+          )
           .limit(limit)
           .offset(offset);
 

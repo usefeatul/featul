@@ -1,281 +1,322 @@
-@media only screen and (max-width: 480px) {
-  div[data-youtube-video]>iframe {
-    max-height: 50px;
-  }
+/* Keep YouTube embeds responsive in both editor and read-only renderer */
+div[data-youtube-video] {
+	width: 100%;
+	max-width: 100%;
 }
 
-@media only screen and (max-width: 720px) {
-  div[data-youtube-video]>iframe {
-    max-height: 100px;
-  }
+/* Keep spacing between embedded video blocks and the next editable line */
+.ProseMirror div[data-youtube-video] {
+	margin-bottom: 1em;
+}
+
+.ProseMirror div[data-youtube-video]:last-child {
+	margin-bottom: 0;
+}
+
+div[data-youtube-video] > iframe {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 9;
+	min-height: 400px;
+}
+
+/* Make Twitter embeds use the full content width */
+div[data-twitter] {
+	width: 100%;
+	max-width: 100%;
+}
+
+div[data-twitter] :where(.react-tweet-theme) {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	min-height: 500px;
+}
+
+@media (max-width: 640px) {
+	div[data-youtube-video] > iframe {
+		min-height: 320px;
+	}
+
+	div[data-twitter] :where(.react-tweet-theme) {
+		min-height: 380px;
+	}
 }
 
 /* Base editor spacing */
 .ProseMirror {
-  line-height: 1.75;
-  font-size: 0.95rem;
+	line-height: 1.75;
+	font-size: 0.95rem;
 }
 
 /* Required for floating drag-handle positioning */
 .tiptap {
-  --drag-handle-gutter: 2.5rem;
-  position: relative;
+	--drag-handle-gutter: 2.5rem;
+	position: relative;
 }
 
 /* Reserve a left gutter for drag handle */
 .tiptap .ProseMirror[contenteditable="true"] {
-  padding-left: var(--drag-handle-gutter);
+	padding-left: var(--drag-handle-gutter);
 }
 
 /* Block drag handle (Tiptap DragHandle extension) */
 .drag-handle {
-  position: relative;
-  display: block;
-  width: 2.25rem;
-  height: 1.5rem;
-  border: none;
-  background: transparent;
-  color: var(--foreground, #111827);
-  cursor: grab;
-  pointer-events: auto;
-  z-index: 30;
-  opacity: 0;
-  transition:
-    opacity 120ms ease,
-    background-color 120ms ease,
-    border-color 120ms ease,
-    color 120ms ease;
+	position: relative;
+	display: block;
+	width: 2.25rem;
+	height: 1.5rem;
+	border: none;
+	background: transparent;
+	color: var(--foreground, #111827);
+	cursor: grab;
+	pointer-events: auto;
+	z-index: 30;
+	opacity: 0;
+	transition:
+		opacity 120ms ease,
+		background-color 120ms ease,
+		border-color 120ms ease,
+		color 120ms ease;
 }
 
 .drag-handle[data-visible="true"] {
-  opacity: 1;
+	opacity: 1;
 }
 
 .drag-handle::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid var(--border, #d1d5db);
-  background: var(--background, #ffffff);
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease;
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 0.375rem;
+	border: 1px solid var(--border, #d1d5db);
+	background: var(--background, #ffffff);
+	transition:
+		background-color 120ms ease,
+		border-color 120ms ease;
 }
 
 .drag-handle::after {
-  content: "";
-  position: absolute;
-  left: 0.55rem;
-  top: 50%;
-  width: 2px;
-  height: 2px;
-  transform: translateY(-50%);
-  border-radius: 9999px;
-  background: currentColor;
-  box-shadow:
-    0 -4px currentColor,
-    0 4px currentColor,
-    5px -4px currentColor,
-    5px 0 currentColor,
-    5px 4px currentColor;
+	content: "";
+	position: absolute;
+	left: 0.55rem;
+	top: 50%;
+	width: 2px;
+	height: 2px;
+	transform: translateY(-50%);
+	border-radius: 9999px;
+	background: currentColor;
+	box-shadow:
+		0 -4px currentColor,
+		0 4px currentColor,
+		5px -4px currentColor,
+		5px 0 currentColor,
+		5px 4px currentColor;
 }
 
 .drag-handle:hover::before {
-  border-color: var(--border, #9ca3af);
-  background: var(--muted, #e5e7eb);
+	border-color: var(--border, #9ca3af);
+	background: var(--muted, #e5e7eb);
 }
 
 .drag-handle:active,
 .drag-handle[data-dragging="true"] {
-  cursor: grabbing;
+	cursor: grabbing;
 }
 
 /* Paragraph spacing */
 .ProseMirror p {
-  margin-top: 0;
-  margin-bottom: 1em;
+	margin-top: 0;
+	margin-bottom: 1em;
 }
 
 .ProseMirror p:last-child {
-  margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 /* Keep figure spacing visually equal above/below by removing paragraph gap before figure nodes */
 .ProseMirror p:has(+ .featul-figure-node) {
-  margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 /* Prevent prose paragraph top margin from adding extra gap after a figure node */
 .ProseMirror .featul-figure-node + p {
-  margin-top: 0;
+	margin-top: 0;
 }
 
 /* Normalize typography plugin defaults inside figure nodes so wrapper spacing stays symmetric */
 .ProseMirror .featul-figure-node figure,
 .ProseMirror .featul-figure-node img {
-  margin-top: 0;
-  margin-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
 }
 
 /* Placeholder styles - shows on empty paragraph */
-.ProseMirror>p.is-empty::before,
-.ProseMirror>p.is-node-empty::before,
-.ProseMirror>p.is-editor-empty::before {
-  color: var(--accent, #adb5bd);
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
+.ProseMirror > p.is-empty::before,
+.ProseMirror > p.is-node-empty::before,
+.ProseMirror > p.is-editor-empty::before {
+	color: var(--accent, #adb5bd);
+	content: attr(data-placeholder);
+	float: left;
+	height: 0;
+	pointer-events: none;
 }
 
 /* Heading styles */
 .ProseMirror h1 {
-  font-size: 1.75em;
-  font-weight: 700;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+	font-size: 1.75em;
+	font-weight: 700;
+	margin-top: 1em;
+	margin-bottom: 0.5em;
 }
 
 .ProseMirror h2 {
-  font-size: 1.4em;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+	font-size: 1.4em;
+	font-weight: 600;
+	margin-top: 1em;
+	margin-bottom: 0.5em;
 }
 
 .ProseMirror h3 {
-  font-size: 1.2em;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+	font-size: 1.2em;
+	font-weight: 600;
+	margin-top: 1em;
+	margin-bottom: 0.5em;
 }
 
 /* List styles */
 .ProseMirror ul {
-  list-style-type: disc;
-  padding-left: 1.5em;
-  margin: 0.5em 0;
+	list-style-type: disc;
+	padding-left: 1.5em;
+	margin: 0.5em 0;
 }
 
 .ProseMirror ol {
-  list-style-type: decimal;
-  padding-left: 1.5em;
-  margin: 0.5em 0;
+	list-style-type: decimal;
+	padding-left: 1.5em;
+	margin: 0.5em 0;
 }
 
 .ProseMirror li {
-  margin: 0.25em 0;
+	margin: 0.25em 0;
 }
 
-.ProseMirror li>p {
-  margin: 0;
+.ProseMirror li > p {
+	margin: 0;
 }
 
 /* Blockquote styles */
 .ProseMirror blockquote {
-  border-left: 3px solid var(--border, #e5e7eb);
-  padding-left: 1em;
-  margin: 1em 0;
-  color: var(--muted-foreground, #6b7280);
-  font-style: italic;
+	border-left: 3px solid var(--border, #e5e7eb);
+	padding-left: 1em;
+	margin: 1em 0;
+	color: var(--muted-foreground, #6b7280);
+	font-style: italic;
 }
 
 /* CSS for bold coloring and highlighting issue*/
-span[style]>strong {
-  color: inherit;
+span[style] > strong {
+	color: inherit;
 }
 
-mark[style]>strong {
-  color: inherit;
+mark[style] > strong {
+	color: inherit;
 }
 
 /* Ensure bg-sidebar works within prose context */
 .prose .bg-sidebar {
-  background-color: var(--color-sidebar) !important;
+	background-color: var(--color-sidebar);
+}
+
+/* Mention chip styling to match github-link badge treatment */
+.ProseMirror [data-type="mention"],
+.ProseMirror .mention,
+.prose [data-type="mention"],
+.prose .mention {
+	color: var(--primary);
+	background-color: color-mix(in oklab, var(--primary) 8%, transparent);
+	border-radius: 0.25rem;
+	padding: 0.125rem 0.25rem;
+	font-weight: 600;
+	text-decoration: none;
 }
 
 /* codeblocks */
 
 pre {
-  background: linear-gradient(180deg, #0f1525 0%, #0b111d 100%);
-  color: #e6edf3;
-  font-family:
-    "JetBrainsMono",
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    "Liberation Mono",
-    "Courier New",
-    monospace;
-  font-size: 0.76rem;
-  line-height: 1.5;
-  padding: 0.65rem 0.85rem;
-  border-radius: 0.5rem;
-  border: 1px solid #273244;
-  overflow-x: auto;
+	background: linear-gradient(180deg, #0f1525 0%, #0b111d 100%);
+	color: #e6edf3;
+	font-family:
+		"JetBrainsMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+		"Liberation Mono", "Courier New", monospace;
+	font-size: 0.76rem;
+	line-height: 1.5;
+	padding: 0.65rem 0.85rem;
+	border-radius: 0.5rem;
+	border: 1px solid #273244;
+	overflow-x: auto;
 
-  code {
-    color: inherit;
-    padding: 0;
-    background: none;
-    font-size: inherit;
-    line-height: inherit;
-  }
+	code {
+		color: inherit;
+		padding: 0;
+		background: none;
+		font-size: inherit;
+		line-height: inherit;
+	}
 
-  .hljs-comment,
-  .hljs-quote {
-    color: #616161;
-  }
+	.hljs-comment,
+	.hljs-quote {
+		color: #616161;
+	}
 
-  .hljs-variable,
-  .hljs-template-variable,
-  .hljs-attribute,
-  .hljs-tag,
-  .hljs-name,
-  .hljs-regexp,
-  .hljs-link,
-  .hljs-selector-id,
-  .hljs-selector-class {
-    color: #f98181;
-  }
+	.hljs-variable,
+	.hljs-template-variable,
+	.hljs-attribute,
+	.hljs-tag,
+	.hljs-name,
+	.hljs-regexp,
+	.hljs-link,
+	.hljs-selector-id,
+	.hljs-selector-class {
+		color: #f98181;
+	}
 
-  .hljs-number,
-  .hljs-meta,
-  .hljs-built_in,
-  .hljs-builtin-name,
-  .hljs-literal,
-  .hljs-type,
-  .hljs-params {
-    color: #fbbc88;
-  }
+	.hljs-number,
+	.hljs-meta,
+	.hljs-built_in,
+	.hljs-builtin-name,
+	.hljs-literal,
+	.hljs-type,
+	.hljs-params {
+		color: #fbbc88;
+	}
 
-  .hljs-string,
-  .hljs-symbol,
-  .hljs-bullet {
-    color: #b9f18d;
-  }
+	.hljs-string,
+	.hljs-symbol,
+	.hljs-bullet {
+		color: #b9f18d;
+	}
 
-  .hljs-title,
-  .hljs-section {
-    color: #faf594;
-  }
+	.hljs-title,
+	.hljs-section {
+		color: #faf594;
+	}
 
-  .hljs-keyword,
-  .hljs-selector-tag {
-    color: #70cff8;
-  }
+	.hljs-keyword,
+	.hljs-selector-tag {
+		color: #70cff8;
+	}
 
-  .hljs-emphasis {
-    font-style: italic;
-  }
+	.hljs-emphasis {
+		font-style: italic;
+	}
 
-  .hljs-strong {
-    font-weight: 700;
-  }
+	.hljs-strong {
+		font-weight: 700;
+	}
 }

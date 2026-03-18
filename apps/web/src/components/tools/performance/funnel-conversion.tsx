@@ -4,6 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import BackLink from "../global/backlink";
+import { serializeJsonLd } from "@/lib/security";
 
 function parseNumber(value: string): number {
   const cleaned = value.replace(/[^0-9.-]/g, "");
@@ -161,7 +162,7 @@ export default function FunnelConversionTool() {
       </div>
 
       <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify({
+        {serializeJsonLd({
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
           mainEntity: [

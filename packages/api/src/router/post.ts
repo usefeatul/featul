@@ -9,6 +9,7 @@ import { mapPermissions } from "../shared/permissions"
 import { triggerPostWebhooks } from "../services/webhook"
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
 import { getRequestFingerprint } from "../shared/request-fingerprint"
+import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
 
 export function createPostRouter() {
   return j.router({
@@ -146,7 +147,7 @@ export function createPostRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId,
-          action: "post_created",
+          action: ACTIVITY_ACTIONS.POST_CREATED,
           actionType: "create",
           entity: "post",
           entityId: String(newPost.id),
@@ -374,7 +375,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: boardRow.workspaceId,
             userId,
-            action: "post_updated",
+            action: ACTIVITY_ACTIONS.POST_UPDATED,
             actionType: "update",
             entity: "post",
             entityId: String(updatedPost.id),
@@ -471,7 +472,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: boardRow.workspaceId,
             userId,
-            action: "post_deleted",
+            action: ACTIVITY_ACTIONS.POST_DELETED,
             actionType: "delete",
             entity: "post",
             entityId: String(postId),
@@ -538,7 +539,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: boardRow.workspaceId,
             userId,
-            action: "post_reported",
+            action: ACTIVITY_ACTIONS.POST_REPORTED,
             actionType: "create",
             entity: "post",
             entityId: String(postId),
@@ -666,7 +667,7 @@ export function createPostRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: boardRow.workspaceId,
               userId,
-              action: "post_vote_removed",
+              action: ACTIVITY_ACTIONS.POST_VOTE_REMOVED,
               actionType: "delete",
               entity: "post",
               entityId: String(postId),
@@ -700,7 +701,7 @@ export function createPostRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: boardRow.workspaceId,
               userId,
-              action: "post_voted",
+              action: ACTIVITY_ACTIONS.POST_VOTED,
               actionType: "create",
               entity: "post",
               entityId: String(postId),
@@ -723,7 +724,7 @@ export function createPostRouter() {
 
         // Resolve Workspace first
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, workspaceSlug))
           .limit(1)
@@ -734,7 +735,7 @@ export function createPostRouter() {
 
         // Resolve Board within Workspace
         const [b] = await ctx.db
-          .select({ id: board.id })
+          .select({ id: board.id, isPublic: board.isPublic })
           .from(board)
           .where(and(
             eq(board.workspaceId, ws.id),
@@ -744,6 +745,41 @@ export function createPostRouter() {
 
         if (!b) {
           return c.superjson({ posts: [] })
+        }
+
+        if (!b.isPublic) {
+          let userId: string | null = null
+          try {
+            const session = await auth.api.getSession({
+              headers: (c as any)?.req?.raw?.headers || (await headers()),
+            })
+            if (session?.user?.id) {
+              userId = session.user.id
+            }
+          } catch { }
+
+          if (!userId) {
+            return c.superjson({ posts: [] })
+          }
+
+          let allowed = ws.ownerId === userId
+          if (!allowed) {
+            const [member] = await ctx.db
+              .select({ id: workspaceMember.id })
+              .from(workspaceMember)
+              .where(
+                and(
+                  eq(workspaceMember.workspaceId, ws.id),
+                  eq(workspaceMember.userId, userId),
+                  eq(workspaceMember.isActive, true)
+                )
+              )
+              .limit(1)
+            allowed = Boolean(member?.id)
+          }
+          if (!allowed) {
+            return c.superjson({ posts: [] })
+          }
         }
 
         // Split title into words for better matching
@@ -971,7 +1007,7 @@ export function createPostRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: ws.id,
           userId,
-          action: "post_merged",
+          action: ACTIVITY_ACTIONS.POST_MERGED,
           actionType: "update",
           entity: "post",
           entityId: String(targetPost.id),
@@ -1121,7 +1157,7 @@ export function createPostRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: ws.id,
             userId,
-            action: "post_merged",
+            action: ACTIVITY_ACTIONS.POST_MERGED,
             actionType: "update",
             entity: "post",
             entityId: String(targetPost.id),
@@ -1137,10 +1173,11 @@ export function createPostRouter() {
         return c.superjson({ success: true })
       }),
 
-    searchMergeCandidates: publicProcedure
+    searchMergeCandidates: privateProcedure
       .input(searchMergeCandidatesSchema)
       .get(async ({ ctx, input, c }) => {
         const { postId, query, excludeSelf } = input
+        const userId = ctx.session.user.id
 
         // Get the current post to find its workspace
         const [currentPost] = await ctx.db
@@ -1161,6 +1198,39 @@ export function createPostRouter() {
 
         if (!currentBoard) {
           throw new HTTPException(404, { message: "Board not found" })
+        }
+
+        const [ws] = await ctx.db
+          .select({ ownerId: workspace.ownerId })
+          .from(workspace)
+          .where(eq(workspace.id, currentBoard.workspaceId))
+          .limit(1)
+        if (!ws) {
+          throw new HTTPException(404, { message: "Workspace not found" })
+        }
+
+        let allowed = ws.ownerId === userId
+        if (!allowed) {
+          const [member] = await ctx.db
+            .select({ role: workspaceMember.role })
+            .from(workspaceMember)
+            .where(
+              and(
+                eq(workspaceMember.workspaceId, currentBoard.workspaceId),
+                eq(workspaceMember.userId, userId),
+                eq(workspaceMember.isActive, true)
+              )
+            )
+            .limit(1)
+          if (member) {
+            const perms = mapPermissions(member.role)
+            if (perms.canModerateAllBoards) {
+              allowed = true
+            }
+          }
+        }
+        if (!allowed) {
+          throw new HTTPException(403, { message: "Forbidden" })
         }
 
         let searchCondition = sql`true`

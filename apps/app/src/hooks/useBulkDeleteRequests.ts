@@ -101,11 +101,11 @@ export function useBulkDeleteRequests({
             try {
               const detail: RequestsPageRefreshingDetail = { workspaceSlug }
               window.dispatchEvent(new CustomEvent<RequestsPageRefreshingDetail>("requests:page-refreshing", { detail }))
-              router.refresh()
             } catch {
               toast.error("Failed to refresh page")
             }
           }
+          router.refresh()
           toast.success(`Deleted ${okIds.length} ${okIds.length === 1 ? "post" : "posts"}`)
         }
         if (failed > 0) {

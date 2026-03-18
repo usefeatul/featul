@@ -37,9 +37,9 @@ export function useRequestNavigation(
         return
       }
 
-      if ((e.key === "ArrowLeft" || e.key === "z") && prevHref) {
+      if (e.key === "z" && prevHref) {
         router.push(prevHref)
-      } else if ((e.key === "ArrowRight" || e.key === "x") && nextHref) {
+      } else if (e.key === "x" && nextHref) {
         router.push(nextHref)
       }
     }

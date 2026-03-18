@@ -7,6 +7,11 @@ import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, ge
 import { readHasVotedForPost } from "@/lib/vote.server"
 import { toRequestItemData } from "@/lib/request-item"
 import { MainContent } from "@/components/subdomain/MainContent"
+import {
+  parsePositiveIntSearchParam,
+  parseSortOrderParam,
+  resolveSearchParams,
+} from "@/utils/search-params"
 import type { RequestItemData } from "@/types/request"
 
 export const revalidate = 0
@@ -26,7 +31,7 @@ export default async function SitePage({
   searchParams: Promise<{ page?: string; board?: string; order?: "newest" | "oldest" | "likes" }>
 }) {
   const { subdomain, slug } = await params
-  const sp = await searchParams
+  const sp = (await resolveSearchParams(searchParams)) ?? {}
 
   const [ws] = await db
     .select({ id: workspace.id })
@@ -35,11 +40,10 @@ export default async function SitePage({
     .limit(1)
   if (!ws) notFound()
 
-  const page = Math.max(1, Number(sp.page ?? "1") || 1)
+  const page = parsePositiveIntSearchParam(sp.page)
   const offset = (page - 1) * PAGE_SIZE
   const boardSlug = sp.board || undefined
-  const orderParam = String(sp.order || "likes").toLowerCase()
-  const order = orderParam === "oldest" ? "oldest" : orderParam === "likes" ? "likes" : "newest"
+  const order = parseSortOrderParam(sp.order, "likes")
 
   const rows = await getWorkspacePosts(slug, {
     order,

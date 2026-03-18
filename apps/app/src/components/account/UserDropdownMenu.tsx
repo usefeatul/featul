@@ -17,41 +17,48 @@ import { PlusIcon } from "@featul/ui/icons/plus";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { getInitials } from "@/utils/user";
-
-export type UserDropdownAccount = {
-  userId: string;
-  name: string;
-  image: string;
-  isCurrent: boolean;
-};
+import type { UserDropdownAccount } from "./types";
+import { MAX_DEVICE_ACCOUNTS } from "./constants";
 
 type UserDropdownMenuProps = {
   showAccounts: boolean;
   accounts: UserDropdownAccount[];
   switchingAccountUserId: string | null;
+  removingAccountUserId: string | null;
   loading: boolean;
   onAccount: () => void;
   onSignOut: () => void;
   onOpenAddAccount: () => void;
   onSwitchAccount: (userId: string) => void;
+  onOpenAccountActions: (
+    event: React.MouseEvent<HTMLElement>,
+    account: UserDropdownAccount,
+  ) => void;
 };
 
 export default function UserDropdownMenu({
   showAccounts,
   accounts,
   switchingAccountUserId,
+  removingAccountUserId,
   loading,
   onAccount,
   onSignOut,
   onOpenAddAccount,
   onSwitchAccount,
+  onOpenAccountActions,
 }: UserDropdownMenuProps) {
+  const isBusy = Boolean(switchingAccountUserId || removingAccountUserId);
+  const isAtAccountLimit = accounts.length >= MAX_DEVICE_ACCOUNTS;
+  const isAddAccountDisabled = isBusy || isAtAccountLimit;
+
   return (
     <DropdownMenuContent
       className="w-40 max-w-[85vw] p-1.5"
       side="bottom"
       align="center"
       sideOffset={8}
+      withBackdrop
     >
       <DropdownMenuItem
         onSelect={onAccount}
@@ -74,8 +81,7 @@ export default function UserDropdownMenu({
               ) : null}
               {accounts.map((account) => {
                 const initials = getInitials(account.name || "A");
-                const disabled =
-                  account.isCurrent || Boolean(switchingAccountUserId);
+                const disabled = account.isCurrent || isBusy;
                 return (
                   <DropdownMenuItem
                     key={account.userId}
@@ -86,7 +92,20 @@ export default function UserDropdownMenu({
                     disabled={disabled}
                     className="h-8 rounded-md px-2.5 flex items-center gap-2 group"
                   >
-                    <Avatar className="size-4">
+                    <Avatar
+                      className="size-4"
+                      onContextMenu={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (isBusy) return;
+                        onOpenAccountActions(event, account);
+                      }}
+                      title={
+                        account.isCurrent
+                          ? account.name
+                          : `${account.name} (right-click for actions)`
+                      }
+                    >
                       {account.image ? (
                         <AvatarImage src={account.image} alt={account.name} />
                       ) : null}
@@ -95,7 +114,8 @@ export default function UserDropdownMenu({
                     <div className="min-w-0 flex-1 truncate transition-colors group-hover:text-foreground">
                       {account.name}
                     </div>
-                    {switchingAccountUserId === account.userId ? (
+                    {switchingAccountUserId === account.userId ||
+                    removingAccountUserId === account.userId ? (
                       <LoaderIcon className="size-4 animate-spin text-accent" />
                     ) : account.isCurrent ? (
                       <TickIcon
@@ -110,9 +130,10 @@ export default function UserDropdownMenu({
             <DropdownMenuItem
               onSelect={(event) => {
                 event.preventDefault();
+                if (isAddAccountDisabled) return;
                 onOpenAddAccount();
               }}
-              disabled={Boolean(switchingAccountUserId)}
+              disabled={isAddAccountDisabled}
               className="mt-1 h-8 rounded-md px-2.5 flex items-center gap-2 whitespace-nowrap group"
             >
               <PlusIcon className="size-4 text-foreground transition-colors group-hover:text-primary" />
@@ -127,7 +148,7 @@ export default function UserDropdownMenu({
       <DropdownMenuItem
         onSelect={onSignOut}
         className="h-9 rounded-md px-2.5 flex items-center gap-2 group"
-        aria-disabled={loading || Boolean(switchingAccountUserId)}
+        aria-disabled={loading || isBusy}
       >
         <LogoutIcon className="size-4 text-foreground group-hover:opacity-100 group-hover:text-red-500 transition-colors" />
         <span className="transition-colors group-hover:text-foreground">

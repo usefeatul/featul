@@ -7,6 +7,9 @@ export async function readInitialCollapsedCommentIds(postId: string): Promise<st
   
   if (!cookie?.value) return []
   
-  // The value might be URI encoded
-  return decodeURIComponent(cookie.value).split(",").filter(Boolean)
+  try {
+    return decodeURIComponent(cookie.value).split(",").filter(Boolean)
+  } catch {
+    return []
+  }
 }

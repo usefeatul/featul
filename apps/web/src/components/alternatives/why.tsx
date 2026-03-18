@@ -10,7 +10,7 @@ import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
 export default function WhyBetter({ alt }: { alt: Alternative }) {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
@@ -78,7 +78,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
 
             <div className="sm:relative sm:mt-0">
               <div className="flex items-start gap-3">
-                <ChartIcon className="size-4 sm:size-5 text-primary"  opacity={1} />
+                <ChartIcon className="size-4 sm:size-5 text-primary" opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
                   Intuitive workflow design
                 </h3>
@@ -112,7 +112,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
 
             <div className="sm:relative sm:mt-6">
               <div className="flex items-start gap-3">
-                <BookmarkIcon className="size-4 sm:size-5 text-primary"  opacity={1} />
+                <BookmarkIcon className="size-4 sm:size-5 text-primary" opacity={1} />
                 <h3 className="text-foreground text-base sm:text-lg font-medium">
                   Thoughtful user experience
                 </h3>

@@ -1,3 +1,5 @@
+import { formatDistanceToNowStrict } from "date-fns"
+
 export function formatTime12h(tz: string, d: Date = new Date()): string {
   try {
     const parts = new Intl.DateTimeFormat(undefined, {
@@ -46,4 +48,24 @@ export function relativeTime(date: string): string {
     month: "short",
     day: "numeric",
   }).format(past)
+}
+
+export type DateLike = string | Date
+
+function parseDate(value: DateLike): Date | null {
+  const date = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+export function formatExpiryLabel(expiresAt: DateLike, now: Date = new Date()): string {
+  const expiresOn = parseDate(expiresAt)
+  if (!expiresOn) return ""
+
+  const diffMs = expiresOn.getTime() - now.getTime()
+  if (diffMs <= 0) return "Expired"
+
+  return `Expires ${formatDistanceToNowStrict(expiresOn, {
+    addSuffix: true,
+    roundingMethod: "ceil",
+  })}`
 }

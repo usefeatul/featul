@@ -8,6 +8,7 @@ import { getDefinitionBySlug, getAllDefinitionParams, getPrimarySlug } from "@/t
 import { SITE_URL } from "@/config/seo"
 import { buildDefinitionBreadcrumbSchema } from "@/lib/structured-data"
 import Script from "next/script"
+import { serializeJsonLd } from "@/lib/security";
 
 export async function generateStaticParams() {
   return getAllDefinitionParams()
@@ -40,7 +41,7 @@ export default async function DefinitionPage({ params }: { params: Promise<{ ter
         id="definition-breadcrumb-jsonld"
         type="application/ld+json"
         strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDefinitionBreadcrumbSchema({ siteUrl: SITE_URL, slug: def.slug, name: def.name })) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildDefinitionBreadcrumbSchema({ siteUrl: SITE_URL, slug: def.slug, name: def.name })) }}
       />
     </>
   )

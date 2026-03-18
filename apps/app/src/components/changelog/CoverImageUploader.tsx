@@ -8,6 +8,7 @@ import { LoaderIcon } from "@featul/ui/icons/loader";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy";
+import { uploadFileToSignedUrl } from "@/lib/upload";
 
 interface CoverImageUploaderProps {
     workspaceSlug: string;
@@ -44,11 +45,7 @@ export function CoverImageUploader({
             const data = await res.json();
 
             if ("uploadUrl" in data && "publicUrl" in data) {
-                await fetch(data.uploadUrl, {
-                    method: "PUT",
-                    body: file,
-                    headers: { "Content-Type": file.type },
-                });
+                await uploadFileToSignedUrl(data.uploadUrl, file);
                 onCoverImageChange(data.publicUrl);
                 toast.success("Cover image uploaded");
             }

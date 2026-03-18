@@ -95,7 +95,8 @@ export function useMentions(
       const after = text.slice(at + 1, selectionStart)
       const valid = /^[A-Za-z0-9._\-\s]*$/.test(after)
       const beforeChar = upto[at - 1]
-      const boundary = !beforeChar || /\s|[().,;:!?\[\]{}]/.test(beforeChar)
+      const boundaryChars = "().,;:!?[]{}"
+      const boundary = !beforeChar || /\s/.test(beforeChar) || boundaryChars.includes(beforeChar)
 
       if (boundary && valid) {
         setMentionQuery(after)

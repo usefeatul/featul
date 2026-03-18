@@ -1,77 +1,75 @@
-export type PricingPlanKey = 'free' | 'starter' | 'professional' | 'self_hosted'
+export type PricingPlanKey = "free" | "starter" | "professional"
+export type BillingCycle = "monthly" | "yearly"
+
+export type PricingPlanFeature = {
+  title: string
+}
 
 export type PricingPlan = {
   key: PricingPlanKey
   name: string
-  price: string
   note: string
-  ctaLabel: string
+  monthlyPrice: number
+  yearlyPrice: number
   href: string
-  features: string[]
+  features: PricingPlanFeature[]
 }
 
-export const topPlans: PricingPlan[] = [
-  {
-    key: 'free',
-    name: 'Free',
-    price: '$0/mo',
-    note: 'Ideal for getting started',
-    ctaLabel: 'Start for free',
-    href: 'https://app.featul.com/auth/sign-up',
+export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
+  free: {
+    key: "free",
+    name: "Free",
+    note: "Ideal for getting started",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    href: "https://app.featul.com/auth/sign-up",
     features: [
-      'Up to 3 team members',
-      'File attachments',
-      'Essential tagging and changelog tools',
-      'Structured tags for organizing feedback',
-      'Changelog tags for release updates',
-      'No integrations or imports',
+      { title: "Up to 3 team members" },
+      { title: "File attachments" },
+      { title: "Essential tagging and changelog tools" },
+      { title: "No integrations or imports" },
     ],
   },
-  {
-    key: 'starter',
-    name: 'Starter',
-    price: '$20/mo',
-    note: 'For growing teams',
-    ctaLabel: 'Start free trial',
-    href: 'https://app.featul.com/auth/sign-up',
+  starter: {
+    key: "starter",
+    name: "Starter",
+    note: "For growing teams",
+    monthlyPrice: 20,
+    yearlyPrice: 200,
+    href: "https://app.featul.com/auth/sign-up",
     features: [
-      'Up to 5 team members',
-      'Unlimited boards',
-      'Branding controls',
-      'Integrations and imports',
-      'Lower tagging limits',
-      'Full changelog management',
+      { title: "Up to 5 team members" },
+      { title: "Unlimited boards" },
+      { title: "Branding controls" },
+      { title: "Integrations and imports" },
+      { title: "Advanced organization and publishing" },
     ],
   },
-  {
-    key: 'professional',
-    name: 'Professional',
-    price: '$45/mo',
-    note: 'For advanced teams',
-    ctaLabel: 'Start free trial',
-    href: 'https://app.featul.com/auth/sign-up',
+  professional: {
+    key: "professional",
+    name: "Professional",
+    note: "For advanced teams",
+    monthlyPrice: 45,
+    yearlyPrice: 450,
+    href: "https://app.featul.com/auth/sign-up",
     features: [
-      'Everything in Starter',
-      'Up to 10 team members',
-      'Higher tagging limits',
-      'Unlimited changelog entries',
-      'Best for scale',
+      { title: "Everything in Starter" },
+      { title: "Up to 10 team members" },
+      { title: "Comprehensive tagging controls" },
+      { title: "Unlimited changelog entries" },
+      { title: "Best for scale" },
     ],
   },
-]
+}
 
-export const selfHostedPlan: PricingPlan = {
-  key: 'self_hosted',
-  name: 'Freedom (Self‑Hosted)',
-  price: 'Open Source',
-  note: 'All Enterprise features',
-  ctaLabel: 'View docs',
-  href: '/docs',
-  features: [
-    'Full source code access',
-    'Complete data control',
-    'No usage limits',
-    'Custom modifications',
-    'Community support',
-  ],
+export const PRICING_PLAN_ORDER: PricingPlanKey[] = ["free", "starter", "professional"]
+
+export function getPricingPlan(plan: PricingPlanKey) {
+  return PRICING_PLANS[plan]
+}
+
+export function formatPricingPrice(plan: PricingPlan, cycle: BillingCycle) {
+  const amount = cycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice
+  if (cycle === "yearly") return `$${amount} / year`
+  return `$${amount} / month`
 }

@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@featul/auth/session"
-import { findFirstAccessibleWorkspaceSlug } from "@/lib/workspace"
 import { CreateWorkspaceDialog } from "@/components/workspaces/CreateWorkspaceDialog"
+import { resolveAuthenticatedAppPath } from "@/lib/auth-redirect"
 
 export const revalidate = 30
 export const metadata: Metadata = createPageMetadata({
@@ -18,10 +18,10 @@ export default async function StartPage() {
   if (!session?.user) {
     redirect("/auth/sign-in?redirect=/start")
   }
-  const slug = await findFirstAccessibleWorkspaceSlug(session.user.id!)
-  if (slug) {
-    redirect(`/workspaces/${slug}`)
-  }
+  const userId = session.user.id
+  if (!userId) redirect("/auth/sign-in?redirect=/start")
+  const targetPath = await resolveAuthenticatedAppPath(userId, "")
+  if (targetPath !== "/start") redirect(targetPath)
   return (
     <div className="min-h-screen bg-background">
       <CreateWorkspaceDialog open />

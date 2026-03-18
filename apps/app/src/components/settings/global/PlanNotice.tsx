@@ -4,13 +4,13 @@ import React from "react";
 import { AccentBar } from "@featul/ui/components/cardElements";
 import { cn } from "@featul/ui/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { client } from "@featul/api/client";
 import {
   normalizePlan,
   getPlanLimits,
   type PlanKey,
   type PlanLimits,
 } from "@/lib/plan";
+import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace-client";
 
 type Feature =
   | "branding"
@@ -153,20 +153,14 @@ export default function PlanNotice({
   boardsCount?: number;
 }) {
   const { data } = useQuery({
-    queryKey: ["workspace-plan", slug],
-    queryFn: async () => {
-      const res = await client.workspace.bySlug.$get({ slug });
-      const d = await res.json();
-      return String(
-        (d as { workspace?: { plan?: string } })?.workspace?.plan || "free",
-      );
-    },
+    queryKey: workspaceQueryKeys.bySlug(slug),
+    queryFn: () => fetchWorkspaceBySlug(slug),
     enabled: !rawPlan,
     staleTime: 300000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  const plan = normalizePlan(rawPlan || data || "free");
+  const plan = normalizePlan(rawPlan || data?.plan || "free");
   const limits = getPlanLimits(plan);
   const msg = buildMessage(feature, plan, limits, {
     members: membersCount,

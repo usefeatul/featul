@@ -27,6 +27,7 @@ export function RequestContent({
   initialCollapsedIds,
 }: RequestContentProps) {
   const visibleCommentCount = initialComments?.length ?? post.commentCount
+  const normalizedContent = post.content?.replace(/\n{2,}/g, "\n")
 
   const rawDisplayAuthor = getDisplayUser(
     post.author
@@ -65,9 +66,9 @@ export function RequestContent({
 
       {/* Image */}
 
-      {post.content ? (
-        <div className="prose dark:prose-invert text-sm text-accent mb-6">
-          {post.content}
+      {normalizedContent ? (
+        <div className="prose dark:prose-invert text-sm text-accent mb-6 wrap-break-word whitespace-pre-wrap leading-6">
+          {normalizedContent}
         </div>
       ) : null}
 

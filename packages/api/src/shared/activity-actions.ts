@@ -1,0 +1,41 @@
+export const ACTIVITY_ACTIONS = {
+  TAG_CREATED: "tag_created",
+  TAG_DELETED: "tag_deleted",
+  POST_META_UPDATED: "post_meta_updated",
+  POST_BOARD_UPDATED: "post_board_updated",
+  POST_CREATED: "post_created",
+  POST_UPDATED: "post_updated",
+  POST_DELETED: "post_deleted",
+  POST_REPORTED: "post_reported",
+  POST_VOTE_REMOVED: "post_vote_removed",
+  POST_VOTED: "post_voted",
+  POST_MERGED: "post_merged",
+  COMMENT_CREATED: "comment_created",
+  COMMENT_UPDATED: "comment_updated",
+  COMMENT_MARKED_INTERNAL: "comment_marked_internal",
+  COMMENT_MARKED_EXTERNAL: "comment_marked_external",
+  COMMENT_DELETED: "comment_deleted",
+  COMMENT_VOTE_REMOVED: "comment_vote_removed",
+  COMMENT_VOTE_CHANGED: "comment_vote_changed",
+  COMMENT_VOTED: "comment_voted",
+  COMMENT_REPORTED: "comment_reported",
+  COMMENT_PINNED: "comment_pinned",
+  COMMENT_UNPINNED: "comment_unpinned",
+  CHANGELOG_TAG_CREATED: "changelog_tag_created",
+  CHANGELOG_TAG_DELETED: "changelog_tag_deleted",
+  CHANGELOG_NOTRA_CONNECTION_SAVED: "changelog_notra_connection_saved",
+  CHANGELOG_NOTRA_CONNECTION_DELETED: "changelog_notra_connection_deleted",
+  CHANGELOG_NOTRA_IMPORT_FAILED: "changelog_notra_import_failed",
+  CHANGELOG_NOTRA_IMPORTED: "changelog_notra_imported",
+  CHANGELOG_ENTRY_CREATED: "changelog_entry_created",
+  CHANGELOG_ENTRY_UPDATED: "changelog_entry_updated",
+  CHANGELOG_ENTRY_DELETED: "changelog_entry_deleted",
+  CHANGELOG_ENTRY_PUBLISHED: "changelog_entry_published",
+} as const
+
+export type ActivityAction = (typeof ACTIVITY_ACTIONS)[keyof typeof ACTIVITY_ACTIONS]
+
+export const IMPORT_RATE_LIMIT_ACTIONS = [
+  ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORTED,
+  ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORT_FAILED,
+] as const

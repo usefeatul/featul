@@ -35,6 +35,7 @@ export interface CompetitorEntry {
 export interface IntegrationEntry {
     slug: string;
     name: string;
+    website: string;
     category: "communication" | "project-management" | "analytics" | "automation";
     description: string;
     benefits: string[];
@@ -706,6 +707,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "slack",
         name: "Slack",
+        website: "https://slack.com",
         category: "communication",
         description: "Get instant notifications and triage feedback directly in Slack",
         benefits: [
@@ -718,6 +720,7 @@ export const INTEGRATIONS: IntegrationEntry[] = [
     {
         slug: "discord",
         name: "Discord",
+        website: "https://discord.com",
         category: "communication",
         description: "Engage your community and capture feedback from Discord channels",
         benefits: [
@@ -726,6 +729,58 @@ export const INTEGRATIONS: IntegrationEntry[] = [
             "Vote on features directly from Discord",
         ],
         relatedDefinitions: ["community-engagement", "user-feedback"],
+    },
+    {
+        slug: "notra",
+        name: "Notra",
+        website: "https://usenotra.com",
+        category: "project-management",
+        description: "Import changelog entries from Notra and keep product updates in sync",
+        benefits: [
+            "Bring Notra changelog entries into Featul",
+            "Centralize release communication in one workflow",
+            "Maintain continuity when switching tools",
+        ],
+        relatedDefinitions: ["changelog", "release-management"],
+    },
+    {
+        slug: "nolt",
+        name: "Nolt",
+        website: "https://nolt.io",
+        category: "project-management",
+        description: "Migrate feedback requests and comments from Nolt into Featul",
+        benefits: [
+            "Move existing Nolt boards without losing context",
+            "Keep historical votes and feedback conversations",
+            "Continue roadmap planning in a unified workspace",
+        ],
+        relatedDefinitions: ["product-feedback", "feature-voting"],
+    },
+    {
+        slug: "canny",
+        name: "Canny",
+        website: "https://canny.io",
+        category: "project-management",
+        description: "Import Canny requests and discussions into your Featul workspace",
+        benefits: [
+            "Preserve Canny feedback history during migration",
+            "Consolidate roadmap and changelog in one tool",
+            "Reduce migration friction for growing teams",
+        ],
+        relatedDefinitions: ["product-feedback", "roadmap"],
+    },
+    {
+        slug: "productboard",
+        name: "ProductBoard",
+        website: "https://www.productboard.com",
+        category: "project-management",
+        description: "Migrate ProductBoard posts, boards, and comments into Featul",
+        benefits: [
+            "Transfer ProductBoard data into a single feedback hub",
+            "Keep teams aligned with transparent roadmap updates",
+            "Speed up onboarding after migration",
+        ],
+        relatedDefinitions: ["product-management", "roadmap"],
     },
     // {
     //     slug: "microsoft-teams",

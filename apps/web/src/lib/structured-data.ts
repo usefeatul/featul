@@ -1,5 +1,12 @@
 import type { ToolItem } from "@/types/tools";
 
+function normalizeJsonLdText(value: unknown): string {
+  return String(value ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 type BuildFaqParams = {
   tool: ToolItem;
   categoryName: string;
@@ -104,12 +111,12 @@ export function buildBlogPostingSchema({ siteUrl, slug, post }: BuildBlogPosting
   const image = post.coverImage ? (post.coverImage.startsWith("http") ? post.coverImage : `${siteUrl}${post.coverImage}`) : `${siteUrl}/og.png`;
   const authors = (post.authors && post.authors.length > 0 ? post.authors : post.author ? [post.author] : [])
     .filter(Boolean)
-    .map((a) => ({ "@type": "Person", name: a!.name }));
+    .map((a) => ({ "@type": "Person", name: normalizeJsonLdText(a!.name) }));
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt || post.title,
+    headline: normalizeJsonLdText(post.title),
+    description: normalizeJsonLdText(post.excerpt || post.title),
     image,
     datePublished: post.publishedAt || undefined,
     mainEntityOfPage: page,
@@ -137,7 +144,7 @@ export function buildBlogBreadcrumbSchema({ siteUrl, slug, title }: BuildBlogBre
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Blog", item: `${siteUrl}/blog` },
-      { "@type": "ListItem", position: 2, name: title, item: `${siteUrl}/blog/${slug}` },
+      { "@type": "ListItem", position: 2, name: normalizeJsonLdText(title), item: `${siteUrl}/blog/${slug}` },
     ],
   };
 }

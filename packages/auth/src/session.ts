@@ -4,9 +4,15 @@ import { db, session as sessionTable } from "@featul/db";
 import { eq, desc } from "drizzle-orm";
 
 export type SessionData = {
-  session?: { token?: string }
-  user?: { id?: string; name?: string; email?: string; image?: string | null; twoFactorEnabled?: boolean }
-} | null
+  session?: { token?: string };
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    image?: string | null;
+    twoFactorEnabled?: boolean;
+  };
+} | null;
 
 export async function getServerSession(): Promise<SessionData> {
   try {
@@ -20,7 +26,14 @@ export async function getServerSession(): Promise<SessionData> {
 }
 
 export async function listServerSessions(): Promise<
-  { id: string; isCurrent: boolean; userAgent?: string | null; ipAddress?: string | null; createdAt?: string; expiresAt?: string }[]
+  {
+    id: string;
+    isCurrent: boolean;
+    userAgent?: string | null;
+    ipAddress?: string | null;
+    createdAt?: string;
+    expiresAt?: string;
+  }[]
 > {
   try {
     const s = await getServerSession();
@@ -44,8 +57,10 @@ export async function listServerSessions(): Promise<
       isCurrent: Boolean(currentToken) && String(r.token) === currentToken,
       userAgent: r.userAgent || null,
       ipAddress: r.ipAddress || null,
-      createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : undefined,
-      expiresAt: r.expiresAt instanceof Date ? r.expiresAt.toISOString() : undefined,
+      createdAt:
+        r.createdAt instanceof Date ? r.createdAt.toISOString() : undefined,
+      expiresAt:
+        r.expiresAt instanceof Date ? r.expiresAt.toISOString() : undefined,
     }));
   } catch {
     return [];
@@ -78,8 +93,100 @@ export async function listServerAccounts(): Promise<
   }
 }
 
+type DeviceSessionEntry = {
+  session?: {
+    token?: string | null;
+  } | null;
+  user?: {
+    id?: string | null;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
+};
+
+export async function listServerDeviceAccounts(): Promise<
+  { userId: string; name: string; image: string; isCurrent: boolean }[]
+> {
+  try {
+    const s = await getServerSession();
+    const currentUserId = String(s?.user?.id || "").trim();
+    if (!currentUserId) return [];
+
+    const currentToken = String((s as any)?.session?.token || "").trim();
+    const currentName =
+      String(s?.user?.name || s?.user?.email || "Account").trim() || "Account";
+    const currentImage = typeof s?.user?.image === "string" ? s.user.image : "";
+
+    const headersList = await headers();
+    const raw = await auth.api
+      .listDeviceSessions({
+        headers: headersList,
+      })
+      .catch(() => []);
+
+    const deviceSessions = Array.isArray(raw)
+      ? (raw as DeviceSessionEntry[])
+      : [];
+    const seenUserIds = new Set<string>();
+
+    const accounts = deviceSessions
+      .map((entry) => {
+        const userId = String(entry?.user?.id || "").trim();
+        const sessionToken = String(entry?.session?.token || "").trim();
+        if (!userId || !sessionToken || seenUserIds.has(userId)) return null;
+        seenUserIds.add(userId);
+
+        const email = String(entry?.user?.email || "").trim();
+        const fallbackName = email ? email.split("@")[0] : "Account";
+        const name =
+          String(entry?.user?.name || fallbackName || "Account").trim() ||
+          "Account";
+        const image =
+          typeof entry?.user?.image === "string" ? entry.user.image : "";
+
+        return {
+          userId,
+          name,
+          image,
+          isCurrent:
+            userId === currentUserId ||
+            (Boolean(currentToken) && sessionToken === currentToken),
+        };
+      })
+      .filter(
+        (
+          entry,
+        ): entry is {
+          userId: string;
+          name: string;
+          image: string;
+          isCurrent: boolean;
+        } => Boolean(entry),
+      );
+
+    if (!accounts.some((account) => account.isCurrent)) {
+      accounts.unshift({
+        userId: currentUserId,
+        name: currentName,
+        image: currentImage,
+        isCurrent: true,
+      });
+    }
+
+    return accounts;
+  } catch {
+    return [];
+  }
+}
+
 export async function listServerPasskeys(): Promise<
-  { id: string; name?: string | null; createdAt?: string | null; deviceType?: string | null }[]
+  {
+    id: string;
+    name?: string | null;
+    createdAt?: string | null;
+    deviceType?: string | null;
+  }[]
 > {
   try {
     const s = await getServerSession();

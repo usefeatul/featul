@@ -1,4 +1,5 @@
 import Script from "next/script"
+import { serializeJsonLd } from "@/lib/security";
 
 export type FaqItem = { q: string; a: string }
 
@@ -17,7 +18,7 @@ export default function FaqJsonLd({ faqs }: { faqs: FaqItem[] }) {
   }
   return (
     <Script id="schema-faq" type="application/ld+json" strategy="afterInteractive">
-      {JSON.stringify(data)}
+      {serializeJsonLd(data)}
     </Script>
   )
 }

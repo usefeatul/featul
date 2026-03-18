@@ -15,6 +15,7 @@ import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { getSlugFromPath } from "../../config/nav";
 import { CreatePostModal } from "../post/CreatePostModal";
+import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
 export default function MobileDrawerContent({
   pathname,
@@ -26,6 +27,7 @@ export default function MobileDrawerContent({
   initialWorkspace,
   initialWorkspaces,
   initialUser,
+  initialDeviceAccounts,
   onLinkClick,
 }: {
   pathname: string;
@@ -34,11 +36,26 @@ export default function MobileDrawerContent({
   secondaryNav: NavItem[];
   initialTimezone?: string | null;
   initialServerNow?: number;
-  initialWorkspace?: { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null } | undefined;
+  initialWorkspace?:
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        logo?: string | null;
+        plan?: "free" | "starter" | "professional" | null;
+      }
+    | undefined;
   initialWorkspaces?:
-  | { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }[]
-  | undefined;
-  initialUser?: { name?: string; email?: string; image?: string | null } | undefined;
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        logo?: string | null;
+        plan?: "free" | "starter" | "professional" | null;
+      }[]
+    | undefined;
+  initialUser?: UserIdentity | undefined;
+  initialDeviceAccounts?: DeviceAccount[] | undefined;
   onLinkClick?: () => void;
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
@@ -57,13 +74,30 @@ export default function MobileDrawerContent({
             <FeatulLogoIcon className="size-6" size={24} />
             <div className="text-lg font-semibold">Featul</div>
           </div>
-          <WorkspaceSwitcher className="mt-5.5 px-1" initialWorkspace={initialWorkspace} initialWorkspaces={initialWorkspaces} />
-          <Timezone className="mt-2 px-1" initialTimezone={initialTimezone} initialServerNow={initialServerNow} />
+          <WorkspaceSwitcher
+            className="mt-5.5 px-1"
+            initialWorkspace={initialWorkspace}
+            initialWorkspaces={initialWorkspaces}
+          />
+          <Timezone
+            className="mt-2 px-1"
+            initialTimezone={initialTimezone}
+            initialServerNow={initialServerNow}
+          />
         </div>
 
         <SidebarSection title="REQUEST">
           {primaryNav.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={pathname} count={statusCounts ? statusCounts[statusKey(item.label)] : undefined} mutedIcon={false} onClick={onLinkClick} />
+            <SidebarItem
+              key={item.label}
+              item={item}
+              pathname={pathname}
+              count={
+                statusCounts ? statusCounts[statusKey(item.label)] : undefined
+              }
+              mutedIcon={false}
+              onClick={onLinkClick}
+            />
           ))}
         </SidebarSection>
 
@@ -83,9 +117,18 @@ export default function MobileDrawerContent({
             user={initialUser}
           />
           {secondaryNav.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={pathname} mutedIcon onClick={onLinkClick} />
+            <SidebarItem
+              key={item.label}
+              item={item}
+              pathname={pathname}
+              mutedIcon
+              onClick={onLinkClick}
+            />
           ))}
-          <UserDropdown initialUser={initialUser} />
+          <UserDropdown
+            initialUser={initialUser}
+            initialDeviceAccounts={initialDeviceAccounts}
+          />
         </SidebarSection>
       </ScrollArea>
     </DrawerContent>

@@ -16,9 +16,17 @@ import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
 import { LoadingButton } from "@/components/global/loading-button";
 export default function DomainSection({ slug, initialPlan, initialInfo, initialDefaultDomain }: { slug: string; initialPlan?: string; initialInfo?: DomainInfo; initialDefaultDomain?: string }) {
   const [open, setOpen] = React.useState(false);
-  const { data, isLoading } = useDomain(slug, initialInfo !== undefined || initialDefaultDomain !== undefined || initialPlan !== undefined ? { info: (initialInfo || null) as DomainInfo, plan: String(initialPlan || "free"), defaultDomain: String(initialDefaultDomain || "") } : undefined);
+  const initialDomainData =
+    initialInfo !== undefined || initialDefaultDomain !== undefined || initialPlan !== undefined
+      ? {
+          info: initialInfo ?? null,
+          plan: String(initialPlan || "free"),
+          defaultDomain: String(initialDefaultDomain || ""),
+        }
+      : undefined;
+  const { data, isLoading } = useDomain(slug, initialDomainData);
   const plan = normalizePlan(data?.plan || "free");
-  const info = (data?.info || null) as DomainInfo;
+  const info = data?.info ?? null;
   const canUse = plan === "starter" || plan === "professional";
   const { loading: accessLoading, canEditDomain } = useCanEditDomain(slug);
 

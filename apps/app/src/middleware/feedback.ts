@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { db, workspace } from "@featul/db"
 import { eq } from "drizzle-orm"
+import { reroute } from "./reroute"
 
 async function findWorkspaceSlugForFeedbackHost(hostNoPort: string) {
   const baseHost = hostNoPort.replace(/^feedback\./, "")
@@ -45,32 +46,7 @@ export async function rewriteFeedback(req: NextRequest, ctx: { pathname: string;
     try {
       const targetSlug = await findWorkspaceSlugForFeedbackHost(hostNoPort)
       if (targetSlug) {
-        if (pathname === "/") {
-          const url = req.nextUrl.clone()
-          url.pathname = `/${targetSlug}/${targetSlug}`
-          return NextResponse.rewrite(url)
-        }
-        if (pathname === "/roadmap") {
-          const url = req.nextUrl.clone()
-          url.pathname = `/${targetSlug}/roadmap`
-          return NextResponse.rewrite(url)
-        }
-        if (pathname === "/changelog") {
-          const url = req.nextUrl.clone()
-          url.pathname = `/${targetSlug}/changelog`
-          return NextResponse.rewrite(url)
-        }
-        if (pathname.startsWith("/changelog/")) {
-          const url = req.nextUrl.clone()
-          url.pathname = `/${targetSlug}${pathname}`
-          return NextResponse.rewrite(url)
-        }
-        if (pathname.startsWith("/board/")) {
-          const url = req.nextUrl.clone()
-          url.pathname = `/${targetSlug}${pathname}`
-          return NextResponse.rewrite(url)
-        }
-        return NextResponse.next()
+        return reroute(req, targetSlug, pathname)
       }
     } catch {
       return NextResponse.next()
@@ -78,4 +54,3 @@ export async function rewriteFeedback(req: NextRequest, ctx: { pathname: string;
   }
   return null
 }
-

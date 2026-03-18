@@ -1,4 +1,10 @@
 import { z } from "zod"
+import {
+  isReservedWorkspaceName,
+  isReservedWorkspaceSlug,
+} from "@featul/api/shared/workspace-slug"
+
+export { isReservedWorkspaceName, isReservedWorkspaceSlug } from "@featul/api/shared/workspace-slug"
 
 const validTlds = new Set([
   "com","net","org","io","co","ai","app","dev","gg","xyz","me","us","uk","ca","de","fr","it","es","nl","br","in","jp","ru","ch","se","no","fi","pl","cz","sk","id","au","nz","be","dk","pt","gr","mx","za","ar","tw","kr","hk","sg","ie","il","at","tr","sa","ua","vn","ph","th","my","cl","pe","uy","lu","li","ro","bg","hu","lt","lv","ee","rs","ba","md","ge","am","az","by","kz","uz","tm","tj","kg","pa","do","cr","gt","hn","ni","jm","tt","pr","ae","qa","kw","om","bh","eg","ma","tn","dz","cc","biz","info","tech"
@@ -33,15 +39,17 @@ export const suggestDomainFix = (domain: string) => {
   return null
 }
 
-export const isNameValid = (name: string) => z.string().min(1).max(15).safeParse(name.trim()).success
+export const isNameValid = (name: string) =>
+  z.string().min(1).max(15).safeParse(name.trim()).success && !isReservedWorkspaceName(name)
 
-export const isSlugValid = (slug: string) => z.string().min(5).regex(/^[a-z]+$/).safeParse(slug.trim()).success
+export const isSlugValid = (slug: string) =>
+  z.string().min(5).regex(/^[a-z]+$/).safeParse(slug.trim()).success && !isReservedWorkspaceSlug(slug)
 
 export const isTimezoneValid = (tz: string) => z.string().min(1).safeParse(String(tz)).success
 
 export const workspaceSchema = z.object({
-  name: z.string().min(1).max(15),
+  name: z.string().min(1).max(15).refine((value) => !isReservedWorkspaceName(value)),
   domain: z.string().min(1).refine(isDomainValid),
-  slug: z.string().min(5).regex(/^[a-z]+$/),
+  slug: z.string().min(5).regex(/^[a-z]+$/).refine((value) => !isReservedWorkspaceSlug(value)),
   timezone: z.string().min(1),
 })

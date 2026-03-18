@@ -5,9 +5,9 @@ import { DotPattern } from "@/components/dot-pattern";
 
 export default function Setup() {
   return (
-    <section className="relative" data-component="Setup">
-      <DotPattern className="z-0" />
-      <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-12 lg:px-16 xl:px-18">
+    <section className="relative my-6 sm:my-8" data-component="Setup">
+      {/* <DotPattern className="z-0" /> */}
+      <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <SetupIcon aria-hidden className="size-5 text-primary mb-2 sm:mb-3" opacity={1} />
           <h2 className="mt-6 text-foreground text-balance text-2xl sm:text-3xl font-semibold">

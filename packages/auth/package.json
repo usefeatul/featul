@@ -16,6 +16,7 @@
     "./client": "./src/client.ts",
     "./auth": "./src/auth.ts",
     "./server": "./src/auth.ts",
+    "./billing": "./src/billing.ts",
     "./workspace": "./src/workspace.ts",
     "./password": "./src/password.ts",
     "./session": "./src/session.ts",
@@ -25,14 +26,14 @@
     "./*": "./src/*"
   },
   "dependencies": {
-    "@better-auth/passkey": "^1.4.18",
+    "@better-auth/passkey": "^1.5.5",
+    "@better-auth/stripe": "^1.5.5",
     "@featul/db": "workspace:*",
-    "@polar-sh/better-auth": "^1.6.4",
-    "@polar-sh/sdk": "^0.42.2",
     "@react-email/components": "^1.0.1",
     "@react-email/render": "^2.0.0",
     "@upstash/redis": "^1.35.7",
-    "better-auth": "1.4.18"
+    "better-auth": "1.5.5",
+    "stripe": "^20.4.1"
   },
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",

@@ -12,9 +12,30 @@ import {
 import type { CommentData } from "@/types/comment";
 import type { SubdomainRequestDetailData } from "@/types/subdomain";
 
-type RawPostRow = SubdomainRequestDetailData & {
+type RawPostRow = Omit<
+  SubdomainRequestDetailData,
+  | "createdAt"
+  | "publishedAt"
+  | "metadata"
+  | "upvotes"
+  | "commentCount"
+  | "isFeatured"
+  | "isLocked"
+  | "isPinned"
+  | "allowComments"
+  | "hidePublicMemberIdentity"
+> & {
   authorId: string | null;
-  metadata: Record<string, any> | null;
+  upvotes: number | null;
+  commentCount: number | null;
+  isFeatured?: boolean | null;
+  isLocked?: boolean | null;
+  isPinned?: boolean | null;
+  allowComments?: boolean | null;
+  hidePublicMemberIdentity?: boolean | null;
+  createdAt: string | Date;
+  publishedAt: string | Date | null;
+  metadata: Record<string, unknown> | null;
   author:
     | {
         name: string | null;
@@ -23,6 +44,16 @@ type RawPostRow = SubdomainRequestDetailData & {
       }
     | null;
 };
+
+function toIsoString(value: string | Date): string {
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : date.toISOString();
+}
+
+function toOptionalIsoString(value: string | Date | null): string | null {
+  if (!value) return null;
+  return toIsoString(value);
+}
 
 export type PublicBoardRequestDetailPageData = {
   workspaceSlug: string;
@@ -90,7 +121,28 @@ export async function loadPublicBoardRequestDetailPageData({
   const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id, "public");
 
   const post: SubdomainRequestDetailData = {
-    ...postWithAuthor,
+    id: postWithAuthor.id,
+    title: postWithAuthor.title,
+    content: postWithAuthor.content ?? null,
+    image: postWithAuthor.image ?? null,
+    upvotes: postWithAuthor.upvotes ?? 0,
+    commentCount: postWithAuthor.commentCount ?? 0,
+    roadmapStatus: postWithAuthor.roadmapStatus ?? null,
+    isFeatured: postWithAuthor.isFeatured ?? undefined,
+    isLocked: postWithAuthor.isLocked ?? undefined,
+    isPinned: postWithAuthor.isPinned ?? undefined,
+    boardName: postWithAuthor.boardName,
+    boardSlug: postWithAuthor.boardSlug,
+    allowComments: postWithAuthor.allowComments ?? undefined,
+    hidePublicMemberIdentity: postWithAuthor.hidePublicMemberIdentity ?? undefined,
+    role: postWithAuthor.role ?? null,
+    duplicateOfId: postWithAuthor.duplicateOfId ?? null,
+    mergedCount: postWithAuthor.mergedCount ?? 0,
+    mergedInto: postWithAuthor.mergedInto ?? null,
+    author: postWithAuthor.author,
+    metadata: postWithAuthor.metadata ?? null,
+    createdAt: toIsoString(postWithAuthor.createdAt),
+    publishedAt: toOptionalIsoString(postWithAuthor.publishedAt),
     hasVoted,
     isOwner,
     isFeatul: rawPost.authorId === "featul-founder",
@@ -142,5 +194,10 @@ async function loadPostWithAuthorAndBoard(
     includeSources: false,
   });
 
-  return { ...(p as any), mergedCount, mergedInto } as RawPostRow;
+  return {
+    ...p,
+    metadata: (p.metadata ?? null) as Record<string, unknown> | null,
+    mergedCount,
+    mergedInto,
+  };
 }

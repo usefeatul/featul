@@ -3,6 +3,10 @@ import { toRequestItemData } from "@/lib/request-item";
 import type { RequestItemData } from "@/types/request";
 import { createPageMetadata } from "@/lib/seo";
 import { readInitialSelectionState } from "@/lib/selection-server";
+import {
+  parsePositiveIntSearchParam,
+  resolveSearchParams,
+} from "@/utils/search-params";
 
 export const metadata = createPageMetadata({
   title: "Request",
@@ -24,19 +28,10 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return notFound();
 
-  let sp: SearchParams = {};
-  if (searchParams) {
-    try {
-      sp = await searchParams;
-    } catch {
-      console.error("Error parsing search params", searchParams);
-    }
-  }
+  const sp = (await resolveSearchParams(searchParams)) ?? {};
   const PAGE_SIZE = 20;
   const pageSize = PAGE_SIZE;
-  const rawPage = sp.page;
-  const pageValue = Array.isArray(rawPage) ? rawPage[0] : rawPage;
-  const page = Math.max(Number(pageValue) || 1, 1);
+  const page = parsePositiveIntSearchParam(sp.page);
   const offset = (page - 1) * pageSize;
 
   const rows = await getWorkspacePosts(slug, { order: "newest", limit: pageSize, offset });

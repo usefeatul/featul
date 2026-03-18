@@ -1,34 +1,49 @@
 import { Container } from "@/components/global/container";
-import { alternatives } from "@/config/alternatives";
+import { getAllAlternatives } from "@/config/alternatives";
 import AlternativesList from "@/components/alternatives/list";
 import { createPageMetadata } from "@/lib/seo";
-import { VerticalLines } from "@/components/vertical-lines";
+import { Hero } from "@/components/home/hero";
 
 export const metadata = createPageMetadata({
-  title:
-    "Alternatives - Compare featul with Canny, Featurebase, Nolt, Upvoty, UserJot",
+  title: "Best featul Alternatives for Feedback & Roadmaps",
   description:
     "Side‑by‑side comparisons covering features, privacy, and hosting differences to help you choose confidently.",
   path: "/alternatives",
 });
 
 export default function AlternativesIndexPage() {
-  return (
-    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18 relative">
-      <VerticalLines className="absolute z-0" />
-      <section className="pt-10 md:pt-16 relative z-10">
-        <div className="max-w-3xl">
-          <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">
-            Alternatives
-          </h1>
-          <p className="text-muted-foreground mt-4 text-base sm:text-lg">
-            Compare featul with similar products. Each page highlights key
-            features, privacy, and hosting differences.
-          </p>
-        </div>
+  const allAlternatives = getAllAlternatives().sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 
-        <AlternativesList items={alternatives} />
-      </section>
-    </Container>
+  return (
+    <main className="min-h-screen pt-16">
+      <Hero />
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14 pb-14 sm:pb-20">
+        <section className="mt-4">
+          <div className="border-b border-border/70 pb-6 sm:pb-8">
+            <p className="text-accent text-[11px] font-medium uppercase tracking-[0.14em]">
+              Alternatives
+            </p>
+            <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+              <h1 className="text-balance text-xl font-bold sm:text-2xl lg:text-3xl">
+                All product comparisons
+              </h1>
+              <span className="text-accent inline-flex items-center text-xs font-medium">
+                {allAlternatives.length} comparisons
+              </span>
+            </div>
+            <p className="text-accent mt-3 max-w-2xl text-sm sm:text-base">
+              Browse our complete list of detailed comparisons. See how featul
+              stacks up against each competitor on features, pricing, and value.
+            </p>
+          </div>
+
+          <div className="mt-2">
+            <AlternativesList items={allAlternatives} />
+          </div>
+        </section>
+      </Container>
+    </main>
   );
 }

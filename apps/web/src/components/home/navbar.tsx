@@ -37,7 +37,7 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-colors",
+        "fixed top-10 left-0 right-0 z-50 transition-colors",
         scrolled
           ? "backdrop-blur-lg bg-background/70"
           : "bg-background"
@@ -45,9 +45,9 @@ export default function Navbar() {
       data-component="Navbar"
     >
 
-      <Container maxWidth="6xl" className="relative px-4 sm:px-12 lg:px-16 xl:px-18">
-        <LinearSeparator className="absolute bottom-0 left-0 right-0 my-0" />
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6 flex items-center justify-between h-18">
+      <Container maxWidth="6xl" className="relative px-4 sm:px-10 lg:px-12 xl:px-14">
+        <LinearSeparator variant="line" className="absolute bottom-0 left-0 right-0 my-0" />
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6">
           <Link
             href="/"
             aria-label="Go home"
@@ -98,7 +98,7 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
-            <Button asChild size="sm" className="font-light ">
+            <Button asChild size="sm" className="font-heading ">
               <Link
                 href="https://app.featul.com"
                 data-sln-event="cta: start for free clicked"

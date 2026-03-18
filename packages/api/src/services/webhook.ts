@@ -1,5 +1,6 @@
 import type { IntegrationType } from "../validators/integration"
 import { isIntegrationsAllowed } from "../shared/plan"
+import { getEffectiveWorkspacePlan } from "@featul/auth/billing"
 
 /**
  * Post data structure for webhook notifications
@@ -241,7 +242,7 @@ export async function triggerPostWebhooks(
       return
     }
 
-    const plan = ws.plan ?? "free"
+    const plan = await getEffectiveWorkspacePlan(workspaceId)
     if (!isIntegrationsAllowed(plan)) {
       return
     }

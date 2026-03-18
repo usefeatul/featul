@@ -6,12 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem";
 import RoadmapColumn from "@/components/roadmap/RoadmapColumn";
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable";
+import RoadmapKeyboardShortcuts from "@/components/roadmap/RoadmapKeyboardShortcuts";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { ROADMAP_STATUSES, statusLabel } from "@/lib/roadmap";
 import {
   toRoadmapCardItem,
   useRoadmapBoardState,
 } from "@/hooks/useRoadmapBoardState";
+import { useRoadmapCanvasNavigation } from "@/hooks/useRoadmapCanvasNavigation";
 import type { RequestItemData } from "@/types/request";
 import type { PostUser } from "@/types/post";
 
@@ -29,6 +31,12 @@ export default function RoadmapBoard({
   initialCollapsedByStatus?: Record<string, boolean>;
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
+  const {
+    boardScrollRef,
+    setColumnRef,
+    jumpToStatus,
+    getCurrentStatusIndex,
+  } = useRoadmapCanvasNavigation(ROADMAP_STATUSES);
   const {
     sensors,
     grouped,
@@ -49,21 +57,39 @@ export default function RoadmapBoard({
     setCreatePostOpen(true);
   }, []);
 
+  const jumpToStatusIndex = React.useCallback(
+    (index: number) => {
+      const target = ROADMAP_STATUSES[index];
+      if (!target) return;
+      jumpToStatus(target);
+    },
+    [jumpToStatus],
+  );
+
   return (
-    <section className="space-y-4 min-w-0">
+    <section className="space-y-4 min-w-0 h-full min-h-[72vh]">
       <DndContext
         sensors={sensors}
         onDragStart={({ active }) => handleDragStart(String(active.id))}
         onDragEnd={({ over }) => handleDragEnd(over?.id as string | undefined)}
       >
-        <div className="w-full min-w-0 overflow-x-auto bg-background pb-2 [scrollbar-width:thin]">
-          <div className="flex min-w-full flex-col gap-4 md:min-w-max md:flex-row md:items-start">
+        <RoadmapKeyboardShortcuts
+          columnCount={ROADMAP_STATUSES.length}
+          getCurrentIndex={getCurrentStatusIndex}
+          onJumpToIndex={jumpToStatusIndex}
+        />
+        <div
+          ref={boardScrollRef}
+          className="w-full h-full min-h-[72vh] min-w-0 overflow-x-auto bg-background pb-2 [scrollbar-width:thin]"
+        >
+          <div className="flex min-w-full min-h-[72vh] flex-col gap-4 md:flex-row md:items-stretch">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
               const itemsForStatus = grouped[s];
               return (
                 <div
                   key={s}
-                  className={`w-full md:flex-none ${collapsedByStatus[s] ? "md:w-20" : "md:w-[308px]"}`}
+                  ref={(node) => setColumnRef(s, node)}
+                  className={`w-full md:h-full ${collapsedByStatus[s] ? "md:w-20 md:flex-none" : "md:min-w-[300px] md:flex-1 lg:min-w-[320px]"}`}
                 >
                   <RoadmapColumn
                     id={s}
@@ -100,7 +126,7 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className="rounded-sm border border-border bg-card dark:bg-black/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-3 py-3 pointer-events-none"
+              className="pointer-events-none overflow-hidden rounded-xl border border-border/80 bg-card shadow-[0_12px_28px_rgba(15,23,42,0.16)]"
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}

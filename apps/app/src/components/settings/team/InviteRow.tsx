@@ -10,6 +10,7 @@ import { getInitials } from "@/utils/user";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { roleBadgeClass } from "./role-badge";
+import { formatExpiryLabel } from "@/lib/time";
 
 interface InviteRowProps {
   slug: string;
@@ -24,6 +25,7 @@ export default function InviteRow({
 }: InviteRowProps) {
   const [menuFor, setMenuFor] = React.useState<string | null>(null);
   const updatingRef = React.useRef<boolean>(false);
+  const expiryLabel = formatExpiryLabel(i.expiresAt) || "Expires soon";
 
   const handleUpdateRole = async (newRole: "admin" | "member" | "viewer"): Promise<void> => {
     if (updatingRef.current) return;
@@ -101,7 +103,7 @@ export default function InviteRow({
           </Avatar>
           <div className="min-w-0">
             <div className="font-medium truncate">{i.email}</div>
-            <div className="text-xs text-accent">Expires {new Date(i.expiresAt).toLocaleDateString()}</div>
+            <div className="text-xs text-accent">{expiryLabel}</div>
           </div>
         </div>
       </TableCell>

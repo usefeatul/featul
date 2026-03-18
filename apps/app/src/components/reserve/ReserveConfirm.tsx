@@ -10,8 +10,10 @@ import { Link2, Mail } from "lucide-react"
 
 export default function ReserveConfirm() {
   const router = useRouter()
-  const routeParams = useParams() as any
-  const tokenParam = typeof routeParams?.token === "string" ? routeParams.token : undefined
+  const routeParams = useParams<{ token?: string | string[] }>()
+  const tokenParam = Array.isArray(routeParams?.token)
+    ? routeParams.token[0]
+    : routeParams?.token
 
   const [loading, setLoading] = React.useState(false)
   const [busy, setBusy] = React.useState(false)
@@ -30,13 +32,16 @@ export default function ReserveConfirm() {
     ;(async () => {
       const res = await lookupPromise
       if (!res.ok) {
-        if ((res as any)?.status === 410) setError("This reservation has expired.")
-        else setError("Invalid reservation link.")
+        if (mounted) {
+          if (res.status === 410) setError("This reservation has expired.")
+          else setError("Invalid reservation link.")
+        }
       } else {
-        const data = await res.json()
+        const data = await res.json().catch(() => null)
         const r = data?.reservation as { slug?: string; email?: string } | null
-        if (!r) setError("Reservation not found or expired.")
-        else {
+        if (!r) {
+          if (mounted) setError("Reservation not found or expired.")
+        } else {
           if (mounted) {
             setSlug(r.slug || null)
             setEmail(r.email || null)
@@ -60,8 +65,10 @@ export default function ReserveConfirm() {
       try {
         const s = await authClient.getSession()
         if (s?.data?.user?.email) router.replace(`/start?slug=${slug}`)
-      } catch {}
-    } catch (e) {
+      } catch {
+        // Non-blocking: fallback leaves user on the confirmation page.
+      }
+    } catch {
       toast.error("Confirmation failed")
     } finally {
       setBusy(false)
@@ -80,7 +87,7 @@ export default function ReserveConfirm() {
         ) : null}
         {loading ? (
           <div className="h-5 w-64 bg-muted rounded animate-pulse" />
-        ) : (
+        ) : !error ? (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Link2 className="size-4 text-accent" />
@@ -91,6 +98,8 @@ export default function ReserveConfirm() {
               <div className="rounded-md  bg-muted px-2 py-1 text-sm font-mono">{email}</div>
             </div>
           </div>
+        ) : (
+          <div className="text-sm text-accent">Reservation details unavailable.</div>
         )}
         <div className="mt-6">
           <Button type="button" variant="quiet" size="lg" className="w-full bg-primary/90 hover:bg-primary text-white" disabled={busy} onClick={handleConfirm}>

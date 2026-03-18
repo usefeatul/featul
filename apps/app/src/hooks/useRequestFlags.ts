@@ -27,7 +27,7 @@ export function useRequestFlags({ item }: UseRequestFlagsProps) {
 
     React.useEffect(() => {
         setOptimisticFlags(toFlagsState(item))
-    }, [item.isPinned, item.isLocked, item.isFeatured])
+    }, [item])
 
     const toggleFlag = async (key: RequestFlagKey) => {
         if (isUpdating) return

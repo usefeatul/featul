@@ -9,11 +9,16 @@ import { motion, type HTMLMotionProps } from "framer-motion"
 
 export interface NotificationItem {
   id: string
-  postSlug: string
+  type?: "feedback" | "changelog"
+  path?: string
+  postSlug?: string
+  entrySlug?: string
+  postTitle?: string | null
+  entryTitle?: string | null
   authorImage?: string | null
   authorName?: string | null
   isRead?: boolean
-  createdAt: string
+  createdAt: string | Date
 }
 
 interface NotificationsPanelProps {
@@ -59,7 +64,12 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
             {notifications.map((n) => (
               <li key={n.id} className="px-2">
                 <Link
-                  href={`/board/p/${n.postSlug}`}
+                  href={
+                    n.path ||
+                    (n.type === "changelog"
+                      ? `/changelog/p/${n.entrySlug}`
+                      : `/board/p/${n.postSlug}`)
+                  }
                   className="px-2 py-1.5 flex items-center gap-2 rounded-md  hover:bg-muted dark:hover:bg-black/40"
                   onClick={() => markRead(n.id)}
                 >
@@ -80,11 +90,17 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
                     <div className="text-xs">
                       <span className="font-bold">{n.authorName || "Guest"}</span>
                       <span className="text-accent ml-1 font-medium">
-                        mentioned you in feedback.
+                        {n.type === "changelog"
+                          ? "mentioned you in changelog."
+                          : "mentioned you in feedback."}
                       </span>
                     </div>
                     <div className="text-xs text-accent">
-                      {relativeTime(n.createdAt)}
+                      {relativeTime(
+                        typeof n.createdAt === "string"
+                          ? n.createdAt
+                          : n.createdAt.toISOString()
+                      )}
                     </div>
                   </div>
                 </Link>

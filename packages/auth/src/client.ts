@@ -8,7 +8,7 @@ import {
 } from "better-auth/client/plugins"
 import { emailOTPClient } from "better-auth/client/plugins"
 import { passkeyClient } from "@better-auth/passkey/client"
-import { polarClient } from "@polar-sh/better-auth/client"
+import { stripeClient } from "@better-auth/stripe/client"
 import type { AuthServer } from "./auth"
 
 export const authClient = createAuthClient({
@@ -20,7 +20,7 @@ export const authClient = createAuthClient({
     passkeyClient(),
     twoFactorClient(),
     multiSessionClient(),
-    polarClient(),
+    stripeClient({ subscription: true }),
   ],
 })
 

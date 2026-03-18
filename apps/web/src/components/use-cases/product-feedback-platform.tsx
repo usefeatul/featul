@@ -2,6 +2,7 @@ import Link from "next/link"
 import Script from "next/script"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/structured-data"
+import { serializeJsonLd } from "@/lib/security";
 
 export function ProductFeedbackUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({
@@ -16,7 +17,7 @@ export function ProductFeedbackUseCase() {
         id="usecase-breadcrumb-jsonld"
         type="application/ld+json"
         strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
       <article className="mx-auto w-full max-w-3xl py-16 md:py-24">
         <header className="mb-10 text-center">

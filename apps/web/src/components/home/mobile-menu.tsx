@@ -30,7 +30,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   return (
     <div className="md:hidden fixed inset-0 z-60 bg-background" data-component="MobileMenu">
       {/* Sheet header */}
-      <div className="flex items-center justify-between h-14 px-4 sm:px-12 lg:px-16 xl:px-18">
+      <div className="flex items-center justify-between h-14 px-4 sm:px-10 lg:px-12 xl:px-14">
         <span className="inline-flex items-center gap-2">
           <FeatulLogoIcon />
         </span>
@@ -44,7 +44,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           <MenuIcon className="text-accent size-5" />
         </Button>
       </div>
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
         <nav className="py-4 grid gap-2">
           {navigationConfig.main.map((item) => (
             <Link

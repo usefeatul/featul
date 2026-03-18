@@ -207,9 +207,22 @@ export function getAlternativeBySlug(slug: string): Alternative | undefined {
   return undefined
 }
 
+export function getAllAlternatives(): Alternative[] {
+  const merged = new Map<string, Alternative>()
+
+  for (const alt of alternatives) {
+    merged.set(alt.slug, alt)
+  }
+
+  for (const competitor of COMPETITORS) {
+    if (!merged.has(competitor.slug)) {
+      merged.set(competitor.slug, competitorToAlternative(competitor))
+    }
+  }
+
+  return Array.from(merged.values())
+}
+
 export function getAlternativeSlugs(): string[] {
-  // Combine both sources, removing duplicates
-  const manualSlugs = alternatives.map((a) => a.slug)
-  const programmaticSlugs = COMPETITORS.map((c) => c.slug)
-  return [...new Set([...manualSlugs, ...programmaticSlugs])]
+  return getAllAlternatives().map((alternative) => alternative.slug)
 }

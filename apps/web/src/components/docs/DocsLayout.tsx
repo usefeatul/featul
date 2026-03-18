@@ -11,7 +11,7 @@ export function DocsLayoutShell({ children }: DocsLayoutShellProps) {
     <div className="fixed inset-0 flex bg-muted">
       {/* Fixed sidebar */}
       <aside className="hidden lg:flex w-56 flex-col shrink-0">
-        <div className="h-full py-8 pl-6 pr-4 overflow-y-auto">
+        <div className="h-full py-8 pl-6 pr-4 overflow-y-auto scrollbar-hide">
           <DocsSidebar />
         </div>
       </aside>

@@ -16,6 +16,7 @@ import { LoadingButton } from "@/components/global/loading-button";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import { useSocialAuth } from "@/hooks/useSocialAuth";
 
 export default function SignUp({
   redirectTo,
@@ -34,6 +35,15 @@ export default function SignUp({
   const [submitted, setSubmitted] = useState(false);
   const { safeRedirectParam, redirect } = useAuthRedirect(redirectTo);
   const styles = getAuthLayoutStyles(embedded);
+  const { onGoogle, onGithub } = useSocialAuth({
+    redirect,
+    setIsLoading,
+    setError,
+    errorMessages: {
+      google: "Failed with Google",
+      github: "Failed with GitHub",
+    },
+  });
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -60,36 +70,6 @@ export default function SignUp({
       setError(message);
       toast.error(message);
     } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGoogleSignUp = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: redirect,
-      });
-    } catch {
-      setError("Failed with Google");
-      toast.error("Failed with Google");
-      setIsLoading(false);
-    }
-  };
-
-  const handleGithubSignUp = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      await authClient.signIn.social({
-        provider: "github",
-        callbackURL: redirect,
-      });
-    } catch {
-      setError("Failed with GitHub");
-      toast.error("Failed with GitHub");
       setIsLoading(false);
     }
   };
@@ -132,8 +112,8 @@ export default function SignUp({
     >
       <SocialAuthButtons
         isLoading={isLoading}
-        onGoogle={handleGoogleSignUp}
-        onGithub={handleGithubSignUp}
+        onGoogle={onGoogle}
+        onGithub={onGithub}
         className={styles.socialGapCls}
       />
 

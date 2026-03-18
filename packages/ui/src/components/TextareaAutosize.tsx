@@ -19,7 +19,8 @@ function TextareaAutosizeBase(
   useIsomorphicLayoutEffect(() => setIsRerendered(true), []);
 
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === "Enter" && !event.shiftKey) {
+    // Only hijack Enter when a custom submit handler is provided.
+    if (onEnterPress && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       onEnterPress?.();
     }
@@ -38,5 +39,4 @@ export const TextareaAutosize = forwardRef<
 >(TextareaAutosizeBase);
 
 TextareaAutosize.displayName = "TextareaAutosize";
-
 

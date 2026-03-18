@@ -7,7 +7,7 @@ import { SquareIcon } from "@featul/ui/icons/square";
 
 export default function Compare({ alt }: { alt: Alternative }) {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section className="py-16">
         <div className="mx-auto  w-full max-w-6xl px-0 sm:px-6">
           <SquareIcon aria-hidden className="size-5 text-primary" />
@@ -69,10 +69,10 @@ export default function Compare({ alt }: { alt: Alternative }) {
             </ul>
           </div>
 
-            <p className="text-accent/70 text-sm leading-6 text-balance sm:max-w-4xl">
-              Partial means the feature is available with limitations or
-              requires workarounds.
-            </p>
+          <p className="text-accent/70 text-sm leading-6 text-balance sm:max-w-4xl">
+            Partial means the feature is available with limitations or
+            requires workarounds.
+          </p>
           {/* <div className="mt-10 flex items-stretch gap-2">
             <AccentBar width={6} />
           </div> */}

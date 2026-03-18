@@ -1,3 +1,5 @@
+import type { ActivityAction } from "@featul/api/shared/activity-actions";
+
 export interface TagSummary {
     id?: string;
     name?: string;
@@ -22,8 +24,9 @@ export interface ActivityMetadata {
 
 export interface ActivityItem {
     id: string;
-    type: string;
+    type: ActivityAction | string;
     entity?: string;
+    entityId?: string;
     title?: string;
     summary?: string;
     status?: string;

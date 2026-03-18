@@ -9,34 +9,61 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { useQuery } from "@tanstack/react-query"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
+
+type BoardItem = {
+  id: string
+  name: string
+  slug: string
+}
+
+type BoardsResponse = {
+  boards?: Array<{
+    id?: string
+    name?: string
+    slug?: string
+  }>
+}
 
 export default function BoardsAction({ className = "" }: { className?: string }) {
   const router = useRouter()
   const pathname = usePathname() || "/"
   const sp = useSearchParams()
   const [open, setOpen] = useFilterPopover("boards")
+  const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
 
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["boards", getSlugFromPath(pathname)],
+    queryKey: ["boards", slug],
+    enabled: Boolean(slug),
     queryFn: async () => {
-      const res = await client.board.byWorkspaceSlug.$get({ slug: getSlugFromPath(pathname) })
-      const data = await res.json()
-      const boards = (data?.boards || []).filter((b: any) => b?.slug !== "roadmap" && b?.slug !== "changelog")
-      return boards.map((b: any) => ({ id: b.id, name: b.name, slug: b.slug }))
+      const res = await client.board.byWorkspaceSlug.$get({ slug })
+      const data = (await res.json().catch(() => null)) as BoardsResponse | null
+      const boards = (Array.isArray(data?.boards) ? data.boards : []).filter(
+        (board): board is Required<Pick<BoardItem, "id" | "name" | "slug">> =>
+          typeof board?.id === "string" &&
+          typeof board?.name === "string" &&
+          typeof board?.slug === "string" &&
+          board.slug !== "roadmap" &&
+          board.slug !== "changelog"
+      )
+      return boards.map((board): BoardItem => ({
+        id: board.id,
+        name: board.name,
+        slug: board.slug,
+      }))
     },
     staleTime: 300_000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   })
 
-  const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
-
-  const selected = React.useMemo(() => parseArrayParam(sp.get("board")), [sp])
-  const isAllSelected = React.useMemo(() => isAllSel(items.map((i: { slug: string }) => i.slug), selected), [items, selected])
-
-  React.useEffect(() => { }, [slug])
+  const selected = React.useMemo(
+    () => parseRequestFiltersFromSearchParams(sp).board,
+    [sp]
+  )
+  const isAllSelected = React.useMemo(() => isAllSel(items.map((i) => i.slug), selected), [items, selected])
 
   const toggle = (slugItem: string) => {
     const next = toggleValue(selected, slugItem)
@@ -61,7 +88,7 @@ export default function BoardsAction({ className = "" }: { className?: string })
       })
       return
     }
-    const next = items.map((i: { slug: string }) => i.slug)
+    const next = items.map((i) => i.slug)
     const href = buildRequestsUrl(slug, sp, { board: next })
     React.startTransition(() => {
       router.push(href, { scroll: false })
@@ -88,7 +115,7 @@ export default function BoardsAction({ className = "" }: { className?: string })
           <div className="p-3 text-sm text-accent">No boards</div>
         ) : (
           <PopoverList>
-            {items.map((it: { id: string; name: string; slug: string }) => (
+            {items.map((it) => (
               <PopoverListItem
                 key={it.id}
                 role="menuitemcheckbox"

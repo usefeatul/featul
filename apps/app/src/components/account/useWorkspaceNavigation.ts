@@ -2,19 +2,11 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { client } from "@featul/api/client";
+import { fetchUserWorkspaces } from "@/lib/workspace-client";
 
-type WorkspaceLite = {
-  slug?: string;
-};
-
-function mapWorkspaceSlugs(payload: unknown): string[] {
-  const workspaces = Array.isArray((payload as { workspaces?: WorkspaceLite[] } | null)?.workspaces)
-    ? ((payload as { workspaces?: WorkspaceLite[] }).workspaces as WorkspaceLite[])
-    : [];
-
-  return workspaces
-    .map((workspace) => String(workspace?.slug || "").trim())
+function mapWorkspaceSlugs(slugs: Array<string | undefined>): string[] {
+  return slugs
+    .map((slug) => String(slug || "").trim())
     .filter(Boolean);
 }
 
@@ -22,32 +14,32 @@ export function useWorkspaceNavigation(currentSlug: string) {
   const router = useRouter();
 
   const getWorkspaceSlugs = React.useCallback(async () => {
-    const response = await client.workspace.listMine.$get();
-    const payload = await response.json().catch(() => null);
-    return mapWorkspaceSlugs(payload);
+    const workspaces = await fetchUserWorkspaces();
+    return mapWorkspaceSlugs(workspaces.map((workspace) => workspace.slug));
   }, []);
+
+  const resolveWorkspaceSlug = React.useCallback(async () => {
+    if (currentSlug) return currentSlug;
+
+    try {
+      const workspaceSlugs = await getWorkspaceSlugs();
+      return workspaceSlugs[0] || "";
+    } catch {
+      return "";
+    }
+  }, [currentSlug, getWorkspaceSlugs]);
 
   const pushWorkspaceRoute = React.useCallback(
     async (path: "account/profile" | "settings/branding") => {
-      if (currentSlug) {
-        router.push(`/workspaces/${currentSlug}/${path}`);
-        return;
-      }
+      const targetSlug = await resolveWorkspaceSlug();
 
-      try {
-        const workspaceSlugs = await getWorkspaceSlugs();
-        const firstSlug = workspaceSlugs[0] || "";
-
-        if (firstSlug) {
-          router.push(`/workspaces/${firstSlug}/${path}`);
-        } else {
-          router.push("/workspaces/new");
-        }
-      } catch {
+      if (targetSlug) {
+        router.push(`/workspaces/${targetSlug}/${path}`);
+      } else {
         router.push("/workspaces/new");
       }
     },
-    [currentSlug, getWorkspaceSlugs, router],
+    [resolveWorkspaceSlug, router],
   );
 
   const navigateToAccountProfile = React.useCallback(async () => {

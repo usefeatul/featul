@@ -28,7 +28,7 @@ interface CommentListProps {
 
 export default function CommentList({
   postId,
-  initialCount = 0,
+  initialCount: _initialCount = 0,
   workspaceSlug,
   surface = "workspace",
   allowComments = true,

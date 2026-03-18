@@ -12,6 +12,9 @@ type PlanOptionCardProps = {
   currentPlan: PlanKey
   billingCycle: BillingCycle
   workspaceId?: string
+  workspaceSlug: string
+  canManageBilling: boolean
+  currentSubscriptionId?: string
 }
 
 export default function PlanOptionCard({
@@ -19,6 +22,9 @@ export default function PlanOptionCard({
   currentPlan,
   billingCycle,
   workspaceId,
+  workspaceSlug,
+  canManageBilling,
+  currentSubscriptionId,
 }: PlanOptionCardProps) {
   const plan = getPlan(planKey)
   const isCurrent = currentPlan === planKey
@@ -75,6 +81,9 @@ export default function PlanOptionCard({
           billingCycle={billingCycle}
           isCurrent={isCurrent}
           workspaceId={workspaceId}
+          workspaceSlug={workspaceSlug}
+          canManageBilling={canManageBilling}
+          currentSubscriptionId={currentSubscriptionId}
           className="h-9 w-full text-sm"
         />
       </div>

@@ -5,14 +5,7 @@ import type { DomainInfo } from "../types/domain";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isDomainValid, suggestDomainFix } from "./validators";
-
-async function safeJson<T = unknown>(res: Response): Promise<T | null> {
-  try {
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
-}
+import { safeJson } from "@/lib/api-response";
 
 interface DomainInfoResponse {
   domain?: DomainInfo;
@@ -92,7 +85,8 @@ export async function verifyDomain(
     ok: res.ok,
     status: data?.status,
     cnameValid: data?.cnameValid,
-    txtValid: data?.txtValid
+    txtValid: data?.txtValid,
+    message: data?.message,
   };
 }
 
@@ -110,14 +104,14 @@ export async function deleteDomain(
 
 type UseDomainActionsOptions = {
   slug: string;
-  info: DomainInfo;
+  info: DomainInfo | null;
   canUse: boolean;
   canEditDomain: boolean;
   onCreated?: () => void;
 };
 
 type UseDomainData = {
-  info: DomainInfo;
+  info: DomainInfo | null;
   plan: string;
   defaultDomain: string;
 };

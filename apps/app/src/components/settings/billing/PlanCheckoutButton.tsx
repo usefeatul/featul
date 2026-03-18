@@ -5,13 +5,16 @@ import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
 import { LoadingButton } from "@/components/global/loading-button"
-import { type BillingCycle, type PlanOption, getCheckoutSlug } from "./billing-data"
+import { type BillingCycle, type PlanOption } from "./billing-data"
 
 type PlanCheckoutButtonProps = {
   plan: PlanOption
   billingCycle: BillingCycle
   isCurrent: boolean
   workspaceId?: string
+  workspaceSlug: string
+  canManageBilling: boolean
+  currentSubscriptionId?: string
   className?: string
 }
 
@@ -20,6 +23,9 @@ export default function PlanCheckoutButton({
   billingCycle,
   isCurrent,
   workspaceId,
+  workspaceSlug,
+  canManageBilling,
+  currentSubscriptionId,
   className,
 }: PlanCheckoutButtonProps) {
   const [isCheckingOut, setIsCheckingOut] = React.useState(false)
@@ -32,23 +38,27 @@ export default function PlanCheckoutButton({
       toast.error("Workspace not found")
       return
     }
-
-    const slug = getCheckoutSlug(plan.id, billingCycle)
-    if (!slug) {
+    if (!canManageBilling) {
+      toast.error("Only the workspace owner can manage billing")
+      return
+    }
+    if (isFreePlan) {
       toast.error("Free plan doesn't require checkout")
       return
     }
 
     try {
       setIsCheckingOut(true)
-      const { error, data } = await authClient.checkout({
-        slug,
+      const billingUrl = `${window.location.origin}/workspaces/${workspaceSlug}/settings/billing`
+      const { error, data } = await authClient.subscription.upgrade({
+        plan: plan.id,
+        annual: billingCycle === "yearly",
         referenceId: workspaceId,
-        metadata: {
-          plan: plan.id,
-          billingCycle,
-        },
-        redirect: false,
+        subscriptionId: currentSubscriptionId,
+        successUrl: billingUrl,
+        cancelUrl: billingUrl,
+        returnUrl: billingUrl,
+        disableRedirect: true,
       })
 
       if (error) {
@@ -56,15 +66,12 @@ export default function PlanCheckoutButton({
         return
       }
 
-      const url =
-        data && typeof data === "object" && "url" in data
-          ? String((data as { url?: string }).url || "")
-          : ""
-      if (!url) {
+      if (!data?.url) {
         toast.error("Checkout URL missing")
         return
       }
-      window.location.href = url
+
+      window.location.href = data.url
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to start checkout"
       toast.error(message)
@@ -96,7 +103,7 @@ export default function PlanCheckoutButton({
         isProfessional && "bg-orange-400! text-white! hover:bg-orange-400! dark:bg-orange-400! dark:hover:bg-orange-400! border-orange-400!",
       )}
       loading={isCheckingOut}
-      disabled={isCurrent || isCheckingOut}
+      disabled={!canManageBilling || isCurrent || isCheckingOut}
       onClick={handleCheckout}
     >
       Choose plan

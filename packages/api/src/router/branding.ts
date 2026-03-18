@@ -5,7 +5,7 @@ import { workspace, brandingConfig, workspaceMember } from "@featul/db"
 import { checkSlugInputSchema } from "../validators/workspace"
 import { updateBrandingInputSchema } from "../validators/branding"
 import { getPlanLimits } from "../shared/plan"
-import { requireBrandingManagerBySlug } from "../shared/access"
+import { getWorkspaceAccessPlan, requireBrandingManagerBySlug } from "../shared/access"
 
 export function createBrandingRouter() {
   return j.router({
@@ -38,7 +38,7 @@ export function createBrandingRouter() {
       .input(updateBrandingInputSchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBrandingManagerBySlug(ctx, input.slug)
-        const limits = getPlanLimits(String(ws.plan || "free"))
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id))
 
         const update: Record<string, unknown> = {}
         if (!limits.allowBranding) {

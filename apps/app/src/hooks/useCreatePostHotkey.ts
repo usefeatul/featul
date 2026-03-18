@@ -25,8 +25,12 @@ export function useCreatePostHotkey({ enabled = true, onOpen }: UseCreatePostHot
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return
-      if (!event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return
+      if (event.altKey || event.shiftKey) return
       if (event.key.toLowerCase() !== "c") return
+
+      const usesPlatformModifier =
+        (event.metaKey && !event.ctrlKey) || (event.ctrlKey && !event.metaKey)
+      if (!usesPlatformModifier) return
 
       const target = event.target instanceof HTMLElement ? event.target : null
       const activeElement =

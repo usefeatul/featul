@@ -15,6 +15,15 @@ type Tag = {
   color?: string | null
 }
 
+type TagsByWorkspaceResponse = {
+  tags?: Array<{
+    id?: string | number
+    name?: string
+    slug?: string
+    color?: string | null
+  }>
+}
+
 type TagsPickerProps = {
   workspaceSlug: string
   postId: string
@@ -36,14 +45,14 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
     queryKey: ["tags", workspaceSlug],
     queryFn: async () => {
       const res = await client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug })
-      const data = await res.json()
-      const tags = (data as any)?.tags || []
-      return tags.map((t: any) => ({
-        id: String(t.id),
-        name: String(t.name || ""),
-        slug: String(t.slug || ""),
-        color: t.color ?? null,
-      })) as Tag[]
+      const data = (await res.json().catch(() => null)) as TagsByWorkspaceResponse | null
+      const tags = Array.isArray(data?.tags) ? data.tags : []
+      return tags.map((tag): Tag => ({
+        id: String(tag.id ?? ""),
+        name: String(tag.name ?? ""),
+        slug: String(tag.slug ?? ""),
+        color: tag.color ?? null,
+      }))
     },
     staleTime: 300_000,
     gcTime: 300_000,
@@ -56,7 +65,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
       const res = await client.post.update.$post({
         postId,
         tags: nextIds,
-      } as any)
+      })
       if (!res.ok) {
         throw new Error("Failed to update tags")
       }

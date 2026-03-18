@@ -1,65 +1,107 @@
-"use client"
-import React, { useEffect, useMemo, useState } from "react"
-import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@featul/ui/components/button"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
-import { buildRequestsUrl, buildWorkspaceUrl } from "@/utils/request"
-import PaginationHotkeys from "@/components/pagination/PaginationHotkeys"
-import type { RequestPaginationProps as Props } from "@/types/pagination"
-import type { PostDeletedEventDetail, RequestsPageRefreshingDetail } from "@/types/events"
+"use client";
+import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@featul/ui/components/button";
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
+import {
+  buildChangelogUrl,
+  buildRequestsUrl,
+  buildWorkspaceUrl,
+} from "@/utils/request";
+import PaginationHotkeys from "@/components/pagination/PaginationHotkeys";
+import type { RequestPaginationProps as Props } from "@/types/pagination";
+import type { WorkspaceScopedEventDetail } from "@/types/events";
 
-export default function RequestPagination({ workspaceSlug, page, pageSize, totalCount, variant = "requests" }: Props) {
-  const router = useRouter()
-  const params = useSearchParams()
-  const [deletedCount, setDeletedCount] = useState(0)
-  const [isPageRefreshing, setIsPageRefreshing] = useState(false)
-  const mk = variant === "workspace" ? buildWorkspaceUrl : buildRequestsUrl
+export default function RequestPagination({
+  workspaceSlug,
+  page,
+  pageSize,
+  totalCount,
+  variant = "requests",
+}: Props) {
+  const router = useRouter();
+  const params = useSearchParams();
+  const [deletedCount, setDeletedCount] = useState(0);
+  const [isPageRefreshing, setIsPageRefreshing] = useState(false);
+  const mk =
+    variant === "workspace"
+      ? buildWorkspaceUrl
+      : variant === "changelog"
+        ? buildChangelogUrl
+        : buildRequestsUrl;
+  const deletedEventName =
+    variant === "changelog" ? "changelog:deleted" : "post:deleted";
+  const refreshingEventName =
+    variant === "changelog"
+      ? "changelog:page-refreshing"
+      : "requests:page-refreshing";
 
-  const effectiveTotal = Math.max(totalCount - deletedCount, 0)
+  const effectiveTotal = Math.max(totalCount - deletedCount, 0);
 
   useEffect(() => {
-    setDeletedCount(0)
-    setIsPageRefreshing(false)
-  }, [workspaceSlug, totalCount])
+    setDeletedCount(0);
+    setIsPageRefreshing(false);
+  }, [workspaceSlug, totalCount]);
 
   useEffect(() => {
-    if (!workspaceSlug) return
-    if (typeof window === "undefined") return
-    const handlePostDeleted = (event: CustomEvent<PostDeletedEventDetail>) => {
-      const detail = event.detail
-      if (detail.workspaceSlug !== workspaceSlug) return
-      setDeletedCount((prev) => prev + 1)
-    }
-    window.addEventListener("post:deleted", handlePostDeleted as EventListener)
-    return () => window.removeEventListener("post:deleted", handlePostDeleted as EventListener)
-  }, [workspaceSlug])
+    if (!workspaceSlug) return;
+    if (typeof window === "undefined") return;
+    const handlePostDeleted = (
+      event: CustomEvent<WorkspaceScopedEventDetail>,
+    ) => {
+      const detail = event.detail;
+      if (detail.workspaceSlug !== workspaceSlug) return;
+      setDeletedCount((prev) => prev + 1);
+    };
+    window.addEventListener(
+      deletedEventName,
+      handlePostDeleted as EventListener,
+    );
+    return () =>
+      window.removeEventListener(
+        deletedEventName,
+        handlePostDeleted as EventListener,
+      );
+  }, [workspaceSlug, deletedEventName]);
 
   useEffect(() => {
-    if (!workspaceSlug) return
-    if (typeof window === "undefined") return
-    const handlePageRefreshing = (event: CustomEvent<RequestsPageRefreshingDetail>) => {
-      const detail = event.detail
-      if (detail.workspaceSlug !== workspaceSlug) return
-      setIsPageRefreshing(true)
-    }
-    window.addEventListener("requests:page-refreshing", handlePageRefreshing as EventListener)
-    return () => window.removeEventListener("requests:page-refreshing", handlePageRefreshing as EventListener)
-  }, [workspaceSlug])
+    if (!workspaceSlug) return;
+    if (typeof window === "undefined") return;
+    const handlePageRefreshing = (
+      event: CustomEvent<WorkspaceScopedEventDetail>,
+    ) => {
+      const detail = event.detail;
+      if (detail.workspaceSlug !== workspaceSlug) return;
+      setIsPageRefreshing(true);
+    };
+    window.addEventListener(
+      refreshingEventName,
+      handlePageRefreshing as EventListener,
+    );
+    return () =>
+      window.removeEventListener(
+        refreshingEventName,
+        handlePageRefreshing as EventListener,
+      );
+  }, [workspaceSlug, refreshingEventName]);
 
   const { totalPages, prevHref, nextHref } = useMemo(() => {
-    const tp = Math.max(1, Math.ceil(Math.max(effectiveTotal, 0) / Math.max(pageSize, 1)))
-    const pPrev = Math.max(page - 1, 1)
-    const pNext = Math.min(page + 1, tp)
+    const tp = Math.max(
+      1,
+      Math.ceil(Math.max(effectiveTotal, 0) / Math.max(pageSize, 1)),
+    );
+    const pPrev = Math.max(page - 1, 1);
+    const pNext = Math.min(page + 1, tp);
     return {
       totalPages: tp,
       prevHref: mk(workspaceSlug, params as URLSearchParams, { page: pPrev }),
       nextHref: mk(workspaceSlug, params as URLSearchParams, { page: pNext }),
-    }
-  }, [workspaceSlug, page, pageSize, effectiveTotal, params, mk])
+    };
+  }, [workspaceSlug, page, pageSize, effectiveTotal, params, mk]);
 
-  if (isPageRefreshing) return null
-  if (effectiveTotal <= pageSize) return null
+  if (isPageRefreshing) return null;
+  if (effectiveTotal <= pageSize) return null;
 
   return (
     <div className="mt-2 mb-2 flex w-full flex-col items-stretch justify-center gap-2 sm:mb-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
@@ -72,17 +114,49 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
       <div className="order-1 flex min-w-0 w-full flex-col items-end gap-2 sm:order-2 sm:w-auto">
         <div className="flex items-center gap-2">
           <Toolbar size="sm">
-            <Button asChild variant="card" size="sm" disabled={page <= 1} className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card">
-              <Link prefetch={false} href={prevHref} rel="prev" aria-label="Previous page" aria-keyshortcuts="z" title="Prev (Z)" className="group">
+            <Button
+              asChild
+              variant="card"
+              size="sm"
+              disabled={page <= 1}
+              className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+            >
+              <Link
+                prefetch={false}
+                href={prevHref}
+                rel="prev"
+                aria-label="Previous page"
+                aria-keyshortcuts="z"
+                title="Prev (Z)"
+                className="group"
+              >
                 <span className="text-xs font-medium">Prev</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                  Z
+                </span>
               </Link>
             </Button>
             <ToolbarSeparator />
-            <Button asChild variant="card" size="sm" disabled={page >= totalPages || effectiveTotal === 0} className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card">
-              <Link prefetch={false} href={nextHref} rel="next" aria-label="Next page" aria-keyshortcuts="x" title="Next (X)" className="group">
+            <Button
+              asChild
+              variant="card"
+              size="sm"
+              disabled={page >= totalPages || effectiveTotal === 0}
+              className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+            >
+              <Link
+                prefetch={false}
+                href={nextHref}
+                rel="next"
+                aria-label="Next page"
+                aria-keyshortcuts="x"
+                title="Next (X)"
+                className="group"
+              >
                 <span className="text-xs font-medium">Next</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">X</span>
+                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                  X
+                </span>
               </Link>
             </Button>
           </Toolbar>
@@ -92,5 +166,5 @@ export default function RequestPagination({ workspaceSlug, page, pageSize, total
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -13,6 +13,7 @@ import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { LastUsedTag } from "@/components/auth/LastUsedTag";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import { useSocialAuth } from "@/hooks/useSocialAuth";
 
 export default function SignIn({
   redirectTo,
@@ -31,40 +32,19 @@ export default function SignIn({
   const [lastUsedMethod, setLastUsedMethod] = useState<string | null>(null);
   const { safeRedirectParam, redirect } = useAuthRedirect(redirectTo);
   const styles = getAuthLayoutStyles(embedded);
+  const { onGoogle, onGithub } = useSocialAuth({
+    redirect,
+    setIsLoading,
+    setError,
+    errorMessages: {
+      google: "Failed to sign in with Google",
+      github: "Failed to sign in with GitHub",
+    },
+  });
 
   useEffect(() => {
     setLastUsedMethod(authClient.getLastUsedLoginMethod());
   }, []);
-
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: redirect,
-      });
-    } catch {
-      setError("Failed to sign in with Google");
-      toast.error("Failed to sign in with Google");
-      setIsLoading(false);
-    }
-  };
-
-  const handleGithubSignIn = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      await authClient.signIn.social({
-        provider: "github",
-        callbackURL: redirect,
-      });
-    } catch {
-      setError("Failed to sign in with GitHub");
-      toast.error("Failed to sign in with GitHub");
-      setIsLoading(false);
-    }
-  };
 
   const handlePasskeySignIn = async () => {
     setIsLoading(true);
@@ -164,8 +144,8 @@ export default function SignIn({
     >
       <SocialAuthButtons
         isLoading={isLoading}
-        onGoogle={handleGoogleSignIn}
-        onGithub={handleGithubSignIn}
+        onGoogle={onGoogle}
+        onGithub={onGithub}
         lastUsedMethod={lastUsedMethod}
         className={styles.socialGapCls}
       />

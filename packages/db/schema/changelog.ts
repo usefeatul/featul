@@ -5,6 +5,7 @@ import {
   json,
   uniqueIndex,
   index,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { board } from "./feedback";
@@ -69,3 +70,35 @@ export const changelogEntry = pgTable(
 
 export type ChangelogEntry = typeof changelogEntry.$inferSelect;
 export type NewChangelogEntry = typeof changelogEntry.$inferInsert;
+
+// Changelog mentions for notifications
+export const changelogMention = pgTable(
+  "changelog_mention",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    entryId: text("entry_id")
+      .notNull()
+      .references(() => changelogEntry.id, { onDelete: "cascade" }),
+    mentionedUserId: text("mentioned_user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    mentionedBy: text("mentioned_by")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    isRead: boolean("is_read").default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) =>
+    ({
+      changelogMentionEntryIdx: index("changelog_mention_entry_id_idx").on(
+        table.entryId,
+      ),
+      changelogMentionMentionedUserIdx: index(
+        "changelog_mention_mentioned_user_id_idx",
+      ).on(table.mentionedUserId),
+    }) as const,
+);
+
+export type ChangelogMention = typeof changelogMention.$inferSelect;

@@ -8,21 +8,21 @@ import { ChevronDownIcon } from 'lucide-react'
 export default function FAQsFour() {
 
     return (
-        <Container  maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
-            <section className="py-16 md:py-24" data-component="FAQ">
+        <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <section className="my-6 sm:my-8 py-4 sm:py-4 md:py-6" data-component="FAQ">
                 <div className="max-w-5xl px-1 sm:px-6">
-                <div className="max-w-xl text-left">
-                    <h2 className="text-balance text-3xl font-semibold">Questions &amp; Answers</h2>
-                </div>
+                    <div className="max-w-xl text-left">
+                        <h2 className="text-balance text-3xl font-semibold">Questions &amp; Answers</h2>
+                    </div>
 
-                <div className="mt-4 max-w-xl">
-                    <p className="text-accent text-md">
-                        Get the essentials of feedback management and see how featul helps you ship better products.
-                    </p>
-                    <Accordion
-                        type="single"
-                        collapsible
-                        className="w-full">
+                    <div className="mt-4 max-w-xl">
+                        <p className="text-accent text-md">
+                            Get the essentials of feedback management and see how featul helps you ship better products.
+                        </p>
+                        <Accordion
+                            type="single"
+                            collapsible
+                            className="w-full">
                             {faqItems.map((item) => (
                                 <div
                                     className="group"

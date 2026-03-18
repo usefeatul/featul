@@ -13,8 +13,8 @@ import Link from "next/link";
 export function ConversionHero() {
   const isMobile = useIsMobile();
   return (
-    <section className="relative" data-component="ConversionHero">
-      <Container maxWidth="6xl" className="px-4 sm:px-12 lg:px-16 xl:px-18">
+    <section className="relative my-6 sm:my-8" data-component="ConversionHero">
+      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full px-1 sm:px-6">
           <div className="pt-6 pb-8 sm:pt-8 sm:pb-14">
             <h2 className="text-foreground text-balance max-w-5xl sm:max-w-6xl text-xl sm:text-2xl md:text-3xl font-semibold leading-snug">
@@ -44,15 +44,15 @@ export function ConversionHero() {
               they’ll love. No complex setup, no privacy concerns just results.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <HotkeyLink
-                className="w-full sm:w-auto size-9 px-3 rounded-md"
-                label="Add to your website"
-              />
+              <HotkeyLink className="w-full sm:w-auto "
+              label="Add to your website"
+               />
+
               <Button
                 asChild
-                variant="outline"
-                size="sm"
-                className="w-full sm:w-auto h-9 px-3 rounded-md  text-accent"
+                variant="nav"
+                size="lg"
+                className="w-full sm:w-auto rounded-md text-accent"
               >
                 <Link href="#demo" aria-label="Get a demo">
                   <span className="inline-flex items-center gap-1.5">

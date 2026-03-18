@@ -10,6 +10,7 @@ export type DocsFrontmatter = {
 export type DocsPageId =
   | "getting-started/overview"
   | "getting-started/index"
+  | "getting-started/shortcuts"
   | "getting-started/create-boards"
   | "getting-started/invite-members"
   | "getting-started/plan-roadmap"
@@ -32,6 +33,7 @@ export type DocsPageId =
 const DOC_IDS: DocsPageId[] = [
   "getting-started/overview",
   "getting-started/index",
+  "getting-started/shortcuts",
   "getting-started/create-boards",
   "getting-started/invite-members",
   "getting-started/plan-roadmap",
@@ -69,4 +71,3 @@ export async function readDocsMarkdown(id: DocsPageId) {
     content,
   }
 }
-

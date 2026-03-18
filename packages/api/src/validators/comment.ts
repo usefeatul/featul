@@ -65,8 +65,13 @@ export const pinCommentInputSchema = z.object({
   isPinned: z.boolean(),
 })
 
+export const setCommentVisibilityInputSchema = z.object({
+  commentId: z.string().min(1),
+  isInternal: z.boolean(),
+})
+
 export const mentionsListInputSchema = z.object({
-  limit: z.number().min(1).max(100).optional(),
+  limit: z.coerce.number().min(1).max(100).optional(),
 })
 
 export const mentionsMarkReadInputSchema = z.object({
@@ -80,6 +85,7 @@ export type ListCommentsInput = z.infer<typeof listCommentsInputSchema>
 export type VoteCommentInput = z.infer<typeof voteCommentInputSchema>
 export type ReportCommentInput = z.infer<typeof reportCommentInputSchema>
 export type PinCommentInput = z.infer<typeof pinCommentInputSchema>
+export type SetCommentVisibilityInput = z.infer<typeof setCommentVisibilityInputSchema>
 export type MentionsListInput = z.infer<typeof mentionsListInputSchema>
 export type MentionsMarkReadInput = z.infer<typeof mentionsMarkReadInputSchema>
 export type CommentSurface = z.infer<typeof commentSurfaceSchema>

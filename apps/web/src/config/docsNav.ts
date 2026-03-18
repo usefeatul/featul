@@ -41,6 +41,12 @@ export const docsSections: DocsNavSection[] = [
     ],
   },
   {
+    label: "Shortcuts",
+    items: [
+      { id: "getting-started/shortcuts", label: "Keyboard Shortcuts", href: "/docs/getting-started/shortcuts" },
+    ],
+  },
+  {
     label: "Open Source",
     items: [
       { id: "open-source/index", label: "Overview", href: "/docs/open-source" },

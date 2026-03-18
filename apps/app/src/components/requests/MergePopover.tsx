@@ -9,6 +9,16 @@ import { MergeIcon } from "@featul/ui/icons/merge"
 import { client } from "@featul/api/client"
 import { useQuery } from "@tanstack/react-query"
 
+type MergeCandidate = {
+  id: string
+  title: string
+  slug: string
+}
+
+type MergeCandidatesResponse = {
+  candidates?: MergeCandidate[]
+}
+
 export interface MergePopoverProps {
   postId: string
   workspaceSlug: string
@@ -29,9 +39,11 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
         postId,
         query: query.trim(),
         excludeSelf: true,
-      } as any)
-      const data = await res.json()
-      return (data?.candidates || []) as { id: string; title: string; slug: string }[]
+      })
+      const data = (await res
+        .json()
+        .catch(() => null)) as MergeCandidatesResponse | null
+      return Array.isArray(data?.candidates) ? data.candidates : []
     },
     staleTime: 10_000,
   })
@@ -45,11 +57,15 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
   async function onSelectCandidate(targetId: string, slug: string) {
     if (!mode) return
     if (mode === "merge_into") {
-      await client.post.merge.$post({ postId, targetPostId: targetId, mergeType: "merge_into" } as any)
+      await client.post.merge.$post({
+        postId,
+        targetPostId: targetId,
+        mergeType: "merge_into",
+      })
       setSearchOpen(false)
       router.push(`/workspaces/${workspaceSlug}/requests/${slug}`)
     } else {
-      await client.post.mergeHere.$post({ postId, sourcePostIds: [targetId] } as any)
+      await client.post.mergeHere.$post({ postId, sourcePostIds: [targetId] })
       setSearchOpen(false)
       router.refresh()
     }
@@ -63,7 +79,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
             type="button"
             variant="nav"
             size="icon-sm"
-            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-destructive/5"
+            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
             aria-label="Merge"
           >
             <MergeIcon className="size-3.5" />

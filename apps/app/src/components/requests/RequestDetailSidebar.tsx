@@ -233,42 +233,48 @@ export default function RequestDetailSidebar({
                 </div>
               </div>
               {post.duplicateOfId ? (
-                <div className="rounded-md bg-card border border-border/50 p-3">
-                  <div className="flex flex-col gap-2">
-                    <Link
-                      href={post.mergedInto ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}` : "#"}
-                      className="text-sm font-medium"
-                    >
+                <div className="rounded-lg border border-border bg-background">
+                  <Link
+                    href={post.mergedInto ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}` : "#"}
+                    className="block space-y-2 p-3"
+                  >
+                    <div className="text-sm font-medium leading-snug text-foreground">
                       {post.mergedInto?.title || "Merged request"}
-                    </Link>
-                    <div className="flex items-center gap-2 text-xs font-light">
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <StatusIcon status={post.mergedInto?.roadmapStatus || "pending"} className="size-4" />
                       <span className="capitalize">{post.mergedInto?.roadmapStatus || "Open"}</span>
                       {post.mergedInto?.boardName ? (
-                        <span className="text-accent">{post.mergedInto.boardName}</span>
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground">
+                          {post.mergedInto.boardName}
+                        </span>
                       ) : null}
-                      <span className="text-accent">
-                        {relativeTime(post.mergedInto?.mergedAt || post.createdAt)}
-                      </span>
+                      <span>{relativeTime(post.mergedInto?.mergedAt || post.createdAt)}</span>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               ) : null}
               {post.mergedSources && post.mergedSources.length > 0 ? (
-                <div className="rounded-md bg-card border border-border/50 p-3">
-                  <div className="space-y-3">
+                <div className="rounded-lg border border-border bg-background p-3">
+                  <div className="space-y-2.5">
                     {post.mergedSources.map((src) => (
-                      <div key={src.id} className="flex flex-col gap-2">
-                        <Link href={`/workspaces/${workspaceSlug}/requests/${src.slug}`} className="text-sm font-medium block">
-                          {src.title}
-                        </Link>
-                        <div className="flex items-center gap-2 text-xs font-light">
+                      <Link
+                        key={src.id}
+                        href={`/workspaces/${workspaceSlug}/requests/${src.slug}`}
+                        className="block space-y-2"
+                      >
+                        <div className="text-sm font-medium leading-snug text-foreground">{src.title}</div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <StatusIcon status={src.roadmapStatus || "pending"} className="size-4" />
                           <span className="capitalize">{src.roadmapStatus || "Open"}</span>
-                          {src.boardName ? <span className="text-accent">{src.boardName}</span> : null}
-                          <span className="text-accent">{relativeTime(src.mergedAt || post.createdAt)}</span>
+                          {src.boardName ? (
+                            <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground">
+                              {src.boardName}
+                            </span>
+                          ) : null}
+                          <span>{relativeTime(src.mergedAt || post.createdAt)}</span>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>

@@ -6,6 +6,8 @@ import { z } from "zod"
 export const integrationTypes = ["discord", "slack"] as const
 export type IntegrationType = (typeof integrationTypes)[number]
 
+
+
 /**
  * Webhook URL validation patterns
  */
@@ -56,7 +58,11 @@ export const listIntegrationsSchema = z.object({
   workspaceSlug: z.string().min(1, "Workspace slug is required"),
 })
 
+
+
+
 export type ConnectWebhookInput = z.infer<typeof connectWebhookSchema>
 export type DisconnectWebhookInput = z.infer<typeof disconnectWebhookSchema>
 export type TestWebhookInput = z.infer<typeof testWebhookSchema>
 export type ListIntegrationsInput = z.infer<typeof listIntegrationsSchema>
+

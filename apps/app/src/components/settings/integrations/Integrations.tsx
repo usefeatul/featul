@@ -16,7 +16,7 @@ type Props = {
 };
 
 /**
- * Integrations settings section with Discord and Slack webhook support
+ * Integrations settings section with webhook and GitHub sync integrations
  */
 export default function IntegrationsSection({ slug, plan, initialIntegrations }: Props) {
   const [pendingIntegration, setPendingIntegration] = React.useState<string | null>(null);
@@ -119,9 +119,7 @@ export default function IntegrationsSection({ slug, plan, initialIntegrations }:
             || !discordActionsEnabled
           }
         />
-        <div className="md:col-span-1">
-          <SuggestIntegrationCard />
-        </div>
+        <SuggestIntegrationCard />
       </div>
 
       <div className="mt-4">

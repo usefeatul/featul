@@ -2,16 +2,25 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { organization, lastLoginMethod, emailOTP, twoFactor, multiSession } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
-import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth"
-import { Polar } from "@polar-sh/sdk"
-import { db, user, session, account, verification, passkeyTable, twoFactorTable } from "@featul/db"
+import { stripe } from "@better-auth/stripe"
+import {
+  db,
+  user,
+  session,
+  account,
+  verification,
+  passkeyTable,
+  twoFactorTable,
+  subscription as subscriptionTable,
+} from "@featul/db"
 import { sendVerificationOtpEmail, sendWelcome } from "./email"
 import { createAuthEndpoint, createAuthMiddleware, APIError, sessionMiddleware } from "better-auth/api"
 import { getPasswordError } from "./password"
-import { syncPolarSubscription } from "./polar"
 import { getValidatedTrustedOrigins } from "./trusted-origins"
 import { setSessionCookie } from "better-auth/cookies"
 import { getAuthRateLimitStorage } from "./rate-limit-storage"
+import { isWorkspaceBillingOwner, syncWorkspacePlanFromSubscription } from "./billing"
+import { getStripeClient } from "./stripe"
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
@@ -61,95 +70,83 @@ const multiSessionBootstrapPlugin = {
   },
 }
 
-const polarAccessToken = (process.env.POLAR_ACCESS_TOKEN || "").trim()
-const polarWebhookSecret = (process.env.POLAR_WEBHOOK_SECRET || "").trim()
-const polarServer =
-  process.env.POLAR_SERVER === "production" ? "production" : "sandbox"
-const polarStarterMonthly =
-  (process.env.POLAR_PRODUCT_ID_STARTER_MONTHLY || "").trim() ||
-  (process.env.POLAR_PRODUCT_ID_MONTHLY || "").trim()
-const polarStarterYearly =
-  (process.env.POLAR_PRODUCT_ID_STARTER_YEARLY || "").trim() ||
-  (process.env.POLAR_PRODUCT_ID_YEARLY || "").trim()
-const polarProfessionalMonthly = (process.env.POLAR_PRODUCT_ID_PROFESSIONAL_MONTHLY || "").trim()
-const polarProfessionalYearly = (process.env.POLAR_PRODUCT_ID_PROFESSIONAL_YEARLY || "").trim()
+const stripeSecretKey = (process.env.STRIPE_SECRET_KEY || "").trim()
+const stripeWebhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || "").trim()
+const stripeStarterMonthlyPriceId = (process.env.STRIPE_PRICE_ID_STARTER_MONTHLY || "").trim()
+const stripeStarterYearlyPriceId = (process.env.STRIPE_PRICE_ID_STARTER_YEARLY || "").trim()
+const stripeProfessionalMonthlyPriceId = (process.env.STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY || "").trim()
+const stripeProfessionalYearlyPriceId = (process.env.STRIPE_PRICE_ID_PROFESSIONAL_YEARLY || "").trim()
 
-const polarCheckoutProducts = [
-  polarStarterMonthly
-    ? { productId: polarStarterMonthly, slug: "starter-monthly" }
+const stripePlans = [
+  stripeStarterMonthlyPriceId
+    ? {
+        name: "starter",
+        priceId: stripeStarterMonthlyPriceId,
+        annualDiscountPriceId: stripeStarterYearlyPriceId || undefined,
+      }
     : null,
-  polarStarterYearly
-    ? { productId: polarStarterYearly, slug: "starter-yearly" }
+  stripeProfessionalMonthlyPriceId
+    ? {
+        name: "professional",
+        priceId: stripeProfessionalMonthlyPriceId,
+        annualDiscountPriceId: stripeProfessionalYearlyPriceId || undefined,
+      }
     : null,
-  polarProfessionalMonthly
-    ? { productId: polarProfessionalMonthly, slug: "professional-monthly" }
-    : null,
-  polarProfessionalYearly
-    ? { productId: polarProfessionalYearly, slug: "professional-yearly" }
-    : null,
-].filter(Boolean) as { productId: string; slug: string }[]
+].filter(Boolean) as Array<{
+  name: "starter" | "professional"
+  priceId: string
+  annualDiscountPriceId?: string
+}>
 
-const polarClient = polarAccessToken
-  ? new Polar({ accessToken: polarAccessToken, server: polarServer })
-  : null
-const polarUse: Array<
-  | ReturnType<typeof checkout>
-  | ReturnType<typeof portal>
-  | ReturnType<typeof usage>
-  | ReturnType<typeof webhooks>
-> = [
-  checkout({
-    products: polarCheckoutProducts.length > 0 ? polarCheckoutProducts : undefined,
-    successUrl: "/start?checkout_id={CHECKOUT_ID}",
-    authenticatedUsersOnly: true,
-  }),
-  portal(),
-  usage(),
-]
+const stripePlugin = (() => {
+  if (!stripeSecretKey || !stripeWebhookSecret || stripePlans.length === 0) {
+    return null
+  }
 
-if (polarClient && polarWebhookSecret) {
-  polarUse.push(
-    webhooks({
-      secret: polarWebhookSecret,
-      onSubscriptionCreated: async (payload) => {
-        await syncPolarSubscription(payload.data)
-      },
-      onSubscriptionUpdated: async (payload) => {
-        await syncPolarSubscription(payload.data)
-      },
-      onSubscriptionActive: async (payload) => {
-        await syncPolarSubscription(payload.data)
-      },
-      onSubscriptionCanceled: async (payload) => {
-        await syncPolarSubscription(payload.data)
-      },
-      onSubscriptionUncanceled: async (payload) => {
-        await syncPolarSubscription(payload.data)
-      },
-      onSubscriptionRevoked: async (payload) => {
-        await syncPolarSubscription(payload.data)
-      },
-    })
-  )
-}
+  const stripeClient = getStripeClient()
+  if (!stripeClient) {
+    return null
+  }
 
-const polarPlugin = polarClient
-  ? polar({
-      client: polarClient,
-      createCustomerOnSignUp: true,
-      use: polarUse as [
-        ReturnType<typeof checkout>,
-        ...Array<
-          | ReturnType<typeof checkout>
-          | ReturnType<typeof portal>
-          | ReturnType<typeof usage>
-          | ReturnType<typeof webhooks>
-        >
-      ],
-    })
-  : null
-
-
+  return stripe({
+    stripeClient,
+    stripeWebhookSecret,
+    createCustomerOnSignUp: true,
+    subscription: {
+      enabled: true,
+      plans: stripePlans,
+      authorizeReference: async ({ user, referenceId }) => {
+        const workspaceId = String(referenceId || "").trim()
+        if (!workspaceId) return false
+        return isWorkspaceBillingOwner(workspaceId, user.id)
+      },
+      onSubscriptionComplete: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+      onSubscriptionCreated: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+      onSubscriptionUpdate: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+      onSubscriptionCancel: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+      onSubscriptionDeleted: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+      onTrialStart: async (subscription: { referenceId?: unknown; plan?: unknown; status?: unknown }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+      onTrialEnd: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+      onTrialExpired: async (subscription: { referenceId?: unknown; plan?: unknown; status?: unknown }) => {
+        await syncWorkspacePlanFromSubscription(subscription)
+      },
+    },
+  })
+})()
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -161,6 +158,7 @@ export const auth = betterAuth({
       verification,
       passkey: passkeyTable,
       twoFactor: twoFactorTable,
+      subscription: subscriptionTable,
     },
   }),
 
@@ -232,7 +230,13 @@ export const auth = betterAuth({
     emailOTP({
       overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
-        await sendVerificationOtpEmail(email, otp, type)
+        const normalizedType: Parameters<typeof sendVerificationOtpEmail>[2] =
+          type === "forget-password"
+            ? "forget-password"
+            : type === "sign-in"
+              ? "sign-in"
+              : "email-verification"
+        await sendVerificationOtpEmail(email, otp, normalizedType)
       },
     }),
     passkey({
@@ -245,7 +249,7 @@ export const auth = betterAuth({
     }),
     multiSession(),
     multiSessionBootstrapPlugin,
-    ...(polarPlugin ? [polarPlugin] : []),
+    ...(stripePlugin ? [stripePlugin] : []),
   ],
 
   databaseHooks: {
@@ -257,7 +261,7 @@ export const auth = betterAuth({
           const name = String(created.name || "") || undefined
           try {
             await sendWelcome(to, name)
-          } catch (e) { }
+          } catch (e) {}
         },
       },
     },

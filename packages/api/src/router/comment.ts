@@ -11,6 +11,8 @@ import {
   workspace,
   workspaceMember,
   activityLog,
+  changelogEntry,
+  changelogMention,
 } from "@featul/db";
 import { auth } from "@featul/auth";
 import {
@@ -21,12 +23,14 @@ import {
   voteCommentInputSchema,
   reportCommentInputSchema,
   pinCommentInputSchema,
+  setCommentVisibilityInputSchema,
   mentionsListInputSchema,
   mentionsMarkReadInputSchema,
 } from "../validators/comment";
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
+import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
 
 async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
   try {
@@ -68,6 +72,7 @@ export function createCommentRouter() {
           .select({
             postId: post.id,
             boardId: board.id,
+            boardIsPublic: board.isPublic,
             allowComments: board.allowComments,
             workspaceId: workspace.id,
             workspaceOwnerId: workspace.ownerId,
@@ -107,6 +112,10 @@ export function createCommentRouter() {
         });
 
         const includeInternal = surface === "workspace" && canViewInternal;
+
+        if (!targetPost.boardIsPublic && !canViewInternal) {
+          throw new HTTPException(403, { message: "Only workspace members can view comments on this board" });
+        }
 
         // Fetch all comments with author info and role
         const comments = await ctx.db
@@ -370,7 +379,7 @@ export function createCommentRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: targetPost.workspaceId,
             userId,
-            action: "comment_created",
+            action: ACTIVITY_ACTIONS.COMMENT_CREATED,
             actionType: "create",
             entity: "comment",
             entityId: String(newComment.id),
@@ -544,7 +553,7 @@ export function createCommentRouter() {
           await ctx.db.insert(activityLog).values({
             workspaceId: postInfo.workspaceId,
             userId,
-            action: "comment_updated",
+            action: ACTIVITY_ACTIONS.COMMENT_UPDATED,
             actionType: "update",
             entity: "comment",
             entityId: String(commentId),
@@ -558,6 +567,135 @@ export function createCommentRouter() {
         }
 
         return c.superjson({ comment: updatedComment });
+      }),
+
+    // Set comment visibility (internal/external)
+    setVisibility: privateProcedure
+      .input(setCommentVisibilityInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const { commentId, isInternal } = input;
+        const userId = ctx.session.user.id;
+
+        const [target] = await ctx.db
+          .select({
+            id: comment.id,
+            postId: post.id,
+            parentId: comment.parentId,
+            authorId: comment.authorId,
+            currentIsInternal: comment.isInternal,
+            postTitle: post.title,
+            roadmapStatus: post.roadmapStatus,
+            workspaceOwnerId: workspace.ownerId,
+            workspaceId: workspace.id,
+          })
+          .from(comment)
+          .innerJoin(post, eq(comment.postId, post.id))
+          .innerJoin(board, eq(post.boardId, board.id))
+          .innerJoin(workspace, eq(board.workspaceId, workspace.id))
+          .where(eq(comment.id, commentId))
+          .limit(1);
+
+        if (!target) {
+          throw new HTTPException(404, { message: "Comment not found" });
+        }
+
+        const isAuthor = target.authorId === userId;
+        const isWorkspaceOwner = target.workspaceOwnerId === userId;
+
+        if (!isAuthor && !isWorkspaceOwner) {
+          throw new HTTPException(403, {
+            message: "You can only update visibility for your own comments",
+          });
+        }
+
+        const [membership] = await ctx.db
+          .select({ userId: workspaceMember.userId })
+          .from(workspaceMember)
+          .where(
+            and(
+              eq(workspaceMember.workspaceId, target.workspaceId),
+              eq(workspaceMember.userId, userId),
+              eq(workspaceMember.isActive, true)
+            )
+          )
+          .limit(1);
+
+        if (!isWorkspaceOwner && !membership?.userId) {
+          throw new HTTPException(403, {
+            message: "Only active workspace members can update comment visibility",
+          });
+        }
+
+        if (!isInternal && target.parentId) {
+          const [parent] = await ctx.db
+            .select({ isInternal: comment.isInternal })
+            .from(comment)
+            .where(eq(comment.id, target.parentId))
+            .limit(1);
+
+          if (parent?.isInternal) {
+            throw new HTTPException(400, {
+              message: "Replies to internal comments must remain internal",
+            });
+          }
+        }
+
+        if (!isInternal) {
+          const [childInternalCount] = await ctx.db
+            .select({ count: sql<number>`count(*)` })
+            .from(comment)
+            .where(
+              and(
+                eq(comment.parentId, commentId),
+                eq(comment.status, "published"),
+                eq(comment.isInternal, true)
+              )
+            );
+
+          if (Number(childInternalCount?.count || 0) > 0) {
+            throw new HTTPException(400, {
+              message: "Convert internal replies before making this comment external",
+            });
+          }
+        }
+
+        if (Boolean(target.currentIsInternal) === Boolean(isInternal)) {
+          return c.superjson({
+            id: target.id,
+            isInternal: Boolean(target.currentIsInternal),
+          });
+        }
+
+        const [updated] = await ctx.db
+          .update(comment)
+          .set({
+            isInternal,
+            moderatedBy: userId,
+            moderatedAt: new Date(),
+          })
+          .where(eq(comment.id, commentId))
+          .returning({ id: comment.id, isInternal: comment.isInternal });
+
+        await ctx.db.insert(activityLog).values({
+          workspaceId: target.workspaceId,
+          userId,
+          action: isInternal ? ACTIVITY_ACTIONS.COMMENT_MARKED_INTERNAL : ACTIVITY_ACTIONS.COMMENT_MARKED_EXTERNAL,
+          actionType: "update",
+          entity: "comment",
+          entityId: String(commentId),
+          title: target.postTitle,
+          metadata: {
+            postId: target.postId,
+            postTitle: target.postTitle,
+            roadmapStatus: target.roadmapStatus,
+            isInternal,
+          },
+        });
+
+        return c.superjson({
+          id: updated?.id,
+          isInternal: Boolean(updated?.isInternal),
+        });
       }),
 
     // Delete a comment
@@ -648,7 +786,7 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: postInfo.workspaceId,
           userId,
-          action: "comment_deleted",
+          action: ACTIVITY_ACTIONS.COMMENT_DELETED,
           actionType: "delete",
           entity: "comment",
           entityId: String(commentId),
@@ -750,7 +888,7 @@ export function createCommentRouter() {
               await ctx.db.insert(activityLog).values({
                 workspaceId: postInfo.workspaceId,
                 userId,
-                action: "comment_vote_removed",
+                action: ACTIVITY_ACTIONS.COMMENT_VOTE_REMOVED,
                 actionType: "delete",
                 entity: "comment",
                 entityId: String(commentId),
@@ -792,7 +930,7 @@ export function createCommentRouter() {
               await ctx.db.insert(activityLog).values({
                 workspaceId: postInfo.workspaceId,
                 userId,
-                action: "comment_vote_changed",
+                action: ACTIVITY_ACTIONS.COMMENT_VOTE_CHANGED,
                 actionType: "update",
                 entity: "comment",
                 entityId: String(commentId),
@@ -836,7 +974,7 @@ export function createCommentRouter() {
             await ctx.db.insert(activityLog).values({
               workspaceId: postInfo.workspaceId,
               userId,
-              action: "comment_voted",
+              action: ACTIVITY_ACTIONS.COMMENT_VOTED,
               actionType: "create",
               entity: "comment",
               entityId: String(commentId),
@@ -917,7 +1055,7 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: postInfo.workspaceId,
           userId,
-          action: "comment_reported",
+          action: ACTIVITY_ACTIONS.COMMENT_REPORTED,
           actionType: "create",
           entity: "comment",
           entityId: String(commentId),
@@ -1015,7 +1153,7 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: target.workspaceId,
           userId,
-          action: isPinned ? "comment_pinned" : "comment_unpinned",
+          action: isPinned ? ACTIVITY_ACTIONS.COMMENT_PINNED : ACTIVITY_ACTIONS.COMMENT_UNPINNED,
           actionType: "update",
           entity: "comment",
           entityId: String(commentId),
@@ -1040,16 +1178,22 @@ export function createCommentRouter() {
       .get(async ({ ctx, input, c }) => {
         const userId = ctx.session.user.id;
         const limit = Math.min(Math.max(Number(input?.limit || 50), 1), 100);
-        const rows = await ctx.db
+
+        const commentRows: Array<{
+          id: string;
+          isRead: boolean;
+          createdAt: Date;
+          postSlug: string;
+          postTitle: string;
+          authorName: string;
+          authorImage: string | null;
+        }> = await ctx.db
           .select({
             id: commentMention.id,
             isRead: commentMention.isRead,
             createdAt: commentMention.createdAt,
-            commentId: comment.id,
-            commentContent: comment.content,
             postSlug: post.slug,
             postTitle: post.title,
-            workspaceSlug: workspace.slug,
             authorName: comment.authorName,
             authorImage: user.image,
           })
@@ -1062,13 +1206,85 @@ export function createCommentRouter() {
           .where(eq(commentMention.mentionedUserId, userId))
           .orderBy(desc(commentMention.createdAt))
           .limit(limit);
-        return c.superjson({ notifications: rows });
+
+        const changelogRows: Array<{
+          id: string;
+          isRead: boolean;
+          createdAt: Date;
+          entrySlug: string;
+          entryTitle: string;
+          authorName: string;
+          authorImage: string | null;
+        }> = await ctx.db
+          .select({
+            id: changelogMention.id,
+            isRead: changelogMention.isRead,
+            createdAt: changelogMention.createdAt,
+            entrySlug: changelogEntry.slug,
+            entryTitle: changelogEntry.title,
+            authorName: user.name,
+            authorImage: user.image,
+          })
+          .from(changelogMention)
+          .innerJoin(changelogEntry, eq(changelogMention.entryId, changelogEntry.id))
+          .innerJoin(user, eq(changelogMention.mentionedBy, user.id))
+          .where(eq(changelogMention.mentionedUserId, userId))
+          .orderBy(desc(changelogMention.createdAt))
+          .limit(limit);
+
+        const notifications = [
+          ...commentRows.map((row: {
+            id: string;
+            isRead: boolean;
+            createdAt: Date;
+            postSlug: string;
+            postTitle: string;
+            authorName: string;
+            authorImage: string | null;
+          }) => ({
+            id: `comment:${row.id}`,
+            type: "feedback" as const,
+            isRead: row.isRead,
+            createdAt: row.createdAt,
+            path: `/board/p/${row.postSlug}`,
+            postSlug: row.postSlug,
+            postTitle: row.postTitle,
+            authorName: row.authorName,
+            authorImage: row.authorImage,
+          })),
+          ...changelogRows.map((row: {
+            id: string;
+            isRead: boolean;
+            createdAt: Date;
+            entrySlug: string;
+            entryTitle: string;
+            authorName: string;
+            authorImage: string | null;
+          }) => ({
+            id: `changelog:${row.id}`,
+            type: "changelog" as const,
+            isRead: row.isRead,
+            createdAt: row.createdAt,
+            path: `/changelog/p/${row.entrySlug}`,
+            entrySlug: row.entrySlug,
+            entryTitle: row.entryTitle,
+            authorName: row.authorName,
+            authorImage: row.authorImage,
+          })),
+        ]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .slice(0, limit);
+
+        return c.superjson({ notifications });
       }),
 
     // Count unread mention notifications
     mentionsCount: privateProcedure.get(async ({ ctx, c }) => {
       const userId = ctx.session.user.id;
-      const [{ count }] = await ctx.db
+      const [commentUnread] = await ctx.db
         .select({ count: sql<number>`count(*)` })
         .from(commentMention)
         .where(
@@ -1077,7 +1293,20 @@ export function createCommentRouter() {
             eq(commentMention.isRead, false)
           )
         );
-      return c.superjson({ unread: Number(count || 0) });
+
+      const [changelogUnread] = await ctx.db
+        .select({ count: sql<number>`count(*)` })
+        .from(changelogMention)
+        .where(
+          and(
+            eq(changelogMention.mentionedUserId, userId),
+            eq(changelogMention.isRead, false),
+          ),
+        );
+
+      const unread =
+        Number(commentUnread?.count || 0) + Number(changelogUnread?.count || 0);
+      return c.superjson({ unread });
     }),
 
     // Mark a mention notification as read
@@ -1085,16 +1314,52 @@ export function createCommentRouter() {
       .input(mentionsMarkReadInputSchema)
       .post(async ({ ctx, input, c }) => {
         const userId = ctx.session.user.id;
-        const { id } = input;
-        await ctx.db
-          .update(commentMention)
-          .set({ isRead: true })
-          .where(
-            and(
-              eq(commentMention.id, id),
-              eq(commentMention.mentionedUserId, userId)
-            )
-          );
+        const rawId = input.id;
+        const [prefix, parsedMentionId] = rawId.split(":", 2);
+        const kind = parsedMentionId ? prefix : "comment";
+        const mentionId = parsedMentionId ?? rawId;
+
+        if (kind === "changelog") {
+          await ctx.db
+            .update(changelogMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(changelogMention.id, mentionId),
+                eq(changelogMention.mentionedUserId, userId),
+              ),
+            );
+        } else if (kind === "comment") {
+          await ctx.db
+            .update(commentMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(commentMention.id, mentionId),
+                eq(commentMention.mentionedUserId, userId),
+              ),
+            );
+        } else {
+          await ctx.db
+            .update(commentMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(commentMention.id, mentionId),
+                eq(commentMention.mentionedUserId, userId),
+              ),
+            );
+          await ctx.db
+            .update(changelogMention)
+            .set({ isRead: true })
+            .where(
+              and(
+                eq(changelogMention.id, mentionId),
+                eq(changelogMention.mentionedUserId, userId),
+              ),
+            );
+        }
+
         return c.superjson({ success: true });
       }),
 
@@ -1109,6 +1374,15 @@ export function createCommentRouter() {
             eq(commentMention.mentionedUserId, userId),
             eq(commentMention.isRead, false)
           )
+        );
+      await ctx.db
+        .update(changelogMention)
+        .set({ isRead: true })
+        .where(
+          and(
+            eq(changelogMention.mentionedUserId, userId),
+            eq(changelogMention.isRead, false),
+          ),
         );
       return c.superjson({ success: true });
     }),

@@ -1,8 +1,6 @@
 "use client"
 
-import React from "react"
 import { useQuery } from "@tanstack/react-query"
-import { client } from "@featul/api/client"
 import type { Member } from "@/types/team"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
@@ -12,6 +10,7 @@ import { roleBadgeClass } from "@/components/settings/team/role-badge"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import RoleBadge from "@/components/global/RoleBadge"
+import { fetchWorkspaceMembers, teamQueryKeys } from "@/lib/team-client"
 
 interface Props {
   slug: string
@@ -19,22 +18,18 @@ interface Props {
 }
 
 export default function MemberList({ slug, initialMembers = [] }: Props) {
-  const { data = { members: initialMembers }, isLoading } = useQuery({
-    queryKey: ["members", slug],
-    queryFn: async () => {
-      const res = await client.team.membersByWorkspaceSlug.$get({ slug })
-      const d = await res.json()
-      return { members: (d?.members || []) as Member[] }
-    },
-    initialData: { members: initialMembers },
+  const { data = initialMembers, isLoading } = useQuery<Member[]>({
+    queryKey: teamQueryKeys.members(slug),
+    queryFn: () => fetchWorkspaceMembers(slug),
+    initialData: initialMembers,
     staleTime: 30_000,
     retry: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    refetchOnMount: true,
+    refetchOnMount: false,
   })
 
-  const items = data.members || []
+  const items = data
 
   return (
     <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border [&_[data-slot=table-container]]:bg-transparent [&_[data-slot=table-container]]:border-0 [&_[data-slot=table-container]]:rounded-none">

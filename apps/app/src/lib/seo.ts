@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { SITE_URL, DEFAULT_OG_IMAGE, DEFAULT_TITLE } from '@/config/seo'
 import { getWorkspaceBySlug, getBoardByWorkspaceSlug } from '@/lib/workspace'
-import { db, workspace, board, post } from "@featul/db"
+import { db, board, post } from "@featul/db"
 import { eq, and } from "drizzle-orm"
 
 function normalizePath(path?: string) {

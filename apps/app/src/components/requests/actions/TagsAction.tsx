@@ -9,7 +9,44 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFilterPopover } from "@/lib/filter-store"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getSlugFromPath, workspaceBase } from "@/config/nav"
-import { parseArrayParam, buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { buildRequestsUrl, toggleValue, isAllSelected as isAllSel } from "@/utils/request"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
+
+type TagItem = {
+  id: string
+  name: string
+  slug: string
+  color?: string | null
+  count?: number
+}
+
+type TagsResponse = {
+  tags?: Array<{
+    id?: string
+    name?: string
+    slug?: string
+    color?: string | null
+    count?: number
+  }>
+}
+
+function parseTagsResponse(payload: TagsResponse | null): TagItem[] {
+  const tags = Array.isArray(payload?.tags) ? payload.tags : []
+  return tags
+    .filter(
+      (tag): tag is Required<Pick<TagItem, "id" | "name" | "slug">> & Pick<TagItem, "color" | "count"> =>
+        typeof tag?.id === "string" &&
+        typeof tag?.name === "string" &&
+        typeof tag?.slug === "string"
+    )
+    .map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      slug: tag.slug,
+      color: tag.color ?? null,
+      count: typeof tag.count === "number" ? tag.count : undefined,
+    }))
+}
 
 export default function TagsAction({ className = "" }: { className?: string }) {
   const router = useRouter()
@@ -17,42 +54,42 @@ export default function TagsAction({ className = "" }: { className?: string }) {
   const sp = useSearchParams()
   const [open, setOpen] = useFilterPopover("tags")
   const queryClient = useQueryClient()
+  const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["tags", getSlugFromPath(pathname)],
+    queryKey: ["tags", slug],
     queryFn: async () => {
       const res = await client.board.tagsByWorkspaceSlug.$get({ slug })
-      const data = await res.json()
-      const tags = (data?.tags || [])
-      return tags.map((t: any) => ({ id: t.id, name: t.name, slug: t.slug, color: t.color, count: t.count }))
+      const data = (await res.json().catch(() => null)) as TagsResponse | null
+      return parseTagsResponse(data)
     },
     staleTime: 300_000,
     gcTime: 300_000,
-    enabled: !!getSlugFromPath(pathname),
+    enabled: Boolean(slug),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   })
 
-  const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
-
-  const selected = React.useMemo(() => parseArrayParam(sp.get("tag")), [sp])
-  const isAllSelected = React.useMemo(() => isAllSel(items.map((i: { slug: string }) => i.slug), selected), [items, selected])
+  const selected = React.useMemo(
+    () => parseRequestFiltersFromSearchParams(sp).tag,
+    [sp]
+  )
+  const isAllSelected = React.useMemo(() => isAllSel(items.map((i) => i.slug), selected), [items, selected])
 
   React.useEffect(() => {
     if (open) {
       queryClient.prefetchQuery({
-        queryKey: ["tags", getSlugFromPath(pathname)],
+        queryKey: ["tags", slug],
         queryFn: async () => {
-          const res = await client.board.tagsByWorkspaceSlug.$get({ slug: getSlugFromPath(pathname) })
-          const data = await res.json()
-          const tags = (data?.tags || [])
-          return tags.map((t: any) => ({ id: t.id, name: t.name, slug: t.slug, color: t.color, count: t.count }))
+          const res = await client.board.tagsByWorkspaceSlug.$get({ slug })
+          const data = (await res.json().catch(() => null)) as TagsResponse | null
+          return parseTagsResponse(data)
         },
         staleTime: 300_000,
         gcTime: 300_000,
       })
     }
-  }, [open, pathname, queryClient, slug])
+  }, [open, queryClient, slug])
 
   const toggle = (tagSlug: string) => {
     const next = toggleValue(selected, tagSlug)
@@ -77,7 +114,7 @@ export default function TagsAction({ className = "" }: { className?: string }) {
       })
       return
     }
-    const next = items.map((i: { slug: string }) => i.slug)
+    const next = items.map((i) => i.slug)
     const href = buildRequestsUrl(slug, sp, { tag: next })
     React.startTransition(() => {
       router.push(href, { scroll: false })
@@ -104,7 +141,7 @@ export default function TagsAction({ className = "" }: { className?: string }) {
           <div className="p-3 text-sm text-accent">No tags</div>
         ) : (
           <PopoverList>
-            {items.map((it: { id: string; name: string; slug: string; color?: string; count?: number }) => (
+            {items.map((it) => (
               <PopoverListItem
                 key={it.id}
                 role="menuitemcheckbox"

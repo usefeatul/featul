@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import SubdomainRequestDetail from "@/components/subdomain/SubdomainRequestDetail";
 import { createPostMetadata } from "@/lib/seo";
+import { getSingleSearchParam } from "@/utils/search-params";
 import { loadPublicBoardRequestDetailPageData } from "./data";
 
 export const revalidate = 0;
@@ -22,7 +23,7 @@ export default async function PublicBoardRequestDetailPage({ params, searchParam
   const data = await loadPublicBoardRequestDetailPageData({ subdomain, postSlug });
   if (!data) return notFound();
 
-  const backLink = sp.from === "roadmap" ? "/roadmap" : data.backLink;
+  const backLink = getSingleSearchParam(sp.from) === "roadmap" ? "/roadmap" : data.backLink;
 
   return (
     <SubdomainRequestDetail

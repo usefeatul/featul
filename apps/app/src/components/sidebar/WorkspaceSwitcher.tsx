@@ -78,6 +78,7 @@ export default function WorkspaceSwitcher({
           side="bottom"
           align="center"
           sideOffset={8}
+          withBackdrop
         >
           {all.length === 0 ? (
             <DropdownMenuItem disabled>No workspaces yet</DropdownMenuItem>

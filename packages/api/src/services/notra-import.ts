@@ -4,15 +4,18 @@ import {
   changelogEntry,
   workspaceNotraConnection,
 } from "@featul/db";
-import type { NotraPost } from "./notra";
 import {
+  createNotraClient,
   listNotraPostsPage,
-  markdownToTiptapDoc,
   NotraApiError,
+} from "./notra-client";
+import type { NotraClientFactory, NotraPost } from "./notra-client";
+import {
+  markdownToTiptapDoc,
   resolveNotraMarkdown,
   toNotraChangelogSlug,
   toPlainText,
-} from "./notra";
+} from "./notra-content";
 import {
   decryptSecret,
   encryptSecret,
@@ -20,6 +23,7 @@ import {
   hasSecretKeyVersion,
   SecretCryptoError,
 } from "./secret-crypto";
+import { IMPORT_RATE_LIMIT_ACTIONS } from "../shared/activity-actions";
 
 type StatusFilter = "draft" | "published";
 type PublishBehavior = "preserve" | "draft_only";
@@ -149,10 +153,6 @@ const NOTRA_PROVIDER = "notra";
 const IMPORT_RATE_LIMIT_WINDOW_MS = 60_000;
 const IMPORT_RATE_LIMIT_MAX_PER_USER = 3;
 const IMPORT_RATE_LIMIT_MAX_PER_WORKSPACE = 6;
-const IMPORT_RATE_LIMIT_ACTIONS = [
-  "changelog_notra_imported",
-  "changelog_notra_import_failed",
-] as const;
 const NOTRA_MARKDOWN_SOURCE_MAX_CHARS = 200_000;
 const NOTRA_HTML_SOURCE_MAX_CHARS = 400_000;
 const NOTRA_MARKDOWN_STORED_MAX_CHARS = 120_000;
@@ -296,7 +296,7 @@ async function resolveCredentials(input: {
   };
 }
 
-function mapRemotePost(input: {
+export function mapNotraPostToChangelogEntry(input: {
   post: NotraPost;
   publishBehavior: PublishBehavior;
 }): {
@@ -380,6 +380,7 @@ export async function runNotraImport(input: {
   useStoredConnection: boolean;
   organizationId?: string;
   apiKey?: string;
+  notraClientFactory?: NotraClientFactory;
 }): Promise<NotraImportSummary> {
   await assertNotraImportRateLimit(
     input.db,
@@ -394,6 +395,8 @@ export async function runNotraImport(input: {
     organizationId: input.organizationId,
     apiKey: input.apiKey,
   });
+  const clientFactory = input.notraClientFactory ?? createNotraClient;
+  const notraClient = clientFactory(credentials.apiKey);
 
   let currentCount = input.currentEntryCount;
   let page = 1;
@@ -406,11 +409,12 @@ export async function runNotraImport(input: {
 
   while (page <= input.maxPages) {
     const remote = await listNotraPostsPage({
-      apiKey: credentials.apiKey,
+      client: notraClient,
       organizationId: credentials.organizationId,
       page,
       limit: input.limit,
       status: input.status,
+      contentType: ["changelog"],
     });
 
     fetchedCount += remote.posts.length;
@@ -442,7 +446,7 @@ export async function runNotraImport(input: {
     );
 
     for (const post of remote.posts) {
-      const mapped = mapRemotePost({
+      const mapped = mapNotraPostToChangelogEntry({
         post,
         publishBehavior: input.publishBehavior,
       });
