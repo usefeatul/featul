@@ -25,6 +25,8 @@ export default async function SettingsSectionPage({ params }: Props) {
   const {
     initialPlan,
     initialWorkspaceId,
+    initialWorkspaceOwnerId,
+    initialBillingSubscription,
     initialWorkspaceName,
     initialTimezone,
     initialTeam,
@@ -47,6 +49,8 @@ export default async function SettingsSectionPage({ params }: Props) {
       initialHidePoweredBy={initialHidePoweredBy}
       initialPlan={initialPlan}
       initialWorkspaceId={initialWorkspaceId}
+      initialWorkspaceOwnerId={initialWorkspaceOwnerId}
+      initialBillingSubscription={initialBillingSubscription}
       initialWorkspaceName={initialWorkspaceName}
       initialTimezone={initialTimezone}
       initialTeam={initialTeam}

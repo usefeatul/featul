@@ -18,6 +18,7 @@ import { getPlanLimits, normalizePlan, type PlanKey } from "../shared/plan"
 import { limitInvite } from "../services/ratelimiter"
 import { mapPermissions } from "../shared/permissions"
 import type { AuthenticatedRouterContext as TeamRouterContext } from "../types/router-context"
+import { getWorkspaceAccessPlan } from "../shared/access"
 
 async function getWorkspaceMemberEmails(
   ctx: TeamRouterContext,
@@ -97,8 +98,8 @@ function getMemberLimitMessage(plan: string, maxMembers: number): string {
   return `${label} plan allows up to ${maxMembers} members.`
 }
 
-async function assertMemberLimitNotReached(ctx: TeamRouterContext, wsId: string, plan: string) {
-  const normalizedPlan = normalizePlan(plan)
+async function assertMemberLimitNotReached(ctx: TeamRouterContext, wsId: string) {
+  const normalizedPlan = normalizePlan(await getWorkspaceAccessPlan(wsId))
   const limits = getPlanLimits(normalizedPlan)
   const [mc] = await ctx.db
     .select({ count: sql<number>`count(*)` })
@@ -274,7 +275,7 @@ export function createTeamRouter() {
           .limit(1)
         if (owner?.email?.toLowerCase() === inviteEmail) throw new HTTPException(400, { message: "User is already a member of this workspace" })
 
-        await assertMemberLimitNotReached(ctx, ws.id, String(ws.plan || "free"))
+        await assertMemberLimitNotReached(ctx, ws.id)
 
         const token = crypto.randomUUID()
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -482,16 +483,7 @@ export function createTeamRouter() {
           .where(and(eq(workspaceMember.workspaceId, inv.workspaceId), eq(workspaceMember.userId, me.id)))
           .limit(1)
         if (!existing) {
-          const [wsp] = await ctx.db
-            .select({ plan: workspace.plan })
-            .from(workspace)
-            .where(eq(workspace.id, inv.workspaceId))
-            .limit(1)
-          await assertMemberLimitNotReached(
-            ctx,
-            inv.workspaceId,
-            String(wsp?.plan || "free")
-          )
+          await assertMemberLimitNotReached(ctx, inv.workspaceId)
           await ctx.db.insert(workspaceMember).values({
             workspaceId: inv.workspaceId,
             userId: me.id,
@@ -577,7 +569,7 @@ export function createTeamRouter() {
             .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, u.id)))
             .limit(1)
           if (!existing) {
-            await assertMemberLimitNotReached(ctx, ws.id, String(ws.plan || "free"))
+            await assertMemberLimitNotReached(ctx, ws.id)
             await ctx.db.insert(workspaceMember).values({
               workspaceId: ws.id,
               userId: u.id,
@@ -597,7 +589,7 @@ export function createTeamRouter() {
           return c.json({ ok: true, invited: false })
         }
 
-        await assertMemberLimitNotReached(ctx, ws.id, String(ws.plan || "free"))
+        await assertMemberLimitNotReached(ctx, ws.id)
         const token = crypto.randomUUID()
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         await ctx.db.insert(workspaceInvite).values({

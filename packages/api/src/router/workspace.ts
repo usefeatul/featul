@@ -1,16 +1,17 @@
 import { HTTPException } from "hono/http-exception"
 import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation, user, subscription } from "@featul/db"
+import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation, user } from "@featul/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema, workspaceSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema, importCsvInputSchema, updateTimezoneInputSchema } from "../validators/workspace"
 import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
-import { normalizePlan, isDataImportsAllowed } from "../shared/plan"
+import { isDataImportsAllowed } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
 import { runWorkspaceCsvImport } from "../services/workspace-csv-import"
 import { isReservedWorkspaceSlug } from "../shared/workspace-slug"
+import { getWorkspaceAccessPlan } from "../shared/access"
 
 const dnsResolver = new Resolver()
 
@@ -47,7 +48,9 @@ async function requireWorkspaceManagerWithPlan(ctx: any, slug: string) {
   }
   if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
-  return ws
+  const plan = await getWorkspaceAccessPlan(ws.id)
+
+  return { ...ws, plan }
 }
 
 export function createWorkspaceRouter() {
@@ -226,14 +229,6 @@ export function createWorkspaceRouter() {
             joinedAt: new Date(),
           })
 
-          // Create subscription record (every workspace gets a free plan by default)
-          await ctx.db.insert(subscription).values({
-            workspaceId: ws.id,
-            plan: 'free',
-            status: 'active',
-            billingCycle: 'monthly',
-          })
-
           await ctx.db.insert(brandingConfig).values({
             workspaceId: ws.id,
           })
@@ -337,7 +332,7 @@ export function createWorkspaceRouter() {
         }
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
-        const planKey = normalizePlan(String(ws.plan || "free"))
+        const planKey = await getWorkspaceAccessPlan(ws.id)
         if (!(planKey === "starter" || planKey === "professional")) {
           throw new HTTPException(403, { message: "Custom domain available on Starter or Professional plans" })
         }
@@ -404,7 +399,7 @@ export function createWorkspaceRouter() {
           if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true
         }
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
-        const planKey = normalizePlan(String(ws.plan || "free"))
+        const planKey = await getWorkspaceAccessPlan(ws.id)
         if (!(planKey === "starter" || planKey === "professional")) {
           throw new HTTPException(403, { message: "Custom domain available on Starter or Professional plans" })
         }

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, integer, index } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 import { workspace } from './workspace'
 
@@ -8,47 +8,37 @@ export type PlanTier = typeof planTier[number]
 
 // Subscription table for workspace billing
 // Note: workspace.plan is denormalized for performance (quick limit checks)
-// This table is the source of truth for detailed billing information with Polar
+// This table mirrors Better Auth Stripe subscription records for workspace billing.
 export const subscription = pgTable('subscription', {
     id: text('id')
         .primaryKey()
         .$defaultFn(() => createId()),
-    workspaceId: text('workspace_id')
-        .notNull()
-        .unique()
-        .references(() => workspace.id, { onDelete: 'cascade' }),
-
-    // Plan details
     plan: text('plan', { enum: planTier })
         .notNull()
         .default('free'),
-
-    // Polar integration
-    polarCustomerId: text('polar_customer_id').unique(),
-    polarSubscriptionId: text('polar_subscription_id').unique(),
-    polarProductId: text('polar_product_id'),
-    polarPriceId: text('polar_price_id'),
-
-    // Subscription status
+    referenceId: text('reference_id')
+        .notNull()
+        .references(() => workspace.id, { onDelete: 'cascade' }),
+    stripeCustomerId: text('stripe_customer_id'),
+    stripeSubscriptionId: text('stripe_subscription_id').unique(),
     status: text('status', {
         enum: ['active', 'canceled', 'incomplete', 'past_due', 'trialing', 'unpaid']
-    }),
-
-    // Billing details
-    billingCycle: text('billing_cycle', { enum: ['monthly', 'yearly'] })
-        .notNull()
-        .default('monthly'),
-    currentPeriodStart: timestamp('current_period_start'),
-    currentPeriodEnd: timestamp('current_period_end'),
+    }).default('incomplete'),
+    periodStart: timestamp('period_start'),
+    periodEnd: timestamp('period_end'),
     cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false),
-
-    // Trial information
+    cancelAt: timestamp('cancel_at'),
+    canceledAt: timestamp('canceled_at'),
+    endedAt: timestamp('ended_at'),
+    seats: integer('seats'),
     trialStart: timestamp('trial_start'),
     trialEnd: timestamp('trial_end'),
-
-    // Timestamps
+    billingInterval: text('billing_interval', { enum: ['month', 'year'] }),
+    stripeScheduleId: text('stripe_schedule_id'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
-})
+}, (table) => ({
+    subscriptionReferenceIdx: index('subscription_reference_idx').on(table.referenceId),
+}))
 
 export type Subscription = typeof subscription.$inferSelect

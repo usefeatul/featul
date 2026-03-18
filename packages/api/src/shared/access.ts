@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm"
 import { HTTPException } from "hono/http-exception"
 import { workspace, workspaceMember } from "@featul/db"
+import { getEffectiveWorkspacePlan } from "@featul/auth/billing"
 
 export async function requireBoardManagerBySlug(ctx: any, slug: string) {
   const [ws] = await ctx.db
@@ -68,4 +69,7 @@ export async function requireBrandingManagerBySlug(ctx: any, slug: string) {
   return ws
 }
 
+export async function getWorkspaceAccessPlan(workspaceId: string) {
+  return getEffectiveWorkspacePlan(workspaceId)
+}
 

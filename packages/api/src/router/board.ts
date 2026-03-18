@@ -7,9 +7,9 @@ import { byIdSchema, updatePostMetaSchema, updatePostBoardSchema } from "../vali
 import { HTTPException } from "hono/http-exception"
 import { byBoardInputSchema, boardSlugSchema } from "../validators/board"
 import { checkSlugInputSchema } from "../validators/workspace"
-import { normalizePlan, getPlanLimits, assertWithinLimit } from "../shared/plan"
+import { getPlanLimits, assertWithinLimit } from "../shared/plan"
 import { toSlug } from "../shared/slug"
-import { requireBoardManagerBySlug } from "../shared/access"
+import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access"
 import { createHash } from "crypto"
 import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
 
@@ -155,7 +155,7 @@ export function createBoardRouter() {
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug)
 
-        const limits = getPlanLimits(normalizePlan(String(ws.plan || "free")))
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id))
         const [countRow] = await ctx.db
           .select({ count: sql<number>`count(*)` })
           .from(board)
@@ -246,7 +246,7 @@ export function createBoardRouter() {
         }
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
 
-        const limits = getPlanLimits(normalizePlan(String(ws.plan || "free")))
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id))
         const [countRow] = await ctx.db
           .select({ count: sql<number>`count(*)` })
           .from(tag)

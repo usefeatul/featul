@@ -6,6 +6,7 @@ export const user = pgTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').notNull(),
   image: text('image'),
+  stripeCustomerId: text('stripe_customer_id').unique(),
   isAdmin: boolean('is_admin').default(false),
   twoFactorEnabled: boolean('two_factor_enabled'),
   createdAt: timestamp('created_at').notNull(),

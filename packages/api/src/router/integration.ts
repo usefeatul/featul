@@ -11,6 +11,7 @@ import { sendTestNotification } from "../services/webhook"
 import { isIntegrationsAllowed } from "../shared/plan"
 import { HTTPException } from "hono/http-exception"
 import type { IntegrationType } from "../validators/integration"
+import { getWorkspaceAccessPlan } from "../shared/access"
 
 /**
  * Helper to check if user has permission to manage integrations
@@ -116,7 +117,7 @@ export function createIntegrationRouter() {
           throw new HTTPException(403, { message: "You don't have permission to manage integrations" })
         }
 
-        const plan = ws.plan ?? "free"
+        const plan = await getWorkspaceAccessPlan(ws.id)
         if (!isIntegrationsAllowed(plan)) {
           throw new HTTPException(403, { message: "Integrations are available on Starter or Professional plans" })
         }
@@ -233,7 +234,7 @@ export function createIntegrationRouter() {
           throw new HTTPException(403, { message: "You don't have permission to test integrations" })
         }
 
-        const plan = ws.plan ?? "free"
+        const plan = await getWorkspaceAccessPlan(ws.id)
         if (!isIntegrationsAllowed(plan)) {
           throw new HTTPException(403, { message: "Integrations are available on Starter or Professional plans" })
         }

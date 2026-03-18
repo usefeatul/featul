@@ -12,6 +12,7 @@ import {
   user,
   workspaceIntegration,
   postReport,
+  subscription,
 } from "@featul/db";
 import { resolvePostAuthorImage } from "@/lib/author-avatar";
 import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
@@ -23,6 +24,7 @@ import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
 import type { FeedbackTag } from "../components/settings/feedback/ManageTags";
 import type { ChangelogTag } from "../components/settings/changelog/ChangelogTags";
 import type { Integration } from "@/hooks/useIntegrations";
+import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import {
   getBrandingBySlug,
   getBrandingColorsBySlug,
@@ -560,6 +562,17 @@ export async function getSettingsInitialData(
 ): Promise<{
   initialPlan?: string;
   initialWorkspaceId?: string;
+  initialWorkspaceOwnerId?: string;
+  initialBillingSubscription?: {
+    id: string;
+    plan: string;
+    status: string;
+    stripeSubscriptionId?: string | null;
+    billingInterval?: string | null;
+    periodEnd?: string | null;
+    cancelAtPeriodEnd?: boolean | null;
+    trialEnd?: string | null;
+  } | null;
   initialWorkspaceName?: string;
   initialTimezone?: string;
   initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
@@ -600,6 +613,8 @@ export async function getSettingsInitialData(
     feedbackRoadmap,
     feedbackTagsRows,
     integrationsRows,
+    activeBillingSubscription,
+    effectivePlan,
     branding,
   ] = await Promise.all([
     db
@@ -704,6 +719,27 @@ export async function getSettingsInitialData(
       })
       .from(workspaceIntegration)
       .where(eq(workspaceIntegration.workspaceId, ws.id)),
+    db
+      .select({
+        id: subscription.id,
+        plan: subscription.plan,
+        status: subscription.status,
+        stripeSubscriptionId: subscription.stripeSubscriptionId,
+        billingInterval: subscription.billingInterval,
+        periodEnd: subscription.periodEnd,
+        cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        trialEnd: subscription.trialEnd,
+      })
+      .from(subscription)
+      .where(
+        and(
+          eq(subscription.referenceId, ws.id),
+          sql`${subscription.status} in ('active', 'trialing', 'past_due')`
+        )
+      )
+      .orderBy(desc(subscription.updatedAt), desc(subscription.createdAt))
+      .limit(1),
+    getEffectiveWorkspacePlan(ws.id),
     getBrandingBySlug(slug),
   ]);
 
@@ -713,8 +749,25 @@ export async function getSettingsInitialData(
   const feedbackBoards = [...feedbackRoadmap, ...feedbackBoardsNonSystem]
 
   return {
-    initialPlan: String(ws?.plan || "free"),
+    initialPlan: effectivePlan,
     initialWorkspaceId: ws.id,
+    initialWorkspaceOwnerId: ws.ownerId,
+    initialBillingSubscription: activeBillingSubscription[0]
+      ? {
+          id: activeBillingSubscription[0].id,
+          plan: String(activeBillingSubscription[0].plan || ""),
+          status: String(activeBillingSubscription[0].status || ""),
+          stripeSubscriptionId: activeBillingSubscription[0].stripeSubscriptionId ?? null,
+          billingInterval: activeBillingSubscription[0].billingInterval ?? null,
+          periodEnd: activeBillingSubscription[0].periodEnd
+            ? activeBillingSubscription[0].periodEnd.toISOString()
+            : null,
+          cancelAtPeriodEnd: activeBillingSubscription[0].cancelAtPeriodEnd ?? null,
+          trialEnd: activeBillingSubscription[0].trialEnd
+            ? activeBillingSubscription[0].trialEnd.toISOString()
+            : null,
+        }
+      : null,
     initialWorkspaceName: String(ws?.name || ""),
     initialTimezone: String(ws?.timezone || "UTC"),
     initialTeam: {

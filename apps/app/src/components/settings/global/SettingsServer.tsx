@@ -23,6 +23,17 @@ import SettingsTabsHeader from "./SettingsTabsHeader";
 type Props = {
   slug: string;
   initialWorkspaceId?: string;
+  initialWorkspaceOwnerId?: string;
+  initialBillingSubscription?: {
+    id: string;
+    plan: string;
+    status: string;
+    stripeSubscriptionId?: string | null;
+    billingInterval?: string | null;
+    periodEnd?: string | null;
+    cancelAtPeriodEnd?: boolean | null;
+    trialEnd?: string | null;
+  } | null;
   selectedSection?: string;
   initialTimezone?: string;
   initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
@@ -42,6 +53,8 @@ type Props = {
 export default function SettingsServer({
   slug,
   initialWorkspaceId,
+  initialWorkspaceOwnerId,
+  initialBillingSubscription,
   selectedSection,
   initialTimezone,
   initialTeam,
@@ -69,6 +82,8 @@ export default function SettingsServer({
         <SectionRenderer
           slug={slug}
           initialWorkspaceId={initialWorkspaceId}
+          initialWorkspaceOwnerId={initialWorkspaceOwnerId}
+          initialBillingSubscription={initialBillingSubscription}
           section={selected}
           initialTimezone={initialTimezone}
           initialTeam={initialTeam}
@@ -92,6 +107,8 @@ export default function SettingsServer({
 function SectionRenderer({
   slug,
   initialWorkspaceId,
+  initialWorkspaceOwnerId,
+  initialBillingSubscription,
   section,
   initialTimezone,
   initialTeam,
@@ -109,6 +126,17 @@ function SectionRenderer({
 }: {
   slug: string;
   initialWorkspaceId?: string;
+  initialWorkspaceOwnerId?: string;
+  initialBillingSubscription?: {
+    id: string;
+    plan: string;
+    status: string;
+    stripeSubscriptionId?: string | null;
+    billingInterval?: string | null;
+    periodEnd?: string | null;
+    cancelAtPeriodEnd?: boolean | null;
+    trialEnd?: string | null;
+  } | null;
   section: string;
   initialTimezone?: string;
   initialTeam?: { members: Member[]; invites: Invite[]; meId: string | null };
@@ -173,7 +201,15 @@ function SectionRenderer({
         />
       );
     case "billing":
-      return <BillingSection currentPlan={initialPlan} workspaceId={initialWorkspaceId} />;
+      return (
+        <BillingSection
+          slug={slug}
+          currentPlan={initialPlan}
+          workspaceId={initialWorkspaceId}
+          workspaceOwnerId={initialWorkspaceOwnerId}
+          initialSubscription={initialBillingSubscription}
+        />
+      );
     case "domain":
       return (
         <DomainSection

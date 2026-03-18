@@ -13,7 +13,7 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug } from "../shared/slug";
-import { requireBoardManagerBySlug } from "../shared/access";
+import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
 import {
   getChangelogTags,
   findTagsByIds,
@@ -342,7 +342,7 @@ export function createChangelogRouter() {
           throw new HTTPException(404, {
             message: "Changelog board not found",
           });
-        const limits = getPlanLimits(String(ws.plan || "free"));
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const currentTags = getChangelogTags(b.changelogTags);
         const maxTags = limits.maxChangelogTags;
         assertWithinLimit(
@@ -579,7 +579,7 @@ export function createChangelogRouter() {
             message: "Changelog board not found",
           });
 
-        const limits = getPlanLimits(String(ws.plan || "free"));
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const [countResult] = await ctx.db
           .select({ count: sql<number>`count(*)::int` })
           .from(changelogEntry)
@@ -739,7 +739,7 @@ export function createChangelogRouter() {
             message: "Changelog board not found",
           });
 
-        const limits = getPlanLimits(String(ws.plan || "free"));
+        const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const [countResult] = await ctx.db
           .select({ count: sql<number>`count(*)::int` })
           .from(changelogEntry)
