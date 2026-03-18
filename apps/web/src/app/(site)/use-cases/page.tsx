@@ -21,7 +21,7 @@ export default function UseCasesIndexPage() {
             <p className="text-sm text-accent">
               Use cases • {totalUseCases} guide{totalUseCases > 1 ? "s" : ""}
             </p>
-            <h1 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl mt-4">
+            <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl mt-4">
               See how teams actually use featul
             </h1>
             <p className="text-accent mt-4 max-w-2xl">

@@ -13,7 +13,7 @@ export default function Create() {
         <div className="bg-background py-4 sm:py-6">
           <div className="mx-auto w-full px-1 sm:px-6 max-w-5xl ">
             <div>
-              <h2 className="text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">
+              <h2 className="font-heading text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">
                 Up and running in 30 seconds
               </h2>
               <div className="mt-10 flex items-start gap-2">

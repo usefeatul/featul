@@ -48,7 +48,7 @@ export default function IntegrationsIndexPage() {
         <section className="py-8 sm:py-12" data-component="IntegrationsIndex">
           <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
             <div className="max-w-3xl">
-              <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">
+              <h1 className="font-heading text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">
                 Integrations
               </h1>
               <p className="text-accent mt-4 text-base sm:text-lg">

@@ -12,7 +12,7 @@ export const metadata: Metadata = createPageMetadata({
 export default function ToolsCategoriesPage() {
   return (
     <ToolsPageShell mainClassName="min-[height:calc(100vh-64px)] pt-16">
-      <h1 className="text-balance text-3xl font-bold md:text-4xl">Categories</h1>
+      <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl">Categories</h1>
       <p className="text-accent mt-4">Find calculators and templates grouped by topic.</p>
       <CategoryList />
     </ToolsPageShell>

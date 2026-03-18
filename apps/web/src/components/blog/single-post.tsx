@@ -52,7 +52,7 @@ export function SinglePost({ post }: SinglePostProps) {
 
           {/* Title/meta constrained to left column width */}
           <header className="mb-6 text-left">
-            <h1 className="text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-tight wrap-break-words text-balance">
+            <h1 className="font-heading text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-tight wrap-break-words text-balance">
               {post.title}
             </h1>
             {post.excerpt ? (

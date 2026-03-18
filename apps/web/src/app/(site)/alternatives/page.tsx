@@ -26,7 +26,7 @@ export default function AlternativesIndexPage() {
               Alternatives
             </p>
             <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
-              <h1 className="text-balance text-xl font-bold sm:text-2xl lg:text-3xl">
+              <h1 className="font-heading text-balance text-xl font-bold sm:text-2xl lg:text-3xl">
                 All product comparisons
               </h1>
               <span className="text-accent inline-flex items-center text-xs font-medium">

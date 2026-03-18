@@ -14,7 +14,7 @@ export default function FeaturesSection() {
         <div className="bg-background py-4 sm:py-6">
           <div className="mx-auto w-full max-w-5xl px-1 sm:px-6">
             <div>
-              <h2 className="text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">
+              <h2 className="font-heading text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">
                 Everything you need to manage feedback
               </h2>
               <div className="mt-10 flex items-stretch gap-3">

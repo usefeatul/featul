@@ -10,7 +10,7 @@ export default function CTA() {
       <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="bg-white p-6 sm:p-8 rounded-md  border border-black/10  ring-offset-background transition-all">
-            <h2 className="text-foreground max-w-lg sm:max-w-2xl text-balance text-xl sm:text-2xl lg:text-3xl font-medium">
+            <h2 className="font-heading text-foreground max-w-lg sm:max-w-2xl text-balance text-xl sm:text-2xl lg:text-3xl font-medium">
               <span className="text-muted-foreground">
                 Collect and prioritize feedback.
               </span>{" "}

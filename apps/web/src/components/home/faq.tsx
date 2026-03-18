@@ -12,7 +12,7 @@ export default function FAQsFour() {
             <section className="my-6 sm:my-8 py-4 sm:py-4 md:py-6" data-component="FAQ">
                 <div className="max-w-5xl px-1 sm:px-6">
                     <div className="max-w-xl text-left">
-                        <h2 className="text-balance text-3xl font-semibold">Questions &amp; Answers</h2>
+                        <h2 className="font-heading text-balance text-3xl font-semibold">Questions &amp; Answers</h2>
                     </div>
 
                     <div className="mt-4 max-w-xl">

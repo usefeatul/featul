@@ -23,7 +23,7 @@ export default function Pricing() {
         <section className="py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
             <div className="text-center max-w-4xl mx-auto">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
                 <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
               </h2>
               <p className="text-accent mt-4 text-base sm:text-lg">

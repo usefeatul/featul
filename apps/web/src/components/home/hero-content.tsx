@@ -9,7 +9,7 @@ import { LiveDemo } from "../global/live-demo";
 export function HeroContent() {
   return (
     <div className="text-left" data-component="HeroContent">
-      <h1 className=" text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-semibold text-foreground text-balance">
+      <h1 className="font-heading text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-semibold text-foreground text-balance">
         The{" "}
         <span className="mx-2 inline-flex items-center align-baseline rounded-md  bg-primary/30 px-2 py-[2px] text-black/70">
           simple and fast

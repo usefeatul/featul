@@ -22,7 +22,7 @@ export function EnterpriseCustomerSuccessUseCase() {
       <article className="mx-auto w-full max-w-3xl py-16 md:py-24">
         <header className="mb-10 text-center">
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">Use case</p>
-          <h1 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
+          <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
             Scale enterprise customer success with structured feedback programs
           </h1>
           <p className="text-accent mt-4">
