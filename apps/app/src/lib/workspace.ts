@@ -262,7 +262,13 @@ export async function listUserWorkspaces(
     { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }
   >();
   for (const w of owned.concat(memberRows)) map.set(w.id, w);
-  return Array.from(map.values());
+
+  return Promise.all(
+    Array.from(map.values()).map(async (workspaceSummary) => ({
+      ...workspaceSummary,
+      plan: await getEffectiveWorkspacePlan(workspaceSummary.id),
+    }))
+  );
 }
 
 export async function getWorkspacePosts(
