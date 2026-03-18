@@ -154,10 +154,5 @@ export async function syncWorkspacePlanFromSubscription(
 ) {
   const referenceId = String(subscription?.referenceId || "").trim()
   if (!referenceId) return
-
-  const nextPlan = isPaidStatus(subscription?.status)
-    ? normalizePlan(subscription?.plan) || "free"
-    : "free"
-
-  await setWorkspacePlan(referenceId, nextPlan)
+  await syncWorkspacePlan(referenceId)
 }
