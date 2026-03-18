@@ -121,7 +121,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                             {integration.name}
                         </p>
 
-                        <h1 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
+                        <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
                             {meta.h1}
                         </h1>
                         <p className="text-accent mt-4 max-w-3xl">{sections.intro}</p>

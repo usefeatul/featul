@@ -77,7 +77,7 @@ export default function Integrations() {
       <section data-component="Integrations" className="my-6 sm:my-8 py-8 sm:py-12">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="max-w-3xl text-left">
-            <h2 className="text-foreground text-2xl sm:text-3xl lg:text-3xl font-semibold">
+            <h2 className="font-heading text-foreground text-2xl sm:text-3xl lg:text-3xl font-semibold">
               Integrate with your favorite tools
             </h2>
             <div className="mt-3 flex items-start gap-2">

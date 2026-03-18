@@ -15,7 +15,7 @@ export default function ToolsIndexPage() {
   return (
     <ToolsPageShell dataComponent="ToolsIndex">
       <p className="text-sm text-accent ">Growth tools • {totalTools} calculators</p>
-      <h1 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl mt-4">Practical SaaS calculators for clear, data‑led decisions</h1>
+      <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl mt-4">Practical SaaS calculators for clear, data‑led decisions</h1>
       <p className="text-accent mt-4 max-w-2xl">Calculate core SaaS metrics including MRR, CAC, LTV, churn, and runway.</p>
       <CategoryList />
     </ToolsPageShell>

@@ -76,7 +76,7 @@ export function ComparisonTemplate({ data, relatedLinks }: Props) {
                             {" / "}
                             {competitor.name}
                         </p>
-                        <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">
+                        <h1 className="font-heading text-balance text-3xl sm:text-4xl lg:text-5xl font-bold">
                             {meta.h1}
                         </h1>
                         <p className="text-muted-foreground mt-4 text-base sm:text-lg max-w-2xl">
