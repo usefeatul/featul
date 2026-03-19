@@ -14,24 +14,31 @@ type PromoCardProps = {
 
 export function PromoCard({
   className,
-  title = "featul, Simplified",
-  description = "Stop guessing. Get actionable feedback understand what users need, iterate faster, and ship with confidence.",
+  title = "Featul, Simplified",
+  description = "Stop guessing. Get actionable feedback, understand what users need, iterate faster, and ship with confidence.",
   ctaHref = "https://app.featul.com",
   ctaLabel = "Sign up for featul",
-  subtext = "free to start, no cc required",
+  subtext = "Free to start, no cc required",
 }: PromoCardProps) {
   return (
     <div className={cn("w-full", className)}>
-      <div className="rounded-md  bg-primary/10 p-2">
-        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-        <p className="mt-1 text-xs text-accent leading-5">{description}</p>
-        <div className="mt-2">
-          <Button asChild className="w-full">
+      <div className="rounded-md border border-border/60 bg-card px-3 py-3">
+        <h3 className="font-heading text-sm font-semibold tracking-tight text-foreground">
+          {title}
+        </h3>
+        <p className="mt-1.5 text-xs leading-5 text-accent">{description}</p>
+        <div className="mt-3">
+          <Button
+            asChild
+            variant="default"
+            size="sm"
+            className="w-full font-heading text-xs shadow-none"
+          >
             <Link href={ctaHref}>{ctaLabel}</Link>
           </Button>
         </div>
+        <p className="mt-2 text-center text-[11px] text-accent/75">{subtext}</p>
       </div>
-      <p className="mt-2 text-center text-xs text-accent/80">{subtext}</p>
     </div>
   );
 }
