@@ -54,7 +54,9 @@ export default function Navbar() {
             className="inline-flex items-center gap-2"
           >
             <FeatulLogoIcon size={26} />
-            {/* <span className="text-lg font-medium">featul</span> */}
+            <span className="text-lg font-semibold tracking-tight text-foreground">
+              Featul
+            </span>
           </Link>
           <nav className="hidden md:flex items-center font-medium text-sm gap-6 md:ml-auto">
             {before.map((item) => (
