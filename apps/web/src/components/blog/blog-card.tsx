@@ -1,7 +1,6 @@
 import Link from "next/link";
-import type { MarblePost } from "@/types/marble";
-import { Card, CardContent } from "@featul/ui/components/card";
 import Image from "next/image";
+import type { MarblePost } from "@/types/marble";
 
 type BlogCardProps = {
   post: MarblePost;
@@ -9,107 +8,51 @@ type BlogCardProps = {
 
 export function BlogCard({ post }: BlogCardProps) {
   const date = post.publishedAt ? new Date(post.publishedAt) : null;
-  const author =
-    post.author ??
-    (post.authors && post.authors.length > 0 ? post.authors[0] : null);
-  const avatarSrc = author?.image ?? "";
-  const toPlain = (s?: string | null) => (s ? s.replace(/<[^>]+>/g, " ") : "");
-  const words = `${toPlain(post.content)} ${toPlain(post.excerpt)}`
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-  const readMinutes = words.length
-    ? Math.max(1, Math.round(words.length / 200))
-    : null;
-  const tagNames = (post.tags ?? [])
-    .map((t) => t.name)
-    .filter(Boolean);
-  const categoryName = post.category?.name ?? null;
+
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group block h-full"
+      className="group block h-full w-full"
       prefetch={false}
     >
-      <Card className="h-full overflow-hidden border flex flex-col transition-colors hover:bg-muted/20">
+      <article className="flex h-full flex-col">
         {post.coverImage ? (
-          <div className="aspect-video w-full relative">
+          <div className="relative aspect-[16/11] w-full overflow-hidden rounded-md bg-muted">
             <Image
               src={post.coverImage ?? ""}
               alt={`${post.title} – blog post cover`}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
               placeholder="blur"
               blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA40lEQVR4nGNgQAJmVta/bWxs/zMwMDAwMjL+Z2Rk/M/IyPifmZn5PxMT039WVtb/7Ozs/zk4OP5zcnL+5+Li+s/Nzf2fh4fnPy8v739+fv7/AgIC/4WEhP4LCwv/FxER+S8qKvpfTEzsv7i4+H8JCYn/kpKS/6WkpP5LS0v/l5GR+S8rK/tfTk7uv7y8/H8FBYX/ioqK/5WUlP4rKyv/V1FR+a+qqvpfTU3tv7q6+n8NDY3/mpqa/7W0tP5ra2v/19HR+a+rq/tfT0/vv76+/n8DA4P/hoaG/42Mjf4bGxv/BwB2mFqQvpnLTAAAAABJRU5ErkJggg=="
               className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
-        ) : null}
-        <CardContent className="p-5 flex-1 flex flex-col">
-          {(categoryName || tagNames.length > 0) ? (
-            <div className="flex flex-wrap items-center gap-2">
-              {categoryName && (
-                <span className="inline-flex w-fit items-center rounded-md  border border-border bg-primary/70 px-2 py-[2px] text-xs text-black">
-                  {categoryName}
-                </span>
-              )}
-              {tagNames.map((t, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex w-fit items-center rounded-md  border border-border/60 bg-muted px-2 py-[2px] text-xs text-black"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
-          <div className="mt-3 flex items-center gap-2">
-            {avatarSrc ? (
-              <Image
-                src={avatarSrc}
-                alt={author?.name ?? "Author"}
-                width={20}
-                height={20}
-                className="h-5 w-5 rounded-md  object-cover translate-y-[0.5px]"
-              />
-            ) : null}
-            {author?.name ? (
-              <span className="text-xs text-primary">
-                {author.name}
+        ) : (
+          <div className="flex aspect-[16/11] w-full items-end rounded-md bg-[linear-gradient(180deg,#f2f5f8_0%,#d7dde3_100%)] p-4">
+            {post.category?.name ? (
+              <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-black/65 backdrop-blur-sm">
+                {post.category.name}
               </span>
             ) : null}
-            {date ? (
-              <span className="text-xs text-accent">
-                {date.toLocaleDateString(undefined, {
+          </div>
+        )}
+
+        <div className="flex flex-1 flex-col px-1 pb-1 pt-4">
+          <h2 className="line-clamp-3 font-serif text-[1.15rem] leading-[1.2] tracking-[-0.02em] text-foreground transition-colors duration-300 group-hover:text-foreground/75 sm:text-[1.3rem]">
+            {post.title}
+          </h2>
+          <p className="mt-2.5 text-[13px] text-accent">
+            {date
+              ? date.toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
-                })}
-              </span>
-            ) : (
-              <span className="text-xs text-accent">Latest</span>
-            )}
-            {readMinutes ? (
-              <>
-                <span className="mb-1 text-zinc-300">•</span>
-                <span className="text-xs text-accent">
-                  {readMinutes} min read
-                </span>
-              </>
-            ) : null}
-          </div>
-
-          <h3 className="mt-2 text-base font-semibold text-foreground group-hover:text-primary line-clamp-2">
-            {post.title}
-          </h3>
-          {post.excerpt ? (
-            <p className="text-accent mt-2 text-sm line-clamp-2">
-              {post.excerpt}
-            </p>
-          ) : null}
-        </CardContent>
-      </Card>
+                })
+              : "Latest"}
+          </p>
+        </div>
+      </article>
     </Link>
   );
 }
