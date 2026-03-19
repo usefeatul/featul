@@ -33,6 +33,9 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
       <div className="flex items-center justify-between h-14 px-4 sm:px-10 lg:px-12 xl:px-14">
         <span className="inline-flex items-center gap-2">
           <FeatulLogoIcon />
+          <span className="text-base font-semibold tracking-tight text-foreground">
+            Featul
+          </span>
         </span>
         <Button
           type="button"

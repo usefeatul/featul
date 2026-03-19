@@ -9,7 +9,7 @@ export const faqItems: FaqItem[] = [
     id: "item-1",
     question: "How quickly can I start collecting feedback?",
     answer:
-      "You can start in minutes. Add the featul widget, share a feedback link, or enable a public board—no complex setup required.",
+      "You can start in minutes. Add the featul widget, share a feedback link, or enable a public board no complex setup required.",
   },
   {
     id: "item-2",
@@ -63,7 +63,7 @@ export const faqItems: FaqItem[] = [
     id: "item-10",
     question: "How can featul improve customer experience management?",
     answer:
-      "Unify input from users and teams, prioritize by impact, and communicate decisions clearly—so customers feel heard and guided.",
+      "Unify input from users and teams, prioritize by impact, and communicate decisions clearly so customers feel heard and guided.",
   },
   {
     id: "item-11",
