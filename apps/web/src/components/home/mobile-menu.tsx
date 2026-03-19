@@ -28,9 +28,12 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   if (!open || !isMobile) return null;
 
   return (
-    <div className="md:hidden fixed inset-0 z-60 bg-background" data-component="MobileMenu">
+    <div
+      className="fixed inset-x-0 bottom-0 top-10 z-60 overflow-y-auto bg-background md:hidden"
+      data-component="MobileMenu"
+    >
       {/* Sheet header */}
-      <div className="flex items-center justify-between h-14 px-4 sm:px-10 lg:px-12 xl:px-14">
+      <div className="flex h-16 items-center justify-between border-b border-border px-4 sm:px-10 lg:px-12 xl:px-14">
         <span className="inline-flex items-center gap-2">
           <FeatulLogoIcon />
           <span className="text-base font-semibold tracking-tight text-foreground">
