@@ -32,7 +32,7 @@ export function SinglePost({ post }: SinglePostProps) {
   return (
     <article className="py-16 md:py-24">
       <ReadingProgress targetSelector="article" position="bottom" />
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-12">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start lg:gap-12">
         <div className="text-left w-full max-w-3xl">
           <nav
             aria-label="Breadcrumb"
@@ -130,7 +130,7 @@ export function SinglePost({ post }: SinglePostProps) {
         </div>
 
         {/* Right column (ToC + Promo) aligned to top */}
-        <aside className="hidden lg:block sticky top-24 h-fit space-y-6">
+        <aside className="hidden lg:block lg:self-start sticky top-28 max-h-[calc(100dvh-7rem)] overflow-y-auto pr-1 space-y-6">
           {items.length > 0 ? <TableOfContents items={items} /> : null}
           <PromoCard />
         </aside>
