@@ -32,27 +32,29 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className }: MemberT
           No posts yet
         </div>
       ) : (
-        <div className="space-y-2">
+        <div>
           {displayedPosts.map((p) => (
-            <div key={p.id} className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-xs gap-3">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                {p.status ? <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" /> : null}
-                <Link
-                  href={`/workspaces/${slug}/requests/${p.slug}`}
-                  className="min-w-0 flex-1 truncate text-foreground hover:text-primary"
-                  title={p.title}
-                >
-                  {p.title}
-                </Link>
+            <div key={p.id} className="border-t border-border/70 first:border-t-0">
+              <div className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted text-xs gap-3">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  {p.status ? <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" /> : null}
+                  <Link
+                    href={`/workspaces/${slug}/requests/${p.slug}`}
+                    className="min-w-0 flex-1 truncate text-foreground hover:text-primary"
+                    title={p.title}
+                  >
+                    {p.title}
+                  </Link>
+                </div>
+                <UpvoteButton
+                  postId={p.id}
+                  upvotes={Number(p.upvotes || 0)}
+                  className="text-xs shrink-0"
+                />
               </div>
-              <UpvoteButton
-                postId={p.id}
-                upvotes={Number(p.upvotes || 0)}
-                className="text-xs shrink-0"
-              />
             </div>
           ))}
-          <div className="pt-2 flex justify-center">
+          <div className="mt-2 border-t border-border/70 pt-3 flex justify-center">
             <Button asChild variant="nav" size="xs" className="rounded-md text-xs px-2.5">
               <Link href={`/workspaces/${slug}/requests`}>
                 View all requests

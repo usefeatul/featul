@@ -8,23 +8,9 @@ import {
   workspace,
   workspaceMember,
 } from "@featul/db";
+import { readActivityStatus } from "@featul/api/shared/member-activity";
 import { and, eq, isNull, lt, sql } from "drizzle-orm";
 import type { PaginatedActivity } from "@/types/activity";
-
-function readActivityStatus(metadata: unknown): string | null {
-  if (!metadata || typeof metadata !== "object") return null;
-  const candidate = metadata as { status?: unknown; roadmapStatus?: unknown };
-  if (typeof candidate.status === "string" && candidate.status.trim()) {
-    return candidate.status;
-  }
-  if (
-    typeof candidate.roadmapStatus === "string" &&
-    candidate.roadmapStatus.trim()
-  ) {
-    return candidate.roadmapStatus;
-  }
-  return null;
-}
 
 async function getWorkspaceForMemberAccess(slug: string, viewerId: string) {
   const [workspaceRow] = await db

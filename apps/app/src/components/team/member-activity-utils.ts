@@ -1,9 +1,14 @@
 import { format, isToday, isYesterday } from "date-fns"
-import { ACTIVITY_ACTIONS } from "@featul/api/shared/activity-actions"
+import {
+  getActivityCategory,
+  isChangelogActivity,
+  isPostOrCommentActivity,
+  type ActivityCategory,
+} from "@featul/api/shared/member-activity"
 import { getActivityStatus } from "@/lib/activity-status"
 import type { ActivityItem } from "@/types/activity"
 
-export type ActivityCategory = "all" | "posts" | "comments" | "changelog" | "tags"
+export type { ActivityCategory } from "@featul/api/shared/member-activity"
 
 export type ActivityRow =
   | { kind: "item"; key: string; item: ActivityItem; href: string }
@@ -25,78 +30,6 @@ export const CATEGORY_FILTERS: Array<{ id: ActivityCategory; label: string }> = 
 
 const COLLAPSIBLE_REPEAT_THRESHOLD = 3
 
-const POST_ACTION_TYPES = new Set<string>([
-  ACTIVITY_ACTIONS.POST_CREATED,
-  ACTIVITY_ACTIONS.POST_UPDATED,
-  ACTIVITY_ACTIONS.POST_DELETED,
-  ACTIVITY_ACTIONS.POST_REPORTED,
-  ACTIVITY_ACTIONS.POST_VOTE_REMOVED,
-  ACTIVITY_ACTIONS.POST_VOTED,
-  ACTIVITY_ACTIONS.POST_MERGED,
-  ACTIVITY_ACTIONS.POST_META_UPDATED,
-  ACTIVITY_ACTIONS.POST_BOARD_UPDATED,
-])
-
-const COMMENT_ACTION_TYPES = new Set<string>([
-  ACTIVITY_ACTIONS.COMMENT_CREATED,
-  ACTIVITY_ACTIONS.COMMENT_UPDATED,
-  ACTIVITY_ACTIONS.COMMENT_MARKED_INTERNAL,
-  ACTIVITY_ACTIONS.COMMENT_MARKED_EXTERNAL,
-  ACTIVITY_ACTIONS.COMMENT_DELETED,
-  ACTIVITY_ACTIONS.COMMENT_VOTE_REMOVED,
-  ACTIVITY_ACTIONS.COMMENT_VOTE_CHANGED,
-  ACTIVITY_ACTIONS.COMMENT_VOTED,
-  ACTIVITY_ACTIONS.COMMENT_REPORTED,
-  ACTIVITY_ACTIONS.COMMENT_PINNED,
-  ACTIVITY_ACTIONS.COMMENT_UNPINNED,
-])
-
-const WORKSPACE_TAG_ACTION_TYPES = new Set<string>([
-  ACTIVITY_ACTIONS.TAG_CREATED,
-  ACTIVITY_ACTIONS.TAG_DELETED,
-])
-
-const CHANGELOG_TAG_ACTION_TYPES = new Set<string>([
-  ACTIVITY_ACTIONS.CHANGELOG_TAG_CREATED,
-  ACTIVITY_ACTIONS.CHANGELOG_TAG_DELETED,
-])
-
-const CHANGELOG_ACTION_TYPES = new Set<string>([
-  ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_SAVED,
-  ACTIVITY_ACTIONS.CHANGELOG_NOTRA_CONNECTION_DELETED,
-  ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORT_FAILED,
-  ACTIVITY_ACTIONS.CHANGELOG_NOTRA_IMPORTED,
-  ACTIVITY_ACTIONS.CHANGELOG_ENTRY_CREATED,
-  ACTIVITY_ACTIONS.CHANGELOG_ENTRY_UPDATED,
-  ACTIVITY_ACTIONS.CHANGELOG_ENTRY_DELETED,
-  ACTIVITY_ACTIONS.CHANGELOG_ENTRY_PUBLISHED,
-])
-
-export function getActivityCategory(item: ActivityItem): ActivityCategory {
-  if (
-    item.entity === "tag" ||
-    item.entity === "changelog_tag" ||
-    WORKSPACE_TAG_ACTION_TYPES.has(item.type) ||
-    CHANGELOG_TAG_ACTION_TYPES.has(item.type)
-  ) {
-    return "tags"
-  }
-
-  if (item.entity === "comment" || COMMENT_ACTION_TYPES.has(item.type)) {
-    return "comments"
-  }
-
-  if (item.entity === "post" || POST_ACTION_TYPES.has(item.type)) {
-    return "posts"
-  }
-
-  if (item.entity === "changelog_entry" || CHANGELOG_ACTION_TYPES.has(item.type)) {
-    return "changelog"
-  }
-
-  return "all"
-}
-
 export function getActivityHref(item: ActivityItem, workspaceSlug: string) {
   const metadata = (item.metadata ?? {}) as Record<string, unknown>
   const slugCandidate =
@@ -104,27 +37,15 @@ export function getActivityHref(item: ActivityItem, workspaceSlug: string) {
     (typeof metadata.postSlug === "string" && metadata.postSlug) ||
     null
 
-  const isPostOrComment =
-    item.entity === "post" ||
-    item.entity === "comment" ||
-    POST_ACTION_TYPES.has(item.type) ||
-    COMMENT_ACTION_TYPES.has(item.type)
-
-  if (isPostOrComment && slugCandidate) {
+  if (isPostOrCommentActivity(item) && slugCandidate) {
     return `/workspaces/${workspaceSlug}/requests/${slugCandidate}`
   }
 
-  if (isPostOrComment) {
+  if (isPostOrCommentActivity(item)) {
     return `/workspaces/${workspaceSlug}/requests`
   }
 
-  const isChangelogActivity =
-    item.entity === "changelog_entry" ||
-    item.entity === "changelog_tag" ||
-    CHANGELOG_ACTION_TYPES.has(item.type) ||
-    CHANGELOG_TAG_ACTION_TYPES.has(item.type)
-
-  if (isChangelogActivity) {
+  if (isChangelogActivity(item)) {
     if (item.entity === "changelog_entry" && item.entityId) {
       return `/workspaces/${workspaceSlug}/changelog/${item.entityId}/edit`
     }

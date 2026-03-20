@@ -1,7 +1,10 @@
 import { client } from "@featul/api/client";
+import type { ActivityCategory } from "@featul/api/shared/member-activity";
 import { safeJson } from "@/lib/api-response";
 import type { PaginatedActivity } from "@/types/activity";
 import type { Member, Role } from "@/types/team";
+
+export type MemberActivityCategory = ActivityCategory;
 
 export type WorkspaceViewer = {
   role: Role | null;
@@ -13,6 +16,7 @@ export type MemberStats = {
   comments: number;
   upvotes: number;
 };
+
 
 export type MemberTopPost = {
   id: string;
@@ -48,8 +52,12 @@ export const teamQueryKeys = {
     ["workspace-viewer", slug, userId] as const,
   memberStats: (slug: string, userId: string) =>
     ["member-stats", slug, userId] as const,
-  memberActivity: (slug: string, userId: string) =>
-    ["member-activity", slug, userId] as const,
+  memberActivity: (
+    slug: string,
+    userId: string,
+    categoryFilter: MemberActivityCategory,
+    statusFilter: string
+  ) => ["member-activity", slug, userId, categoryFilter, statusFilter] as const,
 };
 
 export async function fetchWorkspaceMembers(slug: string): Promise<Member[]> {
@@ -91,7 +99,11 @@ export async function fetchMemberActivity(
   slug: string,
   userId: string,
   cursor?: string,
-  limit: number = 20
+  limit: number = 20,
+  filters?: {
+    categoryFilter?: MemberActivityCategory;
+    statusFilter?: string;
+  }
 ): Promise<PaginatedActivity> {
   if (!slug || !userId) {
     return { items: [], nextCursor: null };
@@ -101,6 +113,10 @@ export async function fetchMemberActivity(
     userId,
     limit,
     cursor,
+    categoryFilter: filters?.categoryFilter ?? "all",
+    ...(filters?.statusFilter && filters.statusFilter !== "all"
+      ? { statusFilter: filters.statusFilter }
+      : {}),
   });
   const data = await safeJson<PaginatedActivity>(res);
   return {

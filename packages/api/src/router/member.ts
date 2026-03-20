@@ -2,6 +2,11 @@ import { j, privateProcedure } from "../jstack"
 import { HTTPException } from "hono/http-exception"
 import { and, eq, lt, sql, isNull } from "drizzle-orm"
 import {
+  matchesActivityFilters,
+  normalizeActivityStatus,
+  readActivityStatus,
+} from "../shared/member-activity"
+import {
   workspace,
   workspaceMember,
   board,
@@ -24,14 +29,6 @@ type ActivityRow = {
   entityId: string
   createdAt: Date | string | null
   metadata: unknown
-}
-
-function readActivityStatus(metadata: unknown): string | null {
-  if (!metadata || typeof metadata !== "object") return null
-  const candidate = metadata as { status?: unknown; roadmapStatus?: unknown }
-  if (typeof candidate.status === "string" && candidate.status.trim()) return candidate.status
-  if (typeof candidate.roadmapStatus === "string" && candidate.roadmapStatus.trim()) return candidate.roadmapStatus
-  return null
 }
 
 async function getWorkspaceBySlugOrThrow(ctx: MemberRouterContext, slug: string) {
@@ -122,39 +119,61 @@ export function createMemberRouter() {
         await requireIsMember(ctx, ws.id)
 
         const limit = Math.min(Math.max(Number(input.limit || 20), 1), 50)
-        const cursorDate = input.cursor ? new Date(input.cursor) : null
+        const batchSize = Math.min(Math.max(limit * 3, limit + 1), 100)
+        const normalizedStatusFilter = normalizeActivityStatus(input.statusFilter)
+        let cursorDate = input.cursor ? new Date(input.cursor) : null
+        const matchedRows: ActivityRow[] = []
+        let hasMore = false
 
-        const rows = await ctx.db
-          .select({
-            id: activityLog.id,
-            type: activityLog.action,
-            title: activityLog.title,
-            entity: activityLog.entity,
-            entityId: activityLog.entityId,
-            createdAt: activityLog.createdAt,
-            metadata: activityLog.metadata,
-          })
-          .from(activityLog)
-          .where(
-            and(
-              eq(activityLog.workspaceId, ws.id),
-              eq(activityLog.userId, input.userId),
-              ...(cursorDate ? [lt(activityLog.createdAt, cursorDate)] : []),
-            ),
-          )
-          .orderBy(sql`${activityLog.createdAt} desc`)
-          .limit(limit + 1)
+        while (matchedRows.length < limit + 1) {
+          const rows = await ctx.db
+            .select({
+              id: activityLog.id,
+              type: activityLog.action,
+              title: activityLog.title,
+              entity: activityLog.entity,
+              entityId: activityLog.entityId,
+              createdAt: activityLog.createdAt,
+              metadata: activityLog.metadata,
+            })
+            .from(activityLog)
+            .where(
+              and(
+                eq(activityLog.workspaceId, ws.id),
+                eq(activityLog.userId, input.userId),
+                ...(cursorDate ? [lt(activityLog.createdAt, cursorDate)] : []),
+              ),
+            )
+            .orderBy(sql`${activityLog.createdAt} desc`)
+            .limit(batchSize)
 
-        const hasMore = rows.length > limit
-        const limited = rows.slice(0, limit).map((row: ActivityRow) => ({
+          if (rows.length === 0) break
+
+          for (const row of rows) {
+            if (matchesActivityFilters(row, input.categoryFilter, normalizedStatusFilter ?? undefined)) {
+              matchedRows.push(row)
+              if (matchedRows.length >= limit + 1) break
+            }
+          }
+
+          if (matchedRows.length >= limit + 1) {
+            hasMore = true
+            break
+          }
+
+          if (rows.length < batchSize) break
+
+          const lastRowCreatedAt = rows[rows.length - 1]?.createdAt
+          if (!lastRowCreatedAt) break
+          cursorDate = new Date(lastRowCreatedAt)
+        }
+
+        const limited = matchedRows.slice(0, limit).map((row: ActivityRow) => ({
           ...row,
           status: readActivityStatus(row.metadata),
         }))
         const lastCreatedAt = limited[limited.length - 1]?.createdAt
-        const nextCursor =
-          hasMore && lastCreatedAt
-            ? new Date(lastCreatedAt).toISOString()
-            : null
+        const nextCursor = hasMore && lastCreatedAt ? new Date(lastCreatedAt).toISOString() : null
 
         c.header("Cache-Control", "private, max-age=60, stale-while-revalidate=300")
         return c.superjson({ items: limited, nextCursor })

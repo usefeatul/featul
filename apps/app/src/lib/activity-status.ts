@@ -1,3 +1,7 @@
+import {
+  normalizeActivityStatus,
+  readActivityStatus,
+} from "@featul/api/shared/member-activity"
 import type { ActivityItem } from "@/types/activity"
 
 function toTitleCase(value: string) {
@@ -8,23 +12,13 @@ function toTitleCase(value: string) {
     .join(" ")
 }
 
-export function normalizeActivityStatus(value: unknown): string | null {
-  const raw = String(value || "").trim().toLowerCase()
-  return raw.length > 0 ? raw : null
-}
-
 export function getActivityStatus(
   item: Pick<ActivityItem, "status" | "metadata">,
 ): string | null {
   const directStatus = normalizeActivityStatus(item.status)
   if (directStatus) return directStatus
 
-  const metadata = item.metadata || {}
-  return (
-    normalizeActivityStatus(metadata.status) ||
-    normalizeActivityStatus(metadata.roadmapStatus) ||
-    normalizeActivityStatus(metadata.toStatus)
-  )
+  return readActivityStatus(item.metadata)
 }
 
 export function formatActivityStatusLabel(status: unknown): string | null {
