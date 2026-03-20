@@ -1,16 +1,16 @@
 "use client"
 
 import React from "react"
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import type { Member } from "@/types/team"
-import type { ActivityItem, PaginatedActivity } from "@/types/activity"
+import type { PaginatedActivity } from "@/types/activity"
 import { MemberHeader } from "@/components/team/MemberHeader"
 import { MemberActivity } from "@/components/team/MemberActivity"
 import { MemberTopPosts } from "@/components/team/MemberTopPosts"
+import { useMemberActivityQuery } from "@/components/team/useMemberActivityQuery"
 import { cn } from "@featul/ui/lib/utils"
 import {
   EMPTY_MEMBER_STATS,
-  fetchMemberActivity,
   fetchMemberStats,
   fetchWorkspaceMembers,
   teamQueryKeys,
@@ -55,29 +55,21 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
   const topPosts: MemberTopPost[] = statsData?.topPosts || initialTopPosts || []
 
   const {
-    data: activityData,
+    items,
+    categoryFilter,
+    setCategoryFilter,
+    statusFilter,
+    setStatusFilter,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading: isActivityLoading,
     isFetching: isActivityFetching,
-  } = useInfiniteQuery({
-    queryKey: teamQueryKeys.memberActivity(slug, userId),
-    queryFn: async ({ pageParam }) => {
-      const cursor = typeof pageParam === "string" && pageParam.length > 0 ? pageParam : undefined
-      return fetchMemberActivity(slug, userId, cursor)
-    },
-    getNextPageParam: (lastPage) => (lastPage?.nextCursor ?? undefined) as string | undefined,
-    initialPageParam: "",
-    initialData: { pages: [initialActivity], pageParams: [""] },
-    staleTime: 30_000,
-    refetchOnMount: false,
+  } = useMemberActivityQuery({
+    slug,
+    userId,
+    initialActivity,
   })
-
-  const items = React.useMemo((): ActivityItem[] => {
-    const pages = activityData?.pages || [initialActivity]
-    return pages.flatMap((p) => p?.items || [])
-  }, [activityData?.pages, initialActivity])
 
   const tabButtonClass = (tab: "activity" | "top-posts") =>
     cn(
@@ -116,6 +108,10 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
               isFetchingNextPage={isFetchingNextPage}
               onLoadMore={() => fetchNextPage()}
               isLoading={isActivityLoading || isActivityFetching}
+              categoryFilter={categoryFilter}
+              onCategoryChange={setCategoryFilter}
+              statusFilter={statusFilter}
+              onStatusChange={setStatusFilter}
             />
           </div>
           <div
