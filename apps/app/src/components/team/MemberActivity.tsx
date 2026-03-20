@@ -59,7 +59,9 @@ export function MemberActivity({ workspaceSlug, items, hasNextPage, isFetchingNe
         <div className="space-y-4">
           {dayGroups.map((day) => (
             <section key={day.key} className="space-y-1.5">
-              <div className="px-1 text-[11px] uppercase tracking-wide text-accent/90 font-medium">{day.label}</div>
+              <div className="px-2 pt-1 font-heading text-[12px] font-semibold uppercase leading-none tracking-[0.16em] text-foreground">
+                {day.label}
+              </div>
               <ul className="divide-y divide-border">
                 {day.rows.map((row) => {
                   if (row.kind === "item") {
