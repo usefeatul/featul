@@ -1,11 +1,7 @@
 import { j, privateProcedure } from "../jstack"
 import { HTTPException } from "hono/http-exception"
-import { and, eq, lt, sql, isNull } from "drizzle-orm"
-import {
-  matchesActivityFilters,
-  normalizeActivityStatus,
-  readActivityStatus,
-} from "../shared/member-activity"
+import { and, eq, sql, isNull } from "drizzle-orm"
+import { loadMemberActivityPage } from "../services/member-activity"
 import {
   workspace,
   workspaceMember,
@@ -13,23 +9,9 @@ import {
   post,
   comment,
   vote,
-  user,
-  postUpdate,
-  postMerge,
-  activityLog,
 } from "@featul/db"
 import { memberByWorkspaceInputSchema, memberActivityInputSchema } from "../validators/member"
 import type { AuthenticatedRouterContext as MemberRouterContext } from "../types/router-context"
-
-type ActivityRow = {
-  id: string
-  type: string
-  title: string | null
-  entity: string
-  entityId: string
-  createdAt: Date | string | null
-  metadata: unknown
-}
 
 async function getWorkspaceBySlugOrThrow(ctx: MemberRouterContext, slug: string) {
   const [ws] = await ctx.db
@@ -118,65 +100,18 @@ export function createMemberRouter() {
         const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
         await requireIsMember(ctx, ws.id)
 
-        const limit = Math.min(Math.max(Number(input.limit || 20), 1), 50)
-        const batchSize = Math.min(Math.max(limit * 3, limit + 1), 100)
-        const normalizedStatusFilter = normalizeActivityStatus(input.statusFilter)
-        let cursorDate = input.cursor ? new Date(input.cursor) : null
-        const matchedRows: ActivityRow[] = []
-        let hasMore = false
-
-        while (matchedRows.length < limit + 1) {
-          const rows = await ctx.db
-            .select({
-              id: activityLog.id,
-              type: activityLog.action,
-              title: activityLog.title,
-              entity: activityLog.entity,
-              entityId: activityLog.entityId,
-              createdAt: activityLog.createdAt,
-              metadata: activityLog.metadata,
-            })
-            .from(activityLog)
-            .where(
-              and(
-                eq(activityLog.workspaceId, ws.id),
-                eq(activityLog.userId, input.userId),
-                ...(cursorDate ? [lt(activityLog.createdAt, cursorDate)] : []),
-              ),
-            )
-            .orderBy(sql`${activityLog.createdAt} desc`)
-            .limit(batchSize)
-
-          if (rows.length === 0) break
-
-          for (const row of rows) {
-            if (matchesActivityFilters(row, input.categoryFilter, normalizedStatusFilter ?? undefined)) {
-              matchedRows.push(row)
-              if (matchedRows.length >= limit + 1) break
-            }
-          }
-
-          if (matchedRows.length >= limit + 1) {
-            hasMore = true
-            break
-          }
-
-          if (rows.length < batchSize) break
-
-          const lastRowCreatedAt = rows[rows.length - 1]?.createdAt
-          if (!lastRowCreatedAt) break
-          cursorDate = new Date(lastRowCreatedAt)
-        }
-
-        const limited = matchedRows.slice(0, limit).map((row: ActivityRow) => ({
-          ...row,
-          status: readActivityStatus(row.metadata),
-        }))
-        const lastCreatedAt = limited[limited.length - 1]?.createdAt
-        const nextCursor = hasMore && lastCreatedAt ? new Date(lastCreatedAt).toISOString() : null
+        const activityPage = await loadMemberActivityPage({
+          database: ctx.db,
+          workspaceId: ws.id,
+          memberUserId: input.userId,
+          cursor: input.cursor ?? undefined,
+          limit: input.limit,
+          categoryFilter: input.categoryFilter,
+          statusFilter: input.statusFilter,
+        })
 
         c.header("Cache-Control", "private, max-age=60, stale-while-revalidate=300")
-        return c.superjson({ items: limited, nextCursor })
+        return c.superjson(activityPage)
       }),
   })
 }

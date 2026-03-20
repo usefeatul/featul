@@ -1,37 +1,21 @@
 import { client } from "@featul/api/client";
-import type { ActivityCategory } from "@featul/api/shared/member-activity";
 import { safeJson } from "@/lib/api-response";
 import type { PaginatedActivity } from "@/types/activity";
-import type { Member, Role } from "@/types/team";
-
-export type MemberActivityCategory = ActivityCategory;
-
-export type WorkspaceViewer = {
-  role: Role | null;
-  isOwner: boolean;
-};
-
-export type MemberStats = {
-  posts: number;
-  comments: number;
-  upvotes: number;
-};
-
-
-export type MemberTopPost = {
-  id: string;
-  title: string;
-  slug: string;
-  upvotes: number;
-  status?: string | null;
-};
+import type { Member } from "@/types/team";
+import {
+  EMPTY_MEMBER_STATS,
+  type MemberActivityCategory,
+  type MemberStats,
+  type MemberTopPost,
+  type WorkspaceViewer,
+} from "@/lib/team";
 
 type MembersResponse = {
   members?: Member[];
 };
 
 type ViewerResponse = {
-  role?: Role | null;
+  role?: WorkspaceViewer["role"];
   isOwner?: boolean;
 };
 
@@ -40,25 +24,14 @@ type MemberStatsResponse = {
   topPosts?: MemberTopPost[];
 };
 
-export const EMPTY_MEMBER_STATS: MemberStats = {
-  posts: 0,
-  comments: 0,
-  upvotes: 0,
-};
-
-export const teamQueryKeys = {
-  members: (slug: string) => ["members", slug] as const,
-  viewer: (slug: string, userId: string | null) =>
-    ["workspace-viewer", slug, userId] as const,
-  memberStats: (slug: string, userId: string) =>
-    ["member-stats", slug, userId] as const,
-  memberActivity: (
-    slug: string,
-    userId: string,
-    categoryFilter: MemberActivityCategory,
-    statusFilter: string
-  ) => ["member-activity", slug, userId, categoryFilter, statusFilter] as const,
-};
+export { teamQueryKeys } from "@/lib/team-query-keys";
+export {
+  EMPTY_MEMBER_STATS,
+  type MemberActivityCategory,
+  type MemberStats,
+  type MemberTopPost,
+  type WorkspaceViewer,
+} from "@/lib/team";
 
 export async function fetchWorkspaceMembers(slug: string): Promise<Member[]> {
   if (!slug) return [];

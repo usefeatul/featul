@@ -7,10 +7,11 @@ import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { LoadingSpinner } from "@/components/settings/global/LoadingSpinner"
 import { Button } from "@featul/ui/components/button"
 import { cn } from "@featul/ui/lib/utils"
+import type { MemberTopPost } from "@/lib/team"
 
 interface MemberTopPostsProps {
   slug: string
-  topPosts: Array<{ id: string; title: string; slug: string; upvotes: number; status?: string | null }>
+  topPosts: MemberTopPost[]
   isLoading?: boolean
   className?: string
 }
