@@ -1,5 +1,4 @@
 import {
-  activityLog,
   board,
   comment,
   db,
@@ -8,8 +7,8 @@ import {
   workspace,
   workspaceMember,
 } from "@featul/db";
-import { readActivityStatus } from "@featul/api/shared/member-activity";
-import { and, eq, isNull, lt, sql } from "drizzle-orm";
+import { loadMemberActivityPage } from "@featul/api/services/member-activity";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import type { PaginatedActivity } from "@/types/activity";
 
 async function getWorkspaceForMemberAccess(slug: string, viewerId: string) {
@@ -165,46 +164,11 @@ export async function loadMemberActivity(
     return { items: [], nextCursor: null };
   }
 
-  const safeLimit = Math.min(Math.max(Number(limit || 20), 1), 50);
-  const cursorDate = cursor ? new Date(cursor) : null;
-
-  const rows = await db
-    .select({
-      id: activityLog.id,
-      type: activityLog.action,
-      title: activityLog.title,
-      entity: activityLog.entity,
-      entityId: activityLog.entityId,
-      createdAt: activityLog.createdAt,
-      metadata: activityLog.metadata,
-    })
-    .from(activityLog)
-    .where(
-      and(
-        eq(activityLog.workspaceId, workspaceRow.id),
-        eq(activityLog.userId, memberUserId),
-        ...(cursorDate ? [lt(activityLog.createdAt, cursorDate)] : [])
-      )
-    )
-    .orderBy(sql`${activityLog.createdAt} desc`)
-    .limit(safeLimit + 1);
-
-  const hasMore = rows.length > safeLimit;
-  const items = rows.slice(0, safeLimit).map((row) => ({
-    id: row.id,
-    type: row.type,
-    title: row.title ?? undefined,
-    entity: row.entity || undefined,
-    entityId: row.entityId,
-    createdAt: row.createdAt,
-    metadata: row.metadata ?? undefined,
-    status: readActivityStatus(row.metadata) ?? undefined,
-  }));
-  const lastCreatedAt = items[items.length - 1]?.createdAt;
-
-  return {
-    items,
-    nextCursor:
-      hasMore && lastCreatedAt ? new Date(lastCreatedAt).toISOString() : null,
-  };
+  return loadMemberActivityPage({
+    database: db,
+    workspaceId: workspaceRow.id,
+    memberUserId,
+    cursor,
+    limit,
+  });
 }

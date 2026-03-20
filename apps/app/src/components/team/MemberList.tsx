@@ -10,7 +10,8 @@ import { roleBadgeClass } from "@/components/settings/team/role-badge"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import RoleBadge from "@/components/global/RoleBadge"
-import { fetchWorkspaceMembers, teamQueryKeys } from "@/lib/team-client"
+import { fetchWorkspaceMembers } from "@/lib/team-client"
+import { teamQueryKeys } from "@/lib/team-query-keys"
 
 interface Props {
   slug: string

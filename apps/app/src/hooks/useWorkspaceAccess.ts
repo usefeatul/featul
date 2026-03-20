@@ -2,7 +2,8 @@
 
 import { useSession } from "@featul/auth/client"
 import { useQuery } from "@tanstack/react-query"
-import { fetchWorkspaceViewer, teamQueryKeys } from "@/lib/team-client"
+import { fetchWorkspaceViewer } from "@/lib/team-client"
+import { teamQueryKeys } from "@/lib/team-query-keys"
 
 type Role = "admin" | "member" | "viewer"
 

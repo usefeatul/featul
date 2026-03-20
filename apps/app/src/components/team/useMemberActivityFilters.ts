@@ -23,16 +23,18 @@ export function useMemberActivityFilters({
   statusFilter,
 }: UseMemberActivityFiltersInput) {
   const [expandedGroups, setExpandedGroups] = React.useState<Record<string, boolean>>({})
-  const [statusOptions, setStatusOptions] = React.useState<string[]>([])
 
   const categoryScopedItems = React.useMemo(() => {
     return filterActivityItems(items, categoryFilter, "all")
   }, [items, categoryFilter])
 
   const availableStatuses = React.useMemo(() => {
-    if (statusFilter === "all") return getAvailableStatuses(categoryScopedItems)
-    return statusOptions.length > 0 ? statusOptions : getAvailableStatuses(categoryScopedItems)
-  }, [categoryScopedItems, statusFilter, statusOptions])
+    const statuses = getAvailableStatuses(categoryScopedItems)
+    if (statusFilter === "all" || statuses.includes(statusFilter)) {
+      return statuses
+    }
+    return [...statuses, statusFilter].sort((left, right) => left.localeCompare(right))
+  }, [categoryScopedItems, statusFilter])
 
   const filteredItems = React.useMemo(() => {
     return filterActivityItems(items, categoryFilter, statusFilter)
@@ -45,12 +47,6 @@ export function useMemberActivityFilters({
   React.useEffect(() => {
     setExpandedGroups({})
   }, [categoryFilter, statusFilter])
-
-  React.useEffect(() => {
-    if (statusFilter === "all") {
-      setStatusOptions(getAvailableStatuses(categoryScopedItems))
-    }
-  }, [categoryScopedItems, statusFilter])
 
   const toggleGroup = React.useCallback((key: string) => {
     setExpandedGroups((prev) => ({ ...prev, [key]: !prev[key] }))

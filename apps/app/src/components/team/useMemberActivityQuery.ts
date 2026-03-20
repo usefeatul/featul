@@ -3,11 +3,9 @@
 import React from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import type { ActivityItem, PaginatedActivity } from "@/types/activity"
-import {
-  fetchMemberActivity,
-  teamQueryKeys,
-  type MemberActivityCategory,
-} from "@/lib/team-client"
+import { fetchMemberActivity } from "@/lib/team-client"
+import { teamQueryKeys } from "@/lib/team-query-keys"
+import type { MemberActivityCategory } from "@/lib/team"
 
 interface UseMemberActivityQueryInput {
   slug: string
