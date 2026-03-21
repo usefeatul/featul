@@ -12,6 +12,31 @@ type BuildFaqParams = {
   categoryName: string;
 };
 
+type FaqPageItem =
+  | {
+      question: string;
+      answer: string;
+    }
+  | {
+      q: string;
+      a: string;
+    };
+
+export function buildFaqPageSchema(faqs: FaqPageItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: normalizeJsonLdText("question" in faq ? faq.question : faq.q),
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: normalizeJsonLdText("answer" in faq ? faq.answer : faq.a),
+      },
+    })),
+  };
+}
+
 export function buildToolFaqSchema({ tool, categoryName }: BuildFaqParams) {
   const questions: Array<{ name: string; text: string }> = [];
 
@@ -22,13 +47,15 @@ export function buildToolFaqSchema({ tool, categoryName }: BuildFaqParams) {
   });
 
   // Q2: How do I calculate {tool.name}? Use the first section with code/body if available
-  const calcSection = tool.contentSections?.find(
-    (s) => /formula|calculate|calculation|basic/i.test(s.title)
-  ) || tool.contentSections?.[0];
+  const calcSection =
+    tool.contentSections?.find((s) =>
+      /formula|calculate|calculation|basic/i.test(s.title),
+    ) || tool.contentSections?.[0];
   if (calcSection) {
     const calcText = calcSection.code
       ? `${calcSection.body ? calcSection.body + " " : ""}Formula: ${calcSection.code}`
-      : calcSection.body || `Use the calculator inputs to compute ${tool.name.toLowerCase()}.`;
+      : calcSection.body ||
+        `Use the calculator inputs to compute ${tool.name.toLowerCase()}.`;
     questions.push({
       name: `How do I calculate ${tool.name}?`,
       text: calcText,
@@ -106,10 +133,24 @@ type BuildBlogPostingParams = {
   post: MarblePost;
 };
 
-export function buildBlogPostingSchema({ siteUrl, slug, post }: BuildBlogPostingParams) {
+export function buildBlogPostingSchema({
+  siteUrl,
+  slug,
+  post,
+}: BuildBlogPostingParams) {
   const page = `${siteUrl}/blog/${slug}`;
-  const image = post.coverImage ? (post.coverImage.startsWith("http") ? post.coverImage : `${siteUrl}${post.coverImage}`) : `${siteUrl}/og.png`;
-  const authors = (post.authors && post.authors.length > 0 ? post.authors : post.author ? [post.author] : [])
+  const image = post.coverImage
+    ? post.coverImage.startsWith("http")
+      ? post.coverImage
+      : `${siteUrl}${post.coverImage}`
+    : `${siteUrl}/og.png`;
+  const authors = (
+    post.authors && post.authors.length > 0
+      ? post.authors
+      : post.author
+        ? [post.author]
+        : []
+  )
     .filter(Boolean)
     .map((a) => ({ "@type": "Person", name: normalizeJsonLdText(a!.name) }));
   return {
@@ -138,13 +179,27 @@ type BuildBlogBreadcrumbParams = {
   title: string;
 };
 
-export function buildBlogBreadcrumbSchema({ siteUrl, slug, title }: BuildBlogBreadcrumbParams) {
+export function buildBlogBreadcrumbSchema({
+  siteUrl,
+  slug,
+  title,
+}: BuildBlogBreadcrumbParams) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Blog", item: `${siteUrl}/blog` },
-      { "@type": "ListItem", position: 2, name: normalizeJsonLdText(title), item: `${siteUrl}/blog/${slug}` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Blog",
+        item: `${siteUrl}/blog`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: normalizeJsonLdText(title),
+        item: `${siteUrl}/blog/${slug}`,
+      },
     ],
   };
 }
@@ -155,13 +210,27 @@ type BuildDefinitionBreadcrumbParams = {
   name: string;
 };
 
-export function buildDefinitionBreadcrumbSchema({ siteUrl, slug, name }: BuildDefinitionBreadcrumbParams) {
+export function buildDefinitionBreadcrumbSchema({
+  siteUrl,
+  slug,
+  name,
+}: BuildDefinitionBreadcrumbParams) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Definitions", item: `${siteUrl}/definitions` },
-      { "@type": "ListItem", position: 2, name: name, item: `${siteUrl}/definitions/${slug}` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Definitions",
+        item: `${siteUrl}/definitions`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: name,
+        item: `${siteUrl}/definitions/${slug}`,
+      },
     ],
   };
 }
@@ -196,13 +265,27 @@ type BuildAlternativesBreadcrumbParams = {
   name: string;
 };
 
-export function buildAlternativesBreadcrumbSchema({ siteUrl, slug, name }: BuildAlternativesBreadcrumbParams) {
+export function buildAlternativesBreadcrumbSchema({
+  siteUrl,
+  slug,
+  name,
+}: BuildAlternativesBreadcrumbParams) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Alternatives", item: `${siteUrl}/alternatives` },
-      { "@type": "ListItem", position: 2, name: `${name} vs featul`, item: `${siteUrl}/alternatives/${slug}` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Alternatives",
+        item: `${siteUrl}/alternatives`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: `${name} vs featul`,
+        item: `${siteUrl}/alternatives/${slug}`,
+      },
     ],
   };
 }
@@ -213,13 +296,27 @@ type BuildUseCasesBreadcrumbParams = {
   name: string;
 };
 
-export function buildUseCasesBreadcrumbSchema({ siteUrl, slug, name }: BuildUseCasesBreadcrumbParams) {
+export function buildUseCasesBreadcrumbSchema({
+  siteUrl,
+  slug,
+  name,
+}: BuildUseCasesBreadcrumbParams) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Use Cases", item: `${siteUrl}/use-cases` },
-      { "@type": "ListItem", position: 2, name, item: `${siteUrl}/use-cases/${slug}` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Use Cases",
+        item: `${siteUrl}/use-cases`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name,
+        item: `${siteUrl}/use-cases/${slug}`,
+      },
     ],
   };
 }
@@ -230,13 +327,27 @@ type BuildIntegrationsBreadcrumbParams = {
   name: string;
 };
 
-export function buildIntegrationsBreadcrumbSchema({ siteUrl, slug, name }: BuildIntegrationsBreadcrumbParams) {
+export function buildIntegrationsBreadcrumbSchema({
+  siteUrl,
+  slug,
+  name,
+}: BuildIntegrationsBreadcrumbParams) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Integrations", item: `${siteUrl}/integrations` },
-      { "@type": "ListItem", position: 2, name, item: `${siteUrl}/integrations/${slug}` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Integrations",
+        item: `${siteUrl}/integrations`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name,
+        item: `${siteUrl}/integrations/${slug}`,
+      },
     ],
   };
 }
