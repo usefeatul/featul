@@ -55,9 +55,9 @@ async function requireWorkspaceManagerWithPlan(ctx: any, slug: string) {
 
 export function createWorkspaceRouter() {
   return j.router({
-    ping: publicProcedure.get(({ c }) => {
-      return c.json({ message: "pong" })
-    }),
+    // ping: publicProcedure.get(({ c }) => {
+    //   return c.json({ message: "pong" })
+    // }),
     bySlug: publicProcedure
       .input(workspaceSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
