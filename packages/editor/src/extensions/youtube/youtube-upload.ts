@@ -1,5 +1,4 @@
-import { Node } from "@tiptap/core";
-import { ReactNodeViewRenderer } from "@tiptap/react";
+import { createUploadNode } from "../shared/create-upload-node";
 import { YouTubeUploadView } from "./youtube-view";
 
 /**
@@ -7,44 +6,8 @@ import { YouTubeUploadView } from "./youtube-view";
  * Creates a placeholder node that renders the YouTube upload component
  * When a URL is submitted, it replaces itself with an actual YouTube embed
  */
-export const YouTubeUpload = Node.create({
-	name: "youtubeUpload",
-
-	group: "block",
-
-	atom: true,
-
-	addAttributes() {
-		return {
-			src: {
-				default: null,
-				parseHTML: (element: HTMLElement) => element.getAttribute("data-src"),
-				renderHTML: (attributes: { src?: string | null }) => {
-					if (!attributes.src) {
-						return {};
-					}
-
-					return {
-						"data-src": attributes.src,
-					};
-				},
-			},
-		};
-	},
-
-	addNodeView() {
-		return ReactNodeViewRenderer(YouTubeUploadView);
-	},
-
-	parseHTML() {
-		return [
-			{
-				tag: 'div[data-type="youtube-upload"]',
-			},
-		];
-	},
-
-	renderHTML({ HTMLAttributes }) {
-		return ["div", { "data-type": "youtube-upload", ...HTMLAttributes }];
-	},
+export const YouTubeUpload = createUploadNode({
+  name: "youtubeUpload",
+  dataType: "youtube-upload",
+  view: YouTubeUploadView,
 });
