@@ -1,119 +1,60 @@
-"use client"
+"use client";
 
-import React from "react"
-import { SearchIcon } from "@featul/ui/icons/search"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@featul/ui/components/button"
+import React from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  CommandDialog,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "@featul/ui/components/command"
-import { useQuery } from "@tanstack/react-query"
-import { client } from "@featul/api/client"
+  WorkspaceSearchAction,
+  type WorkspaceSearchResult,
+} from "@/components/global/WorkspaceSearchAction";
 
 export interface SearchActionProps {
-  slug: string
-  className?: string
+  slug: string;
+  className?: string;
 }
 
 export function SearchAction({ slug, className = "" }: SearchActionProps) {
-  const router = useRouter()
-  const pathname = usePathname() || "/"
-  const searchParams = useSearchParams()
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(searchParams.get("search") || "")
-
-  React.useEffect(() => {
-    setValue(searchParams.get("search") || "")
-  }, [searchParams])
+  const router = useRouter();
+  const pathname = usePathname() || "/";
+  const searchParams = useSearchParams();
+  const currentSearch = searchParams.get("search") || "";
 
   function buildSearchUrl(nextSearch: string): string {
-    const base = pathname || "/"
-    const url = new URL(base, "http://dummy")
+    const base = pathname || "/";
+    const url = new URL(base, "http://dummy");
     searchParams.forEach((v, k) => {
-      if (k !== "search") url.searchParams.set(k, v)
-    })
-    const trimmed = nextSearch.trim()
+      if (k !== "search") url.searchParams.set(k, v);
+    });
+    const trimmed = nextSearch.trim();
     if (trimmed) {
-      url.searchParams.set("search", trimmed)
+      url.searchParams.set("search", trimmed);
     } else {
-      url.searchParams.delete("search")
+      url.searchParams.delete("search");
     }
-    const query = url.searchParams.toString()
-    return `${url.pathname}${query ? `?${query}` : ""}`
+    const query = url.searchParams.toString();
+    return `${url.pathname}${query ? `?${query}` : ""}`;
   }
 
-  const runSearch = () => {
-    const href = buildSearchUrl(value)
-    router.push(href)
-    setOpen(false)
-  }
+  const runSearch = (value: string) => {
+    const href = buildSearchUrl(value);
+    router.push(href);
+  };
 
   const clearSearch = () => {
-    setValue("")
-    const href = buildSearchUrl("")
-    router.push(href)
-    setOpen(false)
-  }
-
-  const { data: results = [], isLoading } = useQuery({
-    queryKey: ["search", slug, value],
-    enabled: open && value.trim().length >= 2,
-    queryFn: async () => {
-      const res = await client.board.searchPostsByWorkspaceSlug.$get({ slug, q: value.trim() })
-      const data = await res.json()
-      return (data?.posts || []) as { id: string; title: string; slug: string }[]
-    },
-    staleTime: 10_000,
-  })
+    const href = buildSearchUrl("");
+    router.push(href);
+  };
 
   return (
-    <>
-      <Button
-        type="button"
-        variant="nav"
-        size="icon-sm"
-        aria-label="Search"
-        className={className}
-        onClick={() => setOpen(true)}
-      >
-        <SearchIcon className="w-4 h-4" size={16} />
-      </Button>
-
-      <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
-        title="Search"
-        width="wide"
-        icon={<SearchIcon className="size-3.5 opacity-80" />}
-      >
-        <CommandInput
-          value={value}
-          onValueChange={(v) => setValue(v)}
-          placeholder="Search requests"
-          aria-label="Search requests"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") runSearch()
-            if (e.key === "Escape") clearSearch()
-          }}
-        />
-        <CommandList>
-          <CommandEmpty />
-          {isLoading ? null : results.length > 0 ? (
-            <CommandGroup>
-              {results.map((r) => (
-                <CommandItem key={r.id} onSelect={() => router.push(`/board/p/${r.slug}`)}>
-                  {r.title}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          ) : null}
-        </CommandList>
-      </CommandDialog>
-    </>
-  )
+    <WorkspaceSearchAction
+      workspaceSlug={slug}
+      currentSearch={currentSearch}
+      className={className}
+      buttonVariant="nav"
+      onSearchSubmit={runSearch}
+      onClearSearch={clearSearch}
+      onResultSelect={(result: WorkspaceSearchResult) => {
+        router.push(`/board/p/${result.slug}`);
+      }}
+    />
+  );
 }
