@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import SettingsCard from "../../global/SettingsCard";
+import React from "react";
 import { DiscordIcon } from "@featul/ui/icons/discord";
-import WebhookDialog from "./WebhookDialog";
 import type { Integration } from "@/hooks/useIntegrations";
+import WebhookIntegrationCard from "./WebhookIntegrationCard";
 
 interface DiscordCardProps {
   integration?: Integration;
@@ -26,50 +25,19 @@ export default function DiscordCard({
   isPending = false,
   disabled = false,
 }: DiscordCardProps) {
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const isConnected = !!integration;
-
-  const handleConnect = async (webhookUrl: string): Promise<boolean> => {
-    if (onConnect) {
-      return await onConnect(webhookUrl);
-    }
-    return false;
-  };
-
-  const handleAction = () => {
-    if (isConnected && onDisconnect) {
-      onDisconnect();
-    } else {
-      setDialogOpen(true);
-    }
-  };
-
   return (
-    <>
-      <SettingsCard
-        icon={<DiscordIcon className="w-5 h-5" />}
-        title="Discord"
-        description={
-          isConnected
-            ? "Connected! You'll receive notifications in your Discord channel when new submissions are posted."
-            : "Connect your Discord server to get notified when a new request is submitted."
-        }
-        buttonLabel={isConnected ? "Disconnect" : "Connect"}
-        onAction={handleAction}
-        isLoading={isPending}
-        disabled={disabled || isPending}
-        isConnected={isConnected}
-        onTest={isConnected && onTest ? onTest : undefined}
-      />
-
-      <WebhookDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        type="discord"
-        onConnect={handleConnect}
-        isPending={isPending}
-      />
-    </>
+    <WebhookIntegrationCard
+      type="discord"
+      title="Discord"
+      icon={<DiscordIcon className="w-5 h-5" />}
+      connectedDescription="Connected! You'll receive notifications in your Discord channel when new submissions are posted."
+      disconnectedDescription="Connect your Discord server to get notified when a new request is submitted."
+      integration={integration}
+      onConnect={onConnect}
+      onDisconnect={onDisconnect}
+      onTest={onTest}
+      isPending={isPending}
+      disabled={disabled}
+    />
   );
 }
