@@ -46,14 +46,20 @@ export default function Invite({
   const [busy, setBusy] = React.useState<boolean>(!!busyProp);
   const [loading, setLoading] = React.useState<boolean>(!!loadingProp);
   const [token, setToken] = React.useState<string>("");
-  const [workspaceName, setWorkspaceName] = React.useState<string | null>(wsNameProp ?? null);
-  const [workspaceLogo, setWorkspaceLogo] = React.useState<string | null>(wsLogoProp ?? null);
-  const [inviterName, setInviterName] = React.useState<string | null>(inviterProp ?? null);
+  const [workspaceName, setWorkspaceName] = React.useState<string | null>(
+    wsNameProp ?? null,
+  );
+  const [workspaceLogo, setWorkspaceLogo] = React.useState<string | null>(
+    wsLogoProp ?? null,
+  );
+  const [inviterName, setInviterName] = React.useState<string | null>(
+    inviterProp ?? null,
+  );
   const [user, setUser] = React.useState<InviteUser | null>(userProp ?? null);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const t = ((tokenProp || tokenParam) || "").trim();
+    const t = (tokenProp || tokenParam || "").trim();
     if (!t) return;
     setToken(t);
     let mounted = true;
@@ -61,7 +67,10 @@ export default function Invite({
     const sessionPromise = authClient.getSession();
     const invitePromise = client.team.inviteByToken.$get({ token: t });
     (async () => {
-      const [sRes, iRes] = await Promise.allSettled([sessionPromise, invitePromise]);
+      const [sRes, iRes] = await Promise.allSettled([
+        sessionPromise,
+        invitePromise,
+      ]);
       const s = sRes.status === "fulfilled" ? sRes.value : null;
       if (!s?.data?.user) {
         router.replace(`/auth/sign-in?redirect=/invite/${t}`);
@@ -69,10 +78,16 @@ export default function Invite({
       }
       if (mounted && s?.data?.user) setUser(s.data.user);
       if (iRes.status === "fulfilled") {
-        const res = iRes.value as Response;
+        const res = iRes.value;
         if (!res.ok) {
-          if (res.status === 403) setError("This invite is for a different email. Please sign in with the invited address.");
-          else if (res.status === 410) setError("This invite has expired. Ask your admin to send a new one.");
+          if (res.status === 403)
+            setError(
+              "This invite is for a different email. Please sign in with the invited address.",
+            );
+          else if (res.status === 410)
+            setError(
+              "This invite has expired. Ask your admin to send a new one.",
+            );
           else if (res.status === 404) setError("Invalid invite link.");
           else setError("Could not load invite.");
         } else {
@@ -113,7 +128,10 @@ export default function Invite({
       try {
         const mineRes = await client.workspace.listMine.$get();
         const mineData = await mineRes.json();
-        const all = (mineData?.workspaces || []) as { slug: string; name: string }[];
+        const all = (mineData?.workspaces || []) as {
+          slug: string;
+          name: string;
+        }[];
         if (workspaceName) {
           const found = all.find((w) => w.name === workspaceName);
           targetSlug = found?.slug || null;
@@ -126,7 +144,9 @@ export default function Invite({
       }
       if (targetSlug) {
         try {
-          await authClient.organization.setActive({ organizationSlug: targetSlug });
+          await authClient.organization.setActive({
+            organizationSlug: targetSlug,
+          });
         } catch {
           // Non-blocking: redirect still succeeds even if org activation request fails.
         }
@@ -165,17 +185,22 @@ export default function Invite({
         {error ? (
           <div className="mb-3 text-sm text-destructive">
             {error}
-            {user?.email ? <span className="ml-1">Signed in as {user.email}.</span> : null}
+            {user?.email ? (
+              <span className="ml-1">Signed in as {user.email}.</span>
+            ) : null}
           </div>
         ) : null}
         <div className="mx-auto w-full max-w-[380px]">
           <div className="text-left">
-            <h1 className="text-3xl sm:text-4xl font-semibold">You've been invited</h1>
+            <h1 className="text-3xl sm:text-4xl font-semibold">
+              You've been invited
+            </h1>
             {loading ? (
               <div className="mt-1 h-5 w-64 bg-muted rounded animate-pulse" />
             ) : (
               <p className="mt-1 text-sm sm:text-base text-accent">
-                {inviterName || "Someone"} has invited you to join {workspaceName || "this workspace"}
+                {inviterName || "Someone"} has invited you to join{" "}
+                {workspaceName || "this workspace"}
               </p>
             )}
             <div className="mt-4 flex items-center justify-start gap-3">
@@ -199,13 +224,17 @@ export default function Invite({
                 ) : (
                   <>
                     {workspaceName ? (
-                      <div className="text-sm font-medium truncate">{workspaceName}</div>
+                      <div className="text-sm font-medium truncate">
+                        {workspaceName}
+                      </div>
                     ) : null}
                     {name ? (
                       <div className="text-xs text-accent truncate">{name}</div>
                     ) : null}
                     {email ? (
-                      <div className="text-xs text-accent truncate">{email}</div>
+                      <div className="text-xs text-accent truncate">
+                        {email}
+                      </div>
                     ) : null}
                   </>
                 )}

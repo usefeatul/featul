@@ -7,8 +7,12 @@ type MessagePayload = {
   message?: unknown;
 };
 
+type ResponseLike = {
+  json(): Promise<unknown>;
+};
+
 export async function readMessageFromResponse(
-  response: Response,
+  response: ResponseLike,
 ): Promise<string | null> {
   const payload = (await response
     .json()
