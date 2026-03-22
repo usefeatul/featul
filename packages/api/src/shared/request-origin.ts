@@ -1,130 +1,163 @@
-import { HTTPException } from "hono/http-exception"
+import { HTTPException } from "hono/http-exception";
 import {
   getValidatedTrustedOrigins,
   isConfiguredTrustedOrigin,
-} from "@featul/auth/trusted-origins"
+} from "@featul/auth/trusted-origins";
+
+const REQUEST_ORIGIN_WARNINGS = new Set<string>();
 
 function isMutatingMethod(req: Request): boolean {
-  const method = String(req.method || "").toUpperCase()
-  return method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE"
+  const method = String(req.method || "").toUpperCase();
+  return (
+    method === "POST" ||
+    method === "PUT" ||
+    method === "PATCH" ||
+    method === "DELETE"
+  );
 }
 
 function getOriginHost(value: string): string {
   try {
-    return new URL(value).hostname.toLowerCase()
+    return new URL(value).hostname.toLowerCase();
   } catch {
-    return ""
+    return "";
   }
 }
 
 function isLocalDevHost(host: string): boolean {
-  if (!host) return false
-  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".localhost")
+  if (!host) return false;
+  return (
+    host === "localhost" || host === "127.0.0.1" || host.endsWith(".localhost")
+  );
 }
 
 function isLocalDevOrigin(value: string): boolean {
-  return isLocalDevHost(getOriginHost(value))
+  return isLocalDevHost(getOriginHost(value));
+}
+
+function warnIgnoredAppUrl(message: string): void {
+  if (REQUEST_ORIGIN_WARNINGS.has(message)) return;
+  REQUEST_ORIGIN_WARNINGS.add(message);
+  console.warn(message);
 }
 
 function buildFallbackOriginPatterns(): string[] {
-  const fallback: string[] = []
-  const appUrl = String(process.env.NEXT_PUBLIC_APP_URL || "").trim()
+  const fallback: string[] = [];
+  const appUrl = String(process.env.NEXT_PUBLIC_APP_URL || "").trim();
 
   if (appUrl) {
-    let parsed: URL | null = null
+    let parsed: URL | null = null;
     try {
-      parsed = new URL(appUrl)
+      parsed = new URL(appUrl);
     } catch {
       if (process.env.NODE_ENV === "production") {
-        throw new Error("NEXT_PUBLIC_APP_URL must be a valid absolute URL in production")
+        warnIgnoredAppUrl(
+          `Ignoring invalid NEXT_PUBLIC_APP_URL in production: ${appUrl}`,
+        );
       }
     }
 
     if (parsed) {
       if (process.env.NODE_ENV === "production") {
         if (parsed.protocol !== "https:") {
-          throw new Error("NEXT_PUBLIC_APP_URL must use https:// in production")
+          warnIgnoredAppUrl(
+            `Ignoring non-https NEXT_PUBLIC_APP_URL in production: ${appUrl}`,
+          );
+          parsed = null;
         }
-        if (isLocalDevHost(parsed.hostname)) {
-          throw new Error("NEXT_PUBLIC_APP_URL cannot target localhost in production")
+        if (parsed && isLocalDevHost(parsed.hostname)) {
+          warnIgnoredAppUrl(
+            `Ignoring localhost NEXT_PUBLIC_APP_URL in production: ${appUrl}`,
+          );
+          parsed = null;
         }
       }
+    }
 
-      fallback.push(parsed.origin)
+    if (parsed) {
+      fallback.push(parsed.origin);
       if (isLocalDevHost(parsed.hostname)) {
-        const port = parsed.port ? `:${parsed.port}` : ""
-        fallback.push(`${parsed.protocol}//*.localhost${port}`)
+        const port = parsed.port ? `:${parsed.port}` : "";
+        fallback.push(`${parsed.protocol}//*.localhost${port}`);
       }
     }
   }
 
   if (process.env.NODE_ENV !== "production") {
-    fallback.push("http://localhost:3000")
-    fallback.push("http://127.0.0.1:3000")
-    fallback.push("http://*.localhost:3000")
-    fallback.push("https://localhost:3000")
-    fallback.push("https://127.0.0.1:3000")
-    fallback.push("https://*.localhost:3000")
+    fallback.push("http://localhost:3000");
+    fallback.push("http://127.0.0.1:3000");
+    fallback.push("http://*.localhost:3000");
+    fallback.push("https://localhost:3000");
+    fallback.push("https://127.0.0.1:3000");
+    fallback.push("https://*.localhost:3000");
   }
 
-  return Array.from(new Set(fallback))
+  return Array.from(new Set(fallback));
 }
 
 function getPrivilegedOriginPatterns(): string[] {
   const explicit = [
     ...getValidatedTrustedOrigins("API_TRUSTED_ORIGINS"),
     ...getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS"),
-  ]
+  ];
 
-  if (explicit.length > 0) return Array.from(new Set(explicit))
-  return buildFallbackOriginPatterns()
+  if (explicit.length > 0) return Array.from(new Set(explicit));
+  return buildFallbackOriginPatterns();
 }
 
-const privilegedOriginPatterns = getPrivilegedOriginPatterns()
+const privilegedOriginPatterns = getPrivilegedOriginPatterns();
 
 function parseOrigin(value: string): string | null {
-  if (!value || value === "null") return null
+  if (!value || value === "null") return null;
   try {
-    return new URL(value).origin
+    return new URL(value).origin;
   } catch {
-    return null
+    return null;
   }
 }
 
-function isTrustedIncomingOrigin(incomingOrigin: string, requestOrigin: string): boolean {
-  if (incomingOrigin === requestOrigin) return true
-  if (isConfiguredTrustedOrigin(incomingOrigin, privilegedOriginPatterns)) return true
+function isTrustedIncomingOrigin(
+  incomingOrigin: string,
+  requestOrigin: string,
+): boolean {
+  if (incomingOrigin === requestOrigin) return true;
+  if (isConfiguredTrustedOrigin(incomingOrigin, privilegedOriginPatterns))
+    return true;
 
   // Local dev convenience: allow same-site localhost and *.localhost traffic.
   if (isLocalDevOrigin(requestOrigin) && isLocalDevOrigin(incomingOrigin)) {
-    return true
+    return true;
   }
 
-  return false
+  return false;
 }
 
 export function enforceTrustedBrowserOrigin(req: Request): void {
-  if (!isMutatingMethod(req)) return
+  if (!isMutatingMethod(req)) return;
 
-  const requestOrigin = new URL(req.url).origin
-  const origin = (req.headers.get("origin") || "").trim()
-  const referer = (req.headers.get("referer") || "").trim()
+  const requestOrigin = new URL(req.url).origin;
+  const origin = (req.headers.get("origin") || "").trim();
+  const referer = (req.headers.get("referer") || "").trim();
 
-  const incomingOrigin = parseOrigin(origin)
+  const incomingOrigin = parseOrigin(origin);
   if (incomingOrigin) {
-    if (isTrustedIncomingOrigin(incomingOrigin, requestOrigin)) return
-    throw new HTTPException(403, { message: "Invalid request origin" })
+    if (isTrustedIncomingOrigin(incomingOrigin, requestOrigin)) return;
+    throw new HTTPException(403, { message: "Invalid request origin" });
   }
 
-  const refererOrigin = parseOrigin(referer)
+  const refererOrigin = parseOrigin(referer);
   if (refererOrigin) {
-    if (isTrustedIncomingOrigin(refererOrigin, requestOrigin)) return
-    throw new HTTPException(403, { message: "Invalid request origin" })
+    if (isTrustedIncomingOrigin(refererOrigin, requestOrigin)) return;
+    throw new HTTPException(403, { message: "Invalid request origin" });
   }
 
-  const secFetchSite = (req.headers.get("sec-fetch-site") || "").toLowerCase()
-  if (secFetchSite === "same-site" && isLocalDevOrigin(requestOrigin)) return
-  if (secFetchSite && secFetchSite !== "same-origin" && secFetchSite !== "none") {
-    throw new HTTPException(403, { message: "Missing trusted request origin" })
+  const secFetchSite = (req.headers.get("sec-fetch-site") || "").toLowerCase();
+  if (secFetchSite === "same-site" && isLocalDevOrigin(requestOrigin)) return;
+  if (
+    secFetchSite &&
+    secFetchSite !== "same-origin" &&
+    secFetchSite !== "none"
+  ) {
+    throw new HTTPException(403, { message: "Missing trusted request origin" });
   }
 }

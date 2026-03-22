@@ -9,7 +9,7 @@ import {
 } from "@featul/db";
 import { loadMemberActivityPage } from "@featul/api/services/member-activity";
 import { and, eq, isNull, sql } from "drizzle-orm";
-import type { PaginatedActivity } from "@/types/activity";
+import type { ActivityMetadata, PaginatedActivity } from "@/types/activity";
 
 async function getWorkspaceForMemberAccess(slug: string, viewerId: string) {
   const [workspaceRow] = await db
@@ -28,8 +28,8 @@ async function getWorkspaceForMemberAccess(slug: string, viewerId: string) {
       and(
         eq(workspaceMember.workspaceId, workspaceRow.id),
         eq(workspaceMember.userId, viewerId),
-        eq(workspaceMember.isActive, true)
-      )
+        eq(workspaceMember.isActive, true),
+      ),
     )
     .limit(1);
 
@@ -39,7 +39,7 @@ async function getWorkspaceForMemberAccess(slug: string, viewerId: string) {
 export async function loadMemberStats(
   slug: string,
   memberUserId: string,
-  viewerUserId: string
+  viewerUserId: string,
 ): Promise<{
   stats: { posts: number; comments: number; upvotes: number };
   topPosts: Array<{
@@ -65,8 +65,8 @@ export async function loadMemberStats(
     .where(
       and(
         eq(board.workspaceId, workspaceRow.id),
-        eq(post.authorId, memberUserId)
-      )
+        eq(post.authorId, memberUserId),
+      ),
     )
     .limit(1);
 
@@ -78,8 +78,8 @@ export async function loadMemberStats(
     .where(
       and(
         eq(board.workspaceId, workspaceRow.id),
-        eq(comment.authorId, memberUserId)
-      )
+        eq(comment.authorId, memberUserId),
+      ),
     )
     .limit(1);
 
@@ -92,8 +92,8 @@ export async function loadMemberStats(
       and(
         eq(board.workspaceId, workspaceRow.id),
         eq(vote.userId, memberUserId),
-        isNull(vote.commentId)
-      )
+        isNull(vote.commentId),
+      ),
     )
     .limit(1);
 
@@ -107,8 +107,8 @@ export async function loadMemberStats(
       and(
         eq(board.workspaceId, workspaceRow.id),
         eq(vote.userId, memberUserId),
-        isNull(vote.postId)
-      )
+        isNull(vote.postId),
+      ),
     )
     .limit(1);
 
@@ -125,12 +125,12 @@ export async function loadMemberStats(
     .where(
       and(
         eq(board.workspaceId, workspaceRow.id),
-        eq(post.authorId, memberUserId)
-      )
+        eq(post.authorId, memberUserId),
+      ),
     )
     .orderBy(
       sql`coalesce(${post.upvotes}, 0) desc`,
-      sql`coalesce(${post.createdAt}, now()) desc`
+      sql`coalesce(${post.createdAt}, now()) desc`,
     )
     .limit(5);
 
@@ -157,18 +157,30 @@ export async function loadMemberActivity(
   memberUserId: string,
   viewerUserId: string,
   cursor?: string,
-  limit: number = 20
+  limit: number = 20,
 ): Promise<PaginatedActivity> {
   const workspaceRow = await getWorkspaceForMemberAccess(slug, viewerUserId);
   if (!workspaceRow) {
     return { items: [], nextCursor: null };
   }
 
-  return loadMemberActivityPage({
+  const activityPage = await loadMemberActivityPage({
     database: db,
     workspaceId: workspaceRow.id,
     memberUserId,
     cursor,
     limit,
   });
+
+  return {
+    items: activityPage.items.map((item) => ({
+      ...item,
+      createdAt: item.createdAt ?? new Date(0).toISOString(),
+      metadata:
+        item.metadata && typeof item.metadata === "object"
+          ? (item.metadata as ActivityMetadata)
+          : undefined,
+    })),
+    nextCursor: activityPage.nextCursor,
+  };
 }
