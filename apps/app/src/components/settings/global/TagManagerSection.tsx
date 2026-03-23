@@ -22,7 +22,6 @@ import {
 import { LoadingButton } from "@/components/global/loading-button";
 import { TagNameDialog } from "@/components/settings/global/TagNameDialog";
 import { getPlanLimits, normalizePlan } from "@/lib/plan";
-import { cn } from "@featul/ui/lib/utils";
 
 type ManagedTag = {
   id: string;
@@ -137,7 +136,6 @@ export function TagManagerSection<T extends ManagedTag>({
     if (!trimmedName) return;
     if (hasReachedLimit) {
       showLimitReached();
-      setCreateOpen(false);
       return;
     }
 
@@ -225,20 +223,7 @@ export function TagManagerSection<T extends ManagedTag>({
       {renderPlanNotice(tags.length)}
 
       <div className="mt-2 flex items-center justify-start">
-        <LoadingButton
-          type="button"
-          variant={hasReachedLimit ? "destructive" : "default"}
-          className={cn(
-            hasReachedLimit && "ring-destructive/50 hover:ring-destructive/60",
-          )}
-          onClick={() => {
-            if (hasReachedLimit) {
-              showLimitReached();
-              return;
-            }
-            setCreateOpen(true);
-          }}
-        >
+        <LoadingButton type="button" onClick={() => setCreateOpen(true)}>
           {createButtonLabel}
         </LoadingButton>
       </div>
