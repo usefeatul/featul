@@ -1,25 +1,25 @@
-export const PLANS = ["free", "starter", "professional"] as const
+export const PLANS = ["free", "starter", "professional"] as const;
 
-export type PlanKey = (typeof PLANS)[number]
+export type PlanKey = (typeof PLANS)[number];
 
 export type PlanLimits = {
-  maxMembers: number | null
-  maxNonSystemBoards: number | null
-  monthlyPostLimit: number | null
-  allowBranding: boolean
-  allowHidePoweredBy: boolean
-  allowAttachments: boolean
-  allowIntegrations: boolean
-  allowDataImports: boolean
-  maxTags: number | null
-  maxChangelogTags: number | null
-  maxChangelogEntries: number | null
-}
+  maxMembers: number | null;
+  maxNonSystemBoards: number | null;
+  monthlyPostLimit: number | null;
+  allowBranding: boolean;
+  allowHidePoweredBy: boolean;
+  allowAttachments: boolean;
+  allowIntegrations: boolean;
+  allowDataImports: boolean;
+  maxTags: number | null;
+  maxChangelogTags: number | null;
+  maxChangelogEntries: number | null;
+};
 
 const LIMITS: Record<PlanKey, PlanLimits> = {
   free: {
     maxMembers: 3,
-    maxNonSystemBoards: null,
+    maxNonSystemBoards: 5,
     monthlyPostLimit: null,
     allowBranding: false,
     allowHidePoweredBy: false,
@@ -32,7 +32,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
   },
   starter: {
     maxMembers: 5,
-    maxNonSystemBoards: null,
+    maxNonSystemBoards: 10,
     monthlyPostLimit: null,
     allowBranding: true,
     allowHidePoweredBy: true,
@@ -56,31 +56,33 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
     maxChangelogTags: 20,
     maxChangelogEntries: null,
   },
-}
+};
 
 export function normalizePlan(raw: string): PlanKey {
-  const s = String(raw || "free").trim().toLowerCase()
-  return (PLANS as ReadonlyArray<string>).includes(s) ? (s as PlanKey) : "free"
+  const s = String(raw || "free")
+    .trim()
+    .toLowerCase();
+  return (PLANS as ReadonlyArray<string>).includes(s) ? (s as PlanKey) : "free";
 }
 
 export function getPlanLimits(plan: PlanKey | string): PlanLimits {
-  return LIMITS[normalizePlan(String(plan))]
+  return LIMITS[normalizePlan(String(plan))];
 }
 
 export function isIntegrationsAllowed(plan: PlanKey | string): boolean {
-  return getPlanLimits(plan).allowIntegrations
+  return getPlanLimits(plan).allowIntegrations;
 }
 
 export function isDataImportsAllowed(plan: PlanKey | string): boolean {
-  return getPlanLimits(plan).allowDataImports
+  return getPlanLimits(plan).allowDataImports;
 }
 
 export function assertWithinLimit(
   current: number,
   max: number | null,
-  message: (max: number) => string
+  message: (max: number) => string,
 ) {
   if (typeof max === "number" && current >= max) {
-    throw new Error(message(max))
+    throw new Error(message(max));
   }
 }

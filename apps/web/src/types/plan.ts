@@ -1,19 +1,19 @@
-export type PricingPlanKey = "free" | "starter" | "professional"
-export type BillingCycle = "monthly" | "yearly"
+export type PricingPlanKey = "free" | "starter" | "professional";
+export type BillingCycle = "monthly" | "yearly";
 
 export type PricingPlanFeature = {
-  title: string
-}
+  title: string;
+};
 
 export type PricingPlan = {
-  key: PricingPlanKey
-  name: string
-  note: string
-  monthlyPrice: number
-  yearlyPrice: number
-  href: string
-  features: PricingPlanFeature[]
-}
+  key: PricingPlanKey;
+  name: string;
+  note: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  href: string;
+  features: PricingPlanFeature[];
+};
 
 export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
   free: {
@@ -39,7 +39,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     href: "https://app.featul.com/auth/sign-up",
     features: [
       { title: "Up to 5 team members" },
-      { title: "Unlimited boards" },
+      { title: "Up to 10 boards" },
       { title: "Branding controls" },
       { title: "Integrations and imports" },
       { title: "Advanced organization and publishing" },
@@ -55,21 +55,26 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     features: [
       { title: "Everything in Starter" },
       { title: "Up to 10 team members" },
+      { title: "Unlimited boards" },
       { title: "Comprehensive tagging controls" },
       { title: "Unlimited changelog entries" },
       { title: "Best for scale" },
     ],
   },
-}
+};
 
-export const PRICING_PLAN_ORDER: PricingPlanKey[] = ["free", "starter", "professional"]
+export const PRICING_PLAN_ORDER: PricingPlanKey[] = [
+  "free",
+  "starter",
+  "professional",
+];
 
 export function getPricingPlan(plan: PricingPlanKey) {
-  return PRICING_PLANS[plan]
+  return PRICING_PLANS[plan];
 }
 
 export function formatPricingPrice(plan: PricingPlan, cycle: BillingCycle) {
-  const amount = cycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice
-  if (cycle === "yearly") return `$${amount} / year`
-  return `$${amount} / month`
+  const amount = cycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
+  if (cycle === "yearly") return `$${amount} / year`;
+  return `$${amount} / month`;
 }
