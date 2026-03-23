@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@featul/ui/components/button";
-import { DeletePostConfirmDialog } from "@/components/global/DeletePostConfirmDialog";
+import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { TrashIcon } from "@featul/ui/icons/trash";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -74,11 +74,13 @@ export function DeletePostButton({
       >
         <TrashIcon className="size-3.5" />
       </Button>
-      <DeletePostConfirmDialog
+      <DestructiveConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         isPending={isPending}
         onConfirm={handleDelete}
+        title="Are you absolutely sure?"
+        description="This will permanently delete this post."
       />
     </>
   );

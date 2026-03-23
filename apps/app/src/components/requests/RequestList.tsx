@@ -1,29 +1,36 @@
-"use client"
+"use client";
 
-import React, { useEffect, useMemo, useState } from "react"
-import RequestItem from "./RequestItem"
-import type { RequestItemData } from "@/types/request"
-import EmptyRequests from "./EmptyRequests"
-import { BulkDeleteConfirmDialog } from "./BulkDeleteConfirmDialog"
-import { SelectionToolbar } from "./SelectionToolbar"
-import { useBulkDeleteRequests } from "../../hooks/useBulkDeleteRequests"
-import { useSelectableList } from "@/hooks/useSelectableList"
+import React, { useEffect, useMemo, useState } from "react";
+import RequestItem from "./RequestItem";
+import type { RequestItemData } from "@/types/request";
+import EmptyRequests from "./EmptyRequests";
+import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
+import { SelectionToolbar } from "./SelectionToolbar";
+import { useBulkDeleteRequests } from "../../hooks/useBulkDeleteRequests";
+import { useSelectableList } from "@/hooks/useSelectableList";
 
 interface RequestListProps {
-  items: RequestItemData[]
-  workspaceSlug: string
-  linkBase?: string
-  initialTotalCount?: number
-  initialIsSelecting?: boolean
-  initialSelectedIds?: string[]
+  items: RequestItemData[];
+  workspaceSlug: string;
+  linkBase?: string;
+  initialTotalCount?: number;
+  initialIsSelecting?: boolean;
+  initialSelectedIds?: string[];
 }
 
 function RequestListBase(props: RequestListProps) {
-  const { items, workspaceSlug, linkBase, initialTotalCount, initialIsSelecting, initialSelectedIds } = props
-  const [listItems, setListItems] = useState<RequestItemData[]>(items)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const listKey = workspaceSlug
-  const itemIds = useMemo(() => listItems.map((item) => item.id), [listItems])
+  const {
+    items,
+    workspaceSlug,
+    linkBase,
+    initialTotalCount,
+    initialIsSelecting,
+    initialSelectedIds,
+  } = props;
+  const [listItems, setListItems] = useState<RequestItemData[]>(items);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const listKey = workspaceSlug;
+  const itemIds = useMemo(() => listItems.map((item) => item.id), [listItems]);
 
   const { isPending, isRefetching, handleBulkDelete } = useBulkDeleteRequests({
     workspaceSlug,
@@ -32,11 +39,11 @@ function RequestListBase(props: RequestListProps) {
     initialTotalCount,
     onItemsChange: setListItems,
     onComplete: () => setConfirmOpen(false),
-  })
+  });
 
   useEffect(() => {
-    setListItems(items)
-  }, [items])
+    setListItems(items);
+  }, [items]);
 
   const {
     allSelected,
@@ -52,13 +59,13 @@ function RequestListBase(props: RequestListProps) {
     initialSelectedIds,
     isPending,
     setConfirmOpen,
-  })
+  });
 
   if (listItems.length === 0) {
     if (isRefetching) {
-      return null
+      return null;
     }
-    return <EmptyRequests workspaceSlug={workspaceSlug} />
+    return <EmptyRequests workspaceSlug={workspaceSlug} />;
   }
 
   return (
@@ -87,15 +94,16 @@ function RequestListBase(props: RequestListProps) {
         ))}
       </ul>
 
-      <BulkDeleteConfirmDialog
+      <DestructiveConfirmDialog
         open={confirmOpen}
-        selectedCount={selectedCount}
         isPending={isPending}
         onOpenChange={setConfirmOpen}
-        onConfirmDelete={handleBulkDelete}
+        onConfirm={handleBulkDelete}
+        title="Delete selected posts?"
+        description={`This will permanently delete ${selectedCount} ${selectedCount === 1 ? "post" : "posts"}.`}
       />
     </div>
-  )
+  );
 }
 
-export default React.memo(RequestListBase)
+export default React.memo(RequestListBase);
