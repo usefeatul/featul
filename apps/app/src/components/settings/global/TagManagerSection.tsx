@@ -21,6 +21,8 @@ import {
 } from "@featul/ui/components/table";
 import { LoadingButton } from "@/components/global/loading-button";
 import { TagNameDialog } from "@/components/settings/global/TagNameDialog";
+import { getPlanLimits, normalizePlan } from "@/lib/plan";
+import { cn } from "@featul/ui/lib/utils";
 
 type ManagedTag = {
   id: string;
@@ -38,6 +40,9 @@ type TagManagerSectionProps<T extends ManagedTag> = {
   loadTags: () => Promise<T[]>;
   createTag: (name: string) => Promise<MutationResponse>;
   deleteTag: (tag: T) => Promise<MutationResponse>;
+  plan?: string;
+  limitKey: "maxTags" | "maxChangelogTags";
+  limitReachedMessage: (limit: number) => string;
   title: string;
   description: string;
   emptyLabel?: string;
@@ -70,6 +75,9 @@ export function TagManagerSection<T extends ManagedTag>({
   loadTags,
   createTag,
   deleteTag,
+  plan,
+  limitKey,
+  limitReachedMessage,
   title,
   description,
   emptyLabel = "No tags",
@@ -97,6 +105,18 @@ export function TagManagerSection<T extends ManagedTag>({
   const [actionOpenId, setActionOpenId] = React.useState<string | null>(null);
   const [createOpen, setCreateOpen] = React.useState(false);
   const [creating, setCreating] = React.useState(false);
+  const limits = React.useMemo(
+    () => getPlanLimits(normalizePlan(plan || "free")),
+    [plan],
+  );
+  const limit = limits[limitKey];
+  const hasReachedLimit = typeof limit === "number" && tags.length >= limit;
+
+  const showLimitReached = () => {
+    toast.error(
+      typeof limit === "number" ? limitReachedMessage(limit) : "Limit reached",
+    );
+  };
 
   const handleDelete = async (tag: T) => {
     setActionOpenId(null);
@@ -115,6 +135,11 @@ export function TagManagerSection<T extends ManagedTag>({
   const handleCreate = async (name: string) => {
     const trimmedName = String(name || "").trim();
     if (!trimmedName) return;
+    if (hasReachedLimit) {
+      showLimitReached();
+      setCreateOpen(false);
+      return;
+    }
 
     try {
       setCreating(true);
@@ -200,7 +225,20 @@ export function TagManagerSection<T extends ManagedTag>({
       {renderPlanNotice(tags.length)}
 
       <div className="mt-2 flex items-center justify-start">
-        <LoadingButton type="button" onClick={() => setCreateOpen(true)}>
+        <LoadingButton
+          type="button"
+          variant={hasReachedLimit ? "destructive" : "default"}
+          className={cn(
+            hasReachedLimit && "ring-destructive/50 hover:ring-destructive/60",
+          )}
+          onClick={() => {
+            if (hasReachedLimit) {
+              showLimitReached();
+              return;
+            }
+            setCreateOpen(true);
+          }}
+        >
           {createButtonLabel}
         </LoadingButton>
       </div>

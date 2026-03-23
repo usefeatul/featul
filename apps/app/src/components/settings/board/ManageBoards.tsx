@@ -225,12 +225,18 @@ export default function ManageBoards({
       <div className="mt-2 flex items-center justify-start">
         <LoadingButton
           type="button"
-          variant="quiet"
+          variant={hasReachedBoardLimit ? "destructive" : "quiet"}
           onClick={() => {
-            if (hasReachedBoardLimit) return;
+            if (hasReachedBoardLimit) {
+              toast.error(
+                typeof boardLimit === "number"
+                  ? `Boards limit reached (${boardLimit})`
+                  : "Boards limit reached",
+              );
+              return;
+            }
             setCreateOpen(true);
           }}
-          disabled={hasReachedBoardLimit}
         >
           Create board
         </LoadingButton>
