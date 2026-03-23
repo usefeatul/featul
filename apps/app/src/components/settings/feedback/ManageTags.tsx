@@ -24,6 +24,9 @@ export default function ManageTags({
     <TagManagerSection
       queryKey={["workspace-tags", slug]}
       initialTags={initialTags}
+      plan={plan}
+      limitKey="maxTags"
+      limitReachedMessage={(limit) => `Tags limit reached (${limit})`}
       loadTags={async () => {
         const res = await client.board.tagsByWorkspaceSlug.$get({ slug });
         const d = await res.json();

@@ -22,6 +22,9 @@ export default function ChangelogTags({
     <TagManagerSection
       queryKey={["changelog-tags", slug]}
       initialTags={initialTags}
+      plan={initialPlan}
+      limitKey="maxChangelogTags"
+      limitReachedMessage={(limit) => `Changelog tags limit reached (${limit})`}
       loadTags={async () => {
         const res = await client.changelog.tagsList.$get({ slug });
         const d = await res.json();
