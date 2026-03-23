@@ -1,50 +1,56 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
+import { useEffect } from "react";
 
 interface UseCreatePostHotkeyOptions {
-  enabled?: boolean
-  onOpen: () => void
+  enabled?: boolean;
+  onOpen: () => void;
 }
 
 function isEditableElement(element: HTMLElement | null) {
-  if (!element) return false
-  const role = element.getAttribute("role")
-  const tag = element.tagName
+  if (!element) return false;
+  const role = element.getAttribute("role");
+  const tag = element.tagName;
   return (
     role === "textbox" ||
     tag === "INPUT" ||
     tag === "TEXTAREA" ||
     element.isContentEditable
-  )
+  );
 }
 
-export function useCreatePostHotkey({ enabled = true, onOpen }: UseCreatePostHotkeyOptions) {
+export function useCreatePostHotkey({
+  enabled = true,
+  onOpen,
+}: UseCreatePostHotkeyOptions) {
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented) return
-      if (event.altKey || event.shiftKey) return
-      if (event.key.toLowerCase() !== "c") return
+      if (event.defaultPrevented) return;
+      if (event.altKey || event.shiftKey) return;
+      const key = typeof event.key === "string" ? event.key.toLowerCase() : "";
+      if (key !== "c") return;
 
       const usesPlatformModifier =
-        (event.metaKey && !event.ctrlKey) || (event.ctrlKey && !event.metaKey)
-      if (!usesPlatformModifier) return
+        (event.metaKey && !event.ctrlKey) || (event.ctrlKey && !event.metaKey);
+      if (!usesPlatformModifier) return;
 
-      const target = event.target instanceof HTMLElement ? event.target : null
+      const target = event.target instanceof HTMLElement ? event.target : null;
       const activeElement =
-        document.activeElement instanceof HTMLElement ? document.activeElement : null
-      if (isEditableElement(target) || isEditableElement(activeElement)) return
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      if (isEditableElement(target) || isEditableElement(activeElement)) return;
 
-      const selection = window.getSelection()
-      if (selection && !selection.isCollapsed) return
+      const selection = window.getSelection();
+      if (selection && !selection.isCollapsed) return;
 
-      event.preventDefault()
-      onOpen()
-    }
+      event.preventDefault();
+      onOpen();
+    };
 
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [enabled, onOpen])
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [enabled, onOpen]);
 }
