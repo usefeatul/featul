@@ -29,6 +29,7 @@ import {
   useFeedbackBoardsSettings,
   type FeedbackBoardSettings,
 } from "@/hooks/feedback-board-settings";
+import { getPlanLimits, normalizePlan } from "@/lib/plan";
 
 export default function ManageBoards({
   slug,
@@ -53,6 +54,13 @@ export default function ManageBoards({
       ),
     [boards],
   );
+  const limits = React.useMemo(
+    () => getPlanLimits(normalizePlan(plan || "free")),
+    [plan],
+  );
+  const boardLimit = limits.maxNonSystemBoards;
+  const hasReachedBoardLimit =
+    typeof boardLimit === "number" && otherBoards.length >= boardLimit;
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null);
   const [createOpen, setCreateOpen] = React.useState(false);
   const [creating, setCreating] = React.useState(false);
@@ -218,7 +226,11 @@ export default function ManageBoards({
         <LoadingButton
           type="button"
           variant="quiet"
-          onClick={() => setCreateOpen(true)}
+          onClick={() => {
+            if (hasReachedBoardLimit) return;
+            setCreateOpen(true);
+          }}
+          disabled={hasReachedBoardLimit}
         >
           Create board
         </LoadingButton>
@@ -228,6 +240,16 @@ export default function ManageBoards({
         onOpenChange={setCreateOpen}
         saving={creating}
         onSave={async ({ name, slug: boardSlug }) => {
+          if (hasReachedBoardLimit) {
+            toast.error(
+              typeof boardLimit === "number"
+                ? `Boards limit reached (${boardLimit})`
+                : "Boards limit reached",
+            );
+            setCreateOpen(false);
+            return;
+          }
+
           const n = String(name || "").trim();
           const s = String(boardSlug || "").trim();
           if (!n) return;
