@@ -1,76 +1,65 @@
-"use client"
+"use client";
 
-import React, { useState, useTransition } from "react"
-import { useQueryClient } from "@tanstack/react-query"
-import { Button } from "@featul/ui/components/button"
-import { AlertDialogShell } from "@/components/global/AlertDialogShell"
-import { TrashIcon } from "@featul/ui/icons/trash"
-import { AlertDialogAction, AlertDialogCancel, AlertDialogFooter } from "@featul/ui/components/alert-dialog"
-import { client } from "@featul/api/client"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
-import type { PostDeletedEventDetail } from "@/types/events"
-
-type DeletePostErrorResponse = {
-  message?: string
-}
+import React, { useState, useTransition } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@featul/ui/components/button";
+import { DeletePostConfirmDialog } from "@/components/global/DeletePostConfirmDialog";
+import { TrashIcon } from "@featul/ui/icons/trash";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  deletePostById,
+  dispatchPostDeletedEvent,
+  invalidateMemberActivityQueries,
+} from "@/lib/post-deletion";
 
 export interface DeletePostButtonProps {
-  postId: string
-  workspaceSlug?: string
-  backHref?: string
-  className?: string
+  postId: string;
+  workspaceSlug?: string;
+  backHref?: string;
+  className?: string;
 }
 
-export function DeletePostButton({ postId, workspaceSlug, backHref, className }: DeletePostButtonProps) {
-  const router = useRouter()
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const queryClient = useQueryClient()
+export function DeletePostButton({
+  postId,
+  workspaceSlug,
+  backHref,
+  className,
+}: DeletePostButtonProps) {
+  const router = useRouter();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
 
   const handleDelete = () => {
     startTransition(async () => {
       try {
-        const res = await client.post.delete.$post({ postId })
-        if (res.ok) {
-          toast.success("Post deleted successfully")
-          try {
-            if (workspaceSlug) {
-              const detail: PostDeletedEventDetail = { postId, workspaceSlug, status: null }
-              window.dispatchEvent(new CustomEvent<PostDeletedEventDetail>("post:deleted", { detail }))
-            }
-          } catch {
-            // Non-blocking: post list refresh can still happen without the custom event.
+        const result = await deletePostById(postId);
+        if (result.ok) {
+          toast.success("Post deleted successfully");
+
+          if (workspaceSlug) {
+            dispatchPostDeletedEvent({ postId, workspaceSlug, status: null });
           }
 
-          try {
-            queryClient.invalidateQueries({ queryKey: ["member-stats"] })
-            queryClient.invalidateQueries({ queryKey: ["member-activity"] })
-          } catch {
-            // Non-blocking: related stats panels will refresh on next mount.
-          }
+          void invalidateMemberActivityQueries(queryClient);
 
-          const target = backHref || (workspaceSlug ? "/" : null)
+          const target = backHref || (workspaceSlug ? "/" : null);
           if (target) {
-            router.push(target)
-            router.refresh()
+            router.push(target);
+            router.refresh();
           } else {
-            router.back()
-            router.refresh()
+            router.back();
+            router.refresh();
           }
         } else {
-          const err = (await res
-            .json()
-            .catch(() => null)) as DeletePostErrorResponse | null
-          toast.error(err?.message || "Failed to delete post")
+          toast.error(result.message);
         }
-      } catch {
-        toast.error("Failed to delete post")
       } finally {
-        setConfirmOpen(false)
+        setConfirmOpen(false);
       }
-    })
-  }
+    });
+  };
 
   return (
     <>
@@ -85,28 +74,12 @@ export function DeletePostButton({ postId, workspaceSlug, backHref, className }:
       >
         <TrashIcon className="size-3.5" />
       </Button>
-      <AlertDialogShell
+      <DeletePostConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Are you absolutely sure?"
-        description="This will permanently delete this post."
-      >
-        <AlertDialogFooter className="flex justify-end gap-2 mt-2">
-          <AlertDialogCancel disabled={isPending} className="h-8 px-3 text-sm">
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={(e) => {
-              e.preventDefault()
-              handleDelete()
-            }}
-            disabled={isPending}
-            className="h-8 px-4 text-sm bg-red-500 hover:bg-red-600 text-white"
-          >
-            {isPending ? "Deleting..." : "Delete"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogShell>
+        isPending={isPending}
+        onConfirm={handleDelete}
+      />
     </>
-  )
+  );
 }
