@@ -4,7 +4,14 @@ import React from "react";
 import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
 import { Button } from "@featul/ui/components/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@featul/ui/components/table";
 import { Label } from "@featul/ui/components/label";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
@@ -82,7 +89,7 @@ export default function TeamSection({
 
   const handleRoleChange = async (
     userId: string,
-    newRole: "admin" | "member" | "viewer"
+    newRole: "admin" | "member" | "viewer",
   ): Promise<void> => {
     try {
       const res = await client.team.updateRole.$post({
@@ -91,7 +98,9 @@ export default function TeamSection({
         role: newRole,
       });
       if (!res.ok) {
-        const err = (await res.json().catch(() => null)) as { message?: string } | null;
+        const err = (await res.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         throw new Error(err?.message || "Update failed");
       }
       toast.success("Role updated");
@@ -103,14 +112,16 @@ export default function TeamSection({
         };
 
         const nextMembers = current.members.map((member) =>
-          member.userId === userId ? { ...member, role: newRole } : member
+          member.userId === userId ? { ...member, role: newRole } : member,
         );
 
         return { ...current, members: nextMembers };
       });
       setMenuFor(null);
     } catch (e: unknown) {
-      toast.error((e as { message?: string })?.message || "Failed to update role");
+      toast.error(
+        (e as { message?: string })?.message || "Failed to update role",
+      );
     }
   };
 
@@ -118,7 +129,9 @@ export default function TeamSection({
     try {
       const res = await client.team.removeMember.$post({ slug, userId });
       if (!res.ok) {
-        const err = (await res.json().catch(() => null)) as { message?: string } | null;
+        const err = (await res.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         throw new Error(err?.message || "Remove failed");
       }
       toast.success("Member removed");
@@ -130,18 +143,23 @@ export default function TeamSection({
         };
 
         const nextMembers = current.members.filter(
-          (member) => member.userId !== userId
+          (member) => member.userId !== userId,
         );
 
         return { ...current, members: nextMembers };
       });
     } catch (e: unknown) {
-      toast.error((e as { message?: string })?.message || "Failed to remove member");
+      toast.error(
+        (e as { message?: string })?.message || "Failed to remove member",
+      );
     }
   };
 
   return (
-    <SectionCard title="Manage Members" description="Members have access to your workspace.">
+    <SectionCard
+      title="Manage Members"
+      description="Members have access to your workspace."
+    >
       <div className="space-y-2">
         <div className="space-y-2">
           <Label>Members</Label>
@@ -156,11 +174,20 @@ export default function TeamSection({
               <TableBody>
                 {(data.members || []).length === 0 && !isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={2} className="px-4 py-6 text-accent">No members</TableCell>
+                    <TableCell colSpan={2} className="px-4 py-6 text-accent">
+                      No members
+                    </TableCell>
                   </TableRow>
                 ) : (
                   (data.members || []).map((m: Member) => (
-                    <MemberRow key={m.userId} m={m} menuFor={menuFor} setMenuFor={setMenuFor} onRoleChange={handleRoleChange} onRemoveMember={handleRemoveMember} />
+                    <MemberRow
+                      key={m.userId}
+                      m={m}
+                      menuFor={menuFor}
+                      setMenuFor={setMenuFor}
+                      onRoleChange={handleRoleChange}
+                      onRemoveMember={handleRemoveMember}
+                    />
                   ))
                 )}
               </TableBody>
@@ -170,12 +197,24 @@ export default function TeamSection({
 
         <div className="space-y-2 mt-3">
           <Label>Pending Invites</Label>
-          <InvitesList slug={slug} invites={data.invites || []} loading={isLoading} onChanged={refresh} />
+          <InvitesList
+            slug={slug}
+            invites={data.invites || []}
+            loading={isLoading}
+            onChanged={refresh}
+          />
         </div>
 
         <div className="pt-2 space-y-2">
-          <div className="text-sm text-accent">Invite a new member to your workspace.</div>
-                <PlanNotice slug={slug} feature="team" plan={initialPlan} membersCount={(data.members || []).length} />
+          <div className="text-sm text-accent">
+            Invite a new member to your workspace.
+          </div>
+          <PlanNotice
+            slug={slug}
+            feature="team"
+            plan={initialPlan}
+            membersCount={(data.members || []).length}
+          />
           <div className="mt-2 flex items-center justify-start">
             <Button
               type="button"
@@ -189,6 +228,8 @@ export default function TeamSection({
             slug={slug}
             open={inviteOpen}
             onOpenChange={setInviteOpen}
+            plan={initialPlan}
+            currentMemberCount={(data.members || []).length}
             onInvited={async () => {
               await refresh();
             }}
