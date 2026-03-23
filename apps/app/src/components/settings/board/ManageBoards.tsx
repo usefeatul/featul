@@ -1,78 +1,93 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { client } from "@featul/api/client"
-import { toast } from "sonner"
-import { LoadingButton } from "@/components/global/loading-button"
-import PlanNotice from "../global/PlanNotice"
-import ModalCreateBoard from "../feedback/ModalCreateBoard"
-import { MoreVertical } from "lucide-react"
-import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle"
+import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@featul/ui/components/table";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverList,
+  PopoverListItem,
+} from "@featul/ui/components/popover";
+import { client } from "@featul/api/client";
+import { toast } from "sonner";
+import { LoadingButton } from "@/components/global/loading-button";
+import PlanNotice from "../global/PlanNotice";
+import ModalCreateBoard from "../feedback/ModalCreateBoard";
+import { MoreVertical } from "lucide-react";
+import {
+  assertBoardMutationOk,
+  setFeedbackBoardsCache,
+  useFeedbackBoardsSettings,
+  type FeedbackBoardSettings,
+} from "@/hooks/feedback-board-settings";
 
 export default function ManageBoards({
   slug,
   plan,
   initialBoards,
 }: {
-  slug: string
-  plan?: string
-  initialBoards?: FeedbackBoardSettings[]
+  slug: string;
+  plan?: string;
+  initialBoards?: FeedbackBoardSettings[];
 }) {
-  const queryClient = useQueryClient()
-  const { data: boards = [], isLoading, refetch } = useQuery<FeedbackBoardSettings[]>({
-    queryKey: ["feedback-boards", slug],
-    queryFn: async () => {
-      const res = await client.board.settingsByWorkspaceSlug.$get({ slug })
-      const d = await res.json()
-      const boardsData = (d as { boards?: FeedbackBoardSettings[] } | null)?.boards
-      return Array.isArray(boardsData) ? boardsData : []
-    },
-    initialData: Array.isArray(initialBoards) ? initialBoards : undefined,
-    staleTime: 300000,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-  })
+  const queryClient = useQueryClient();
+  const {
+    data: boards = [],
+    isLoading,
+    refetch,
+  } = useFeedbackBoardsSettings(slug, initialBoards);
 
   const otherBoards = React.useMemo(
-    () => (boards || []).filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"),
+    () =>
+      (boards || []).filter(
+        (b) => b.slug !== "roadmap" && b.slug !== "changelog",
+      ),
     [boards],
-  )
-  const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null)
-  const [createOpen, setCreateOpen] = React.useState(false)
-  const [creating, setCreating] = React.useState(false)
-  const [actionOpenId, setActionOpenId] = React.useState<string | null>(null)
+  );
+  const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null);
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [creating, setCreating] = React.useState(false);
+  const [actionOpenId, setActionOpenId] = React.useState<string | null>(null);
 
   const setVisibility = async (boardSlug: string, isPublic: boolean) => {
     try {
-      queryClient.setQueryData<FeedbackBoardSettings[]>(["feedback-boards", slug], (prev) => {
-        const arr = Array.isArray(prev) ? prev : []
-        return arr.map((it) => (it.slug === boardSlug ? { ...it, isPublic } : it))
-      })
+      setFeedbackBoardsCache(queryClient, slug, (boards) =>
+        boards.map((it) => (it.slug === boardSlug ? { ...it, isPublic } : it)),
+      );
     } catch {
       //
     }
     try {
-      const res = await client.board.updateSettings.$post({ slug, boardSlug, patch: { isPublic } })
-      if (!res.ok) {
-        const err = (await res.json().catch(() => null)) as { message?: string } | null
-        throw new Error(err?.message || "Update failed")
-      }
-      await refetch()
-      toast.success(isPublic ? "Board set to Public" : "Board set to Private")
+      const res = await client.board.updateSettings.$post({
+        slug,
+        boardSlug,
+        patch: { isPublic },
+      });
+      await assertBoardMutationOk(res, "Update failed");
+      await refetch();
+      toast.success(isPublic ? "Board set to Public" : "Board set to Private");
     } catch (e: unknown) {
-      await refetch()
-      toast.error((e as { message?: string })?.message || "Failed to update")
+      await refetch();
+      toast.error((e as { message?: string })?.message || "Failed to update");
     }
-  }
+  };
 
   return (
     <div className="space-y-2">
       <div className="text-md font-medium">Manage Boards</div>
-      <div className="text-sm text-accent">Boards are the main way to organize your feedback. They are buckets that contain all of the feedback for a specific product or feature.</div>
+      <div className="text-sm text-accent">
+        Boards are the main way to organize your feedback. They are buckets that
+        contain all of the feedback for a specific product or feature.
+      </div>
       <div className="rounded-md  border overflow-hidden">
         <Table>
           <TableHeader>
@@ -85,50 +100,102 @@ export default function ManageBoards({
           <TableBody>
             {(otherBoards || []).length === 0 && !isLoading ? (
               <TableRow>
-                <TableCell colSpan={3} className="px-4 py-6 text-accent">No boards</TableCell>
+                <TableCell colSpan={3} className="px-4 py-6 text-accent">
+                  No boards
+                </TableCell>
               </TableRow>
             ) : (
               (otherBoards || []).map((b) => (
                 <TableRow key={b.id}>
                   <TableCell className="px-4 text-sm">{b.name}</TableCell>
                   <TableCell className="px-4 text-center">
-                    <Popover open={menuOpenId === b.id} onOpenChange={(v) => setMenuOpenId(v ? String(b.id) : null)}>
+                    <Popover
+                      open={menuOpenId === b.id}
+                      onOpenChange={(v) =>
+                        setMenuOpenId(v ? String(b.id) : null)
+                      }
+                    >
                       <PopoverTrigger asChild>
-                        <LoadingButton type="button" variant="nav" size="sm" aria-label="Board Type">
-                          <span className="text-sm">{b.isPublic ? "Public" : "Private"}</span>
+                        <LoadingButton
+                          type="button"
+                          variant="nav"
+                          size="sm"
+                          aria-label="Board Type"
+                        >
+                          <span className="text-sm">
+                            {b.isPublic ? "Public" : "Private"}
+                          </span>
                         </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
-                          <PopoverListItem role="menuitemradio" aria-checked={b.isPublic} onClick={() => { setMenuOpenId(null); setVisibility(String(b.slug), true) }}>Public</PopoverListItem>
-                          <PopoverListItem role="menuitemradio" aria-checked={!b.isPublic} onClick={() => { setMenuOpenId(null); setVisibility(String(b.slug), false) }}>Private</PopoverListItem>
+                          <PopoverListItem
+                            role="menuitemradio"
+                            aria-checked={b.isPublic}
+                            onClick={() => {
+                              setMenuOpenId(null);
+                              setVisibility(String(b.slug), true);
+                            }}
+                          >
+                            Public
+                          </PopoverListItem>
+                          <PopoverListItem
+                            role="menuitemradio"
+                            aria-checked={!b.isPublic}
+                            onClick={() => {
+                              setMenuOpenId(null);
+                              setVisibility(String(b.slug), false);
+                            }}
+                          >
+                            Private
+                          </PopoverListItem>
                         </PopoverList>
                       </PopoverContent>
                     </Popover>
                   </TableCell>
                   <TableCell className="px-2 text-center">
-                    <Popover open={actionOpenId === b.id} onOpenChange={(v) => setActionOpenId(v ? String(b.id) : null)}>
+                    <Popover
+                      open={actionOpenId === b.id}
+                      onOpenChange={(v) =>
+                        setActionOpenId(v ? String(b.id) : null)
+                      }
+                    >
                       <PopoverTrigger asChild>
-                        <LoadingButton type="button" variant="nav" size="sm" aria-label="More" className="px-2">
+                        <LoadingButton
+                          type="button"
+                          variant="nav"
+                          size="sm"
+                          aria-label="More"
+                          className="px-2"
+                        >
                           <MoreVertical className="size-4 opacity-70" />
                         </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
                         <PopoverList>
-                          <PopoverListItem role="menuitem" onClick={async () => {
-                            setActionOpenId(null)
-                            try {
-                              const res = await client.board.delete.$post({ slug, boardSlug: String(b.slug) })
-                              if (!res.ok) {
-                                const err = (await res.json().catch(() => null)) as { message?: string } | null
-                                throw new Error(err?.message || "Delete failed")
+                          <PopoverListItem
+                            role="menuitem"
+                            onClick={async () => {
+                              setActionOpenId(null);
+                              try {
+                                const res = await client.board.delete.$post({
+                                  slug,
+                                  boardSlug: String(b.slug),
+                                });
+                                await assertBoardMutationOk(
+                                  res,
+                                  "Delete failed",
+                                );
+                                toast.success("Board deleted");
+                                await refetch();
+                              } catch (e: unknown) {
+                                toast.error(
+                                  (e as { message?: string })?.message ||
+                                    "Failed to delete board",
+                                );
                               }
-                              toast.success("Board deleted")
-                              await refetch()
-                            } catch (e: unknown) {
-                              toast.error((e as { message?: string })?.message || "Failed to delete board")
-                            }
-                          }}>
+                            }}
+                          >
                             <span className="text-sm text-red-500">Delete</span>
                           </PopoverListItem>
                         </PopoverList>
@@ -141,35 +208,49 @@ export default function ManageBoards({
           </TableBody>
         </Table>
       </div>
-      <PlanNotice slug={slug} feature="boards" plan={plan} boardsCount={(otherBoards || []).length} />
+      <PlanNotice
+        slug={slug}
+        feature="boards"
+        plan={plan}
+        boardsCount={(otherBoards || []).length}
+      />
       <div className="mt-2 flex items-center justify-start">
-        <LoadingButton type="button" variant="quiet" onClick={() => setCreateOpen(true)}>Create board</LoadingButton>
+        <LoadingButton
+          type="button"
+          variant="quiet"
+          onClick={() => setCreateOpen(true)}
+        >
+          Create board
+        </LoadingButton>
       </div>
       <ModalCreateBoard
         open={createOpen}
         onOpenChange={setCreateOpen}
         saving={creating}
         onSave={async ({ name, slug: boardSlug }) => {
-          const n = String(name || "").trim()
-          const s = String(boardSlug || "").trim()
-          if (!n) return
+          const n = String(name || "").trim();
+          const s = String(boardSlug || "").trim();
+          if (!n) return;
           try {
-            setCreating(true)
-            const res = await client.board.create.$post({ slug, name: n, boardSlug: s || undefined })
-            if (!res.ok) {
-              const err = (await res.json().catch(() => null)) as { message?: string } | null
-              throw new Error(err?.message || "Create failed")
-            }
-            toast.success("Board created")
-            setCreateOpen(false)
-            await refetch()
+            setCreating(true);
+            const res = await client.board.create.$post({
+              slug,
+              name: n,
+              boardSlug: s || undefined,
+            });
+            await assertBoardMutationOk(res, "Create failed");
+            toast.success("Board created");
+            setCreateOpen(false);
+            await refetch();
           } catch (e: unknown) {
-            toast.error((e as { message?: string })?.message || "Failed to create board")
+            toast.error(
+              (e as { message?: string })?.message || "Failed to create board",
+            );
           } finally {
-            setCreating(false)
+            setCreating(false);
           }
         }}
       />
     </div>
-  )
+  );
 }
