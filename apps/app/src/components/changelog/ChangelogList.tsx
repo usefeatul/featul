@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data";
 import ChangelogItem from "./ChangelogItem";
-import { ChangelogBulkDeleteDialog } from "./ChangelogBulkDeleteDialog";
+import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { SelectionToolbar } from "@/components/requests/SelectionToolbar";
 import { useBulkDeleteChangelog } from "../../hooks/useBulkDeleteChangelog";
 import { useSelectableList } from "@/hooks/useSelectableList";
@@ -89,12 +89,14 @@ export function ChangelogList({
         ))}
       </ul>
 
-      <ChangelogBulkDeleteDialog
+      <DestructiveConfirmDialog
         open={confirmOpen}
-        selectedCount={selectedCount}
         isPending={isPending}
         onOpenChange={setConfirmOpen}
-        onConfirmDelete={handleBulkDelete}
+        onConfirm={handleBulkDelete}
+        title="Delete selected entries?"
+        description={`This will permanently delete ${selectedCount} ${selectedCount === 1 ? "entry" : "entries"}.`}
+        confirmClassName="h-8 px-4 text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground"
       />
     </div>
   );

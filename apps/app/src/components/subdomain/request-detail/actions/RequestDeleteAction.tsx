@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { TrashIcon } from "@featul/ui/icons/trash";
 import { PopoverListItem } from "@featul/ui/components/popover";
-import { DeletePostConfirmDialog } from "@/components/global/DeletePostConfirmDialog";
+import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { deletePostById, dispatchPostDeletedEvent } from "@/lib/post-deletion";
@@ -63,7 +63,7 @@ export function RequestDeleteAction({
         <TrashIcon className="ml-auto size-4" />
       </PopoverListItem>
 
-      <DeletePostConfirmDialog
+      <DestructiveConfirmDialog
         open={open}
         onOpenChange={(next) => {
           if (isPending) return;
@@ -71,6 +71,7 @@ export function RequestDeleteAction({
         }}
         isPending={isPending}
         onConfirm={handleDelete}
+        title="Are you absolutely sure?"
         description="This will permanently delete this post. This action cannot be undone."
       />
     </>
