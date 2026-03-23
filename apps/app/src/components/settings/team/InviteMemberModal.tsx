@@ -1,55 +1,92 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Label } from "@featul/ui/components/label"
-import { Input } from "@featul/ui/components/input"
-import { Button } from "@featul/ui/components/button"
-import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { DropdownIcon } from "@featul/ui/icons/dropdown"
-import MemberIcon from "@featul/ui/icons/member"
-import { LoadingButton } from "@/components/global/loading-button"
-import { client } from "@featul/api/client"
-import { toast } from "sonner"
-import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
-import { readApiErrorMessage } from "@/hooks/postApiError"
-import type { Role } from "../../../types/team"
+import React from "react";
+import { Label } from "@featul/ui/components/label";
+import { Input } from "@featul/ui/components/input";
+import { Button } from "@featul/ui/components/button";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverList,
+  PopoverListItem,
+} from "@featul/ui/components/popover";
+import { DropdownIcon } from "@featul/ui/icons/dropdown";
+import MemberIcon from "@featul/ui/icons/member";
+import { LoadingButton } from "@/components/global/loading-button";
+import { client } from "@featul/api/client";
+import { toast } from "sonner";
+import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
+import { readApiErrorMessage } from "@/hooks/postApiError";
+import {
+  getPlanLimits,
+  getMemberLimitMessage,
+  normalizePlan,
+} from "@/lib/plan";
+import type { Role } from "../../../types/team";
 
-const ROLES: Role[] = ["admin", "member", "viewer"]
+const ROLES: Role[] = ["admin", "member", "viewer"];
 
 interface InviteMemberModalProps {
-  slug: string
-  open: boolean
-  onOpenChange: (value: boolean) => void
-  onInvited: () => void
+  slug: string;
+  open: boolean;
+  onOpenChange: (value: boolean) => void;
+  onInvited: () => void;
+  plan?: string;
+  currentMemberCount?: number;
 }
 
-export default function InviteMemberModal({ slug, open, onOpenChange, onInvited }: InviteMemberModalProps) {
-  const [email, setEmail] = React.useState("")
-  const [role, setRole] = React.useState<Role>("member")
-  const [loading, setLoading] = React.useState(false)
-  const [roleOpen, setRoleOpen] = React.useState(false)
+export default function InviteMemberModal({
+  slug,
+  open,
+  onOpenChange,
+  onInvited,
+  plan,
+  currentMemberCount,
+}: InviteMemberModalProps) {
+  const [email, setEmail] = React.useState("");
+  const [role, setRole] = React.useState<Role>("member");
+  const [loading, setLoading] = React.useState(false);
+  const [roleOpen, setRoleOpen] = React.useState(false);
+  const limits = React.useMemo(
+    () => getPlanLimits(normalizePlan(plan || "free")),
+    [plan],
+  );
 
   const onSubmit = async () => {
-    const value = email.trim()
-    if (!value) return
-    if (loading) return
-    setLoading(true)
-    try {
-      const res = await client.team.invite.$post({ slug, email: value, role })
-      if (!res.ok) {
-        const message = await readApiErrorMessage(res, "Failed to invite member")
-        throw new Error(message)
-      }
-      toast.success("Invite sent")
-      setEmail("")
-      onInvited()
-      onOpenChange(false)
-    } catch (e: unknown) {
-      toast.error((e as { message?: string })?.message || "Failed to invite member")
-    } finally {
-      setLoading(false)
+    const value = email.trim();
+    if (!value) return;
+    if (loading) return;
+    if (
+      typeof limits.maxMembers === "number" &&
+      typeof currentMemberCount === "number" &&
+      currentMemberCount >= limits.maxMembers
+    ) {
+      toast.error(getMemberLimitMessage(plan || "free", limits.maxMembers));
+      return;
     }
-  }
+    setLoading(true);
+    try {
+      const res = await client.team.invite.$post({ slug, email: value, role });
+      if (!res.ok) {
+        const message = await readApiErrorMessage(
+          res,
+          "Failed to invite member",
+        );
+        throw new Error(message);
+      }
+      toast.success("Invite sent");
+      setEmail("");
+      onInvited();
+      onOpenChange(false);
+    } catch (e: unknown) {
+      toast.error(
+        (e as { message?: string })?.message || "Failed to invite member",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SettingsDialogShell
@@ -60,9 +97,19 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
       icon={<MemberIcon className="size-3.5" />}
     >
       <div className="flex items-center gap-2">
-        <Label htmlFor="invite-email" className="sr-only">Email</Label>
-        <Input id="invite-email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1 h-10 placeholder:text-accent" />
- 
+        <Label htmlFor="invite-email" className="sr-only">
+          Email
+        </Label>
+        <Input
+          id="invite-email"
+          type="email"
+          autoComplete="email"
+          placeholder="name@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="flex-1 h-10 placeholder:text-accent"
+        />
+
         <Popover open={roleOpen} onOpenChange={setRoleOpen}>
           <PopoverTrigger asChild>
             <Button type="button" variant="nav">
@@ -73,18 +120,32 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
           <PopoverContent list className="min-w-0 w-fit">
             <PopoverList>
               {ROLES.map((r) => (
-                <PopoverListItem key={r} role="menuitemradio" aria-checked={role === r} onClick={() => { setRole(r); setRoleOpen(false) }}>
+                <PopoverListItem
+                  key={r}
+                  role="menuitemradio"
+                  aria-checked={role === r}
+                  onClick={() => {
+                    setRole(r);
+                    setRoleOpen(false);
+                  }}
+                >
                   <span className="text-sm capitalize">{r}</span>
-                  {role === r ? <span className="ml-auto text-xs">✓</span> : null}
+                  {role === r ? (
+                    <span className="ml-auto text-xs">✓</span>
+                  ) : null}
                 </PopoverListItem>
               ))}
             </PopoverList>
           </PopoverContent>
         </Popover>
       </div>
- 
+
       <div className="flex justify-end gap-2 mt-4">
-        <Button type="button" variant="card" onClick={() => onOpenChange(false)}>
+        <Button
+          type="button"
+          variant="card"
+          onClick={() => onOpenChange(false)}
+        >
           Cancel
         </Button>
         <LoadingButton
@@ -97,5 +158,5 @@ export default function InviteMemberModal({ slug, open, onOpenChange, onInvited 
         </LoadingButton>
       </div>
     </SettingsDialogShell>
-  )
+  );
 }
