@@ -58,7 +58,7 @@ function cleanProperties(properties?: AnalyticsProperties) {
 }
 
 function isPostHogConfigured() {
-  return Boolean(process.env.NEXT_PUBLIC_POSTHOG_TOKEN)
+  return Boolean(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN)
 }
 
 export function captureAnalyticsEvent(

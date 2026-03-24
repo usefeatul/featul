@@ -29,7 +29,7 @@ Sentry.init({
   sendDefaultPii: true,
 });
 
-const posthogToken = process.env.NEXT_PUBLIC_POSTHOG_TOKEN;
+const posthogToken = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
 
 if (posthogToken) {
   posthog.init(posthogToken, {

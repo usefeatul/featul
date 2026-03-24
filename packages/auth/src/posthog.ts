@@ -18,7 +18,7 @@ export async function captureServerAnalyticsEvent(
   distinctId: string,
   properties?: ServerAnalyticsProperties,
 ) {
-  const token = (process.env.NEXT_PUBLIC_POSTHOG_TOKEN || "").trim()
+  const token = (process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN || "").trim()
   if (!token || !distinctId) return
 
   const client = new PostHog(token, {
