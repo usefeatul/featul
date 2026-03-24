@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
 import { LoadingButton } from "@/components/global/loading-button"
 import { type BillingCycle, type PlanOption } from "./billing-data"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type PlanCheckoutButtonProps = {
   plan: PlanOption
@@ -71,6 +72,12 @@ export default function PlanCheckoutButton({
         return
       }
 
+      captureAnalyticsEvent(analyticsEvents.billingCheckoutStarted, {
+        workspace_id: workspaceId,
+        workspace_slug: workspaceSlug,
+        plan: plan.id,
+        billing_cycle: billingCycle,
+      })
       window.location.href = data.url
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to start checkout"

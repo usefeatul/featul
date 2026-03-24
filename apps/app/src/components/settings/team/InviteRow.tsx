@@ -11,6 +11,7 @@ import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { roleBadgeClass } from "./role-badge";
 import { formatExpiryLabel } from "@/lib/time";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 interface InviteRowProps {
   slug: string;
@@ -46,6 +47,10 @@ export default function InviteRow({
         throw new Error(err?.message || "Invite failed");
       }
       toast.success("Invite updated");
+      captureAnalyticsEvent(analyticsEvents.inviteUpdated, {
+        workspace_slug: slug,
+        role: newRole,
+      });
       onChanged();
       setMenuFor(null);
     } catch (e: unknown) {
@@ -65,6 +70,9 @@ export default function InviteRow({
         throw new Error(err?.message || "Revoke failed");
       }
       toast.success("Invite revoked");
+      captureAnalyticsEvent(analyticsEvents.inviteRevoked, {
+        workspace_slug: slug,
+      });
       onChanged();
       setMenuFor(null);
     } catch (e: unknown) {
@@ -84,6 +92,10 @@ export default function InviteRow({
         throw new Error(err?.message || "Resend failed");
       }
       toast.success("Invite resent");
+      captureAnalyticsEvent(analyticsEvents.inviteResent, {
+        workspace_slug: slug,
+        role: i.role,
+      });
       onChanged();
       setMenuFor(null);
     } catch (e: unknown) {

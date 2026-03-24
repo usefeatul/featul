@@ -5,6 +5,7 @@ import { Switch } from "@featul/ui/components/switch"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type ChangelogSettingsResponse = {
   isVisible?: boolean
@@ -50,6 +51,10 @@ export default function ChangelogVisibility({ slug, initialIsVisible }: { slug: 
         const err = (await res.json().catch(() => null)) as { message?: string } | null
         throw new Error(err?.message || "Update failed")
       }
+      captureAnalyticsEvent(analyticsEvents.changelogVisibilityChanged, {
+        workspace_slug: slug,
+        is_visible: v,
+      })
       const msg = v ? "Changelog is now visible on your public site" : "Changelog is hidden from your public site"
       toast.success(msg)
       queryClient.setQueryData<ChangelogSettingsCache>(["changelog-settings", slug], {

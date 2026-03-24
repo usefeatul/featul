@@ -14,6 +14,7 @@ import { LastUsedTag } from "@/components/auth/LastUsedTag";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useSocialAuth } from "@/hooks/useSocialAuth";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 export default function SignIn({
   redirectTo,
@@ -55,6 +56,14 @@ export default function SignIn({
         setError(result.error.message || "Failed to sign in with passkey");
         toast.error(result.error.message || "Failed to sign in with passkey");
       } else {
+        captureAnalyticsEvent(analyticsEvents.authMethodUsed, {
+          method: "passkey",
+          intent: "sign_in",
+          stage: "completed",
+        });
+        captureAnalyticsEvent(analyticsEvents.signInCompleted, {
+          method: "passkey",
+        });
         toast.success("Signed in with passkey");
         router.push(redirect);
       }
@@ -75,6 +84,9 @@ export default function SignIn({
         {
           onError: (ctx) => {
             if (ctx.error.status === 403) {
+              captureAnalyticsEvent(analyticsEvents.emailVerificationRequired, {
+                source: "sign_in",
+              });
               toast.info("Please verify your email");
               router.push(`/auth/verify?email=${encodeURIComponent(email.trim())}`);
               return;
@@ -83,6 +95,14 @@ export default function SignIn({
             toast.error(ctx.error.message);
           },
           onSuccess: () => {
+            captureAnalyticsEvent(analyticsEvents.authMethodUsed, {
+              method: "email",
+              intent: "sign_in",
+              stage: "completed",
+            });
+            captureAnalyticsEvent(analyticsEvents.signInCompleted, {
+              method: "email",
+            });
             toast.success("Signed in");
             router.push(redirect);
           },

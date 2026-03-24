@@ -19,6 +19,7 @@ import {
   isReservedWorkspaceName,
   isReservedWorkspaceSlug,
 } from "../../lib/validators"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 interface StepWizardFormProps {
   name: string
@@ -57,6 +58,15 @@ export default function StepWizardForm({
 }: StepWizardFormProps) {
   const [step, setStep] = React.useState(0)
   const steps = React.useMemo(() => ["domain", "name", "slug", "timezone"], [])
+  const viewedStepsRef = React.useRef<Set<string>>(new Set())
+  const submittedRef = React.useRef(false)
+  const formStateRef = React.useRef({
+    domain: "",
+    name: "",
+    slug: "",
+    slugLocked: null as string | null,
+    step: 0,
+  })
   const reservedWorkspaceUrl = slugLocked ? `${slugLocked}.featul.com` : null
   const nameReserved = isReservedWorkspaceName(name)
   const slugReserved = isReservedWorkspaceSlug(slug)
@@ -75,15 +85,69 @@ export default function StepWizardForm({
     (slugLocked ? true : isSlugValid(slug) && slugAvailable === true) &&
     isTimezoneValid(timezone)
 
+  React.useEffect(() => {
+    const stepName = steps[step]
+    if (!stepName || viewedStepsRef.current.has(stepName)) return
+
+    viewedStepsRef.current.add(stepName)
+    captureAnalyticsEvent(analyticsEvents.workspaceSetupStepViewed, {
+      step_name: stepName,
+      step_index: step,
+      has_reserved_slug: Boolean(slugLocked),
+    })
+  }, [step, steps, slugLocked])
+
+  React.useEffect(() => {
+    formStateRef.current = {
+      domain,
+      name,
+      slug,
+      slugLocked,
+      step,
+    }
+  }, [domain, name, slug, slugLocked, step])
+
+  React.useEffect(() => {
+    return () => {
+      if (submittedRef.current) return
+
+      const current = formStateRef.current
+      const hasStarted = Boolean(
+        current.domain.trim() || current.name.trim() || current.slug.trim(),
+      )
+      if (!hasStarted) return
+
+      captureAnalyticsEvent(analyticsEvents.workspaceSetupAbandoned, {
+        last_step: steps[current.step] || steps[0],
+        has_domain: Boolean(current.domain.trim()),
+        has_name: Boolean(current.name.trim()),
+        has_slug: Boolean(current.slug.trim()),
+        has_reserved_slug: Boolean(current.slugLocked),
+      })
+    }
+  }, [steps])
+
   const onNext = React.useCallback(() => {
+    const stepName = steps[step]
     if (step < steps.length - 1) {
+      captureAnalyticsEvent(analyticsEvents.workspaceSetupStepCompleted, {
+        step_name: stepName,
+        step_index: step,
+        next_step: steps[step + 1],
+      })
       setStep((s) => s + 1)
       return
     }
     if (allValid && !isCreating) {
+      submittedRef.current = true
+      captureAnalyticsEvent(analyticsEvents.workspaceSetupStepCompleted, {
+        step_name: stepName,
+        step_index: step,
+        next_step: "workspace_created",
+      })
       create()
     }
-  }, [step, steps.length, allValid, isCreating, create])
+  }, [step, steps, allValid, isCreating, create])
 
   const onBack = React.useCallback(() => {
     setStep((s) => Math.max(0, s - 1))
@@ -116,7 +180,7 @@ export default function StepWizardForm({
           ))}
         </div>
         <CardTitle className="font-heading text-xl">{title}</CardTitle>
-        <CardDescription className="text-accent">{description}</CardDescription>
+        <CardDescription className="text-accent font-light">{description}</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">

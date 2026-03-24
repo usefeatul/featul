@@ -9,6 +9,7 @@ import { normalizePlan } from "@/lib/plan"
 import BillingCycleSegment from "./BillingCycleSegment"
 import PlanOptionCard from "./PlanOptionCard"
 import { type BillingCycle, PLAN_ORDER, getPlan } from "./billing-data"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type BillingSubscription = {
   id: string
@@ -109,6 +110,10 @@ export default function BillingSection({
         return
       }
 
+      captureAnalyticsEvent(analyticsEvents.billingPortalOpened, {
+        workspace_id: workspaceId,
+        workspace_slug: slug,
+      })
       window.location.href = data.url
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to open billing portal"

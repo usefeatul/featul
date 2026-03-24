@@ -20,6 +20,7 @@ import InviteMemberModal from "./InviteMemberModal";
 import { useCanInvite } from "@/hooks/useWorkspaceAccess";
 import MemberRow from "./MemberRow";
 import InvitesList from "./InvitesList";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import type { Member, Invite } from "../../../types/team";
 
 interface TeamSectionProps {
@@ -104,6 +105,10 @@ export default function TeamSection({
         throw new Error(err?.message || "Update failed");
       }
       toast.success("Role updated");
+      captureAnalyticsEvent(analyticsEvents.memberRoleUpdated, {
+        workspace_slug: slug,
+        role: newRole,
+      });
       queryClient.setQueryData<TeamQueryData>(["team", slug], (prev) => {
         const current: TeamQueryData = prev || {
           members: [],
@@ -135,6 +140,9 @@ export default function TeamSection({
         throw new Error(err?.message || "Remove failed");
       }
       toast.success("Member removed");
+      captureAnalyticsEvent(analyticsEvents.memberRemoved, {
+        workspace_slug: slug,
+      });
       queryClient.setQueryData<TeamQueryData>(["team", slug], (prev) => {
         const current: TeamQueryData = prev || {
           members: [],

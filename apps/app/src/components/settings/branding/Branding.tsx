@@ -27,6 +27,7 @@ import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
 import { fetchWorkspaceBySlug } from "@/lib/workspace-client";
 import type { BrandingConfig } from "../../../types/branding";
 import { updateWorkspaceLogoInCache, updateWorkspaceNameInCache } from "./branding-cache";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 interface BrandingSectionProps {
   slug: string;
@@ -215,6 +216,14 @@ export default function BrandingSection({
           //ignore
         }
       }
+      captureAnalyticsEvent(analyticsEvents.brandingUpdated, {
+        workspace_slug: slug,
+        has_logo: Boolean(logoUrl.trim()),
+        theme,
+        layout_style: layoutStyle,
+        sidebar_position: sidebarPosition,
+        hide_powered_by: hidePoweredBy,
+      });
       toast.success("Settings updated");
     } catch (error: unknown) {
       if (canBranding) applyBrandPrimary(prevP || "#3b82f6");

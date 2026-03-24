@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import type { BoardSummary, PostUser } from "@/types/post"
 import { getPostTitleMinError } from "@/hooks/postSubmitGuard"
 import { readApiErrorMessage } from "@/hooks/postApiError"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 interface UsePostSubmissionProps {
   workspaceSlug: string
@@ -74,6 +75,15 @@ export function usePostSubmission({
 
         if (res.ok) {
           const data = await res.json()
+          captureAnalyticsEvent(analyticsEvents.postCreated, {
+            workspace_slug: workspaceSlug,
+            board_slug: selectedBoard.slug,
+            has_image: Boolean(image),
+            has_content: Boolean(normalizedContent),
+            is_anonymous: !user,
+            tag_count: tags?.length ?? 0,
+            roadmap_status: roadmapStatus || null,
+          })
           toast.success("Post submitted successfully")
           setTitle("")
           setContent("")
