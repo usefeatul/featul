@@ -34,6 +34,6 @@ export function showImportSummaryToasts(summary: ImportSummary) {
     );
   }
   if (summary.limitReached) {
-    toast.error("Changelog entry limit reached for your current plan.");
+    toast.error("Changelog entry limit reached");
   }
 }
