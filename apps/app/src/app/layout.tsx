@@ -115,11 +115,6 @@ export default function RootLayout({
         /> */}
         {(process.env.NODE_ENV !== "production" ||
           process.env.NEXT_PUBLIC_ENABLE_DEBUG === "true") && <DebugTools />}
-        <Script
-          src="https://cdn.seline.com/seline.js"
-          data-token={process.env.NEXT_PUBLIC_SELINE_TOKEN}
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
