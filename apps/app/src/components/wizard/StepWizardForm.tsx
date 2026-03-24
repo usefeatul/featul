@@ -115,7 +115,7 @@ export default function StepWizardForm({
             />
           ))}
         </div>
-        <CardTitle className="text-xl">{title}</CardTitle>
+        <CardTitle className="font-heading text-xl">{title}</CardTitle>
         <CardDescription className="text-accent">{description}</CardDescription>
       </CardHeader>
 
