@@ -22,6 +22,11 @@ type UploadTarget = {
 type UseSignedImageUploadOptions = {
   getUploadTarget: (file: File) => Promise<UploadTarget>;
   getPreUploadError?: (file: File) => string | null;
+  onUploadSuccess?: (context: {
+    file: File;
+    publicUrl: string;
+    uploadUrl: string;
+  }) => void;
   loadingMessage?: string;
   successMessage?: string;
   defaultErrorMessage?: string;
@@ -54,6 +59,7 @@ async function uploadFileToSignedUrl(uploadUrl: string, file: File) {
 export function useSignedImageUpload({
   getUploadTarget,
   getPreUploadError,
+  onUploadSuccess,
   loadingMessage = "Uploading image...",
   successMessage = "Image uploaded",
   defaultErrorMessage = "Failed to upload image",
@@ -89,6 +95,11 @@ export function useSignedImageUpload({
         name: file.name,
         type: file.type,
       });
+      try {
+        onUploadSuccess?.({ file, publicUrl, uploadUrl });
+      } catch (analyticsError) {
+        console.error("Failed to track uploaded image:", analyticsError);
+      }
       toast.success(successMessage, { id: toastId });
     } catch (error: unknown) {
       const message =

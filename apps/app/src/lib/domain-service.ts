@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isDomainValid, suggestDomainFix } from "./validators";
 import { safeJson } from "@/lib/api-response";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 interface DomainInfoResponse {
   domain?: DomainInfo;
@@ -127,6 +128,9 @@ export function useDomainActions({ slug, info, canUse, canEditDomain, onCreated 
         return;
       }
       toast.success("Domain added. Configure DNS and verify.");
+      captureAnalyticsEvent(analyticsEvents.customDomainAdded, {
+        workspace_slug: slug,
+      });
       onCreated?.();
       try {
         queryClient.setQueryData<UseDomainData>(["domain", slug], (prev) => {
@@ -159,9 +163,16 @@ export function useDomainActions({ slug, info, canUse, canEditDomain, onCreated 
     mutationFn: () => verifyDomain(slug),
     onSuccess: (result) => {
       if (!result.ok) {
+        captureAnalyticsEvent(analyticsEvents.customDomainVerificationFailed, {
+          workspace_slug: slug,
+          reason: result.message || "verify_failed",
+        });
         toast.error(result.message || "Verify failed");
       } else if (result.status === "verified") {
         toast.success("Domain verified");
+        captureAnalyticsEvent(analyticsEvents.customDomainVerified, {
+          workspace_slug: slug,
+        });
         if (info?.host) {
           type WsDetails = {
             id: string;
@@ -176,11 +187,19 @@ export function useDomainActions({ slug, info, canUse, canEditDomain, onCreated 
           );
         }
       } else {
+        captureAnalyticsEvent(analyticsEvents.customDomainVerificationFailed, {
+          workspace_slug: slug,
+          reason: "pending",
+        });
         toast.info("Records not found yet. Still pending.");
       }
       queryClient.invalidateQueries({ queryKey: ["domain", slug] });
     },
     onError: (e: unknown) => {
+      captureAnalyticsEvent(analyticsEvents.customDomainVerificationFailed, {
+        workspace_slug: slug,
+        reason: (e as Error)?.message || "verify_failed",
+      });
       toast.error((e as Error)?.message || "Failed to verify domain");
     },
   });

@@ -17,6 +17,7 @@ import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useSocialAuth } from "@/hooks/useSocialAuth";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 export default function SignUp({
   redirectTo,
@@ -62,6 +63,17 @@ export default function SignUp({
         email: email.trim(),
         password,
         callbackURL: `/auth/verify?email=${encodeURIComponent(email.trim())}${safeRedirectParam ? `&redirect=${encodeURIComponent(safeRedirectParam)}` : ""}`,
+      });
+      captureAnalyticsEvent(analyticsEvents.authMethodUsed, {
+        method: "email",
+        intent: "sign_up",
+        stage: "completed",
+      });
+      captureAnalyticsEvent(analyticsEvents.signUpCompleted, {
+        method: "email",
+      });
+      captureAnalyticsEvent(analyticsEvents.emailVerificationRequired, {
+        source: "sign_up",
       });
       toast.success("Account created. Check your email for the code");
       router.push(`/auth/verify?email=${encodeURIComponent(email)}${safeRedirectParam ? `&redirect=${encodeURIComponent(safeRedirectParam)}` : ""}`);

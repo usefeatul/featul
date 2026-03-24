@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 interface UseUpvoteProps {
   postId: string;
@@ -85,6 +86,10 @@ export function useUpvote({
           const data = await res.json();
           setUpvotes(data.upvotes);
           setHasVoted(data.hasVoted);
+          captureAnalyticsEvent(analyticsEvents.postVoteToggled, {
+            post_id: postId,
+            action: data.hasVoted ? "upvote" : "remove_upvote",
+          });
           if (onChange)
             onChange({ upvotes: data.upvotes, hasVoted: data.hasVoted });
 

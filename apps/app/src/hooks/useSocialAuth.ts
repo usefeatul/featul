@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { authClient } from "@featul/auth/client";
 import { toast } from "sonner";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 type SocialProvider = "google" | "github";
 
@@ -30,6 +31,11 @@ export function useSocialAuth({
       setError("");
 
       try {
+        captureAnalyticsEvent(analyticsEvents.authMethodUsed, {
+          method: provider,
+          intent: "sign_in",
+          stage: "started",
+        });
         await authClient.signIn.social({
           provider,
           callbackURL: redirect,

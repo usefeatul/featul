@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { getLogoUploadUrl, saveBranding } from "../../../lib/branding-service"
 import { setWorkspaceLogo } from "@/lib/branding-store"
 import { BRANDING_UPLOAD_CONTENT_TYPES, BRANDING_LOGO_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type Props = {
   slug: string
@@ -57,6 +58,11 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
       if (!result.ok) throw new Error(result.message || "Save failed")
       setWorkspaceLogo(slug, publicUrl)
       onChange(publicUrl)
+      captureAnalyticsEvent(analyticsEvents.logoUploaded, {
+        workspace_slug: slug,
+        file_type: file.type || "unknown",
+        file_size_bytes: file.size,
+      })
       toast.success("Logo updated", { id: toastId })
     } catch (error: unknown) {
       const message = error instanceof Error && error.message ? error.message : "Failed to upload"

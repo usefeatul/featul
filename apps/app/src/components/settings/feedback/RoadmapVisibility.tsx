@@ -11,6 +11,7 @@ import {
   type FeedbackBoardSettings,
   useFeedbackBoardsSettings,
 } from "@/hooks/feedback-board-settings";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 export default function RoadmapVisibility({
   slug,
@@ -48,6 +49,10 @@ export default function RoadmapVisibility({
       });
       await assertBoardMutationOk(res, "Update failed");
       await refetch();
+      captureAnalyticsEvent(analyticsEvents.roadmapVisibilityChanged, {
+        workspace_slug: slug,
+        is_visible: v,
+      });
       toast.success(v ? "Roadmap is now visible" : "Roadmap is hidden");
     } catch (e: unknown) {
       await refetch();

@@ -1,6 +1,9 @@
+"use client";
+
 import type { QueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import type { PostDeletedEventDetail } from "@/types/events";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 type DeletePostErrorResponse = {
   message?: string;
@@ -14,6 +17,9 @@ export async function deletePostById(
   try {
     const response = await client.post.delete.$post({ postId });
     if (response.ok) {
+      captureAnalyticsEvent(analyticsEvents.postDeleted, {
+        post_id: postId,
+      });
       return { ok: true };
     }
 

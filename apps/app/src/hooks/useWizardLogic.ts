@@ -10,6 +10,7 @@ import {
   slugifyFromName,
   isReservedWorkspaceSlug,
 } from "../lib/validators";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 function extractNameFromDomain(domain: string): string {
   const part = domain.split(".")[0]?.trim() || "";
@@ -149,6 +150,13 @@ export function useWizardLogic() {
       toast.success("Workspace created");
 
       const createdSlug = data?.workspace?.slug || slug;
+      captureAnalyticsEvent(analyticsEvents.workspaceCreated, {
+        workspace_id: data?.workspace?.id ? String(data.workspace.id) : undefined,
+        workspace_slug: createdSlug,
+        timezone,
+        has_reserved_slug: Boolean(slugLocked),
+        creation_source: slugLocked ? "reservation" : "wizard",
+      });
 
       queryClient.setQueryData(
         ["workspaces"],
@@ -171,7 +179,7 @@ export function useWizardLogic() {
     } finally {
       setIsCreating(false);
     }
-  }, [name, domain, slug, timezone, queryClient, router]);
+  }, [name, domain, slug, timezone, queryClient, router, slugLocked]);
 
   const handleNameChange = useCallback((v: string) => {
     setNameDirty(true);

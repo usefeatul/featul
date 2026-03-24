@@ -21,6 +21,7 @@ import { setSessionCookie } from "better-auth/cookies"
 import { getAuthRateLimitStorage } from "./rate-limit-storage"
 import { isWorkspaceBillingOwner, syncWorkspacePlanFromSubscription } from "./billing"
 import { getStripeClient } from "./stripe"
+import { captureServerAnalyticsEvent } from "./posthog"
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
@@ -122,6 +123,20 @@ const stripePlugin = (() => {
       },
       onSubscriptionComplete: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
         await syncWorkspacePlanFromSubscription(subscription)
+
+        const workspaceId = String(subscription.referenceId || "").trim()
+        if (!workspaceId) return
+
+        await captureServerAnalyticsEvent(
+          "subscription_upgraded",
+          `workspace:${workspaceId}`,
+          {
+            workspace_id: workspaceId,
+            plan: String(subscription.plan || ""),
+            status: String(subscription.status || ""),
+            source: "stripe_complete",
+          },
+        )
       },
       onSubscriptionCreated: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
         await syncWorkspacePlanFromSubscription(subscription)
@@ -259,9 +274,16 @@ export const auth = betterAuth({
           const to = String(created.email || "")
           if (!to) return
           const name = String(created.name || "") || undefined
+          const userId = String(created.id || "").trim()
           try {
             await sendWelcome(to, name)
           } catch (e) {}
+          if (userId) {
+            await captureServerAnalyticsEvent("sign_up_completed", userId, {
+              email: to,
+              has_name: Boolean(name),
+            })
+          }
         },
       },
     },

@@ -14,6 +14,7 @@ import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { readApiErrorMessage } from "@/hooks/postApiError";
 import type { InviteByTokenResponse, InviteUser } from "@/types/invite";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 type InviteProps = {
   token?: string;
@@ -152,6 +153,10 @@ export default function Invite({
         }
       }
       toast.success("Invite accepted");
+      captureAnalyticsEvent(analyticsEvents.inviteAccepted, {
+        workspace_name: workspaceName || null,
+        workspace_slug: targetSlug,
+      });
       if (targetSlug) router.replace(`/workspaces/${targetSlug}`);
       else router.replace("/start");
     } catch (e: unknown) {
@@ -172,6 +177,9 @@ export default function Invite({
         throw new Error(message);
       }
       toast.success("Invite declined");
+      captureAnalyticsEvent(analyticsEvents.inviteDeclined, {
+        workspace_name: workspaceName || null,
+      });
       router.replace("/start");
     } catch (e: unknown) {
       toast.error((e as { message?: string })?.message || "Invite failed");

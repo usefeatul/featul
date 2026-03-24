@@ -12,6 +12,7 @@ import {
   type CommentCreatedEventDetail,
   type CommentSurface,
 } from "@/lib/comment-shared"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 interface UseCommentSubmitProps {
   postId: string
@@ -167,6 +168,14 @@ export function useCommentSubmit({
           }
 
           resetForm()
+          captureAnalyticsEvent(analyticsEvents.commentCreated, {
+            post_id: postId,
+            surface,
+            is_reply: Boolean(parentId),
+            is_internal: Boolean(isInternal),
+            has_image: Boolean(uploadedImage),
+            is_anonymous: createdComment?.isAnonymous ?? undefined,
+          })
           toast.success(parentId ? "Reply posted" : "Comment posted")
           try {
             const detail: CommentCreatedEventDetail = {

@@ -8,6 +8,7 @@ import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, C
 import { MergeIcon } from "@featul/ui/icons/merge"
 import { client } from "@featul/api/client"
 import { useQuery } from "@tanstack/react-query"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type MergeCandidate = {
   id: string
@@ -62,10 +63,20 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
         targetPostId: targetId,
         mergeType: "merge_into",
       })
+      captureAnalyticsEvent(analyticsEvents.postsMerged, {
+        post_id: postId,
+        target_post_id: targetId,
+        merge_type: "merge_into",
+      })
       setSearchOpen(false)
       router.push(`/workspaces/${workspaceSlug}/requests/${slug}`)
     } else {
       await client.post.mergeHere.$post({ postId, sourcePostIds: [targetId] })
+      captureAnalyticsEvent(analyticsEvents.postsMerged, {
+        post_id: postId,
+        target_post_id: targetId,
+        merge_type: "merge_here",
+      })
       setSearchOpen(false)
       router.refresh()
     }

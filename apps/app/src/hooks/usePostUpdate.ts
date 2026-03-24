@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { getPostTitleMinError } from "@/hooks/postSubmitGuard"
 import { readApiErrorMessage } from "@/hooks/postApiError"
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 interface UsePostUpdateProps {
   postId: string
@@ -44,6 +45,14 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
         })
 
         if (res.ok) {
+          captureAnalyticsEvent(analyticsEvents.postUpdated, {
+            post_id: postId,
+            board_slug: selectedBoard.slug,
+            has_image: Boolean(image),
+            has_content: Boolean(normalizedContent),
+            tag_count: tags?.length ?? 0,
+            roadmap_status: roadmapStatus || null,
+          })
           toast.success("Post updated successfully")
           onSuccess()
 

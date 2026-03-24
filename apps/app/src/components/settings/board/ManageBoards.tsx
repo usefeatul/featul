@@ -19,6 +19,7 @@ import {
 } from "@featul/ui/components/popover";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import { LoadingButton } from "@/components/global/loading-button";
 import PlanNotice from "../global/PlanNotice";
 import ModalCreateBoard from "../feedback/ModalCreateBoard";
@@ -257,6 +258,10 @@ export default function ManageBoards({
             });
             await assertBoardMutationOk(res, "Create failed");
             toast.success("Board created");
+            captureAnalyticsEvent(analyticsEvents.boardCreated, {
+              workspace_slug: slug,
+              board_slug: s || undefined,
+            });
             setCreateOpen(false);
             await refetch();
           } catch (e: unknown) {

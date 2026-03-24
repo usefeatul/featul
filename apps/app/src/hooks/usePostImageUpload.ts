@@ -1,5 +1,6 @@
 import { getPostImageUploadUrl } from "@/lib/post-service";
 import { useSignedImageUpload } from "./shared-image-upload";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 export {
   ALLOWED_IMAGE_TYPES,
@@ -24,5 +25,14 @@ export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
         file.size,
         boardSlug as string,
       ),
+    onUploadSuccess: ({ file }) => {
+      captureAnalyticsEvent(analyticsEvents.imageUploaded, {
+        upload_target: "post",
+        workspace_slug: workspaceSlug,
+        board_slug: boardSlug || null,
+        file_type: file.type || "unknown",
+        file_size_bytes: file.size,
+      });
+    },
   });
 }

@@ -23,6 +23,7 @@ import {
   getMemberLimitMessage,
   normalizePlan,
 } from "@/lib/plan";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import type { Role } from "../../../types/team";
 
 const ROLES: Role[] = ["admin", "member", "viewer"];
@@ -76,6 +77,10 @@ export default function InviteMemberModal({
         throw new Error(message);
       }
       toast.success("Invite sent");
+      captureAnalyticsEvent(analyticsEvents.workspaceInviteSent, {
+        workspace_slug: slug,
+        role,
+      });
       setEmail("");
       onInvited();
       onOpenChange(false);
