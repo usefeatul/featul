@@ -6,7 +6,6 @@ import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { Button } from "@featul/ui/components/button";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { navigationConfig } from "@/config/homeNav";
-import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
 type MobileMenuProps = {
   open: boolean;
@@ -14,18 +13,16 @@ type MobileMenuProps = {
 };
 
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
-  const isMobile = useIsMobile();
-
   useEffect(() => {
-    if (!open || !isMobile) return;
+    if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev || "";
     };
-  }, [open, isMobile]);
-  // Only render on mobile when open
-  if (!open || !isMobile) return null;
+  }, [open]);
+
+  if (!open) return null;
 
   return (
     <div

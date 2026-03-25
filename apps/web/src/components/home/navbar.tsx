@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./mobile-menu";
-import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 import { LinearSeparator } from "@/components/linear-separator";
 
 export default function Navbar() {
@@ -20,7 +19,6 @@ export default function Navbar() {
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const isMobile = useIsMobile();
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0);
     onScroll();
@@ -29,10 +27,20 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (!isMobile && mobileOpen) {
+    const media = window.matchMedia("(min-width: 768px)");
+    const handleChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setMobileOpen(false);
+      }
+    };
+
+    media.addEventListener("change", handleChange);
+    if (media.matches) {
       setMobileOpen(false);
     }
-  }, [isMobile, mobileOpen]);
+
+    return () => media.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <header
