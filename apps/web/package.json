@@ -11,6 +11,7 @@
     "validate-seo": "bun run scripts/validate-seo.ts"
   },
   "dependencies": {
+    "@c15t/nextjs": "^1.8.5",
     "@featul/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.2.2",
     "@tanstack/react-query": "^5.91.3",
