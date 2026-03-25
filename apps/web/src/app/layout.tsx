@@ -104,10 +104,10 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         <OrganizationJsonLd />
-        <Script
+        <script
           id="site-navigation-jsonld"
           type="application/ld+json"
-          strategy="beforeInteractive"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: serializeJsonLd(
               buildSiteNavigationSchema(
@@ -123,10 +123,10 @@ export default function RootLayout({
             ),
           }}
         />
-        <Script
+        <script
           id="software-app-jsonld"
           type="application/ld+json"
-          strategy="beforeInteractive"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildSoftwareApplicationSchema(SITE_URL)) }}
         />
       </head>
