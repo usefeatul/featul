@@ -26,8 +26,8 @@ export default function Home() {
         <SectionStack>
           <Hero />
           <ConversionHero />
-          <Listening />
           <FeaturesSection />
+          <Listening />
           <Integrations />
           <Setup />
           <Create />
