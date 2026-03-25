@@ -49,6 +49,7 @@ export default function FeaturesSection() {
                     src="/image/dashboard.png"
                     alt="Feedback dashboard showing all customer requests organized by status and votes"
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 80vw, 960px"
                     className="object-cover object-top"
                   />
                 </div>
@@ -76,6 +77,7 @@ export default function FeaturesSection() {
                     src="/image/dashboard.png"
                     alt="Changelog interface showing product updates"
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 420px"
                     className="object-cover object-center"
                   />
                 </div>
@@ -103,6 +105,7 @@ export default function FeaturesSection() {
                     src="/image/dashboard.png"
                     alt="Public roadmap showing planned, in-progress, and completed features"
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 420px"
                     className="object-cover object-right-top"
                   />
                 </div>

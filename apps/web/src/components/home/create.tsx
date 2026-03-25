@@ -44,6 +44,7 @@ export default function Create() {
                       src="/image/dashboard.png"
                       alt="Workspace dashboard with request statuses and counts"
                       fill
+                      sizes="(max-width: 640px) 55vw, (max-width: 1024px) 28vw, 320px"
                       className="object-cover object-left-top"
                     />
                   </div>
@@ -52,6 +53,7 @@ export default function Create() {
                       src="/image/dashboard.png"
                       alt="Workspace view with sortable customer requests"
                       fill
+                      sizes="(max-width: 640px) 55vw, (max-width: 1024px) 28vw, 320px"
                       className="object-cover object-right-top"
                     />
                   </div>
@@ -74,6 +76,7 @@ export default function Create() {
                     src="/image/dashboard.png"
                     alt="Public feedback board where users can submit and vote"
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
                     className="object-cover object-center"
                   />
                 </div>
