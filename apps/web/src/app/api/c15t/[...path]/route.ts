@@ -16,6 +16,10 @@ const HOP_BY_HOP_HEADERS = new Set([
   "upgrade",
 ]);
 
+type NodeRequestInit = RequestInit & {
+  duplex?: "half";
+};
+
 function getUpstreamBaseUrl() {
   for (const key of UPSTREAM_ENV_KEYS) {
     const value = process.env[key];
@@ -54,13 +58,20 @@ async function proxyRequest(
 
   const { path } = await params;
   const targetUrl = new URL(`${path.join("/")}${request.nextUrl.search}`, `${upstreamBaseUrl}/`);
-
-  const upstreamResponse = await fetch(targetUrl, {
+  const hasRequestBody = request.method !== "GET" && request.method !== "HEAD";
+  const upstreamRequestInit: NodeRequestInit = {
     method: request.method,
     headers: buildUpstreamHeaders(request),
-    body: request.method === "GET" || request.method === "HEAD" ? undefined : request.body,
+    body: hasRequestBody ? request.body : undefined,
     redirect: "manual",
-  });
+  };
+
+  if (hasRequestBody) {
+    // Node's fetch requires duplex for streamed request bodies, but worker typings omit it.
+    upstreamRequestInit.duplex = "half";
+  }
+
+  const upstreamResponse = await fetch(targetUrl, upstreamRequestInit as RequestInit);
 
   const responseHeaders = new Headers(upstreamResponse.headers);
   responseHeaders.delete("content-encoding");
