@@ -130,7 +130,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildSoftwareApplicationSchema(SITE_URL)) }}
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <VerticalLines />
         {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "false") && <DebugTools />}
