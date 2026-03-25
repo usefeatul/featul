@@ -1,11 +1,8 @@
-"use client";
-
-import { useRef } from "react";
 import { Container } from "../global/container";
 import { Card } from "@featul/ui/components/card";
 import type { ComponentType } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SlackIcon } from "@featul/ui/icons/slack";
 import { DiscordIcon } from "@featul/ui/icons/discord";
 import { NotraIcon } from "@featul/ui/icons/notra";
@@ -13,6 +10,7 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
+import { HorizontalScrollControls } from "./horizontal-scroll-controls";
 
 type IntegrationItem = {
   slug: string;
@@ -87,20 +85,6 @@ const integrations: IntegrationItem[] = [
 ];
 
 export default function Integrations() {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollSlider = (direction: "backward" | "forward") => {
-    const slider = sliderRef.current;
-
-    if (!slider) return;
-
-    const amount = Math.max(slider.clientWidth * 0.82, 240);
-    slider.scrollBy({
-      left: direction === "forward" ? amount : -amount,
-      behavior: "smooth",
-    });
-  };
-
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section data-component="Integrations" className="my-6 sm:my-8 py-8 sm:py-12">
@@ -118,7 +102,7 @@ export default function Integrations() {
           </div>
 
           <div
-            ref={sliderRef}
+            id="home-integrations-slider"
             className="mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 scroll-smooth [-webkit-overflow-scrolling:touch] scrollbar-hide md:grid md:grid-cols-2 md:gap-3 md:overflow-visible md:pb-0 lg:grid-cols-3 lg:gap-4"
           >
             {integrations.map((item) => {
@@ -163,24 +147,12 @@ export default function Integrations() {
             })}
           </div>
 
-          <div className="mt-4 flex items-center justify-end gap-2 md:hidden">
-            <button
-              type="button"
-              onClick={() => scrollSlider("backward")}
-              className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-white text-foreground transition-colors hover:bg-muted"
-              aria-label="Scroll integrations backward"
-            >
-              <ArrowLeft className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollSlider("forward")}
-              className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-white text-foreground transition-colors hover:bg-muted"
-              aria-label="Scroll integrations forward"
-            >
-              <ArrowRight className="size-4" />
-            </button>
-          </div>
+          <HorizontalScrollControls
+            targetId="home-integrations-slider"
+            className="mt-4 flex items-center justify-end gap-2 md:hidden"
+            backwardLabel="Scroll integrations backward"
+            forwardLabel="Scroll integrations forward"
+          />
         </div>
       </section>
     </Container>

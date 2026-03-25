@@ -1,13 +1,11 @@
-"use client";
-
-import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Card } from "@featul/ui/components/card";
 import { AccentBar } from "@featul/ui/components/cardElements";
 import { Container } from "../global/container";
+import { HorizontalScrollControls } from "./horizontal-scroll-controls";
 
 const features = [
   {
@@ -61,20 +59,6 @@ const features = [
 ] as const;
 
 export default function FeaturesSection() {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollSlider = (direction: "backward" | "forward") => {
-    const slider = sliderRef.current;
-
-    if (!slider) return;
-
-    const amount = Math.max(slider.clientWidth * 0.82, 240);
-    slider.scrollBy({
-      left: direction === "forward" ? amount : -amount,
-      behavior: "smooth",
-    });
-  };
-
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section className="my-8 sm:my-10">
@@ -94,7 +78,7 @@ export default function FeaturesSection() {
             </div>
 
             <div
-              ref={sliderRef}
+              id="home-features-slider"
               className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 scroll-smooth [-webkit-overflow-scrolling:touch] scrollbar-hide md:grid md:grid-cols-2 md:gap-4 md:overflow-visible md:pb-0 lg:gap-6"
             >
               {features.map((feature) => (
@@ -139,24 +123,12 @@ export default function FeaturesSection() {
               ))}
             </div>
 
-            <div className="mt-4 flex items-center justify-end gap-2 md:hidden">
-              <button
-                type="button"
-                onClick={() => scrollSlider("backward")}
-                className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-white text-foreground transition-colors hover:bg-muted"
-                aria-label="Scroll features backward"
-              >
-                <ArrowLeft className="size-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollSlider("forward")}
-                className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-white text-foreground transition-colors hover:bg-muted"
-                aria-label="Scroll features forward"
-              >
-                <ArrowRight className="size-4" />
-              </button>
-            </div>
+            <HorizontalScrollControls
+              targetId="home-features-slider"
+              className="mt-4 flex items-center justify-end gap-2 md:hidden"
+              backwardLabel="Scroll features backward"
+              forwardLabel="Scroll features forward"
+            />
           </div>
         </div>
       </section>
