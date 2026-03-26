@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { Manrope, Sora } from "next/font/google";
 import { DebugTools } from "@featul/ui/global/debug-tools";
 import "./globals.css";
@@ -98,11 +97,7 @@ export default function RootLayout({
         <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "en-US" } as Record<string, string>)} />
         <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "en" } as Record<string, string>)} />
         <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "x-default" } as Record<string, string>)} />
-        <Script
-          src="https://cdn.seline.com/seline.js"
-          data-token={process.env.NEXT_PUBLIC_SELINE_TOKEN}
-          strategy="afterInteractive"
-        />
+        <script src="https://cdn.visitors.now/v.js" data-token={process.env.VISITORS_TOKEN} data-persist="" />
         <OrganizationJsonLd />
         <script
           id="site-navigation-jsonld"
