@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { organization, lastLoginMethod, emailOTP, twoFactor, multiSession } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
 import { stripe } from "@better-auth/stripe"
+import Stripe from "stripe"
 import {
   db,
   user,
@@ -19,8 +20,13 @@ import { getPasswordError } from "./password"
 import { getValidatedTrustedOrigins } from "./trusted-origins"
 import { setSessionCookie } from "better-auth/cookies"
 import { getAuthRateLimitStorage } from "./rate-limit-storage"
+import {
+  sendFailedPaymentNotificationForInvoice,
+  sendUpcomingPaymentNotificationForInvoice,
+  sendWorkspaceUpgradeNotification,
+} from "./billing-notifications"
 import { isWorkspaceBillingOwner, syncWorkspacePlanFromSubscription } from "./billing"
-import { getStripeClient } from "./stripe"
+import { getStripeClient, getStripePlanNameFromItems, type StripeBillingPlanName } from "./stripe"
 import { captureServerAnalyticsEvent } from "./posthog"
 
 function resolveCookieDomain() {
@@ -99,6 +105,31 @@ const stripePlans = [
   annualDiscountPriceId?: string
 }>
 
+function toPaidStripePlanName(plan: unknown): StripeBillingPlanName | null {
+  if (plan === "starter" || plan === "professional") {
+    return plan
+  }
+
+  return null
+}
+
+function getPreviousPlanFromSubscriptionUpdateEvent(event: Stripe.Event) {
+  if (event.type !== "customer.subscription.updated") return null
+
+  const previousAttributes = (event.data as { previous_attributes?: { items?: unknown } }).previous_attributes
+  const items = previousAttributes?.items
+
+  if (Array.isArray(items)) {
+    return getStripePlanNameFromItems(items)
+  }
+
+  if (items && typeof items === "object" && Array.isArray((items as { data?: unknown[] }).data)) {
+    return getStripePlanNameFromItems((items as { data?: unknown[] }).data)
+  }
+
+  return null
+}
+
 const stripePlugin = (() => {
   if (!stripeSecretKey || !stripeWebhookSecret || stripePlans.length === 0) {
     return null
@@ -121,11 +152,34 @@ const stripePlugin = (() => {
         if (!workspaceId) return false
         return isWorkspaceBillingOwner(workspaceId, user.id)
       },
-      onSubscriptionComplete: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+      onSubscriptionComplete: async ({
+        event,
+        subscription,
+      }: {
+        event: Stripe.Event
+        subscription: {
+          referenceId?: unknown
+          plan?: unknown
+          status?: unknown
+          billingInterval?: unknown
+          stripeSubscriptionId?: unknown
+        }
+      }) => {
         await syncWorkspacePlanFromSubscription(subscription)
 
         const workspaceId = String(subscription.referenceId || "").trim()
         if (!workspaceId) return
+
+        const plan = toPaidStripePlanName(subscription.plan)
+        if (plan) {
+          await sendWorkspaceUpgradeNotification({
+            workspaceId,
+            plan,
+            billingInterval: String(subscription.billingInterval || "").trim() || null,
+            stripeSubscriptionId: String(subscription.stripeSubscriptionId || "").trim() || null,
+            stripeEventId: event.id,
+          })
+        }
 
         await captureServerAnalyticsEvent(
           "subscription_upgraded",
@@ -138,11 +192,63 @@ const stripePlugin = (() => {
           },
         )
       },
-      onSubscriptionCreated: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+      onSubscriptionCreated: async ({
+        event,
+        subscription,
+      }: {
+        event: Stripe.Event
+        subscription: {
+          referenceId?: unknown
+          plan?: unknown
+          status?: unknown
+          billingInterval?: unknown
+          stripeSubscriptionId?: unknown
+        }
+      }) => {
         await syncWorkspacePlanFromSubscription(subscription)
+
+        const workspaceId = String(subscription.referenceId || "").trim()
+        const plan = toPaidStripePlanName(subscription.plan)
+        if (!workspaceId || !plan) return
+
+        await sendWorkspaceUpgradeNotification({
+          workspaceId,
+          plan,
+          billingInterval: String(subscription.billingInterval || "").trim() || null,
+          stripeSubscriptionId: String(subscription.stripeSubscriptionId || "").trim() || null,
+          stripeEventId: event.id,
+        })
       },
-      onSubscriptionUpdate: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
+      onSubscriptionUpdate: async ({
+        event,
+        subscription,
+      }: {
+        event: Stripe.Event
+        subscription: {
+          referenceId?: unknown
+          plan?: unknown
+          status?: unknown
+          billingInterval?: unknown
+          stripeSubscriptionId?: unknown
+        }
+      }) => {
         await syncWorkspacePlanFromSubscription(subscription)
+
+        const workspaceId = String(subscription.referenceId || "").trim()
+        const currentPlan = toPaidStripePlanName(subscription.plan)
+        const previousPlan = getPreviousPlanFromSubscriptionUpdateEvent(event)
+
+        if (!workspaceId || !currentPlan || !previousPlan || previousPlan === currentPlan) {
+          return
+        }
+
+        await sendWorkspaceUpgradeNotification({
+          workspaceId,
+          plan: currentPlan,
+          billingInterval: String(subscription.billingInterval || "").trim() || null,
+          stripeSubscriptionId: String(subscription.stripeSubscriptionId || "").trim() || null,
+          stripeEventId: event.id,
+        })
       },
       onSubscriptionCancel: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
         await syncWorkspacePlanFromSubscription(subscription)
@@ -159,6 +265,16 @@ const stripePlugin = (() => {
       onTrialExpired: async (subscription: { referenceId?: unknown; plan?: unknown; status?: unknown }) => {
         await syncWorkspacePlanFromSubscription(subscription)
       },
+    },
+    onEvent: async (event) => {
+      switch (event.type) {
+        case "invoice.payment_failed":
+          await sendFailedPaymentNotificationForInvoice(event, event.data.object as Stripe.Invoice)
+          break
+        case "invoice.upcoming":
+          await sendUpcomingPaymentNotificationForInvoice(event, event.data.object as Stripe.Invoice)
+          break
+      }
     },
   })
 })()

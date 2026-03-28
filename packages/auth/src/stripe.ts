@@ -1,6 +1,11 @@
 import Stripe from "stripe"
 
 export type StripeBillingPlanName = "starter" | "professional"
+type StripePriceLike = {
+  price?: {
+    id?: string | null
+  } | null
+} | null | undefined
 
 const STRIPE_API_VERSION = "2026-02-25.clover"
 
@@ -49,15 +54,20 @@ export function getStripePlanNameFromPriceId(priceId: string | null | undefined)
   return null
 }
 
-export function getStripePlanNameFromSubscription(
-  stripeSubscription: Stripe.Subscription,
-): StripeBillingPlanName | null {
-  for (const item of stripeSubscription.items.data) {
-    const matchedPlan = getStripePlanNameFromPriceId(item.price?.id)
+export function getStripePlanNameFromItems(items: readonly unknown[] | null | undefined): StripeBillingPlanName | null {
+  for (const rawItem of items || []) {
+    const item = rawItem as StripePriceLike
+    const matchedPlan = getStripePlanNameFromPriceId(item?.price?.id)
     if (matchedPlan) {
       return matchedPlan
     }
   }
 
   return null
+}
+
+export function getStripePlanNameFromSubscription(
+  stripeSubscription: Stripe.Subscription,
+): StripeBillingPlanName | null {
+  return getStripePlanNameFromItems(stripeSubscription.items.data)
 }

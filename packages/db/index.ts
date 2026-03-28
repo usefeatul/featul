@@ -34,6 +34,7 @@ export const {
   commentReport,
   vote,
   subscription,
+  billingNotification,
   brandingConfig,
   workspaceSlugReservation,
   changelogEntry,

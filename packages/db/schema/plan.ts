@@ -1,10 +1,12 @@
-import { pgTable, text, timestamp, boolean, integer, index } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, integer, index, uniqueIndex } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 import { workspace } from './workspace'
 
 // Plan tiers
 export const planTier = ['free', 'starter', 'professional'] as const
 export type PlanTier = typeof planTier[number]
+export const billingNotificationKind = ['upgrade', 'payment_failed', 'payment_due'] as const
+export type BillingNotificationKind = typeof billingNotificationKind[number]
 
 // Subscription table for workspace billing
 // Note: workspace.plan is denormalized for performance (quick limit checks)
@@ -42,3 +44,25 @@ export const subscription = pgTable('subscription', {
 }))
 
 export type Subscription = typeof subscription.$inferSelect
+
+export const billingNotification = pgTable('billing_notification', {
+    id: text('id')
+        .primaryKey()
+        .$defaultFn(() => createId()),
+    workspaceId: text('workspace_id')
+        .notNull()
+        .references(() => workspace.id, { onDelete: 'cascade' }),
+    kind: text('kind', { enum: billingNotificationKind })
+        .notNull(),
+    stripeEventId: text('stripe_event_id')
+        .notNull(),
+    stripeInvoiceId: text('stripe_invoice_id'),
+    sentAt: timestamp('sent_at')
+        .notNull()
+        .defaultNow(),
+}, (table) => ({
+    billingNotificationStripeEventIdx: uniqueIndex('billing_notification_stripe_event_idx').on(table.stripeEventId),
+    billingNotificationWorkspaceIdx: index('billing_notification_workspace_idx').on(table.workspaceId, table.kind),
+}))
+
+export type BillingNotification = typeof billingNotification.$inferSelect
