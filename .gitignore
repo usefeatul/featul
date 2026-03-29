@@ -43,4 +43,3 @@ next-env.d.ts
 
 # wrangler
 .wrangler
-.DS_Store
