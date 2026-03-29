@@ -38,3 +38,30 @@ Configure Stripe to send these events to `/api/auth/stripe/webhook`:
 - Billing emails are sent to the workspace owner when a paid plan is activated or changed, when a payment fails, and when a renewal is approaching.
 - In Stripe Dashboard, set the webhook endpoint's upcoming renewal reminder to `3` days so `invoice.upcoming` arrives on the intended schedule.
 - The detailed plugin behavior and schema contract are documented in [`/Users/dalyjean/Desktop/featul/docs/better-auth-stripe.md`](/Users/dalyjean/Desktop/featul/docs/better-auth-stripe.md).
+
+## Manual verification checklist
+
+Use the Stripe CLI to replay webhooks against your local app and confirm the expected billing emails are sent only once.
+
+### Upgrade email
+
+1. Start the app locally with Stripe and Resend configured.
+2. Complete a paid checkout from free to Starter or Professional.
+3. Confirm the workspace owner receives a single upgrade email.
+4. Confirm the email greets the owner by name when available and includes the workspace name.
+5. Confirm replaying the same event does not send a second upgrade email.
+
+### Failed payment email
+
+1. Trigger or replay `invoice.payment_failed`.
+2. Confirm the workspace owner receives a failed-payment email.
+3. Confirm the email links to `/workspaces/{slug}/settings/billing`.
+4. Confirm replaying the same event does not send a duplicate email.
+
+### Upcoming renewal email
+
+1. Ensure Stripe Dashboard is configured to send upcoming renewal reminders 3 days early.
+2. Trigger or replay `invoice.upcoming`.
+3. Confirm the workspace owner receives the renewal reminder email.
+4. Confirm the email includes the workspace name and renewal details when Stripe provides them.
+5. Confirm replaying the same event does not send a duplicate email.
