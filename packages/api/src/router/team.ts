@@ -477,6 +477,12 @@ export function createTeamRouter() {
         const me = ctx.session.user
         if (!me?.email || me.email.toLowerCase() !== inv.email.toLowerCase()) throw new HTTPException(403, { message: "Email mismatch" })
 
+        const [ws] = await ctx.db
+          .select({ slug: workspace.slug })
+          .from(workspace)
+          .where(eq(workspace.id, inv.workspaceId))
+          .limit(1)
+
         const [existing] = await ctx.db
           .select({ id: workspaceMember.id })
           .from(workspaceMember)
@@ -502,7 +508,7 @@ export function createTeamRouter() {
             isNull(workspaceInvite.acceptedAt)
           ))
 
-        return c.json({ ok: true })
+        return c.json({ ok: true, workspaceSlug: ws?.slug || null })
       }),
 
     declineInvite: privateProcedure
@@ -547,7 +553,15 @@ export function createTeamRouter() {
           .from(user)
           .where(inv.invitedBy ? eq(user.id, inv.invitedBy) : sql`false`)
           .limit(1)
-        return c.superjson({ invite: { workspaceName: ws?.name || "Workspace", workspaceLogo: ws?.logo || null, role: inv.role, invitedByName: inviter?.name || inviter?.email || null } })
+        return c.superjson({
+          invite: {
+            workspaceName: ws?.name || "Workspace",
+            workspaceSlug: ws?.slug || null,
+            workspaceLogo: ws?.logo || null,
+            role: inv.role,
+            invitedByName: inviter?.name || inviter?.email || null,
+          }
+        })
       }),
 
     addExisting: privateProcedure
