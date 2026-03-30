@@ -3,6 +3,7 @@ import { render, toPlainText } from "@react-email/render"
 import { BrandedEmail, Brand } from "./brandemail"
 
 export interface ReportEmailProps {
+    recipientName?: string
     workspaceName: string
     itemName: string
     itemUrl: string
@@ -14,6 +15,7 @@ export interface ReportEmailProps {
 }
 
 export function ReportEmail({
+    recipientName,
     workspaceName,
     itemName,
     itemUrl,
@@ -26,9 +28,10 @@ export function ReportEmail({
     const eyebrow = "New Report"
     const title = `A ${itemType} has been reported in ${workspaceName}`
 
-    const intro = `A ${itemType} has received a new report.`
+    const intro = `Hello ${recipientName || "there"},`
 
     const paragraphs = [
+        `${itemName} has received a new report.`,
         `Reason: ${reason}`,
         description ? `Description: ${description}` : "",
         `Total Reports: ${reportCount}`

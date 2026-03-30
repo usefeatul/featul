@@ -292,6 +292,7 @@ export function createTeamRouter() {
         try {
           const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
           const url = `${baseUrl}/invite/${token}`
+          const inviterName = String(ctx.session.user.name || ctx.session.user.email || "").trim() || undefined
           const [branding] = await ctx.db
             .select({ primaryColor: brandingConfig.primaryColor })
             .from(brandingConfig)
@@ -304,7 +305,10 @@ export function createTeamRouter() {
             backgroundColor: undefined,
             textColor: undefined,
           }
-          await sendWorkspaceInvite(input.email.trim().toLowerCase(), ws.name || "Workspace", url, brand)
+          await sendWorkspaceInvite(input.email.trim().toLowerCase(), ws.name || "Workspace", url, {
+            brand,
+            inviterName,
+          })
         } catch { }
 
         return c.superjson({ ok: true, token })
@@ -347,6 +351,7 @@ export function createTeamRouter() {
         try {
           const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
           const url = `${baseUrl}/invite/${token}`
+          const inviterName = String(ctx.session.user.name || ctx.session.user.email || "").trim() || undefined
           const [branding] = await ctx.db
             .select({ primaryColor: brandingConfig.primaryColor })
             .from(brandingConfig)
@@ -359,7 +364,10 @@ export function createTeamRouter() {
             backgroundColor: undefined,
             textColor: undefined,
           }
-          await sendWorkspaceInvite(inv.email.trim().toLowerCase(), ws.name || "Workspace", url, brand)
+          await sendWorkspaceInvite(inv.email.trim().toLowerCase(), ws.name || "Workspace", url, {
+            brand,
+            inviterName,
+          })
         } catch { }
 
         return c.json({ ok: true })

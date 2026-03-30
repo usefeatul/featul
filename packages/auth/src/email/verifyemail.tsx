@@ -4,10 +4,17 @@ import { BrandedEmail, Brand } from "./brandemail"
 
 export type VerifyType = "email-verification" | "forget-password" | "sign-in"
 
-export function VerifyEmail({ otp, type, brand }: { otp: string; type: VerifyType; brand?: Brand }) {
+type VerifyEmailOptions = {
+  otp: string
+  type: VerifyType
+  recipientName?: string
+  brand?: Brand
+}
+
+export function VerifyEmail({ otp, type, recipientName, brand }: VerifyEmailOptions) {
   const eyebrow = "SECURITY"
   const title = type === "email-verification" ? "Verify your email" : type === "forget-password" ? "Reset your password" : "Sign in code"
-  const intro = "Hello,"
+  const intro = `Hello ${recipientName || "there"},`
   const body = type === "email-verification"
     ? "Please use the verification code below."
     : type === "forget-password"
@@ -43,8 +50,8 @@ export function VerifyEmail({ otp, type, brand }: { otp: string; type: VerifyTyp
   )
 }
 
-export async function renderVerifyEmail(otp: string, type: VerifyType, brand?: Brand) {
-  const element = <VerifyEmail otp={otp} type={type} brand={brand} />
+export async function renderVerifyEmail(otp: string, type: VerifyType, options?: { recipientName?: string; brand?: Brand }) {
+  const element = <VerifyEmail otp={otp} type={type} recipientName={options?.recipientName} brand={options?.brand} />
   const html = await render(element)
   const text = toPlainText(html)
   return { html, text }

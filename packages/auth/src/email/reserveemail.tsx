@@ -2,10 +2,17 @@ import React from "react"
 import { render, toPlainText } from "@react-email/render"
 import { BrandedEmail, type Brand } from "./brandemail"
 
-export function ReserveSlugEmail({ slug, confirmUrl, brand }: { slug: string; confirmUrl: string; brand?: Brand }) {
+type ReserveSlugEmailProps = {
+  slug: string
+  confirmUrl: string
+  recipientName?: string
+  brand?: Brand
+}
+
+export function ReserveSlugEmail({ slug, confirmUrl, recipientName, brand }: ReserveSlugEmailProps) {
   const eyebrow = "RESERVE"
   const title = `Reserve ${slug}.featul.com`
-  const intro = "Hello,"
+  const intro = `Hello ${recipientName || "there"},`
   const body = `You requested to reserve the subdomain ${slug}.featul.com.`
   const paragraphs = ["Click the button below to confirm your reservation."]
   const ctaText = "Confirm Reservation"
@@ -28,8 +35,8 @@ export function ReserveSlugEmail({ slug, confirmUrl, brand }: { slug: string; co
   )
 }
 
-export async function renderReserveEmail(slug: string, confirmUrl: string, brand?: Brand) {
-  const element = <ReserveSlugEmail slug={slug} confirmUrl={confirmUrl} brand={brand} />
+export async function renderReserveEmail(slug: string, confirmUrl: string, options?: { recipientName?: string; brand?: Brand }) {
+  const element = <ReserveSlugEmail slug={slug} confirmUrl={confirmUrl} recipientName={options?.recipientName} brand={options?.brand} />
   const html = await render(element)
   const text = toPlainText(html)
   return { html, text }
