@@ -3,11 +3,13 @@
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import type { PostDeletedEventDetail } from "@/types/events";
 
 export function WorkspaceEvents({ slug }: { slug: string }) {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const normalizeStatus = React.useCallback(
     (value: string | null | undefined): string | null => {
@@ -97,10 +99,18 @@ export function WorkspaceEvents({ slug }: { slug: string }) {
       if (isEditableElement(target) || isEditableElement(activeElement)) return;
 
       const key = typeof event.key === "string" ? event.key.toLowerCase() : "";
+      const usesPlatformModifier =
+        (event.metaKey && !event.ctrlKey) || (event.ctrlKey && !event.metaKey);
 
-      if ((event.metaKey || event.ctrlKey) && !event.shiftKey && key === "g") {
+      if (usesPlatformModifier && !event.shiftKey && key === "g") {
         event.preventDefault();
         router.push(`/workspaces/${slug}`);
+        return;
+      }
+
+      if (usesPlatformModifier && !event.shiftKey && key === "m") {
+        event.preventDefault();
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
       }
     };
 
@@ -108,7 +118,6 @@ export function WorkspaceEvents({ slug }: { slug: string }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [router, slug]);
-
+  }, [resolvedTheme, router, setTheme, slug]);
   return null;
 }
