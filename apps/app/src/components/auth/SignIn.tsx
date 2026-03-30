@@ -47,6 +47,10 @@ export default function SignIn({
     setLastUsedMethod(authClient.getLastUsedLoginMethod());
   }, []);
 
+  const twoFactorHref = safeRedirectParam
+    ? `/auth/two-factor?redirect=${encodeURIComponent(safeRedirectParam)}`
+    : "/auth/two-factor";
+
   const handlePasskeySignIn = async () => {
     setIsLoading(true);
     setError("");
@@ -94,7 +98,12 @@ export default function SignIn({
             setError(ctx.error.message);
             toast.error(ctx.error.message);
           },
-          onSuccess: () => {
+          onSuccess: (ctx) => {
+            if ((ctx as { data?: { twoFactorRedirect?: boolean } })?.data?.twoFactorRedirect) {
+              toast.info("Enter your authentication code to finish signing in");
+              router.push(twoFactorHref);
+              return;
+            }
             captureAnalyticsEvent(analyticsEvents.authMethodUsed, {
               method: "email",
               intent: "sign_in",

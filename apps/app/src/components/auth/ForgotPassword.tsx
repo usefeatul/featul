@@ -21,9 +21,11 @@ import {
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { resetPassword as resetPasswordOtp } from "../../utils/otp";
 import { useOtpVerification } from "@/hooks/useOtpVerification";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function ForgotPassword() {
   const router = useRouter();
+  const { safeRedirectParam, redirect } = useAuthRedirect();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
@@ -34,6 +36,9 @@ export default function ForgotPassword() {
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState<"request" | "otp" | "password">("request");
   const styles = getAuthLayoutStyles(false);
+  const twoFactorHref = safeRedirectParam
+    ? `/auth/two-factor?redirect=${encodeURIComponent(safeRedirectParam)}`
+    : "/auth/two-factor";
   const { sendCode: sendResetCode, verifyCode: verifyOtp } = useOtpVerification({
     email,
     code,
@@ -80,7 +85,7 @@ export default function ForgotPassword() {
       toast.success("Password reset", { duration: 2000 });
       await new Promise((r) => setTimeout(r, 600));
       await authClient.signIn.email(
-        { email: email.trim(), password, callbackURL: "/start" },
+        { email: email.trim(), password, callbackURL: redirect },
         {
           onError: (ctx) => {
             if (ctx.error.status === 403) {
@@ -93,9 +98,14 @@ export default function ForgotPassword() {
             setError(ctx.error.message);
             toast.error(ctx.error.message);
           },
-          onSuccess: () => {
+          onSuccess: (ctx) => {
+            if ((ctx as { data?: { twoFactorRedirect?: boolean } })?.data?.twoFactorRedirect) {
+              toast.info("Enter your authentication code to finish signing in");
+              router.push(twoFactorHref);
+              return;
+            }
             setTimeout(() => toast.success("Signed in"), 400);
-            router.push("/start");
+            router.push(redirect);
           },
         }
       );
@@ -127,7 +137,15 @@ export default function ForgotPassword() {
         <p className="text-accent-foreground text-center text-sm font-normal">
           Remembered your password?
           <Button asChild variant="link" className="px-2 text-primary">
-            <Link href="/auth/sign-in">Sign in</Link>
+            <Link
+              href={
+                safeRedirectParam
+                  ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}`
+                  : "/auth/sign-in"
+              }
+            >
+              Sign in
+            </Link>
           </Button>
         </p>
       }
