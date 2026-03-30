@@ -3,7 +3,6 @@ export type AccountSection = { value: string; label: string; desc: string }
 export const ACCOUNT_SECTIONS: AccountSection[] = [
   { value: "profile", label: "Profile", desc: "Update your personal info" },
   { value: "security", label: "Security", desc: "Manage password and sessions" },
-  { value: "notifications", label: "Notifications", desc: "Email and app alerts" },
   { value: "appearance", label: "Appearance", desc: "Choose light, dark, or system" },
 ]
 
