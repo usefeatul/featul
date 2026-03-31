@@ -15,6 +15,7 @@ Most shortcuts are ignored while you're typing in an input, textarea, or rich te
 | --- | --- |
 | `Cmd + G` / `Ctrl + G` | Opens the workspace home page for the current workspace. |
 | `Cmd + C` / `Ctrl + C` | Opens the **Create Post** modal when no field is focused and no text is selected. |
+| `Cmd + M` / `Ctrl + M` | Quickly toggles between light mode and dark mode. |
 
 ## Sidebar shortcuts
 
