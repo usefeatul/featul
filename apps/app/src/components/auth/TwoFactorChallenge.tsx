@@ -27,7 +27,7 @@ export default function TwoFactorChallenge() {
   const [method, setMethod] = useState<VerificationMethod>("totp");
   const [totpCode, setTotpCode] = useState("");
   const [backupCode, setBackupCode] = useState("");
-  const [trustDevice, setTrustDevice] = useState(true);
+  const [trustDevice, setTrustDevice] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -184,7 +184,7 @@ export default function TwoFactorChallenge() {
             placeholder="ABCDE-12345"
             value={backupCode}
             onChange={(event) => {
-              setBackupCode(event.target.value.toUpperCase());
+              setBackupCode(event.target.value);
               resetErrorState();
             }}
           />
