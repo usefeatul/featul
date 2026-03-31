@@ -113,7 +113,6 @@ bun run db:push
 bun run db:studio
 ```
 
-Before pushing changes, `git status -sb` is a quick way to confirm the current branch and what will be included in the next commit.
 
 ## How The App Is Split
 
