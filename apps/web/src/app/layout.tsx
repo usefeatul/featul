@@ -3,9 +3,18 @@ import { Manrope, Sora } from "next/font/google";
 import { DebugTools } from "@featul/ui/global/debug-tools";
 import Script from "next/script";
 import "./globals.css";
-import { SITE_URL, DEFAULT_TITLE, TITLE_TEMPLATE, DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS } from "@/config/seo";
+import {
+  SITE_URL,
+  DEFAULT_TITLE,
+  TITLE_TEMPLATE,
+  DEFAULT_DESCRIPTION,
+  DEFAULT_KEYWORDS,
+} from "@/config/seo";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
-import { buildSiteNavigationSchema, buildSoftwareApplicationSchema } from "@/lib/structured-data";
+import {
+  buildSiteNavigationSchema,
+  buildSoftwareApplicationSchema,
+} from "@/lib/structured-data";
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { VerticalLines } from "@/components/vertical-lines";
@@ -70,9 +79,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: "/favicon.svg?v=3", type: "image/svg+xml" },
-    ],
+    icon: [{ url: "/favicon.svg?v=3", type: "image/svg+xml" }],
     shortcut: "/favicon-96x96.png",
     apple: "/apple-touch-icon.png",
   },
@@ -92,17 +99,42 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const visitorsToken = process.env.VISITORS_TOKEN?.trim();
+  const selineToken = process.env.NEXT_PUBLIC_SELINE_TOKEN?.trim();
+
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
-        <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "en-US" } as Record<string, string>)} />
-        <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "en" } as Record<string, string>)} />
-        <link rel="alternate" href={`${SITE_URL}/`} {...({ hrefLang: "x-default" } as Record<string, string>)} />
-     <Script
-          src="https://cdn.seline.com/seline.js"
-          data-token={process.env.NEXT_PUBLIC_SELINE_TOKEN}
-          strategy="afterInteractive"
+        <link
+          rel="alternate"
+          href={`${SITE_URL}/`}
+          {...({ hrefLang: "en-US" } as Record<string, string>)}
         />
+        <link
+          rel="alternate"
+          href={`${SITE_URL}/`}
+          {...({ hrefLang: "en" } as Record<string, string>)}
+        />
+        <link
+          rel="alternate"
+          href={`${SITE_URL}/`}
+          {...({ hrefLang: "x-default" } as Record<string, string>)}
+        />
+        {visitorsToken ? (
+          <Script
+            src="https://cdn.visitors.now/v.js"
+            data-token={visitorsToken}
+            data-persist=""
+            strategy="afterInteractive"
+          />
+        ) : null}
+        {selineToken ? (
+          <Script
+            src="https://cdn.seline.com/seline.js"
+            data-token={selineToken}
+            strategy="afterInteractive"
+          />
+        ) : null}
         <OrganizationJsonLd />
         <script
           id="site-navigation-jsonld"
@@ -110,16 +142,19 @@ export default function RootLayout({
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: serializeJsonLd(
-              buildSiteNavigationSchema(
-                SITE_URL,
-                [
-                  { name: "Home", href: "/" },
-                  ...navigationConfig.main.filter((i) => ["/pricing", "/blog"].includes(i.href)),
-                  ...footerNavigationConfig.groups
-                    .flatMap((g) => g.items)
-                    .filter((i) => ["/tools", "/definitions", "/alternatives"].includes(i.href)),
-                ]
-              )
+              buildSiteNavigationSchema(SITE_URL, [
+                { name: "Home", href: "/" },
+                ...navigationConfig.main.filter((i) =>
+                  ["/pricing", "/blog"].includes(i.href),
+                ),
+                ...footerNavigationConfig.groups
+                  .flatMap((g) => g.items)
+                  .filter((i) =>
+                    ["/tools", "/definitions", "/alternatives"].includes(
+                      i.href,
+                    ),
+                  ),
+              ]),
             ),
           }}
         />
@@ -127,13 +162,16 @@ export default function RootLayout({
           id="software-app-jsonld"
           type="application/ld+json"
           suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildSoftwareApplicationSchema(SITE_URL)) }}
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(buildSoftwareApplicationSchema(SITE_URL)),
+          }}
         />
       </head>
       <body suppressHydrationWarning>
         {children}
         <VerticalLines />
-        {((process.env.NODE_ENV !== "production") || process.env.NEXT_PUBLIC_ENABLE_DEBUG === "false") && <DebugTools />}
+        {(process.env.NODE_ENV !== "production" ||
+          process.env.NEXT_PUBLIC_ENABLE_DEBUG === "false") && <DebugTools />}
       </body>
     </html>
   );

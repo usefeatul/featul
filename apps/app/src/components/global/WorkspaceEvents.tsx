@@ -100,10 +100,9 @@ export function WorkspaceEvents({ slug }: { slug: string }) {
 
       const key = typeof event.key === "string" ? event.key.toLowerCase() : "";
       const usesPlatformModifier =
-        (event.metaKey && !event.ctrlKey) ||
-        (event.ctrlKey && !event.metaKey);
+        (event.metaKey && !event.ctrlKey) || (event.ctrlKey && !event.metaKey);
 
-      if ((event.metaKey || event.ctrlKey) && !event.shiftKey && key === "g") {
+      if (usesPlatformModifier && !event.shiftKey && key === "g") {
         event.preventDefault();
         router.push(`/workspaces/${slug}`);
         return;
@@ -120,6 +119,5 @@ export function WorkspaceEvents({ slug }: { slug: string }) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [resolvedTheme, router, setTheme, slug]);
-
   return null;
 }

@@ -1,9 +1,15 @@
-import { betterAuth } from "better-auth"
-import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import { organization, lastLoginMethod, emailOTP, twoFactor, multiSession } from "better-auth/plugins"
-import { passkey } from "@better-auth/passkey"
-import { stripe } from "@better-auth/stripe"
-import Stripe from "stripe"
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import {
+  organization,
+  lastLoginMethod,
+  emailOTP,
+  twoFactor,
+  multiSession,
+} from "better-auth/plugins";
+import { passkey } from "@better-auth/passkey";
+import { stripe } from "@better-auth/stripe";
+import Stripe from "stripe";
 import {
   db,
   user,
@@ -13,44 +19,56 @@ import {
   passkeyTable,
   twoFactorTable,
   subscription as subscriptionTable,
-} from "@featul/db"
-import { sendVerificationOtpEmail, sendWelcome } from "./email"
-import { createAuthEndpoint, createAuthMiddleware, APIError, sessionMiddleware } from "better-auth/api"
-import { getPasswordError } from "./password"
-import { getValidatedTrustedOrigins } from "./trusted-origins"
-import { setSessionCookie } from "better-auth/cookies"
-import { getAuthRateLimitStorage } from "./rate-limit-storage"
+} from "@featul/db";
+import { sendVerificationOtpEmail, sendWelcome } from "./email";
+import {
+  createAuthEndpoint,
+  createAuthMiddleware,
+  APIError,
+  sessionMiddleware,
+} from "better-auth/api";
+import { getPasswordError } from "./password";
+import { getValidatedTrustedOrigins } from "./trusted-origins";
+import { setSessionCookie } from "better-auth/cookies";
+import { getAuthRateLimitStorage } from "./rate-limit-storage";
 import {
   sendFailedPaymentNotificationForInvoice,
   sendUpcomingPaymentNotificationForInvoice,
   sendWorkspaceUpgradeNotification,
-} from "./billing-notifications"
-import { isWorkspaceBillingOwner, syncWorkspacePlanFromSubscription } from "./billing"
-import { getStripeClient, getStripePlanNameFromItems, type StripeBillingPlanName } from "./stripe"
-import { captureServerAnalyticsEvent } from "./posthog"
+} from "./billing-notifications";
+import {
+  isWorkspaceBillingOwner,
+  syncWorkspacePlanFromSubscription,
+} from "./billing";
+import {
+  getStripeClient,
+  getStripePlanNameFromItems,
+  type StripeBillingPlanName,
+} from "./stripe";
+import { captureServerAnalyticsEvent } from "./posthog";
 
 function resolveCookieDomain() {
-  const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim()
+  const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim();
   if (explicit) {
-    if (explicit === "localhost" || explicit === "127.0.0.1") return ""
-    return explicit
+    if (explicit === "localhost" || explicit === "127.0.0.1") return "";
+    return explicit;
   }
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "").trim()
-  if (!appUrl) return ""
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "").trim();
+  if (!appUrl) return "";
   try {
-    const hostname = new URL(appUrl).hostname
-    if (hostname === "localhost" || hostname === "127.0.0.1") return ""
-    const parts = hostname.split(".").filter(Boolean)
-    if (parts.length < 2) return ""
-    return `.${parts.slice(-2).join(".")}`
+    const hostname = new URL(appUrl).hostname;
+    if (hostname === "localhost" || hostname === "127.0.0.1") return "";
+    const parts = hostname.split(".").filter(Boolean);
+    if (parts.length < 2) return "";
+    return `.${parts.slice(-2).join(".")}`;
   } catch {
-    return ""
+    return "";
   }
 }
 
-const cookieDomain = resolveCookieDomain()
-const trustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS")
-const authRateLimitStorage = getAuthRateLimitStorage()
+const cookieDomain = resolveCookieDomain();
+const trustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS");
+const authRateLimitStorage = getAuthRateLimitStorage();
 
 const multiSessionBootstrapPlugin = {
   id: "multi-session-bootstrap",
@@ -63,26 +81,37 @@ const multiSessionBootstrapPlugin = {
         use: [sessionMiddleware],
       },
       async (ctx) => {
-        if (!ctx.context.session?.session?.token || !ctx.context.session?.user) {
-          throw new APIError("UNAUTHORIZED")
+        if (
+          !ctx.context.session?.session?.token ||
+          !ctx.context.session?.user
+        ) {
+          throw new APIError("UNAUTHORIZED");
         }
 
         // Re-issue the current session cookie so multi-session hooks can seed
         // a missing per-device cookie for legacy sessions.
-        await setSessionCookie(ctx, ctx.context.session as any)
+        await setSessionCookie(ctx, ctx.context.session as any);
 
-        return ctx.json({ success: true })
+        return ctx.json({ success: true });
       },
     ),
   },
-}
+};
 
-const stripeSecretKey = (process.env.STRIPE_SECRET_KEY || "").trim()
-const stripeWebhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || "").trim()
-const stripeStarterMonthlyPriceId = (process.env.STRIPE_PRICE_ID_STARTER_MONTHLY || "").trim()
-const stripeStarterYearlyPriceId = (process.env.STRIPE_PRICE_ID_STARTER_YEARLY || "").trim()
-const stripeProfessionalMonthlyPriceId = (process.env.STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY || "").trim()
-const stripeProfessionalYearlyPriceId = (process.env.STRIPE_PRICE_ID_PROFESSIONAL_YEARLY || "").trim()
+const stripeSecretKey = (process.env.STRIPE_SECRET_KEY || "").trim();
+const stripeWebhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || "").trim();
+const stripeStarterMonthlyPriceId = (
+  process.env.STRIPE_PRICE_ID_STARTER_MONTHLY || ""
+).trim();
+const stripeStarterYearlyPriceId = (
+  process.env.STRIPE_PRICE_ID_STARTER_YEARLY || ""
+).trim();
+const stripeProfessionalMonthlyPriceId = (
+  process.env.STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY || ""
+).trim();
+const stripeProfessionalYearlyPriceId = (
+  process.env.STRIPE_PRICE_ID_PROFESSIONAL_YEARLY || ""
+).trim();
 
 const stripePlans = [
   stripeStarterMonthlyPriceId
@@ -100,44 +129,50 @@ const stripePlans = [
       }
     : null,
 ].filter(Boolean) as Array<{
-  name: "starter" | "professional"
-  priceId: string
-  annualDiscountPriceId?: string
-}>
+  name: "starter" | "professional";
+  priceId: string;
+  annualDiscountPriceId?: string;
+}>;
 
 function toPaidStripePlanName(plan: unknown): StripeBillingPlanName | null {
   if (plan === "starter" || plan === "professional") {
-    return plan
+    return plan;
   }
 
-  return null
+  return null;
 }
 
 function getPreviousPlanFromSubscriptionUpdateEvent(event: Stripe.Event) {
-  if (event.type !== "customer.subscription.updated") return null
+  if (event.type !== "customer.subscription.updated") return null;
 
-  const previousAttributes = (event.data as { previous_attributes?: { items?: unknown } }).previous_attributes
-  const items = previousAttributes?.items
+  const previousAttributes = (
+    event.data as { previous_attributes?: { items?: unknown } }
+  ).previous_attributes;
+  const items = previousAttributes?.items;
 
   if (Array.isArray(items)) {
-    return getStripePlanNameFromItems(items)
+    return getStripePlanNameFromItems(items);
   }
 
-  if (items && typeof items === "object" && Array.isArray((items as { data?: unknown[] }).data)) {
-    return getStripePlanNameFromItems((items as { data?: unknown[] }).data)
+  if (
+    items &&
+    typeof items === "object" &&
+    Array.isArray((items as { data?: unknown[] }).data)
+  ) {
+    return getStripePlanNameFromItems((items as { data?: unknown[] }).data);
   }
 
-  return null
+  return null;
 }
 
 const stripePlugin = (() => {
   if (!stripeSecretKey || !stripeWebhookSecret || stripePlans.length === 0) {
-    return null
+    return null;
   }
 
-  const stripeClient = getStripeClient()
+  const stripeClient = getStripeClient();
   if (!stripeClient) {
-    return null
+    return null;
   }
 
   return stripe({
@@ -148,39 +183,40 @@ const stripePlugin = (() => {
       enabled: true,
       plans: stripePlans,
       authorizeReference: async ({ user, referenceId }) => {
-        const workspaceId = String(referenceId || "").trim()
-        if (!workspaceId) return false
-        return isWorkspaceBillingOwner(workspaceId, user.id)
+        const workspaceId = String(referenceId || "").trim();
+        if (!workspaceId) return false;
+        return isWorkspaceBillingOwner(workspaceId, user.id);
       },
       onSubscriptionComplete: async ({
         event,
         subscription,
       }: {
-        event: Stripe.Event
+        event: Stripe.Event;
         subscription: {
-          referenceId?: unknown
-          plan?: unknown
-          status?: unknown
-          billingInterval?: unknown
-          stripeSubscriptionId?: unknown
-        }
+          referenceId?: unknown;
+          plan?: unknown;
+          status?: unknown;
+          billingInterval?: unknown;
+          stripeSubscriptionId?: unknown;
+        };
       }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+        await syncWorkspacePlanFromSubscription(subscription);
 
-        const workspaceId = String(subscription.referenceId || "").trim()
-        if (!workspaceId) return
+        const workspaceId = String(subscription.referenceId || "").trim();
+        if (!workspaceId) return;
 
-        const plan = toPaidStripePlanName(subscription.plan)
+        const plan = toPaidStripePlanName(subscription.plan);
         if (plan) {
           await sendWorkspaceUpgradeNotification({
             workspaceId,
             plan,
-            billingInterval: String(subscription.billingInterval || "").trim() || null,
-            stripeSubscriptionId: String(subscription.stripeSubscriptionId || "").trim() || null,
+            billingInterval:
+              String(subscription.billingInterval || "").trim() || null,
+            stripeSubscriptionId:
+              String(subscription.stripeSubscriptionId || "").trim() || null,
             stripeEventId: event.id,
-          })
+          });
         }
-
         await captureServerAnalyticsEvent(
           "subscription_upgraded",
           `workspace:${workspaceId}`,
@@ -190,94 +226,141 @@ const stripePlugin = (() => {
             status: String(subscription.status || ""),
             source: "stripe_complete",
           },
-        )
+        );
       },
       onSubscriptionCreated: async ({
         event,
         subscription,
       }: {
-        event: Stripe.Event
+        event: Stripe.Event;
         subscription: {
-          referenceId?: unknown
-          plan?: unknown
-          status?: unknown
-          billingInterval?: unknown
-          stripeSubscriptionId?: unknown
-        }
+          referenceId?: unknown;
+          plan?: unknown;
+          status?: unknown;
+          billingInterval?: unknown;
+          stripeSubscriptionId?: unknown;
+        };
       }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+        await syncWorkspacePlanFromSubscription(subscription);
 
-        const workspaceId = String(subscription.referenceId || "").trim()
-        const plan = toPaidStripePlanName(subscription.plan)
-        if (!workspaceId || !plan) return
+        const workspaceId = String(subscription.referenceId || "").trim();
+        const plan = toPaidStripePlanName(subscription.plan);
+        if (!workspaceId || !plan) return;
 
         await sendWorkspaceUpgradeNotification({
           workspaceId,
           plan,
-          billingInterval: String(subscription.billingInterval || "").trim() || null,
-          stripeSubscriptionId: String(subscription.stripeSubscriptionId || "").trim() || null,
+          billingInterval:
+            String(subscription.billingInterval || "").trim() || null,
+          stripeSubscriptionId:
+            String(subscription.stripeSubscriptionId || "").trim() || null,
           stripeEventId: event.id,
-        })
+        });
       },
       onSubscriptionUpdate: async ({
         event,
         subscription,
       }: {
-        event: Stripe.Event
+        event: Stripe.Event;
         subscription: {
-          referenceId?: unknown
-          plan?: unknown
-          status?: unknown
-          billingInterval?: unknown
-          stripeSubscriptionId?: unknown
-        }
+          referenceId?: unknown;
+          plan?: unknown;
+          status?: unknown;
+          billingInterval?: unknown;
+          stripeSubscriptionId?: unknown;
+        };
       }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+        await syncWorkspacePlanFromSubscription(subscription);
 
-        const workspaceId = String(subscription.referenceId || "").trim()
-        const currentPlan = toPaidStripePlanName(subscription.plan)
-        const previousPlan = getPreviousPlanFromSubscriptionUpdateEvent(event)
+        const workspaceId = String(subscription.referenceId || "").trim();
+        const currentPlan = toPaidStripePlanName(subscription.plan);
+        const previousPlan = getPreviousPlanFromSubscriptionUpdateEvent(event);
 
-        if (!workspaceId || !currentPlan || !previousPlan || previousPlan === currentPlan) {
-          return
+        if (
+          !workspaceId ||
+          !currentPlan ||
+          !previousPlan ||
+          previousPlan === currentPlan
+        ) {
+          return;
         }
 
         await sendWorkspaceUpgradeNotification({
           workspaceId,
           plan: currentPlan,
-          billingInterval: String(subscription.billingInterval || "").trim() || null,
-          stripeSubscriptionId: String(subscription.stripeSubscriptionId || "").trim() || null,
+          billingInterval:
+            String(subscription.billingInterval || "").trim() || null,
+          stripeSubscriptionId:
+            String(subscription.stripeSubscriptionId || "").trim() || null,
           stripeEventId: event.id,
-        })
+        });
       },
-      onSubscriptionCancel: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+      onSubscriptionCancel: async ({
+        subscription,
+      }: {
+        subscription: {
+          referenceId?: unknown;
+          plan?: unknown;
+          status?: unknown;
+        };
+      }) => {
+        await syncWorkspacePlanFromSubscription(subscription);
       },
-      onSubscriptionDeleted: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+      onSubscriptionDeleted: async ({
+        subscription,
+      }: {
+        subscription: {
+          referenceId?: unknown;
+          plan?: unknown;
+          status?: unknown;
+        };
+      }) => {
+        await syncWorkspacePlanFromSubscription(subscription);
       },
-      onTrialStart: async (subscription: { referenceId?: unknown; plan?: unknown; status?: unknown }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+      onTrialStart: async (subscription: {
+        referenceId?: unknown;
+        plan?: unknown;
+        status?: unknown;
+      }) => {
+        await syncWorkspacePlanFromSubscription(subscription);
       },
-      onTrialEnd: async ({ subscription }: { subscription: { referenceId?: unknown; plan?: unknown; status?: unknown } }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+      onTrialEnd: async ({
+        subscription,
+      }: {
+        subscription: {
+          referenceId?: unknown;
+          plan?: unknown;
+          status?: unknown;
+        };
+      }) => {
+        await syncWorkspacePlanFromSubscription(subscription);
       },
-      onTrialExpired: async (subscription: { referenceId?: unknown; plan?: unknown; status?: unknown }) => {
-        await syncWorkspacePlanFromSubscription(subscription)
+      onTrialExpired: async (subscription: {
+        referenceId?: unknown;
+        plan?: unknown;
+        status?: unknown;
+      }) => {
+        await syncWorkspacePlanFromSubscription(subscription);
       },
     },
     onEvent: async (event) => {
       switch (event.type) {
         case "invoice.payment_failed":
-          await sendFailedPaymentNotificationForInvoice(event, event.data.object as Stripe.Invoice)
-          break
+          await sendFailedPaymentNotificationForInvoice(
+            event,
+            event.data.object as Stripe.Invoice,
+          );
+          break;
         case "invoice.upcoming":
-          await sendUpcomingPaymentNotificationForInvoice(event, event.data.object as Stripe.Invoice)
-          break
+          await sendUpcomingPaymentNotificationForInvoice(
+            event,
+            event.data.object as Stripe.Invoice,
+          );
+          break;
       }
     },
-  })
-})()
+  });
+})();
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -366,14 +449,17 @@ export const auth = betterAuth({
             ? "forget-password"
             : type === "sign-in"
               ? "sign-in"
-              : "email-verification"
-        await sendVerificationOtpEmail(email, otp, normalizedType)
+              : "email-verification";
+        await sendVerificationOtpEmail(email, otp, normalizedType);
       },
     }),
     passkey({
       rpID: process.env.PASSKEY_RP_ID || "localhost",
       rpName: process.env.PASSKEY_RP_NAME || "Featul",
-      origin: process.env.PASSKEY_ORIGIN || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      origin:
+        process.env.PASSKEY_ORIGIN ||
+        process.env.NEXT_PUBLIC_APP_URL ||
+        "http://localhost:3000",
     }),
     twoFactor({
       issuer: "Featul",
@@ -387,18 +473,18 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (created) => {
-          const to = String(created.email || "")
-          if (!to) return
-          const name = String(created.name || "") || undefined
-          const userId = String(created.id || "").trim()
+          const to = String(created.email || "");
+          if (!to) return;
+          const name = String(created.name || "") || undefined;
+          const userId = String(created.id || "").trim();
           try {
-            await sendWelcome(to, name)
+            await sendWelcome(to, name);
           } catch (e) {}
           if (userId) {
             await captureServerAnalyticsEvent("sign_up_completed", userId, {
               email: to,
               has_name: Boolean(name),
-            })
+            });
           }
         },
       },
@@ -407,15 +493,18 @@ export const auth = betterAuth({
 
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      const isPasswordOp = ctx.path === "/sign-up/email" || ctx.path === "/change-password" || ctx.path === "/set-password"
-      if (!isPasswordOp) return
-      const pwd = ctx.body?.password ?? ctx.body?.newPassword
-      const msg = getPasswordError(String(pwd || ""))
+      const isPasswordOp =
+        ctx.path === "/sign-up/email" ||
+        ctx.path === "/change-password" ||
+        ctx.path === "/set-password";
+      if (!isPasswordOp) return;
+      const pwd = ctx.body?.password ?? ctx.body?.newPassword;
+      const msg = getPasswordError(String(pwd || ""));
       if (msg) {
-        throw new APIError("BAD_REQUEST", { message: msg })
+        throw new APIError("BAD_REQUEST", { message: msg });
       }
     }),
   },
-})
+});
 
-export type AuthServer = typeof auth
+export type AuthServer = typeof auth;
