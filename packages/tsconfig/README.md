@@ -1,30 +1,52 @@
 # @featul/tsconfig
 
-Shared TypeScript configurations for the Featul monorepo.
+`@featul/tsconfig` contains the shared TypeScript configuration presets for the Featul monorepo. It gives apps and packages a consistent baseline for strictness, module resolution, JSX handling, and platform-specific overrides.
 
-## 📦 Purpose
+## Available Configs
 
-This package provides a standardized TypeScript configuration to ensure consistency across all apps and packages in the monorepo.
+- `base.json` for shared TypeScript defaults across packages
+- `nextjs.json` for Next.js applications
+- `react-library.json` for React component libraries
 
-## 🛠 Usage
+## What The Presets Do
 
-Extend the base configuration in your `tsconfig.json`:
+`base.json` enables strict typing, declaration output, `NodeNext` module settings, JSON module support, and modern `ES2022` targets.
+
+`nextjs.json` builds on the base config with the Next.js TypeScript plugin, bundler-style module resolution, preserved JSX, and `noEmit`.
+
+`react-library.json` builds on the base config with `react-jsx` enabled for library packages that export React components.
+
+## Usage
+
+For a Next.js app:
 
 ```json
 {
-  "extends": "@featul/tsconfig/base.json",
+  "extends": "@featul/tsconfig/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
   },
+  "include": ["src", ".next/types/**/*.ts"]
+}
+```
+
+For a shared React package:
+
+```json
+{
+  "extends": "@featul/tsconfig/react-library.json",
   "include": ["src"]
 }
 ```
 
-## Available Configs
+For a non-Next package:
 
-- `base.json`: The standard configuration used by most packages.
-- `nextjs.json`: Configuration tailored for Next.js applications (if available).
-- `react-library.json`: Configuration for React component libraries.
+```json
+{
+  "extends": "@featul/tsconfig/base.json",
+  "include": ["src"]
+}
+```

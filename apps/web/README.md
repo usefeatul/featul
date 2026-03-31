@@ -1,54 +1,84 @@
-# Featul Web Platform
+# Featul Web
 
-A modern business tools platform built with Next.js, featuring calculators, blog integration, and comprehensive business resources.
+`apps/web` is the public-facing Featul website. It covers the landing page, docs, blog, pricing, legal pages, SEO pages, integrations content, and the library of business tools and definitions used to attract and educate users.
 
-## 🚀 Quick Start
+## What Lives Here
 
-```bash
-cd apps/web
-npm install
-cp .env.example .env.local
-npm run dev
+- Marketing homepage and conversion-focused site pages
+- Docs pages under `src/app/(docs)`
+- Blog routes and content rendering
+- Pricing, legal, integrations, use-case, alternatives, and glossary pages
+- SEO-focused business calculators and content templates
+- Static assets including the dashboard screenshots and brand imagery in `public/`
+
+## Important Folders
+
+```text
+src/
+├── app/                       # Public routes, docs routes, and API proxy routes
+├── components/home/           # Landing page sections
+├── components/docs/           # Docs layouts and markdown rendering
+├── components/blog/           # Blog UI
+├── components/tools/          # Calculator and tool components
+├── components/seo/            # SEO templates and structured data components
+├── content/legal/             # Legal markdown content
+├── config/                    # Navigation, footer, tools, legal, and SEO config
+├── data/                      # FAQ and structured content data
+└── lib/                       # Query, markdown, SEO, and content helpers
 ```
 
-## 📁 Structure
+## Tech Stack
 
-- `src/app/(site)/` - Main pages (blog, tools, legal, pricing)
-- `src/components/tools/` - Business calculators (customer, finance, performance, pricing, product, revenue)
-- `src/content/legal/` - Legal documents (privacy, terms, GDPR)
-- `public/` - Static assets and logos
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Markdown content rendering
+- Marble CMS integration for blog content
+- Structured data and SEO helpers
 
-## ✨ Features
+## Setup
 
-**Business Tools**: 30+ calculators for metrics, finance, pricing, and analytics
-**Blog**: Marble CMS integration with dynamic routing
-**Alternatives**: Tool comparison directory
-**Definitions**: Business glossary with SEO optimization
-**Legal**: Comprehensive privacy, terms, and GDPR compliance
+From the repo root, create the local env file:
 
-## 🛠️ Tech Stack
+```bash
+cp apps/web/.env.example apps/web/.env.local
+```
 
-- Next.js 15 + React 19 + TypeScript
-- Tailwind CSS with typography plugin
-- Marble CMS for blog content
-- SEO optimized with structured data
+Common values in this env file include:
 
-## 🔧 Setup
+- Marble CMS credentials
+- public site and dashboard URLs
+- consent tooling URLs
+- analytics tokens
+- optional search-console verification
 
-1. **Environment**: Copy `.env.example` → `.env.local`
-2. **Blog Setup**: Add `MARBLE_WORKSPACE_KEY` to enable blog
-3. **Development**: `npm run dev` → `localhost:3000`
+## Running The Site
 
-## 📱 Pages
+Recommended from the repo root:
 
-- `/` - Landing page with tools showcase
-- `/blog` - Blog posts from Marble CMS
-- `/tools/*` - Business calculators by category
-- `/alternatives/*` - Tool comparisons
-- `/definitions/*` - Business glossary
-- `/pricing` - Pricing information
-- `/privacy`, `/terms`, `/gdpr` - Legal pages
+```bash
+bun run web:dev
+```
 
----
+Or from inside this folder:
 
-**Featul** - Built for modern business teams 🚀
+```bash
+bun dev
+```
+
+## Main Route Groups
+
+- `/` for the marketing homepage
+- `/docs/*` for product documentation
+- `/blog/*` for content and articles
+- `/tools/*` for calculator pages
+- `/alternatives/*` for comparison pages
+- `/use-cases/*` for use-case landing pages
+- `/integrations/*` for integration pages
+- `/definitions/*` for glossary terms
+- `/pricing`, `/privacy`, `/terms`, and `/gdpr` for commercial and legal pages
+
+## Notes
+
+This workspace is best read alongside the root README because it is designed to work with the shared UI, data, and auth packages from the monorepo.
