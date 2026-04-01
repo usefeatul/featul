@@ -92,7 +92,10 @@ const multiSessionBootstrapPlugin = {
 
         // Re-issue the current session cookie so multi-session hooks can seed
         // a missing per-device cookie for legacy sessions.
-        await setSessionCookie(ctx, ctx.context.session as any);
+        await setSessionCookie(
+          ctx,
+          ctx.context.session as Parameters<typeof setSessionCookie>[1],
+        );
 
         return ctx.json({ success: true });
       },
@@ -482,7 +485,9 @@ export const auth = betterAuth({
           const userId = String(created.id || "").trim();
           try {
             await sendWelcome(to, name);
-          } catch (e) {}
+          } catch (error) {
+            console.error("Failed to send welcome email", error);
+          }
           if (userId) {
             await captureServerAnalyticsEvent("sign_up_completed", userId, {
               email: to,

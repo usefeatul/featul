@@ -11,7 +11,7 @@ import {
   vote,
 } from "@featul/db"
 import { memberByWorkspaceInputSchema, memberActivityInputSchema } from "../validators/member"
-import type { AuthenticatedRouterContext as MemberRouterContext } from "../types/router-context"
+import type { AuthenticatedRouterContext as MemberRouterContext } from "../types/router"
 
 async function getWorkspaceBySlugOrThrow(ctx: MemberRouterContext, slug: string) {
   const [ws] = await ctx.db

@@ -14,6 +14,12 @@ export type SessionData = {
   };
 } | null;
 
+function getSessionToken(sessionData: SessionData): string {
+  return typeof sessionData?.session?.token === "string"
+    ? sessionData.session.token
+    : "";
+}
+
 export async function getServerSession(): Promise<SessionData> {
   try {
     const session = await auth.api.getSession({
@@ -38,7 +44,7 @@ export async function listServerSessions(): Promise<
   try {
     const s = await getServerSession();
     const userId = String(s?.user?.id || "").trim();
-    const currentToken = String((s as any)?.session?.token || "");
+    const currentToken = getSessionToken(s);
     if (!userId) return [];
     const rows = await db
       .select({
@@ -113,7 +119,7 @@ export async function listServerDeviceAccounts(): Promise<
     const currentUserId = String(s?.user?.id || "").trim();
     if (!currentUserId) return [];
 
-    const currentToken = String((s as any)?.session?.token || "").trim();
+    const currentToken = getSessionToken(s).trim();
     const currentName =
       String(s?.user?.name || s?.user?.email || "Account").trim() || "Account";
     const currentImage = typeof s?.user?.image === "string" ? s.user.image : "";

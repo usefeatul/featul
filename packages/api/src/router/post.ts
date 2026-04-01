@@ -1,4 +1,4 @@
-import { eq, and, sql, isNull, ilike, or, inArray } from "drizzle-orm"
+import { eq, and, sql, isNull, ilike, or, inArray, type SQL } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { vote, post, workspace, board, postTag, workspaceMember, postReport, postMerge, comment, activityLog, tag, user } from "@featul/db"
 import { votePostSchema, createPostSchema, updatePostSchema, byIdSchema, reportPostSchema, getSimilarSchema, mergePostSchema, mergeHerePostSchema, searchMergeCandidatesSchema } from "../validators/post"
@@ -10,27 +10,66 @@ import { triggerPostWebhooks } from "../services/webhook"
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
 import { getRequestFingerprint } from "../shared/request-fingerprint"
 import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
+import type { RequestCarrier } from "../types/post"
+
+function getRequestFromContext(c: unknown): Request {
+  const carrier = c as RequestCarrier
+  if (carrier.req?.raw instanceof Request) {
+    return carrier.req.raw
+  }
+  if (carrier.request instanceof Request) {
+    return carrier.request
+  }
+  throw new Error("Expected request on router context")
+}
+
+async function getRequestHeaders(c: unknown): Promise<Headers> {
+  try {
+    return getRequestFromContext(c).headers
+  } catch {
+    return await headers()
+  }
+}
+
+async function getOptionalSessionUserId(c: unknown): Promise<string | null> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await getRequestHeaders(c),
+    })
+    return session?.user?.id ?? null
+  } catch (_error) {
+    // Public routes are expected to run without a readable session sometimes.
+    return null
+  }
+}
+
+function buildTitleSearchCondition(title: string): SQL {
+  const words = title.trim().split(/\s+/).filter((word) => word.length > 2)
+  if (words.length === 0) {
+    return ilike(post.title, `%${title}%`)
+  }
+
+  return (
+    or(
+      ilike(post.title, `%${title}%`),
+      ...words.map((word) => ilike(post.title, `%${word}%`))
+    ) ?? ilike(post.title, `%${title}%`)
+  )
+}
 
 export function createPostRouter() {
   return j.router({
     create: publicProcedure
       .input(createPostSchema)
       .post(async ({ ctx, input, c }) => {
-        enforceTrustedBrowserOrigin(c.req.raw)
+        const request = getRequestFromContext(c)
+        enforceTrustedBrowserOrigin(request)
         const { title, content, image, workspaceSlug, boardSlug, fingerprint, roadmapStatus, tags } = input
 
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
+        const userId = await getOptionalSessionUserId(c)
 
         const anonymousFingerprint = !userId
-          ? getRequestFingerprint(c.req.raw, fingerprint)
+          ? getRequestFingerprint(request, fingerprint)
           : undefined
 
         // Resolve Workspace
@@ -592,21 +631,14 @@ export function createPostRouter() {
     vote: publicProcedure
       .input(votePostSchema)
       .post(async ({ ctx, input, c }) => {
-        enforceTrustedBrowserOrigin(c.req.raw)
+        const request = getRequestFromContext(c)
+        enforceTrustedBrowserOrigin(request)
         const { postId, fingerprint } = input
 
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
+        const userId = await getOptionalSessionUserId(c)
 
         const effectiveFingerprint = !userId
-          ? getRequestFingerprint(c.req.raw, fingerprint)
+          ? getRequestFingerprint(request, fingerprint)
           : undefined
 
         if (!userId && !effectiveFingerprint) {
@@ -748,15 +780,7 @@ export function createPostRouter() {
         }
 
         if (!b.isPublic) {
-          let userId: string | null = null
-          try {
-            const session = await auth.api.getSession({
-              headers: (c as any)?.req?.raw?.headers || (await headers()),
-            })
-            if (session?.user?.id) {
-              userId = session.user.id
-            }
-          } catch { }
+          const userId = await getOptionalSessionUserId(c)
 
           if (!userId) {
             return c.superjson({ posts: [] })
@@ -782,20 +806,7 @@ export function createPostRouter() {
           }
         }
 
-        // Split title into words for better matching
-        const words = title.trim().split(/\s+/).filter(w => w.length > 2)
-
-        let searchCondition = ilike(post.title, `%${title}%`)
-
-        if (words.length > 0) {
-          // If we have words, try to match ANY of them, but rank by relevance?
-          // For now, let's just find posts that contain ANY of the significant words
-          // This is broader than "phrase match"
-          searchCondition = or(
-            ilike(post.title, `%${title}%`), // Exact phrase match
-            ...words.map(w => ilike(post.title, `%${w}%`)) // Or any word match
-          ) as any
-        }
+        const searchCondition = buildTitleSearchCondition(title)
 
         const similarPosts = await ctx.db
           .select({
@@ -820,15 +831,7 @@ export function createPostRouter() {
       .get(async ({ ctx, input, c }) => {
         const { postId, fingerprint } = input
 
-        let userId: string | null = null
-        try {
-          const session = await auth.api.getSession({
-            headers: (c as any)?.req?.raw?.headers || (await headers()),
-          })
-          if (session?.user?.id) {
-            userId = session.user.id
-          }
-        } catch { }
+        const userId = await getOptionalSessionUserId(c)
 
         let hasVoted = false
 
@@ -1239,14 +1242,7 @@ export function createPostRouter() {
           const searchTerm = `%${query}%`
           searchCondition = sql`(${post.title} ilike ${searchTerm} or ${post.content} ilike ${searchTerm})`
         } else {
-          // Auto-suggest similar posts based on title
-          const words = currentPost.title.trim().split(/\s+/).filter((w: string) => w.length > 2)
-          if (words.length > 0) {
-            searchCondition = or(
-              ilike(post.title, `%${currentPost.title}%`),
-              ...words.map((w: string) => ilike(post.title, `%${w}%`))
-            ) as any
-          }
+          searchCondition = buildTitleSearchCondition(currentPost.title)
         }
 
         let candidates = await ctx.db
