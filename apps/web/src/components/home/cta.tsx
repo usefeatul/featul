@@ -1,7 +1,6 @@
 import { Container } from "../global/container";
 import { HotkeyLink } from "../global/hotkey-link";
 import { LiveDemo } from "../global/live-demo";
-import { DotPattern } from "@/components/dot-pattern";
 
 export default function CTA() {
   return (

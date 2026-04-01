@@ -5,7 +5,13 @@ import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { docsSections } from "../../config/docsNav";
-import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 import { motion } from "framer-motion";
 
 // Flatten all nav items for tracking
@@ -18,7 +24,7 @@ export function DocsSidebar() {
   const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0, opacity: 0 });
 
   // Calculate indicator position based on active item
-  const updateIndicator = () => {
+  const updateIndicator = useCallback(() => {
     const activeItem = allNavItems.find((item) => item.href === pathname);
     if (!activeItem || !navRef.current) return;
 
@@ -34,18 +40,18 @@ export function DocsSidebar() {
       height: Math.max(itemRect.height - indicatorInset * 2, 0),
       opacity: 1,
     });
-  };
+  }, [pathname]);
 
   // Update on pathname change and initial mount
   useLayoutEffect(() => {
     updateIndicator();
-  }, [pathname]);
+  }, [updateIndicator]);
 
   // Handle resize
   useEffect(() => {
     window.addEventListener("resize", updateIndicator);
     return () => window.removeEventListener("resize", updateIndicator);
-  }, []);
+  }, [updateIndicator]);
 
   return (
     <nav className="flex flex-col h-full select-none">

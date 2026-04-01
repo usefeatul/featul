@@ -4,7 +4,6 @@ import { Container } from "../global/container";
 import Image from "next/image";
 import { HeroContent } from "./hero-content";
 import { PreviewSwitchPill } from "@/components/home/preview-switch";
-import { DotPattern } from "@/components/dot-pattern";
 import { usePreviewHint } from "../../hooks/usePreviewHint";
 
 const PREVIEW_WIDTH = 1762;
