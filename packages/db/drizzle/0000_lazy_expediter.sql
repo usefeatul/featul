@@ -55,7 +55,7 @@ CREATE TABLE "verification" (
 );
 --> statement-breakpoint
 CREATE TABLE "workspace" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"slug" text NOT NULL,
 	"domain" text NOT NULL,
@@ -79,8 +79,8 @@ CREATE TABLE "workspace" (
 );
 --> statement-breakpoint
 CREATE TABLE "workspace_domain" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"workspace_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"workspace_id" text NOT NULL,
 	"host" text NOT NULL,
 	"cname_name" text DEFAULT 'feedback' NOT NULL,
 	"cname_target" text DEFAULT 'origin.featul.com' NOT NULL,
@@ -94,8 +94,8 @@ CREATE TABLE "workspace_domain" (
 );
 --> statement-breakpoint
 CREATE TABLE "workspace_invite" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"workspace_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"workspace_id" text NOT NULL,
 	"email" text NOT NULL,
 	"role" text DEFAULT 'member' NOT NULL,
 	"invited_by" text NOT NULL,
@@ -107,8 +107,8 @@ CREATE TABLE "workspace_invite" (
 );
 --> statement-breakpoint
 CREATE TABLE "workspace_member" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"workspace_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"workspace_id" text NOT NULL,
 	"user_id" text NOT NULL,
 	"role" text DEFAULT 'member' NOT NULL,
 	"permissions" json DEFAULT '{"canManageWorkspace":false,"canManageBilling":false,"canManageMembers":false,"canManageBoards":false,"canModerateAllBoards":false,"canConfigureBranding":false}'::json NOT NULL,
@@ -121,8 +121,8 @@ CREATE TABLE "workspace_member" (
 );
 --> statement-breakpoint
 CREATE TABLE "board" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"workspace_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"workspace_id" text NOT NULL,
 	"name" text NOT NULL,
 	"slug" text NOT NULL,
 	"system_type" text,
@@ -142,8 +142,8 @@ CREATE TABLE "board" (
 );
 --> statement-breakpoint
 CREATE TABLE "post" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"board_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"board_id" text NOT NULL,
 	"title" text NOT NULL,
 	"content" text NOT NULL,
 	"image" text,
@@ -169,19 +169,19 @@ CREATE TABLE "post" (
 	"moderated_by" text,
 	"moderated_at" timestamp,
 	"moderation_reason" text,
-	"duplicate_of_id" uuid
+	"duplicate_of_id" text
 );
 --> statement-breakpoint
 CREATE TABLE "post_tag" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid NOT NULL,
-	"tag_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"post_id" text NOT NULL,
+	"tag_id" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "post_update" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"post_id" text NOT NULL,
 	"title" text NOT NULL,
 	"content" text NOT NULL,
 	"author_id" text NOT NULL,
@@ -190,8 +190,8 @@ CREATE TABLE "post_update" (
 );
 --> statement-breakpoint
 CREATE TABLE "tag" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"workspace_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"workspace_id" text NOT NULL,
 	"name" text NOT NULL,
 	"slug" text NOT NULL,
 	"color" text DEFAULT '#6b7280',
@@ -202,9 +202,9 @@ CREATE TABLE "tag" (
 );
 --> statement-breakpoint
 CREATE TABLE "comment" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid NOT NULL,
-	"parent_id" uuid,
+	"id" text PRIMARY KEY NOT NULL,
+	"post_id" text NOT NULL,
+	"parent_id" text,
 	"content" text NOT NULL,
 	"author_id" text,
 	"author_name" text,
@@ -228,8 +228,8 @@ CREATE TABLE "comment" (
 );
 --> statement-breakpoint
 CREATE TABLE "comment_mention" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"comment_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"comment_id" text NOT NULL,
 	"mentioned_user_id" text NOT NULL,
 	"mentioned_by" text NOT NULL,
 	"is_read" boolean DEFAULT false,
@@ -237,8 +237,8 @@ CREATE TABLE "comment_mention" (
 );
 --> statement-breakpoint
 CREATE TABLE "comment_reaction" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"comment_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"comment_id" text NOT NULL,
 	"user_id" text,
 	"type" text NOT NULL,
 	"ip_address" text,
@@ -247,8 +247,8 @@ CREATE TABLE "comment_reaction" (
 );
 --> statement-breakpoint
 CREATE TABLE "comment_report" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"comment_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"comment_id" text NOT NULL,
 	"reported_by" text,
 	"reason" text NOT NULL,
 	"description" text,
@@ -260,7 +260,7 @@ CREATE TABLE "comment_report" (
 );
 --> statement-breakpoint
 CREATE TABLE "user_vote_history" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"total_votes" integer DEFAULT 0,
 	"upvotes_given" integer DEFAULT 0,
@@ -270,9 +270,9 @@ CREATE TABLE "user_vote_history" (
 );
 --> statement-breakpoint
 CREATE TABLE "vote" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid,
-	"comment_id" uuid,
+	"id" text PRIMARY KEY NOT NULL,
+	"post_id" text,
+	"comment_id" text,
 	"user_id" text,
 	"ip_address" text,
 	"user_agent" text,
@@ -283,17 +283,17 @@ CREATE TABLE "vote" (
 );
 --> statement-breakpoint
 CREATE TABLE "vote_aggregate" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid,
-	"comment_id" uuid,
+	"id" text PRIMARY KEY NOT NULL,
+	"post_id" text,
+	"comment_id" text,
 	"upvotes" integer DEFAULT 0,
 	"total_votes" integer DEFAULT 0,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "branding_config" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"workspace_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"workspace_id" text NOT NULL,
 	"primary_color" text DEFAULT '#3b82f6',
 	"theme" text DEFAULT 'system',
 	"layout_style" text DEFAULT 'comfortable',
@@ -306,7 +306,7 @@ CREATE TABLE "branding_config" (
 );
 --> statement-breakpoint
 CREATE TABLE "workspace_slug_reservation" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"slug" text NOT NULL,
 	"email" text NOT NULL,
 	"token" text NOT NULL,
