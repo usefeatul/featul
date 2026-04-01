@@ -17,7 +17,7 @@ export async function getPosts() {
     const data: MarblePostListResponse = await raw.json()
     return data
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 
@@ -28,7 +28,7 @@ export async function getTags() {
     const data: MarbleTagListResponse = await raw.json()
     return data
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 
@@ -39,7 +39,7 @@ export async function getSinglePost(slug: string) {
     const data: MarblePostResponse = await raw.json()
     return data
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 
@@ -50,7 +50,7 @@ export async function getCategories() {
     const data: MarbleCategoryListResponse = await raw.json()
     return data
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 
@@ -61,6 +61,6 @@ export async function getAuthors() {
     const data: MarbleAuthorListResponse = await raw.json()
     return data
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }

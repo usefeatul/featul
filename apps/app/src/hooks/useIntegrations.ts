@@ -4,22 +4,8 @@ import { useTransition } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
-
-/**
- * Integration types supported by the system
- */
-export type IntegrationType = "discord" | "slack";
-
-/**
- * Integration data returned from the API
- */
-export interface Integration {
-  id: string;
-  type: IntegrationType;
-  isActive: boolean | null;
-  lastTriggeredAt: Date | null;
-  createdAt: Date;
-}
+import type { Integration, IntegrationType } from "@/types/settings";
+export type { Integration, IntegrationType } from "@/types/settings";
 
 interface UseIntegrationsProps {
   workspaceSlug: string;

@@ -6,7 +6,7 @@
  */
 
 import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/content-matrix";
-import { getDefinitionBySlug, getAllDefinitionSlugs } from "@/types/definitions";
+import { getDefinitionBySlug, getAllDefinitionSlugs } from "@/content/definitions";
 import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools";
 
 // ─────────────────────────────────────────────────────────────────────────────

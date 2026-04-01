@@ -10,25 +10,28 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { auth } from "@featul/auth/auth";
 import { splitSetCookieHeader } from "better-auth/cookies";
+import type {
+  DeviceSessionAuthApi,
+  DeviceSessionEntry,
+  HeaderAppender,
+  HeadersWithGetSetCookie,
+  RequestCarrier,
+  SessionCarrier,
+} from "../types/account";
 
 const MAX_DEVICE_ACCOUNTS = 3;
 
-type DeviceSessionEntry = {
-  session?: {
-    token?: string | null;
-  } | null;
-  user?: {
-    id?: string | null;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  } | null;
-};
+const deviceSessionAuthApi = auth.api as DeviceSessionAuthApi;
 
-function getRawHeaders(c: any): Headers {
-  const raw = c?.req?.raw?.headers || c?.request?.headers;
+function getRawHeaders(c: unknown): Headers {
+  const carrier = c as RequestCarrier;
+  const raw = carrier.req?.raw?.headers || carrier.request?.headers;
   if (raw instanceof Headers) return raw;
   return new Headers(raw || {});
+}
+
+function getSessionToken(value: SessionCarrier | null | undefined): string {
+  return typeof value?.session?.token === "string" ? value.session.token : "";
 }
 
 function parseDeviceSessions(value: unknown): DeviceSessionEntry[] {
@@ -36,10 +39,11 @@ function parseDeviceSessions(value: unknown): DeviceSessionEntry[] {
   return value as DeviceSessionEntry[];
 }
 
-function appendSetCookieHeaders(c: any, headers: Headers): void {
+function appendSetCookieHeaders(c: HeaderAppender, headers: Headers): void {
+  const headersWithGetSetCookie = headers as HeadersWithGetSetCookie;
   const cookies =
-    typeof (headers as any).getSetCookie === "function"
-      ? ((headers as any).getSetCookie() as string[])
+    typeof headersWithGetSetCookie.getSetCookie === "function"
+      ? headersWithGetSetCookie.getSetCookie()
       : splitSetCookieHeader(headers.get("set-cookie") || "");
 
   for (const cookie of cookies) {
@@ -113,7 +117,7 @@ export function createAccountRouter() {
   return j.router({
     listSessions: privateProcedure.get(async ({ ctx, c }) => {
       const userId = ctx.session.user.id;
-      const currentToken = String((ctx.session as any)?.session?.token || "");
+      const currentToken = getSessionToken(ctx.session);
 
       const rows = await ctx.db
         .select({
@@ -149,9 +153,7 @@ export function createAccountRouter() {
     listDeviceAccounts: privateProcedure.get(async ({ ctx, c }) => {
       const rawHeaders = getRawHeaders(c);
       const currentUserId = String(ctx.session.user.id || "").trim();
-      const currentToken = String(
-        (ctx.session as any)?.session?.token || "",
-      ).trim();
+      const currentToken = getSessionToken(ctx.session).trim();
       const currentName =
         String(
           ctx.session.user.name || ctx.session.user.email || "Account",
@@ -181,9 +183,7 @@ export function createAccountRouter() {
     bootstrapDeviceSession: privateProcedure.post(async ({ ctx, c }) => {
       const rawHeaders = getRawHeaders(c);
       const currentUserId = String(ctx.session.user.id || "").trim();
-      const currentToken = String(
-        (ctx.session as any)?.session?.token || "",
-      ).trim();
+      const currentToken = getSessionToken(ctx.session).trim();
       const currentName =
         String(
           ctx.session.user.name || ctx.session.user.email || "Account",
@@ -213,12 +213,10 @@ export function createAccountRouter() {
         });
       }
 
-      const bootstrapResult = (await (
-        auth.api as any
-      ).bootstrapCurrentDeviceSession({
+      const bootstrapResult = await deviceSessionAuthApi.bootstrapCurrentDeviceSession({
         headers: rawHeaders,
         returnHeaders: true,
-      })) as { headers?: Headers };
+      });
 
       if (bootstrapResult.headers instanceof Headers) {
         appendSetCookieHeaders(c, bootstrapResult.headers);
@@ -314,13 +312,13 @@ export function createAccountRouter() {
           });
         }
 
-        const revokeResult = (await (auth.api as any).revokeDeviceSession({
+        const revokeResult = await deviceSessionAuthApi.revokeDeviceSession({
           headers: rawHeaders,
           body: {
             sessionToken: targetSessionToken,
           },
           returnHeaders: true,
-        })) as { headers?: Headers };
+        });
 
         if (revokeResult.headers instanceof Headers) {
           appendSetCookieHeaders(c, revokeResult.headers);
@@ -336,7 +334,7 @@ export function createAccountRouter() {
       .input(revokeSessionInputSchema)
       .post(async ({ ctx, input, c }) => {
         const userId = ctx.session.user.id;
-        const currentToken = String((ctx.session as any)?.session?.token || "");
+        const currentToken = getSessionToken(ctx.session);
 
         const [target] = await ctx.db
           .select({ id: session.id, token: session.token })

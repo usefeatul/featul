@@ -1,7 +1,6 @@
 "use client";
 import { Container } from "../global/container";
 import { SetupIcon } from "@featul/ui/icons/setup";
-import { DotPattern } from "@/components/dot-pattern";
 
 export default function Setup() {
   return (

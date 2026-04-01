@@ -8,9 +8,7 @@
     "./extensions/*": "./src/extensions/*"
   },
   "scripts": {
-    "check-types": "tsc --noEmit",
-    "lint": "biome check .",
-    "format": "biome --write ."
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@featul/ui": "workspace:*",

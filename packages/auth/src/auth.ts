@@ -31,6 +31,7 @@ import { getPasswordError } from "./password";
 import { getValidatedTrustedOrigins } from "./trusted-origins";
 import { setSessionCookie } from "better-auth/cookies";
 import { getAuthRateLimitStorage } from "./rate-limit-storage";
+import { isAuthRateLimitEnabled } from "./rate-limit-config";
 import {
   sendFailedPaymentNotificationForInvoice,
   sendUpcomingPaymentNotificationForInvoice,
@@ -69,6 +70,7 @@ function resolveCookieDomain() {
 const cookieDomain = resolveCookieDomain();
 const trustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS");
 const authRateLimitStorage = getAuthRateLimitStorage();
+const authRateLimitEnabled = isAuthRateLimitEnabled();
 
 const multiSessionBootstrapPlugin = {
   id: "multi-session-bootstrap",
@@ -90,7 +92,10 @@ const multiSessionBootstrapPlugin = {
 
         // Re-issue the current session cookie so multi-session hooks can seed
         // a missing per-device cookie for legacy sessions.
-        await setSessionCookie(ctx, ctx.context.session as any);
+        await setSessionCookie(
+          ctx,
+          ctx.context.session as Parameters<typeof setSessionCookie>[1],
+        );
 
         return ctx.json({ success: true });
       },
@@ -420,6 +425,7 @@ export const auth = betterAuth({
   trustedOrigins,
 
   rateLimit: {
+    enabled: authRateLimitEnabled,
     customStorage: authRateLimitStorage,
     window: 60,
     max: 100,
@@ -479,7 +485,9 @@ export const auth = betterAuth({
           const userId = String(created.id || "").trim();
           try {
             await sendWelcome(to, name);
-          } catch (e) {}
+          } catch (error) {
+            console.error("Failed to send welcome email", error);
+          }
           if (userId) {
             await captureServerAnalyticsEvent("sign_up_completed", userId, {
               email: to,

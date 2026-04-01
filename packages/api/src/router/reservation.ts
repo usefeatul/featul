@@ -7,6 +7,16 @@ import { sendReservationEmail } from "@featul/auth/email"
 import { isReservedWorkspaceSlug } from "../shared/workspace-slug"
 const MAX_RESERVATIONS_PER_EMAIL = 3
 
+async function sendReservationEmailBestEffort(email: string, slug: string, token: string): Promise<void> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    const url = `${baseUrl}/reserve/${token}`
+    await sendReservationEmail(email, slug, url)
+  } catch (error) {
+    console.error("Failed to send reservation email", error)
+  }
+}
+
 export function createReservationRouter() {
   return j.router({
     checkSlug: publicProcedure
@@ -92,11 +102,7 @@ export function createReservationRouter() {
           await ctx.db.insert(workspaceSlugReservation).values({ slug, email, token, status: "reserved", expiresAt: expires })
         }
 
-        try {
-          const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-          const url = `${baseUrl}/reserve/${token}`
-          await sendReservationEmail(email, slug, url)
-        } catch {}
+        await sendReservationEmailBestEffort(email, slug, token)
 
         return c.superjson({ ok: true, token })
       }),

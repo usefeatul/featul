@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import DefinitionsIndex from "@/components/definitions/DefinitionsIndex"
 import { createPageMetadata } from "@/lib/seo"
-import { DEFINITIONS } from "@/types/definitions"
+import { DEFINITIONS } from "@/content/definitions"
 
 export const metadata: Metadata = createPageMetadata({
   title: "SaaS Metrics & Definitions",

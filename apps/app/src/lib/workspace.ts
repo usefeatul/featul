@@ -17,13 +17,15 @@ import {
 import { resolvePostAuthorImage } from "@/lib/author-avatar";
 import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
 import type { RequestItemRow } from "@/lib/request-item";
+import type {
+  ChangelogTag,
+  FeedbackBoardSettings,
+  FeedbackTag,
+  Integration,
+} from "@/types/settings";
 import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
 import type { DomainInfo } from "../types/domain";
-import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
-import type { FeedbackTag } from "../components/settings/feedback/ManageTags";
-import type { ChangelogTag } from "../components/settings/changelog/ChangelogTags";
-import type { Integration } from "@/hooks/useIntegrations";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import {
   getBrandingBySlug,

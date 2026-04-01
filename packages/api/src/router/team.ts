@@ -17,7 +17,7 @@ import {
 import { getPlanLimits, normalizePlan, type PlanKey } from "../shared/plan"
 import { limitInvite } from "../services/ratelimiter"
 import { mapPermissions } from "../shared/permissions"
-import type { AuthenticatedRouterContext as TeamRouterContext } from "../types/router-context"
+import type { AuthenticatedRouterContext as TeamRouterContext } from "../types/router"
 import { getWorkspaceAccessPlan } from "../shared/access"
 
 async function getWorkspaceMemberEmails(
