@@ -2,12 +2,9 @@
 
 import PlanNotice from "../global/PlanNotice";
 import { client } from "@featul/api/client";
+import type { ChangelogTag } from "@/types/settings";
+export type { ChangelogTag } from "@/types/settings";
 import { TagManagerSection } from "../global/TagManagerSection";
-
-export interface ChangelogTag {
-  id: string;
-  name: string;
-}
 
 export default function ChangelogTags({
   slug,

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { getPosts } from "@/lib/query"
 import { getAllCompetitorSlugs, getAllIntegrationSlugs, getAllUseCaseSlugs } from "@/lib/data/programmatic"
 import { getAllCategorySlugs, getAllToolParams } from "@/types/tools"
-import { getAllDefinitionSlugs } from "@/types/definitions"
+import { getAllDefinitionSlugs } from "@/content/definitions"
 import { SITE_URL } from "@/config/seo"
 
 export const revalidate = 86400

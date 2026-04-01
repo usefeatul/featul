@@ -46,10 +46,7 @@
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
-    "./icons": "./src/icons/index.tsx",
     "./icons/*": "./src/icons/*.tsx",
-    "./global/*": "./src/global/*.tsx",
-    "./ui": "./src/ui/*.tsx",
-    "./ui/*": "./src/ui/*.tsx"
+    "./global/*": "./src/global/*.tsx"
   }
 }

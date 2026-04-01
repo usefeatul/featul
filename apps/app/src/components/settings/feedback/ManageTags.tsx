@@ -1,15 +1,10 @@
 "use client";
 
 import { client } from "@featul/api/client";
+import type { FeedbackTag } from "@/types/settings";
+export type { FeedbackTag } from "@/types/settings";
 import PlanNotice from "../global/PlanNotice";
 import { TagManagerSection } from "../global/TagManagerSection";
-
-export interface FeedbackTag {
-  id: string;
-  name: string;
-  slug: string;
-  postCount: number;
-}
 
 export default function ManageTags({
   slug,

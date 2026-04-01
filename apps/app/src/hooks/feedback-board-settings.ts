@@ -2,20 +2,8 @@
 
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
-
-export interface FeedbackBoardSettings {
-  id: string;
-  name: string;
-  slug: string;
-  isPublic: boolean;
-  isVisible: boolean;
-  isActive: boolean;
-  allowAnonymous: boolean;
-  allowComments: boolean;
-  hidePublicMemberIdentity: boolean;
-  sortOrder: number;
-  postCount: number;
-}
+import type { FeedbackBoardSettings } from "@/types/settings";
+export type { FeedbackBoardSettings } from "@/types/settings";
 
 type MutationResponse = {
   ok: boolean;

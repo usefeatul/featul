@@ -2,8 +2,8 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Container } from "@/components/global/container";
+import { getDefinitionContent } from "@/content/definitions";
 import type { Definition } from "@/types/definitions";
-import { getDefinitionContent } from "@/types/definitions";
 import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
 export default function DefinitionDetail({ def }: { def: Definition }) {
