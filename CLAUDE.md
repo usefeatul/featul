@@ -13,7 +13,6 @@ Featul is a SaaS feedback management platform built as a Turborepo monorepo. It 
 bun run dev              # Run all apps
 bun run web:dev          # Run web app only (marketing/docs)
 bun run app:dev          # Run main app only (via turbo filter)
-
 # Build & Lint
 bun run build            # Build all packages
 bun run lint             # Lint all packages
@@ -45,8 +44,9 @@ Uses **jstack** for type-safe RPC. Key patterns:
 ```typescript
 // Procedure types in jstack.ts
 const baseProcedure = j.procedure.use(databaseMiddleware)
-export const publicProcedure = baseProcedure
-export const privateProcedure = baseProcedure.use(authMiddleware)
+const authenticatedProcedure = baseProcedure.use(authMiddleware)
+export const publicProcedure = baseProcedure.use(rateLimitMiddlewarePublic)
+export const privateProcedure = authenticatedProcedure.use(rateLimitMiddlewarePrivate)
 
 // Router definition pattern
 export function createWorkspaceRouter() {
@@ -61,7 +61,10 @@ export function createWorkspaceRouter() {
 }
 ```
 
-Routers are in `packages/api/src/router/` - one file per domain (workspace, board, post, comment, etc.)
+Routers are in `packages/api/src/router/` - one file per domain:
+- Core: workspace, board, post, comment, member, team, account
+- Features: changelog, changelog-automation, storage, branding, integration
+- Other: reservation, comment-mentions
 
 Client usage: `client.workspace.bySlug.$post({ slug: "..." })`
 
@@ -70,8 +73,10 @@ Client usage: `client.workspace.bySlug.$post({ slug: "..." })`
 Uses **better-auth** with:
 - Email/password + OTP verification
 - Google/GitHub OAuth
+- Passkeys and two-factor authentication
 - Cross-subdomain cookies for multi-tenant auth
 - Organization plugin for workspace membership
+- Stripe integration for billing
 
 Session access:
 - Server: `getServerSession()` from `@featul/auth/session`
@@ -82,13 +87,15 @@ Session access:
 PostgreSQL via **Neon serverless** with **Drizzle ORM**.
 
 Schema files in `packages/db/schema/`:
-- `auth.ts` - user, session, account, verification
+- `auth.ts` - user, session, account, verification, passkey, twoFactor
 - `workspace.ts` - workspace, workspaceMember, workspaceDomain
 - `post.ts` - post, tag, postTag
 - `comment.ts` - comment, commentReaction, commentMention
 - `vote.ts` - vote, voteAggregate
 - `feedback.ts` - board configuration
-- `branding.ts`, `changelog.ts`, `reservation.ts`
+- `plan.ts` - billing plans and subscriptions
+- `integration.ts` - GitHub integration
+- `branding.ts`, `changelog.ts`, `reservation.ts`, `notra.ts`
 
 ### Multi-Tenancy
 
@@ -110,3 +117,4 @@ Subdomain routing handled in `apps/app/src/middleware/host.ts`:
 - `packages/auth/src/auth.ts` - Better-auth configuration
 - `packages/db/schema/index.ts` - Schema exports
 - `apps/app/src/middleware.ts` - Next.js middleware entry
+- `packages/api/src/services/ratelimiter.ts` - Upstash Redis rate limiting
