@@ -31,6 +31,7 @@ import { getPasswordError } from "./password";
 import { getValidatedTrustedOrigins } from "./trusted-origins";
 import { setSessionCookie } from "better-auth/cookies";
 import { getAuthRateLimitStorage } from "./rate-limit-storage";
+import { isAuthRateLimitEnabled } from "./rate-limit-config";
 import {
   sendFailedPaymentNotificationForInvoice,
   sendUpcomingPaymentNotificationForInvoice,
@@ -69,6 +70,7 @@ function resolveCookieDomain() {
 const cookieDomain = resolveCookieDomain();
 const trustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS");
 const authRateLimitStorage = getAuthRateLimitStorage();
+const authRateLimitEnabled = isAuthRateLimitEnabled();
 
 const multiSessionBootstrapPlugin = {
   id: "multi-session-bootstrap",
@@ -420,6 +422,7 @@ export const auth = betterAuth({
   trustedOrigins,
 
   rateLimit: {
+    enabled: authRateLimitEnabled,
     customStorage: authRateLimitStorage,
     window: 60,
     max: 100,
