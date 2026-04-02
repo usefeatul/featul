@@ -50,7 +50,7 @@ function formatShortcutKey(key: string) {
 
 function ShortcutKeys({ keys }: { keys: string[] }) {
   return (
-    <span className="font-mono text-[12px] font-medium tracking-[-0.01em] text-zinc-400">
+    <span className="font-mono text-[12px] font-medium tracking-[-0.01em] text-muted-foreground">
       {keys.map(formatShortcutKey).join(" ")}
     </span>
   );
@@ -205,7 +205,7 @@ export default function WorkspaceShortcutsDrawer() {
         aria-modal="true"
         aria-labelledby="workspace-shortcuts-title"
         className={cn(
-          "fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-white/8 bg-zinc-900/98 shadow-[0_18px_48px_rgba(0,0,0,0.35)]",
+          "fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-[0_18px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.35)]",
           "top-4 right-4 bottom-4 left-4 sm:left-auto sm:w-[340px]",
           "transition-all duration-200 ease-out",
           open
@@ -213,12 +213,12 @@ export default function WorkspaceShortcutsDrawer() {
             : "pointer-events-none translate-x-6 opacity-0",
         )}
       >
-        <div className="flex flex-col gap-3 border-b border-white/6 px-4 pt-4 pb-3">
+        <div className="flex flex-col gap-3 border-b border-border px-4 pt-4 pb-3">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <h2
                 id="workspace-shortcuts-title"
-                className="text-sm font-semibold tracking-tight text-white"
+                className="text-sm font-semibold tracking-tight text-foreground"
               >
                 Keyboard Shortcuts
               </h2>
@@ -230,8 +230,8 @@ export default function WorkspaceShortcutsDrawer() {
               aria-label="Close keyboard shortcuts"
               onClick={() => setOpen(false)}
               className={cn(
-                "size-7 cursor-pointer rounded-md bg-transparent p-0 text-zinc-500 shadow-none",
-                "hover:bg-white/5 hover:text-zinc-200",
+                "size-7 cursor-pointer rounded-md bg-transparent p-0 text-muted-foreground shadow-none",
+                "hover:bg-muted hover:text-foreground",
               )}
             >
               <XMarkIcon className="size-4" />
@@ -239,7 +239,7 @@ export default function WorkspaceShortcutsDrawer() {
           </div>
 
           <div className="relative">
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-zinc-500" />
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               ref={inputRef}
               value={query}
@@ -247,8 +247,8 @@ export default function WorkspaceShortcutsDrawer() {
               placeholder="Search shortcuts"
               aria-label="Search shortcuts"
               className={cn(
-                "h-10 border-white/8 bg-white/2 pl-8 text-sm text-zinc-100",
-                "placeholder:text-zinc-500 focus-visible:border-white/15 focus-visible:ring-white/10",
+                "h-10 bg-background pl-8 text-sm text-foreground",
+                "placeholder:text-muted-foreground",
               )}
             />
           </div>
@@ -260,7 +260,7 @@ export default function WorkspaceShortcutsDrawer() {
               <div className="space-y-5">
                 {groupedShortcuts.map((section) => (
                   <section key={section.group} className="space-y-2">
-                    <div className="text-[11px] font-semibold text-zinc-500">
+                    <div className="text-[11px] font-semibold text-muted-foreground">
                       {GROUP_LABELS[section.group] ?? section.group}
                     </div>
                     <div className="space-y-1">
@@ -269,7 +269,7 @@ export default function WorkspaceShortcutsDrawer() {
                           key={shortcut.id}
                           className="flex items-start justify-between gap-4 px-0 py-1"
                         >
-                          <div className="min-w-0 text-[13px] font-medium leading-5 text-zinc-200">
+                          <div className="min-w-0 text-[13px] font-medium leading-5 text-foreground">
                             {shortcut.title}
                           </div>
                           <ShortcutBindingStack bindings={shortcut.bindings} />
@@ -280,7 +280,7 @@ export default function WorkspaceShortcutsDrawer() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-white/10 bg-zinc-950/80 px-4 py-6 text-sm text-zinc-500">
+              <div className="rounded-xl border border-border bg-background px-4 py-6 text-sm text-muted-foreground">
                 No shortcuts found.
               </div>
             )}
