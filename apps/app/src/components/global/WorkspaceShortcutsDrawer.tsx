@@ -20,6 +20,16 @@ const GROUP_LABELS: Record<string, string> = {
   "Roadmap navigation": "Roadmap",
 };
 
+const KEY_SYMBOLS: Record<string, string> = {
+  Command: "⌘",
+  Ctrl: "⌃",
+  Shift: "⇧",
+  Enter: "↵",
+  Escape: "Esc",
+  "Left Arrow": "←",
+  "Right Arrow": "→",
+};
+
 function isEditableElement(element: HTMLElement | null) {
   if (!element) return false;
   const role = element.getAttribute("role");
@@ -33,20 +43,15 @@ function isEditableElement(element: HTMLElement | null) {
   );
 }
 
+function formatShortcutKey(key: string) {
+  return KEY_SYMBOLS[key] ?? key;
+}
+
 function ShortcutKeys({ keys }: { keys: string[] }) {
   return (
-    <div className="flex flex-wrap items-center justify-end gap-1">
-      {keys.map((key, index) => (
-        <React.Fragment key={`${key}-${index}`}>
-          {index > 0 ? (
-            <span className="px-0.5 text-[11px] text-muted-foreground/70">+</span>
-          ) : null}
-          <span className="rounded-md border border-border bg-background px-2 py-1 text-[11px] font-medium text-foreground shadow-sm dark:bg-black/30">
-            {key}
-          </span>
-        </React.Fragment>
-      ))}
-    </div>
+    <span className="font-mono text-[12px] font-medium tracking-[-0.01em] text-zinc-400">
+      {keys.map(formatShortcutKey).join(" ")}
+    </span>
   );
 }
 
@@ -56,11 +61,11 @@ function ShortcutBindingStack({
   bindings: (typeof WORKSPACE_SHORTCUTS)[number]["bindings"];
 }) {
   return (
-    <div className="flex min-w-[148px] flex-col items-end gap-1.5">
+    <div className="flex min-w-[132px] flex-col items-end gap-1">
       {bindings.map((binding, index) => (
         <div
           key={`${binding.label ?? "shared"}-${binding.keys.join("-")}-${index}`}
-          className="flex items-center gap-1.5"
+          className="flex items-center"
         >
           <ShortcutKeys keys={binding.keys} />
         </div>
@@ -199,7 +204,7 @@ export default function WorkspaceShortcutsDrawer() {
         aria-modal="true"
         aria-labelledby="workspace-shortcuts-title"
         className={cn(
-          "fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl",
+          "fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-white/8 bg-zinc-900/98 shadow-[0_18px_48px_rgba(0,0,0,0.35)]",
           "top-4 right-4 bottom-4 left-4 sm:left-auto sm:w-[340px]",
           "transition-all duration-200 ease-out",
           open
@@ -207,7 +212,7 @@ export default function WorkspaceShortcutsDrawer() {
             : "pointer-events-none translate-x-6 opacity-0",
         )}
       >
-        <div className="flex flex-col gap-3 border-b border-white/10 px-4 pt-4 pb-3">
+        <div className="flex flex-col gap-3 border-b border-white/6 px-4 pt-4 pb-3">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <h2
@@ -223,7 +228,7 @@ export default function WorkspaceShortcutsDrawer() {
               onClick={() => setOpen(false)}
               className={cn(
                 "inline-flex size-7 items-center justify-center rounded-md text-zinc-500 transition-colors",
-                "hover:bg-white/5 hover:text-zinc-200",
+                "hover:text-zinc-200",
               )}
             >
               <XMarkIcon className="size-4" />
@@ -239,8 +244,8 @@ export default function WorkspaceShortcutsDrawer() {
               placeholder="Search shortcuts"
               aria-label="Search shortcuts"
               className={cn(
-                "h-10 border-white/10 bg-zinc-950 pl-8 text-sm text-zinc-100",
-                "placeholder:text-zinc-500 focus-visible:border-[#5b5bd6] focus-visible:ring-[#5b5bd6]/40",
+                "h-10 border-white/8 bg-white/2 pl-8 text-sm text-zinc-100",
+                "placeholder:text-zinc-500 focus-visible:border-white/15 focus-visible:ring-white/10",
               )}
             />
           </div>
@@ -255,13 +260,13 @@ export default function WorkspaceShortcutsDrawer() {
                     <div className="text-[11px] font-semibold text-zinc-500">
                       {GROUP_LABELS[section.group] ?? section.group}
                     </div>
-                    <div className="space-y-0.5">
+                    <div className="space-y-1">
                       {section.items.map((shortcut) => (
                         <div
                           key={shortcut.id}
-                          className="flex items-center justify-between gap-4 rounded-md px-1 py-1.5"
+                          className="flex items-start justify-between gap-4 px-0 py-1"
                         >
-                          <div className="min-w-0 text-[13px] font-medium text-zinc-200">
+                          <div className="min-w-0 text-[13px] font-medium leading-5 text-zinc-200">
                             {shortcut.title}
                           </div>
                           <ShortcutBindingStack bindings={shortcut.bindings} />
