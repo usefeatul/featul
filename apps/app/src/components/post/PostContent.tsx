@@ -1,25 +1,27 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Input } from "@featul/ui/components/input"
-import { XMarkIcon } from "@featul/ui/icons/xmark"
-import ContentImage from "@/components/global/ContentImage"
-import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
+import React from "react";
+import { Input } from "@featul/ui/components/input";
+import { cn } from "@featul/ui/lib/utils";
+import { XMarkIcon } from "@featul/ui/icons/xmark";
+import ContentImage from "@/components/global/ContentImage";
+import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize";
 
 export interface UploadedImage {
-  url: string
-  name: string
-  type: string
+  url: string;
+  name: string;
+  type: string;
 }
 
 export interface PostContentProps {
-  title: string
-  setTitle: (value: string) => void
-  content: string
-  setContent: (value: string) => void
-  uploadedImage: UploadedImage | null
-  uploadingImage: boolean
-  handleRemoveImage: () => void
+  title: string;
+  setTitle: (value: string) => void;
+  content: string;
+  setContent: (value: string) => void;
+  uploadedImage: UploadedImage | null;
+  uploadingImage: boolean;
+  handleRemoveImage: () => void;
+  expanded?: boolean;
 }
 
 export function PostContent({
@@ -30,9 +32,15 @@ export function PostContent({
   uploadedImage,
   uploadingImage,
   handleRemoveImage,
+  expanded = false,
 }: PostContentProps) {
   return (
-    <div className="px-3 md:px-4 flex flex-col gap-2">
+    <div
+      className={cn(
+        "px-3 md:px-4 flex flex-col gap-2",
+        expanded && "min-h-0 flex-1",
+      )}
+    >
       <Input
         variant="plain"
         placeholder="Post title"
@@ -48,9 +56,9 @@ export function PostContent({
         onChange={(e) => setContent(e.target.value)}
         minRows={2}
         maxRows={10}
-        className="w-full resize-none min-h-[72px] max-h-[32dvh] overflow-y-auto py-2 text-base placeholder:text-accent wrap-break-word border-none outline-none"
+        className="w-full resize-none overflow-y-auto py-2 text-base placeholder:text-accent wrap-break-word border-none outline-none min-h-[72px] max-h-[32dvh]"
       />
-      
+
       {/* Image Preview */}
       {uploadedImage && (
         <div className="relative inline-block w-fit mb-2">
@@ -73,5 +81,5 @@ export function PostContent({
         </div>
       )}
     </div>
-  )
+  );
 }

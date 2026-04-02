@@ -1,42 +1,47 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
-import DocumentTextIcon from "@featul/ui/icons/document-text"
-import { PostHeader } from "./PostHeader"
-import { PostContent } from "./PostContent"
-import { PostFooter } from "./PostFooter"
-import { usePostSubmission } from "@/hooks/usePostSubmission"
-import { usePostImageUpload } from "@/hooks/usePostImageUpload"
-import { useWorkspaceBoards } from "@/hooks/useWorkspaceBoards"
-import { client } from "@featul/api/client"
-import { useRouter } from "next/navigation"
-import { useSimilarPosts } from "@/hooks/useSimilarPosts"
-import { SimilarPosts } from "./SimilarPosts"
-import type { TagSummary, PostUser } from "@/types/post"
-import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
+import React, { useState, useEffect } from "react";
+import { Button } from "@featul/ui/components/button";
+import { cn } from "@featul/ui/lib/utils";
+import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
+import DocumentTextIcon from "@featul/ui/icons/document-text";
+import { ExpandIcon } from "@featul/ui/icons/expand";
+import { CollapseIcon } from "@featul/ui/icons/collapse";
+import { PostHeader } from "./PostHeader";
+import { PostContent } from "./PostContent";
+import { PostFooter } from "./PostFooter";
+import { usePostSubmission } from "@/hooks/usePostSubmission";
+import { usePostImageUpload } from "@/hooks/usePostImageUpload";
+import { useWorkspaceBoards } from "@/hooks/useWorkspaceBoards";
+import { client } from "@featul/api/client";
+import { useRouter } from "next/navigation";
+import { useSimilarPosts } from "@/hooks/useSimilarPosts";
+import { SimilarPosts } from "./SimilarPosts";
+import type { TagSummary, PostUser } from "@/types/post";
+import { canSubmitPostForm } from "@/hooks/postSubmitGuard";
 
 export function CreatePostModal({
   open,
   onOpenChange,
   workspaceSlug,
-  user
+  user,
 }: {
-  open: boolean
-  onOpenChange: (v: boolean) => void
-  workspaceSlug: string
-  user?: PostUser
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  workspaceSlug: string;
+  user?: PostUser;
 }) {
-  const router = useRouter()
+  const router = useRouter();
   const { boards, selectedBoard, setSelectedBoard } = useWorkspaceBoards({
     open,
     workspaceSlug,
-  })
+  });
 
   // New State for Status and Tags
-  const [status, setStatus] = useState("pending")
-  const [availableTags, setAvailableTags] = useState<TagSummary[]>([])
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [expanded, setExpanded] = useState(false);
+  const [status, setStatus] = useState("pending");
+  const [availableTags, setAvailableTags] = useState<TagSummary[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const {
     uploadedImage,
@@ -46,96 +51,126 @@ export function CreatePostModal({
     handleFileSelect,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
+  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug);
 
-  const {
-    title,
-    setTitle,
-    content,
-    setContent,
-    isPending,
-    submitPost
-  } = usePostSubmission({
-    workspaceSlug,
-    onSuccess: () => {
-      onOpenChange(false)
-      setUploadedImage(null)
-      // Reset fields
-      setStatus("pending")
-      setSelectedTags([])
-    },
-    onCreated: (post) => {
-      router.push(`/workspaces/${workspaceSlug}/requests/${post.slug}`)
-    },
-    skipDefaultRedirect: true
-  })
+  const { title, setTitle, content, setContent, isPending, submitPost } =
+    usePostSubmission({
+      workspaceSlug,
+      onSuccess: () => {
+        onOpenChange(false);
+        setUploadedImage(null);
+        // Reset fields
+        setStatus("pending");
+        setSelectedTags([]);
+      },
+      onCreated: (post) => {
+        router.push(`/workspaces/${workspaceSlug}/requests/${post.slug}`);
+      },
+      skipDefaultRedirect: true,
+    });
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+      setExpanded(false);
+    }
+  }, [open]);
 
-    let canceled = false
+  useEffect(() => {
+    if (!open) return;
+
+    let canceled = false;
 
     const fetchTags = async () => {
-      const res = await client.board.tagsByWorkspaceSlug.$get({ slug: workspaceSlug })
-      if (!res.ok || canceled) return
-      const data = (await res.json()) as { tags?: TagSummary[] } | null
+      const res = await client.board.tagsByWorkspaceSlug.$get({
+        slug: workspaceSlug,
+      });
+      if (!res.ok || canceled) return;
+      const data = (await res.json()) as { tags?: TagSummary[] } | null;
       const tags = (Array.isArray(data?.tags) ? data.tags : []).map((t) => ({
         id: t.id,
         name: t.name,
         slug: t.slug,
-        color: t.color
-      }))
+        color: t.color,
+      }));
       if (!canceled) {
-        setAvailableTags(tags)
+        setAvailableTags(tags);
       }
-    }
+    };
 
-    fetchTags()
+    fetchTags();
 
     return () => {
-      canceled = true
-    }
-  }, [open, workspaceSlug])
+      canceled = true;
+    };
+  }, [open, workspaceSlug]);
 
   const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault()
+    e?.preventDefault();
     // Find tag IDs from selected slugs/ids
-    const tagIds = availableTags.filter(t => selectedTags.includes(t.id)).map(t => t.id)
-    submitPost(selectedBoard, user ?? null, uploadedImage?.url, status, tagIds)
-  }
+    const tagIds = availableTags
+      .filter((t) => selectedTags.includes(t.id))
+      .map((t) => t.id);
+    submitPost(selectedBoard, user ?? null, uploadedImage?.url, status, tagIds);
+  };
 
   const { posts: similarPosts } = useSimilarPosts({
     title,
     boardSlug: selectedBoard?.slug,
     workspaceSlug,
     enabled: open,
-  })
+  });
 
   const toggleTag = (tagId: string) => {
-    setSelectedTags(prev =>
+    setSelectedTags((prev) =>
       prev.includes(tagId)
-        ? prev.filter(id => id !== tagId)
-        : [...prev, tagId]
-    )
-  }
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId],
+    );
+  };
 
   const canSubmit = canSubmitPostForm({
     title,
     hasSelectedBoard: !!selectedBoard,
     isPending,
     uploadingImage,
-  })
+  });
+  const expandLabel = expanded ? "Collapse composer" : "Expand composer";
 
   return (
     <SettingsDialogShell
       open={open}
       onOpenChange={onOpenChange}
       title="Create post"
-      width="widest"
-      offsetY="10%"
+      width={expanded ? "xl" : "widest"}
+      offsetY={expanded ? "14%" : "12%"}
+      verticalAnchor="top"
       icon={<DocumentTextIcon className="size-3.5" />}
+      dialogClassName="duration-150 data-[state=open]:zoom-in-100 data-[state=closed]:zoom-out-100"
+      bodyClassName="overflow-hidden p-0"
+      layoutTransition={{ duration: 0.16, ease: "easeOut" }}
+      headerActions={
+        <Button
+          type="button"
+          variant="card"
+          size="icon-sm"
+          className="size-7 rounded-md text-accent hover:text-foreground"
+          onClick={() => setExpanded((prev) => !prev)}
+          aria-label={expandLabel}
+          title={expandLabel}
+        >
+          {expanded ? (
+            <CollapseIcon className="size-4" />
+          ) : (
+            <ExpandIcon className="size-4" />
+          )}
+        </Button>
+      }
     >
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className={cn("flex flex-col", expanded && "min-h-0")}
+        style={expanded ? { height: "min(58dvh, 560px)" } : undefined}
+      >
         <PostHeader
           user={user || null}
           initials={user?.name?.[0] || "?"}
@@ -156,6 +191,7 @@ export function CreatePostModal({
           uploadedImage={uploadedImage}
           uploadingImage={uploadingImage}
           handleRemoveImage={handleRemoveImage}
+          expanded={expanded}
         />
 
         <PostFooter
@@ -175,5 +211,5 @@ export function CreatePostModal({
         />
       </form>
     </SettingsDialogShell>
-  )
+  );
 }
