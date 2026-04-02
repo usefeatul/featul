@@ -3,6 +3,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@featul/ui/lib/utils";
+import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { XMarkIcon } from "@featul/ui/icons/xmark";
@@ -222,17 +223,19 @@ export default function WorkspaceShortcutsDrawer() {
                 Keyboard Shortcuts
               </h2>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-sm"
               aria-label="Close keyboard shortcuts"
               onClick={() => setOpen(false)}
               className={cn(
-                "inline-flex size-7 items-center justify-center rounded-md text-zinc-500 transition-colors",
-                "hover:text-zinc-200",
+                "size-7 cursor-pointer rounded-md bg-transparent p-0 text-zinc-500 shadow-none",
+                "hover:bg-white/5 hover:text-zinc-200",
               )}
             >
               <XMarkIcon className="size-4" />
-            </button>
+            </Button>
           </div>
 
           <div className="relative">
