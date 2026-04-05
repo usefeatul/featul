@@ -3,6 +3,7 @@ import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import Sidebar from "@/components/sidebar/Sidebar";
 import MobileSidebar from "@/components/sidebar/MobileSidebar";
 import { WorkspaceEvents } from "@/components/global/WorkspaceEvents";
+import WorkspaceShortcutsDrawer from "@/components/global/WorkspaceShortcutsDrawer";
 import {
   getBrandingColorsBySlug,
   getWorkspaceStatusCounts,
@@ -96,6 +97,7 @@ export default async function WorkspaceLayout({
         initialUser={session?.user}
         initialDeviceAccounts={deviceAccounts}
       />
+      <WorkspaceShortcutsDrawer />
     </Container>
   );
 }
