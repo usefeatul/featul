@@ -92,8 +92,7 @@ export default function PlanOptionCard({
 }
 
 function getPlanRibbon(planKey: PlanKey): { label: string; tone: "popular" | "value" } | null {
-  if (planKey === "starter") return { label: "Most popular", tone: "popular" }
-  if (planKey === "professional") return { label: "Best value", tone: "value" }
+  if (planKey === "professional") return { label: "Most popular", tone: "value" }
   return null
 }
 

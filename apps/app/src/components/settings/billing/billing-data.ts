@@ -47,9 +47,9 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
   starter: {
     id: "starter",
     label: "Starter",
-    tagline: "For growing teams",
-    monthlyPrice: 20,
-    yearlyPrice: 200,
+    tagline: "For early teams",
+    monthlyPrice: 24,
+    yearlyPrice: 240,
     features: [
       {
         title: "Up to 5 team members",
@@ -78,9 +78,9 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
   professional: {
     id: "professional",
     label: "Professional",
-    tagline: "For advanced teams",
-    monthlyPrice: 45,
-    yearlyPrice: 450,
+    tagline: "For growing product teams",
+    monthlyPrice: 47,
+    yearlyPrice: 470,
     features: [
       {
         title: "Everything in Starter",
