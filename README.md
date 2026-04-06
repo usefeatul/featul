@@ -82,7 +82,7 @@ If you plan to run Drizzle database commands, make sure `DATABASE_URL` is also a
 Run the product app:
 
 ```bash
-bun run app:dev
+bun run app:devs
 ```
 
 Run the marketing site:
