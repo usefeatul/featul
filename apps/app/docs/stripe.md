@@ -36,6 +36,7 @@ Configure Stripe to send these events to `/api/auth/stripe/webhook`:
 - Billing is workspace-scoped by `referenceId = workspace.id`.
 - Only the workspace owner can manage billing in this version.
 - Billing emails are sent to the workspace owner when a paid plan is activated or changed, when a payment fails, and when a renewal is approaching.
+- Trial policy and scope rules are documented in [`/Users/dalyjean/Desktop/featul/apps/app/docs/trial.md`](/Users/dalyjean/Desktop/featul/apps/app/docs/trial.md).
 - In Stripe Dashboard, set the webhook endpoint's upcoming renewal reminder to `3` days so `invoice.upcoming` arrives on the intended schedule.
 - The detailed plugin behavior and schema contract are documented in [`/Users/dalyjean/Desktop/featul/docs/better-auth-stripe.md`](/Users/dalyjean/Desktop/featul/docs/better-auth-stripe.md).
 
