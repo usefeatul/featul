@@ -48,15 +48,11 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
   starter: {
     id: "starter",
     label: "Starter",
-    tagline: "For early teams with a 7-day free trial",
+    tagline: "For early teams",
     monthlyPrice: 24,
     yearlyPrice: 240,
     trialDays: 7,
     features: [
-      {
-        title: "7-day free trial",
-        description: "Try Starter before your first paid billing cycle begins.",
-      },
       {
         title: "Up to 5 team members",
         description: "Scale collaboration with support for a larger team.",
@@ -84,15 +80,11 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
   professional: {
     id: "professional",
     label: "Professional",
-    tagline: "For growing product teams with a 3-day free trial",
+    tagline: "For growing product teams",
     monthlyPrice: 47,
     yearlyPrice: 470,
     trialDays: 3,
     features: [
-      {
-        title: "3-day free trial",
-        description: "Evaluate the full Professional plan before upgrading.",
-      },
       {
         title: "Everything in Starter",
         description: "Includes all Starter features and capabilities.",
