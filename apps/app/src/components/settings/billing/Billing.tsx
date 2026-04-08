@@ -170,10 +170,13 @@ export default function BillingSection({
               <span className="font-heading font-medium text-accent">{activePlan.label}</span>
               <span className="font-heading text-accent">${currentAmount}</span>
               <span className="font-heading text-accent">{currentSuffix}</span>
+              {trialEndLabel ? (
+                <span className="text-accent">•</span>
+              ) : null}
+              {trialEndLabel ? (
+                <span className="text-accent">Trial until {trialEndLabel}</span>
+              ) : null}
             </div>
-            {trialEndLabel ? (
-              <div className="text-sm text-accent">Trial ends on {trialEndLabel}</div>
-            ) : null}
           </div>
           <BillingCycleSegment billingCycle={billingCycle} onChange={setBillingCycle} />
         </div>
