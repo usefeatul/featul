@@ -69,7 +69,7 @@ export default function PlanOptionCard({
         </div>
         {plan.trialDays ? (
           <div className="mt-1 text-sm text-accent">
-            Includes a <span className="font-medium text-foreground">{plan.trialDays}-day free trial</span>
+            <span className="font-medium text-foreground">{plan.trialDays}-day free trial</span>
           </div>
         ) : null}
       </div>
