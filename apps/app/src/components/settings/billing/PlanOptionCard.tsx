@@ -60,18 +60,19 @@ export default function PlanOptionCard({
         </div>
       </div>
 
-      <div className="relative z-10 mb-4 text-4xl font-semibold tracking-tight text-foreground">
-        {billingCycle === "yearly" ? `$${plan.yearlyPrice}` : `$${plan.monthlyPrice}`}
-        <span className="ml-1 text-sm font-normal text-accent">
-          /{billingCycle === "yearly" ? "year" : "mo"}
-        </span>
-      </div>
-
-      {plan.trialDays ? (
-        <div className="relative z-10 mb-4 text-sm font-medium text-accent">
-          {plan.trialDays}-day free trial
+      <div className="relative z-10 mb-4">
+        <div className="text-4xl font-semibold tracking-tight text-foreground">
+          {billingCycle === "yearly" ? `$${plan.yearlyPrice}` : `$${plan.monthlyPrice}`}
+          <span className="ml-1 text-sm font-normal text-accent">
+            /{billingCycle === "yearly" ? "year" : "mo"}
+          </span>
         </div>
-      ) : null}
+        {plan.trialDays ? (
+          <div className="mt-1 text-sm text-accent">
+            Includes a <span className="font-medium text-foreground">{plan.trialDays}-day free trial</span>
+          </div>
+        ) : null}
+      </div>
 
       <ul className="relative z-10 mb-4 flex-1 space-y-1.5 text-sm text-accent">
         {plan.features.map((feature) => (
