@@ -124,6 +124,9 @@ const stripePlans = [
         name: "starter",
         priceId: stripeStarterMonthlyPriceId,
         annualDiscountPriceId: stripeStarterYearlyPriceId || undefined,
+        freeTrial: {
+          days: 7,
+        },
       }
     : null,
   stripeProfessionalMonthlyPriceId
@@ -131,12 +134,18 @@ const stripePlans = [
         name: "professional",
         priceId: stripeProfessionalMonthlyPriceId,
         annualDiscountPriceId: stripeProfessionalYearlyPriceId || undefined,
+        freeTrial: {
+          days: 3,
+        },
       }
     : null,
 ].filter(Boolean) as Array<{
   name: "starter" | "professional";
   priceId: string;
   annualDiscountPriceId?: string;
+  freeTrial?: {
+    days: number;
+  };
 }>;
 
 function toPaidStripePlanName(plan: unknown): StripeBillingPlanName | null {
@@ -187,6 +196,17 @@ const stripePlugin = (() => {
     subscription: {
       enabled: true,
       plans: stripePlans,
+      getCheckoutSessionParams: async ({ plan }) => {
+        if (!plan.freeTrial) {
+          return {};
+        }
+
+        return {
+          params: {
+            payment_method_collection: "if_required",
+          },
+        };
+      },
       authorizeReference: async ({ user, referenceId }) => {
         const workspaceId = String(referenceId || "").trim();
         if (!workspaceId) return false;

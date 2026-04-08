@@ -27,7 +27,7 @@ export default function Pricing() {
                 <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
               </h2>
               <p className="text-accent mt-4 text-base sm:text-lg">
-                Start free, scale as you grow. Simple plans for customer‑driven teams.
+                Start free, then move into simple flat-workspace plans for early and growing product teams.
               </p>
             </div>
 
@@ -184,15 +184,14 @@ function PricingPlanRibbon({
 }
 
 function getPlanRibbon(planKey: PricingPlanKey): { label: string; tone: "popular" | "value" } | null {
-  if (planKey === "starter") return { label: "Most popular", tone: "popular" }
-  if (planKey === "professional") return { label: "Best value", tone: "value" }
+  if (planKey === "professional") return { label: "Most popular", tone: "value" }
   return null
 }
 
 function getPlanCtaLabel(planKey: PricingPlanKey): string {
   if (planKey === "free") return "Get Free"
   if (planKey === "starter") return "Get Starter"
-  return "Get Pro"
+  return "Get Professional"
 }
 
 function getRibbonSpotlightClass(tone: "popular" | "value") {

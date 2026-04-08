@@ -143,6 +143,18 @@ export default function BillingSection({
   const currentAmount =
     currentBillingCycle === "yearly" ? activePlan.yearlyPrice : activePlan.monthlyPrice
   const currentSuffix = currentBillingCycle === "yearly" ? "/year" : "/mo"
+  const trialEndLabel = React.useMemo(() => {
+    if (!subscription?.trialEnd || subscription.status !== "trialing") return null
+
+    const trialEndDate = new Date(subscription.trialEnd)
+    if (Number.isNaN(trialEndDate.getTime())) return null
+
+    return new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(trialEndDate)
+  }, [subscription?.status, subscription?.trialEnd])
 
   return (
     <SectionCard
@@ -151,16 +163,24 @@ export default function BillingSection({
       action={billingAction}
     >
       <div className="space-y-3">
-        <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border border-border/70 bg-background px-3 py-3">
-          <div className="min-w-0 space-y-1">
-            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm text-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-md border border-border/70 bg-background px-3 py-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-foreground">
               <span>Current:</span>
               <span className="font-heading font-medium text-accent">{activePlan.label}</span>
               <span className="font-heading text-accent">${currentAmount}</span>
               <span className="font-heading text-accent">{currentSuffix}</span>
+              {trialEndLabel ? (
+                <span className="text-accent">•</span>
+              ) : null}
+              {trialEndLabel ? (
+                <span className="text-accent">Trial until {trialEndLabel}</span>
+              ) : null}
             </div>
           </div>
-          <BillingCycleSegment billingCycle={billingCycle} onChange={setBillingCycle} />
+          <div className="shrink-0">
+            <BillingCycleSegment billingCycle={billingCycle} onChange={setBillingCycle} />
+          </div>
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">

@@ -113,7 +113,7 @@ export default function PlanCheckoutButton({
       disabled={!canManageBilling || isCurrent || isCheckingOut}
       onClick={handleCheckout}
     >
-      Choose plan
+      {plan.trialDays ? "Start trial" : "Choose plan"}
     </LoadingButton>
   )
 }

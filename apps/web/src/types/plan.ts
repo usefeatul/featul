@@ -33,9 +33,9 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
   starter: {
     key: "starter",
     name: "Starter",
-    note: "For growing teams",
-    monthlyPrice: 20,
-    yearlyPrice: 200,
+    note: "For early teams",
+    monthlyPrice: 24,
+    yearlyPrice: 240,
     href: "https://app.featul.com/auth/sign-up",
     features: [
       { title: "Up to 5 team members" },
@@ -48,9 +48,9 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
   professional: {
     key: "professional",
     name: "Professional",
-    note: "For advanced teams",
-    monthlyPrice: 45,
-    yearlyPrice: 450,
+    note: "For growing product teams",
+    monthlyPrice: 47,
+    yearlyPrice: 470,
     href: "https://app.featul.com/auth/sign-up",
     features: [
       { title: "Everything in Starter" },
