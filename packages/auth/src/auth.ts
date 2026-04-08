@@ -204,13 +204,6 @@ const stripePlugin = (() => {
         return {
           params: {
             payment_method_collection: "if_required",
-            subscription_data: {
-              trial_settings: {
-                end_behavior: {
-                  missing_payment_method: "cancel",
-                },
-              },
-            },
           },
         };
       },
