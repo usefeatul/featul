@@ -67,6 +67,12 @@ export default function PlanOptionCard({
         </span>
       </div>
 
+      {plan.trialDays ? (
+        <div className="relative z-10 mb-4 text-sm font-medium text-accent">
+          {plan.trialDays}-day free trial
+        </div>
+      ) : null}
+
       <ul className="relative z-10 mb-4 flex-1 space-y-1.5 text-sm text-accent">
         {plan.features.map((feature) => (
           <li key={feature.title} className="leading-relaxed">

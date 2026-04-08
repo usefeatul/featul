@@ -143,6 +143,18 @@ export default function BillingSection({
   const currentAmount =
     currentBillingCycle === "yearly" ? activePlan.yearlyPrice : activePlan.monthlyPrice
   const currentSuffix = currentBillingCycle === "yearly" ? "/year" : "/mo"
+  const trialEndLabel = React.useMemo(() => {
+    if (!subscription?.trialEnd || subscription.status !== "trialing") return null
+
+    const trialEndDate = new Date(subscription.trialEnd)
+    if (Number.isNaN(trialEndDate.getTime())) return null
+
+    return new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(trialEndDate)
+  }, [subscription?.status, subscription?.trialEnd])
 
   return (
     <SectionCard
@@ -159,6 +171,9 @@ export default function BillingSection({
               <span className="font-heading text-accent">${currentAmount}</span>
               <span className="font-heading text-accent">{currentSuffix}</span>
             </div>
+            {trialEndLabel ? (
+              <div className="text-sm text-accent">Trial ends on {trialEndLabel}</div>
+            ) : null}
           </div>
           <BillingCycleSegment billingCycle={billingCycle} onChange={setBillingCycle} />
         </div>
