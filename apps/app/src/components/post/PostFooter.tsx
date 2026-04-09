@@ -1,34 +1,34 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Button } from "@featul/ui/components/button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
-import { ImageIcon } from "lucide-react"
-import type { UploadedImage } from "./PostContent"
+import React from "react";
+import { Button } from "@featul/ui/components/button";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { ImageIcon } from "lucide-react";
+import type { UploadedImage } from "./PostContent";
 
 export interface PostFooterProps {
-  isPending: boolean
-  disabled: boolean
-  uploadedImage: UploadedImage | null
-  uploadingImage: boolean
-  fileInputRef: React.RefObject<HTMLInputElement | null>
-  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
-  ALLOWED_IMAGE_TYPES: string[]
-  submitLabel?: string
+  isPending: boolean;
+  disabled: boolean;
+  uploadedImage: UploadedImage | null;
+  uploadingImage: boolean;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  ALLOWED_IMAGE_TYPES: string[];
+  submitLabel?: string;
 }
 
-export function PostFooter({ 
-  isPending, 
-  disabled, 
-  uploadedImage, 
-  uploadingImage, 
-  fileInputRef, 
+export function PostFooter({
+  isPending,
+  disabled,
+  uploadedImage,
+  uploadingImage,
+  fileInputRef,
   handleFileSelect,
   ALLOWED_IMAGE_TYPES,
-  submitLabel = "Create"
+  submitLabel = "Create",
 }: PostFooterProps) {
   return (
-    <div className="flex items-center justify-between p-3 md:p-4">
+    <div className="mt-auto flex items-center justify-between p-3 md:p-4">
       <div className="flex items-center gap-2">
         <input
           ref={fileInputRef}
@@ -62,8 +62,12 @@ export function PostFooter({
         className="bg-primary text-primary-foreground hover:bg-primary/90 px-6"
       >
         {isPending && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
-        {isPending ? (submitLabel === "Create" ? "Creating..." : "Saving...") : submitLabel}
+        {isPending
+          ? submitLabel === "Create"
+            ? "Creating..."
+            : "Saving..."
+          : submitLabel}
       </Button>
     </div>
-  )
+  );
 }
