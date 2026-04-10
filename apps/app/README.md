@@ -81,4 +81,4 @@ By default the app uses the Next.js dev server with Turbopack.
 
 ## Notes
 
-If you also run `apps/web` locally at the same time, one of the apps may move off port `3000` automatically depending on which dev server starts first.
+If you also run `apps/web` locally at the same time, one of the apps may move off port `3000` automatically depending on which dev server starts first. optionnaly you can run `bun run app:dev --port 3001` to run the app on port 3001
