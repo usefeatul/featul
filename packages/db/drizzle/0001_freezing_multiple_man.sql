@@ -1,5 +1,5 @@
 CREATE TABLE "activity_log" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"workspace_id" text NOT NULL,
 	"user_id" text,
 	"action" text NOT NULL,
@@ -12,9 +12,9 @@ CREATE TABLE "activity_log" (
 );
 --> statement-breakpoint
 CREATE TABLE "post_merge" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"source_post_id" uuid NOT NULL,
-	"target_post_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"source_post_id" text NOT NULL,
+	"target_post_id" text NOT NULL,
 	"merged_by" text NOT NULL,
 	"merge_type" text NOT NULL,
 	"reason" text,
@@ -23,8 +23,8 @@ CREATE TABLE "post_merge" (
 );
 --> statement-breakpoint
 CREATE TABLE "post_report" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"post_id" text NOT NULL,
 	"reported_by" text,
 	"reason" text NOT NULL,
 	"description" text,
@@ -36,8 +36,8 @@ CREATE TABLE "post_report" (
 );
 --> statement-breakpoint
 CREATE TABLE "changelog_entry" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"board_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"board_id" text NOT NULL,
 	"title" text NOT NULL,
 	"slug" text NOT NULL,
 	"content" json NOT NULL,

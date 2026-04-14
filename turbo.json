@@ -67,6 +67,10 @@
     "check-types": {
       "dependsOn": ["transit"]
     },
+    "test": {
+      "dependsOn": ["transit"],
+      "inputs": ["$TURBO_DEFAULT$", ".env.test", "docker-compose.test.yml"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

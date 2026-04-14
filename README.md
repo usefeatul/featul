@@ -111,7 +111,24 @@ bun run db:generate
 bun run db:migrate
 bun run db:push
 bun run db:studio
+bun run test
+bun run test:watch
+bun run test:coverage
 ```
+
+## Testing
+
+The initial automated test setup focuses on the main product app and its supporting shared packages.
+
+```bash
+bun run test
+bun run test:watch
+bun run test:coverage
+```
+
+The root test flow uses the shared `packages/test` toolkit, runs Vitest across `apps/app`, `@featul/auth`, `@featul/api`, and `@featul/ui`, and boots a dedicated Postgres test database from `.env.test`.
+
+For database-backed integration tests, the test DB startup prefers `docker-compose.test.yml` and falls back to a local Postgres runtime when Docker is unavailable but the Postgres CLI tools are installed.
 
 
 ## How The App Is Split
