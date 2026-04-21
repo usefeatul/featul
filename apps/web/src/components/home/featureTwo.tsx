@@ -116,7 +116,7 @@ export default function FeaturesSection() {
               </div>
 
               <div
-                className={`overflow-hidden rounded-md border border-foreground/10 p-3 transition-colors duration-300 sm:p-4 ${active.panelClassName}`}
+                className={`overflow-hidden rounded-md border border-border p-3 shadow-2xl shadow-zinc-950/20 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background transition-colors duration-300 sm:p-4 ${active.panelClassName}`}
               >
                 <div
                   className="relative overflow-hidden rounded-[5px] border border-white/70 bg-white/85"
