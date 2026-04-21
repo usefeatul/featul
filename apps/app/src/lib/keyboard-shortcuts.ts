@@ -43,6 +43,16 @@ export const WORKSPACE_SHORTCUTS: WorkspaceShortcut[] = [
     ],
   },
   {
+    id: "open-search",
+    group: "Global workspace",
+    title: "Open search",
+    description: "Open the search dialog when no field is focused.",
+    bindings: [
+      { label: "Mac", keys: ["Command", "K"] },
+      { label: "Windows", keys: ["Ctrl", "K"] },
+    ],
+  },
+  {
     id: "create-post",
     group: "Global workspace",
     title: "Create post",

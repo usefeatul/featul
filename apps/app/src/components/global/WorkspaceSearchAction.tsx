@@ -43,10 +43,57 @@ export function WorkspaceSearchAction({
 }: WorkspaceSearchActionProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(currentSearch);
+  const buttonRef = React.useRef<HTMLButtonElement | null>(null);
 
   React.useEffect(() => {
     setValue(currentSearch);
   }, [currentSearch]);
+
+  React.useEffect(() => {
+    const isEditableElement = (element: HTMLElement | null) => {
+      if (!element) return false;
+      const role = element.getAttribute("role") || "";
+      const tag = element.tagName;
+      return (
+        role === "textbox" ||
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        element.isContentEditable
+      );
+    };
+
+    const isVisibleSearchAction = () => {
+      const button = buttonRef.current;
+      if (!button) return false;
+      const rect = button.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.altKey || event.shiftKey) return;
+
+      const key = typeof event.key === "string" ? event.key.toLowerCase() : "";
+      if (key !== "k") return;
+
+      const usesPlatformModifier =
+        (event.metaKey && !event.ctrlKey) || (event.ctrlKey && !event.metaKey);
+      if (!usesPlatformModifier) return;
+
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      const activeElement =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      if (isEditableElement(target) || isEditableElement(activeElement)) return;
+      if (!isVisibleSearchAction()) return;
+
+      event.preventDefault();
+      setOpen(true);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const { data: results = [], isLoading } = useQuery({
     queryKey: ["search", workspaceSlug, value],
@@ -78,6 +125,7 @@ export function WorkspaceSearchAction({
   return (
     <>
       <Button
+        ref={buttonRef}
         type="button"
         variant={buttonVariant}
         size="icon-sm"
