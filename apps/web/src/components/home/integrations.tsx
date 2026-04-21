@@ -95,8 +95,13 @@ export default function Integrations() {
             </h2>
             <div className="mt-3 flex items-start gap-2">
               <AccentBar width={8} />
-              <p className="text-accent text-sm sm:text-base">
-                Connect notifications and imports to centralize feedback workflows.
+              <p className="text-accent max-w-3xl text-sm leading-6 sm:text-base">
+                Connect Featul with the tools your team already depends on, so
+                feedback can move through a clear and consistent operating
+                workflow. Notifications keep new requests visible in the right
+                channels, while import options help preserve historical context,
+                reduce manual migration work, and bring product conversations
+                into one structured system.
               </p>
             </div>
           </div>
