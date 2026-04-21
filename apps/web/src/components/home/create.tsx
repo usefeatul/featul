@@ -3,7 +3,6 @@ import { Container } from "../global/container";
 import { Card } from "@featul/ui/components/card";
 import { AccentBar } from "@featul/ui/components/cardElements";
 import FeatureCard from "./featureCard";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 const setupCards = [
@@ -12,20 +11,14 @@ const setupCards = [
     description:
       "Sign up with email, choose your workspace, and get your feedback portal live without touching your codebase.",
     href: "/docs/getting-started/index",
-    panelClassName:
-      "bg-[radial-gradient(circle_at_top,#f4dcc1_0%,transparent_52%),linear-gradient(135deg,#f7f1e6_0%,#e5e8e1_100%)]",
+    step: "01",
   },
   {
     title: "Share your board",
     description:
       "Use your workspace subdomain or custom domain to collect votes, comments, and new requests in one place.",
     href: "/docs/branding-setup/domain",
-    image: "/image/dashboard.png",
-    alt: "Public feedback board where users can submit and vote",
-    imageClassName: "object-cover object-center",
-    imageFrameClassName: "sm:mr-10",
-    panelClassName:
-      "bg-[radial-gradient(circle_at_top_left,#efe1c8_0%,transparent_45%),linear-gradient(135deg,#e5e7dc_0%,#d9dfd8_100%)]",
+    step: "02",
   },
 ] as const;
 
@@ -52,63 +45,27 @@ export default function Create() {
               {setupCards.map((card) => (
                 <Card
                   key={card.title}
-                  className="group gap-0 rounded-md border border-foreground/8 bg-white p-3 shadow-none ring-1 ring-black/5"
+                  className="group rounded-md border border-foreground/10 bg-white p-5 shadow-none"
                 >
-                  <div
-                    className={`relative overflow-hidden rounded-md border border-black/5 ${card.panelClassName}`}
-                  >
-                    <div className="min-h-[220px] p-4 sm:min-h-[260px] sm:p-5">
-                      {card.title === "Create your workspace" ? (
-                        <div className="relative h-full">
-                          <div className="absolute bottom-0 left-0 h-[84%] w-[58%] overflow-hidden rounded-md border border-white/70 bg-white">
-                            <Image
-                              src="/image/dashboard.png"
-                              alt="Workspace dashboard with request statuses and counts"
-                              fill
-                              sizes="(max-width: 640px) 55vw, (max-width: 1024px) 28vw, 320px"
-                              className="object-cover object-left-top"
-                            />
-                          </div>
-                          <div className="absolute right-0 top-0 h-[84%] w-[58%] overflow-hidden rounded-md border border-white/70 bg-white">
-                            <Image
-                              src="/image/dashboard.png"
-                              alt="Workspace view with sortable customer requests"
-                              fill
-                              sizes="(max-width: 640px) 55vw, (max-width: 1024px) 28vw, 320px"
-                              className="object-cover object-right-top"
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div
-                          className={`relative h-full overflow-hidden rounded-md border border-white/70 bg-white ${card.imageFrameClassName}`}
-                        >
-                          <Image
-                            src={card.image}
-                            alt={card.alt}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
-                            className={card.imageClassName}
-                          />
-                        </div>
-                      )}
+                  <div className="flex items-start gap-4">
+                    <span className="text-primary flex size-8 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary/5 text-sm font-semibold">
+                      {card.step}
+                    </span>
+                    <div>
+                      <h3 className="text-foreground text-lg font-semibold tracking-[-0.02em] sm:text-xl">
+                        {card.title}
+                      </h3>
+                      <p className="text-accent mt-2 max-w-[46ch] text-sm leading-6 sm:text-base">
+                        {card.description}
+                      </p>
+                      <Link
+                        href={card.href}
+                        className="text-primary mt-4 inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary/80"
+                      >
+                        Learn more
+                        <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                      </Link>
                     </div>
-                  </div>
-
-                  <div className="px-2 pb-3 pt-5 sm:px-3">
-                    <h3 className="text-foreground text-xl font-semibold tracking-[-0.02em]">
-                      {card.title}
-                    </h3>
-                    <p className="text-accent mt-3 max-w-[46ch] text-sm leading-6 sm:text-base">
-                      {card.description}
-                    </p>
-                    <Link
-                      href={card.href}
-                      className="text-primary mt-5 inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary/80"
-                    >
-                      Learn more
-                      <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                    </Link>
                   </div>
                 </Card>
               ))}
