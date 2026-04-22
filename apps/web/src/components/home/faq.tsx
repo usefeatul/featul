@@ -30,7 +30,7 @@ export default function FAQsFour() {
                                     <AccordionItem
                                         value={item.id}
                                         className="border-none px-0 py-3">
-                                        <AccordionTrigger className="group cursor-pointer text-left text-md  font-medium !no-underline hover:!no-underline justify-start [&>svg]:hidden">
+                                        <AccordionTrigger className="font-heading group cursor-pointer text-left text-md font-medium !no-underline hover:!no-underline justify-start [&>svg]:hidden">
                                             <span className="inline-flex items-center gap-2">
                                                 <ChevronDownIcon className="size-4 text-primary transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                                 <span>{item.question}</span>

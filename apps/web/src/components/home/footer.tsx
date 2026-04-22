@@ -25,7 +25,7 @@ export default function FooterSection() {
                 className="inline-flex items-center gap-2 text-foreground hover:text-primary"
               >
                 <FeatulLogoIcon />
-                <span className="text-sm font-medium">featul</span>
+                <span className="font-heading text-sm font-medium">featul</span>
               </Link>
               <p className="text-accent mt-4 text-sm leading-6">
                 Customer feedback, roadmaps, and changelogs in one simple
@@ -37,7 +37,7 @@ export default function FooterSection() {
               <div className="grid grid-cols-2 gap-x-10 gap-y-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-10">
                 {footerNavigationConfig.groups.map((group, index) => (
                   <div key={index} className="text-sm">
-                    <span className="text-foreground block font-medium">
+                    <span className="font-heading text-foreground block font-medium">
                       {group.title}
                     </span>
                     <div className="mt-3 space-y-2.5">
