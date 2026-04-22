@@ -20,6 +20,15 @@ export const footerNavigationConfig: FooterNavigationConfig = {
       ],
     },
     {
+      title: 'Features',
+      items: [
+        { name: 'Boards', href: '/docs/getting-started/create-boards' },
+        { name: 'Dashboard', href: '/docs/getting-started/overview' },
+        { name: 'Roadmap', href: '/docs/getting-started/plan-roadmap' },
+        { name: 'Changelog', href: '/docs/getting-started/publish-updates' },
+      ],
+    },
+    {
       title: 'Alternatives',
       items: [
         { name: 'UserJot', href: '/alternatives/userjot' },
