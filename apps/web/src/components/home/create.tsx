@@ -55,13 +55,9 @@ export default function Create() {
               </h2>
               <div className="mt-10 flex items-start gap-2">
                 <AccentBar width={8} />
-                <p className="text-accent max-w-3xl text-sm leading-6 sm:text-base">
-                  Start with a workspace, configure the public board, and share a
-                  branded feedback destination with customers in minutes. The
-                  setup flow is intentionally practical: teams can invite
-                  collaborators, define how feedback is collected, and begin
-                  organizing requests without adding implementation work to the
-                  product roadmap or slowing down their release process.
+                <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
+                  Create a workspace, invite your team, and share a branded
+                  feedback board without adding setup work to your roadmap.
                 </p>
               </div>
             </div>

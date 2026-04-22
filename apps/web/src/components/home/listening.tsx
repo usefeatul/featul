@@ -16,9 +16,8 @@ export default function Listening() {
           <div className="mt-10 flex items-stretch gap-3">
             <AccentBar width={8} />
             <p className="text-accent text-md leading-6 text-balance sm:max-w-4xl">
-              featul gives every request a single homecaptured, organized, and
-              ready to ship. No more buried DMs, scattered emails, or forgotten
-              ideas.
+              Featul keeps feedback organized in one place, so teams can spot
+              what matters and ship with more confidence.
             </p>
           </div>
 
