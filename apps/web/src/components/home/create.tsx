@@ -30,20 +30,20 @@ const essentials = [
     title: "Custom domain and branding",
     description: "Use your domain, logo, colors, and theme.",
     icon: DomainIcon,
-    iconClassName: "border-2 border-sky-300 bg-sky-100 text-sky-600",
+    iconClassName: "border border-sky-200 bg-sky-100 text-sky-600",
   },
   {
     title: "Team roles and invites",
     description: "Invite teammates and collaborate in one workspace.",
     icon: MemberIcon,
     iconClassName:
-      "border-2 border-emerald-300 bg-emerald-100 text-emerald-600",
+      "border border-emerald-200 bg-emerald-100 text-emerald-600",
   },
   {
     title: "CSV import and export",
     description: "Move feedback data in or out whenever you need.",
     icon: CsvIcon,
-    iconClassName: "border-2 border-amber-300 bg-amber-100 text-amber-600",
+    iconClassName: "border border-amber-200 bg-amber-100 text-amber-600",
   },
 ] as const;
 
