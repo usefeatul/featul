@@ -11,7 +11,7 @@ export default function FooterSection() {
 
   return (
     <footer className="bg-background">
-      <Container maxWidth="6xl" className="px-4 py-12 sm:px-10 md:py-16 lg:px-12 xl:px-14">
+      <Container maxWidth="6xl" className="px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="grid items-start gap-12 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
             <div className="max-w-sm">
@@ -53,7 +53,7 @@ export default function FooterSection() {
             </nav>
           </div>
 
-          <div className="mt-12 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
               <p className="text-accent text-sm">© {year} featul</p>
               <StatusButton
