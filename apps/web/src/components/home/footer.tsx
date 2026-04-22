@@ -5,12 +5,16 @@ import { StatusButton } from "@/components/home/status";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
 import { TwitterIcon } from "@featul/ui/icons/twitter";
+import { LinearSeparator } from "@/components/linear-separator";
 
 export default function FooterSection() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="bg-background">
+      <div className="mx-auto max-w-6xl">
+        <LinearSeparator />
+      </div>
       <Container maxWidth="6xl" className="px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="grid items-start gap-12 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
