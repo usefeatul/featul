@@ -19,18 +19,18 @@ export function ConversionHero() {
               Build better products with customer feedback.
               <span className="block mt-1 text-accent/80">
                 Collect, prioritize, and ship what matters with
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-border bg-foreground/5 px-1.5 py-0 text-[0.9em] text-accent/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 sm:text-inherit dark:ring-offset-black">
-                  <BoardIcon className="size-6 text-primary sm:size-8" />
+                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-sky-200 bg-sky-50 px-1.5 py-0 text-[0.9em] text-sky-700 ring-1 ring-sky-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 sm:text-inherit dark:ring-offset-black">
+                  <BoardIcon className="size-6 text-sky-600 sm:size-8" />
                   boards
                 </span>
                 ,
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-border bg-foreground/5 px-1.5 py-0 text-[0.9em] text-accent/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 sm:text-inherit dark:ring-offset-black">
-                  <RoadmapIcon className="size-6 text-primary sm:size-8" />
+                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0 text-[0.9em] text-emerald-700 ring-1 ring-emerald-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 sm:text-inherit dark:ring-offset-black">
+                  <RoadmapIcon className="size-6 text-emerald-600 sm:size-8" />
                   roadmaps
                 </span>
                 , and
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-border bg-foreground/5 px-1.5 py-0 text-[0.9em] text-accent/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 sm:text-inherit dark:ring-offset-black">
-                  <ChangelogIcon className="size-6 text-primary sm:size-8" />
+                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0 text-[0.9em] text-amber-700 ring-1 ring-amber-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 sm:text-inherit dark:ring-offset-black">
+                  <ChangelogIcon className="size-6 text-amber-600 sm:size-8" />
                   changelogs
                 </span>
                 .
