@@ -30,16 +30,20 @@ const essentials = [
     title: "Custom domain and branding",
     description: "Use your domain, logo, colors, and theme.",
     icon: DomainIcon,
+    iconClassName: "border-2 border-sky-300 bg-sky-100 text-sky-600",
   },
   {
     title: "Team roles and invites",
     description: "Invite teammates and collaborate in one workspace.",
     icon: MemberIcon,
+    iconClassName:
+      "border-2 border-emerald-300 bg-emerald-100 text-emerald-600",
   },
   {
     title: "CSV import and export",
     description: "Move feedback data in or out whenever you need.",
     icon: CsvIcon,
+    iconClassName: "border-2 border-amber-300 bg-amber-100 text-amber-600",
   },
 ] as const;
 
@@ -98,8 +102,8 @@ export default function Create() {
                   </div>
                 </div>
 
-                <div className="p-5 sm:p-6">
-                  <div className="mb-5">
+                <div className="flex h-full flex-col p-5 sm:p-6">
+                  <div>
                     <p className="text-primary text-sm font-medium">
                       Included from day one
                     </p>
@@ -107,13 +111,15 @@ export default function Create() {
                       The basics are already handled.
                     </h3>
                   </div>
-                  <div className="space-y-4">
+                  <div className="mt-6 flex flex-1 flex-col justify-between gap-5">
                     {essentials.map((item) => {
                       const Icon = item.icon;
 
                       return (
                         <div key={item.title} className="flex gap-3">
-                          <Icon className="text-primary mt-0.5 size-7 shrink-0 rounded-md bg-primary/5 p-1.5" />
+                          <Icon
+                            className={`mt-0.5 size-7 shrink-0 rounded-md p-1.5 ${item.iconClassName}`}
+                          />
                           <div>
                             <h4 className="text-foreground text-sm font-semibold">
                               {item.title}
