@@ -116,10 +116,10 @@ export default function FeaturesSection() {
               </div>
 
               <div
-                className={`overflow-hidden rounded-md border border-border p-3 shadow-2xl shadow-zinc-950/20 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background transition-colors duration-300 sm:p-4 ${active.panelClassName}`}
+                className={`relative overflow-hidden rounded-md border border-foreground/10 p-3 outline-none ring-1 ring-white/80 ring-offset-2 ring-offset-background transition-colors duration-300 before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-white/90 sm:p-4 ${active.panelClassName}`}
               >
                 <div
-                  className="relative overflow-hidden rounded-[5px] border border-white/70 bg-white/85"
+                  className="relative overflow-hidden rounded-[5px] border border-foreground/10 bg-background"
                   style={{ aspectRatio: "1.7 / 1" }}
                 >
                   <AnimatePresence mode="wait">
