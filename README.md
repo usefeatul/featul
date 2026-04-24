@@ -38,8 +38,6 @@ This repo is organised as a Turbo monorepo with two applications and several sha
 └── turbo.json      # Task orchestration for build, dev, lint, and type-checking
 ```
 
-## Architecture At A Glance
-
 The monorepo is split into two Next.js apps:
 
 - `apps/app` is the main product runtime for signed-in users, workspace dashboards, feedback boards, roadmap, changelog, widget routes, and API endpoints.
@@ -71,9 +69,7 @@ flowchart LR
     AUTH --> EXT
 ```
 
-## Sequence Diagrams
 
-These diagrams show the main ways the pieces work together.
 
 ### 1. Signed-in product flow
 
@@ -101,7 +97,7 @@ sequenceDiagram
     APP-->>B: Render dashboard UI
 ```
 
-### 2. Public board / roadmap / changelog flow
+
 
 This is the public-facing workspace experience served by `apps/app` under subdomain-style routes.
 
@@ -123,10 +119,7 @@ sequenceDiagram
     AUTH->>DB: Read session if cookie exists
     DB-->>AUTH: Session or null
     AUTH-->>APP: Current user or anonymous
-    APP-->>V: Render public requests, roadmap, or changelog
-```
-
-### 3. Marketing and docs flow
+ 
 
 The marketing site is a separate Next.js app with its own pages and content, but it still reuses shared UI patterns from the monorepo.
 
