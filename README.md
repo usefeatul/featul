@@ -38,6 +38,12 @@ This repo is organised as a Turbo monorepo with two applications and several sha
 └── turbo.json      # Task orchestration for build, dev, lint, and type-checking
 ```
 
+The monorepo is split into two Next.js apps:
+
+- `apps/app` is the main product runtime for signed-in users, workspace dashboards, feedback boards, roadmap, changelog, widget routes, and API endpoints.
+- `apps/web` is the separate marketing and documentation site.
+- Shared packages sit underneath both apps so auth, database access, API logic, editor features, and UI stay consistent.
+
 ## Tech Stack
 
 - Bun workspaces and Turborepo

@@ -1,4 +1,25 @@
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+const DEFAULT_SITE_URL = "https://featul.com"
+
+function normalizeSiteUrl(input?: string) {
+  const candidate = input?.trim() || DEFAULT_SITE_URL
+
+  try {
+    const url = new URL(candidate)
+
+    if (url.hostname === "www.featul.com") {
+      url.hostname = "featul.com"
+    }
+
+    url.hash = ""
+    url.pathname = url.pathname.replace(/\/$/, "")
+
+    return url.toString()
+  } catch {
+    return DEFAULT_SITE_URL
+  }
+}
+
+export const SITE_URL = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)
 
 export const DEFAULT_TITLE = "featul"
 export const TITLE_TEMPLATE = "%s - featul"
