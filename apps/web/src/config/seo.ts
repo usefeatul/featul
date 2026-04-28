@@ -1,4 +1,4 @@
-const DEFAULT_SITE_URL = "https://featul.com"
+const DEFAULT_SITE_URL = "https://www.featul.com"
 
 function normalizeSiteUrl(input?: string) {
   const candidate = input?.trim() || DEFAULT_SITE_URL
@@ -6,8 +6,8 @@ function normalizeSiteUrl(input?: string) {
   try {
     const url = new URL(candidate)
 
-    if (url.hostname === "www.featul.com") {
-      url.hostname = "featul.com"
+    if (url.hostname === "featul.com") {
+      url.hostname = "www.featul.com"
     }
 
     url.hash = ""
