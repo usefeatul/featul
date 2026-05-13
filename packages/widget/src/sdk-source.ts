@@ -174,16 +174,35 @@ export function getWidgetSdkSource() {
       button.style.position = "fixed";
       button.style.bottom = "20px";
       button.style[position] = "20px";
+      button.style.alignItems = "center";
+      button.style.justifyContent = "center";
+      button.style.boxSizing = "border-box";
       button.style.height = "48px";
-      button.style.padding = "0 18px";
+      button.style.minWidth = "100px";
+      button.style.padding = "0 20px";
       button.style.border = "0";
       button.style.borderRadius = "999px";
-      button.style.background = "#ff7144";
+      button.style.background = "linear-gradient(180deg, #ff7a52 0%, #ff6336 100%)";
       button.style.color = "#ffffff";
-      button.style.font = "500 14px/1.2 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      button.style.boxShadow = "0 16px 40px rgba(15, 23, 42, 0.22)";
+      button.style.font = "600 14px/1 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      button.style.letterSpacing = "0";
+      button.style.whiteSpace = "nowrap";
+      button.style.boxShadow = "0 18px 45px rgba(255, 99, 54, 0.28), 0 10px 28px rgba(15, 23, 42, 0.16)";
       button.style.cursor = "pointer";
+      button.style.userSelect = "none";
       button.style.zIndex = "2147483647";
+      button.style.transition = "transform 160ms ease, box-shadow 160ms ease, filter 160ms ease";
+      button.onmouseenter = function () {
+        if (state.open || state.animating) return;
+        button.style.transform = "translateY(-1px)";
+        button.style.filter = "brightness(1.03)";
+        button.style.boxShadow = "0 20px 48px rgba(255, 99, 54, 0.34), 0 12px 30px rgba(15, 23, 42, 0.18)";
+      };
+      button.onmouseleave = function () {
+        button.style.transform = "translateY(0)";
+        button.style.filter = "brightness(1)";
+        button.style.boxShadow = "0 18px 45px rgba(255, 99, 54, 0.28), 0 10px 28px rgba(15, 23, 42, 0.16)";
+      };
       button.onclick = function () {
         window.featul.showWidget();
       };
