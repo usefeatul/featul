@@ -47,21 +47,21 @@ export function getWidgetSdkSource() {
       parentOrigin: window.location.origin,
       theme: state.options.theme || "auto",
       position: position,
-      section: state.options.defaultSection || "feedback"
+      section: state.options.defaultSection || "home"
     });
     iframe.src = baseUrl + "/widget/" + encodeURIComponent(state.projectId) + "/frame?" + params.toString();
     iframe.title = "Featul feedback widget";
     iframe.setAttribute("aria-hidden", "true");
     iframe.style.position = "fixed";
-    iframe.style.bottom = "86px";
+    iframe.style.bottom = "82px";
     iframe.style[position] = "20px";
-    iframe.style.width = "400px";
-    iframe.style.height = "620px";
+    iframe.style.width = "384px";
+    iframe.style.height = "700px";
     iframe.style.maxWidth = "calc(100vw - 32px)";
     iframe.style.maxHeight = "calc(100vh - 108px)";
     iframe.style.border = "0";
-    iframe.style.borderRadius = "14px";
-    iframe.style.boxShadow = "0 24px 70px rgba(15, 23, 42, 0.24)";
+    iframe.style.borderRadius = "18px";
+    iframe.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
     iframe.style.zIndex = "2147483646";
     iframe.style.display = "none";
     iframe.style.background = "transparent";
@@ -81,7 +81,7 @@ export function getWidgetSdkSource() {
       button.style.padding = "0 18px";
       button.style.border = "0";
       button.style.borderRadius = "999px";
-      button.style.background = "#111827";
+      button.style.background = "#ff7144";
       button.style.color = "#ffffff";
       button.style.font = "500 14px/1.2 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       button.style.boxShadow = "0 16px 40px rgba(15, 23, 42, 0.22)";

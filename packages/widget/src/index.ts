@@ -1,4 +1,4 @@
-export type FeatulWidgetSection = "feedback" | "roadmap" | "changelog";
+export type FeatulWidgetSection = "home" | "feedback" | "roadmap" | "changelog";
 
 export type FeatulWidgetOptions = {
   widget?: boolean;
