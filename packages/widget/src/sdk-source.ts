@@ -98,7 +98,9 @@ export function getWidgetSdkSource() {
 
   function syncButtonVisibility() {
     if (!state.button) return;
-    state.button.style.display = state.open ? "none" : "inline-flex";
+    state.button.style.setProperty("display", state.open ? "none" : "inline-flex", "important");
+    state.button.style.setProperty("opacity", state.open ? "0" : "1", "important");
+    state.button.style.setProperty("pointer-events", state.open ? "none" : "auto", "important");
   }
 
   function setOpen(open, options) {
