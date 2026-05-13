@@ -12,6 +12,7 @@ export function getWidgetSdkSource() {
     user: null,
     iframe: null,
     button: null,
+    position: "right",
     open: false,
     ready: false,
     closeTimer: null,
@@ -39,10 +40,64 @@ export function getWidgetSdkSource() {
     else state.queue.push({ type: type, payload: payload });
   }
 
+  function getPanelRect(position) {
+    var width = Math.min(384, Math.max(280, window.innerWidth - 32));
+    var height = Math.min(700, Math.max(360, window.innerHeight - 40));
+    return {
+      left: position === "left" ? 20 : window.innerWidth - width - 20,
+      top: window.innerHeight - height - 20,
+      width: width,
+      height: height
+    };
+  }
+
+  function getLauncherRect(position) {
+    if (state.button) {
+      var rect = state.button.getBoundingClientRect();
+      if (rect.width && rect.height) {
+        return {
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height
+        };
+      }
+    }
+    var width = 104;
+    var height = 48;
+    return {
+      left: position === "left" ? 20 : window.innerWidth - width - 20,
+      top: window.innerHeight - height - 20,
+      width: width,
+      height: height
+    };
+  }
+
+  function applyFrameRect(rect) {
+    if (!state.iframe) return;
+    state.iframe.style.left = rect.left + "px";
+    state.iframe.style.top = rect.top + "px";
+    state.iframe.style.width = rect.width + "px";
+    state.iframe.style.height = rect.height + "px";
+    state.iframe.style.right = "auto";
+    state.iframe.style.bottom = "auto";
+  }
+
+  function applyPanelRect() {
+    applyFrameRect(getPanelRect(state.position));
+    if (state.iframe) state.iframe.style.borderRadius = "18px";
+  }
+
+  function applyLauncherRect() {
+    applyFrameRect(getLauncherRect(state.position));
+    if (state.iframe) state.iframe.style.borderRadius = "999px";
+  }
+
   function buildFrame() {
     if (state.iframe || !state.projectId) return;
 
     var position = state.options.position === "left" ? "left" : "right";
+    state.position = position;
     var iframe = document.createElement("iframe");
     var params = new URLSearchParams({
       parentOrigin: window.location.origin,
@@ -54,22 +109,15 @@ export function getWidgetSdkSource() {
     iframe.title = "Featul feedback widget";
     iframe.setAttribute("aria-hidden", "true");
     iframe.style.position = "fixed";
-    iframe.style.bottom = "20px";
-    iframe.style[position] = "20px";
-    iframe.style.width = "384px";
-    iframe.style.height = "700px";
-    iframe.style.maxWidth = "calc(100vw - 32px)";
-    iframe.style.maxHeight = "calc(100vh - 40px)";
     iframe.style.border = "0";
-    iframe.style.borderRadius = "18px";
+    iframe.style.borderRadius = "999px";
     iframe.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
     iframe.style.zIndex = "2147483646";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
-    iframe.style.transform = "translateY(18px) scale(0.96)";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    iframe.style.transition = "opacity 180ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1)";
-    iframe.style.background = "transparent";
+    iframe.style.transition = "left 260ms cubic-bezier(0.16, 1, 0.3, 1), top 260ms cubic-bezier(0.16, 1, 0.3, 1), width 260ms cubic-bezier(0.16, 1, 0.3, 1), height 260ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 260ms cubic-bezier(0.16, 1, 0.3, 1), opacity 120ms ease";
+    iframe.style.background = "#171717";
     iframe.style.colorScheme = state.options.theme === "dark" ? "dark" : "normal";
     document.body.appendChild(iframe);
     state.iframe = iframe;
@@ -98,6 +146,7 @@ export function getWidgetSdkSource() {
       document.body.appendChild(button);
       state.button = button;
     }
+    applyLauncherRect();
     syncButtonVisibility();
   }
 
@@ -118,25 +167,34 @@ export function getWidgetSdkSource() {
         state.closeTimer = null;
       }
       if (open) {
+        applyLauncherRect();
         state.iframe.style.display = "block";
+        state.iframe.style.opacity = "1";
         window.requestAnimationFrame(function () {
           if (!state.iframe) return;
-          state.iframe.style.opacity = "1";
-          state.iframe.style.transform = "translateY(0) scale(1)";
+          applyPanelRect();
         });
       } else {
-        state.iframe.style.opacity = "0";
-        state.iframe.style.transform = "translateY(18px) scale(0.96)";
+        applyLauncherRect();
         state.closeTimer = window.setTimeout(function () {
-          if (state.iframe && !state.open) state.iframe.style.display = "none";
+          if (state.iframe && !state.open) {
+            state.iframe.style.opacity = "0";
+            state.iframe.style.display = "none";
+          }
           state.closeTimer = null;
-        }, 220);
+          syncButtonVisibility();
+        }, 280);
       }
     }
-    syncButtonVisibility();
+    if (open) syncButtonVisibility();
     if (open) enqueue("show", options || {});
     else enqueue("hide", {});
   }
+
+  window.addEventListener("resize", function () {
+    if (state.open) applyPanelRect();
+    else applyLauncherRect();
+  });
 
   window.addEventListener("message", function (event) {
     if (event.origin !== baseUrl) return;
