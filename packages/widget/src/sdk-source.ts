@@ -12,10 +12,13 @@ export function getWidgetSdkSource() {
     user: null,
     iframe: null,
     button: null,
+    shell: null,
     position: "right",
     open: false,
     ready: false,
     closeTimer: null,
+    morphTimer: null,
+    animating: false,
     queue: []
   };
 
@@ -73,14 +76,18 @@ export function getWidgetSdkSource() {
     };
   }
 
+  function applyRect(element, rect) {
+    if (!element) return;
+    element.style.left = rect.left + "px";
+    element.style.top = rect.top + "px";
+    element.style.width = rect.width + "px";
+    element.style.height = rect.height + "px";
+    element.style.right = "auto";
+    element.style.bottom = "auto";
+  }
+
   function applyFrameRect(rect) {
-    if (!state.iframe) return;
-    state.iframe.style.left = rect.left + "px";
-    state.iframe.style.top = rect.top + "px";
-    state.iframe.style.width = rect.width + "px";
-    state.iframe.style.height = rect.height + "px";
-    state.iframe.style.right = "auto";
-    state.iframe.style.bottom = "auto";
+    applyRect(state.iframe, rect);
   }
 
   function applyPanelRect() {
@@ -91,6 +98,29 @@ export function getWidgetSdkSource() {
   function applyLauncherRect() {
     applyFrameRect(getLauncherRect(state.position));
     if (state.iframe) state.iframe.style.borderRadius = "999px";
+  }
+
+  function applyShellPanelRect() {
+    applyRect(state.shell, getPanelRect(state.position));
+    if (!state.shell) return;
+    state.shell.style.borderRadius = "18px";
+    state.shell.style.background = "#171717";
+    state.shell.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
+  }
+
+  function applyShellLauncherRect() {
+    applyRect(state.shell, getLauncherRect(state.position));
+    if (!state.shell) return;
+    state.shell.style.borderRadius = "999px";
+    state.shell.style.background = "#ff7144";
+    state.shell.style.boxShadow = "0 16px 40px rgba(15, 23, 42, 0.22)";
+  }
+
+  function clearTimers() {
+    if (state.closeTimer) window.clearTimeout(state.closeTimer);
+    if (state.morphTimer) window.clearTimeout(state.morphTimer);
+    state.closeTimer = null;
+    state.morphTimer = null;
   }
 
   function buildFrame() {
@@ -110,17 +140,31 @@ export function getWidgetSdkSource() {
     iframe.setAttribute("aria-hidden", "true");
     iframe.style.position = "fixed";
     iframe.style.border = "0";
-    iframe.style.borderRadius = "999px";
+    iframe.style.borderRadius = "18px";
     iframe.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
     iframe.style.zIndex = "2147483646";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    iframe.style.transition = "left 260ms cubic-bezier(0.16, 1, 0.3, 1), top 260ms cubic-bezier(0.16, 1, 0.3, 1), width 260ms cubic-bezier(0.16, 1, 0.3, 1), height 260ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 260ms cubic-bezier(0.16, 1, 0.3, 1), opacity 120ms ease";
+    iframe.style.transition = "opacity 120ms ease";
     iframe.style.background = "#171717";
     iframe.style.colorScheme = state.options.theme === "dark" ? "dark" : "normal";
     document.body.appendChild(iframe);
     state.iframe = iframe;
+
+    var shell = document.createElement("div");
+    shell.setAttribute("aria-hidden", "true");
+    shell.style.position = "fixed";
+    shell.style.border = "0";
+    shell.style.borderRadius = "999px";
+    shell.style.zIndex = "2147483647";
+    shell.style.display = "none";
+    shell.style.opacity = "0";
+    shell.style.pointerEvents = "none";
+    shell.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
+    shell.style.transition = "left 300ms cubic-bezier(0.16, 1, 0.3, 1), top 300ms cubic-bezier(0.16, 1, 0.3, 1), width 300ms cubic-bezier(0.16, 1, 0.3, 1), height 300ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 300ms cubic-bezier(0.16, 1, 0.3, 1), background-color 180ms ease, box-shadow 300ms ease, opacity 140ms ease";
+    document.body.appendChild(shell);
+    state.shell = shell;
 
     if (state.options.trigger !== "custom" && state.options.widget !== false) {
       var button = document.createElement("button");
@@ -146,15 +190,21 @@ export function getWidgetSdkSource() {
       document.body.appendChild(button);
       state.button = button;
     }
-    applyLauncherRect();
+    applyPanelRect();
+    applyShellLauncherRect();
     syncButtonVisibility();
   }
 
   function syncButtonVisibility() {
+    var hidden = state.open || state.animating;
+    setButtonHidden(hidden);
+  }
+
+  function setButtonHidden(hidden) {
     if (!state.button) return;
-    state.button.style.setProperty("display", state.open ? "none" : "inline-flex", "important");
-    state.button.style.setProperty("opacity", state.open ? "0" : "1", "important");
-    state.button.style.setProperty("pointer-events", state.open ? "none" : "auto", "important");
+    state.button.style.setProperty("display", hidden ? "none" : "inline-flex", "important");
+    state.button.style.setProperty("opacity", hidden ? "0" : "1", "important");
+    state.button.style.setProperty("pointer-events", hidden ? "none" : "auto", "important");
   }
 
   function setOpen(open, options) {
@@ -162,38 +212,66 @@ export function getWidgetSdkSource() {
     state.open = open;
     if (state.iframe) {
       state.iframe.setAttribute("aria-hidden", open ? "false" : "true");
-      if (state.closeTimer) {
-        window.clearTimeout(state.closeTimer);
-        state.closeTimer = null;
-      }
+      clearTimers();
+      state.animating = true;
+      setButtonHidden(true);
       if (open) {
-        applyLauncherRect();
+        applyPanelRect();
+        applyShellLauncherRect();
+        if (state.shell) {
+          state.shell.style.display = "block";
+          state.shell.style.opacity = "1";
+        }
         state.iframe.style.display = "block";
-        state.iframe.style.opacity = "1";
+        state.iframe.style.opacity = "0";
+        syncButtonVisibility();
         window.requestAnimationFrame(function () {
-          if (!state.iframe) return;
-          applyPanelRect();
+          applyShellPanelRect();
         });
+        state.morphTimer = window.setTimeout(function () {
+          if (state.iframe && state.open) state.iframe.style.opacity = "1";
+          if (state.shell) state.shell.style.opacity = "0";
+          state.closeTimer = window.setTimeout(function () {
+            if (state.shell) state.shell.style.display = "none";
+            state.animating = false;
+            state.closeTimer = null;
+            syncButtonVisibility();
+          }, 140);
+          state.morphTimer = null;
+        }, 300);
       } else {
-        applyLauncherRect();
+        if (state.iframe) state.iframe.style.opacity = "0";
+        applyShellPanelRect();
+        if (state.shell) {
+          state.shell.style.display = "block";
+          state.shell.style.opacity = "1";
+        }
+        syncButtonVisibility();
+        window.requestAnimationFrame(function () {
+          applyShellLauncherRect();
+        });
         state.closeTimer = window.setTimeout(function () {
           if (state.iframe && !state.open) {
-            state.iframe.style.opacity = "0";
             state.iframe.style.display = "none";
           }
+          if (state.shell) {
+            state.shell.style.opacity = "0";
+            state.shell.style.display = "none";
+          }
+          state.animating = false;
           state.closeTimer = null;
-          syncButtonVisibility();
-        }, 280);
+          setButtonHidden(false);
+        }, 320);
       }
     }
-    if (open) syncButtonVisibility();
     if (open) enqueue("show", options || {});
     else enqueue("hide", {});
   }
 
   window.addEventListener("resize", function () {
-    if (state.open) applyPanelRect();
-    else applyLauncherRect();
+    applyPanelRect();
+    if (state.open) applyShellPanelRect();
+    else applyShellLauncherRect();
   });
 
   window.addEventListener("message", function (event) {
@@ -228,14 +306,18 @@ export function getWidgetSdkSource() {
       setOpen(false);
     },
     destroy: function () {
-      if (state.closeTimer) window.clearTimeout(state.closeTimer);
+      clearTimers();
       if (state.iframe && state.iframe.parentNode) state.iframe.parentNode.removeChild(state.iframe);
       if (state.button && state.button.parentNode) state.button.parentNode.removeChild(state.button);
+      if (state.shell && state.shell.parentNode) state.shell.parentNode.removeChild(state.shell);
       state.iframe = null;
       state.button = null;
+      state.shell = null;
       state.ready = false;
       state.open = false;
       state.closeTimer = null;
+      state.morphTimer = null;
+      state.animating = false;
       state.queue = [];
     }
   };
