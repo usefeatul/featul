@@ -66,8 +66,8 @@ export function getWidgetSdkSource() {
         };
       }
     }
-    var width = 104;
-    var height = 48;
+    var width = 52;
+    var height = 52;
     return {
       left: position === "left" ? 20 : window.innerWidth - width - 20,
       top: window.innerHeight - height - 20,
@@ -112,8 +112,8 @@ export function getWidgetSdkSource() {
     applyRect(state.shell, getLauncherRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = "999px";
-    state.shell.style.background = "#ff7144";
-    state.shell.style.boxShadow = "0 16px 40px rgba(15, 23, 42, 0.22)";
+    state.shell.style.background = "linear-gradient(180deg, #ff7a52 0%, #ff6336 100%)";
+    state.shell.style.boxShadow = "0 18px 45px rgba(255, 99, 54, 0.28), 0 10px 28px rgba(15, 23, 42, 0.16)";
   }
 
   function clearTimers() {
@@ -162,7 +162,7 @@ export function getWidgetSdkSource() {
     shell.style.opacity = "0";
     shell.style.pointerEvents = "none";
     shell.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    shell.style.transition = "left 300ms cubic-bezier(0.16, 1, 0.3, 1), top 300ms cubic-bezier(0.16, 1, 0.3, 1), width 300ms cubic-bezier(0.16, 1, 0.3, 1), height 300ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 300ms cubic-bezier(0.16, 1, 0.3, 1), background-color 180ms ease, box-shadow 300ms ease, opacity 140ms ease";
+    shell.style.transition = "left 300ms cubic-bezier(0.16, 1, 0.3, 1), top 300ms cubic-bezier(0.16, 1, 0.3, 1), width 300ms cubic-bezier(0.16, 1, 0.3, 1), height 300ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 300ms cubic-bezier(0.16, 1, 0.3, 1), background 180ms ease, box-shadow 300ms ease, opacity 140ms ease";
     document.body.appendChild(shell);
     state.shell = shell;
 
@@ -170,16 +170,16 @@ export function getWidgetSdkSource() {
       var button = document.createElement("button");
       button.type = "button";
       button.setAttribute("aria-label", "Open feedback");
-      button.textContent = "Feedback";
+      button.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 17.5h-.75A2.75 2.75 0 0 1 2 14.75v-7.5A2.75 2.75 0 0 1 4.75 4.5h14.5A2.75 2.75 0 0 1 22 7.25v7.5a2.75 2.75 0 0 1-2.75 2.75h-8.5L6.6 21.05A.65.65 0 0 1 5.5 20.58V17.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7.25 10.25h9.5M7.25 13.25h6.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
       button.style.position = "fixed";
       button.style.bottom = "20px";
       button.style[position] = "20px";
       button.style.alignItems = "center";
       button.style.justifyContent = "center";
       button.style.boxSizing = "border-box";
-      button.style.height = "48px";
-      button.style.minWidth = "100px";
-      button.style.padding = "0 20px";
+      button.style.width = "52px";
+      button.style.height = "52px";
+      button.style.padding = "0";
       button.style.border = "0";
       button.style.borderRadius = "999px";
       button.style.background = "linear-gradient(180deg, #ff7a52 0%, #ff6336 100%)";
