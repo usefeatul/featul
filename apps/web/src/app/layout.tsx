@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
-import { DebugTools } from "@featul/ui/global/debug-tools";
 import Script from "next/script";
 import "./globals.css";
 import {
@@ -170,8 +169,6 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         {children}
         <VerticalLines />
-        {(process.env.NODE_ENV !== "production" ||
-          process.env.NEXT_PUBLIC_ENABLE_DEBUG === "false") && <DebugTools />}
       </body>
     </html>
   );
