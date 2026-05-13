@@ -19,6 +19,7 @@
     "@featul/auth": "workspace:*",
     "@featul/db": "workspace:*",
     "@featul/editor": "workspace:*",
+    "@featul/widget": "workspace:*",
     "@neondatabase/serverless": "^0.10.4",
     "@sentry/nextjs": "^10.44.0",
     "@tabler/icons-react": "^3.40.0",
