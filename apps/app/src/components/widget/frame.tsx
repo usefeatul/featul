@@ -3,27 +3,21 @@
 import * as React from "react";
 import {
   Bell,
+  Camera,
+  ChevronLeft,
   ChevronRight,
   Flame,
   Home,
+  ImageIcon,
   Map,
   Megaphone,
   MessageSquare,
   Pencil,
-  Send,
   X,
 } from "lucide-react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
-import { Input } from "@featul/ui/components/input";
 import { Textarea } from "@featul/ui/components/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@featul/ui/components/select";
 
 type Section = "home" | "feedback" | "roadmap" | "changelog";
 
@@ -58,13 +52,10 @@ export default function WidgetFrame({
   const [workspaceName, setWorkspaceName] = React.useState("Feedback");
   const [primaryColor, setPrimaryColor] = React.useState("#111827");
   const [tabs, setTabs] = React.useState<Section[]>(["home", "feedback", "roadmap", "changelog"]);
-  const [boards, setBoards] = React.useState<Board[]>([]);
   const [boardId, setBoardId] = React.useState("");
-  const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const [userId, setUserId] = React.useState<string | null>(null);
   const [identity, setIdentity] = React.useState<IdentifiedUser | null>(null);
-  const [similar, setSimilar] = React.useState<Array<{ id: string; title: string; upvotes: number | null }>>([]);
   const [roadmap, setRoadmap] = React.useState<Array<{ id: string; title: string; roadmapStatus: string | null; upvotes: number | null }>>([]);
   const [changelog, setChangelog] = React.useState<Array<{ id: string; title: string; summary: string | null; publishedAt: string | null }>>([]);
   const [loading, setLoading] = React.useState(true);
@@ -92,8 +83,7 @@ export default function WidgetFrame({
           ? (data.config.enabledTabs as Section[])
           : ["feedback", "roadmap", "changelog"];
         setTabs(["home", ...enabledTabs]);
-        const nextBoards = Array.isArray(data.boards) ? data.boards : [];
-        setBoards(nextBoards);
+        const nextBoards: Board[] = Array.isArray(data.boards) ? data.boards : [];
         setBoardId(data.config?.defaultBoardId || nextBoards[0]?.id || "");
       } catch {
         if (!canceled) setMessage("The widget could not load.");
@@ -129,23 +119,6 @@ export default function WidgetFrame({
   }, [apiBase, section]);
 
   React.useEffect(() => {
-    if (title.trim().length < 2 || !boardId) {
-      setSimilar([]);
-      return;
-    }
-    const timeout = window.setTimeout(async () => {
-      try {
-        const res = await client.widget.similar.$get({ ...apiBase, title, boardId });
-        const data = await res.json();
-        setSimilar(Array.isArray(data.posts) ? data.posts : []);
-      } catch {
-        setSimilar([]);
-      }
-    }, 250);
-    return () => window.clearTimeout(timeout);
-  }, [apiBase, boardId, title]);
-
-  React.useEffect(() => {
     async function handleMessage(event: MessageEvent) {
       if (event.data?.source !== "featul-widget") return;
       if (event.data.type === "show" && event.data.payload?.section) {
@@ -178,22 +151,22 @@ export default function WidgetFrame({
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!boardId || !title.trim()) return;
+    const normalizedContent = content.trim();
+    const derivedTitle = normalizedContent.split(/\s+/).slice(0, 10).join(" ");
+    if (!boardId || normalizedContent.length < 3) return;
     setSubmitting(true);
     setMessage("");
     try {
       const res = await client.widget.create.$post({
         ...apiBase,
         boardId,
-        title,
-        content: content.trim() || title,
+        title: derivedTitle.slice(0, 120),
+        content: normalizedContent,
         userId: userId || undefined,
         identity: identity?.email ? { ...identity, email: identity.email } : undefined,
       });
       if (!res.ok) throw new Error("Failed");
-      setTitle("");
       setContent("");
-      setSimilar([]);
       setMessage("Feedback submitted. Thank you.");
     } catch {
       setMessage(identity && !userId ? "Identification failed. Check the email passed to identify()." : "Could not submit feedback.");
@@ -202,56 +175,67 @@ export default function WidgetFrame({
     }
   };
 
-  const voteForPost = async (postId: string) => {
-    try {
-      const res = await client.widget.vote.$post({
-        ...apiBase,
-        postId,
-        userId: userId || undefined,
-        identity: identity?.email ? { ...identity, email: identity.email } : undefined,
-      });
-      const data = await res.json();
-      setSimilar((items) =>
-        items.map((item) =>
-          item.id === postId ? { ...item, upvotes: data.upvotes || 0 } : item,
-        ),
-      );
-    } catch {
-      setMessage("Could not update vote.");
-    }
-  };
-
   const featuredEntry = changelog[0];
   const previewRoadmap = roadmap.slice(0, 4);
   const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
+  const isFeedback = section === "feedback";
 
   return (
     <main className="flex h-screen flex-col overflow-hidden rounded-[18px] border border-white/10 bg-[#171717] text-white shadow-sm">
-      <header className="flex items-center gap-3 px-4 py-3">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/8">
-          <MessageSquare className="size-4 text-white" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{workspaceName}</p>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          onClick={() => setSection("feedback")}
-          className="h-8 rounded-full bg-white px-3 text-xs text-black hover:bg-white/90"
-        >
-          <Pencil className="size-3.5" />
-          Give feedback
-        </Button>
-        <Button type="button" variant="ghost" size="icon-sm" className="text-white/55 hover:bg-white/10 hover:text-white" aria-label="Notifications">
-          <Bell className="size-4" />
-        </Button>
-        <button type="button" onClick={close} className="text-white/45 transition-colors hover:text-white" aria-label="Close widget">
-          <X className="size-4" />
-        </button>
-      </header>
+      {isFeedback ? (
+        <header className="flex items-center gap-3 px-5 py-4">
+          <button
+            type="button"
+            onClick={() => setSection("home")}
+            className="flex size-7 items-center justify-center rounded-full text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+            aria-label="Back to widget home"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <p className="flex-1 text-base font-semibold">Give feedback</p>
+          <button
+            type="button"
+            className="flex size-7 items-center justify-center rounded-full text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+            aria-label="Notifications"
+          >
+            <Bell className="size-4" />
+          </button>
+          <button
+            type="button"
+            onClick={close}
+            className="flex size-7 items-center justify-center rounded-full text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+            aria-label="Close widget"
+          >
+            <X className="size-4" />
+          </button>
+        </header>
+      ) : (
+        <header className="flex items-center gap-3 px-4 py-3">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/8">
+            <MessageSquare className="size-4 text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold">{workspaceName}</p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setSection("feedback")}
+            className="h-8 rounded-full bg-white px-3 text-xs text-black hover:bg-white/90"
+          >
+            <Pencil className="size-3.5" />
+            Give feedback
+          </Button>
+          <Button type="button" variant="ghost" size="icon-sm" className="text-white/55 hover:bg-white/10 hover:text-white" aria-label="Notifications">
+            <Bell className="size-4" />
+          </Button>
+          <button type="button" onClick={close} className="text-white/45 transition-colors hover:text-white" aria-label="Close widget">
+            <X className="size-4" />
+          </button>
+        </header>
+      )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-2">
+      <div className={isFeedback ? "flex min-h-0 flex-1 flex-col px-5 pb-5 pt-1" : "min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-2"}>
         {loading ? <p className="text-sm text-white/45">Loading...</p> : null}
         {message ? <p className="mb-3 rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">{message}</p> : null}
 
@@ -327,48 +311,43 @@ export default function WidgetFrame({
         ) : null}
 
         {section === "feedback" ? (
-          <div className="space-y-4">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-[#ff7144]">Feedback</p>
-              <h2 className="mt-2 text-xl font-semibold">What should we build next?</h2>
-            </div>
-            <form onSubmit={submit} className="space-y-3">
-              {boards.length > 1 ? (
-                <Select value={boardId} onValueChange={setBoardId}>
-                  <SelectTrigger className="w-full border-white/10 bg-white/8 text-white">
-                    <SelectValue placeholder="Select board" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {boards.map((item) => (
-                      <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : null}
-              <Input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="What should we improve?" className="border-white/10 bg-white/8 text-white placeholder:text-white/35" />
-              <Textarea value={content} onChange={(event) => setContent(event.target.value)} placeholder="Add context, examples, or the screen where this came up." className="min-h-32 border-white/10 bg-white/8 text-white placeholder:text-white/35" />
-              <Button type="submit" disabled={submitting || !boardId || title.trim().length < 3} className="w-full rounded-full text-white" style={{ backgroundColor: primaryColor || "#ff7144" }}>
-                <Send className="size-4" />
-                Submit feedback
-              </Button>
-            </form>
-            {similar.length ? (
-              <div className="mt-5 space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wide text-white/45">Similar suggestions</p>
-                {similar.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between gap-3 border-b border-dashed border-white/10 py-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{item.title}</p>
-                      <p className="text-xs text-white/45">{item.upvotes || 0} votes</p>
-                    </div>
-                    <Button type="button" variant="outline" size="sm" className="rounded-full border-white/10 bg-transparent text-white hover:bg-white/10" onClick={() => voteForPost(item.id)}>
-                      Vote
-                    </Button>
-                  </div>
-                ))}
+          <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
+            <Textarea
+              variant="plain"
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              placeholder="What's on your mind?"
+              autoFocus
+              className="min-h-0 flex-1 resize-none px-0 py-5 text-lg leading-relaxed text-white shadow-none placeholder:text-white/25 focus-visible:ring-0"
+            />
+            <div className="flex items-center justify-between pt-3">
+              <div className="flex items-center gap-5 text-white/50">
+                <button
+                  type="button"
+                  className="transition-colors hover:text-white"
+                  aria-label="Attach image"
+                >
+                  <ImageIcon className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  className="transition-colors hover:text-white"
+                  aria-label="Take screenshot"
+                >
+                  <Camera className="size-4" />
+                </button>
               </div>
-            ) : null}
-          </div>
+              <Button
+                type="submit"
+                variant="plain"
+                disabled={submitting || !boardId || content.trim().length < 3}
+                className="h-10 rounded-full bg-white/60 px-5 text-sm font-medium text-black hover:bg-white/75 disabled:bg-white/20 disabled:text-white/35"
+                style={!submitting && boardId && content.trim().length >= 3 ? { backgroundColor: primaryColor || "#ff7144", color: "#fff" } : undefined}
+              >
+                Post
+              </Button>
+            </div>
+          </form>
         ) : null}
 
         {section === "roadmap" ? (
@@ -399,22 +378,24 @@ export default function WidgetFrame({
         ) : null}
       </div>
 
-      <nav className="grid grid-cols-4 border-t border-white/8 bg-[#1b1b1b]/95 px-3 py-2">
-        {displayedTabs.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setSection(tab)}
-            className={`flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] transition-colors ${section === tab ? "text-[#ff7144]" : "text-white/45 hover:text-white/75"}`}
-          >
-            {tab === "home" ? <Home className="size-4" /> : null}
-            {tab === "feedback" ? <MessageSquare className="size-4" /> : null}
-            {tab === "roadmap" ? <Map className="size-4" /> : null}
-            {tab === "changelog" ? <Megaphone className="size-4" /> : null}
-            <span>{tab === "changelog" ? "Updates" : `${tab.charAt(0).toUpperCase()}${tab.slice(1)}`}</span>
-          </button>
-        ))}
-      </nav>
+      {!isFeedback ? (
+        <nav className="grid grid-cols-4 border-t border-white/8 bg-[#1b1b1b]/95 px-3 py-2">
+          {displayedTabs.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setSection(tab)}
+              className={`flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] transition-colors ${section === tab ? "text-[#ff7144]" : "text-white/45 hover:text-white/75"}`}
+            >
+              {tab === "home" ? <Home className="size-4" /> : null}
+              {tab === "feedback" ? <MessageSquare className="size-4" /> : null}
+              {tab === "roadmap" ? <Map className="size-4" /> : null}
+              {tab === "changelog" ? <Megaphone className="size-4" /> : null}
+              <span>{tab === "changelog" ? "Updates" : `${tab.charAt(0).toUpperCase()}${tab.slice(1)}`}</span>
+            </button>
+          ))}
+        </nav>
+      ) : null}
     </main>
   );
 }

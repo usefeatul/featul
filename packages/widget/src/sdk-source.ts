@@ -93,6 +93,12 @@ export function getWidgetSdkSource() {
       document.body.appendChild(button);
       state.button = button;
     }
+    syncButtonVisibility();
+  }
+
+  function syncButtonVisibility() {
+    if (!state.button) return;
+    state.button.style.display = state.open ? "none" : "inline-flex";
   }
 
   function setOpen(open, options) {
@@ -102,6 +108,7 @@ export function getWidgetSdkSource() {
       state.iframe.style.display = open ? "block" : "none";
       state.iframe.setAttribute("aria-hidden", open ? "false" : "true");
     }
+    syncButtonVisibility();
     if (open) enqueue("show", options || {});
     else enqueue("hide", {});
   }

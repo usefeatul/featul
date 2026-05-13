@@ -7,7 +7,7 @@ type Props = {
   searchParams?: Promise<{
     parentOrigin?: string;
     theme?: "light" | "dark" | "auto";
-    section?: "feedback" | "roadmap" | "changelog";
+    section?: "home" | "feedback" | "roadmap" | "changelog";
   }>;
 };
 
@@ -20,7 +20,7 @@ export default async function WidgetFramePage({ params, searchParams }: Props) {
       projectId={projectId}
       parentOrigin={sp.parentOrigin || ""}
       initialTheme={sp.theme || "auto"}
-      initialSection={sp.section || "feedback"}
+      initialSection={sp.section || "home"}
     />
   );
 }
