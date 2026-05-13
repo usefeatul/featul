@@ -14,6 +14,7 @@ export function getWidgetSdkSource() {
     button: null,
     open: false,
     ready: false,
+    closeTimer: null,
     queue: []
   };
 
@@ -53,17 +54,21 @@ export function getWidgetSdkSource() {
     iframe.title = "Featul feedback widget";
     iframe.setAttribute("aria-hidden", "true");
     iframe.style.position = "fixed";
-    iframe.style.bottom = "82px";
+    iframe.style.bottom = "20px";
     iframe.style[position] = "20px";
     iframe.style.width = "384px";
     iframe.style.height = "700px";
     iframe.style.maxWidth = "calc(100vw - 32px)";
-    iframe.style.maxHeight = "calc(100vh - 108px)";
+    iframe.style.maxHeight = "calc(100vh - 40px)";
     iframe.style.border = "0";
     iframe.style.borderRadius = "18px";
     iframe.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
     iframe.style.zIndex = "2147483646";
     iframe.style.display = "none";
+    iframe.style.opacity = "0";
+    iframe.style.transform = "translateY(18px) scale(0.96)";
+    iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
+    iframe.style.transition = "opacity 180ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1)";
     iframe.style.background = "transparent";
     iframe.style.colorScheme = state.options.theme === "dark" ? "dark" : "normal";
     document.body.appendChild(iframe);
@@ -107,8 +112,26 @@ export function getWidgetSdkSource() {
     buildFrame();
     state.open = open;
     if (state.iframe) {
-      state.iframe.style.display = open ? "block" : "none";
       state.iframe.setAttribute("aria-hidden", open ? "false" : "true");
+      if (state.closeTimer) {
+        window.clearTimeout(state.closeTimer);
+        state.closeTimer = null;
+      }
+      if (open) {
+        state.iframe.style.display = "block";
+        window.requestAnimationFrame(function () {
+          if (!state.iframe) return;
+          state.iframe.style.opacity = "1";
+          state.iframe.style.transform = "translateY(0) scale(1)";
+        });
+      } else {
+        state.iframe.style.opacity = "0";
+        state.iframe.style.transform = "translateY(18px) scale(0.96)";
+        state.closeTimer = window.setTimeout(function () {
+          if (state.iframe && !state.open) state.iframe.style.display = "none";
+          state.closeTimer = null;
+        }, 220);
+      }
     }
     syncButtonVisibility();
     if (open) enqueue("show", options || {});
@@ -147,12 +170,14 @@ export function getWidgetSdkSource() {
       setOpen(false);
     },
     destroy: function () {
+      if (state.closeTimer) window.clearTimeout(state.closeTimer);
       if (state.iframe && state.iframe.parentNode) state.iframe.parentNode.removeChild(state.iframe);
       if (state.button && state.button.parentNode) state.button.parentNode.removeChild(state.button);
       state.iframe = null;
       state.button = null;
       state.ready = false;
       state.open = false;
+      state.closeTimer = null;
       state.queue = [];
     }
   };

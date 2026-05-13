@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Bell,
   Camera,
@@ -40,6 +41,7 @@ type WidgetFrameProps = {
   parentOrigin: string;
   initialTheme: "light" | "dark" | "auto";
   initialSection: Section;
+  initialPosition: "left" | "right";
 };
 
 export default function WidgetFrame({
@@ -47,6 +49,7 @@ export default function WidgetFrame({
   parentOrigin,
   initialTheme,
   initialSection,
+  initialPosition,
 }: WidgetFrameProps) {
   const [section, setSection] = React.useState<Section>(initialSection || "home");
   const [workspaceName, setWorkspaceName] = React.useState("Feedback");
@@ -179,9 +182,17 @@ export default function WidgetFrame({
   const previewRoadmap = roadmap.slice(0, 4);
   const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
   const isFeedback = section === "feedback";
+  const reduceMotion = useReducedMotion();
+  const transformOrigin = initialPosition === "left" ? "bottom left" : "bottom right";
 
   return (
-    <main className="flex h-screen flex-col overflow-hidden rounded-[18px] border border-white/10 bg-[#171717] text-white shadow-sm">
+    <motion.main
+      initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.94 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.8 }}
+      style={{ transformOrigin }}
+      className="flex h-screen flex-col overflow-hidden rounded-[18px] border border-white/10 bg-[#171717] text-white shadow-sm"
+    >
       {isFeedback ? (
         <header className="flex items-center gap-3 px-5 py-4">
           <button
@@ -396,7 +407,7 @@ export default function WidgetFrame({
           ))}
         </nav>
       ) : null}
-    </main>
+    </motion.main>
   );
 }
 
