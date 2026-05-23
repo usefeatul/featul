@@ -60,7 +60,7 @@ export default async function WorkspaceLayout({
   const { primary: p } = branding;
   const serverNow = Date.now();
   return (
-    <div className="workspace-shell fixed inset-0 flex h-dvh w-full flex-col overflow-hidden bg-background text-foreground lg:flex-row lg:gap-3 lg:px-2 lg:py-2">
+    <div className="workspace-shell fixed inset-0 flex h-dvh w-full flex-col overflow-hidden bg-background text-foreground lg:flex-row lg:gap-3 lg:px-2 lg:pb-2 lg:pt-1">
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
