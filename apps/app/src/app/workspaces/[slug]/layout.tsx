@@ -77,9 +77,9 @@ export default async function WorkspaceLayout({
       />
       <main className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden pb-14 lg:pb-0">
         <EditorHeaderProvider>
+          <WorkspaceHeader />
           <div className="workspace-main flex min-h-0 flex-1 overflow-hidden rounded-none border border-border bg-card dark:bg-black/40 lg:rounded-lg">
             <div className="flex min-h-0 flex-1 flex-col">
-              <WorkspaceHeader />
               <div className="px-3 sm:px-5 lg:px-6">
                 <FilterSummary />
               </div>

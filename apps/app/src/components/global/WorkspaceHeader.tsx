@@ -41,11 +41,11 @@ export default function WorkspaceHeader() {
   if (!title && !showRequestsActions && !isMemberDetail) return null;
 
   const innerClassName = isMemberDetail
-    ? "mx-auto flex min-h-9 w-full max-w-[64rem] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-    : "flex min-h-9 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between";
+    ? "mx-auto flex min-h-7 w-full max-w-[64rem] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+    : "flex min-h-7 w-full items-center justify-end";
 
   return (
-    <div className="bg-card px-3 py-2.5 sm:px-5 lg:px-6 dark:bg-transparent">
+    <div className="px-3 pb-2 sm:px-5 lg:px-6">
       <div className={innerClassName}>
         <div />
         {isMemberDetail ? (
