@@ -50,9 +50,9 @@ export default function RequestDetail({
     : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
 
   return (
-    <section>
-      <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
-        <div className="grid items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
+    <section className="mx-auto min-h-full w-full max-w-[72rem] pt-5 lg:pt-7">
+      <div className="min-h-full overflow-hidden bg-card dark:bg-black/40">
+        <div className="grid min-h-full items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
           <article className="relative min-w-0 px-4 py-4 md:px-6 md:py-5">
             <header className="pb-4">
               {isMobile ? (

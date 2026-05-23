@@ -83,7 +83,7 @@ export default async function WorkspaceLayout({
               <div className="px-3 sm:px-5 lg:px-6">
                 <FilterSummary />
               </div>
-              <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-5 lg:px-6 lg:py-5">
+              <div className="scrollbar-hide min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-5 lg:px-6 lg:py-5">
                 {children}
               </div>
             </div>

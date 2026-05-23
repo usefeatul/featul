@@ -43,21 +43,7 @@ export default function WorkspaceHeader() {
   return (
     <div className="bg-card px-3 py-2.5 sm:px-5 lg:px-6">
       <div className="flex min-h-9 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {title ? (
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="hidden h-2 w-2 rounded-full bg-primary sm:inline-flex" />
-            <h1 className="truncate text-base font-heading leading-tight font-semibold sm:text-lg">
-              {title}
-            </h1>
-            {workspaceSlug ? (
-              <span className="hidden truncate text-xs text-accent sm:inline">
-                / {workspaceSlug}
-              </span>
-            ) : null}
-          </div>
-        ) : (
-          <div />
-        )}
+        <div />
         {isMemberDetail ? (
           <Toolbar size="sm">
             <Button
