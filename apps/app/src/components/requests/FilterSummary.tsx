@@ -207,7 +207,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
               onClick={handleClearAll}
               variant="ghost"
               size="icon-sm"
-              className="text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors"
+              className="bg-transparent text-muted-foreground transition-colors hover:text-destructive dark:bg-transparent dark:hover:text-destructive"
               aria-label="Clear all filters"
             >
               <span>
