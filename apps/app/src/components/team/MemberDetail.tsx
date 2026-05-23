@@ -77,7 +77,7 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
     )
 
   return (
-    <div className="rounded-sm border bg-card dark:bg-black/40 p-4 lg:p-6 space-y-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
+    <div className="bg-card p-4 dark:bg-black/40 lg:p-6 space-y-4">
       <MemberHeader member={member} userId={userId} stats={stats} />
 
       <div className="pt-4 mt-2 border-t space-y-3">

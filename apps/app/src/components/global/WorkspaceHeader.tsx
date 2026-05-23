@@ -9,6 +9,7 @@ import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
+import FilterSummary from "@/components/requests/FilterSummary";
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
@@ -40,18 +41,19 @@ export default function WorkspaceHeader() {
 
   if (!title && !showRequestsActions && !isMemberDetail) return null;
 
+  const innerClassName = isMemberDetail
+    ? "mx-auto flex min-h-7 w-full max-w-[64rem] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+    : showRequestsActions
+      ? "flex min-h-7 w-full items-center justify-between gap-3"
+      : "flex min-h-7 w-full items-center justify-end";
+  const wrapperClassName = showRequestsActions
+    ? "px-0 pb-1"
+    : "px-3 pb-2 sm:px-5 lg:px-6";
+
   return (
-    <div className="mt-4 mb-6.5">
-      <div className="flex items-center justify-between">
-        {title ? (
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-heading leading-tight font-semibold">
-              {title}
-            </h1>
-          </div>
-        ) : (
-          <div />
-        )}
+    <div className={wrapperClassName}>
+      <div className={innerClassName}>
+        {isMemberDetail ? <div /> : null}
         {isMemberDetail ? (
           <Toolbar size="sm">
             <Button
@@ -69,7 +71,10 @@ export default function WorkspaceHeader() {
             </Button>
           </Toolbar>
         ) : showRequestsActions ? (
-          <HeaderActions />
+          <>
+            <FilterSummary className="min-w-0 flex-1 pr-3" />
+            <HeaderActions className="shrink-0" />
+          </>
         ) : showChangelogActions ? (
           <Toolbar size="sm">
             <ImportNotraDialog workspaceSlug={workspaceSlug} />
@@ -88,13 +93,13 @@ export default function WorkspaceHeader() {
         ) : showChangelogEditActions &&
           editorContext &&
           editorContext.actions.length > 0 ? (
-          <div className="flex items-center gap-0 bg-card rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black divide-x divide-border overflow-hidden">
+          <div className="flex items-center gap-0 overflow-hidden rounded-md bg-card dark:bg-transparent">
             {editorContext.actions
               .filter((action) => action.type === "switch")
               .map((action) => (
                 <div
                   key={action.key}
-                  className="flex items-center gap-2 px-3 h-8 bg-transparent dark:bg-black/40 hover:bg-muted/50 transition-colors"
+                  className="flex items-center gap-2 px-3 h-8 bg-transparent hover:bg-muted/50 transition-colors"
                 >
                   <span className="text-sm font-medium text-muted-foreground">
                     {action.label}

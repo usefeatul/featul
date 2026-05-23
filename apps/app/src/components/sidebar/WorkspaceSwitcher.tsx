@@ -51,8 +51,8 @@ export default function WorkspaceSwitcher({
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer rounded-md">
-          <div className="group flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer transition-colors hover:bg-muted dark:hover:bg-black/40">
-            <div className={cn("relative size-7 rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black overflow-hidden", currentLogo ? "bg-transparent" : "bg-card")}>
+          <div className="group flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer transition-colors hover:bg-muted">
+            <div className={cn("relative size-7 overflow-hidden rounded-md border border-border bg-card ring-1 ring-border/30 ring-offset-1 ring-offset-background", currentLogo ? "bg-transparent" : "bg-card")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}
@@ -66,9 +66,9 @@ export default function WorkspaceSwitcher({
             </div>
             <div className="flex min-w-0 flex-col items-start gap-1 overflow-hidden">
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
-              <span className="text-xs text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
+              <span className="text-[11px] text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
             </div>
-            <span className="ml-auto inline-flex h-[19px] w-5 shrink-0 items-center justify-center rounded-sm border border-border bg-card text-xs font-extralight text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:bg-black/50 dark:text-accent dark:ring-offset-black">
+            <span className="ml-auto inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-border bg-card text-xs font-medium text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-background">
               <ChevronIcon className="size-3 text-accent" />
             </span>
           </div>
@@ -99,7 +99,7 @@ export default function WorkspaceSwitcher({
                         )}
                       >
                         {logoUrl ? (
-                          <div className="relative w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border overflow-hidden">
+                          <div className="relative w-8 h-8 shrink-0 overflow-hidden rounded-md border border-border bg-muted ring-1 ring-border/30">
                             <Image
                               src={logoUrl}
                               alt={w.name}
@@ -109,7 +109,7 @@ export default function WorkspaceSwitcher({
                             />
                           </div>
                         ) : (
-                          <div className="w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border" />
+                          <div className="h-8 w-8 shrink-0 rounded-md border border-border bg-muted ring-1 ring-border/30" />
                         )}
                         <div className="flex flex-col overflow-hidden">
                           <span className="truncate text-sm font-medium">{w.name}</span>
