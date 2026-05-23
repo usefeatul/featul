@@ -1,4 +1,3 @@
-import { Container } from "@/components/global/container";
 import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import Sidebar from "@/components/sidebar/Sidebar";
 import MobileSidebar from "@/components/sidebar/MobileSidebar";
@@ -62,11 +61,7 @@ export default async function WorkspaceLayout({
   const { primary: p } = branding;
   const serverNow = Date.now();
   return (
-    <Container
-      className="min-h-screen lg:flex lg:gap-4 lg:px-6"
-      maxWidth="7xl"
-      noPadding
-    >
+    <div className="workspace-shell min-h-screen w-full bg-background text-foreground lg:flex lg:gap-3 lg:px-2 lg:py-2">
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
@@ -80,11 +75,19 @@ export default async function WorkspaceLayout({
         initialUser={session?.user}
         initialDeviceAccounts={deviceAccounts}
       />
-      <main className="w-full min-w-0 lg:flex-1 px-2 sm:px-3 md:px-4 lg:px-0 pb-10 lg:pb-0">
+      <main className="w-full min-w-0 pb-10 lg:flex-1 lg:pb-0">
         <EditorHeaderProvider>
-          <WorkspaceHeader />
-          <FilterSummary />
-          {children}
+          <div className="workspace-main min-h-[calc(100vh-1rem)] overflow-hidden rounded-none border border-border bg-card lg:rounded-lg">
+            <div className="flex h-full min-h-[calc(100vh-1rem)] flex-col">
+              <WorkspaceHeader />
+              <div className="px-3 sm:px-5 lg:px-6">
+                <FilterSummary />
+              </div>
+              <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-5 lg:px-6 lg:py-5">
+                {children}
+              </div>
+            </div>
+          </div>
         </EditorHeaderProvider>
       </main>
       <MobileSidebar
@@ -98,6 +101,6 @@ export default async function WorkspaceLayout({
         initialDeviceAccounts={deviceAccounts}
       />
       <WorkspaceShortcutsDrawer />
-    </Container>
+    </div>
   );
 }

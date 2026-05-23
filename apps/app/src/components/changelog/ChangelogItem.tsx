@@ -35,8 +35,8 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
         onToggle?.(!isSelectedMode)
     }, [isSelectingMode, isSelectedMode, onToggle])
     const rowClassName = cn(
-        "flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40",
-        isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
+        "flex items-center gap-3 border-b border-border/70 bg-card px-3 py-2.5 last:border-b-0",
+        isSelectingMode ? "cursor-pointer" : "hover:bg-muted/60 transition-colors"
     )
 
     return (
@@ -70,10 +70,10 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
                         <h3 className="text-sm font-medium text-foreground truncate">{item.title}</h3>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <div className="hidden items-center gap-3 text-xs text-muted-foreground sm:flex">
                         <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(displayDate)}</span>
                         <div className="relative">
-                            <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
+                            <Avatar className="size-6 bg-muted relative overflow-visible">
                                 <AvatarImage src={item.authorImage || randomAvatarUrl(item.authorId)} alt={authorName} />
                                 <AvatarFallback>{getInitials(authorName)}</AvatarFallback>
                             </Avatar>

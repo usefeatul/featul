@@ -133,7 +133,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
       {isVisible ? (
         <div
           key="filter-summary-bar"
-          className="bg-white dark:bg-black/60 pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-2 border-t-transparent overflow-hidden rounded-xs shadow-sm px-1 py-0.5  backdrop-blur-lg supports-backdrop-filter:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border border-border"
+          className="pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-2 overflow-hidden rounded-xs bg-card px-1 py-0.5"
         >
           <div className="flex items-center  gap-2 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
             {status.map((s) => (

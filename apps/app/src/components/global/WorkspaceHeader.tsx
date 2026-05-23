@@ -41,13 +41,19 @@ export default function WorkspaceHeader() {
   if (!title && !showRequestsActions && !isMemberDetail) return null;
 
   return (
-    <div className="mt-4 mb-6.5">
-      <div className="flex items-center justify-between">
+    <div className="bg-card px-3 py-2.5 sm:px-5 lg:px-6">
+      <div className="flex min-h-9 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {title ? (
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-heading leading-tight font-semibold">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="hidden h-2 w-2 rounded-full bg-primary sm:inline-flex" />
+            <h1 className="truncate text-base font-heading leading-tight font-semibold sm:text-lg">
               {title}
             </h1>
+            {workspaceSlug ? (
+              <span className="hidden truncate text-xs text-accent sm:inline">
+                / {workspaceSlug}
+              </span>
+            ) : null}
           </div>
         ) : (
           <div />
@@ -88,13 +94,13 @@ export default function WorkspaceHeader() {
         ) : showChangelogEditActions &&
           editorContext &&
           editorContext.actions.length > 0 ? (
-          <div className="flex items-center gap-0 bg-card rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black divide-x divide-border overflow-hidden">
+          <div className="flex items-center gap-0 overflow-hidden rounded-md bg-card">
             {editorContext.actions
               .filter((action) => action.type === "switch")
               .map((action) => (
                 <div
                   key={action.key}
-                  className="flex items-center gap-2 px-3 h-8 bg-transparent dark:bg-black/40 hover:bg-muted/50 transition-colors"
+                  className="flex items-center gap-2 px-3 h-8 bg-transparent hover:bg-muted/50 transition-colors"
                 >
                   <span className="text-sm font-medium text-muted-foreground">
                     {action.label}

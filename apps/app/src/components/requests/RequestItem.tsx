@@ -45,11 +45,11 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     onToggle?.(!isSelectedMode)
   }, [isSelectingMode, isSelectedMode, onToggle])
   const rowClassName = cn(
-    "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
-    isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
+    "flex items-center gap-3 border-b border-border/70 bg-card px-3 py-2.5 last:border-b-0 relative overflow-hidden",
+    isSelectingMode ? "cursor-pointer" : "hover:bg-muted/60 transition-colors"
   )
   const actionsClassName = cn(
-    "ml-auto flex items-center gap-3 text-xs text-accent",
+    "ml-auto hidden items-center gap-3 text-xs text-accent sm:flex",
     isSelectingMode && "pointer-events-none"
   )
 
@@ -74,7 +74,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       <Link
         href={href}
         className={cn(
-          "flex-1 min-w-0 truncate text-sm font-medium",
+          "flex-1 min-w-0 truncate text-sm font-medium leading-5",
           isLinkDisabled ? "text-foreground/60 cursor-default pointer-events-none" : "text-foreground"
         )}
         onClick={(e) => {
@@ -97,7 +97,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
         </div>
         <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
         <div className="relative">
-          <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
+          <Avatar className="size-6 bg-muted relative overflow-visible">
             <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
             <AvatarFallback>{getInitials(authorLabel)}</AvatarFallback>
             <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />

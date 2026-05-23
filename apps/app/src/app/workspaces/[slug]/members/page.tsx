@@ -25,7 +25,7 @@ export default async function MembersPage({ params }: Props) {
   const initialMembers = data.initialTeam?.members ?? []
 
   return (
-    <section className="space-y-4">
+    <section className="mx-auto w-full max-w-[56rem] space-y-4 pt-8 lg:pt-10">
       <MemberList slug={slug} initialMembers={initialMembers} />
     </section>
   )

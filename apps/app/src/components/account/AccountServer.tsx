@@ -24,7 +24,7 @@ export default function AccountServer({ slug, selectedSection, initialUser, twoF
     ? selectedSection
     : defaultSection
   return (
-    <section className="space-y-4">
+    <section className="mx-auto mt-8 w-full max-w-[56rem] space-y-4 lg:mt-10">
       <AccountTabsHeader slug={slug} selected={selected} />
       <div className="mt-2">
         <SectionRenderer section={selected} initialUser={initialUser || undefined} twoFactorEnabled={twoFactorEnabled} initialSessions={initialSessions} initialAccounts={initialAccounts} initialPasskeys={initialPasskeys} />
