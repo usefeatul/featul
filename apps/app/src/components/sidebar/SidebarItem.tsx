@@ -49,11 +49,11 @@ function SidebarItem({
       />
       <span className="transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className="ml-auto rounded-sm bg-card px-1.5 py-0.5 text-[11px] font-medium text-accent tabular-nums">
+        <span className="ml-auto rounded-sm border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-accent tabular-nums ring-1 ring-border/20 ring-offset-1 ring-offset-background">
           {count}
         </span>
       ) : shortcut ? (
-        <span className="ml-auto rounded-sm bg-card px-1.5 py-0.5 text-[11px] font-medium text-accent">
+        <span className="ml-auto rounded-sm border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-background">
           {shortcut}
         </span>
       ) : null}

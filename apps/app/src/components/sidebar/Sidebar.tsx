@@ -91,7 +91,7 @@ export default function Sidebar({
       onBlur={() => setHotkeysActive(false)}
       className={cn(
         "hidden lg:flex w-full lg:w-58 xl:w-60 lg:shrink-0 flex-col",
-        "border-r border-border bg-background text-foreground",
+        "bg-background text-foreground",
         "lg:sticky lg:top-2 lg:h-[calc(100vh-1rem)] lg:overflow-hidden",
         className,
       )}
