@@ -35,8 +35,8 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
         onToggle?.(!isSelectedMode)
     }, [isSelectingMode, isSelectedMode, onToggle])
     const rowClassName = cn(
-        "flex items-center gap-3 border-b border-border/70 bg-card px-3 py-2.5 last:border-b-0",
-        isSelectingMode ? "cursor-pointer" : "hover:bg-muted/60 transition-colors"
+        "flex items-center gap-3 border-b border-border/70 bg-card px-3 py-2.5 last:border-b-0 dark:bg-transparent",
+        isSelectingMode ? "cursor-pointer" : "hover:bg-muted/60 dark:hover:bg-white/5 transition-colors"
     )
 
     return (
