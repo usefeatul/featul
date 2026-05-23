@@ -18,6 +18,7 @@ export default function SearchAction({
   const pathname = usePathname() || "/";
   const sp = useSearchParams();
   const [pendingHref, setPendingHref] = React.useState<string | null>(null);
+  const [open, setOpen] = React.useState(false);
 
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname]);
   const currentSearch = sp.get("search") || "";
@@ -39,6 +40,8 @@ export default function SearchAction({
       className={className}
       buttonVariant="card"
       showNoResults
+      open={open}
+      onOpenChange={setOpen}
       onSearchSubmit={runSearch}
       onResultSelect={(result: WorkspaceSearchResult) => {
         setPendingHref(`/workspaces/${slug}/requests/${result.slug}`);

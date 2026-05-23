@@ -90,18 +90,19 @@ export default function Sidebar({
       onFocus={() => setHotkeysActive(true)}
       onBlur={() => setHotkeysActive(false)}
       className={cn(
-        "hidden lg:flex w-full lg:w-60 lg:shrink-0 flex-col bg-background",
+        "hidden lg:flex w-full lg:w-58 xl:w-60 lg:shrink-0 flex-col",
+        "bg-background text-foreground",
         "lg:sticky lg:top-2 lg:h-[calc(100vh-1rem)] lg:overflow-hidden",
         className,
       )}
     >
       <div className="p-2">
-        <div className="group flex items-center gap-2 px-4 py-1">
-          <FeatulLogoIcon className="size-6"  />
-          <div className="text-md font-semibold ">Featul</div>
+        <div className="group flex h-10 items-center gap-2 rounded-md px-3 py-1">
+          <FeatulLogoIcon className="size-5" />
+          <div className="text-sm font-semibold">Featul</div>
         </div>
         <WorkspaceSwitcher
-          className="mt-5.5 px-1"
+          className="mt-3 px-1"
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
         />
@@ -141,7 +142,7 @@ export default function Sidebar({
 
       <SidebarSection className="pb-4 py-2">
         <Button
-          className="w-full mb-1 group dark:bg-background flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
+          className="w-full mb-1 group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:bg-transparent"
           variant="ghost"
           size="md"
           onClick={openCreatePost}

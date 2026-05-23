@@ -47,7 +47,7 @@ export default async function ChangelogListPage({
   const { entries } = data;
 
   return (
-    <section className="space-y-4">
+    <section className="mx-auto w-full max-w-[72rem] space-y-4 pt-5 lg:pt-7">
       <ChangelogList
         items={entries}
         workspaceSlug={slug}

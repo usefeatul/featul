@@ -58,8 +58,8 @@ export function useRequestMultiSelectFilter({
   const router = useRouter();
   const pathname = usePathname() || "/";
   const sp = useSearchParams();
-  const [open, setOpen] = useFilterPopover(popoverKey);
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname]);
+  const [open, setOpen] = useFilterPopover(popoverKey);
 
   const selected = React.useMemo(
     () => parseRequestFiltersFromSearchParams(sp)[filterKey],

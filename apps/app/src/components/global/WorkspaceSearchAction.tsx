@@ -29,6 +29,8 @@ type WorkspaceSearchActionProps = {
   onSearchSubmit: (value: string) => void;
   onResultSelect: (result: WorkspaceSearchResult) => void;
   onClearSearch?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function WorkspaceSearchAction({
@@ -40,8 +42,21 @@ export function WorkspaceSearchAction({
   onSearchSubmit,
   onResultSelect,
   onClearSearch,
+  open: controlledOpen,
+  onOpenChange,
 }: WorkspaceSearchActionProps) {
-  const [open, setOpen] = React.useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = React.useCallback(
+    (nextOpen: boolean) => {
+      if (typeof controlledOpen === "boolean") {
+        onOpenChange?.(nextOpen);
+      } else {
+        setUncontrolledOpen(nextOpen);
+      }
+    },
+    [controlledOpen, onOpenChange],
+  );
   const [value, setValue] = React.useState(currentSearch);
   const buttonRef = React.useRef<HTMLButtonElement | null>(null);
 
@@ -93,7 +108,7 @@ export function WorkspaceSearchAction({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [setOpen]);
 
   const { data: results = [], isLoading } = useQuery({
     queryKey: ["search", workspaceSlug, value],

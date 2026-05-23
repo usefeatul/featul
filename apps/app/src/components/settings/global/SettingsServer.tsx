@@ -76,7 +76,7 @@ export default function SettingsServer({
       ? selectedSection
       : sections[0]?.value || "branding";
   return (
-    <section className="space-y-4 mt-6.5">
+    <section className="mx-auto mt-8 w-full max-w-[64rem] space-y-4 px-4 sm:px-6 lg:mt-10 lg:px-0">
       <SettingsTabsHeader slug={slug} selected={selected} />
       <div className="mt-2">
         <SectionRenderer

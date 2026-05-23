@@ -64,15 +64,15 @@ export default function MobileDrawerContent({
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent>
+    <DrawerContent className="bg-background">
       <VisuallyHidden>
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-md px-2 py-2">
-            <FeatulLogoIcon className="size-6" size={24} />
-            <div className="text-lg font-semibold">Featul</div>
+          <div className="group flex h-10 items-center gap-2 rounded-md px-2 py-2">
+            <FeatulLogoIcon className="size-5" size={20} />
+            <div className="text-sm font-semibold">Featul</div>
           </div>
           <WorkspaceSwitcher
             className="mt-5.5 px-1"
@@ -103,7 +103,7 @@ export default function MobileDrawerContent({
 
         <SidebarSection className="pb-8">
           <Button
-            className="w-full mb-1 group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
+            className="w-full mb-1 group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted"
             variant="plain"
             onClick={() => setCreatePostOpen(true)}
           >
