@@ -33,7 +33,7 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
   const items = data
 
   return (
-    <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border [&_[data-slot=table-container]]:bg-transparent [&_[data-slot=table-container]]:border-0 [&_[data-slot=table-container]]:rounded-none">
+    <div className="overflow-hidden rounded-sm bg-transparent [&_[data-slot=table-container]]:bg-transparent [&_[data-slot=table-container]]:border-0 [&_[data-slot=table-container]]:rounded-none">
       <Table>
         <TableHeader>
           <TableRow>
@@ -49,7 +49,7 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
             </TableRow>
           ) : (
             items.map((m) => (
-              <TableRow key={m.userId} className="cursor-pointer bg-card dark:bg-black/40 hover:bg-background dark:hover:bg-background">
+              <TableRow key={m.userId} className="cursor-pointer bg-transparent hover:bg-background dark:hover:bg-background">
                 <TableCell className="px-4">
                   <Link href={`/workspaces/${slug}/members/${m.userId}`} className="flex items-center gap-3 min-w-0">
                     <div className="relative">
