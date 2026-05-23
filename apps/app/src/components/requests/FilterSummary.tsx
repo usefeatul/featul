@@ -121,11 +121,13 @@ export default function FilterSummary({ className = "" }: { className?: string }
     const found = STATUS_OPTIONS.find((s) => s.value === v)
     return found ? found.label : v
   }
+  const filterButtonClassName =
+    "bg-background ring-offset-background dark:bg-black/40"
 
   return (
     <div
       className={cn(
-        "fixed top-0 inset-x-0 z-40 flex justify-center px-3 pointer-events-none",
+        "flex justify-start pointer-events-none",
         className
       )}
       aria-label="Active filters"
@@ -133,7 +135,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
       {isVisible ? (
         <div
           key="filter-summary-bar"
-          className="pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-2 overflow-hidden rounded-xs bg-card px-1 py-0.5"
+          className="pointer-events-auto flex max-w-full items-center gap-2 overflow-hidden rounded-xs bg-background px-1 py-0.5 dark:bg-black/40"
         >
           <div className="flex items-center  gap-2 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
             {status.map((s) => (
@@ -143,6 +145,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
                   onClick={() => removeStatus(s)}
                   variant="nav"
                   size="xs"
+                  className={filterButtonClassName}
                   aria-label={`Remove status ${statusLabel(s)}`}
                 >
                   <span className="truncate">{statusLabel(s)}</span>
@@ -157,6 +160,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
                   onClick={() => removeBoard(b)}
                   variant="nav"
                   size="xs"
+                  className={filterButtonClassName}
                   aria-label={`Remove board ${boardsBySlug[b] || b}`}
                 >
                   <span className="truncate">{boardsBySlug[b] || b}</span>
@@ -171,6 +175,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
                   onClick={() => removeTag(t)}
                   variant="nav"
                   size="xs"
+                  className={filterButtonClassName}
                   aria-label={`Remove tag ${tagsBySlug[t] || t}`}
                 >
                   <span className="truncate">{tagsBySlug[t] || t}</span>
@@ -185,6 +190,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
                   onClick={removeOrder}
                   variant="nav"
                   size="xs"
+                  className={filterButtonClassName}
                   aria-label="Remove sort oldest"
                 >
                   <span className="truncate">Oldest first</span>

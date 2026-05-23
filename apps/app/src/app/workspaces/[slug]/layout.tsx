@@ -12,7 +12,6 @@ import {
   getWorkspaceDomainInfoBySlug,
 } from "@/lib/workspace";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
-import FilterSummary from "@/components/requests/FilterSummary";
 import {
   getServerSession,
   listServerDeviceAccounts,
@@ -80,9 +79,6 @@ export default async function WorkspaceLayout({
           <WorkspaceHeader />
           <div className="workspace-main flex min-h-0 flex-1 overflow-hidden rounded-none border border-border bg-card dark:bg-black/40 lg:rounded-lg">
             <div className="flex min-h-0 flex-1 flex-col">
-              <div className="px-3 sm:px-5 lg:px-6">
-                <FilterSummary />
-              </div>
               <div className="scrollbar-hide min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-5 lg:px-6 lg:py-5">
                 {children}
               </div>

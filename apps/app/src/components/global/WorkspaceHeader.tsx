@@ -9,6 +9,7 @@ import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
+import FilterSummary from "@/components/requests/FilterSummary";
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
@@ -42,15 +43,17 @@ export default function WorkspaceHeader() {
 
   const innerClassName = isMemberDetail
     ? "mx-auto flex min-h-7 w-full max-w-[64rem] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
-    : "flex min-h-7 w-full items-center justify-end";
+    : showRequestsActions
+      ? "flex min-h-7 w-full items-center justify-between gap-3"
+      : "flex min-h-7 w-full items-center justify-end";
   const wrapperClassName = showRequestsActions
-    ? "pl-3 pr-0 pb-2 sm:pl-5 lg:pl-6"
+    ? "px-0 pb-2"
     : "px-3 pb-2 sm:px-5 lg:px-6";
 
   return (
     <div className={wrapperClassName}>
       <div className={innerClassName}>
-        <div />
+        {isMemberDetail ? <div /> : null}
         {isMemberDetail ? (
           <Toolbar size="sm">
             <Button
@@ -68,7 +71,10 @@ export default function WorkspaceHeader() {
             </Button>
           </Toolbar>
         ) : showRequestsActions ? (
-          <HeaderActions />
+          <>
+            <FilterSummary className="min-w-0 flex-1 pr-3" />
+            <HeaderActions className="shrink-0" />
+          </>
         ) : showChangelogActions ? (
           <Toolbar size="sm">
             <ImportNotraDialog workspaceSlug={workspaceSlug} />
