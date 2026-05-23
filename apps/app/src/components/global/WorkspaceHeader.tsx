@@ -40,9 +40,13 @@ export default function WorkspaceHeader() {
 
   if (!title && !showRequestsActions && !isMemberDetail) return null;
 
+  const innerClassName = isMemberDetail
+    ? "mx-auto flex min-h-9 w-full max-w-[64rem] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    : "flex min-h-9 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between";
+
   return (
     <div className="bg-card px-3 py-2.5 sm:px-5 lg:px-6 dark:bg-transparent">
-      <div className="flex min-h-9 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className={innerClassName}>
         <div />
         {isMemberDetail ? (
           <Toolbar size="sm">

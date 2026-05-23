@@ -32,7 +32,7 @@ export default async function MemberDetailPage({ params }: Props) {
     ])
 
   return (
-    <section className="mx-auto w-full max-w-[64rem] space-y-4 px-4 sm:px-6 lg:px-0">
+    <section className="mx-auto w-full max-w-[64rem] space-y-4">
       <MemberDetail
         slug={slug}
         userId={userId}
