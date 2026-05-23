@@ -61,7 +61,7 @@ export default async function WorkspaceLayout({
   const { primary: p } = branding;
   const serverNow = Date.now();
   return (
-    <div className="workspace-shell min-h-screen w-full bg-background text-foreground lg:flex lg:gap-3 lg:px-2 lg:py-2">
+    <div className="workspace-shell fixed inset-0 flex h-dvh w-full flex-col overflow-hidden bg-background text-foreground lg:flex-row lg:gap-3 lg:px-2 lg:py-2">
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
@@ -75,10 +75,10 @@ export default async function WorkspaceLayout({
         initialUser={session?.user}
         initialDeviceAccounts={deviceAccounts}
       />
-      <main className="w-full min-w-0 pb-10 lg:flex-1 lg:pb-0">
+      <main className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden pb-14 lg:pb-0">
         <EditorHeaderProvider>
-          <div className="workspace-main min-h-[calc(100vh-1rem)] overflow-hidden rounded-none border border-border bg-card lg:rounded-lg">
-            <div className="flex h-full min-h-[calc(100vh-1rem)] flex-col">
+          <div className="workspace-main flex min-h-0 flex-1 overflow-hidden rounded-none border border-border bg-card lg:rounded-lg">
+            <div className="flex min-h-0 flex-1 flex-col">
               <WorkspaceHeader />
               <div className="px-3 sm:px-5 lg:px-6">
                 <FilterSummary />

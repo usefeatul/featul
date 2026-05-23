@@ -37,7 +37,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
   if (!data) return notFound();
 
   return (
-    <section className="mx-auto w-full max-w-[47rem] space-y-4 pt-12 lg:pt-16">
+    <section className="mx-auto w-full max-w-[62rem] space-y-4 pt-10 lg:pt-14">
       <PostCountSeed
         slug={slug}
         statuses={data.statusFilter}
