@@ -15,6 +15,7 @@ import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
+import { normalizePlan, type PlanKey } from "@/lib/plan";
 
 export default function WorkspaceSwitcher({
   className = "",
@@ -37,6 +38,7 @@ export default function WorkspaceSwitcher({
     handleSelectWorkspace,
     handleCreateNew,
   } = useWorkspaceSwitcher(slug, initialWorkspace || null, initialWorkspaces || []);
+  const currentPlan = wsInfo?.plan || current?.plan || "free";
 
   const onSelectWorkspace = React.useCallback((targetSlug: string) => {
     setOpen(false);
@@ -66,7 +68,7 @@ export default function WorkspaceSwitcher({
             </div>
             <div className="flex min-w-0 flex-col items-start gap-1 overflow-hidden">
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
-              <span className="text-[11px] text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
+              <PlanText plan={currentPlan} className="text-[11px]" />
             </div>
             <span className="ml-auto inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-border bg-card text-xs font-medium text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-background">
               <ChevronIcon className="size-3 text-accent" />
@@ -113,9 +115,7 @@ export default function WorkspaceSwitcher({
                         )}
                         <div className="flex flex-col overflow-hidden">
                           <span className="truncate text-sm font-medium">{w.name}</span>
-                          <span className="text-xs text-muted-foreground capitalize">
-                            {w.plan || "Free"}
-                          </span>
+                          <PlanText plan={w.plan || "free"} className="mt-1 text-xs" />
                         </div>
                       </DropdownMenuItem>
                     );
@@ -139,4 +139,42 @@ export default function WorkspaceSwitcher({
       </DropdownMenu>
     </div>
   );
+}
+
+function PlanText({
+  plan,
+  className,
+}: {
+  plan?: string | null;
+  className?: string;
+}) {
+  const normalizedPlan = normalizePlan(plan || "free");
+
+  return (
+    <span
+      className={cn(
+        "font-light capitalize leading-none",
+        getPlanTextClassName(normalizedPlan),
+        className,
+      )}
+    >
+      {normalizedPlan}
+    </span>
+  );
+}
+
+function getPlanTextClassName(plan: PlanKey) {
+  if (plan === "free") {
+    return "text-green-600 dark:text-green-400";
+  }
+
+  if (plan === "starter") {
+    return "text-primary";
+  }
+
+  if (plan === "professional") {
+    return "text-orange-600 dark:text-orange-400";
+  }
+
+  return "text-muted-foreground";
 }
