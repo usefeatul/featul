@@ -41,7 +41,7 @@ export default function WorkspaceHeader() {
   if (!title && !showRequestsActions && !isMemberDetail) return null;
 
   return (
-    <div className="bg-card px-3 py-2.5 sm:px-5 lg:px-6">
+    <div className="bg-card px-3 py-2.5 sm:px-5 lg:px-6 dark:bg-transparent">
       <div className="flex min-h-9 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div />
         {isMemberDetail ? (
@@ -80,7 +80,7 @@ export default function WorkspaceHeader() {
         ) : showChangelogEditActions &&
           editorContext &&
           editorContext.actions.length > 0 ? (
-          <div className="flex items-center gap-0 overflow-hidden rounded-md bg-card">
+          <div className="flex items-center gap-0 overflow-hidden rounded-md bg-card dark:bg-transparent">
             {editorContext.actions
               .filter((action) => action.type === "switch")
               .map((action) => (
