@@ -47,7 +47,7 @@ export default function WorkspaceHeader() {
       ? "flex min-h-7 w-full items-center justify-between gap-3"
       : "flex min-h-7 w-full items-center justify-end";
   const wrapperClassName = showRequestsActions
-    ? "px-0 pb-1"
+    ? "-mt-1 px-0 pb-1"
     : "px-3 pb-2 sm:px-5 lg:px-6";
 
   return (
