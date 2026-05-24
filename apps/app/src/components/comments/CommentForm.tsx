@@ -98,7 +98,7 @@ export default function CommentForm({
             checkForMention(next, caret)
           }}
           placeholder={placeholder}
-          className="min-h-[60px] resize-none text-sm shadow-none placeholder:text-accent border-none focus-visible:ring-0"
+          className="min-h-[60px] resize-none border-none bg-card text-sm shadow-none placeholder:text-accent focus-visible:ring-0 dark:bg-card"
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}
@@ -150,7 +150,7 @@ export default function CommentForm({
             type="button"
             size="xs"
             variant="card"
-            className="h-8 w-8 p-0 rounded-md dark:bg-black/40"
+            className="h-8 w-8 p-0 rounded-md dark:bg-background"
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -171,7 +171,7 @@ export default function CommentForm({
                   variant="card"
                   onClick={() => setIsInternal((prev) => !prev)}
                   className={cn(
-                    "h-8 w-8 p-0 rounded-md dark:bg-black/40",
+                    "h-8 w-8 p-0 rounded-md dark:bg-background",
                     isInternal && "bg-muted border-green-600/40 text-green-600 dark:text-green-400"
                   )}
                   disabled={isPending || uploadingImage || internalForced}
