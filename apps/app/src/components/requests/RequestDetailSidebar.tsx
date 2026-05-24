@@ -18,6 +18,7 @@ import RoleBadge from "../global/RoleBadge";
 import type { RequestDetailData } from "@/types/request";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { CircleQuestionMarkIcon } from "@featul/ui/icons/circle-question-mark";
+import TagIcon from "@featul/ui/icons/tag";
 
 export type RequestDetailSidebarProps = {
   post: RequestDetailData;
@@ -205,7 +206,12 @@ export default function RequestDetailSidebar({
                       </span>
                     ))}
                   </div>
-                ) : null}
+                ) : (
+                  <div className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border/70 bg-muted/20 px-3 text-center text-xs font-medium text-muted-foreground ring-1 ring-border/40 ring-offset-1 ring-offset-background">
+                    <TagIcon className="size-3.5" />
+                    No tags
+                  </div>
+                )}
               </div>
             </div>
           ) : null}
