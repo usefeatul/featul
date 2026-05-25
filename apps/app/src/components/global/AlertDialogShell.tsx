@@ -48,14 +48,14 @@ export function AlertDialogShell({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent showCloseButton style={{ ...styleWidth, ...positionStyle }} className={`max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1`}>
+      <AlertDialogContent showCloseButton style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none">
         <AlertDialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <AlertDialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
             {icon ?? <TrashIcon className="size-3.5 opacity-80" />}
             {title}
           </AlertDialogTitle>
         </AlertDialogHeader>
-        <div className="bg-card rounded-lg p-2 border border-border">
+        <div className="rounded-lg bg-background p-2 ring-1 ring-border/60 ring-offset-1 ring-offset-background">
           {description ? (
             <AlertDialogDescription className="text-sm text-accent mb-2">
               {description}
