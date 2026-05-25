@@ -59,7 +59,7 @@ export default function RequestDetail({
     <section className="mx-auto -my-4 flex min-h-[calc(100%+2rem)] w-full max-w-[72rem] flex-col lg:-my-5 lg:min-h-[calc(100%+2.5rem)]">
       <div className="flex min-h-0 flex-1 overflow-hidden bg-[var(--workspace-surface)]">
         <div className="grid min-h-full flex-1 items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
-          <article className="relative min-w-0 px-4 py-4 md:px-6 md:py-5">
+          <article className="relative min-w-0 px-4 pb-4 pt-9 md:px-6 md:pb-5 md:pt-12">
             <header className="pb-4">
               {isMobile ? (
                 <div className="flex flex-col gap-2">
