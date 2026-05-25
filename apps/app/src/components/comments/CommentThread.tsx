@@ -186,7 +186,7 @@ function ReplyWrapper({
 
       {/* Mask vertical line at last item */}
       {isLast && (
-        <div className="absolute -left-[21px] top-[14px] bottom-0 w-px bg-background z-10" />
+        <div className="absolute -left-[21px] top-[14px] bottom-0 w-px bg-[var(--workspace-surface)] z-10" />
       )}
 
       {children}

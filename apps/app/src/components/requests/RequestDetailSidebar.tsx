@@ -79,7 +79,7 @@ export default function RequestDetailSidebar({
                 role={post.role}
                 isOwner={post.isOwner}
                 isFeatul={post.isFeatul}
-                className="-bottom-1 -right-1 bg-card"
+                className="-bottom-1 -right-1 bg-[var(--workspace-surface)]"
               />
             </Avatar>
           </div>

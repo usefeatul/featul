@@ -79,7 +79,7 @@ function renderInlineTagSummary(tags: TagSummary[]) {
       {visibleTags.map((tag) => (
         <span
           key={String(tag.id || tag.slug || tag.name)}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5 max-w-[120px]"
+          className="inline-flex items-center gap-1.5 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-background bg-muted/80 px-2 py-0.5 max-w-[120px]"
         >
           <span className="inline-block size-2 rounded-full bg-primary" />
           <span className="truncate">{tag.name || tag.slug || "tag"}</span>
@@ -167,7 +167,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created tag</span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/80 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-2 py-0.5 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/80 ring-1 ring-border/60 ring-offset-1 ring-offset-background px-2 py-0.5 text-sm">
             {color ? <span className="inline-block size-2 rounded-full" style={{ backgroundColor: color }} /> : null}
             <span className="truncate max-w-[160px]">{label}</span>
           </span>
@@ -179,7 +179,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>deleted tag</span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/60 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-2 py-0.5 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/60 ring-1 ring-border/60 ring-offset-1 ring-offset-background px-2 py-0.5 text-sm">
             <span className="truncate max-w-[160px]">{label}</span>
           </span>
         </span>
@@ -195,7 +195,7 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created changelog tag</span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-background bg-muted/80 px-2 py-0.5 text-sm">
             {color ? <span className="inline-block size-2 rounded-full" style={{ backgroundColor: color }} /> : null}
             <span className="truncate max-w-[160px]">{label}</span>
           </span>

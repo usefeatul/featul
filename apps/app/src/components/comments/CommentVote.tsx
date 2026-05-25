@@ -164,7 +164,7 @@ export default function CommentVote({
   }
 
   return (
-    <Toolbar size="sm" variant="plain" className="h-8 bg-card border-border">
+    <Toolbar size="sm" variant="plain" className="h-8 bg-[var(--workspace-surface)] border-border">
       <Button
         type="button"
         variant="plain"

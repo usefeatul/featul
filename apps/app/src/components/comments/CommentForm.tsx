@@ -98,7 +98,7 @@ export default function CommentForm({
             checkForMention(next, caret)
           }}
           placeholder={placeholder}
-          className="min-h-[60px] resize-none border-none bg-card text-sm shadow-none placeholder:text-accent focus-visible:ring-0 dark:bg-card"
+          className="min-h-[60px] resize-none border-none bg-[var(--workspace-surface)] text-sm shadow-none placeholder:text-accent focus-visible:ring-0"
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}

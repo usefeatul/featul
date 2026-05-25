@@ -79,7 +79,7 @@ function RequestListBase(props: RequestListProps) {
             Sorted by newest activity
           </p>
         </div>
-        <span className="rounded-sm bg-background px-2 py-1 text-xs font-medium tabular-nums text-accent">
+        <span className="rounded-sm bg-[var(--workspace-surface)] px-2 py-1 text-xs font-medium tabular-nums text-accent">
           {initialTotalCount ?? listItems.length}
         </span>
       </div>

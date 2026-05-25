@@ -49,7 +49,7 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
             </TableRow>
           ) : (
             items.map((m) => (
-              <TableRow key={m.userId} className="cursor-pointer bg-transparent hover:bg-background dark:hover:bg-background">
+              <TableRow key={m.userId} className="cursor-pointer bg-transparent hover:bg-card">
                 <TableCell className="px-4">
                   <Link href={`/workspaces/${slug}/members/${m.userId}`} className="flex items-center gap-3 min-w-0">
                     <div className="relative">

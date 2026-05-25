@@ -122,7 +122,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
     return found ? found.label : v
   }
   const filterButtonClassName =
-    "h-8 bg-background py-0 ring-offset-background"
+    "h-8 bg-[var(--workspace-surface)] py-0 ring-offset-background"
 
   return (
     <div
@@ -135,7 +135,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
       {isVisible ? (
         <div
           key="filter-summary-bar"
-          className="pointer-events-auto flex max-w-full items-center gap-2 overflow-hidden rounded-xs bg-background px-1 py-0"
+          className="pointer-events-auto flex max-w-full items-center gap-2 overflow-hidden rounded-xs bg-[var(--workspace-surface)] px-1 py-0"
         >
           <div className="flex items-center  gap-2 overflow-x-auto px-0.5 py-0 flex-1 scrollbar-hide">
             {status.map((s) => (
