@@ -18,6 +18,7 @@ import {
 } from "@/hooks/shared-image-upload";
 import { Button } from "@featul/ui/components/button";
 import { AvatarIcon } from "@featul/ui/icons/avatar";
+import { updateAccountUserCaches } from "./cache";
 
 type AvatarUploadProps = {
   initialUser?: { name?: string; email?: string; image?: string | null } | null;
@@ -93,7 +94,7 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
             : { ...(initialUser || {}), image: publicUrl };
         setImage(publicUrl);
         try {
-          queryClient.setQueryData(["me"], { user: updatedUser });
+          updateAccountUserCaches(queryClient, updatedUser);
         } catch (e: unknown) {
           console.error(e);
         }
