@@ -22,7 +22,7 @@ export default function AccountTabsHeader({ slug, selected }: { slug: string; se
               value={item.value}
               className={index === 0 ? "pl-2 pr-4 text-accent" : "px-4 text-accent"}
             >
-              {item.label}
+              <span data-slot="tabs-label">{item.label}</span>
             </TabsTrigger>
           ))}
         </TabsList>

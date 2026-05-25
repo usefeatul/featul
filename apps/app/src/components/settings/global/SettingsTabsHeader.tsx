@@ -22,7 +22,7 @@ export default function SettingsTabsHeader({ slug, selected }: { slug: string; s
               value={item.value}
               className={index === 0 ? "pl-2 pr-4 text-accent whitespace-nowrap" : "px-4 text-accent whitespace-nowrap"}
             >
-              {item.label}
+              <span data-slot="tabs-label">{item.label}</span>
             </TabsTrigger>
           ))}
         </TabsList>
