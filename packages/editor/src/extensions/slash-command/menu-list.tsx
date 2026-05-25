@@ -91,7 +91,7 @@ export const EditorSlashMenu = ({
       </PopoverAnchor>
       <PopoverContent
         id="slash-command"
-        className="p-1 bg-muted dark:bg-black/40 rounded-2xl gap-1 w-80 shadow-none border-none"
+        className="p-1 bg-muted dark:bg-background rounded-2xl gap-1 w-80 shadow-none border-none"
         list={true}
         side="bottom"
         align="start"
