@@ -45,8 +45,8 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     onToggle?.(!isSelectedMode)
   }, [isSelectingMode, isSelectedMode, onToggle])
   const rowClassName = cn(
-    "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md bg-card px-4 py-3 relative overflow-hidden sm:grid-cols-[auto_minmax(0,1fr)_auto]",
-    isSelectingMode ? "cursor-pointer" : "hover:bg-muted/60 transition-colors"
+    "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md bg-[var(--workspace-surface)] px-4 py-3 relative overflow-hidden sm:grid-cols-[auto_minmax(0,1fr)_auto]",
+    isSelectingMode ? "cursor-pointer" : "hover:bg-card transition-colors"
   )
   const actionsClassName = cn(
     "ml-auto hidden items-center gap-3 text-xs text-accent sm:flex",

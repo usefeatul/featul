@@ -240,7 +240,7 @@ function SectionRenderer({
       );
     default:
       return (
-        <div className="bg-card rounded-md  border p-4">Unknown section</div>
+        <div className="bg-[var(--workspace-surface)] rounded-md  border p-4">Unknown section</div>
       );
   }
 }

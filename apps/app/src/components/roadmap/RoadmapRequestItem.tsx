@@ -49,7 +49,7 @@ export default function RoadmapRequestItem({
   const tone = getRoadmapStatusTone(item.roadmapStatus);
 
   return (
-    <div className="flex min-h-[142px] w-full min-w-0 flex-col overflow-hidden rounded-[inherit] bg-card">
+    <div className="flex min-h-[142px] w-full min-w-0 flex-col overflow-hidden rounded-[inherit] bg-[var(--workspace-surface)]">
       <div className="px-3 pb-3 pt-3">
         <div className="flex items-start gap-3">
           <Link

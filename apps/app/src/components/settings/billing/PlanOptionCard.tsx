@@ -33,7 +33,7 @@ export default function PlanOptionCard({
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-md border bg-linear-to-b from-background via-background to-stone-100/90 p-4 dark:to-stone-900/75",
+        "relative flex h-full flex-col overflow-hidden rounded-md border bg-linear-to-b from-[var(--workspace-surface)] via-[var(--workspace-surface)] to-[var(--workspace-surface)] p-4",
         planKey === "free"
           ? "border-border/70"
           : isCurrent

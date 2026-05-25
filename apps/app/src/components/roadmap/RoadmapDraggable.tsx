@@ -31,7 +31,7 @@ export default function RoadmapDraggable({
         transform: transform ? CSS.Translate.toString(transform) : undefined,
       }}
       className={
-        "overflow-hidden rounded-md bg-card transition-colors hover:bg-muted/40 cursor-grab select-none active:cursor-grabbing " +
+        "overflow-hidden rounded-md bg-[var(--workspace-surface)] transition-colors hover:bg-card cursor-grab select-none active:cursor-grabbing " +
         (isDragging ? "opacity-0 " : "") +
         (className ? className : "")
       }

@@ -69,7 +69,7 @@ function RequestListBase(props: RequestListProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-md bg-card">
+    <div className="overflow-hidden rounded-md bg-[var(--workspace-surface)]">
       <div className="flex items-center justify-between px-4 py-2.5">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold leading-none text-foreground">

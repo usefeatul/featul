@@ -17,7 +17,7 @@ interface MemberActivityFiltersProps {
 }
 
 function chipClass(active: boolean) {
-  return `rounded-md h-7 px-3 text-xs border bg-background transition-colors ${
+  return `rounded-md h-7 px-3 text-xs border bg-[var(--workspace-surface)] transition-colors ${
     active
       ? "border-primary/40 text-foreground ring-1 ring-primary/20"
       : "border-border text-accent hover:border-foreground/20"
@@ -35,7 +35,7 @@ export function MemberActivityFilters({
   onStatusChange,
 }: MemberActivityFiltersProps) {
   return (
-    <div className="mb-3 space-y-2 rounded-md border border-border/60 bg-background p-2.5">
+    <div className="mb-3 space-y-2 rounded-md border border-border/60 bg-[var(--workspace-surface)] p-2.5">
       <div className="space-y-1.5">
         <div className="px-0.5 text-[11px] uppercase tracking-wide text-accent/80">Type</div>
         <div className={rowClass}>

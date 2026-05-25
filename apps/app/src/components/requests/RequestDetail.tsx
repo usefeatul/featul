@@ -51,7 +51,7 @@ export default function RequestDetail({
 
   return (
     <section className="mx-auto min-h-full w-full max-w-[72rem] pt-5 lg:pt-7">
-      <div className="min-h-full overflow-hidden bg-card">
+      <div className="min-h-full overflow-hidden bg-[var(--workspace-surface)]">
         <div className="grid min-h-full items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
           <article className="relative min-w-0 px-4 py-4 md:px-6 md:py-5">
             <header className="pb-4">

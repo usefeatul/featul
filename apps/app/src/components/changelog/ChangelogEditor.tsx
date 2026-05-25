@@ -138,7 +138,7 @@ export function ChangelogEditor({
     }, [setActions, clearActions, handleSave, isSaving, isDraft, isDirty, router, workspaceSlug, setIsDraft, setIsDirty]);
 
     return (
-        <div className="min-h-full bg-card">
+        <div className="min-h-full bg-[var(--workspace-surface)]">
             <main className="mx-auto max-w-3xl px-4 pt-0 pb-[120px] lg:pb-[96px]">
                 {/* Cover Image (when present) */}
                 {coverImage && (

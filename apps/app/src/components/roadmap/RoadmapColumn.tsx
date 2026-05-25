@@ -33,7 +33,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`h-full overflow-hidden rounded-md bg-card transition-colors duration-200 flex flex-col ${isOver ? "outline outline-1 outline-primary" : ""}`}
+      className={`h-full overflow-hidden rounded-md bg-[var(--workspace-surface)] transition-colors duration-200 flex flex-col ${isOver ? "outline outline-1 outline-primary" : ""}`}
       layout
       initial={false}
       transition={{
@@ -103,7 +103,7 @@ export default function RoadmapColumn({
       <AnimatePresence initial={false}>
         {!collapsed ? (
           <motion.ul
-            className="min-h-[260px] flex-1 space-y-2 bg-background p-2.5"
+            className="min-h-[260px] flex-1 space-y-2 bg-[var(--workspace-surface)] p-2.5"
             initial={false}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
