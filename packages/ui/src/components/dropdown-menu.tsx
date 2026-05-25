@@ -48,7 +48,7 @@ function DropdownMenuContent({
           <div
             aria-hidden="true"
             className={cn(
-              "fixed inset-0 z-40 bg-black/10 dark:bg-background animate-in fade-in-0",
+              "fixed inset-0 z-40 bg-black/10 dark:bg-black/20 animate-in fade-in-0",
               backdropClassName
             )}
           />
