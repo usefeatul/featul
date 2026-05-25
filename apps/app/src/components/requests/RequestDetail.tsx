@@ -28,7 +28,10 @@ type RequestDetailProps = {
   readonly?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
-  navigation?: { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null }
+  navigation?: {
+    prev: { slug: string; title: string } | null
+    next: { slug: string; title: string } | null
+  }
 }
 
 export default function RequestDetail({
@@ -39,7 +42,10 @@ export default function RequestDetail({
   initialCollapsedIds,
   navigation,
 }: RequestDetailProps) {
-  const { prevHref, nextHref, searchParams } = useRequestNavigation(workspaceSlug, navigation)
+  const { prevHref, nextHref, searchParams } = useRequestNavigation(
+    workspaceSlug,
+    navigation,
+  )
   const backHref = buildRequestsUrl(workspaceSlug, searchParams, {})
   const isMobile = useIsMobile()
   const [editOpen, setEditOpen] = useState(false)
@@ -51,7 +57,7 @@ export default function RequestDetail({
 
   return (
     <section className="mx-auto min-h-full w-full max-w-[72rem] pt-5 lg:pt-7">
-      <div className="min-h-full overflow-hidden bg-[var(--workspace-surface)]">
+      <div className="min-h-full overflow-hidden rounded-lg border-2 border-border bg-[var(--workspace-surface)] shadow-sm ring-1 ring-border/40">
         <div className="grid min-h-full items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
           <article className="relative min-w-0 px-4 py-4 md:px-6 md:py-5">
             <header className="pb-4">
@@ -65,9 +71,16 @@ export default function RequestDetail({
                     </Button>
                     <div className="inline-flex items-center gap-2">
                       <Toolbar size="sm" variant="plain">
-                        <MergePopover postId={post.id} workspaceSlug={workspaceSlug} />
+                        <MergePopover
+                          postId={post.id}
+                          workspaceSlug={workspaceSlug}
+                        />
                         <ToolbarSeparator />
-                        <DeletePostButton postId={post.id} workspaceSlug={workspaceSlug} backHref={backHref} />
+                        <DeletePostButton
+                          postId={post.id}
+                          workspaceSlug={workspaceSlug}
+                          backHref={backHref}
+                        />
                       </Toolbar>
                     </div>
                   </div>
@@ -120,15 +133,28 @@ export default function RequestDetail({
                 ) : null}
                 {post.image ? (
                   <div className="flex justify-start">
-                    <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
+                    <ContentImage
+                      url={post.image}
+                      alt={post.title}
+                      className="h-40 w-auto max-w-full rounded-md"
+                    />
                   </div>
                 ) : null}
               </div>
               {isMobile ? (
                 <div className="flex items-center justify-between gap-3 text-sm text-accent">
                   <div className="inline-flex items-center gap-3">
-                    <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-sm" />
-                    <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
+                    <UpvoteButton
+                      postId={post.id}
+                      upvotes={post.upvotes}
+                      hasVoted={post.hasVoted}
+                      className="text-sm"
+                    />
+                    <CommentCounter
+                      postId={post.id}
+                      initialCount={post.commentCount}
+                      surface="workspace"
+                    />
                   </div>
                   <Toolbar size="sm" variant="plain">
                     <Button
@@ -144,9 +170,14 @@ export default function RequestDetail({
                           <span className="text-xs font-medium">Prev</span>
                         </Link>
                       ) : (
-                        <span aria-hidden="true" className="flex items-center gap-2">
+                        <span
+                          aria-hidden="true"
+                          className="flex items-center gap-2"
+                        >
                           <ChevronLeftIcon className="size-3.5 opacity-50" />
-                          <span className="text-xs font-medium opacity-50">Prev</span>
+                          <span className="text-xs font-medium opacity-50">
+                            Prev
+                          </span>
                         </span>
                       )}
                     </Button>
@@ -164,8 +195,13 @@ export default function RequestDetail({
                           <ChevronRightIcon className="size-3" />
                         </Link>
                       ) : (
-                        <span aria-hidden="true" className="flex items-center gap-2">
-                          <span className="text-xs font-medium opacity-50">Next</span>
+                        <span
+                          aria-hidden="true"
+                          className="flex items-center gap-2"
+                        >
+                          <span className="text-xs font-medium opacity-50">
+                            Next
+                          </span>
                           <ChevronRightIcon className="size-3.5 opacity-50" />
                         </span>
                       )}
@@ -175,8 +211,17 @@ export default function RequestDetail({
               ) : null}
               {isMobile ? null : (
                 <div className="flex items-center justify-end gap-3 text-xs text-accent">
-                  <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" />
-                  <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
+                  <UpvoteButton
+                    postId={post.id}
+                    upvotes={post.upvotes}
+                    hasVoted={post.hasVoted}
+                    className="text-xs"
+                  />
+                  <CommentCounter
+                    postId={post.id}
+                    initialCount={post.commentCount}
+                    surface="workspace"
+                  />
                 </div>
               )}
               <div className="mt-2 pt-4">
@@ -193,11 +238,20 @@ export default function RequestDetail({
             </div>
           </article>
 
-          <RequestDetailSidebar post={post} workspaceSlug={workspaceSlug} readonly={readonly} />
+          <RequestDetailSidebar
+            post={post}
+            workspaceSlug={workspaceSlug}
+            readonly={readonly}
+          />
         </div>
       </div>
       {canEdit ? (
-        <EditPostModal open={editOpen} onOpenChange={setEditOpen} workspaceSlug={workspaceSlug} post={post} />
+        <EditPostModal
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          workspaceSlug={workspaceSlug}
+          post={post}
+        />
       ) : null}
     </section>
   )
