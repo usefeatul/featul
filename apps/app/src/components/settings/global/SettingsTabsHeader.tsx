@@ -20,9 +20,9 @@ export default function SettingsTabsHeader({ slug, selected }: { slug: string; s
             <TabsTrigger
               key={item.value}
               value={item.value}
-              className="px-4 text-accent whitespace-nowrap"
+              className={index === 0 ? "pl-2 pr-4 text-accent whitespace-nowrap" : "px-4 text-accent whitespace-nowrap"}
             >
-              <span className={index === 0 ? "-ml-4" : undefined}>{item.label}</span>
+              {item.label}
             </TabsTrigger>
           ))}
         </TabsList>

@@ -20,9 +20,9 @@ export default function AccountTabsHeader({ slug, selected }: { slug: string; se
             <TabsTrigger
               key={item.value}
               value={item.value}
-              className="px-4 text-accent"
+              className={index === 0 ? "pl-2 pr-4 text-accent" : "px-4 text-accent"}
             >
-              <span className={index === 0 ? "-ml-4" : undefined}>{item.label}</span>
+              {item.label}
             </TabsTrigger>
           ))}
         </TabsList>
