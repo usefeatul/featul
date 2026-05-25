@@ -33,7 +33,7 @@ function SidebarItem({
     (pathname === item.href ||
       (item.href !== "/" && pathname.startsWith(item.href)));
   const classes = cn(
-    "group flex h-9 items-center gap-2 rounded-md px-3 text-xs md:text-sm",
+    "group grid h-9 grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-3 text-xs md:text-sm",
     active
       ? "bg-muted text-foreground"
       : "text-accent hover:bg-muted hover:text-foreground",
@@ -43,11 +43,11 @@ function SidebarItem({
     <>
       <Icon
         className={cn(
-          "size-5 text-foreground group-hover:text-primary transition-colors",
+          "size-5 justify-self-center text-foreground transition-colors group-hover:text-primary",
           mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
         )}
       />
-      <span className="transition-colors">{item.label}</span>
+      <span className="min-w-0 truncate transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
         <span className="ml-auto rounded-sm border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-accent tabular-nums ring-1 ring-border/20 ring-offset-1 ring-offset-background">
           {count}

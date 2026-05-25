@@ -13,7 +13,7 @@ export default function SidebarSection({
   className?: string;
 }) {
   return (
-    <div className={cn("px-3 py-2", className)}>
+    <div className={cn("px-4 py-2", className)}>
       {title ? (
         <div className="mb-2 px-3 text-[11px] font-medium uppercase tracking-normal text-accent/80">
           {title}
