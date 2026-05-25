@@ -56,9 +56,9 @@ export default function RequestDetail({
     : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
 
   return (
-    <section className="mx-auto min-h-full w-full max-w-[72rem] pt-5 lg:pt-7">
-      <div className="min-h-full overflow-hidden bg-[var(--workspace-surface)]">
-        <div className="grid min-h-full items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
+    <section className="mx-auto -my-4 flex min-h-[calc(100%+2rem)] w-full max-w-[72rem] flex-col lg:-my-5 lg:min-h-[calc(100%+2.5rem)]">
+      <div className="flex min-h-0 flex-1 overflow-hidden bg-[var(--workspace-surface)]">
+        <div className="grid min-h-full flex-1 items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
           <article className="relative min-w-0 px-4 py-4 md:px-6 md:py-5">
             <header className="pb-4">
               {isMobile ? (

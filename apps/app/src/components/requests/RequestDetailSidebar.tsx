@@ -59,7 +59,7 @@ export default function RequestDetailSidebar({
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
   return (
-    <aside className="hidden self-stretch border-l border-border/60 md:block">
+    <aside className="hidden self-stretch border-l-2 border-border md:block">
       <div className="h-full px-4 py-4 md:px-6 md:py-5">
         <div className="mb-6 flex items-center gap-3">
           <div className="relative">
