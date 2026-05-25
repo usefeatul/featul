@@ -171,7 +171,7 @@ export default function PlanNotice({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-md border border-border/70 bg-[var(--workspace-surface)] px-2 py-2 text-xs text-foreground dark:border-border/80 sm:text-sm",
+        "relative overflow-hidden rounded-md border border-border/70 bg-background px-2 py-2 text-xs text-foreground dark:border-border/80 sm:text-sm",
         className,
       )}
     >
