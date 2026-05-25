@@ -23,7 +23,7 @@ export default function CommentEditor({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         onBlur={onBlur}
-        className="min-h-[80px] resize-none text-sm bg-[var(--workspace-surface)] border-border focus:border-primary transition-colors"
+        className="min-h-[80px] resize-none text-sm bg-secondary border-border focus:border-primary transition-colors"
         disabled={isPending}
         autoFocus
         aria-label="Edit comment"
