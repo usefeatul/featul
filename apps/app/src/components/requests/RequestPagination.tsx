@@ -131,7 +131,7 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Prev</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
                   Z
                 </span>
               </Link>
@@ -154,7 +154,7 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Next</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
                   X
                 </span>
               </Link>

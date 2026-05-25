@@ -93,7 +93,7 @@ export default function WorkspaceHeader() {
         ) : showChangelogEditActions &&
           editorContext &&
           editorContext.actions.length > 0 ? (
-          <div className="flex items-center gap-0 overflow-hidden rounded-md bg-card dark:bg-transparent">
+          <div className="flex items-center gap-0 overflow-hidden rounded-md bg-card">
             {editorContext.actions
               .filter((action) => action.type === "switch")
               .map((action) => (

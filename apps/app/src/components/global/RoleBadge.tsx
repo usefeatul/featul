@@ -55,7 +55,7 @@ export default function RoleBadge({
   return (
     <div
       className={cn(
-        "absolute -bottom-1 -right-1 border border-border rounded-full bg-card dark:bg-black p-0.5 z-10 pointer-events-auto",
+        "absolute -bottom-1 -right-1 border border-border rounded-full bg-card p-0.5 z-10 pointer-events-auto",
         className
       )}
     >

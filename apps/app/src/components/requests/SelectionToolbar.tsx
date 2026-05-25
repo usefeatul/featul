@@ -33,7 +33,7 @@ export function SelectionToolbar({ allSelected, selectedCount, isPending, onTogg
       >
         <span>{isPending ? "Deleting…" : "Delete"}</span>
         {!isPending && selectedCount > 0 ? (
-          <span className="ml-1 rounded-sm border px-1 py-0.5 text-xs leading-none text-accent bg-card dark:bg-black transition-colors group-hover:bg-card">
+          <span className="ml-1 rounded-sm border px-1 py-0.5 text-xs leading-none text-accent bg-card transition-colors group-hover:bg-card">
             D
           </span>
         ) : null}

@@ -71,7 +71,7 @@ function PopoverListItem({
     <Component
       data-slot="popover-list-item"
       className={cn(
-        "relative group w-full text-left px-3 py-2 hover:bg-muted dark:hover:bg-black/40 flex items-center gap-3 cursor-pointer rounded-none",
+        "relative group w-full text-left px-3 py-2 hover:bg-muted dark:hover:bg-muted/50 flex items-center gap-3 cursor-pointer rounded-none",
         className
       )}
       {...(props as any)}

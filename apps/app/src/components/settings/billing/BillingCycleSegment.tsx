@@ -24,7 +24,7 @@ export default function BillingCycleSegment({ billingCycle, onChange }: BillingC
           value="monthly"
           className={cn(
             "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
-            billingCycle === "monthly" && "bg-card text-foreground dark:bg-black/50",
+            billingCycle === "monthly" && "bg-card text-foreground",
           )}
         >
           Monthly
@@ -33,7 +33,7 @@ export default function BillingCycleSegment({ billingCycle, onChange }: BillingC
           value="yearly"
           className={cn(
             "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
-            billingCycle === "yearly" && "bg-card text-foreground dark:bg-black/50",
+            billingCycle === "yearly" && "bg-card text-foreground",
           )}
         >
           Yearly

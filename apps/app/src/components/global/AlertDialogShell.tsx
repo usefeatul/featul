@@ -55,7 +55,7 @@ export function AlertDialogShell({
             {title}
           </AlertDialogTitle>
         </AlertDialogHeader>
-        <div className="bg-card rounded-lg p-2 dark:bg-black/60 border border-border">
+        <div className="bg-card rounded-lg p-2 border border-border">
           {description ? (
             <AlertDialogDescription className="text-sm text-accent mb-2">
               {description}
@@ -67,4 +67,3 @@ export function AlertDialogShell({
     </AlertDialog>
   )
 }
-

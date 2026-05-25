@@ -26,7 +26,7 @@ export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: strin
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm cursor-pointer ${active ? "bg-muted dark:bg-black/40" : "hover:bg-muted dark:hover:bg-black/60"
+      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm cursor-pointer ${active ? "bg-muted dark:bg-muted/50" : "hover:bg-muted dark:hover:bg-muted/50"
         }`}
       disabled={loading}
     >

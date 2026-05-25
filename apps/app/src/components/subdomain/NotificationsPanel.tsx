@@ -33,7 +33,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
       <motion.div
         ref={ref}
         {...props}
-        className={`z-50 max-w-[90vw] max-h-[36rem] bg-card dark:bg-black overflow-y-auto rounded-md border  p-2 text-popover-foreground shadow-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black "}`}
+        className={`z-50 max-w-[90vw] max-h-[36rem] bg-card overflow-y-auto rounded-md border  p-2 text-popover-foreground shadow-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black "}`}
         role="dialog"
         aria-label="Notifications"
         initial={{ opacity: 0, y: -6, scale: 0.98 }}
@@ -70,7 +70,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
                       ? `/changelog/p/${n.entrySlug}`
                       : `/board/p/${n.postSlug}`)
                   }
-                  className="px-2 py-1.5 flex items-center gap-2 rounded-md  hover:bg-muted dark:hover:bg-black/40"
+                  className="px-2 py-1.5 flex items-center gap-2 rounded-md  hover:bg-muted dark:hover:bg-muted/50"
                   onClick={() => markRead(n.id)}
                 >
                   <div className="relative">

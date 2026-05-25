@@ -292,7 +292,7 @@ export default function UserDropdown({
               <button
                 suppressHydrationWarning
                 type="button"
-                className="group grid h-9 w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-3 py-0 text-xs text-accent hover:bg-muted dark:hover:bg-black/40 md:text-sm"
+                className="group grid h-9 w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-3 py-0 text-xs text-accent hover:bg-muted dark:hover:bg-muted/50 md:text-sm"
               >
                 <div className="justify-self-center overflow-hidden">
                   <Avatar className="size-5">

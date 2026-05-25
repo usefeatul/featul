@@ -154,7 +154,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                       <Badge
                         key={f}
                         variant="nav"
-                        className="bg-muted dark:bg-black/50 text-muted-foreground border border-border px-2 py-0.5 text-xs font-medium rounded-md"
+                        className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-medium rounded-md"
                       >
                         {f}
                       </Badge>

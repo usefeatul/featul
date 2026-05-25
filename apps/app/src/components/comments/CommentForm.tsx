@@ -150,7 +150,7 @@ export default function CommentForm({
             type="button"
             size="xs"
             variant="card"
-            className="h-8 w-8 p-0 rounded-md dark:bg-background"
+            className="h-8 w-8 p-0 rounded-md"
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -171,7 +171,7 @@ export default function CommentForm({
                   variant="card"
                   onClick={() => setIsInternal((prev) => !prev)}
                   className={cn(
-                    "h-8 w-8 p-0 rounded-md dark:bg-background",
+                    "h-8 w-8 p-0 rounded-md",
                     isInternal && "bg-muted border-green-600/40 text-green-600 dark:text-green-400"
                   )}
                   disabled={isPending || uploadingImage || internalForced}

@@ -66,7 +66,7 @@ export function ChangelogList({
   }
 
   return (
-    <div className="overflow-hidden rounded-md bg-card dark:bg-transparent">
+    <div className="overflow-hidden rounded-md bg-card">
       {isSelectingForRender && (
         <SelectionToolbar
           allSelected={allSelected}

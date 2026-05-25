@@ -61,7 +61,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-xs text-muted-foreground bg-muted dark:bg-black px-1.5 py-0.5 rounded-md border" suppressHydrationWarning>{timeString}</span>
+            <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md border" suppressHydrationWarning>{timeString}</span>
             <ChevronDown className="size-4 text-muted-foreground opacity-50" />
           </div>
         </Button>
@@ -73,7 +73,7 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
         container={typeof document !== "undefined" ? (document.querySelector('[data-slot="dialog-content"]') as HTMLElement | null) : undefined}
       >
         <div className="p-2 border-b">
-          <div className="w-fit bg-muted/50 dark:bg-black rounded-sm  px-1.5 py-1 mb-1.5">
+          <div className="w-fit bg-muted/50 rounded-sm  px-1.5 py-1 mb-1.5">
             <span className="text-xs font-light text-accent" suppressHydrationWarning>
               Your local time - {formatTimeWithDate((typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC"), now)}
             </span>

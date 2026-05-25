@@ -67,7 +67,7 @@ function CommandDialog({
             {title}
           </DialogTitle>
         </DialogHeader>
-        <div className="bg-card rounded-xl p-2 dark:bg-black/40 border border-border">
+        <div className="bg-card rounded-xl p-2 border border-border">
           <Command className="">
             {children}
           </Command>
@@ -84,7 +84,7 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="bg-card dark:bg-black/5 flex h-8 items-center gap-3  px-6"
+      className="bg-card flex h-8 items-center gap-3  px-6"
     >
       <SearchIcon className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input

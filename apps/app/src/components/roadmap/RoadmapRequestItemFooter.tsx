@@ -45,7 +45,7 @@ export default function RoadmapRequestItemFooter({
           role={role}
           isOwner={isOwner}
           isFeatul={isFeatul}
-          className="-bottom-1! -right-1! bg-background dark:bg-background"
+          className="-bottom-1! -right-1! bg-background"
         />
       </Avatar>
       <div className="ml-auto grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 text-xs text-accent">

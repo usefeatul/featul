@@ -32,7 +32,7 @@ export function TagSelector({
         <Button
           variant="card"
           size="sm"
-          className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:bg-muted hover:text-foreground dark:bg-black/30 dark:hover:bg-white/10"
+          className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted/50"
         >
           <TagIcon className="size-3.5 opacity-70" />
           {selectedTags.length > 0 && (

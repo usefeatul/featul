@@ -33,7 +33,7 @@ export default function SettingsCard({
   children,
 }: Props) {
   return (
-    <Card className="rounded-xl bg-background dark:bg-background overflow-hidden px-2 pt-2 pb-2 border border-border gap-0
+    <Card className="rounded-xl bg-card overflow-hidden px-2 pt-2 pb-2 border border-border gap-0
     " variant="plain">
       <div className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
@@ -84,7 +84,7 @@ export default function SettingsCard({
         </div>
       </div>
       {/* Description section */}
-      <div className="px-4 pt-3 pb-2 bg-card dark:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
+      <div className="px-4 pt-3 pb-2 bg-card ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
         <div className="text-sm text-accent leading-relaxed wrap-break-word">
           {description}
         </div>
