@@ -9,6 +9,7 @@
 
 :root {
   --background: oklch(0.9748 0.0010 100.42);
+  --workspace-surface: oklch(0.9600 0.0010 100.42);
   --foreground: oklch(0.2132 0.0042 264.48);
   --card: oklch(0.9450 0.0010 100.42);
   --card-foreground: oklch(0.2132 0.0042 264.48);
@@ -68,6 +69,7 @@
 
 .dark {
   --background: oklch(22.254% 0.00194 286.054);
+  --workspace-surface: oklch(0.1800 0.0035 264.48);
   --foreground: oklch(99.700% 0.00105 11.528);
   --card: oklch(0.1700 0.0040 264.48);
   --card-foreground: oklch(99.700% 0.00105 11.528);
@@ -127,6 +129,7 @@
 .quiet {
   color-scheme: light;
   --background: oklch(0.9820 0.0040 250);
+  --workspace-surface: oklch(0.9680 0.0060 248);
   --foreground: oklch(0.2500 0.0200 260);
   --card: oklch(0.9520 0.0080 245);
   --card-foreground: oklch(0.2500 0.0200 260);
@@ -163,6 +166,7 @@
 .solarized {
   color-scheme: light;
   --background: oklch(0.9650 0.0190 92);
+  --workspace-surface: oklch(0.9450 0.0210 90);
   --foreground: oklch(0.3300 0.0350 234);
   --card: oklch(0.9250 0.0240 88);
   --card-foreground: oklch(0.3300 0.0350 234);
@@ -199,6 +203,7 @@
 .github-dark {
   color-scheme: dark;
   --background: oklch(0.2050 0.0180 255);
+  --workspace-surface: oklch(0.1800 0.0190 255);
   --foreground: oklch(0.9200 0.0100 250);
   --card: oklch(0.1600 0.0200 255);
   --card-foreground: oklch(0.9200 0.0100 250);

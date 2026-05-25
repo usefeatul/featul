@@ -77,7 +77,7 @@ export default async function WorkspaceLayout({
       <main className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden pb-14 lg:pb-0">
         <EditorHeaderProvider>
           <WorkspaceHeader />
-          <div className="workspace-main flex min-h-0 flex-1 overflow-hidden rounded-none border border-border bg-background lg:rounded-lg">
+          <div className="workspace-main flex min-h-0 flex-1 overflow-hidden rounded-none border border-border bg-[var(--workspace-surface)] lg:rounded-lg">
             <div className="flex min-h-0 flex-1 flex-col">
               <div className="scrollbar-hide min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-5 lg:px-6 lg:py-5">
                 {children}
