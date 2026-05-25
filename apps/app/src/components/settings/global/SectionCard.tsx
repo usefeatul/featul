@@ -12,7 +12,7 @@ export default function SectionCard({
   action?: React.ReactNode;
 }) {
   return (
-    <section className="mb-3 overflow-hidden rounded-md bg-background text-foreground">
+    <section className="mb-3 overflow-hidden rounded-md bg-[var(--workspace-surface)] text-foreground">
       <header className="flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="text-base font-heading font-semibold">{title}</h2>
