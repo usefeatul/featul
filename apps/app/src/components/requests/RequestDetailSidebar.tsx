@@ -60,7 +60,7 @@ export default function RequestDetailSidebar({
 
   return (
     <aside className="hidden self-stretch border-l border-border md:block">
-      <div className="h-full px-4 pb-4 pt-9 md:px-6 md:pb-5 md:pt-12">
+      <div className="h-full px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-16">
         <div className="mb-6 flex items-center gap-3">
           <div className="relative">
             <Avatar className="relative size-10 overflow-visible">
