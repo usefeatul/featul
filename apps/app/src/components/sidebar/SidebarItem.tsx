@@ -35,8 +35,8 @@ function SidebarItem({
   const classes = cn(
     "group grid h-9 grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-3 text-xs md:text-sm",
     active
-      ? "bg-muted text-foreground"
-      : "text-accent hover:bg-muted hover:text-foreground",
+      ? "bg-muted/70 text-foreground"
+      : "text-accent hover:bg-muted/60 hover:text-foreground",
     className
   );
   const content = (
@@ -49,11 +49,11 @@ function SidebarItem({
       />
       <span className="min-w-0 truncate transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className="ml-auto rounded-sm border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-accent tabular-nums ring-1 ring-border/20 ring-offset-1 ring-offset-background">
+        <span className="ml-auto min-w-5 rounded-sm border border-border/60 bg-card px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-accent/80 tabular-nums transition-colors group-hover:border-border/80 group-hover:text-accent">
           {count}
         </span>
       ) : shortcut ? (
-        <span className="ml-auto rounded-sm border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-background">
+        <span className="ml-auto min-w-5 rounded-sm border border-border/60 bg-card px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-accent/80 transition-colors group-hover:border-border/80 group-hover:text-accent">
           {shortcut}
         </span>
       ) : null}
