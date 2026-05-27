@@ -26,6 +26,7 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
     const publishedDate = item.publishedAt ? new Date(item.publishedAt) : null
     const createdDate = new Date(item.createdAt)
     const displayDate = publishedDate || createdDate
+    const href = `/workspaces/${workspaceSlug}/changelog/${item.id}/edit`
     const isSelectingMode = Boolean(isSelecting)
     const isSelectedMode = Boolean(isSelected)
     const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
@@ -35,13 +36,22 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
         onToggle?.(!isSelectedMode)
     }, [isSelectingMode, isSelectedMode, onToggle])
     const rowClassName = cn(
-        "flex items-center gap-3 border-b border-border/70 bg-[var(--workspace-surface)] px-3 py-2.5 last:border-b-0",
+        "relative flex items-center gap-3 overflow-hidden border-b border-border/70 bg-[var(--workspace-surface)] px-3 py-2.5 last:border-b-0",
         isSelectingMode ? "cursor-pointer" : "hover:bg-card transition-colors"
     )
 
     return (
         <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug} onClick={handleRowClick}>
             <div className={rowClassName}>
+                {!isSelectingMode ? (
+                    <Link
+                        href={href}
+                        className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        aria-label={item.title}
+                    >
+                        <span className="sr-only">Edit changelog entry</span>
+                    </Link>
+                ) : null}
                 {isSelectingMode && (
                     <Checkbox
                         checked={isSelectedMode}
@@ -50,14 +60,11 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
                         className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
                     />
                 )}
-                <Link
-                    href={`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`}
+                <div
                     className={cn(
                         "flex items-center gap-3 flex-1 min-w-0",
                         isSelectingMode && "pointer-events-none"
                     )}
-                    tabIndex={isSelectingMode ? -1 : 0}
-                    aria-disabled={isSelectingMode ? true : undefined}
                 >
                     <div className="shrink-0">
                         {item.status === "published" ? (
@@ -79,7 +86,7 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
                             </Avatar>
                         </div>
                     </div>
-                </Link>
+                </div>
             </div>
         </ChangelogItemContextMenu>
     )

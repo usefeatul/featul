@@ -163,7 +163,7 @@ export default function BillingSection({
       action={billingAction}
     >
       <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-md border border-border/70 bg-[var(--workspace-surface)] px-3 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-md border border-border/70 bg-card px-3 py-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-foreground">
               <span>Current:</span>

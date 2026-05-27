@@ -60,6 +60,15 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       className={rowClassName}
       onClick={handleRowClick}
     >
+      {!isLinkDisabled ? (
+        <Link
+          href={href}
+          className="absolute inset-0 z-10 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          aria-label={title}
+        >
+          <span className="sr-only">View request</span>
+        </Link>
+      ) : null}
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       {isSelectingMode ? (
         <Checkbox
@@ -72,20 +81,14 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       ) : null}
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <div className="min-w-0">
-        <Link
-          href={href}
+        <span
           className={cn(
             "block truncate text-sm font-medium leading-5",
-            isLinkDisabled ? "text-foreground/60 cursor-default pointer-events-none" : "text-foreground"
+            isLinkDisabled ? "text-foreground/60" : "text-foreground"
           )}
-          onClick={(e) => {
-            if (isLinkDisabled) e.preventDefault()
-          }}
-          tabIndex={isLinkDisabled ? -1 : 0}
-          aria-disabled={isLinkDisabled ? true : undefined}
         >
           {displayTitle}
-        </Link>
+        </span>
         <div className="mt-0.5 flex items-center gap-2 text-xs text-accent sm:hidden">
           <span className="tabular-nums">{item.upvotes} votes</span>
           <span aria-hidden>·</span>
@@ -95,7 +98,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       <div className={actionsClassName}>
         <ReportIndicator count={item.reportCount || 0} />
 
-        <div className="inline-flex items-center gap-2 relative z-10">
+        <div className="relative z-20 inline-flex items-center gap-2">
           <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
         </div>
         <div className="inline-flex items-center gap-1">
