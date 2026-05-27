@@ -10,6 +10,8 @@ import { MemberActivity } from "@/components/team/MemberActivity"
 import { useMemberActivityQuery } from "@/components/team/useMemberActivityQuery"
 import StatusIcon from "@/components/requests/StatusIcon"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
+import { Button } from "@featul/ui/components/button"
+import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { cn } from "@featul/ui/lib/utils"
 import { teamQueryKeys } from "@/lib/team-query-keys"
 import {
@@ -96,6 +98,20 @@ export default function MemberDetail({
     <div className="flex min-h-0 flex-1 overflow-hidden bg-[var(--workspace-surface)]">
       <div className="grid min-h-full flex-1 items-stretch gap-0 md:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
         <article className="relative min-w-0 px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-24">
+          <div className="absolute left-4 top-5 md:left-6">
+            <Button
+              asChild
+              variant="card"
+              size="icon-sm"
+            >
+              <Link
+                href={`/workspaces/${slug}/members`}
+                aria-label="Back to members"
+              >
+                <ChevronLeftIcon className="size-3.5" />
+              </Link>
+            </Button>
+          </div>
           <div className="mx-auto w-full max-w-5xl">
             <div className="mb-9">
               <MemberHeader member={member} userId={userId} stats={stats} />
