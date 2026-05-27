@@ -179,57 +179,125 @@ export default function MemberDetail({
         </article>
 
         <aside className="hidden self-stretch border-l border-border md:block">
-          <div className="h-full space-y-4 px-4 pb-4 pt-6 md:px-6 md:pb-5">
+          <div className="h-full space-y-5 px-4 pb-4 pt-6 md:px-6 md:pb-5">
             <div className="rounded-lg border border-border/70 bg-card/40 p-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-foreground">Activity</span>
-                <span className="text-muted-foreground">Member</span>
+              <div>
+                <div className="text-sm font-medium text-foreground">
+                  Contribution mix
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Where this member has been most active.
+                </p>
               </div>
-              <div className="mt-4 grid grid-cols-8 gap-1">
-                {Array.from({ length: 32 }).map((_, index) => {
-                  const activeCount =
-                    Number(stats.posts || 0) + Number(stats.comments || 0)
-                  const isActive = index < Math.min(activeCount, 32)
+              <div className="mt-4 space-y-3">
+                {[
+                  { label: "Requests", value: Number(stats.posts || 0) },
+                  { label: "Comments", value: Number(stats.comments || 0) },
+                  { label: "Votes", value: Number(stats.upvotes || 0) },
+                ].map((item) => {
+                  const maxValue = Math.max(
+                    Number(stats.posts || 0),
+                    Number(stats.comments || 0),
+                    Number(stats.upvotes || 0),
+                    1,
+                  )
                   return (
-                    <span
-                      key={index}
-                      className={cn(
-                        "aspect-square rounded-sm",
-                        isActive ? "bg-primary/70" : "bg-muted",
-                      )}
-                      aria-hidden="true"
-                    />
+                    <div key={item.label} className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-3 text-sm">
+                        <span className="text-muted-foreground">
+                          {item.label}
+                        </span>
+                        <span className="font-semibold tabular-nums text-foreground">
+                          {item.value}
+                        </span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-primary/70"
+                          style={{
+                            width: `${Math.max(8, (item.value / maxValue) * 100)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
                   )
                 })}
               </div>
-              <p className="mt-4 text-sm text-muted-foreground">
-                {Number(stats.posts || 0) + Number(stats.comments || 0)}{" "}
-                contributions tracked
-              </p>
             </div>
 
             <div className="rounded-lg border border-border/70 bg-card/40 p-4">
-              <div className="text-sm font-medium text-foreground">Impact</div>
-              <dl className="mt-4 space-y-3 text-base">
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-muted-foreground">Requests created</dt>
-                  <dd className="font-semibold tabular-nums">
-                    {Number(stats.posts || 0)}
-                  </dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-muted-foreground">Comments posted</dt>
-                  <dd className="font-semibold tabular-nums">
-                    {Number(stats.comments || 0)}
-                  </dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-muted-foreground">Votes received</dt>
-                  <dd className="font-semibold tabular-nums">
-                    {Number(stats.upvotes || 0)}
-                  </dd>
-                </div>
+              <div className="text-sm font-medium text-foreground">
+                Quick read
+              </div>
+              <dl className="mt-4 space-y-4 text-sm">
+                {[
+                  {
+                    label: "Primary activity",
+                    value:
+                      Number(stats.posts || 0) >= Number(stats.comments || 0)
+                        ? "Requests"
+                        : "Comments",
+                  },
+                  {
+                    label: "Total contributions",
+                    value: String(
+                      Number(stats.posts || 0) + Number(stats.comments || 0),
+                    ),
+                  },
+                  {
+                    label: "Votes received",
+                    value: String(Number(stats.upvotes || 0)),
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <dt className="text-muted-foreground">{item.label}</dt>
+                    <dd className="font-semibold text-foreground">
+                      {item.value}
+                    </dd>
+                  </div>
+                ))}
               </dl>
+            </div>
+
+            <div className="rounded-lg border border-border/70 bg-card/40 p-4">
+              <div className="text-sm font-medium text-foreground">
+                Highlighted requests
+              </div>
+              {displayedPosts.length > 0 ? (
+                <div className="mt-3 space-y-1">
+                  {displayedPosts.slice(0, 3).map((post) => (
+                    <Link
+                      key={post.id}
+                      href={`/workspaces/${slug}/requests/${post.slug}`}
+                      className="block rounded-md px-2 py-2 hover:bg-card"
+                    >
+                      <div className="truncate text-sm font-medium text-foreground">
+                        {post.title}
+                      </div>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        {post.status ? (
+                          <StatusIcon
+                            status={String(post.status)}
+                            className="size-3.5"
+                          />
+                        ) : null}
+                        <span className="capitalize">
+                          {post.status || "Pending"}
+                        </span>
+                        <span aria-hidden>·</span>
+                        <span>{Number(post.upvotes || 0)} votes</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-3 rounded-md border border-dashed border-border/70 py-5 text-center text-sm text-muted-foreground">
+                  No requests yet
+                </div>
+              )}
             </div>
           </div>
         </aside>
