@@ -21,10 +21,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MemberDetailPage({ params }: Props) {
   const { slug, userId } = await params
-  const user = await requireSignedInUser(`/workspaces/${slug}/members/${userId}`)
+  const user = await requireSignedInUser(
+    `/workspaces/${slug}/members/${userId}`,
+  )
   const settings = await getSettingsInitialData(slug, user.id)
   const initialMembers = settings.initialTeam?.members ?? []
-  const initialMember = initialMembers.find((member) => member.userId === userId)
+  const initialMember = initialMembers.find(
+    (member) => member.userId === userId,
+  )
   const [{ stats: initialStats, topPosts: initialTopPosts }, initialActivity] =
     await Promise.all([
       loadMemberStats(slug, userId, user.id),
@@ -32,7 +36,7 @@ export default async function MemberDetailPage({ params }: Props) {
     ])
 
   return (
-    <section className="mx-auto w-full max-w-[64rem] space-y-4">
+    <section className="-mx-3 -my-4 flex min-h-[calc(100%+2rem)] w-[calc(100%+1.5rem)] flex-col sm:-mx-5 sm:w-[calc(100%+2.5rem)] lg:-mx-6 lg:-my-5 lg:min-h-[calc(100%+2.5rem)] lg:w-[calc(100%+3rem)]">
       <MemberDetail
         slug={slug}
         userId={userId}
