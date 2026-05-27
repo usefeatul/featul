@@ -3,7 +3,11 @@
 import React from "react"
 import Link from "next/link"
 
-import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@featul/ui/components/avatar"
 import { Checkbox } from "@featul/ui/components/checkbox"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
@@ -14,82 +18,106 @@ import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/d
 import { ChangelogItemContextMenu } from "./ChangelogItemContextMenu"
 
 interface ChangelogItemProps {
-    item: ChangelogEntryWithTags
-    workspaceSlug: string
-    isSelecting?: boolean
-    isSelected?: boolean
-    onToggle?: (checked: boolean) => void
+  item: ChangelogEntryWithTags
+  workspaceSlug: string
+  isSelecting?: boolean
+  isSelected?: boolean
+  onToggle?: (checked: boolean) => void
 }
 
-function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle }: ChangelogItemProps) {
-    const authorName = item.authorName || "Guest"
-    const publishedDate = item.publishedAt ? new Date(item.publishedAt) : null
-    const createdDate = new Date(item.createdAt)
-    const displayDate = publishedDate || createdDate
-    const href = `/workspaces/${workspaceSlug}/changelog/${item.id}/edit`
-    const isSelectingMode = Boolean(isSelecting)
-    const isSelectedMode = Boolean(isSelected)
-    const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
+function ChangelogItem({
+  item,
+  workspaceSlug,
+  isSelecting,
+  isSelected,
+  onToggle,
+}: ChangelogItemProps) {
+  const authorName = item.authorName || "Guest"
+  const publishedDate = item.publishedAt ? new Date(item.publishedAt) : null
+  const createdDate = new Date(item.createdAt)
+  const displayDate = publishedDate || createdDate
+  const href = `/workspaces/${workspaceSlug}/changelog/${item.id}/edit`
+  const isSelectingMode = Boolean(isSelecting)
+  const isSelectedMode = Boolean(isSelected)
+  const handleRowClick: React.MouseEventHandler<HTMLDivElement> =
+    React.useCallback(
+      (e) => {
         if (!isSelectingMode) return
         e.preventDefault()
         e.stopPropagation()
         onToggle?.(!isSelectedMode)
-    }, [isSelectingMode, isSelectedMode, onToggle])
-    const rowClassName = cn(
-        "relative flex items-center gap-3 overflow-hidden border-b border-border/70 bg-[var(--workspace-surface)] px-3 py-2.5 last:border-b-0",
-        isSelectingMode ? "cursor-pointer" : "hover:bg-card transition-colors"
+      },
+      [isSelectingMode, isSelectedMode, onToggle],
     )
+  const rowClassName = cn(
+    "relative flex min-h-[3.25rem] items-center gap-3 overflow-hidden bg-[var(--workspace-surface)] px-4 py-3 sm:px-6",
+    isSelectingMode ? "cursor-pointer" : "hover:bg-card transition-colors",
+  )
 
-    return (
-        <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug} onClick={handleRowClick}>
-            <div className={rowClassName}>
-                {!isSelectingMode ? (
-                    <Link
-                        href={href}
-                        className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                        aria-label={item.title}
-                    >
-                        <span className="sr-only">Edit changelog entry</span>
-                    </Link>
-                ) : null}
-                {isSelectingMode && (
-                    <Checkbox
-                        checked={isSelectedMode}
-                        onCheckedChange={(v) => onToggle?.(Boolean(v))}
-                        onClick={(e) => e.stopPropagation()}
-                        className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
-                    />
-                )}
-                <div
-                    className={cn(
-                        "flex items-center gap-3 flex-1 min-w-0",
-                        isSelectingMode && "pointer-events-none"
-                    )}
-                >
-                    <div className="shrink-0">
-                        {item.status === "published" ? (
-                            <ChangelogPublishedIcon className="size-6" />
-                        ) : (
-                            <ChangelogDraftIcon className="size-6" />
-                        )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium text-foreground truncate">{item.title}</h3>
-                    </div>
+  return (
+    <ChangelogItemContextMenu
+      item={item}
+      workspaceSlug={workspaceSlug}
+      onClick={handleRowClick}
+    >
+      <div className={rowClassName}>
+        {!isSelectingMode ? (
+          <Link
+            href={href}
+            className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            aria-label={item.title}
+          >
+            <span className="sr-only">Edit changelog entry</span>
+          </Link>
+        ) : null}
+        {isSelectingMode && (
+          <Checkbox
+            checked={isSelectedMode}
+            onCheckedChange={(v) => onToggle?.(Boolean(v))}
+            onClick={(e) => e.stopPropagation()}
+            className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
+          />
+        )}
+        <div
+          className={cn(
+            "flex items-center gap-3 flex-1 min-w-0",
+            isSelectingMode && "pointer-events-none",
+          )}
+        >
+          <div className="shrink-0">
+            {item.status === "published" ? (
+              <ChangelogPublishedIcon className="size-4" />
+            ) : (
+              <ChangelogDraftIcon className="size-4" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-medium text-foreground truncate">
+              {item.title}
+            </h3>
+          </div>
 
-                    <div className="hidden items-center gap-3 text-xs text-muted-foreground sm:flex">
-                        <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(displayDate)}</span>
-                        <div className="relative">
-                            <Avatar className="size-6 bg-muted relative overflow-visible">
-                                <AvatarImage src={item.authorImage || randomAvatarUrl(item.authorId)} alt={authorName} />
-                                <AvatarFallback>{getInitials(authorName)}</AvatarFallback>
-                            </Avatar>
-                        </div>
-                    </div>
-                </div>
+          <div className="hidden items-center gap-3 text-xs text-muted-foreground sm:flex">
+            <span className="w-12 text-right">
+              {new Intl.DateTimeFormat("en-US", {
+                month: "short",
+                day: "numeric",
+              }).format(displayDate)}
+            </span>
+            <div className="relative">
+              <Avatar className="size-6 bg-muted relative overflow-visible ring-1 ring-border/70">
+                <AvatarImage
+                  src={item.authorImage || randomAvatarUrl(item.authorId)}
+                  alt={authorName}
+                />
+                <AvatarFallback>{getInitials(authorName)}</AvatarFallback>
+              </Avatar>
             </div>
-        </ChangelogItemContextMenu>
-    )
+          </div>
+        </div>
+      </div>
+    </ChangelogItemContextMenu>
+  )
 }
 
 export default React.memo(ChangelogItem)
