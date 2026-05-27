@@ -56,11 +56,30 @@ export default function RequestDetail({
     : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
 
   return (
-    <section className="mx-auto -my-4 flex min-h-[calc(100%+2rem)] w-full max-w-[82rem] flex-col lg:-my-5 lg:min-h-[calc(100%+2.5rem)]">
+    <section className="-mx-3 -my-4 flex min-h-[calc(100%+2rem)] w-[calc(100%+1.5rem)] flex-col sm:-mx-5 sm:w-[calc(100%+2.5rem)] lg:-mx-6 lg:-my-5 lg:min-h-[calc(100%+2.5rem)] lg:w-[calc(100%+3rem)]">
       <div className="flex min-h-0 flex-1 overflow-hidden bg-[var(--workspace-surface)]">
-        <div className="grid min-h-full flex-1 items-stretch gap-0 md:grid-cols-[minmax(0,1fr)_20rem]">
-          <article className="relative min-w-0 px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-16">
-            <div className="mx-auto w-full max-w-3xl">
+        <div className="grid min-h-full flex-1 items-stretch gap-0 md:grid-cols-[minmax(0,1fr)_19rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
+          <article className="relative min-w-0 px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-24">
+            <div className="absolute left-4 right-4 top-5 hidden items-center justify-between gap-4 md:flex md:left-6 md:right-6">
+              <Button asChild variant="nav" size="xs">
+                <Link href={backHref} aria-label="Back to requests">
+                  <ChevronLeftIcon className="size-3" />
+                </Link>
+              </Button>
+              <RequestNavigation
+                postId={post.id}
+                workspaceSlug={workspaceSlug}
+                prev={navigation?.prev}
+                next={navigation?.next}
+                prevHref={prevHref}
+                nextHref={nextHref}
+                backHref={backHref}
+                className="shrink-0"
+                showActions
+                showBack={false}
+              />
+            </div>
+            <div className="mx-auto w-full max-w-4xl">
               <header className="pb-4">
                 {isMobile ? (
                   <div className="flex flex-col gap-2">
@@ -91,23 +110,10 @@ export default function RequestDetail({
                   </div>
                 ) : (
                   <div className="flex flex-col gap-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <h1 className="text-lg font-semibold leading-snug wrap-break-word text-foreground md:text-xl">
-                          {post.title}
-                        </h1>
-                      </div>
-                      <RequestNavigation
-                        postId={post.id}
-                        workspaceSlug={workspaceSlug}
-                        prev={navigation?.prev}
-                        next={navigation?.next}
-                        prevHref={prevHref}
-                        nextHref={nextHref}
-                        backHref={backHref}
-                        className="shrink-0"
-                        showActions
-                      />
+                    <div className="space-y-1 min-w-0">
+                      <h1 className="text-lg font-semibold leading-snug wrap-break-word text-foreground md:text-xl">
+                        {post.title}
+                      </h1>
                     </div>
                   </div>
                 )}
