@@ -45,7 +45,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     onToggle?.(!isSelectedMode)
   }, [isSelectingMode, isSelectedMode, onToggle])
   const rowClassName = cn(
-    "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md bg-[var(--workspace-surface)] px-4 py-3 relative overflow-hidden sm:grid-cols-[auto_minmax(0,1fr)_auto]",
+    "relative grid min-h-[3.25rem] grid-cols-[auto_minmax(0,1fr)] items-center gap-3 overflow-hidden bg-[var(--workspace-surface)] px-4 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6",
     isSelectingMode ? "cursor-pointer" : "hover:bg-card transition-colors"
   )
   const actionsClassName = cn(
@@ -63,7 +63,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       {!isLinkDisabled ? (
         <Link
           href={href}
-          className="absolute inset-0 z-10 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
           aria-label={title}
         >
           <span className="sr-only">View request</span>
@@ -79,7 +79,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
         />
       ) : null}
-      <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
+      <StatusIcon status={item.roadmapStatus || undefined} className="size-4 text-foreground/80" />
       <div className="min-w-0">
         <span
           className={cn(
@@ -99,15 +99,15 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
         <ReportIndicator count={item.reportCount || 0} />
 
         <div className="relative z-20 inline-flex items-center gap-2">
-          <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
+          <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="h-6 rounded-md border border-border/70 bg-card px-2 text-xs hover:text-red-500/80" />
         </div>
-        <div className="inline-flex items-center gap-1">
+        <div className="relative z-20 inline-flex h-6 items-center gap-1 rounded-md border border-border/70 bg-card px-2">
           <CommentsIcon aria-hidden className="size-3.5" />
           <span className="tabular-nums">{item.commentCount}</span>
         </div>
-        <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
+        <span className="w-12 text-right">{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
         <div className="relative">
-          <Avatar className="size-6 bg-muted relative overflow-visible">
+          <Avatar className="size-6 bg-muted relative overflow-visible ring-1 ring-border/70">
             <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
             <AvatarFallback>{getInitials(authorLabel)}</AvatarFallback>
             <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />
