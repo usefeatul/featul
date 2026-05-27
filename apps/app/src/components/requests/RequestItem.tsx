@@ -98,12 +98,10 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       <div className={actionsClassName}>
         <ReportIndicator count={item.reportCount || 0} />
 
-        <div className="relative z-20 inline-flex items-center gap-2">
-          <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="h-6 rounded-md border border-border/70 bg-card px-2 text-xs hover:text-red-500/80" />
-        </div>
-        <div className="relative z-20 inline-flex h-6 items-center gap-1 rounded-md border border-border/70 bg-card px-2">
+        <div className="relative z-20 inline-flex h-6 items-center gap-2 rounded-md border border-border/70 bg-card px-2">
           <CommentsIcon aria-hidden className="size-3.5" />
           <span className="tabular-nums">{item.commentCount}</span>
+          <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
         </div>
         <span className="w-12 text-right">{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
         <div className="relative">
