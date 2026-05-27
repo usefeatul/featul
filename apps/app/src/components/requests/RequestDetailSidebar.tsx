@@ -207,7 +207,7 @@ export default function RequestDetailSidebar({
                     ))}
                   </div>
                 ) : (
-                  <div className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border/70 bg-[var(--workspace-surface)] px-3 text-center text-xs font-medium text-muted-foreground ring-1 ring-border/40 ring-offset-1 ring-offset-background">
+                  <div className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border/70 bg-card px-3 text-center text-xs font-medium text-muted-foreground ring-1 ring-border/40 ring-offset-1 ring-offset-background">
                     <TagIcon className="size-3.5" />
                     No tags
                   </div>
