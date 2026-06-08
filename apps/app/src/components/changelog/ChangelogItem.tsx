@@ -75,7 +75,7 @@ function ChangelogItem({
             checked={isSelectedMode}
             onCheckedChange={(v) => onToggle?.(Boolean(v))}
             onClick={(e) => e.stopPropagation()}
-            className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
+            className="cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
           />
         )}
         <div

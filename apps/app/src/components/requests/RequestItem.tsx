@@ -45,8 +45,10 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     onToggle?.(!isSelectedMode)
   }, [isSelectingMode, isSelectedMode, onToggle])
   const rowClassName = cn(
-    "relative grid min-h-[3.25rem] grid-cols-[auto_minmax(0,1fr)] items-center gap-3 overflow-hidden bg-[var(--workspace-surface)] px-4 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6",
-    isSelectingMode ? "cursor-pointer" : "hover:bg-card transition-colors"
+    "relative grid min-h-[3.25rem] items-center gap-3 overflow-hidden bg-[var(--workspace-surface)] px-4 py-3 sm:px-6",
+    isSelectingMode
+      ? "grid-cols-[auto_auto_minmax(0,1fr)] sm:grid-cols-[auto_auto_minmax(0,1fr)_auto] cursor-pointer"
+      : "grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto] hover:bg-card transition-colors"
   )
   const actionsClassName = cn(
     "ml-auto hidden items-center gap-3 text-xs text-accent sm:flex",
@@ -76,7 +78,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           onCheckedChange={(v) => onToggle?.(Boolean(v))}
           aria-label="Select post"
           onClick={(e) => e.stopPropagation()}
-          className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
+          className="cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
         />
       ) : null}
       <StatusIcon status={item.roadmapStatus || undefined} className="size-4 text-foreground/80" />
