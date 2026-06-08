@@ -17,7 +17,7 @@ export default function HeaderActions({ className = "" }: { className?: string }
       size="sm"
       variant="plain"
       className={cn(
-        "ml-auto h-8 border-border bg-[var(--workspace-surface)] shadow-none ring-0 ring-offset-0",
+        "ml-auto h-8 border-border bg-card shadow-none ring-0 ring-offset-0",
         className
       )}
     >
