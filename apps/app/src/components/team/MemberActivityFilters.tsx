@@ -33,7 +33,7 @@ export function MemberActivityFilters({
             <button
               key={filter.id}
               type="button"
-              className={`border-b-2 px-0 pb-3 text-sm font-medium transition-colors ${
+              className={`border-b-2 px-0 pb-3 text-xs font-medium transition-colors ${
                 categoryFilter === filter.id
                   ? "border-foreground text-foreground"
                   : "border-transparent text-accent hover:text-foreground"
@@ -55,7 +55,7 @@ export function MemberActivityFilters({
             <div className="inline-flex min-w-max gap-2 pr-1">
               <button
                 type="button"
-                className={`h-7 rounded-md border px-3 text-xs transition-colors ${
+                className={`h-6 rounded-md border px-2.5 text-xs transition-colors ${
                   statusFilter === "all"
                     ? "border-primary/40 bg-card text-foreground ring-1 ring-primary/20"
                     : "border-border/70 bg-card/50 text-accent hover:text-foreground"
@@ -68,7 +68,7 @@ export function MemberActivityFilters({
                 <button
                   key={status}
                   type="button"
-                  className={`h-7 rounded-md border px-3 text-xs transition-colors ${
+                  className={`h-6 rounded-md border px-2.5 text-xs transition-colors ${
                     statusFilter === status
                       ? "border-primary/40 bg-card text-foreground ring-1 ring-primary/20"
                       : "border-border/70 bg-card/50 text-accent hover:text-foreground"

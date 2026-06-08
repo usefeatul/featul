@@ -19,10 +19,10 @@ interface MemberActivityDaySectionProps {
 const sectionClassName =
   "space-y-2 border-t border-border/70 pt-5 first:border-t-0 first:pt-0"
 
-const headingClassName = "text-sm font-semibold leading-none text-foreground"
+const headingClassName = "text-xs font-semibold leading-none text-foreground"
 
 const groupButtonClassName =
-  "block w-full rounded-md px-3 py-3.5 text-left hover:bg-card"
+  "block w-full rounded-md px-2.5 py-2.5 text-left hover:bg-card"
 
 const groupRowClassName = "flex min-w-0 items-start justify-between gap-4"
 
@@ -44,7 +44,7 @@ function GroupSummaryRow({
     <li className="py-0">
       <button type="button" onClick={onExpand} className={groupButtonClassName}>
         <div className={groupRowClassName}>
-          <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
+          <span className="min-w-0 flex-1 text-xs leading-4 text-foreground">
             <MemberActivityDescription item={item} />
           </span>
           <div className="flex shrink-0 items-center gap-2 pt-0.5">
@@ -96,7 +96,7 @@ export function MemberActivityDaySection({
                   <button
                     type="button"
                     onClick={() => onToggleGroup(row.key)}
-                    className="rounded-md px-3 py-2 text-xs text-accent hover:bg-card hover:text-foreground"
+                    className="rounded-md px-2.5 py-2 text-xs text-accent hover:bg-card hover:text-foreground"
                   >
                     Show less
                   </button>

@@ -48,10 +48,8 @@ export function MemberActivity({
     <div>
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <div className="text-base font-semibold text-foreground">
-            Activity
-          </div>
-          <p className="mt-1 text-sm text-accent">
+          <div className="text-xs font-semibold text-foreground">Activity</div>
+          <p className="mt-1 text-xs text-accent">
             Filter contributions by the kind of work you want to review.
           </p>
         </div>
@@ -70,7 +68,7 @@ export function MemberActivity({
           <LoadingSpinner label="Loading activity..." />
         </div>
       ) : dayGroups.length === 0 ? (
-        <div className="rounded-md border border-dashed border-border/70 bg-card/40 py-10 text-center text-sm text-accent">
+        <div className="rounded-md border border-dashed border-border/70 bg-card/40 py-8 text-center text-xs text-accent">
           No matching activity
         </div>
       ) : (
