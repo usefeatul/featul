@@ -40,7 +40,7 @@ export default function SortAction({ className = "" }: SortActionProps) {
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant="card"
+          variant="nav"
           size="icon-sm"
           aria-label="Sort"
           className={className}

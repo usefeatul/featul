@@ -135,7 +135,7 @@ export function RequestMultiSelectFilter({
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant="card"
+          variant="nav"
           size="icon-sm"
           aria-label={ariaLabel}
           className={className}
