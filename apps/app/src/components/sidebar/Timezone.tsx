@@ -53,12 +53,12 @@ export default function Timezone({
 
   return (
     <div className={cn(className)}>
-      <div className="grid h-9 grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-3">
+      <div className="grid h-10 grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md px-3">
         <span className="col-start-1 col-end-3 text-[11px] font-medium text-accent/80">TIME</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="rounded-sm border border-border/60 bg-card px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums text-accent/80">
+              <span className="inline-flex h-5 min-w-16 items-center justify-center rounded-sm border border-border/60 bg-card px-1.5 text-[11px] font-semibold leading-none tabular-nums text-accent/80">
                 {time}
               </span>
             </TooltipTrigger>
