@@ -104,7 +104,7 @@ export default function Sidebar({
         />
         <div className="px-3 pb-2">
           <UserDropdown
-            className="px-0 [&_button]:grid-cols-[1.25rem_minmax(0,1fr)] [&_button]:gap-2 [&_button]:px-3"
+            className="px-0 [&_button]:grid-cols-[1.25rem_minmax(0,1fr)] [&_button]:gap-2 [&_button]:px-3 [&_button>div]:size-4"
             initialUser={initialUser}
             initialDeviceAccounts={initialDeviceAccounts}
           />
