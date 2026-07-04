@@ -4,13 +4,13 @@ import React from "react";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
 import { DrawerContent, DrawerTitle } from "@featul/ui/components/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
+import SettingsNav from "@/components/settings/global/nav";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { getSlugFromPath } from "../../config/nav";
@@ -60,6 +60,9 @@ export default function MobileDrawerContent({
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
+  const settingsMatch = pathname.match(/^\/workspaces\/[^/]+\/settings\/([^/?#]+)/);
+  const isSettingsPage = Boolean(settingsMatch);
+  const selectedSetting = settingsMatch?.[1] || "branding";
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
@@ -69,13 +72,27 @@ export default function MobileDrawerContent({
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
       <ScrollArea className="h-full">
-        <div className="p-3">
-          <div className="group flex h-10 items-center gap-2 rounded-md px-2 py-2">
-            <FeatulLogoIcon className="size-5" size={20} />
-            <div className="text-sm font-semibold">Featul</div>
+        {isSettingsPage ? (
+          <div className="flex min-h-dvh flex-col">
+            <SettingsNav
+              slug={slug}
+              selected={selectedSetting}
+              workspaceName={initialWorkspace?.name}
+              logoUrl={initialWorkspace?.logo}
+              onLinkClick={onLinkClick}
+            />
+            <div className="px-4 pb-4">
+              <UserDropdown
+                initialUser={initialUser}
+                initialDeviceAccounts={initialDeviceAccounts}
+              />
+            </div>
           </div>
+        ) : (
+        <>
+        <div className="p-3">
           <WorkspaceSwitcher
-            className="mt-5.5 px-1"
+            className="px-1"
             initialWorkspace={initialWorkspace}
             initialWorkspaces={initialWorkspaces}
           />
@@ -130,6 +147,8 @@ export default function MobileDrawerContent({
             initialDeviceAccounts={initialDeviceAccounts}
           />
         </SidebarSection>
+        </>
+        )}
       </ScrollArea>
     </DrawerContent>
   );

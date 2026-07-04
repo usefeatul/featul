@@ -18,7 +18,6 @@ import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
 import type { FeedbackTag } from "../feedback/ManageTags";
 import type { ChangelogTag } from "../changelog/ChangelogTags";
 import { SECTIONS } from "../../../config/sections";
-import SettingsTabsHeader from "./SettingsTabsHeader";
 
 type Props = {
   slug: string;
@@ -76,30 +75,27 @@ export default function SettingsServer({
       ? selectedSection
       : sections[0]?.value || "branding";
   return (
-    <section className="mx-auto mt-8 w-full max-w-[64rem] space-y-4 px-4 sm:px-6 lg:mt-10 lg:px-0">
-      <SettingsTabsHeader slug={slug} selected={selected} />
-      <div className="mt-2">
-        <SectionRenderer
-          slug={slug}
-          initialWorkspaceId={initialWorkspaceId}
-          initialWorkspaceOwnerId={initialWorkspaceOwnerId}
-          initialBillingSubscription={initialBillingSubscription}
-          section={selected}
-          initialTimezone={initialTimezone}
-          initialTeam={initialTeam}
-          initialChangelogVisible={initialChangelogVisible}
-          initialChangelogTags={initialChangelogTags}
-          initialHidePoweredBy={initialHidePoweredBy}
-          initialPlan={initialPlan}
-          initialBrandingConfig={initialBrandingConfig}
-          initialWorkspaceName={initialWorkspaceName}
-          initialDomainInfo={initialDomainInfo}
-          initialDefaultDomain={initialDefaultDomain}
-          initialFeedbackBoards={initialFeedbackBoards}
-          initialFeedbackTags={initialFeedbackTags}
-          initialIntegrations={initialIntegrations}
-        />
-      </div>
+    <section className="mx-auto w-full max-w-[44rem] px-1 py-4 sm:px-2 lg:py-6">
+      <SectionRenderer
+        slug={slug}
+        initialWorkspaceId={initialWorkspaceId}
+        initialWorkspaceOwnerId={initialWorkspaceOwnerId}
+        initialBillingSubscription={initialBillingSubscription}
+        section={selected}
+        initialTimezone={initialTimezone}
+        initialTeam={initialTeam}
+        initialChangelogVisible={initialChangelogVisible}
+        initialChangelogTags={initialChangelogTags}
+        initialHidePoweredBy={initialHidePoweredBy}
+        initialPlan={initialPlan}
+        initialBrandingConfig={initialBrandingConfig}
+        initialWorkspaceName={initialWorkspaceName}
+        initialDomainInfo={initialDomainInfo}
+        initialDefaultDomain={initialDefaultDomain}
+        initialFeedbackBoards={initialFeedbackBoards}
+        initialFeedbackTags={initialFeedbackTags}
+        initialIntegrations={initialIntegrations}
+      />
     </section>
   );
 }

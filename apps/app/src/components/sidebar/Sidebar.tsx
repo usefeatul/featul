@@ -14,11 +14,11 @@ import UserDropdown from "@/components/account/UserDropdown";
 import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
+import SettingsNav from "@/components/settings/global/nav";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
@@ -65,6 +65,9 @@ export default function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const slug = getSlugFromPath(pathname);
+  const settingsMatch = pathname.match(/^\/workspaces\/[^/]+\/settings\/([^/?#]+)/);
+  const isSettingsPage = Boolean(settingsMatch);
+  const selectedSetting = settingsMatch?.[1] || "branding";
 
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
@@ -82,6 +85,33 @@ export default function Sidebar({
     return label.trim().toLowerCase();
   };
 
+  if (isSettingsPage) {
+    return (
+      <aside
+        className={cn(
+          "hidden lg:flex w-full lg:w-58 xl:w-60 lg:shrink-0 flex-col",
+          "bg-background text-foreground",
+          "lg:sticky lg:top-2 lg:h-[calc(100vh-1rem)] lg:overflow-hidden",
+          className,
+        )}
+      >
+        <SettingsNav
+          slug={slug}
+          selected={selectedSetting}
+          workspaceName={initialWorkspace?.name}
+          logoUrl={initialWorkspace?.logo}
+          className="px-1"
+        />
+        <div className="px-4 pb-2">
+          <UserDropdown
+            initialUser={initialUser}
+            initialDeviceAccounts={initialDeviceAccounts}
+          />
+        </div>
+      </aside>
+    );
+  }
+
   return (
     <aside
       tabIndex={0}
@@ -96,13 +126,8 @@ export default function Sidebar({
         className,
       )}
     >
-      <div className="px-4 pb-2 pt-1">
-        <div className="group grid h-10 grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-3 py-1">
-          <FeatulLogoIcon className="size-5 justify-self-center" />
-          <div className="text-sm font-semibold">Featul</div>
-        </div>
+      <div className="px-4 pb-2 pt-3">
         <WorkspaceSwitcher
-          className="mt-2"
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
         />
