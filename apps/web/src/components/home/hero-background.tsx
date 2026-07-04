@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function HeroBackground() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 -top-16 bottom-0 overflow-hidden">
+    <div className="pointer-events-none absolute inset-x-0 -top-[100vh] bottom-0 overflow-hidden">
       <Image
         src="/image/herosky.png"
         alt=""

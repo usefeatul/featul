@@ -23,17 +23,19 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Hero />
-      <div className="mx-auto max-w-6xl">
-        <SectionStack>
-          <ConversionHero />
-          <FeaturesSection />
-          <Listening />
-          <Integrations />
-          <Setup />
-          <Create />
-          <Faq />
-          <StatsSection />
-        </SectionStack>
+      <div className="bg-background">
+        <div className="mx-auto max-w-6xl">
+          <SectionStack>
+            <ConversionHero />
+            <FeaturesSection />
+            <Listening />
+            <Integrations />
+            <Setup />
+            <Create />
+            <Faq />
+            <StatsSection />
+          </SectionStack>
+        </div>
       </div>
     </main>
   );

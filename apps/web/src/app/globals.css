@@ -6,7 +6,15 @@
 
 html {
   scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+  height: 100%;
 }
+
+body {
+  overscroll-behavior-y: none;
+  min-height: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
