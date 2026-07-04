@@ -47,7 +47,7 @@ export function HeroContent({ variant = "overlay" }: HeroContentProps) {
           isOverlay ? "text-white/85" : "text-accent"
         )}
       >
-        featul is a privacy-first, open-source customer feedback platform
+        Featul is a privacy-first, open-source customer feedback platform
         that&apos;s both insightful and lightweight
       </p>
       <div
