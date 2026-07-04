@@ -165,7 +165,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
         key={`status-${s}`}
         icon={<StatusIcon status={s} className="size-3.5 shrink-0" />}
         label={statusLabel(s)}
-        aria-label={`Remove status ${statusLabel(s)}`}
+        ariaLabel={`Remove status ${statusLabel(s)}`}
         onRemove={() => removeStatus(s)}
       />
     )
@@ -177,7 +177,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
         key={`board-${b}`}
         icon={<LayersIcon className="size-3.5 shrink-0 opacity-70" size={14} />}
         label={boardsBySlug[b] || b}
-        aria-label={`Remove board ${boardsBySlug[b] || b}`}
+        ariaLabel={`Remove board ${boardsBySlug[b] || b}`}
         onRemove={() => removeBoard(b)}
       />
     )
@@ -189,7 +189,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
         key={`tag-${t}`}
         icon={<TagIcon className="size-3.5 shrink-0 opacity-70" size={14} />}
         label={tagsBySlug[t] || t}
-        aria-label={`Remove tag ${tagsBySlug[t] || t}`}
+        ariaLabel={`Remove tag ${tagsBySlug[t] || t}`}
         onRemove={() => removeTag(t)}
       />
     )
@@ -200,7 +200,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
       <FilterSummaryItem
         key="order-oldest"
         label="Oldest first"
-        aria-label="Remove sort oldest"
+        ariaLabel="Remove sort oldest"
         onRemove={removeOrder}
       />
     )
