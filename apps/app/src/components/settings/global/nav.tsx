@@ -29,7 +29,7 @@ type SettingsNavGroup = {
 };
 
 const settingsIconClass =
-  "size-4 opacity-100 [&_*]:opacity-100 [&_path]:[fill-opacity:1] [&_g]:[fill-opacity:1]";
+  "size-5.5 opacity-100 [&_*]:opacity-100 [&_path]:[fill-opacity:1] [&_g]:[fill-opacity:1]";
 
 const groups: SettingsNavGroup[] = [
   {
@@ -123,14 +123,14 @@ export default function SettingsNav({
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col px-3 pb-4 pt-4 lg:pt-8", className)}>
-      <div className="px-2 pb-5">
+    <div className={cn("flex min-h-0 flex-1 flex-col pb-4", className)}>
+      <div className="px-4 pb-2 pt-8">
         <Link
           href={`/workspaces/${slug}`}
           onClick={onLinkClick}
-          className="group mb-5 flex min-w-0 items-center gap-3 text-left"
+          className="group grid min-h-11 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5 rounded-md px-3 py-2 text-left transition-colors hover:bg-muted/60"
         >
-          <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-[var(--workspace-surface)] text-sm font-semibold text-foreground">
+          <span className="flex size-8 justify-self-center overflow-hidden rounded-md border border-border/90 bg-card text-sm font-semibold text-foreground dark:border-border/60">
             {logoUrl ? (
               <Image
                 src={logoUrl}
@@ -155,13 +155,13 @@ export default function SettingsNav({
         </Link>
       </div>
 
-      <nav className="min-h-0 flex-1 space-y-6 overflow-y-auto pb-4 scrollbar-hide">
+      <nav className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
         {groups.map((group) => (
-          <div key={group.title}>
-            <div className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wide text-accent">
+          <div key={group.title} className="px-4 py-1.5">
+            <div className="mb-1.5 px-3 text-[11px] font-medium uppercase tracking-normal text-accent/80">
               {group.title}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {group.items.map((item) => {
                 const active = selected === item.value;
 
@@ -172,13 +172,13 @@ export default function SettingsNav({
                     onClick={onLinkClick}
                     prefetch={false}
                     className={cn(
-                      "grid h-9 grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-3 text-sm transition-colors",
+                      "group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-2.5 rounded-md px-3 text-sm transition-colors",
                       active
-                        ? "border border-border bg-card text-foreground"
-                        : "text-accent hover:bg-card/70 hover:text-foreground",
+                        ? "bg-muted/70 text-foreground"
+                        : "text-accent hover:bg-muted/60 hover:text-foreground",
                     )}
                   >
-                    <span className="flex size-4 items-center justify-center justify-self-center">
+                    <span className="flex size-5.5 items-center justify-center justify-self-center text-foreground opacity-60 transition-colors group-hover:text-primary group-hover:opacity-100">
                       {item.icon(settingsIconClass)}
                     </span>
                     <span className="truncate">{item.label}</span>
@@ -190,16 +190,20 @@ export default function SettingsNav({
         ))}
       </nav>
 
-      <div className="border-t border-border px-2 pt-3">
+      <div className="px-4 py-1.5 pt-2">
+        <div className="border-t border-border/80 pt-2">
         <Link
           href="https://www.featul.com/docs"
           onClick={onLinkClick}
           prefetch={false}
-          className="flex h-9 items-center gap-2 rounded-md px-2 text-sm text-accent transition-colors hover:bg-card/70 hover:text-foreground"
+          className="group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-2.5 rounded-md px-3 text-sm text-accent transition-colors hover:bg-muted/60 hover:text-foreground"
         >
-          <CloudIcon className={settingsIconClass} width={16} height={16} />
-          Help
+          <span className="flex size-5.5 items-center justify-center justify-self-center text-foreground opacity-60 transition-colors group-hover:text-primary group-hover:opacity-100">
+            <CloudIcon className={settingsIconClass} width={22} height={22} />
+          </span>
+          <span className="truncate">Help</span>
         </Link>
+        </div>
       </div>
     </div>
   );
