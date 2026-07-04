@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { cn } from "@featul/ui/lib/utils"
+import { subdomainSurfaceClassName } from "./subdomainListItemStyles"
 
 type SubdomainListCardProps = {
   children: ReactNode
@@ -12,7 +13,8 @@ export function SubdomainListCard({ children, className }: SubdomainListCardProp
   return (
     <div
       className={cn(
-        "rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card mt-4",
+        "rounded-md mt-4",
+        subdomainSurfaceClassName,
         className
       )}
     >
