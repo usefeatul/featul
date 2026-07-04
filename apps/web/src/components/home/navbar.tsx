@@ -12,12 +12,24 @@ import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./mobile-menu";
 import { LinearSeparator } from "@/components/linear-separator";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
-const navTransition = { type: "spring" as const, stiffness: 420, damping: 30, mass: 0.85 };
+const smoothEase = [0.33, 1, 0.68, 1] as const;
+
+const layoutTransition = {
+  type: "tween" as const,
+  duration: 0.42,
+  ease: smoothEase,
+};
+
+const shellTransition = {
+  type: "tween" as const,
+  duration: 0.38,
+  ease: smoothEase,
+};
 
 const floatShadow =
-  "0 8px 32px -8px rgb(0 0 0 / 0.12), 0 0 0 1px rgb(0 0 0 / 0.06)";
+  "0 8px 32px -8px rgb(0 0 0 / 0.1), 0 0 0 1px rgb(0 0 0 / 0.05)";
 
 const NAV_FULL_WIDTH = 1152;
 const NAV_FLOAT_WIDTH = 800;
@@ -31,12 +43,16 @@ export default function Navbar() {
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const isHomeOverlay = isHome && !scrolled;
   const isFloated = scrolled;
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled((prev) => (y > 32 ? true : y < 12 ? false : prev));
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -59,7 +75,7 @@ export default function Navbar() {
   }, []);
 
   const navLinkClass = cn(
-    "inline-flex items-center rounded-md h-8 px-2 transition-colors",
+    "inline-flex items-center rounded-md h-8 px-2 transition-colors duration-300",
     isHomeOverlay
       ? "text-white/90 hover:bg-white/10 hover:text-white"
       : "text-accent hover:bg-muted hover:text-foreground hover:ring-1 hover:ring-border"
@@ -71,10 +87,10 @@ export default function Navbar() {
         className="pointer-events-none absolute inset-x-0 top-0 origin-top bg-background"
         initial={false}
         animate={{
-          scaleY: !isHome && !isFloated ? 1 : 0,
+          scaleY: !isHome && !isFloated ? 1 : 0.98,
           opacity: !isHome && !isFloated ? 1 : 0,
         }}
-        transition={navTransition}
+        transition={prefersReducedMotion ? { duration: 0 } : layoutTransition}
         style={{ height: 64 }}
         aria-hidden
       />
@@ -89,34 +105,39 @@ export default function Navbar() {
 
         <motion.div
           className="mx-auto w-full"
+          layout
           initial={false}
           animate={{
             marginTop: isFloated ? 12 : 0,
             maxWidth: isFloated ? NAV_FLOAT_WIDTH : NAV_FULL_WIDTH,
           }}
-          transition={navTransition}
+          transition={prefersReducedMotion ? { duration: 0 } : layoutTransition}
         >
           <motion.div
+            layout
             className={cn(
               "relative flex w-full items-center justify-between",
               isFloated ? "px-4 sm:px-5" : "px-3 sm:px-6"
             )}
             initial={false}
             animate={{ height: isFloated ? 56 : 64 }}
-            transition={navTransition}
+            transition={prefersReducedMotion ? { duration: 0 } : layoutTransition}
           >
             <motion.div
-              className="pointer-events-none absolute inset-0 -z-10 bg-white"
-              style={{ transformOrigin: "50% 0%" }}
+              className={cn(
+                "pointer-events-none absolute inset-0 -z-10 bg-white/85 backdrop-blur-md transition-[box-shadow,border-radius] duration-[380ms] ease-[cubic-bezier(0.33,1,0.68,1)]",
+                isFloated ? "rounded-2xl" : "rounded-xl"
+              )}
+              style={{
+                transformOrigin: "50% 0%",
+                boxShadow: isFloated ? floatShadow : "none",
+              }}
               initial={false}
               animate={{
-                scaleX: isFloated ? 1 : 0.72,
-                scaleY: isFloated ? 1 : 0,
                 opacity: isFloated ? 1 : 0,
-                borderRadius: isFloated ? 16 : 12,
-                boxShadow: isFloated ? floatShadow : "0 0 0 0 transparent",
+                scale: isFloated ? 1 : 0.97,
               }}
-              transition={navTransition}
+              transition={prefersReducedMotion ? { duration: 0 } : shellTransition}
               aria-hidden
             />
             <Link
