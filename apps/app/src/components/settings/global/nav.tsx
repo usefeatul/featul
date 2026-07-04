@@ -170,6 +170,7 @@ export default function SettingsNav({
                     key={item.value}
                     href={`/workspaces/${slug}/settings/${item.value}`}
                     onClick={onLinkClick}
+                    prefetch={false}
                     className={cn(
                       "grid h-9 grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-3 text-sm transition-colors",
                       active
@@ -193,6 +194,7 @@ export default function SettingsNav({
         <Link
           href="https://www.featul.com/docs"
           onClick={onLinkClick}
+          prefetch={false}
           className="flex h-9 items-center gap-2 rounded-md px-2 text-sm text-accent transition-colors hover:bg-card/70 hover:text-foreground"
         >
           <CloudIcon className={settingsIconClass} width={16} height={16} />

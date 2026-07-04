@@ -26,7 +26,6 @@ import type {
 import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
 import type { DomainInfo } from "../types/domain";
-import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import {
   getBrandingBySlug,
   getBrandingColorsBySlug,
@@ -265,12 +264,7 @@ export async function listUserWorkspaces(
   >();
   for (const w of owned.concat(memberRows)) map.set(w.id, w);
 
-  return Promise.all(
-    Array.from(map.values()).map(async (workspaceSummary) => ({
-      ...workspaceSummary,
-      plan: await getEffectiveWorkspacePlan(workspaceSummary.id),
-    }))
-  );
+  return Array.from(map.values());
 }
 
 export async function getWorkspacePosts(
@@ -566,7 +560,8 @@ export async function getBoardByWorkspaceSlug(
 
 export async function getSettingsInitialData(
   slug: string,
-  meId?: string
+  meId?: string,
+  selectedSection?: string
 ): Promise<{
   initialPlan?: string;
   initialWorkspaceId?: string;
@@ -596,6 +591,16 @@ export async function getSettingsInitialData(
 }> {
   const ws = await getWorkspaceBySlugRecord(slug);
   if (!ws?.id) return {};
+  const section = selectedSection || "all";
+  const loadAll = section === "all";
+  const needsBranding = loadAll || section === "branding";
+  const needsTeam = loadAll || section === "team";
+  const needsDomain = loadAll || section === "domain";
+  const needsFeedbackBoards = loadAll || section === "feedback" || section === "board";
+  const needsFeedbackTags = loadAll || section === "feedback";
+  const needsChangelog = loadAll || section === "changelog";
+  const needsIntegrations = loadAll || section === "integrations";
+  const needsBilling = loadAll || section === "billing";
 
   const feedbackBoardSelect = {
     id: board.id,
@@ -625,7 +630,7 @@ export async function getSettingsInitialData(
     effectivePlan,
     branding,
   ] = await Promise.all([
-    db
+    needsChangelog ? db
       .select({
         isVisible: board.isVisible,
         isPublic: board.isPublic,
@@ -638,13 +643,13 @@ export async function getSettingsInitialData(
           eq(board.systemType, "changelog")
         )
       )
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needsBranding ? db
       .select({ hidePoweredBy: brandingConfig.hidePoweredBy })
       .from(brandingConfig)
       .where(eq(brandingConfig.workspaceId, ws.id))
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needsTeam ? db
       .select({
         userId: workspaceMember.userId,
         role: workspaceMember.role,
@@ -656,8 +661,8 @@ export async function getSettingsInitialData(
       })
       .from(workspaceMember)
       .innerJoin(user, eq(user.id, workspaceMember.userId))
-      .where(eq(workspaceMember.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceMember.workspaceId, ws.id)) : Promise.resolve([]),
+    needsTeam ? db
       .select({
         id: workspaceInvite.id,
         email: workspaceInvite.email,
@@ -668,8 +673,8 @@ export async function getSettingsInitialData(
         createdAt: workspaceInvite.createdAt,
       })
       .from(workspaceInvite)
-      .where(eq(workspaceInvite.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceInvite.workspaceId, ws.id)) : Promise.resolve([]),
+    needsDomain ? db
       .select({
         id: workspaceDomain.id,
         host: workspaceDomain.host,
@@ -681,22 +686,22 @@ export async function getSettingsInitialData(
       })
       .from(workspaceDomain)
       .where(eq(workspaceDomain.workspaceId, ws.id))
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needsFeedbackBoards ? db
       .select(feedbackBoardSelect)
       .from(board)
       .leftJoin(post, eq(post.boardId, board.id))
       .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
       .groupBy(board.id)
-      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
-    db
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)) : Promise.resolve([]),
+    needsFeedbackBoards ? db
       .select(feedbackBoardSelect)
       .from(board)
       .leftJoin(post, eq(post.boardId, board.id))
       .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
       .groupBy(board.id)
-      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
-    db
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)) : Promise.resolve([]),
+    needsFeedbackTags ? db
       .select({
         id: tag.id,
         name: tag.name,
@@ -716,8 +721,8 @@ export async function getSettingsInitialData(
         )
       )
       .where(eq(tag.workspaceId, ws.id))
-      .groupBy(tag.id, tag.name, tag.slug, tag.color),
-    db
+      .groupBy(tag.id, tag.name, tag.slug, tag.color) : Promise.resolve([]),
+    needsIntegrations ? db
       .select({
         id: workspaceIntegration.id,
         type: workspaceIntegration.type,
@@ -726,8 +731,8 @@ export async function getSettingsInitialData(
         createdAt: workspaceIntegration.createdAt,
       })
       .from(workspaceIntegration)
-      .where(eq(workspaceIntegration.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceIntegration.workspaceId, ws.id)) : Promise.resolve([]),
+    needsBilling ? db
       .select({
         id: subscription.id,
         plan: subscription.plan,
@@ -746,9 +751,9 @@ export async function getSettingsInitialData(
         )
       )
       .orderBy(desc(subscription.updatedAt), desc(subscription.createdAt))
-      .limit(1),
-    getEffectiveWorkspacePlan(ws.id),
-    getBrandingBySlug(slug),
+      .limit(1) : Promise.resolve([]),
+    Promise.resolve(String(ws.plan || "free")),
+    needsBranding ? getBrandingBySlug(slug) : Promise.resolve(null),
   ]);
 
   const b = changelogRows[0];
@@ -807,12 +812,12 @@ export async function getSettingsInitialData(
     initialHidePoweredBy: Boolean(br?.hidePoweredBy),
     initialBrandingConfig: {
       logoUrl: ws?.logo || undefined,
-      primaryColor: branding.primary,
-      theme: branding.theme,
-      layoutStyle: branding.layoutStyle,
-      sidebarPosition: branding.sidebarPosition,
-      hidePoweredBy: branding.hidePoweredBy,
-    },
+      primaryColor: branding?.primary,
+      theme: branding?.theme,
+      layoutStyle: branding?.layoutStyle,
+      sidebarPosition: branding?.sidebarPosition,
+      hidePoweredBy: branding?.hidePoweredBy,
+    } as BrandingConfig,
     initialDomainInfo: d || null,
     initialDefaultDomain: String(ws?.domain || ""),
     initialFeedbackBoards: feedbackBoards.map((b) => ({
