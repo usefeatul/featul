@@ -33,7 +33,7 @@ function SidebarItem({
     (pathname === item.href ||
       (item.href !== "/" && pathname.startsWith(item.href)));
   const classes = cn(
-    "group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md px-3 text-sm",
+    "group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-2 py-1 text-sm",
     active
       ? "bg-muted/70 text-foreground"
       : "text-accent hover:bg-muted/60 hover:text-foreground",

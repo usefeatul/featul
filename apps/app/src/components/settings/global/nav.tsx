@@ -172,7 +172,7 @@ export default function SettingsNav({
                     onClick={onLinkClick}
                     prefetch={false}
                     className={cn(
-                      "group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-2.5 rounded-md px-3 text-sm transition-colors",
+                      "group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1 text-sm transition-colors",
                       active
                         ? "bg-muted/70 text-foreground"
                         : "text-accent hover:bg-muted/60 hover:text-foreground",
@@ -196,7 +196,7 @@ export default function SettingsNav({
           href="https://www.featul.com/docs"
           onClick={onLinkClick}
           prefetch={false}
-          className="group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-2.5 rounded-md px-3 text-sm text-accent transition-colors hover:bg-muted/60 hover:text-foreground"
+          className="group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1 text-sm text-accent transition-colors hover:bg-muted/60 hover:text-foreground"
         >
           <span className="flex size-5.5 items-center justify-center justify-self-center text-foreground opacity-60 transition-colors group-hover:text-primary group-hover:opacity-100">
             <CloudIcon className={settingsIconClass} width={22} height={22} />

@@ -166,7 +166,7 @@ export default function Sidebar({
 
       <SidebarSection className="pb-2 pt-2">
         <Button
-          className="mb-1 grid h-9 w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-3 py-0 text-xs text-accent hover:bg-muted dark:bg-transparent md:text-sm"
+          className="mb-1 grid h-9 w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1 text-xs text-accent hover:bg-muted dark:bg-transparent md:text-sm"
           variant="ghost"
           size="md"
           onClick={openCreatePost}
