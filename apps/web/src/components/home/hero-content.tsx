@@ -60,7 +60,7 @@ export function HeroContent({ variant = "overlay" }: HeroContentProps) {
           className="w-full sm:w-auto"
           label="Add to your website"
         />
-        <LiveDemo className="w-full text-accent sm:w-auto" />
+        <LiveDemo className="w-full sm:w-auto" overlay />
       </div>
       <div
         className={cn(

@@ -53,7 +53,7 @@ export default function CTA() {
                   className="w-full sm:w-auto"
                   label="Add to your website"
                 />
-                <LiveDemo className="w-full text-accent sm:w-auto" />
+                <LiveDemo className="w-full sm:w-auto" overlay />
               </div>
             </div>
           </div>
