@@ -125,7 +125,7 @@ export default function Sidebar({
         className,
       )}
     >
-      <div className="px-2 pb-2 pt-10">
+      <div className="px-2 pb-2 pt-8">
         <WorkspaceSwitcher
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}

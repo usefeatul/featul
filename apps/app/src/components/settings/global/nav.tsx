@@ -124,7 +124,7 @@ export default function SettingsNav({
 
   return (
     <div className={cn("flex min-h-0 flex-1 flex-col pb-4", className)}>
-      <div className="px-2 pb-2 pt-10">
+      <div className="px-2 pb-2 pt-8">
         <Link
           href={`/workspaces/${slug}`}
           onClick={onLinkClick}
