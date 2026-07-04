@@ -102,8 +102,9 @@ export default function Sidebar({
           logoUrl={initialWorkspace?.logo}
           className="px-1"
         />
-        <div className="px-4 pb-2">
+        <div className="px-3 pb-2">
           <UserDropdown
+            className="px-0 [&_button]:grid-cols-[1.25rem_minmax(0,1fr)] [&_button]:gap-2 [&_button]:px-3"
             initialUser={initialUser}
             initialDeviceAccounts={initialDeviceAccounts}
           />
