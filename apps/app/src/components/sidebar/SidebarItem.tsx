@@ -49,11 +49,11 @@ function SidebarItem({
       />
       <span className="min-w-0 truncate transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className="ml-auto inline-flex h-5 min-w-6 items-center justify-center rounded-sm border border-border/60 bg-card px-1.5 text-center text-[11px] font-semibold leading-none text-accent/80 tabular-nums transition-colors group-hover:border-border/80 group-hover:text-accent">
+        <span className="ml-auto inline-flex h-5 min-w-6 items-center justify-center rounded-sm border border-border/90 bg-card px-1.5 text-center text-[11px] font-semibold leading-none text-accent/80 tabular-nums transition-colors group-hover:border-border dark:border-border/60 dark:group-hover:border-border/80 group-hover:text-accent">
           {count}
         </span>
       ) : shortcut ? (
-        <span className="ml-auto inline-flex h-5 min-w-6 items-center justify-center rounded-sm border border-border/60 bg-card px-1.5 text-center text-[11px] font-semibold leading-none text-accent/80 transition-colors group-hover:border-border/80 group-hover:text-accent">
+        <span className="ml-auto inline-flex h-5 min-w-6 items-center justify-center rounded-sm border border-border/90 bg-card px-1.5 text-center text-[11px] font-semibold leading-none text-accent/80 transition-colors group-hover:border-border dark:border-border/60 dark:group-hover:border-border/80 group-hover:text-accent">
           {shortcut}
         </span>
       ) : null}

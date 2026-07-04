@@ -58,7 +58,7 @@ export default function Timezone({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="inline-flex h-5 min-w-16 items-center justify-center rounded-sm border border-border/60 bg-card px-1.5 text-[11px] font-semibold leading-none tabular-nums text-accent/80">
+              <span className="inline-flex h-5 min-w-16 items-center justify-center rounded-sm border border-border/90 bg-card px-1.5 text-[11px] font-semibold leading-none tabular-nums text-accent/80 dark:border-border/60">
                 {time}
               </span>
             </TooltipTrigger>
