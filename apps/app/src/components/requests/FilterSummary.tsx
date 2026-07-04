@@ -5,6 +5,7 @@ import React from "react"
 import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 
 import { cn } from "@featul/ui/lib/utils"
 import { useQuery } from "@tanstack/react-query"
@@ -121,8 +122,71 @@ export default function FilterSummary({ className = "" }: { className?: string }
     const found = STATUS_OPTIONS.find((s) => s.value === v)
     return found ? found.label : v
   }
-  const filterButtonClassName =
-    "h-8 bg-background py-0 ring-offset-background"
+  const activeFilters: React.ReactNode[] = []
+
+  status.forEach((s) => {
+    activeFilters.push(
+      <Button
+        key={`status-${s}`}
+        type="button"
+        onClick={() => removeStatus(s)}
+        variant="ghost"
+        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        aria-label={`Remove status ${statusLabel(s)}`}
+      >
+        <span className="truncate">{statusLabel(s)}</span>
+        <XMarkIcon className="ml-1 size-3 opacity-60" />
+      </Button>
+    )
+  })
+
+  boards.forEach((b) => {
+    activeFilters.push(
+      <Button
+        key={`board-${b}`}
+        type="button"
+        onClick={() => removeBoard(b)}
+        variant="ghost"
+        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        aria-label={`Remove board ${boardsBySlug[b] || b}`}
+      >
+        <span className="truncate">{boardsBySlug[b] || b}</span>
+        <XMarkIcon className="ml-1 size-3 opacity-60" />
+      </Button>
+    )
+  })
+
+  tags.forEach((t) => {
+    activeFilters.push(
+      <Button
+        key={`tag-${t}`}
+        type="button"
+        onClick={() => removeTag(t)}
+        variant="ghost"
+        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        aria-label={`Remove tag ${tagsBySlug[t] || t}`}
+      >
+        <span className="truncate">{tagsBySlug[t] || t}</span>
+        <XMarkIcon className="ml-1 size-3 opacity-60" />
+      </Button>
+    )
+  })
+
+  if (order === "oldest") {
+    activeFilters.push(
+      <Button
+        key="order-oldest"
+        type="button"
+        onClick={removeOrder}
+        variant="ghost"
+        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        aria-label="Remove sort oldest"
+      >
+        <span className="truncate">Oldest first</span>
+        <XMarkIcon className="ml-1 size-3 opacity-60" />
+      </Button>
+    )
+  }
 
   return (
     <div
@@ -133,81 +197,28 @@ export default function FilterSummary({ className = "" }: { className?: string }
       aria-label="Active filters"
     >
       {isVisible ? (
-        <div
+        <Toolbar
           key="filter-summary-bar"
-          className="pointer-events-auto flex max-w-full items-center gap-2 overflow-hidden rounded-xs bg-background px-1 py-0"
+          size="sm"
+          variant="plain"
+          className="pointer-events-auto flex max-w-full items-center overflow-hidden h-8 border-border bg-card shadow-none ring-0 ring-offset-0 px-0 py-0"
         >
-          <div className="flex items-center  gap-2 overflow-x-auto px-0.5 py-0 flex-1 scrollbar-hide">
-            {status.map((s) => (
-              <div key={`status-${s}`}>
-                <Button
-                  type="button"
-                  onClick={() => removeStatus(s)}
-                  variant="nav"
-                  size="xs"
-                  className={filterButtonClassName}
-                  aria-label={`Remove status ${statusLabel(s)}`}
-                >
-                  <span className="truncate">{statusLabel(s)}</span>
-                  <XMarkIcon className="ml-1 size-3 opacity-60" />
-                </Button>
-              </div>
+          <div className="flex items-center gap-0 overflow-x-auto px-0 py-0 flex-1 scrollbar-hide h-full">
+            {activeFilters.map((el, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <ToolbarSeparator />}
+                {el}
+              </React.Fragment>
             ))}
-            {boards.map((b) => (
-              <div key={`board-${b}`}>
-                <Button
-                  type="button"
-                  onClick={() => removeBoard(b)}
-                  variant="nav"
-                  size="xs"
-                  className={filterButtonClassName}
-                  aria-label={`Remove board ${boardsBySlug[b] || b}`}
-                >
-                  <span className="truncate">{boardsBySlug[b] || b}</span>
-                  <XMarkIcon className="ml-1 size-3 opacity-60" />
-                </Button>
-              </div>
-            ))}
-            {tags.map((t) => (
-              <div key={`tag-${t}`}>
-                <Button
-                  type="button"
-                  onClick={() => removeTag(t)}
-                  variant="nav"
-                  size="xs"
-                  className={filterButtonClassName}
-                  aria-label={`Remove tag ${tagsBySlug[t] || t}`}
-                >
-                  <span className="truncate">{tagsBySlug[t] || t}</span>
-                  <XMarkIcon className="ml-1 size-3 opacity-60" />
-                </Button>
-              </div>
-            ))}
-            {order === "oldest" ? (
-              <div key="order-oldest">
-                <Button
-                  type="button"
-                  onClick={removeOrder}
-                  variant="nav"
-                  size="xs"
-                  className={filterButtonClassName}
-                  aria-label="Remove sort oldest"
-                >
-                  <span className="truncate">Oldest first</span>
-                  <XMarkIcon className="ml-1 size-3" />
-                </Button>
-              </div>
-            ) : null}
           </div>
 
-          <div className="flex items-center shrink-0 gap-2">
-            <div className="h-4 w-px bg-border" />
+          <div className="flex items-center shrink-0 h-full">
+            <ToolbarSeparator />
             <Button
               type="button"
               onClick={handleClearAll}
               variant="ghost"
-              size="icon-sm"
-              className="bg-transparent text-muted-foreground transition-colors hover:text-destructive dark:hover:text-destructive"
+              className="h-full w-8 rounded-none border-0 px-0 shadow-none ring-0 ring-offset-0 hover:bg-muted/40 text-muted-foreground transition-colors hover:text-destructive"
               aria-label="Clear all filters"
             >
               <span>
@@ -215,7 +226,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
               </span>
             </Button>
           </div>
-        </div>
+        </Toolbar>
       ) : null}
     </div>
   )

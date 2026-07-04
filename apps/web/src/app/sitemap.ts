@@ -4,6 +4,7 @@ import { getAllCompetitorSlugs, getAllIntegrationSlugs, getAllUseCaseSlugs } fro
 import { getAllCategorySlugs, getAllToolParams } from "@/types/tools"
 import { getAllDefinitionSlugs } from "@/content/definitions"
 import { SITE_URL } from "@/config/seo"
+import { docsSections } from "@/config/docsNav"
 
 export const revalidate = 86400
 
@@ -71,6 +72,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
+  const docsEntries: MetadataRoute.Sitemap = docsSections.flatMap((section) =>
+    section.items.map((item) => ({
+      url: `${SITE_URL}${item.href}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  )
+
   // Blog posts (if configured)
   let blogEntries: MetadataRoute.Sitemap = []
   try {
@@ -95,6 +105,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...categoryEntries,
     ...toolEntries,
     ...definitionEntries,
+    ...docsEntries,
     ...blogEntries,
   ]
 }

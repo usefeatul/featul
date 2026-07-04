@@ -59,9 +59,9 @@ export default function RequestDetailSidebar({
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
   return (
-    <aside className="hidden self-stretch border-l border-border/60 md:block">
-      <div className="h-full px-4 py-4 md:px-6 md:py-5">
-        <div className="mb-6 flex items-center gap-3">
+    <aside className="hidden self-stretch border-l border-border md:block">
+      <div className="h-full px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-16">
+        <div className="mb-6 flex items-center gap-3 border-b border-border pb-6">
           <div className="relative">
             <Avatar className="relative size-10 overflow-visible">
               {displayAuthor.image ? (
@@ -79,7 +79,7 @@ export default function RequestDetailSidebar({
                 role={post.role}
                 isOwner={post.isOwner}
                 isFeatul={post.isFeatul}
-                className="-bottom-1 -right-1 bg-card"
+                className="-bottom-1 -right-1 bg-[var(--workspace-surface)]"
               />
             </Avatar>
           </div>
@@ -134,7 +134,7 @@ export default function RequestDetailSidebar({
           </div>
 
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-            <div className="flex items-center justify-between border-b border-border/50 pb-3">
+            <div className="flex items-center justify-between border-b border-border pb-3">
               <span className="text-sm font-medium text-muted-foreground">
                 Flags
               </span>
@@ -207,7 +207,7 @@ export default function RequestDetailSidebar({
                     ))}
                   </div>
                 ) : (
-                  <div className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border/70 bg-muted/20 px-3 text-center text-xs font-medium text-muted-foreground ring-1 ring-border/40 ring-offset-1 ring-offset-background">
+                  <div className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-card px-3 text-center text-xs font-medium text-muted-foreground ring-1 ring-border/40 ring-offset-1 ring-offset-background">
                     <TagIcon className="size-3.5" />
                     No tags
                   </div>

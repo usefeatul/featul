@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { Button } from "@featul/ui/components/button"
 import { formatActivityStatusLabel } from "@/lib/activity-status"
 import {
   CATEGORY_FILTERS,
@@ -16,14 +15,6 @@ interface MemberActivityFiltersProps {
   onStatusChange: (status: string) => void
 }
 
-function chipClass(active: boolean) {
-  return `rounded-md h-7 px-3 text-xs border bg-[var(--workspace-surface)] transition-colors ${
-    active
-      ? "border-primary/40 text-foreground ring-1 ring-primary/20"
-      : "border-border text-accent hover:border-foreground/20"
-  }`
-}
-
 const rowClass =
   "overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
 
@@ -35,52 +26,57 @@ export function MemberActivityFilters({
   onStatusChange,
 }: MemberActivityFiltersProps) {
   return (
-    <div className="mb-3 space-y-2 rounded-md border border-border/60 bg-[var(--workspace-surface)] p-2.5">
-      <div className="space-y-1.5">
-        <div className="px-0.5 text-[11px] uppercase tracking-wide text-accent/80">Type</div>
-        <div className={rowClass}>
-          <div className="inline-flex min-w-max gap-1.5 pr-1">
-            {CATEGORY_FILTERS.map((filter) => (
-              <Button
-                key={filter.id}
-                type="button"
-                variant="plain"
-                size="xs"
-                className={chipClass(categoryFilter === filter.id)}
-                onClick={() => onCategoryChange(filter.id)}
-              >
-                {filter.label}
-              </Button>
-            ))}
-          </div>
+    <div className="mb-6 space-y-4">
+      <div className={rowClass}>
+        <div className="inline-flex min-w-max gap-5 border-b border-border/70 pr-1">
+          {CATEGORY_FILTERS.map((filter) => (
+            <button
+              key={filter.id}
+              type="button"
+              className={`border-b-2 px-0 pb-3 text-xs font-medium transition-colors ${
+                categoryFilter === filter.id
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-accent hover:text-foreground"
+              }`}
+              onClick={() => onCategoryChange(filter.id)}
+            >
+              {filter.label}
+            </button>
+          ))}
         </div>
       </div>
 
       {availableStatuses.length > 0 ? (
-        <div className="space-y-1.5">
-          <div className="px-0.5 text-[11px] uppercase tracking-wide text-accent/80">Status</div>
+        <div className="space-y-2">
+          <div className="text-xs font-medium text-muted-foreground">
+            Status
+          </div>
           <div className={rowClass}>
-            <div className="inline-flex min-w-max gap-1.5 pr-1">
-              <Button
+            <div className="inline-flex min-w-max gap-2 pr-1">
+              <button
                 type="button"
-                variant="plain"
-                size="xs"
-                className={chipClass(statusFilter === "all")}
+                className={`h-6 rounded-md border px-2.5 text-xs transition-colors ${
+                  statusFilter === "all"
+                    ? "border-primary/40 bg-card text-foreground ring-1 ring-primary/20"
+                    : "border-border/70 bg-card/50 text-accent hover:text-foreground"
+                }`}
                 onClick={() => onStatusChange("all")}
               >
-                All statuses
-              </Button>
+                All
+              </button>
               {availableStatuses.map((status) => (
-                <Button
+                <button
                   key={status}
                   type="button"
-                  variant="plain"
-                  size="xs"
-                  className={chipClass(statusFilter === status)}
+                  className={`h-6 rounded-md border px-2.5 text-xs transition-colors ${
+                    statusFilter === status
+                      ? "border-primary/40 bg-card text-foreground ring-1 ring-primary/20"
+                      : "border-border/70 bg-card/50 text-accent hover:text-foreground"
+                  }`}
                   onClick={() => onStatusChange(status)}
                 >
                   {formatActivityStatusLabel(status) || status}
-                </Button>
+                </button>
               ))}
             </div>
           </div>

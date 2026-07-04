@@ -69,20 +69,7 @@ function RequestListBase(props: RequestListProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-md bg-[var(--workspace-surface)]">
-      <div className="flex items-center justify-between px-4 py-2.5">
-        <div className="min-w-0">
-          <h2 className="text-sm font-semibold leading-none text-foreground">
-            Recent requests
-          </h2>
-          <p className="mt-1 text-xs text-accent">
-            Sorted by newest activity
-          </p>
-        </div>
-        <span className="rounded-sm bg-background px-2 py-1 text-xs font-medium tabular-nums text-accent">
-          {initialTotalCount ?? listItems.length}
-        </span>
-      </div>
+    <div className="overflow-hidden bg-[var(--workspace-surface)]">
       {isSelectingForRender && (
         <SelectionToolbar
           allSelected={allSelected}
@@ -92,7 +79,7 @@ function RequestListBase(props: RequestListProps) {
           onConfirmDelete={() => setConfirmOpen(true)}
         />
       )}
-      <ul className="m-0 list-none space-y-1.5 p-0">
+      <ul className="m-0 list-none divide-y divide-border/60 border-y border-border/60 p-0">
         {listItems.map((p) => (
           <RequestItem
             key={p.id}

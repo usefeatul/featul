@@ -53,8 +53,8 @@ export default function WorkspaceSwitcher({
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer rounded-md">
-          <div className="group grid cursor-pointer grid-cols-[1.75rem_minmax(0,1fr)_1.25rem] items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-muted">
-            <div className={cn("relative size-7 justify-self-center overflow-hidden rounded-md border border-border bg-card ring-1 ring-border/30 ring-offset-1 ring-offset-background", currentLogo ? "bg-transparent" : "bg-card")}>
+          <div className="group grid cursor-pointer grid-cols-[1.75rem_minmax(0,1fr)_1.25rem] items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-muted/60">
+            <div className={cn("relative size-7 justify-self-center overflow-hidden rounded-md border border-border/60 bg-card", currentLogo ? "bg-transparent" : "")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}
@@ -70,8 +70,8 @@ export default function WorkspaceSwitcher({
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
               <PlanText plan={currentPlan} className="text-[11px]" />
             </div>
-            <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center justify-self-end rounded-sm border border-border bg-card text-xs font-medium text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-background">
-              <ChevronIcon className="size-3 text-accent" />
+            <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center justify-self-end rounded-sm border border-border/60 bg-card text-accent/80 transition-colors group-hover:border-border/80 group-hover:text-accent">
+              <ChevronIcon className="size-3" />
             </span>
           </div>
         </DropdownMenuTrigger>

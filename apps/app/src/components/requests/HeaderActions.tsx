@@ -10,14 +10,14 @@ import SearchAction from "./actions/SearchAction"
 
 export default function HeaderActions({ className = "" }: { className?: string }) {
   const buttonClassName =
-    "h-8 w-8 rounded-none border-0 px-0 shadow-none ring-0 ring-offset-0 hover:bg-muted focus-visible:ring-0 focus-visible:ring-offset-0 dark:hover:bg-white/10"
+    "h-8 w-8 rounded-none border-0 px-0 shadow-none ring-0 ring-offset-0 hover:bg-card focus-visible:ring-0 focus-visible:ring-offset-0"
 
   return (
     <Toolbar
       size="sm"
       variant="plain"
       className={cn(
-        "ml-auto h-8 border-border bg-background shadow-none ring-0 ring-offset-0",
+        "ml-auto h-8 border-border bg-card shadow-none ring-0 ring-offset-0",
         className
       )}
     >

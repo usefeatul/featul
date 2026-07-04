@@ -41,6 +41,15 @@ export const docsSections: DocsNavSection[] = [
     ],
   },
   {
+    label: "Advanced",
+    items: [
+      { id: "advanced/subdomain-tracking", label: "Subdomain Tracking", href: "/docs/advanced/subdomain-tracking" },
+      { id: "advanced/custom-events", label: "Custom Events", href: "/docs/advanced/custom-events" },
+      { id: "advanced/identify", label: "Identify Users", href: "/docs/advanced/identify" },
+      { id: "advanced/persist", label: "Persist Sessions", href: "/docs/advanced/persist" },
+    ],
+  },
+  {
     label: "Shortcuts",
     items: [
       { id: "getting-started/shortcuts", label: "Keyboard Shortcuts", href: "/docs/getting-started/shortcuts" },

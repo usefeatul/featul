@@ -49,9 +49,11 @@ function AlertDialogContent({
   className,
   children,
   showCloseButton = true,
+  unstyledContentFrame: _unstyledContentFrame = false,
   ...props
 }: React.ComponentProps<typeof BaseAlertDialog.Popup> & {
   showCloseButton?: boolean
+  unstyledContentFrame?: boolean
 }) {
   return (
     <AlertDialogPortal>
@@ -59,7 +61,7 @@ function AlertDialogContent({
       <BaseAlertDialog.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          "bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-2xl border-2 p-6 shadow-lg duration-200 sm:max-w-sm",
+          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl border border-border bg-card p-2 shadow-lg duration-200 sm:max-w-sm",
           className
         )}
         {...props}

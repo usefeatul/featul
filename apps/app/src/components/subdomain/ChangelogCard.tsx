@@ -25,7 +25,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
 
     return (
         <div className={`${subdomainListItemClassName} relative group`}>
-            <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
+            <Link href={href} className="absolute inset-0 z-10 focus:outline-none" aria-label={item.title}>
                 <span className="sr-only">View changelog</span>
             </Link>
 

@@ -5,6 +5,7 @@ import { docsSections } from "@/config/docsNav"
 import { readDocsMarkdown, type DocsPageId } from "@/lib/docs-markdown"
 import { DocsMarkdown, extractDocsToc } from "@/components/docs/DocsMarkdown"
 import { DocsToc } from "@/components/docs/DocsToc"
+import { createAlternates, pageUrl } from "@/lib/seo"
 
 type DocsPageParams = {
   slug?: string[]
@@ -68,9 +69,11 @@ export async function generateMetadata(props: DocsPageProps): Promise<Metadata> 
   return {
     title: docs.frontmatter.title ?? nav.item.label,
     description: docs.frontmatter.description,
+    alternates: createAlternates(nav.item.href),
     openGraph: {
       title: docs.frontmatter.title ?? nav.item.label,
       description: docs.frontmatter.description,
+      url: pageUrl(nav.item.href),
     },
   }
 }
@@ -116,4 +119,3 @@ export default async function DocsPage(props: DocsPageProps) {
     </>
   )
 }
-

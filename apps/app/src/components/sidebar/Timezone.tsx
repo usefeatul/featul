@@ -58,7 +58,7 @@ export default function Timezone({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="rounded-sm border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-background">
+              <span className="rounded-sm border border-border/60 bg-card px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums text-accent/80">
                 {time}
               </span>
             </TooltipTrigger>
