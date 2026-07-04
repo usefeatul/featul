@@ -75,7 +75,7 @@ export default function SettingsServer({
       ? selectedSection
       : sections[0]?.value || "branding";
   return (
-    <section className="mx-auto w-full max-w-[44rem] px-1 py-4 sm:px-2 lg:py-6">
+    <section className="mx-auto w-full max-w-[56rem] px-2 py-6 sm:px-4 lg:py-8">
       <SectionRenderer
         slug={slug}
         initialWorkspaceId={initialWorkspaceId}
