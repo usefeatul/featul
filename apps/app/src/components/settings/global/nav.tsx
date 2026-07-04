@@ -124,7 +124,7 @@ export default function SettingsNav({
 
   return (
     <div className={cn("flex min-h-0 flex-1 flex-col pb-4", className)}>
-      <div className="px-4 pb-2 pt-10">
+      <div className="px-2 pb-2 pt-10">
         <Link
           href={`/workspaces/${slug}`}
           onClick={onLinkClick}
@@ -157,7 +157,7 @@ export default function SettingsNav({
 
       <nav className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
         {groups.map((group) => (
-          <div key={group.title} className="px-4 py-1.5">
+          <div key={group.title} className="px-2 py-1.5">
             <div className="mb-1.5 px-3 text-[11px] font-medium uppercase tracking-normal text-accent/80">
               {group.title}
             </div>
@@ -190,7 +190,7 @@ export default function SettingsNav({
         ))}
       </nav>
 
-      <div className="px-4 py-1.5 pt-2">
+      <div className="px-2 py-1.5 pt-2">
         <div className="border-t border-border/80 pt-2">
         <Link
           href="https://www.featul.com/docs"

@@ -81,7 +81,7 @@ export default function MobileDrawerContent({
               logoUrl={initialWorkspace?.logo}
               onLinkClick={onLinkClick}
             />
-            <div className="px-4 pb-4">
+            <div className="px-2 pb-4">
               <UserDropdown
                 initialUser={initialUser}
                 initialDeviceAccounts={initialDeviceAccounts}

@@ -101,7 +101,7 @@ export default function Sidebar({
           workspaceName={initialWorkspace?.name}
           logoUrl={initialWorkspace?.logo}
         />
-        <div className="px-4 pb-2">
+        <div className="px-2 pb-2">
           <UserDropdown
             initialUser={initialUser}
             initialDeviceAccounts={initialDeviceAccounts}
@@ -125,7 +125,7 @@ export default function Sidebar({
         className,
       )}
     >
-      <div className="px-4 pb-2 pt-10">
+      <div className="px-2 pb-2 pt-10">
         <WorkspaceSwitcher
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
