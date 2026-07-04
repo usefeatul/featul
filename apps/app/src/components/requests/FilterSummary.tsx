@@ -5,6 +5,8 @@ import React from "react"
 import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
+import { LayersIcon } from "@featul/ui/icons/layers"
+import { TagIcon } from "@featul/ui/icons/tag"
 import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 
 import { cn } from "@featul/ui/lib/utils"
@@ -15,6 +17,7 @@ import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import { buildRequestsUrl } from "@/utils/request"
 import { useFilterBarVisibility } from "@/hooks/useFilterBarVisibility"
 import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
+import StatusIcon from "./StatusIcon"
 
 const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
@@ -24,6 +27,38 @@ const STATUS_OPTIONS = [
   { label: "Complete", value: "completed" },
   { label: "Closed", value: "closed" },
 ]
+
+function FilterSummarySeparator() {
+  return <ToolbarSeparator className="self-stretch bg-border" />
+}
+
+function FilterSummaryItem({
+  icon,
+  label,
+  ariaLabel,
+  onRemove,
+}: {
+  icon?: React.ReactNode
+  label: string
+  ariaLabel: string
+  onRemove: () => void
+}) {
+  return (
+    <Button
+      type="button"
+      onClick={onRemove}
+      variant="card"
+      className="h-8 rounded-none border-0 bg-card px-3 text-xs font-medium text-foreground shadow-none ring-0 ring-offset-0 hover:bg-muted/40 focus-visible:ring-0 focus-visible:ring-offset-0"
+      aria-label={ariaLabel}
+    >
+      <span className="flex min-w-0 items-center">
+        {icon}
+        <span className={cn("truncate", icon ? "ml-1" : "")}>{label}</span>
+      </span>
+      <XMarkIcon className="ml-3 size-3.5 shrink-0 text-muted-foreground opacity-70" />
+    </Button>
+  )
+}
 
 export default function FilterSummary({ className = "" }: { className?: string }) {
   const pathname = usePathname() || "/"
@@ -126,65 +161,48 @@ export default function FilterSummary({ className = "" }: { className?: string }
 
   status.forEach((s) => {
     activeFilters.push(
-      <Button
+      <FilterSummaryItem
         key={`status-${s}`}
-        type="button"
-        onClick={() => removeStatus(s)}
-        variant="ghost"
-        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        icon={<StatusIcon status={s} className="size-3.5 shrink-0" />}
+        label={statusLabel(s)}
         aria-label={`Remove status ${statusLabel(s)}`}
-      >
-        <span className="truncate">{statusLabel(s)}</span>
-        <XMarkIcon className="ml-1 size-3 opacity-60" />
-      </Button>
+        onRemove={() => removeStatus(s)}
+      />
     )
   })
 
   boards.forEach((b) => {
     activeFilters.push(
-      <Button
+      <FilterSummaryItem
         key={`board-${b}`}
-        type="button"
-        onClick={() => removeBoard(b)}
-        variant="ghost"
-        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        icon={<LayersIcon className="size-3.5 shrink-0 opacity-70" size={14} />}
+        label={boardsBySlug[b] || b}
         aria-label={`Remove board ${boardsBySlug[b] || b}`}
-      >
-        <span className="truncate">{boardsBySlug[b] || b}</span>
-        <XMarkIcon className="ml-1 size-3 opacity-60" />
-      </Button>
+        onRemove={() => removeBoard(b)}
+      />
     )
   })
 
   tags.forEach((t) => {
     activeFilters.push(
-      <Button
+      <FilterSummaryItem
         key={`tag-${t}`}
-        type="button"
-        onClick={() => removeTag(t)}
-        variant="ghost"
-        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        icon={<TagIcon className="size-3.5 shrink-0 opacity-70" size={14} />}
+        label={tagsBySlug[t] || t}
         aria-label={`Remove tag ${tagsBySlug[t] || t}`}
-      >
-        <span className="truncate">{tagsBySlug[t] || t}</span>
-        <XMarkIcon className="ml-1 size-3 opacity-60" />
-      </Button>
+        onRemove={() => removeTag(t)}
+      />
     )
   })
 
   if (order === "oldest") {
     activeFilters.push(
-      <Button
+      <FilterSummaryItem
         key="order-oldest"
-        type="button"
-        onClick={removeOrder}
-        variant="ghost"
-        className="h-full rounded-none border-0 px-3 shadow-none ring-0 ring-offset-0 bg-transparent hover:bg-muted/40 text-xs font-medium text-foreground gap-1"
+        label="Oldest first"
         aria-label="Remove sort oldest"
-      >
-        <span className="truncate">Oldest first</span>
-        <XMarkIcon className="ml-1 size-3 opacity-60" />
-      </Button>
+        onRemove={removeOrder}
+      />
     )
   }
 
@@ -206,19 +224,19 @@ export default function FilterSummary({ className = "" }: { className?: string }
           <div className="flex items-center gap-0 overflow-x-auto px-0 py-0 flex-1 scrollbar-hide h-full">
             {activeFilters.map((el, i) => (
               <React.Fragment key={i}>
-                {i > 0 && <ToolbarSeparator />}
+                {i > 0 && <FilterSummarySeparator />}
                 {el}
               </React.Fragment>
             ))}
           </div>
 
           <div className="flex items-center shrink-0 h-full">
-            <ToolbarSeparator />
+            <FilterSummarySeparator />
             <Button
               type="button"
               onClick={handleClearAll}
               variant="ghost"
-              className="h-full w-8 rounded-none border-0 px-0 shadow-none ring-0 ring-offset-0 hover:bg-muted/40 text-muted-foreground transition-colors hover:text-destructive"
+              className="h-8 w-8 rounded-none border-0 bg-card px-0 shadow-none ring-0 ring-offset-0 hover:bg-muted/40 text-muted-foreground transition-colors hover:text-destructive"
               aria-label="Clear all filters"
             >
               <span>
