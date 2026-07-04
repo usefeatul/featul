@@ -123,7 +123,7 @@ export default function SettingsNav({
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col px-3 py-4", className)}>
+    <div className={cn("flex min-h-0 flex-1 flex-col px-3 pb-4 pt-4 lg:pt-8", className)}>
       <div className="px-2 pb-5">
         <Link
           href={`/workspaces/${slug}`}
