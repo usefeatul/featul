@@ -67,9 +67,14 @@
   --letter-spacing: 0;
 }
 
+.workspace-shell {
+  --border: oklch(0.8850 0.0020 100.42);
+  --sidebar-border: oklch(0.8850 0.0020 100.42);
+}
+
 .dark {
   --background: oklch(0.2450 0.0040 264.48);
-  --workspace-surface: oklch(0.1820 0.0045 264.48);
+  --workspace-surface: oklch(0.2300 0.0040 264.48);
   --foreground: oklch(99.700% 0.00105 11.528);
   --card: oklch(0.1820 0.0045 264.48);
   --card-foreground: oklch(99.700% 0.00105 11.528);
@@ -124,6 +129,15 @@
   --shadow-offset-y: 0.125rem;
   --letter-spacing: 0;
   --spacing: 0.25rem;
+}
+
+.dark .workspace-shell {
+  --workspace-surface: oklch(0.2300 0.0040 264.48);
+  --secondary: oklch(0.2400 0.0040 264.48);
+  --muted: oklch(0.2500 0.0040 264.48);
+  --input: oklch(0.2400 0.0040 264.48);
+  --border: oklch(0.3200 0.0060 264.48);
+  --sidebar-border: oklch(0.3200 0.0060 264.48);
 }
 
 .quiet {
