@@ -1,0 +1,25 @@
+{
+  "name": "@featul/widget",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./sdk-source": {
+      "import": "./src/sdk-source.ts",
+      "types": "./src/sdk-source.ts"
+    }
+  },
+  "devDependencies": {
+    "@featul/tsconfig": "workspace:*",
+    "typescript": "^5.9.2"
+  }
+}
