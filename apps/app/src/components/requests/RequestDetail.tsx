@@ -21,7 +21,6 @@ import { DeletePostButton } from "./DeletePostButton"
 import { useIsMobile } from "@featul/ui/hooks/use-mobile"
 import EditPostModal from "../subdomain/request-detail/EditPostModal"
 import type { RequestDetailData } from "@/types/request"
-import { workspaceToolbarTextButtonClassName } from "./workspaceToolbarStyles"
 
 type RequestDetailProps = {
   post: RequestDetailData
@@ -29,10 +28,7 @@ type RequestDetailProps = {
   readonly?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
-  navigation?: {
-    prev: { slug: string; title: string } | null
-    next: { slug: string; title: string } | null
-  }
+  navigation?: { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null }
 }
 
 export default function RequestDetail({
@@ -43,10 +39,7 @@ export default function RequestDetail({
   initialCollapsedIds,
   navigation,
 }: RequestDetailProps) {
-  const { prevHref, nextHref, searchParams } = useRequestNavigation(
-    workspaceSlug,
-    navigation,
-  )
+  const { prevHref, nextHref, searchParams } = useRequestNavigation(workspaceSlug, navigation)
   const backHref = buildRequestsUrl(workspaceSlug, searchParams, {})
   const isMobile = useIsMobile()
   const [editOpen, setEditOpen] = useState(false)
@@ -57,226 +50,155 @@ export default function RequestDetail({
     : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
 
   return (
-    <section className="-mx-3 -my-4 flex min-h-[calc(100%+2rem)] w-[calc(100%+1.5rem)] flex-col sm:-mx-5 sm:w-[calc(100%+2.5rem)] lg:-mx-6 lg:-my-5 lg:min-h-[calc(100%+2.5rem)] lg:w-[calc(100%+3rem)]">
-      <div className="flex min-h-0 flex-1 overflow-hidden bg-[var(--workspace-surface)]">
-        <div className="grid min-h-full flex-1 items-stretch gap-0 md:grid-cols-[minmax(0,1fr)_19rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
-          <article className="relative min-w-0 px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-24">
-            <div className="absolute left-4 right-4 top-5 hidden items-center justify-between gap-4 md:flex md:left-6 md:right-6">
-              <Toolbar size="sm" variant="plain">
-                <Button
-                  asChild
-                  variant="nav"
-                  size="sm"
-                  className={workspaceToolbarTextButtonClassName}
-                >
-                  <Link href={backHref} aria-label="Back to requests">
-                    <ChevronLeftIcon className="size-3" />
-                    <span className="text-xs font-medium">Back</span>
-                  </Link>
-                </Button>
-              </Toolbar>
-              <RequestNavigation
-                postId={post.id}
-                workspaceSlug={workspaceSlug}
-                prev={navigation?.prev}
-                next={navigation?.next}
-                prevHref={prevHref}
-                nextHref={nextHref}
-                backHref={backHref}
-                className="shrink-0"
-                showActions
-                showBack={false}
-              />
-            </div>
-            <div className="mx-auto w-full max-w-4xl">
-              <header className="pb-4">
-                {isMobile ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between gap-2">
+    <section>
+      <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
+        <div className="grid items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
+          <article className="relative min-w-0 px-4 py-4 md:px-6 md:py-5">
+            <div aria-hidden className="absolute right-0 top-0 hidden h-full w-px bg-border/50 md:block" />
+            <header className="pb-4">
+              {isMobile ? (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <Button asChild variant="nav" size="xs">
+                      <Link href={backHref} aria-label="Back to requests">
+                        <ChevronLeftIcon className="size-3" />
+                      </Link>
+                    </Button>
+                    <div className="inline-flex items-center gap-2">
                       <Toolbar size="sm" variant="plain">
-                        <Button
-                          asChild
-                          variant="nav"
-                          size="sm"
-                          className={workspaceToolbarTextButtonClassName}
-                        >
-                          <Link href={backHref} aria-label="Back to requests">
-                            <ChevronLeftIcon className="size-3" />
-                            <span className="text-xs font-medium">Back</span>
-                          </Link>
-                        </Button>
+                        <MergePopover postId={post.id} workspaceSlug={workspaceSlug} />
+                        <ToolbarSeparator />
+                        <DeletePostButton postId={post.id} workspaceSlug={workspaceSlug} backHref={backHref} />
                       </Toolbar>
-                      <div className="inline-flex items-center gap-2">
-                        <Toolbar size="sm" variant="plain">
-                          <MergePopover
-                            postId={post.id}
-                            workspaceSlug={workspaceSlug}
-                          />
-                          <ToolbarSeparator />
-                          <DeletePostButton
-                            postId={post.id}
-                            workspaceSlug={workspaceSlug}
-                            backHref={backHref}
-                          />
-                        </Toolbar>
-                      </div>
                     </div>
-                    <h1 className="text-lg font-semibold leading-tight wrap-break-word text-foreground">
-                      {post.title}
-                    </h1>
                   </div>
-                ) : (
-                  <div className="flex flex-col gap-4">
-                    <div className="space-y-1 min-w-0">
+                  <h1 className="text-lg font-semibold leading-tight wrap-break-word text-foreground">
+                    {post.title}
+                  </h1>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1 min-w-0 flex-1">
                       <h1 className="text-lg font-semibold leading-snug wrap-break-word text-foreground md:text-xl">
                         {post.title}
                       </h1>
                     </div>
+                    <RequestNavigation
+                      postId={post.id}
+                      workspaceSlug={workspaceSlug}
+                      prev={navigation?.prev}
+                      next={navigation?.next}
+                      prevHref={prevHref}
+                      nextHref={nextHref}
+                      backHref={backHref}
+                      className="shrink-0"
+                      showActions
+                    />
                   </div>
-                )}
-              </header>
-
-              <div className="space-y-5 pt-4">
-                <div className="relative group space-y-5">
-                  {canEdit ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      className={editButtonClassName}
-                      onClick={() => setEditOpen(true)}
-                      aria-label="Edit post"
-                    >
-                      <EditIcon className="size-3.5" />
-                    </Button>
-                  ) : null}
-                  {normalizedContent ? (
-                    <div className="prose text-sm text-accent dark:prose-invert wrap-break-word whitespace-pre-wrap leading-6 min-w-0">
-                      {normalizedContent}
-                    </div>
-                  ) : null}
-                  {post.image ? (
-                    <div className="flex justify-start">
-                      <ContentImage
-                        url={post.image}
-                        alt={post.title}
-                        className="h-40 w-auto max-w-full rounded-md"
-                      />
-                    </div>
-                  ) : null}
                 </div>
-                {isMobile ? (
-                  <div className="flex items-center justify-between gap-3 text-sm text-accent">
-                    <div className="inline-flex items-center gap-3">
-                      <UpvoteButton
-                        postId={post.id}
-                        upvotes={post.upvotes}
-                        hasVoted={post.hasVoted}
-                        className="text-sm"
-                      />
-                      <CommentCounter
-                        postId={post.id}
-                        initialCount={post.commentCount}
-                        surface="workspace"
-                      />
-                    </div>
-                    <Toolbar size="sm" variant="plain">
-                      <Button
-                        asChild
-                        variant="nav"
-                        size="sm"
-                        className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
-                        disabled={!prevHref}
-                      >
-                        {prevHref ? (
-                          <Link href={prevHref} aria-label="Previous post">
-                            <ChevronLeftIcon className="size-3" />
-                            <span className="text-xs font-medium">Prev</span>
-                          </Link>
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                            className="flex items-center gap-2"
-                          >
-                            <ChevronLeftIcon className="size-3.5 opacity-50" />
-                            <span className="text-xs font-medium opacity-50">
-                              Prev
-                            </span>
-                          </span>
-                        )}
-                      </Button>
-                      <ToolbarSeparator />
-                      <Button
-                        asChild
-                        variant="nav"
-                        size="sm"
-                        className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
-                        disabled={!nextHref}
-                      >
-                        {nextHref ? (
-                          <Link href={nextHref} aria-label="Next post">
-                            <span className="text-xs font-medium">Next</span>
-                            <ChevronRightIcon className="size-3" />
-                          </Link>
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                            className="flex items-center gap-2"
-                          >
-                            <span className="text-xs font-medium opacity-50">
-                              Next
-                            </span>
-                            <ChevronRightIcon className="size-3.5 opacity-50" />
-                          </span>
-                        )}
-                      </Button>
-                    </Toolbar>
+              )}
+            </header>
+
+            <div className="space-y-5 pt-4">
+              <div className="relative group space-y-5">
+                {canEdit ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className={editButtonClassName}
+                    onClick={() => setEditOpen(true)}
+                    aria-label="Edit post"
+                  >
+                    <EditIcon className="size-3.5" />
+                  </Button>
+                ) : null}
+                {normalizedContent ? (
+                  <div className="prose text-sm text-accent dark:prose-invert wrap-break-word whitespace-pre-wrap leading-6 min-w-0">
+                    {normalizedContent}
                   </div>
                 ) : null}
-                {isMobile ? null : (
-                  <div className="flex items-center justify-end gap-3 text-xs text-accent">
-                    <UpvoteButton
-                      postId={post.id}
-                      upvotes={post.upvotes}
-                      hasVoted={post.hasVoted}
-                      className="text-xs"
-                    />
-                    <CommentCounter
-                      postId={post.id}
-                      initialCount={post.commentCount}
-                      surface="workspace"
-                    />
+                {post.image ? (
+                  <div className="flex justify-start">
+                    <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
                   </div>
-                )}
-                <div className="mt-2 pt-4">
-                  <CommentList
-                    postId={post.id}
-                    initialCount={post.commentCount}
-                    workspaceSlug={workspaceSlug}
-                    surface="workspace"
-                    allowComments={post.allowComments}
-                    initialComments={initialComments}
-                    initialCollapsedIds={initialCollapsedIds}
-                  />
+                ) : null}
+              </div>
+              {isMobile ? (
+                <div className="flex items-center justify-between gap-3 text-sm text-accent">
+                  <div className="inline-flex items-center gap-3">
+                    <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-sm" />
+                    <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
+                  </div>
+                  <Toolbar size="sm" variant="plain">
+                    <Button
+                      asChild
+                      variant="nav"
+                      size="sm"
+                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+                      disabled={!prevHref}
+                    >
+                      {prevHref ? (
+                        <Link href={prevHref} aria-label="Previous post">
+                          <ChevronLeftIcon className="size-3" />
+                          <span className="text-xs font-medium">Prev</span>
+                        </Link>
+                      ) : (
+                        <span aria-hidden="true" className="flex items-center gap-2">
+                          <ChevronLeftIcon className="size-3.5 opacity-50" />
+                          <span className="text-xs font-medium opacity-50">Prev</span>
+                        </span>
+                      )}
+                    </Button>
+                    <ToolbarSeparator />
+                    <Button
+                      asChild
+                      variant="nav"
+                      size="sm"
+                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+                      disabled={!nextHref}
+                    >
+                      {nextHref ? (
+                        <Link href={nextHref} aria-label="Next post">
+                          <span className="text-xs font-medium">Next</span>
+                          <ChevronRightIcon className="size-3" />
+                        </Link>
+                      ) : (
+                        <span aria-hidden="true" className="flex items-center gap-2">
+                          <span className="text-xs font-medium opacity-50">Next</span>
+                          <ChevronRightIcon className="size-3.5 opacity-50" />
+                        </span>
+                      )}
+                    </Button>
+                  </Toolbar>
                 </div>
+              ) : null}
+              {isMobile ? null : (
+                <div className="flex items-center justify-end gap-3 text-xs text-accent">
+                  <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" />
+                  <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
+                </div>
+              )}
+              <div className="mt-2 pt-4">
+                <CommentList
+                  postId={post.id}
+                  initialCount={post.commentCount}
+                  workspaceSlug={workspaceSlug}
+                  surface="workspace"
+                  allowComments={post.allowComments}
+                  initialComments={initialComments}
+                  initialCollapsedIds={initialCollapsedIds}
+                />
               </div>
             </div>
           </article>
 
-          <RequestDetailSidebar
-            post={post}
-            workspaceSlug={workspaceSlug}
-            readonly={readonly}
-          />
+          <RequestDetailSidebar post={post} workspaceSlug={workspaceSlug} readonly={readonly} />
         </div>
       </div>
       {canEdit ? (
-        <EditPostModal
-          open={editOpen}
-          onOpenChange={setEditOpen}
-          workspaceSlug={workspaceSlug}
-          post={post}
-        />
+        <EditPostModal open={editOpen} onOpenChange={setEditOpen} workspaceSlug={workspaceSlug} post={post} />
       ) : null}
     </section>
   )

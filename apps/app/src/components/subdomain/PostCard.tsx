@@ -49,7 +49,7 @@ function PostCardBase({
   return (
     <div className={`${subdomainListItemClassName} relative group overflow-hidden`}>
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
-      <Link href={href} className="absolute inset-0 z-10 focus:outline-none" aria-label={item.title}>
+      <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
         <span className="sr-only">View post</span>
       </Link>
       <div className="inline-flex items-center gap-2">
@@ -87,7 +87,7 @@ function PostCardBase({
           </div>
         </div>
         <div className="flex items-center gap-3 text-xs text-accent">
-          <div className="relative z-20 inline-flex items-center gap-2">
+          <div className="inline-flex items-center gap-2 relative z-10">
             <UpvoteButton
               postId={item.id}
               upvotes={item.upvotes}

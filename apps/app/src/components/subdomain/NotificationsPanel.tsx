@@ -6,8 +6,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avata
 import { getInitials } from "@/utils/user"
 import { relativeTime } from "@/lib/time"
 import { motion, type HTMLMotionProps } from "framer-motion"
-import { subdomainSurfaceClassName } from "./subdomainListItemStyles"
-import { cn } from "@featul/ui/lib/utils"
 
 export interface NotificationItem {
   id: string
@@ -30,16 +28,12 @@ interface NotificationsPanelProps {
 }
 
 const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelProps & HTMLMotionProps<"div">>(
-  ({ notifications, markRead, onMarkAllRead, className, ...props }, ref) => {
+  ({ notifications, markRead, onMarkAllRead, ...props }, ref) => {
     return (
       <motion.div
         ref={ref}
         {...props}
-        className={cn(
-          "z-50 max-w-[90vw] max-h-[36rem] overflow-y-auto rounded-md p-2 text-popover-foreground shadow-md",
-          subdomainSurfaceClassName,
-          className
-        )}
+        className={`z-50 max-w-[90vw] max-h-[36rem] bg-card dark:bg-black overflow-y-auto rounded-md border  p-2 text-popover-foreground shadow-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black "}`}
         role="dialog"
         aria-label="Notifications"
         initial={{ opacity: 0, y: -6, scale: 0.98 }}
@@ -76,7 +70,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
                       ? `/changelog/p/${n.entrySlug}`
                       : `/board/p/${n.postSlug}`)
                   }
-                  className="px-2 py-1.5 flex items-center gap-2 rounded-md  hover:bg-muted dark:hover:bg-muted/50"
+                  className="px-2 py-1.5 flex items-center gap-2 rounded-md  hover:bg-muted dark:hover:bg-black/40"
                   onClick={() => markRead(n.id)}
                 >
                   <div className="relative">

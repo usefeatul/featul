@@ -69,7 +69,7 @@ function RequestListBase(props: RequestListProps) {
   }
 
   return (
-    <div className="overflow-hidden bg-[var(--workspace-surface)]">
+    <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
       {isSelectingForRender && (
         <SelectionToolbar
           allSelected={allSelected}
@@ -79,7 +79,7 @@ function RequestListBase(props: RequestListProps) {
           onConfirmDelete={() => setConfirmOpen(true)}
         />
       )}
-      <ul className="m-0 list-none divide-y divide-border/60 border-y border-border/60 p-0">
+      <ul className="m-0 list-none p-0">
         {listItems.map((p) => (
           <RequestItem
             key={p.id}

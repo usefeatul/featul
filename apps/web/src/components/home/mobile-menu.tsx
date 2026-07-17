@@ -26,7 +26,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 top-0 z-60 overflow-y-auto bg-background md:hidden"
+      className="fixed inset-x-0 bottom-0 top-10 z-60 overflow-y-auto bg-background md:hidden"
       data-component="MobileMenu"
     >
       {/* Sheet header */}

@@ -4,8 +4,6 @@ import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { DocumentTextIcon } from "@featul/ui/icons/document-text"
 import { useBoards, type Board } from "@/hooks/useBoards"
-import { subdomainSurfaceClassName } from "./subdomainListItemStyles"
-import { cn } from "@featul/ui/lib/utils"
 
 export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: string; initialBoards?: Board[]; selectedBoard?: string }) {
   const router = useRouter()
@@ -28,7 +26,7 @@ export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: strin
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm cursor-pointer ${active ? "bg-muted dark:bg-muted/50" : "hover:bg-muted dark:hover:bg-muted/50"
+      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm cursor-pointer ${active ? "bg-muted dark:bg-black/40" : "hover:bg-muted dark:hover:bg-black/60"
         }`}
       disabled={loading}
     >
@@ -41,7 +39,7 @@ export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: strin
   )
 
   return (
-    <div className={cn("rounded-md p-4 min-h-[160px]", subdomainSurfaceClassName)}>
+    <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card dark:bg-background p-4 min-h-[160px]">
       <div className="mb-2 text-sm font-medium flex items-center gap-2">
         <DocumentTextIcon className="size-4 text-muted-foreground" />
         Boards

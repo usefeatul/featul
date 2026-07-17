@@ -11,8 +11,9 @@ function normalizeSiteUrl(input?: string) {
     }
 
     url.hash = ""
+    url.pathname = url.pathname.replace(/\/$/, "")
 
-    return url.origin
+    return url.toString()
   } catch {
     return DEFAULT_SITE_URL
   }

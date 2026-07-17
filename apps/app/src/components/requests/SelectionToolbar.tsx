@@ -1,7 +1,6 @@
 "use client"
 import { Button } from "@featul/ui/components/button"
 import { Checkbox } from "@featul/ui/components/checkbox"
-import { Trash2, X } from "lucide-react"
 
 export interface SelectionToolbarProps {
   allSelected: boolean
@@ -12,56 +11,33 @@ export interface SelectionToolbarProps {
 }
 
 export function SelectionToolbar({ allSelected, selectedCount, isPending, onToggleAll, onConfirmDelete }: SelectionToolbarProps) {
-  const hasSelection = selectedCount > 0
-
   return (
-    <div className="flex min-h-12 items-center justify-between gap-3 border-b border-border/60 bg-[var(--workspace-surface)] px-4 py-2 sm:px-6">
-      <div className="flex min-w-0 items-center gap-3">
-        <Checkbox
-          checked={allSelected}
-          onCheckedChange={onToggleAll}
-          aria-label={allSelected ? "Clear selection" : "Select all"}
-          className="cursor-pointer border-border bg-background/40 data-[state=checked]:border-primary"
-        />
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="rounded-md border border-border/70 bg-muted/40 px-2 py-1 text-xs font-medium tabular-nums text-foreground">
-            {selectedCount}
+    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 border-b border-border/60 bg-muted/50">
+      <Checkbox
+        checked={allSelected}
+        onCheckedChange={onToggleAll}
+        aria-label="Select all"
+        className="cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
+      />
+      <span className="text-xs text-accent">Selected {selectedCount}</span>
+      <Button type="button" variant="ghost" size="sm" className="h-7 px-3" onClick={onToggleAll}>
+        {allSelected ? "Clear" : "Select All"}
+      </Button>
+      <Button
+        type="button"
+        variant="destructive"
+        size="sm"
+        className="h-7 px-3 ml-auto group"
+        disabled={selectedCount === 0 || isPending}
+        onClick={onConfirmDelete}
+      >
+        <span>{isPending ? "Deleting…" : "Delete"}</span>
+        {!isPending && selectedCount > 0 ? (
+          <span className="ml-1 rounded-sm border px-1 py-0.5 text-xs leading-none text-accent bg-card dark:bg-black transition-colors group-hover:bg-card">
+            D
           </span>
-          <span className="truncate text-sm font-medium text-foreground">
-            {selectedCount === 1 ? "item selected" : "items selected"}
-          </span>
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 px-2.5 text-muted-foreground hover:text-foreground"
-          onClick={onToggleAll}
-        >
-          {allSelected ? (
-            <>
-              <X className="size-3.5" />
-              <span>Clear</span>
-            </>
-          ) : (
-            <span>Select all</span>
-          )}
-        </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          className="h-8 px-3"
-          disabled={!hasSelection || isPending}
-          onClick={onConfirmDelete}
-        >
-          <Trash2 className="size-3.5" />
-          <span>{isPending ? "Deleting..." : "Delete"}</span>
-        </Button>
-      </div>
+        ) : null}
+      </Button>
     </div>
   )
 }

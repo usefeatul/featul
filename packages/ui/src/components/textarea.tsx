@@ -8,7 +8,7 @@ const textareaVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-input bg-card border focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        default: "border-input bg-card border focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px] dark:bg-black/40 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         plain: "bg-transparent border-none shadow-none focus-visible:ring-0 px-0",
       },
     },

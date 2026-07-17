@@ -154,7 +154,7 @@ export const ImageUploadComp = ({
 	};
 
 	return (
-		<div className="flex flex-col gap-3 p-3 bg-muted dark:bg-background rounded-2xl">
+		<div className="flex flex-col gap-3 p-3 bg-muted dark:bg-black/40 rounded-2xl">
 			<div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5">
 				<div className="flex items-center gap-2 text-base font-normal">
 					<ImageIcon className="size-3.5" />
@@ -162,7 +162,7 @@ export const ImageUploadComp = ({
 				</div>
 			</div>
 
-			<div className="bg-card rounded-lg p-4 dark:bg-background border border-border">
+			<div className="bg-card rounded-lg p-4 dark:bg-black/40 border border-border">
 				{/* Dropzone or Uploading state */}
 				{loading ? (
 					<div className="flex min-h-[120px] flex-1 flex-col items-center justify-center">

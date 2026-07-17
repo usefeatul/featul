@@ -13,17 +13,11 @@ export default function SettingsTabsHeader({ slug, selected }: { slug: string; s
   }, [router, slug])
 
   return (
-    <Tabs value={selected} onValueChange={onValueChange} className="mt-4 space-y-4">
+    <Tabs value={selected} onValueChange={onValueChange} className="mt-7.5 space-y-4">
       <div className="overflow-x-auto mx-0 px-2 sm:-mx-2 sm:px-2 md:-mx-3 md:px-3 lg:mx-0 lg:px-0 scrollbar-hide">
-        <TabsList className="min-w-full w-fit lg:w-full overflow-visible bg-[var(--workspace-surface)]">
-          {SECTIONS.map((item, index) => (
-            <TabsTrigger
-              key={item.value}
-              value={item.value}
-              className={index === 0 ? "pl-2 pr-4 text-accent whitespace-nowrap" : "px-4 text-accent whitespace-nowrap"}
-            >
-              <span data-slot="tabs-label">{item.label}</span>
-            </TabsTrigger>
+        <TabsList className="min-w-full w-fit lg:w-full overflow-visible">
+          {SECTIONS.map((item) => (
+            <TabsTrigger key={item.value} value={item.value} className="px-3 text-accent whitespace-nowrap">{item.label}</TabsTrigger>
           ))}
         </TabsList>
       </div>

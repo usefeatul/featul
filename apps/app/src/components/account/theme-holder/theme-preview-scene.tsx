@@ -77,57 +77,6 @@ export const darkThemePreviewPalette: ThemePreviewPalette = {
   title: "#FAFAFA",
 };
 
-export const quietThemePreviewPalette: ThemePreviewPalette = {
-  canvas: "#F7FAFC",
-  sidebar: "#EEF3F8",
-  logo: "#263244",
-  profileCard: "#E7EDF4",
-  primaryText: "#263244",
-  secondaryText: "#8A97A8",
-  badge: "#D6DEE8",
-  workspaceText: "#66758A",
-  actionButton: "#E7EDF4",
-  divider: "#DDE5EF",
-  listText: "#2F3B4F",
-  listDate: "#9AA6B6",
-  listAvatar: "#D6DEE8",
-  title: "#1F2937",
-};
-
-export const solarizedThemePreviewPalette: ThemePreviewPalette = {
-  canvas: "#FDF6E3",
-  sidebar: "#EEE8D5",
-  logo: "#314B58",
-  profileCard: "#E6DEC8",
-  primaryText: "#334E5A",
-  secondaryText: "#93A1A1",
-  badge: "#D7CEB5",
-  workspaceText: "#6C7D7D",
-  actionButton: "#E6DEC8",
-  divider: "#DDD2B7",
-  listText: "#3B5662",
-  listDate: "#93A1A1",
-  listAvatar: "#D7CEB5",
-  title: "#263F4A",
-};
-
-export const githubDarkThemePreviewPalette: ThemePreviewPalette = {
-  canvas: "#0D1117",
-  sidebar: "#161B22",
-  logo: "#F0F6FC",
-  profileCard: "#21262D",
-  primaryText: "#C9D1D9",
-  secondaryText: "#8B949E",
-  badge: "#30363D",
-  workspaceText: "#6E7681",
-  actionButton: "#21262D",
-  divider: "#30363D",
-  listText: "#484F58",
-  listDate: "#6E7681",
-  listAvatar: "#30363D",
-  title: "#F0F6FC",
-};
-
 export function ThemePreviewScene({
   palette,
   clipPath,

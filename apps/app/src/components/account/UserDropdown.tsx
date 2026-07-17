@@ -277,7 +277,7 @@ export default function UserDropdown({
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="flex items-center gap-0">
+      <div className="flex items-center gap-1">
         <div className="min-w-0 flex-1">
           <DropdownMenu
             open={open}
@@ -292,10 +292,10 @@ export default function UserDropdown({
               <button
                 suppressHydrationWarning
                 type="button"
-                className="group grid h-9 w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-md px-3 py-0 text-xs text-accent hover:bg-muted dark:hover:bg-muted/50 md:text-sm"
+                className="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40"
               >
-                <div className="justify-self-center overflow-hidden">
-                  <Avatar className="size-5">
+                <div className="ml-1 overflow-hidden">
+                  <Avatar className="size-5.5">
                     {displayUser.image ? (
                       <AvatarImage
                         src={displayUser.image}
@@ -305,7 +305,7 @@ export default function UserDropdown({
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                 </div>
-                <span className="min-w-0 truncate text-left transition-colors">
+                <span className="truncate transition-colors">
                   {displayUser.name || "Account"}
                 </span>
               </button>
@@ -349,7 +349,6 @@ export default function UserDropdown({
         <DialogContent
           fluid
           showCloseButton={false}
-          unstyledContentFrame
           className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-2"
         >
           <DialogHeader className="sr-only">

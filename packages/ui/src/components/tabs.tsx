@@ -61,18 +61,6 @@ function TabsList({
   const computeMetrics = React.useCallback((el: HTMLElement | null) => {
     const root = listRef.current;
     if (!el || !root) return null;
-    const target =
-      el.querySelector<HTMLElement>('[data-slot="tabs-label"]') ?? el;
-    const navRect = root.getBoundingClientRect();
-    const rect = target.getBoundingClientRect();
-    const x = rect.left - navRect.left;
-    const width = rect.width;
-    return { x, width };
-  }, []);
-
-  const computeTriggerMetrics = React.useCallback((el: HTMLElement | null) => {
-    const root = listRef.current;
-    if (!el || !root) return null;
     const navRect = root.getBoundingClientRect();
     const rect = el.getBoundingClientRect();
     const x = rect.left - navRect.left;
@@ -99,16 +87,13 @@ function TabsList({
         );
         return;
       }
-      const m = computeTriggerMetrics(el);
+      const m = computeMetrics(el);
       if (!m) return;
-      const hoverPadding = 8;
-      const x = Math.max(0, m.x - hoverPadding);
-      const width = m.width + (m.x > 0 ? hoverPadding * 2 : hoverPadding);
       requestAnimationFrame(() =>
-        setHover({ x, width, visible: true })
+        setHover({ x: m.x, width: m.width, visible: true })
       );
     },
-    [computeTriggerMetrics]
+    [computeMetrics]
   );
 
   React.useLayoutEffect(() => {

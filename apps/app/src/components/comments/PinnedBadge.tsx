@@ -9,7 +9,7 @@ export default function PinnedBadge({ className, size = 12 }: { className?: stri
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className={cn("inline-flex items-center rounded-full bg-[var(--workspace-surface)] p-0.5", className)} aria-label="Pinned">
+        <span className={cn("inline-flex items-center rounded-full bg-background p-0.5", className)} aria-label="Pinned">
           <PinIcon width={size} height={size} className="text-primary" />
         </span>
       </TooltipTrigger>

@@ -18,6 +18,7 @@ import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
 import type { FeedbackTag } from "../feedback/ManageTags";
 import type { ChangelogTag } from "../changelog/ChangelogTags";
 import { SECTIONS } from "../../../config/sections";
+import SettingsTabsHeader from "./SettingsTabsHeader";
 
 type Props = {
   slug: string;
@@ -75,27 +76,30 @@ export default function SettingsServer({
       ? selectedSection
       : sections[0]?.value || "branding";
   return (
-    <section className="mx-auto w-full max-w-[56rem] px-2 py-6 sm:px-4 lg:py-8">
-      <SectionRenderer
-        slug={slug}
-        initialWorkspaceId={initialWorkspaceId}
-        initialWorkspaceOwnerId={initialWorkspaceOwnerId}
-        initialBillingSubscription={initialBillingSubscription}
-        section={selected}
-        initialTimezone={initialTimezone}
-        initialTeam={initialTeam}
-        initialChangelogVisible={initialChangelogVisible}
-        initialChangelogTags={initialChangelogTags}
-        initialHidePoweredBy={initialHidePoweredBy}
-        initialPlan={initialPlan}
-        initialBrandingConfig={initialBrandingConfig}
-        initialWorkspaceName={initialWorkspaceName}
-        initialDomainInfo={initialDomainInfo}
-        initialDefaultDomain={initialDefaultDomain}
-        initialFeedbackBoards={initialFeedbackBoards}
-        initialFeedbackTags={initialFeedbackTags}
-        initialIntegrations={initialIntegrations}
-      />
+    <section className="space-y-4 mt-6.5">
+      <SettingsTabsHeader slug={slug} selected={selected} />
+      <div className="mt-2">
+        <SectionRenderer
+          slug={slug}
+          initialWorkspaceId={initialWorkspaceId}
+          initialWorkspaceOwnerId={initialWorkspaceOwnerId}
+          initialBillingSubscription={initialBillingSubscription}
+          section={selected}
+          initialTimezone={initialTimezone}
+          initialTeam={initialTeam}
+          initialChangelogVisible={initialChangelogVisible}
+          initialChangelogTags={initialChangelogTags}
+          initialHidePoweredBy={initialHidePoweredBy}
+          initialPlan={initialPlan}
+          initialBrandingConfig={initialBrandingConfig}
+          initialWorkspaceName={initialWorkspaceName}
+          initialDomainInfo={initialDomainInfo}
+          initialDefaultDomain={initialDefaultDomain}
+          initialFeedbackBoards={initialFeedbackBoards}
+          initialFeedbackTags={initialFeedbackTags}
+          initialIntegrations={initialIntegrations}
+        />
+      </div>
     </section>
   );
 }
@@ -236,7 +240,7 @@ function SectionRenderer({
       );
     default:
       return (
-        <div className="bg-[var(--workspace-surface)] rounded-md  border p-4">Unknown section</div>
+        <div className="bg-card rounded-md  border p-4">Unknown section</div>
       );
   }
 }

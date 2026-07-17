@@ -32,7 +32,7 @@ export function BoardSelector({
         <Button
           variant="card"
           size="sm"
-          className="h-8 gap-1 px-2 font-medium text-foreground hover:bg-muted dark:hover:bg-muted/50"
+          className="h-8 gap-1 px-2 font-medium text-foreground hover:bg-muted"
         >
           {selectedBoard ? selectedBoard.name : "Select Board"}
         </Button>

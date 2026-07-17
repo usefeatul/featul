@@ -9,8 +9,6 @@ import { Input } from "@featul/ui/components/input"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { UserFocusIcon } from "@featul/ui/icons/userfocus"
-import { updateAccountUserCaches } from "./cache"
-import { accountQueryKeys } from "./query-keys"
 
 type AccountDetailsProps = {
     initialUser?: { name?: string; email?: string; image?: string | null } | null
@@ -23,7 +21,7 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
     const [saving, setSaving] = React.useState(false)
 
     const { data } = useQuery<{ user: { name?: string; email?: string; image?: string | null } | null }>({
-        queryKey: accountQueryKeys.me,
+        queryKey: ["me"],
         queryFn: async () => {
             const s = await authClient.getSession()
             const sessionData = s && typeof s === "object" && "data" in s ? s.data : s
@@ -45,7 +43,7 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
     React.useEffect(() => {
         if (user) {
             setName((user?.name || "").trim())
-            try { updateAccountUserCaches(queryClient, user) } catch (e: unknown) {
+            try { queryClient.setQueryData(["me"], { user }) } catch (e: unknown) {
                 console.error(e)
             }
         }
@@ -70,7 +68,7 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
 
         // Optimistic update - instant UI feedback
         const optimisticUser = { ...(user || {}), name: nextName || previousName }
-        try { updateAccountUserCaches(queryClient, optimisticUser) } catch (e: unknown) {
+        try { queryClient.setQueryData(["me"], { user: optimisticUser }) } catch (e: unknown) {
             console.error(e)
         }
         toast.success("Saved")
@@ -79,7 +77,7 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
             const { error, data: saveData } = await authClient.updateUser({ name: nextName || undefined })
             if (error) {
                 // Revert on error
-                try { updateAccountUserCaches(queryClient, user) } catch (e: unknown) {
+                try { queryClient.setQueryData(["me"], { user }) } catch (e: unknown) {
                     console.error(e)
                 }
                 setName(previousName)
@@ -90,12 +88,12 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
             const updatedUser = (saveData && typeof saveData === "object" && "user" in saveData)
                 ? saveData.user as { name?: string; email?: string; image?: string | null }
                 : optimisticUser
-            try { updateAccountUserCaches(queryClient, updatedUser) } catch (e: unknown) {
+            try { queryClient.setQueryData(["me"], { user: updatedUser }) } catch (e: unknown) {
                 console.error(e)
             }
         } catch (err: unknown) {
             // Revert on error
-            try { updateAccountUserCaches(queryClient, user) } catch (e: unknown) {
+            try { queryClient.setQueryData(["me"], { user }) } catch (e: unknown) {
                 console.error(e)
             }
             setName(previousName)

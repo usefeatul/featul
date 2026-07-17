@@ -12,8 +12,6 @@ import StatusIcon from "../requests/StatusIcon"
 import { Badge } from "@featul/ui/components/badge"
 import { PoweredBy } from "./PoweredBy"
 import RoleBadge from "../global/RoleBadge"
-import { subdomainSurfaceClassName } from "./subdomainListItemStyles"
-import { cn } from "@featul/ui/lib/utils"
 
 
 export type PostSidebarProps = {
@@ -79,7 +77,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
 
   return (
     <aside className="hidden md:block space-y-4 min-w-0">
-      <div className={cn("rounded-xl p-4", subdomainSurfaceClassName)}>
+      <div className="rounded-xl bg-card dark:bg-background p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
         {/* Header: User & Time */}
         <div className="flex items-center gap-3 mb-6">
           <div className="relative">
@@ -156,7 +154,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                       <Badge
                         key={f}
                         variant="nav"
-                        className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-medium rounded-md"
+                        className="bg-muted dark:bg-black/50 text-muted-foreground border border-border px-2 py-0.5 text-xs font-medium rounded-md"
                       >
                         {f}
                       </Badge>

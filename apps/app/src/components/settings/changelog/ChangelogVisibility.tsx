@@ -73,7 +73,7 @@ export default function ChangelogVisibility({ slug, initialIsVisible }: { slug: 
     <div className="space-y-2">
       <div className="text-md font-medium">Changelog Visibility</div>
       <div className="text-sm text-accent">Show or hide your changelog on the public site.</div>
-      <div className="bg-card flex items-center justify-between rounded-md border p-3">
+      <div className="bg-background flex items-center justify-between rounded-md border p-3">
         <div className="text-sm">Visible on public site</div>
         <Switch checked={visible} onCheckedChange={handleToggleVisible} aria-label="Toggle Changelog Visibility" />
       </div>

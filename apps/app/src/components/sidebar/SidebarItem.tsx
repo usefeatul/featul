@@ -33,27 +33,25 @@ function SidebarItem({
     (pathname === item.href ||
       (item.href !== "/" && pathname.startsWith(item.href)));
   const classes = cn(
-    "group grid h-10 grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-2 py-1 text-sm",
-    active
-      ? "bg-muted/70 text-foreground"
-      : "text-accent hover:bg-muted/60 hover:text-foreground",
+    "group flex items-center gap-2 rounded-md  px-3 py-2 text-xs md:text-sm",
+    active ? "bg-transparent text-foreground" : "text-accent hover:bg-muted dark:hover:bg-black/40",
     className
   );
   const content = (
     <>
       <Icon
         className={cn(
-          "size-5.5 justify-self-center text-foreground transition-colors group-hover:text-primary",
+          "size-5 text-foreground group-hover:text-primary transition-colors",
           mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
         )}
       />
-      <span className="min-w-0 truncate transition-colors">{item.label}</span>
+      <span className="transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className="ml-auto inline-flex h-5 min-w-6 items-center justify-center rounded-sm border border-border/90 bg-card px-1.5 text-center text-[11px] font-semibold leading-none text-accent/80 tabular-nums transition-colors group-hover:border-border dark:border-border/60 dark:group-hover:border-border/80 group-hover:text-accent">
+        <span className="ml-auto rounded-sm bg-card dark:bg-black/50 px-1.5 py-0.5 text-xs font-extralight text-accent dark:text-accent tabular-nums border border-border ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:ring-offset-black ">
           {count}
         </span>
       ) : shortcut ? (
-        <span className="ml-auto inline-flex h-5 min-w-6 items-center justify-center rounded-sm border border-border/90 bg-card px-1.5 text-center text-[11px] font-semibold leading-none text-accent/80 transition-colors group-hover:border-border dark:border-border/60 dark:group-hover:border-border/80 group-hover:text-accent">
+        <span className="ml-auto rounded-sm bg-card dark:bg-black/50 px-1.5 py-0.5 text-xs font-extralight text-accent dark:text-accent border border-border ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:ring-offset-black">
           {shortcut}
         </span>
       ) : null}

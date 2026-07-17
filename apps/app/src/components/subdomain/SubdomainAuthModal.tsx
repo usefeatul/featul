@@ -31,7 +31,6 @@ export default function SubdomainAuthModal({
       <DialogContent
         fluid
         showCloseButton={false}
-        unstyledContentFrame
         className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-2"
       >
         <DialogHeader className="sr-only">

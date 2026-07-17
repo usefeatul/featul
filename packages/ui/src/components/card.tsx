@@ -9,8 +9,8 @@ interface CardProps extends React.ComponentProps<"div"> {
 function Card({ className, variant = "default", ...props }: CardProps) {
   const baseClass =
     variant === "plain"
-      ? "bg-card text-card-foreground flex flex-col gap-6 rounded-md py-6 outline-none"
-      : "bg-card text-card-foreground flex flex-col gap-6 rounded-md border py-6 outline-none ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
+      ? "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md py-6 outline-none"
+      : "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md border py-6 outline-none ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
 
   return (
     <div

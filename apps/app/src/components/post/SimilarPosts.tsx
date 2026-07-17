@@ -40,7 +40,7 @@ export function SimilarPosts({ posts, linkPrefix, onLinkClick }: SimilarPostsPro
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.15, duration: 0.4 }}
-                className="relative group p-4 hover:bg-muted/30 dark:hover:bg-muted/50 transition-colors"
+                className="relative group p-4 hover:bg-muted/30 dark:hover:bg-black/30 transition-colors"
               >
                 <Link
                   href={`${baseHref}/${post.slug}`}

@@ -5,9 +5,6 @@ import React from "react"
 import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
-import { LayersIcon } from "@featul/ui/icons/layers"
-import { TagIcon } from "@featul/ui/icons/tag"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 
 import { cn } from "@featul/ui/lib/utils"
 import { useQuery } from "@tanstack/react-query"
@@ -17,11 +14,6 @@ import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import { buildRequestsUrl } from "@/utils/request"
 import { useFilterBarVisibility } from "@/hooks/useFilterBarVisibility"
 import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
-import StatusIcon from "./StatusIcon"
-import {
-  workspaceToolbarIconButtonClassName,
-  workspaceToolbarTextButtonClassName,
-} from "./workspaceToolbarStyles"
 
 const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
@@ -31,39 +23,6 @@ const STATUS_OPTIONS = [
   { label: "Complete", value: "completed" },
   { label: "Closed", value: "closed" },
 ]
-
-function FilterSummarySeparator() {
-  return <ToolbarSeparator className="self-stretch bg-border" />
-}
-
-function FilterSummaryItem({
-  icon,
-  label,
-  ariaLabel,
-  onRemove,
-}: {
-  icon?: React.ReactNode
-  label: string
-  ariaLabel: string
-  onRemove: () => void
-}) {
-  return (
-    <Button
-      type="button"
-      onClick={onRemove}
-      variant="nav"
-      size="sm"
-      className={cn(workspaceToolbarTextButtonClassName, "text-xs font-medium text-foreground")}
-      aria-label={ariaLabel}
-    >
-      <span className="flex min-w-0 items-center">
-        {icon}
-        <span className={cn("truncate", icon ? "ml-1" : "")}>{label}</span>
-      </span>
-      <XMarkIcon className="ml-3 size-3.5 shrink-0 text-muted-foreground opacity-70" />
-    </Button>
-  )
-}
 
 export default function FilterSummary({ className = "" }: { className?: string }) {
   const pathname = usePathname() || "/"
@@ -162,90 +121,87 @@ export default function FilterSummary({ className = "" }: { className?: string }
     const found = STATUS_OPTIONS.find((s) => s.value === v)
     return found ? found.label : v
   }
-  const activeFilters: React.ReactNode[] = []
-
-  status.forEach((s) => {
-    activeFilters.push(
-      <FilterSummaryItem
-        key={`status-${s}`}
-        icon={<StatusIcon status={s} className="size-3.5 shrink-0" />}
-        label={statusLabel(s)}
-        ariaLabel={`Remove status ${statusLabel(s)}`}
-        onRemove={() => removeStatus(s)}
-      />
-    )
-  })
-
-  boards.forEach((b) => {
-    activeFilters.push(
-      <FilterSummaryItem
-        key={`board-${b}`}
-        icon={<LayersIcon className="size-3.5 shrink-0 opacity-70" size={14} />}
-        label={boardsBySlug[b] || b}
-        ariaLabel={`Remove board ${boardsBySlug[b] || b}`}
-        onRemove={() => removeBoard(b)}
-      />
-    )
-  })
-
-  tags.forEach((t) => {
-    activeFilters.push(
-      <FilterSummaryItem
-        key={`tag-${t}`}
-        icon={<TagIcon className="size-3.5 shrink-0 opacity-70" size={14} />}
-        label={tagsBySlug[t] || t}
-        ariaLabel={`Remove tag ${tagsBySlug[t] || t}`}
-        onRemove={() => removeTag(t)}
-      />
-    )
-  })
-
-  if (order === "oldest") {
-    activeFilters.push(
-      <FilterSummaryItem
-        key="order-oldest"
-        label="Oldest first"
-        ariaLabel="Remove sort oldest"
-        onRemove={removeOrder}
-      />
-    )
-  }
 
   return (
     <div
       className={cn(
-        "flex justify-start pointer-events-none",
+        "fixed top-0 inset-x-0 z-40 flex justify-center px-3 pointer-events-none",
         className
       )}
       aria-label="Active filters"
     >
       {isVisible ? (
-        <Toolbar
+        <div
           key="filter-summary-bar"
-          size="sm"
-          variant="plain"
-          className="pointer-events-auto flex h-8 max-w-full items-center overflow-hidden px-0 py-0"
+          className="bg-white dark:bg-black/60 pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-2 border-t-transparent overflow-hidden rounded-xs shadow-sm px-1 py-0.5  backdrop-blur-lg supports-backdrop-filter:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border border-border"
         >
-          <div className="flex items-center gap-0 overflow-x-auto px-0 py-0 flex-1 scrollbar-hide h-full">
-            {activeFilters.map((el, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <FilterSummarySeparator />}
-                {el}
-              </React.Fragment>
+          <div className="flex items-center  gap-2 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
+            {status.map((s) => (
+              <div key={`status-${s}`}>
+                <Button
+                  type="button"
+                  onClick={() => removeStatus(s)}
+                  variant="nav"
+                  size="xs"
+                  aria-label={`Remove status ${statusLabel(s)}`}
+                >
+                  <span className="truncate">{statusLabel(s)}</span>
+                  <XMarkIcon className="ml-1 size-3 opacity-60" />
+                </Button>
+              </div>
             ))}
+            {boards.map((b) => (
+              <div key={`board-${b}`}>
+                <Button
+                  type="button"
+                  onClick={() => removeBoard(b)}
+                  variant="nav"
+                  size="xs"
+                  aria-label={`Remove board ${boardsBySlug[b] || b}`}
+                >
+                  <span className="truncate">{boardsBySlug[b] || b}</span>
+                  <XMarkIcon className="ml-1 size-3 opacity-60" />
+                </Button>
+              </div>
+            ))}
+            {tags.map((t) => (
+              <div key={`tag-${t}`}>
+                <Button
+                  type="button"
+                  onClick={() => removeTag(t)}
+                  variant="nav"
+                  size="xs"
+                  aria-label={`Remove tag ${tagsBySlug[t] || t}`}
+                >
+                  <span className="truncate">{tagsBySlug[t] || t}</span>
+                  <XMarkIcon className="ml-1 size-3 opacity-60" />
+                </Button>
+              </div>
+            ))}
+            {order === "oldest" ? (
+              <div key="order-oldest">
+                <Button
+                  type="button"
+                  onClick={removeOrder}
+                  variant="nav"
+                  size="xs"
+                  aria-label="Remove sort oldest"
+                >
+                  <span className="truncate">Oldest first</span>
+                  <XMarkIcon className="ml-1 size-3" />
+                </Button>
+              </div>
+            ) : null}
           </div>
 
-          <div className="flex items-center shrink-0 h-full">
-            <FilterSummarySeparator />
+          <div className="flex items-center shrink-0 gap-2">
+            <div className="h-4 w-px bg-border" />
             <Button
               type="button"
               onClick={handleClearAll}
-              variant="nav"
+              variant="ghost"
               size="icon-sm"
-              className={cn(
-                workspaceToolbarIconButtonClassName,
-                "h-8 w-8 text-muted-foreground transition-colors hover:text-destructive"
-              )}
+              className="text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors"
               aria-label="Clear all filters"
             >
               <span>
@@ -253,7 +209,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
               </span>
             </Button>
           </div>
-        </Toolbar>
+        </div>
       ) : null}
     </div>
   )

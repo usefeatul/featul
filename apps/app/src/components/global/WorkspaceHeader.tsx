@@ -1,61 +1,75 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@featul/ui/components/button"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@featul/ui/components/button";
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
 
-import { Switch } from "@featul/ui/components/switch"
-import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections"
-import HeaderActions from "@/components/requests/HeaderActions"
-import FilterSummary from "@/components/requests/FilterSummary"
-import { Plus } from "lucide-react"
-import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext"
-import ImportNotraDialog from "@/components/changelog/ImportNotraDialog"
+import { Switch } from "@featul/ui/components/switch";
+import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections";
+import HeaderActions from "@/components/requests/HeaderActions";
+import { Plus } from "lucide-react";
+import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
+import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
 
 function resolveTitle(segment: string): string {
-  const s = segment.toLowerCase()
-  if (WORKSPACE_TITLES[s]) return WORKSPACE_TITLES[s]
-  const found = SECTIONS.find((x) => x.value === s)
-  return found ? found.label : ""
+  const s = segment.toLowerCase();
+  if (WORKSPACE_TITLES[s]) return WORKSPACE_TITLES[s];
+  const found = SECTIONS.find((x) => x.value === s);
+  return found ? found.label : "";
 }
 
 export default function WorkspaceHeader() {
-  const pathname = usePathname() || "/"
-  const parts = pathname.split("/").filter(Boolean)
-  const idx = parts.indexOf("workspaces")
-  const workspaceSlug = idx >= 0 ? (parts[idx + 1] ?? "") : ""
-  const rest = idx >= 0 ? parts.slice(idx + 2) : []
-  const showRequestsActions = rest.length === 0 || rest[0] === "requests"
-  const showChangelogActions = rest[0] === "changelog" && rest.length === 1
-  const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2
-  const isMemberDetail = rest[0] === "members" && rest.length > 1
-  const editorContext = useEditorHeaderActionsOptional()
+  const pathname = usePathname() || "/";
+  const parts = pathname.split("/").filter(Boolean);
+  const idx = parts.indexOf("workspaces");
+  const workspaceSlug = idx >= 0 ? (parts[idx + 1] ?? "") : "";
+  const rest = idx >= 0 ? parts.slice(idx + 2) : [];
+  const showRequestsActions = rest.length === 0 || rest[0] === "requests";
+  const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
+  const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
+  const isMemberDetail = rest[0] === "members" && rest.length > 1;
+  const editorContext = useEditorHeaderActionsOptional();
 
-  let title = rest.length === 0 ? "Requests" : ""
+  let title = rest.length === 0 ? "Requests" : "";
   if (rest.length > 0) {
-    const t = resolveTitle(rest[0] ?? "")
-    title = t || ""
+    const t = resolveTitle(rest[0] ?? "");
+    title = t || "";
   }
 
-  if (isMemberDetail) return null
-  if (!title && !showRequestsActions) return null
-
-  const innerClassName = showRequestsActions
-    ? "flex min-h-7 w-full items-center justify-between gap-3"
-    : "flex min-h-7 w-full items-center justify-end"
-  const wrapperClassName = showRequestsActions
-    ? "px-0 pb-1"
-    : "px-3 pb-2 sm:px-5 lg:px-6"
+  if (!title && !showRequestsActions && !isMemberDetail) return null;
 
   return (
-    <div className={wrapperClassName}>
-      <div className={innerClassName}>
-        {showRequestsActions ? (
-          <>
-            <FilterSummary className="min-w-0 flex-1 pr-3" />
-            <HeaderActions className="shrink-0" />
-          </>
+    <div className="mt-4 mb-6.5">
+      <div className="flex items-center justify-between">
+        {title ? (
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-heading leading-tight font-semibold">
+              {title}
+            </h1>
+          </div>
+        ) : (
+          <div />
+        )}
+        {isMemberDetail ? (
+          <Toolbar size="sm">
+            <Button
+              asChild
+              variant="card"
+              className="h-full rounded-none border-none hover:bg-muted px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
+            >
+              <Link
+                href={`/workspaces/${workspaceSlug}/members`}
+                aria-label="Back to members"
+              >
+                <ChevronLeftIcon className="size-3 mr-1" />
+                <span className="hidden sm:inline">Back</span>
+              </Link>
+            </Button>
+          </Toolbar>
+        ) : showRequestsActions ? (
+          <HeaderActions />
         ) : showChangelogActions ? (
           <Toolbar size="sm">
             <ImportNotraDialog workspaceSlug={workspaceSlug} />
@@ -74,13 +88,13 @@ export default function WorkspaceHeader() {
         ) : showChangelogEditActions &&
           editorContext &&
           editorContext.actions.length > 0 ? (
-          <div className="flex items-center gap-0 overflow-hidden rounded-md bg-[var(--workspace-surface)]">
+          <div className="flex items-center gap-0 bg-card rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black divide-x divide-border overflow-hidden">
             {editorContext.actions
               .filter((action) => action.type === "switch")
               .map((action) => (
                 <div
                   key={action.key}
-                  className="flex items-center gap-2 px-3 h-8 bg-transparent hover:bg-muted/50 transition-colors"
+                  className="flex items-center gap-2 px-3 h-8 bg-transparent dark:bg-black/40 hover:bg-muted/50 transition-colors"
                 >
                   <span className="text-sm font-medium text-muted-foreground">
                     {action.label}
@@ -111,5 +125,5 @@ export default function WorkspaceHeader() {
         ) : null}
       </div>
     </div>
-  )
+  );
 }

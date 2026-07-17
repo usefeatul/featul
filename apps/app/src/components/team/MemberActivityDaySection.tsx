@@ -17,17 +17,18 @@ interface MemberActivityDaySectionProps {
 }
 
 const sectionClassName =
-  "space-y-2 border-t border-border/70 pt-5 first:border-t-0 first:pt-0"
+  "space-y-1.5 border-t border-border/70 pt-4 first:border-t-0 first:pt-0"
 
-const headingClassName = "text-xs font-semibold leading-none text-foreground"
+const headingClassName =
+  "px-2 pt-1 font-heading text-[12px] font-semibold uppercase leading-none tracking-[0.16em] text-foreground"
 
 const groupButtonClassName =
-  "block w-full rounded-md px-2.5 py-2.5 text-left hover:bg-card"
+  "block w-full -mx-2 rounded-sm px-2 py-2.5 text-left hover:bg-muted/60"
 
-const groupRowClassName = "flex min-w-0 items-start justify-between gap-4"
+const groupRowClassName = "text-xs text-accent flex items-center gap-2 min-w-0"
 
 const counterClassName =
-  "inline-flex shrink-0 items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs text-accent"
+  "inline-flex shrink-0 items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] text-accent"
 
 function GroupSummaryRow({
   createdAt,
@@ -44,15 +45,11 @@ function GroupSummaryRow({
     <li className="py-0">
       <button type="button" onClick={onExpand} className={groupButtonClassName}>
         <div className={groupRowClassName}>
-          <span className="min-w-0 flex-1 text-xs leading-4 text-foreground">
+          <span className="font-medium shrink-0">{format(new Date(createdAt), "LLL d")}</span>
+          <span className="min-w-0 flex-1">
             <MemberActivityDescription item={item} />
           </span>
-          <div className="flex shrink-0 items-center gap-2 pt-0.5">
-            <span className="text-xs text-muted-foreground">
-              {format(new Date(createdAt), "h:mm a")}
-            </span>
-            <span className={counterClassName}>{count}x</span>
-          </div>
+          <span className={counterClassName}>{count}x</span>
         </div>
       </button>
     </li>
@@ -69,16 +66,10 @@ export function MemberActivityDaySection({
     <section className={sectionClassName}>
       <div className={headingClassName}>{dayGroup.label}</div>
 
-      <ul className="divide-y divide-border/60">
+      <ul className="divide-y divide-border">
         {dayGroup.rows.map((row) => {
           if (row.kind === "item") {
-            return (
-              <MemberActivityItemRow
-                key={row.key}
-                item={row.item}
-                href={row.href}
-              />
-            )
+            return <MemberActivityItemRow key={row.key} item={row.item} href={row.href} />
           }
 
           const isExpanded = Boolean(expandedGroups[row.key])
@@ -96,7 +87,7 @@ export function MemberActivityDaySection({
                   <button
                     type="button"
                     onClick={() => onToggleGroup(row.key)}
-                    className="rounded-md px-2.5 py-2 text-xs text-accent hover:bg-card hover:text-foreground"
+                    className="text-xs text-accent hover:text-foreground"
                   >
                     Show less
                   </button>

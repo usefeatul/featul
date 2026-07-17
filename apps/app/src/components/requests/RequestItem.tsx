@@ -45,13 +45,11 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     onToggle?.(!isSelectedMode)
   }, [isSelectingMode, isSelectedMode, onToggle])
   const rowClassName = cn(
-    "relative grid min-h-[3.25rem] items-center gap-3 overflow-hidden bg-[var(--workspace-surface)] px-4 py-3 sm:px-6",
-    isSelectingMode
-      ? "grid-cols-[auto_auto_minmax(0,1fr)] sm:grid-cols-[auto_auto_minmax(0,1fr)_auto] cursor-pointer"
-      : "grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto] hover:bg-card transition-colors"
+    "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
+    isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
   )
   const actionsClassName = cn(
-    "ml-auto hidden items-center gap-3 text-xs text-accent sm:flex",
+    "ml-auto flex items-center gap-3 text-xs text-accent",
     isSelectingMode && "pointer-events-none"
   )
 
@@ -62,15 +60,6 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       className={rowClassName}
       onClick={handleRowClick}
     >
-      {!isLinkDisabled ? (
-        <Link
-          href={href}
-          className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
-          aria-label={title}
-        >
-          <span className="sr-only">View request</span>
-        </Link>
-      ) : null}
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       {isSelectingMode ? (
         <Checkbox
@@ -78,36 +67,37 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           onCheckedChange={(v) => onToggle?.(Boolean(v))}
           aria-label="Select post"
           onClick={(e) => e.stopPropagation()}
-          className="cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
+          className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
         />
       ) : null}
-      <StatusIcon status={item.roadmapStatus || undefined} className="size-4 text-foreground/80" />
-      <div className="min-w-0">
-        <span
-          className={cn(
-            "block truncate text-sm font-medium leading-5",
-            isLinkDisabled ? "text-foreground/60" : "text-foreground"
-          )}
-        >
-          {displayTitle}
-        </span>
-        <div className="mt-0.5 flex items-center gap-2 text-xs text-accent sm:hidden">
-          <span className="tabular-nums">{item.upvotes} votes</span>
-          <span aria-hidden>·</span>
-          <span className="tabular-nums">{item.commentCount} comments</span>
-        </div>
-      </div>
+      <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
+      <Link
+        href={href}
+        className={cn(
+          "flex-1 min-w-0 truncate text-sm font-medium",
+          isLinkDisabled ? "text-foreground/60 cursor-default pointer-events-none" : "text-foreground"
+        )}
+        onClick={(e) => {
+          if (isLinkDisabled) e.preventDefault()
+        }}
+        tabIndex={isLinkDisabled ? -1 : 0}
+        aria-disabled={isLinkDisabled ? true : undefined}
+      >
+        {displayTitle}
+      </Link>
       <div className={actionsClassName}>
         <ReportIndicator count={item.reportCount || 0} />
 
-        <div className="relative z-20 inline-flex h-6 items-center gap-2 rounded-md border border-border/70 bg-card px-2">
-          <CommentsIcon aria-hidden className="size-3.5" />
-          <span className="tabular-nums">{item.commentCount}</span>
+        <div className="inline-flex items-center gap-2 relative z-10">
           <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
         </div>
-        <span className="w-12 text-right">{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
+        <div className="inline-flex items-center gap-1">
+          <CommentsIcon aria-hidden className="size-3.5" />
+          <span className="tabular-nums">{item.commentCount}</span>
+        </div>
+        <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
         <div className="relative">
-          <Avatar className="size-6 bg-muted relative overflow-visible ring-1 ring-border/70">
+          <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
             <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
             <AvatarFallback>{getInitials(authorLabel)}</AvatarFallback>
             <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />

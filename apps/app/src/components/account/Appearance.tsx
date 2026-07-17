@@ -7,39 +7,17 @@ import { useTheme } from "next-themes"
 import { DarkMode } from "./theme-holder/dark-theme"
 import { LightMode } from "./theme-holder/light-theme"
 import { SystemMode } from "./theme-holder/system-theme"
-import {
-  githubDarkThemePreviewPalette,
-  quietThemePreviewPalette,
-  solarizedThemePreviewPalette,
-  ThemePreviewScene,
-} from "./theme-holder/theme-preview-scene"
 
-type ThemeOption = "light" | "dark" | "system" | "quiet" | "solarized" | "github-dark"
-
-const QuietMode = () => (
-  <svg width="282" height="193" viewBox="0 0 282 193" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ThemePreviewScene palette={quietThemePreviewPalette} />
-  </svg>
-)
-
-const SolarizedMode = () => (
-  <svg width="282" height="193" viewBox="0 0 282 193" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ThemePreviewScene palette={solarizedThemePreviewPalette} />
-  </svg>
-)
-
-const GithubDarkMode = () => (
-  <svg width="282" height="193" viewBox="0 0 282 193" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ThemePreviewScene palette={githubDarkThemePreviewPalette} />
-  </svg>
-)
+type ThemeOption = "light" | "dark" | "system"
 
 export default function Appearance() {
-  const { theme = "system", setTheme } = useTheme()
+  const { theme = "system", resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
   React.useEffect(() => setMounted(true), [])
 
-  const activeTheme = mounted ? (theme as ThemeOption) || "system" : null
+  const effectiveTheme = mounted
+    ? ((theme === "system" ? resolvedTheme : theme) as ThemeOption) || "system"
+    : null
 
   const options: Array<{
     key: ThemeOption
@@ -65,39 +43,21 @@ export default function Appearance() {
       description: "For low-light environments",
       Preview: DarkMode,
     },
-    {
-      key: "quiet",
-      label: "Quiet Light",
-      description: "Softer contrast for long sessions",
-      Preview: QuietMode,
-    },
-    {
-      key: "solarized",
-      label: "Solarized Light",
-      description: "Warm, readable tones",
-      Preview: SolarizedMode,
-    },
-    {
-      key: "github-dark",
-      label: "GitHub Dark",
-      description: "Crisp dark workspace",
-      Preview: GithubDarkMode,
-    },
   ]
 
   return (
-    <SectionCard title="Appearance" description="Choose a workspace app theme">
+    <SectionCard title="Appearance" description="Choose light, dark, or system theme">
       <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-3">
           {options.map(({ key, label, description, Preview }) => {
-            const isActive = activeTheme === key
+            const isActive = effectiveTheme === key
             return (
               <button
                 key={key}
                 type="button"
                 onClick={() => setTheme(key)}
                 className={cn(
-                  "group flex flex-col gap-2 rounded-xl border bg-card p-2 text-left transition",
+                  "group flex flex-col gap-2 rounded-xl border bg-card/70 p-2 text-left transition",
                   "hover:border-primary/70 hover:bg-accent/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   isActive && "border-primary ring-2 ring-primary"
                 )}>

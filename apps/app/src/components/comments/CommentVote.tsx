@@ -164,7 +164,7 @@ export default function CommentVote({
   }
 
   return (
-    <Toolbar size="sm" variant="plain" className="h-8 bg-[var(--workspace-surface)] border-border">
+    <Toolbar size="sm" variant="plain" className="h-8 bg-card dark:bg-black/50 border-border">
       <Button
         type="button"
         variant="plain"
@@ -172,7 +172,7 @@ export default function CommentVote({
         onClick={() => handleVote("upvote")}
         disabled={isPending}
         className={cn(
-          "h-8 min-w-[58px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent hover:bg-muted/20 dark:hover:bg-muted/50",
+          "h-8 min-w-[58px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
           userVote === "upvote"
             ? "text-green-600 dark:text-green-400"
             : "text-accent hover:text-foreground"
@@ -204,7 +204,7 @@ export default function CommentVote({
         onClick={() => handleVote("downvote")}
         disabled={isPending}
         className={cn(
-          "h-8 min-w-[48px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent hover:bg-muted/20 dark:hover:bg-muted/50",
+          "h-8 min-w-[48px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
           userVote === "downvote"
             ? "text-red-600 dark:text-red-400"
             : "text-accent hover:text-foreground"

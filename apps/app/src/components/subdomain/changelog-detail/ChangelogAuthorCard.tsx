@@ -5,8 +5,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avata
 import { getInitials } from "@/utils/user";
 import RoleBadge from "@/components/global/RoleBadge";
 import type { Role } from "@/types/team";
-import { subdomainSurfaceClassName } from "../subdomainListItemStyles";
-import { cn } from "@featul/ui/lib/utils";
 
 interface ChangelogAuthorCardProps {
     author?: {
@@ -32,7 +30,7 @@ export function ChangelogAuthorCard({ author, publishedAt }: ChangelogAuthorCard
     const roleLabel = getRoleLabel(author?.role, author?.isOwner);
 
     return (
-        <div className={cn("rounded-md p-4", subdomainSurfaceClassName)}>
+        <div className="rounded-md bg-card dark:bg-background p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
             <div className="flex items-start gap-3">
                 <div className="relative">
                     <Avatar className="size-10 relative overflow-visible">
