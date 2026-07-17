@@ -21,6 +21,7 @@ import { DeletePostButton } from "./DeletePostButton"
 import { useIsMobile } from "@featul/ui/hooks/use-mobile"
 import EditPostModal from "../subdomain/request-detail/EditPostModal"
 import type { RequestDetailData } from "@/types/request"
+import { workspaceToolbarTextButtonClassName } from "./workspaceToolbarStyles"
 
 type RequestDetailProps = {
   post: RequestDetailData
@@ -61,16 +62,19 @@ export default function RequestDetail({
         <div className="grid min-h-full flex-1 items-stretch gap-0 md:grid-cols-[minmax(0,1fr)_19rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
           <article className="relative min-w-0 px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-24">
             <div className="absolute left-4 right-4 top-5 hidden items-center justify-between gap-4 md:flex md:left-6 md:right-6">
-              <Button
-                asChild
-                variant="card"
-                size="icon-sm"
-
-              >
-                <Link href={backHref} aria-label="Back to requests">
-                  <ChevronLeftIcon className="size-3.5" />
-                </Link>
-              </Button>
+              <Toolbar size="sm" variant="plain">
+                <Button
+                  asChild
+                  variant="nav"
+                  size="sm"
+                  className={workspaceToolbarTextButtonClassName}
+                >
+                  <Link href={backHref} aria-label="Back to requests">
+                    <ChevronLeftIcon className="size-3" />
+                    <span className="text-xs font-medium">Back</span>
+                  </Link>
+                </Button>
+              </Toolbar>
               <RequestNavigation
                 postId={post.id}
                 workspaceSlug={workspaceSlug}
@@ -89,16 +93,19 @@ export default function RequestDetail({
                 {isMobile ? (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between gap-2">
-                      <Button
-                        asChild
-                        variant="nav"
-                        size="icon-sm"
-                        className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
-                      >
-                        <Link href={backHref} aria-label="Back to requests">
-                          <ChevronLeftIcon className="size-3.5" />
-                        </Link>
-                      </Button>
+                      <Toolbar size="sm" variant="plain">
+                        <Button
+                          asChild
+                          variant="nav"
+                          size="sm"
+                          className={workspaceToolbarTextButtonClassName}
+                        >
+                          <Link href={backHref} aria-label="Back to requests">
+                            <ChevronLeftIcon className="size-3" />
+                            <span className="text-xs font-medium">Back</span>
+                          </Link>
+                        </Button>
+                      </Toolbar>
                       <div className="inline-flex items-center gap-2">
                         <Toolbar size="sm" variant="plain">
                           <MergePopover

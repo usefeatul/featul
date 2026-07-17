@@ -10,6 +10,8 @@ import { getDisplayUser } from "@/utils/user";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
 import ContentImage from "@/components/global/ContentImage";
 import { RequestActions } from "./RequestActions";
+import { subdomainSurfaceClassName } from "../subdomainListItemStyles";
+import { cn } from "@featul/ui/lib/utils";
 
 
 
@@ -44,7 +46,7 @@ export function RequestContent({
   const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
 
   return (
-    <div className="min-w-0 rounded-md border bg-card p-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
+    <div className={cn("min-w-0 rounded-md p-4", subdomainSurfaceClassName)}>
       {/* Status & Actions */}
       <div className="flex items-center justify-between mb-4">
         <div className="inline-flex items-center gap-2">

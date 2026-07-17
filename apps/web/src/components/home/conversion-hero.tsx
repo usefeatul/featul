@@ -19,18 +19,18 @@ export function ConversionHero() {
               Build better products with customer feedback.
               <span className="block mt-1 text-accent/80">
                 Collect, prioritize, and ship what matters with
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-sky-200 bg-sky-50 px-1.5 py-0 text-[0.9em] text-sky-700 shadow-sm ring-1 ring-sky-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 dark:ring-offset-black">
-                  <BoardIcon className="size-6 text-sky-600 sm:size-8" />
+                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-lg border-2 border-sky-500 bg-sky-300 px-1.5 py-0.5 text-[0.9em] font-medium text-sky-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_0_0_1px_rgb(14_165_233/0.25),0_4px_14px_-3px_rgb(14_165_233/0.55)] align-baseline sm:gap-1 sm:px-2">
+                  <BoardIcon className="size-6 text-sky-800 sm:size-8" />
                   boards
                 </span>
                 ,
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0 text-[0.9em] text-emerald-700 shadow-sm ring-1 ring-emerald-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 dark:ring-offset-black">
-                  <RoadmapIcon className="size-6 text-emerald-600 sm:size-8" />
+                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-lg border-2 border-emerald-500 bg-emerald-300 px-1.5 py-0.5 text-[0.9em] font-medium text-emerald-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_0_0_1px_rgb(16_185_129/0.25),0_4px_14px_-3px_rgb(16_185_129/0.55)] align-baseline sm:gap-1 sm:px-2">
+                  <RoadmapIcon className="size-6 text-emerald-800 sm:size-8" />
                   roadmaps
                 </span>
                 , and
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0 text-[0.9em] text-amber-700 shadow-sm ring-1 ring-amber-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 dark:ring-offset-black">
-                  <ChangelogIcon className="size-6 text-amber-600 sm:size-8" />
+                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-lg border-2 border-amber-500 bg-amber-300 px-1.5 py-0.5 text-[0.9em] font-medium text-amber-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_0_0_1px_rgb(245_158_11/0.25),0_4px_14px_-3px_rgb(245_158_11/0.55)] align-baseline sm:gap-1 sm:px-2">
+                  <ChangelogIcon className="size-6 text-amber-800 sm:size-8" />
                   changelogs
                 </span>
                 .

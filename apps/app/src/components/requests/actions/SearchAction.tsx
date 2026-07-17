@@ -38,7 +38,7 @@ export default function SearchAction({
       workspaceSlug={slug}
       currentSearch={currentSearch}
       className={className}
-      buttonVariant="card"
+      buttonVariant="nav"
       showNoResults
       open={open}
       onOpenChange={setOpen}

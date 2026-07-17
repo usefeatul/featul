@@ -7,19 +7,16 @@ import StatusAction from "./actions/StatusAction"
 import TagsAction from "./actions/TagsAction"
 import SortAction from "./actions/SortAction"
 import SearchAction from "./actions/SearchAction"
+import { workspaceToolbarIconButtonClassName } from "./workspaceToolbarStyles"
 
 export default function HeaderActions({ className = "" }: { className?: string }) {
-  const buttonClassName =
-    "h-8 w-8 rounded-none border-0 px-0 shadow-none ring-0 ring-offset-0 hover:bg-card focus-visible:ring-0 focus-visible:ring-offset-0"
+  const buttonClassName = cn(workspaceToolbarIconButtonClassName, "h-8 w-8 p-0")
 
   return (
     <Toolbar
       size="sm"
       variant="plain"
-      className={cn(
-        "ml-auto h-8 border-border bg-card shadow-none ring-0 ring-offset-0",
-        className
-      )}
+      className={cn("ml-auto h-8", className)}
     >
       <SearchAction className={buttonClassName} />
       <ToolbarSeparator />

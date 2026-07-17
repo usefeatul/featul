@@ -18,6 +18,10 @@ import { buildRequestsUrl } from "@/utils/request"
 import { useFilterBarVisibility } from "@/hooks/useFilterBarVisibility"
 import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
 import StatusIcon from "./StatusIcon"
+import {
+  workspaceToolbarIconButtonClassName,
+  workspaceToolbarTextButtonClassName,
+} from "./workspaceToolbarStyles"
 
 const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
@@ -47,8 +51,9 @@ function FilterSummaryItem({
     <Button
       type="button"
       onClick={onRemove}
-      variant="card"
-      className="h-8 rounded-none border-0 bg-card px-3 text-xs font-medium text-foreground shadow-none ring-0 ring-offset-0 hover:bg-muted/40 focus-visible:ring-0 focus-visible:ring-offset-0"
+      variant="nav"
+      size="sm"
+      className={cn(workspaceToolbarTextButtonClassName, "text-xs font-medium text-foreground")}
       aria-label={ariaLabel}
     >
       <span className="flex min-w-0 items-center">
@@ -219,7 +224,7 @@ export default function FilterSummary({ className = "" }: { className?: string }
           key="filter-summary-bar"
           size="sm"
           variant="plain"
-          className="pointer-events-auto flex max-w-full items-center overflow-hidden h-8 border-border bg-card shadow-none ring-0 ring-offset-0 px-0 py-0"
+          className="pointer-events-auto flex h-8 max-w-full items-center overflow-hidden px-0 py-0"
         >
           <div className="flex items-center gap-0 overflow-x-auto px-0 py-0 flex-1 scrollbar-hide h-full">
             {activeFilters.map((el, i) => (
@@ -235,8 +240,12 @@ export default function FilterSummary({ className = "" }: { className?: string }
             <Button
               type="button"
               onClick={handleClearAll}
-              variant="ghost"
-              className="h-8 w-8 rounded-none border-0 bg-card px-0 shadow-none ring-0 ring-offset-0 hover:bg-muted/40 text-muted-foreground transition-colors hover:text-destructive"
+              variant="nav"
+              size="icon-sm"
+              className={cn(
+                workspaceToolbarIconButtonClassName,
+                "h-8 w-8 text-muted-foreground transition-colors hover:text-destructive"
+              )}
               aria-label="Clear all filters"
             >
               <span>

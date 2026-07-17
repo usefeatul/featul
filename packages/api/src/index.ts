@@ -13,6 +13,7 @@ const routerImports = {
   member: () => import("./router/member").then((m) => m.createMemberRouter()),
   integration: () => import("./router/integration").then((m) => m.createIntegrationRouter()),
   account: () => import("./router/account").then((m) => m.createAccountRouter()),
+  widget: () => import("./router/widget").then((m) => m.createWidgetRouter()),
 }
 
 const api = j
@@ -34,6 +35,7 @@ const appRouter = j.mergeRouters(api, {
   member: routerImports.member,
   integration: routerImports.integration,
   account: routerImports.account,
+  widget: routerImports.widget,
 })
 
 export type AppRouter = typeof appRouter

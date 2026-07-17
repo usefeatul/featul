@@ -2,6 +2,8 @@ import React from "react";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import type { JSONContent } from "@tiptap/core";
 import type { Role } from "@/types/team";
+import { subdomainSurfaceClassName } from "../subdomainListItemStyles";
+import { cn } from "@featul/ui/lib/utils";
 
 export interface ChangelogEntryData {
   id: string;
@@ -26,7 +28,7 @@ interface ChangelogContentProps {
 
 export function ChangelogContent({ entry }: ChangelogContentProps) {
   return (
-    <div className="w-full min-w-0 max-w-none justify-self-stretch rounded-md border bg-card p-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
+    <div className={cn("w-full min-w-0 max-w-none justify-self-stretch rounded-md p-4", subdomainSurfaceClassName)}>
       {/* Cover Image */}
       {entry.coverImage ? (
         <div className="aspect-video w-full overflow-hidden rounded-md bg-muted mb-4">
