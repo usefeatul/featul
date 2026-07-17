@@ -3,21 +3,8 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@featul/ui/components/button"
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverList,
-  PopoverListItem,
-} from "@featul/ui/components/popover"
-import {
-  CommandDialog,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "@featul/ui/components/command"
+import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
+import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@featul/ui/components/command"
 import { MergeIcon } from "@featul/ui/icons/merge"
 import { client } from "@featul/api/client"
 import { useQuery } from "@tanstack/react-query"
@@ -41,9 +28,7 @@ export interface MergePopoverProps {
 export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
-  const [mode, setMode] = React.useState<"merge_into" | "merge_here" | null>(
-    null,
-  )
+  const [mode, setMode] = React.useState<"merge_into" | "merge_here" | null>(null)
   const [searchOpen, setSearchOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
 
@@ -105,7 +90,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
             type="button"
             variant="nav"
             size="icon-sm"
-            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
             aria-label="Merge"
           >
             <MergeIcon className="size-3.5" />
@@ -130,8 +115,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
           placeholder="Search posts"
           aria-label="Search posts"
           onKeyDown={(e) => {
-            if (e.key === "Enter" && candidates[0])
-              onSelectCandidate(candidates[0].id, candidates[0].slug)
+            if (e.key === "Enter" && candidates[0]) onSelectCandidate(candidates[0].id, candidates[0].slug)
           }}
         />
         <CommandList>

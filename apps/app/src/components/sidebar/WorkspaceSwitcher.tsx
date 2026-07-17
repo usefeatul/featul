@@ -15,7 +15,6 @@ import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
-import { normalizePlan, type PlanKey } from "@/lib/plan";
 
 export default function WorkspaceSwitcher({
   className = "",
@@ -38,7 +37,6 @@ export default function WorkspaceSwitcher({
     handleSelectWorkspace,
     handleCreateNew,
   } = useWorkspaceSwitcher(slug, initialWorkspace || null, initialWorkspaces || []);
-  const currentPlan = wsInfo?.plan || current?.plan || "free";
 
   const onSelectWorkspace = React.useCallback((targetSlug: string) => {
     setOpen(false);
@@ -53,14 +51,14 @@ export default function WorkspaceSwitcher({
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer rounded-md">
-          <div className="group grid min-h-11 cursor-pointer grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md px-3 py-2 transition-colors hover:bg-muted/60">
-            <div className={cn("relative size-8 justify-self-center overflow-hidden rounded-md border border-border/90 bg-card dark:border-border/60", currentLogo ? "bg-transparent" : "")}>
+          <div className="group flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer transition-colors hover:bg-muted dark:hover:bg-black/40">
+            <div className={cn("relative size-7 rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black overflow-hidden", currentLogo ? "bg-transparent" : "bg-card")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}
                   alt={currentName}
                   fill
-                  sizes="32px"
+                  sizes="24px"
                   className="object-cover"
                   priority
                 />
@@ -68,10 +66,10 @@ export default function WorkspaceSwitcher({
             </div>
             <div className="flex min-w-0 flex-col items-start gap-1 overflow-hidden">
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
-              <PlanText plan={currentPlan} className="text-[11px]" />
+              <span className="text-xs text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
             </div>
-            <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center justify-self-end rounded-sm border border-border/90 bg-card text-accent/80 transition-colors group-hover:border-border dark:border-border/60 dark:group-hover:border-border/80 group-hover:text-accent">
-              <ChevronIcon className="size-3.5" />
+            <span className="ml-auto inline-flex h-[19px] w-5 shrink-0 items-center justify-center rounded-sm border border-border bg-card text-xs font-extralight text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:bg-black/50 dark:text-accent dark:ring-offset-black">
+              <ChevronIcon className="size-3 text-accent" />
             </span>
           </div>
         </DropdownMenuTrigger>
@@ -101,7 +99,7 @@ export default function WorkspaceSwitcher({
                         )}
                       >
                         {logoUrl ? (
-                          <div className="relative w-8 h-8 shrink-0 overflow-hidden rounded-md border border-border bg-muted ring-1 ring-border/30">
+                          <div className="relative w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border overflow-hidden">
                             <Image
                               src={logoUrl}
                               alt={w.name}
@@ -111,11 +109,13 @@ export default function WorkspaceSwitcher({
                             />
                           </div>
                         ) : (
-                          <div className="h-8 w-8 shrink-0 rounded-md border border-border bg-muted ring-1 ring-border/30" />
+                          <div className="w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border" />
                         )}
                         <div className="flex flex-col overflow-hidden">
                           <span className="truncate text-sm font-medium">{w.name}</span>
-                          <PlanText plan={w.plan || "free"} className="mt-1 text-xs" />
+                          <span className="text-xs text-muted-foreground capitalize">
+                            {w.plan || "Free"}
+                          </span>
                         </div>
                       </DropdownMenuItem>
                     );
@@ -139,42 +139,4 @@ export default function WorkspaceSwitcher({
       </DropdownMenu>
     </div>
   );
-}
-
-function PlanText({
-  plan,
-  className,
-}: {
-  plan?: string | null;
-  className?: string;
-}) {
-  const normalizedPlan = normalizePlan(plan || "free");
-
-  return (
-    <span
-      className={cn(
-        "font-light capitalize leading-none",
-        getPlanTextClassName(normalizedPlan),
-        className,
-      )}
-    >
-      {normalizedPlan}
-    </span>
-  );
-}
-
-function getPlanTextClassName(plan: PlanKey) {
-  if (plan === "free") {
-    return "text-green-600 dark:text-green-400";
-  }
-
-  if (plan === "starter") {
-    return "text-primary";
-  }
-
-  if (plan === "professional") {
-    return "text-orange-600 dark:text-orange-400";
-  }
-
-  return "text-muted-foreground";
 }

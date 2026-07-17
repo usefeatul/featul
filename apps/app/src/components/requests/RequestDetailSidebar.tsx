@@ -18,7 +18,6 @@ import RoleBadge from "../global/RoleBadge";
 import type { RequestDetailData } from "@/types/request";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { CircleQuestionMarkIcon } from "@featul/ui/icons/circle-question-mark";
-import TagIcon from "@featul/ui/icons/tag";
 
 export type RequestDetailSidebarProps = {
   post: RequestDetailData;
@@ -59,9 +58,9 @@ export default function RequestDetailSidebar({
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
   return (
-    <aside className="hidden self-stretch border-l border-border md:block">
-      <div className="h-full px-4 pb-4 pt-14 md:px-6 md:pb-5 md:pt-16">
-        <div className="mb-6 flex items-center gap-3 border-b border-border pb-6">
+    <aside className="hidden h-full md:block">
+      <div className="h-full px-4 py-4 md:px-6 md:py-5">
+        <div className="mb-6 flex items-center gap-3">
           <div className="relative">
             <Avatar className="relative size-10 overflow-visible">
               {displayAuthor.image ? (
@@ -79,7 +78,7 @@ export default function RequestDetailSidebar({
                 role={post.role}
                 isOwner={post.isOwner}
                 isFeatul={post.isFeatul}
-                className="-bottom-1 -right-1 bg-[var(--workspace-surface)]"
+                className="-bottom-1 -right-1 bg-card"
               />
             </Avatar>
           </div>
@@ -134,7 +133,7 @@ export default function RequestDetailSidebar({
           </div>
 
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b border-border/50 pb-3">
               <span className="text-sm font-medium text-muted-foreground">
                 Flags
               </span>
@@ -206,12 +205,7 @@ export default function RequestDetailSidebar({
                       </span>
                     ))}
                   </div>
-                ) : (
-                  <div className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-card px-3 text-center text-xs font-medium text-muted-foreground ring-1 ring-border/40 ring-offset-1 ring-offset-background">
-                    <TagIcon className="size-3.5" />
-                    No tags
-                  </div>
-                )}
+                ) : null}
               </div>
             </div>
           ) : null}
@@ -239,7 +233,7 @@ export default function RequestDetailSidebar({
                 </div>
               </div>
               {post.duplicateOfId ? (
-                <div className="rounded-lg border border-border bg-[var(--workspace-surface)]">
+                <div className="rounded-lg border border-border bg-background">
                   <Link
                     href={post.mergedInto ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}` : "#"}
                     className="block space-y-2 p-3"
@@ -261,7 +255,7 @@ export default function RequestDetailSidebar({
                 </div>
               ) : null}
               {post.mergedSources && post.mergedSources.length > 0 ? (
-                <div className="rounded-lg border border-border bg-[var(--workspace-surface)] p-3">
+                <div className="rounded-lg border border-border bg-background p-3">
                   <div className="space-y-2.5">
                     {post.mergedSources.map((src) => (
                       <Link

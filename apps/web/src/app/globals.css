@@ -6,41 +6,9 @@
 
 html {
   scroll-behavior: smooth;
-  overscroll-behavior-y: none;
-  height: 100%;
 }
-
-body {
-  overscroll-behavior-y: none;
-  min-height: 100%;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-}
-
-:root {
-  --hero-sky-banner: oklch(0.5 0.155 238);
-  --hero-sky-nav: oklch(0.55 0.15 240);
-  --hero-sky-mid: oklch(0.62 0.135 242);
-  --hero-sky-light: oklch(0.72 0.1 244);
-  --hero-sky-foreground: oklch(0.99 0.003 250);
-}
-
-.hero-sky {
-  background:
-    radial-gradient(
-      ellipse 120% 70% at 50% -10%,
-      rgba(255, 255, 255, 0.28) 0%,
-      transparent 58%
-    ),
-    linear-gradient(
-      180deg,
-      var(--hero-sky-banner) 0%,
-      var(--hero-sky-mid) 45%,
-      var(--hero-sky-light) 72%,
-      oklch(0.975 0.001 100) 100%
-    );
 }

@@ -58,8 +58,8 @@ export function useRequestMultiSelectFilter({
   const router = useRouter();
   const pathname = usePathname() || "/";
   const sp = useSearchParams();
-  const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname]);
   const [open, setOpen] = useFilterPopover(popoverKey);
+  const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname]);
 
   const selected = React.useMemo(
     () => parseRequestFiltersFromSearchParams(sp)[filterKey],
@@ -135,7 +135,7 @@ export function RequestMultiSelectFilter({
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant="nav"
+          variant="card"
           size="icon-sm"
           aria-label={ariaLabel}
           className={className}

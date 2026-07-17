@@ -13,7 +13,7 @@ function Avatar({
     <BaseAvatar.Root
       data-slot="avatar"
       className={cn(
-        "relative flex size-8 shrink-0 overflow-hidden bg-accent/10 dark:bg-muted rounded-full",
+        "relative flex size-8 shrink-0 overflow-hidden bg-accent/10 dark:bg-black/50 rounded-full",
         className
       )}
       {...props}
@@ -29,7 +29,7 @@ function AvatarImage({
     <BaseAvatar.Image
       data-slot="avatar-image"
       className={cn(
-        "aspect-square bg-accent/10 rounded-full size-full",
+        "aspect-square bg-accent/10 dark:bg-black/10 rounded-full size-full",
         // Invert white SVGs in light mode for proper contrast (e.g., FeatulLogoIcon data URIs)
         "[[src*='data:image/svg+xml']]:dark:brightness-100 [[src*='data:image/svg+xml']]:brightness-0",
         // Ensure SVG data URIs are fully visible - less padding and larger scale for better visibility

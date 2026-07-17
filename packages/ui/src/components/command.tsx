@@ -60,14 +60,14 @@ function CommandDialog({
 
   return (
     <Dialog open={props.open ?? false} onOpenChange={props.onOpenChange}>
-      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none">
+      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1">
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
             {icon ?? <SearchIcon className="size-3.5 opacity-80" />}
             {title}
           </DialogTitle>
         </DialogHeader>
-        <div className="rounded-lg bg-background p-2 ring-1 ring-border/60 ring-offset-1 ring-offset-background">
+        <div className="bg-card rounded-xl p-2 dark:bg-black/40 border border-border">
           <Command className="">
             {children}
           </Command>
@@ -84,7 +84,7 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="bg-card flex h-8 items-center gap-3  px-6"
+      className="bg-card dark:bg-black/5 flex h-8 items-center gap-3  px-6"
     >
       <SearchIcon className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input

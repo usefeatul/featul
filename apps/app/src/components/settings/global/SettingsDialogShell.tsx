@@ -44,14 +44,14 @@ export function SettingsDialogShell({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none">
+      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className={`max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1`}>
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
             {icon}
             {title}
           </DialogTitle>
         </DialogHeader>
-        <div className="rounded-lg bg-background p-2 ring-1 ring-border/60 ring-offset-1 ring-offset-background">
+        <div className="bg-card rounded-xl p-2 dark:bg-black/60 border border-border">
           {description ? (
             <DialogDescription className="text-sm mb-2">
               {description}

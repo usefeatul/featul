@@ -21,21 +21,19 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <Hero />
-      <div className="bg-background">
-        <div className="mx-auto max-w-6xl">
-          <SectionStack>
-            <ConversionHero />
-            <FeaturesSection />
-            <Listening />
-            <Integrations />
-            <Setup />
-            <Create />
-            <Faq />
-            <StatsSection />
-          </SectionStack>
-        </div>
+    <main className="min-h-screen pt-10">
+      <div className="mx-auto max-w-6xl">
+        <SectionStack>
+          <Hero />
+          <ConversionHero />
+          <FeaturesSection />
+          <Listening />
+          <Integrations />
+          <Setup />
+          <Create />
+          <Faq />
+          <StatsSection />
+        </SectionStack>
       </div>
     </main>
   );

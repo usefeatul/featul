@@ -26,7 +26,7 @@ export function StatusSelector({ status, onStatusChange }: StatusSelectorProps) 
         <Button
           variant="card"
           size="sm"
-          className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted/50"
+          className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
         >
           <span className="capitalize">{status}</span>
         </Button>

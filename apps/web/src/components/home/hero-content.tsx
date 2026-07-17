@@ -5,92 +5,42 @@ import { UsersIcon } from "@featul/ui/icons/users";
 import { SetupIcon } from "@featul/ui/icons/setup";
 import { HotkeyLink } from "../global/hotkey-link";
 import { LiveDemo } from "../global/live-demo";
-import { cn } from "@featul/ui/lib/utils";
 
-type HeroContentProps = {
-  variant?: "overlay" | "default";
-};
-
-export function HeroContent({ variant = "overlay" }: HeroContentProps) {
-  const isOverlay = variant === "overlay";
-
+export function HeroContent() {
   return (
-    <div
-      className={cn(
-        "mx-auto max-w-3xl",
-        isOverlay ? "text-center" : "max-w-none text-left"
-      )}
-      data-component="HeroContent"
-    >
-      <h1
-        className={cn(
-          "font-heading text-3xl font-semibold leading-tight tracking-normal text-balance sm:text-4xl md:text-5xl md:tracking-tight",
-          isOverlay ? "text-white" : "text-foreground"
-        )}
-      >
+    <div className="text-left" data-component="HeroContent">
+      <h1 className="font-heading text-3xl sm:text-3xl md:text-5xl leading-tight tracking-normal sm:tracking-tight font-semibold text-foreground text-balance">
         The{" "}
-        <span
-          className={cn(
-            "mx-1 inline-flex items-center rounded-md px-2 py-[2px] align-baseline sm:mx-2",
-            isOverlay
-              ? "bg-white/20 text-white"
-              : "bg-primary/30 text-black/70"
-          )}
-        >
+        <span className="mx-2 inline-flex items-center align-baseline rounded-md  bg-primary/30 px-2 py-[2px] text-black/70">
           simple and fast
         </span>{" "}
-        customer feedback alternative
+        <span className="block mt-0">Customer feedback alternative</span>
       </h1>
-      <p
-        className={cn(
-          "mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-balance sm:text-base md:text-lg",
-          isOverlay ? "text-white/85" : "text-accent"
-        )}
-      >
-        Featul is a privacy-first, open-source customer feedback platform
+      <p className="mt-6 max-w-xl sm:max-w-2xl lg:max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed text-accent text-balance">
+        featul is a privacy-first, open-source customer feedback platform
         that&apos;s both insightful and lightweight
       </p>
-      <div
-        className={cn(
-          "mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-stretch sm:gap-4",
-          isOverlay ? "justify-center" : "justify-start"
-        )}
-      >
+      <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4">
         <HotkeyLink
           className="w-full sm:w-auto"
           label="Add to your website"
         />
-        <LiveDemo className="w-full sm:w-auto" overlay />
+        <LiveDemo className="w-full sm:w-auto min-h-[40px] text-accent min-w-[40px]" />
       </div>
       <div
-        className={cn(
-          "mt-8 flex flex-wrap items-center gap-3 text-xs sm:gap-6",
-          isOverlay ? "justify-center text-white/80" : "text-accent"
-        )}
+        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs  text-accent"
         aria-label="Key highlights"
       >
         <span className="inline-flex items-center gap-2">
-          <FreeIcon
-            width={14}
-            height={14}
-            className={isOverlay ? "text-white" : "text-foreground"}
-          />
+          <FreeIcon width={14} height={14} className="text-foreground" />
           Free forever
         </span>
-        <span className="inline-flex items-center gap-2">
-          <SetupIcon
-            width={14}
-            height={14}
-            className={isOverlay ? "text-white" : "text-foreground"}
-          />
+        <span className=" inline-flex items-center gap-2">
+          <SetupIcon width={14} height={14} className="text-foreground" />
           30-second setup
         </span>
         <span className="inline-flex items-center gap-2">
-          <UsersIcon
-            width={14}
-            height={14}
-            className={isOverlay ? "text-white" : "text-foreground"}
-          />
+          <UsersIcon width={14} height={14} className="text-foreground" />
           Unlimited users
         </span>
       </div>

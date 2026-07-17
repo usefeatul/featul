@@ -19,11 +19,15 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
     );
 
   return (
-    <div className="pointer-events-none absolute left-1/2 bottom-px z-20 w-screen -translate-x-1/2">
-      <div className="pointer-events-auto absolute left-1/2 top-0 z-30 -translate-x-1/2 -translate-y-1/2">
-        <div className="relative flex items-center gap-1.5 rounded-md border border-border/80 bg-card/95 px-2 py-2 shadow-[inset_0_1px_0_hsl(var(--background)/0.95),0_14px_24px_-20px_hsl(var(--foreground)/0.5)] ring-1 ring-border/60 ring-offset-1 ring-offset-background backdrop-blur-3xl">
+    <div className="pointer-events-none absolute left-1/2 bottom-px -translate-x-1/2 w-screen z-20">
+      <div className="relative">
+        <div className="absolute inset-x-0 -top-[2px] h-[15px] border-t border-border bg-background"></div>
+      </div>
+
+      <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
+        <div className="relative flex items-center gap-1.5 rounded-xl border border-border/80 bg-card/95 px-2 py-2 shadow-[inset_0_1px_0_hsl(var(--background)/0.95),0_14px_24px_-20px_hsl(var(--foreground)/0.5)] ring-1 ring-border/60 ring-offset-1 ring-offset-background backdrop-blur-3xl">
           {showHint && (
-            <div className="pointer-events-none absolute -inset-[2px] animate-pulse rounded-md ring-2 ring-border/70" />
+            <div className="pointer-events-none absolute -inset-[2px] rounded-xl ring-2 ring-border/70 animate-pulse"></div>
           )}
 
           <div

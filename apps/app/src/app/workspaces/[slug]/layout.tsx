@@ -1,3 +1,4 @@
+import { Container } from "@/components/global/container";
 import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import Sidebar from "@/components/sidebar/Sidebar";
 import MobileSidebar from "@/components/sidebar/MobileSidebar";
@@ -12,6 +13,7 @@ import {
   getWorkspaceDomainInfoBySlug,
 } from "@/lib/workspace";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
+import FilterSummary from "@/components/requests/FilterSummary";
 import {
   getServerSession,
   listServerDeviceAccounts,
@@ -60,7 +62,11 @@ export default async function WorkspaceLayout({
   const { primary: p } = branding;
   const serverNow = Date.now();
   return (
-    <div className="workspace-shell fixed inset-0 flex h-dvh w-full flex-col overflow-hidden bg-background text-foreground lg:flex-row lg:gap-3 lg:px-2 lg:pb-2 lg:pt-1">
+    <Container
+      className="min-h-screen lg:flex lg:gap-4 lg:px-6"
+      maxWidth="7xl"
+      noPadding
+    >
       <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
@@ -74,16 +80,11 @@ export default async function WorkspaceLayout({
         initialUser={session?.user}
         initialDeviceAccounts={deviceAccounts}
       />
-      <main className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden pb-14 lg:pb-0">
+      <main className="w-full min-w-0 lg:flex-1 px-2 sm:px-3 md:px-4 lg:px-0 pb-10 lg:pb-0">
         <EditorHeaderProvider>
           <WorkspaceHeader />
-          <div className="workspace-main flex min-h-0 flex-1 overflow-hidden rounded-none border border-border bg-[var(--workspace-surface)] lg:rounded-lg">
-            <div className="flex min-h-0 flex-1 flex-col">
-              <div className="scrollbar-hide min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-5 lg:px-6 lg:py-5">
-                {children}
-              </div>
-            </div>
-          </div>
+          <FilterSummary />
+          {children}
         </EditorHeaderProvider>
       </main>
       <MobileSidebar
@@ -97,6 +98,6 @@ export default async function WorkspaceLayout({
         initialDeviceAccounts={deviceAccounts}
       />
       <WorkspaceShortcutsDrawer />
-    </div>
+    </Container>
   );
 }

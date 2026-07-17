@@ -66,7 +66,7 @@ export default function RoadmapVisibility({
       <div className="text-sm text-accent">
         Show or hide your roadmap on the public site.
       </div>
-      <div className="bg-card flex items-center justify-between rounded-md border p-3">
+      <div className="bg-background flex items-center justify-between rounded-md border p-3">
         <div className="text-sm ">Enable Roadmap </div>
         <Switch
           checked={Boolean(roadmap?.isVisible)}

@@ -1,5 +1,6 @@
 import { db, workspace } from "@featul/db";
 import { eq } from "drizzle-orm";
+import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 
 export type WorkspaceSummaryBySlug = {
   id: string;
@@ -37,7 +38,10 @@ export async function getWorkspaceBySlugRecord(
 
   if (!ws) return null;
 
-  return ws;
+  return {
+    ...ws,
+    plan: await getEffectiveWorkspacePlan(ws.id),
+  };
 }
 
 export async function getWorkspaceSummaryBySlug(

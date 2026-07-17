@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
 import { LoadingButton } from "@/components/global/loading-button";
 import {
@@ -27,7 +28,6 @@ import { fetchWorkspaceBySlug } from "@/lib/workspace-client";
 import type { BrandingConfig } from "../../../types/branding";
 import { updateWorkspaceLogoInCache, updateWorkspaceNameInCache } from "./branding-cache";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
-import { CheckIcon } from "@featul/ui/icons/check";
 
 interface BrandingSectionProps {
   slug: string;
@@ -238,106 +238,98 @@ export default function BrandingSection({
   };
 
   return (
-    <section className="text-foreground">
-      <header className="pb-8">
-        <h1 className="text-base font-heading font-semibold">Branding</h1>
-        <p className="mt-1 text-sm font-light leading-relaxed text-accent">
-          Change your brand settings.
-        </p>
-      </header>
-
-      <div className="divide-y divide-border border-y border-border">
-        <SettingsRow label="Logo">
-          <LogoUploader
-            slug={slug}
-            value={logoUrl}
-            onChange={setLogoUrl}
-            disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
-          />
-        </SettingsRow>
-
-        <SettingsRow label="Name">
+    <SectionCard title="Branding" description="Change your brand settings.">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between ">
+          <div className="text-sm">Workspace Name</div>
+          <div className="w-full max-w-md flex items-center justify-end">
             <Input
               value={workspaceName}
               onChange={(e) => setWorkspaceName(e.target.value)}
-              className="h-9 w-full min-w-0 max-w-64 rounded-md border-border bg-card px-3 text-sm"
+              className="h-8 w-auto min-w-[4ch] px-2 text-right"
               size={workspaceNameInputSize}
               maxLength={15}
             />
-        </SettingsRow>
+          </div>
+        </div>
+        <div className="flex items-center justify-between ">
+          <div className="text-sm">Logo</div>
+          <div className="w-full max-w-md flex items-center justify-end">
+            <LogoUploader
+              slug={slug}
+              value={logoUrl}
+              onChange={setLogoUrl}
+              disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-between ">
+          <div className="text-sm">Primary Color</div>
+          <div className="w-full max-w-md flex items-center justify-end">
+            <ColorPicker
+              valueHex={primaryColor}
+              onSelect={(c) => {
+                setPrimaryColor(c.primary);
+                applyBrandPrimary(c.primary);
+              }}
+              disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-between ">
+          <div className="text-sm">Sidebar Position</div>
+          <div className="w-full max-w-md flex items-center justify-end">
+            <SidebarPositionPicker value={sidebarPosition} onSelect={(p) => setSidebarPosition(p)} disabled={!canEditBranding} />
 
-        <SettingsRow label="Primary Color">
-          <ColorPicker
-            valueHex={primaryColor}
-            onSelect={(c) => {
-              setPrimaryColor(c.primary);
-              applyBrandPrimary(c.primary);
-            }}
-            disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
-          />
-        </SettingsRow>
+          </div>
+        </div>
 
-        <SettingsRow label="Sidebar Position">
-          <SidebarPositionPicker
-            value={sidebarPosition}
-            onSelect={(p) => setSidebarPosition(p)}
-            disabled={!canEditBranding}
-          />
-        </SettingsRow>
+        <div className="flex items-center justify-between ">
+          <div className="text-sm">Theme</div>
+          <div className="w-full max-w-md flex items-center justify-end">
 
-        <SettingsRow label="Theme">
-          <ThemePicker
-            value={theme}
-            onSelect={(t) => setTheme(t)}
-            disabled={!canEditBranding}
-          />
-        </SettingsRow>
+                 <ThemePicker value={theme} onSelect={(t) => setTheme(t)} disabled={!canEditBranding} />
+          </div>
+        </div>
 
-        <SettingsRow label="Layout Style">
-          <LayoutStylePicker
-            value={layoutStyle}
-            onSelect={(l) => setLayoutStyle(l)}
-            disabled={!canEditBranding}
-          />
-        </SettingsRow>
+        <div className="flex items-center justify-between ">
+          <div className="text-sm">Layout Style</div>
+          <div className="w-full max-w-md flex items-center justify-end">
 
-        <SettingsRow label='Hide "Powered by" Branding'>
-          <Switch
-            checked={hidePoweredBy}
-            onCheckedChange={(v) => setHidePoweredBy(Boolean(v))}
-            aria-label="Hide Powered by"
-            disabled={!getPlanLimits(plan).allowHidePoweredBy || !canEditBranding}
-          />
-        </SettingsRow>
+            <LayoutStylePicker value={layoutStyle} onSelect={(l) => setLayoutStyle(l)} disabled={!canEditBranding} />
+
+
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between ">
+          <div className="text-sm text-muted-foreground">
+            Hide "Powered by" Branding
+          </div>
+          <div className="w-full max-w-md flex items-center justify-end">
+            <Switch
+              checked={hidePoweredBy}
+              onCheckedChange={(v) => setHidePoweredBy(Boolean(v))}
+              aria-label="Hide Powered by"
+              disabled={!getPlanLimits(plan).allowHidePoweredBy || !canEditBranding}
+            />
+          </div>
+        </div>
+
+        <div className="pt-2 space-y-2">
+          <PlanNotice slug={slug} feature="branding" plan={plan} />
+          <div className="mt-2 flex items-center justify-start">
+            <LoadingButton
+              onClick={handleSave}
+              loading={saving}
+              disabled={loading || brandingAccessLoading || !canEditBranding}
+            >
+              Save
+            </LoadingButton>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-3 pt-5">
-        <PlanNotice slug={slug} feature="branding" plan={plan} />
-        <LoadingButton
-          onClick={handleSave}
-          loading={saving}
-          disabled={loading || brandingAccessLoading || !canEditBranding}
-          className="h-9 rounded-md px-3"
-        >
-          <CheckIcon className="mr-1.5 size-4" size={16} />
-          Save
-        </LoadingButton>
-      </div>
-    </section>
-  );
-}
-
-function SettingsRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="grid min-h-14 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3">
-      <div className="min-w-0 text-sm text-foreground">{label}</div>
-      <div className="flex min-w-0 justify-end">{children}</div>
-    </div>
+    </SectionCard>
   );
 }

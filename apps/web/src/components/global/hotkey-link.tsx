@@ -3,8 +3,6 @@
 import Link from "next/link";
 import React, { useCallback, useEffect } from "react";
 import { Button } from "@featul/ui/components/button";
-import { cn } from "@featul/ui/lib/utils";
-import { marketingButtonSizeClass } from "./marketing-button-styles";
 
 type HotkeyLinkProps = {
   hotkey?: string;
@@ -33,6 +31,7 @@ export function HotkeyLink({
     [hotkey, DASHBOARD_URL]
   );
 
+  // Global hotkey while component is mounted (with accessibility guards)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -56,11 +55,7 @@ export function HotkeyLink({
   }, [hotkey, DASHBOARD_URL]);
 
   return (
-    <Button
-      asChild
-      size="lg"
-      className={cn(marketingButtonSizeClass, "border", className)}
-    >
+    <Button asChild size="lg" className={className}>
       <Link
         href={DASHBOARD_URL ?? "#"}
         onKeyDown={handleKeyDown}
@@ -79,7 +74,7 @@ export function HotkeyLink({
         </span>
         <kbd
           aria-hidden
-          className="inline-flex min-h-[1.125rem] min-w-[1.125rem] shrink-0 items-center justify-center rounded-sm bg-white/20 px-2 py-0.5 text-[11px] leading-none font-heading"
+          className=" rounded-sm font-heading text-heading bg-white/20 px-1.5 py-0.5 text-xs"
         >
           {hotkey.toUpperCase()}
         </kbd>

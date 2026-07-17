@@ -95,7 +95,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
             variant="ghost"
             size="sm"
             className={cn(
-              "h-6 rounded-md border border-border/60 bg-[var(--workspace-surface)] px-2.5 text-xs font-medium text-foreground/90 transition-colors hover:bg-card",
+              "h-6 rounded-md border border-border/60 bg-background px-2.5 text-xs font-medium text-foreground/90 transition-colors hover:bg-muted/60",
               selectedIds.length > 0 && "border-primary/25 bg-primary/10 text-primary hover:bg-primary/15",
               mutation.isPending && "opacity-70 cursor-wait"
             )}

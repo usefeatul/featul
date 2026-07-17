@@ -4,13 +4,13 @@ import React from "react";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
 import { DrawerContent, DrawerTitle } from "@featul/ui/components/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
-import SettingsNav from "@/components/settings/global/nav";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { getSlugFromPath } from "../../config/nav";
@@ -60,39 +60,22 @@ export default function MobileDrawerContent({
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
-  const settingsMatch = pathname.match(/^\/workspaces\/[^/]+\/settings\/([^/?#]+)/);
-  const isSettingsPage = Boolean(settingsMatch);
-  const selectedSetting = settingsMatch?.[1] || "branding";
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent className="bg-background">
+    <DrawerContent>
       <VisuallyHidden>
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
       <ScrollArea className="h-full">
-        {isSettingsPage ? (
-          <div className="flex min-h-dvh flex-col">
-            <SettingsNav
-              slug={slug}
-              selected={selectedSetting}
-              workspaceName={initialWorkspace?.name}
-              logoUrl={initialWorkspace?.logo}
-              onLinkClick={onLinkClick}
-            />
-            <div className="px-2 pb-4">
-              <UserDropdown
-                initialUser={initialUser}
-                initialDeviceAccounts={initialDeviceAccounts}
-              />
-            </div>
-          </div>
-        ) : (
-        <>
         <div className="p-3">
+          <div className="group flex items-center gap-2 rounded-md px-2 py-2">
+            <FeatulLogoIcon className="size-6" size={24} />
+            <div className="text-lg font-semibold">Featul</div>
+          </div>
           <WorkspaceSwitcher
-            className="px-1"
+            className="mt-5.5 px-1"
             initialWorkspace={initialWorkspace}
             initialWorkspaces={initialWorkspaces}
           />
@@ -120,7 +103,7 @@ export default function MobileDrawerContent({
 
         <SidebarSection className="pb-8">
           <Button
-            className="w-full mb-1 group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted"
+            className="w-full mb-1 group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
             variant="plain"
             onClick={() => setCreatePostOpen(true)}
           >
@@ -147,8 +130,6 @@ export default function MobileDrawerContent({
             initialDeviceAccounts={initialDeviceAccounts}
           />
         </SidebarSection>
-        </>
-        )}
       </ScrollArea>
     </DrawerContent>
   );

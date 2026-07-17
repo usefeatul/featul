@@ -41,7 +41,7 @@ export default function GlobalBoardToggleCard({
     <div className="space-y-2">
       <div className="text-md font-medium">{title}</div>
       <div className="text-sm text-accent">{description}</div>
-      <div className="bg-card flex items-center justify-between rounded-md border p-3">
+      <div className="bg-background flex items-center justify-between rounded-md border p-3">
         <div className="text-sm">{switchLabel}</div>
         <Switch checked={value} onCheckedChange={onToggle} aria-label={ariaLabel} />
       </div>
