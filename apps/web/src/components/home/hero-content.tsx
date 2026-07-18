@@ -16,8 +16,8 @@ export function HeroContent() {
         </span>{" "}
         <span className="block mt-0">Customer feedback alternative</span>
       </h1>
-      <p className="mt-6 max-w-xl sm:max-w-2xl lg:max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed text-accent text-balance">
-        featul is a privacy-first, open-source customer feedback platform
+      <p className="mt-6 max-w-xl sm:max-w-2xl lg:max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed text-accent text-balance font-light">
+        Featul is a privacy-first, open-source customer feedback platform
         that&apos;s both insightful and lightweight
       </p>
       <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4">
@@ -28,7 +28,7 @@ export function HeroContent() {
         <LiveDemo className="w-full sm:w-auto min-h-[40px] text-accent min-w-[40px]" />
       </div>
       <div
-        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs  text-accent"
+        className="mt-8 flex flex-wrap items-center gap-3 sm:gap-6 text-xs  text-accent font-light"
         aria-label="Key highlights"
       >
         <span className="inline-flex items-center gap-2">
