@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Manrope, Sora } from "next/font/google";
 import { Providers } from "../components/providers/providers";
 import MainThemeProvider from "@/components/global/MainThemeProvider";
-import WidgetTestEmbed from "@/components/widget/embed";
+// import WidgetTestEmbed from "@/components/widget/embed";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 //
@@ -105,7 +105,7 @@ export default function RootLayout({
         <Providers>
           <MainThemeProvider>{children}</MainThemeProvider>
         </Providers>
-        <WidgetTestEmbed />
+        {/* <WidgetTestEmbed /> */}
         {/* <Script
           id="userjot-widget"
           strategy="afterInteractive"
