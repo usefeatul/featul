@@ -24,14 +24,14 @@ export function Hero() {
   }[active];
 
   return (
-    <section className="relative overflow-hidden my-6 sm:my-8" data-component="Hero">
+    <section className="relative my-6 max-w-full overflow-hidden sm:my-8" data-component="Hero">
       {/* <DotPattern className="z-0" /> */}
       <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="pt-8 pb-16 sm:pt-12 sm:pb-24 mt-4">
             <HeroContent />
             <div className="relative">
-              <div className="relative mt-4 z-0 w-full overflow-x-auto overflow-y-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background translate-y-[3px]">
+              <div className="relative z-0 mt-4 w-full max-w-full overflow-x-auto overflow-y-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background translate-y-[3px]">
                 <div
                   className="relative min-w-[760px] sm:min-w-[960px] lg:min-w-0 lg:w-full"
                   style={{ aspectRatio: `${PREVIEW_WIDTH} / ${PREVIEW_HEIGHT}` }}

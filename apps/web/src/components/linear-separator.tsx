@@ -13,7 +13,7 @@ interface LinearSeparatorProps {
 const LINE_VARIANT_CLASS =
   "h-px w-full bg-[linear-gradient(to_right,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.08)_100%)] bg-[length:100%_1px] bg-no-repeat bg-origin-content";
 
-const PATTERN_WRAPPER_CLASS = "relative h-14 w-full px-2 sm:h-18 md:px-0";
+const PATTERN_WRAPPER_CLASS = "relative h-18 w-full px-2 md:px-0";
 const PATTERN_FRAME_CLASS =
   "absolute inset-y-0 left-1 right-1 bg-neutral-50 md:left-0 md:right-0";
 const PATTERN_RULES_CLASS =

@@ -21,7 +21,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function Home() {
   return (
-    <main className="min-h-screen pt-10">
+    <main className="min-h-screen overflow-x-clip pt-10">
       <div className="mx-auto max-w-6xl">
         <SectionStack>
           <Hero />
