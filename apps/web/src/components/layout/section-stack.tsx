@@ -15,7 +15,9 @@ export function SectionStack({ children }: SectionStackProps) {
             {childrenArray.map((child, index) => (
                 <React.Fragment key={index}>
                     {child}
-                    {index < childrenArray.length - 1 && <LinearSeparator />}
+                    {index < childrenArray.length - 1 && (
+                        <LinearSeparator variant="zigzag" />
+                    )}
                 </React.Fragment>
             ))}
         </>
