@@ -10,7 +10,6 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { HorizontalScrollControls } from "./horizontal-scroll-controls";
 
 type IntegrationItem = {
   slug: string;
@@ -55,8 +54,7 @@ const integrations: IntegrationItem[] = [
   {
     slug: "nolt",
     name: "Nolt",
-    description:
-      "Import requests and comments from Nolt into featul.",
+    description: "Import requests and comments from Nolt into Featul.",
     status: "Coming soon",
     icon: NoltIcon,
     panelClassName:
@@ -65,8 +63,7 @@ const integrations: IntegrationItem[] = [
   {
     slug: "canny",
     name: "Canny",
-    description:
-      "Bring feature requests and comments over from Canny.",
+    description: "Bring feature requests and comments over from Canny.",
     status: "Coming soon",
     icon: CannyIcon,
     panelClassName:
@@ -75,8 +72,7 @@ const integrations: IntegrationItem[] = [
   {
     slug: "productboard",
     name: "ProductBoard",
-    description:
-      "Migrate posts, boards, and comments from ProductBoard.",
+    description: "Migrate posts, boards, and comments from ProductBoard.",
     status: "Coming soon",
     icon: ProductBoardIcon,
     panelClassName:
@@ -87,10 +83,13 @@ const integrations: IntegrationItem[] = [
 export default function Integrations() {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-      <section data-component="Integrations" className="my-6 sm:my-8 py-8 sm:py-12">
+      <section
+        data-component="Integrations"
+        className="my-10 max-w-full overflow-x-clip sm:my-14"
+      >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="max-w-3xl text-left">
-            <h2 className="font-heading text-foreground text-2xl sm:text-3xl lg:text-3xl font-semibold">
+            <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
               Integrate with your favorite tools
             </h2>
             <div className="mt-3 flex items-start gap-2">
@@ -104,56 +103,48 @@ export default function Integrations() {
 
           <div
             id="home-integrations-slider"
-            className="mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 scroll-smooth [-webkit-overflow-scrolling:touch] scrollbar-hide md:grid md:grid-cols-2 md:gap-3 md:overflow-visible md:pb-0 lg:grid-cols-3 lg:gap-4"
+            className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"
           >
             {integrations.map((item) => {
               const Icon = item.icon;
+
               return (
                 <Link
                   key={item.name}
                   href={`/integrations/${item.slug}`}
-                  className="group block h-full min-w-full shrink-0 snap-start md:min-w-0"
+                  className="group block h-full min-w-0"
                   aria-label={`Learn more about ${item.name}`}
                 >
-                  <Card className="h-full gap-0 rounded-md border border-foreground/8 bg-white p-3 shadow-none ring-1 ring-black/5">
-                    <div
-                      className={`relative overflow-hidden rounded-md border border-black/5 ${item.panelClassName}`}
-                    >
-                      <div className="flex min-h-[132px] items-center justify-center p-3 sm:min-h-[148px] sm:p-4">
-                        <div className="flex min-h-[88px] w-full max-w-[200px] items-center justify-center rounded-md border border-white/70 bg-white px-5 py-6">
-                          <Icon className="size-10 sm:size-12" />
+                    <Card className="h-full gap-0 rounded-md border border-foreground/8 bg-white p-3 shadow-none ring-1 ring-black/5">
+                      <div
+                        className={`relative overflow-hidden rounded-md border border-black/5 ${item.panelClassName}`}
+                      >
+                        <div className="flex min-h-[132px] items-center justify-center p-3 sm:min-h-[148px] sm:p-4">
+                          <div className="flex min-h-[88px] w-full max-w-[200px] items-center justify-center rounded-md border border-white/70 bg-white px-5 py-6">
+                            <Icon className="size-10 sm:size-12" />
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="px-2 pb-2 pt-4 sm:px-3">
-                      <div className="flex items-start gap-3">
+                      <div className="px-2 pb-2 pt-4 sm:px-3">
                         <h3 className="text-foreground text-xl font-semibold tracking-[-0.02em]">
                           {item.name}
                         </h3>
+                        <p className="text-accent mt-2.5 text-sm leading-6 sm:text-base">
+                          {item.description}
+                        </p>
+                        <div className="mt-4 flex items-center gap-3">
+                          <span className="text-primary inline-flex items-center gap-2 text-sm font-medium transition-colors group-hover:text-primary/80">
+                            Learn more
+                            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-accent mt-2.5 text-sm leading-6 sm:text-base">
-                        {item.description}
-                      </p>
-                      <div className="mt-4 flex items-center gap-3">
-                        <span className="text-primary inline-flex items-center gap-2 text-sm font-medium transition-colors group-hover:text-primary/80">
-                          Learn more
-                          <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                        </span>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              );
-            })}
+                    </Card>
+                  </Link>
+                );
+              })}
           </div>
-
-          <HorizontalScrollControls
-            targetId="home-integrations-slider"
-            className="mt-4 flex items-center justify-end gap-2 md:hidden"
-            backwardLabel="Scroll integrations backward"
-            forwardLabel="Scroll integrations forward"
-          />
         </div>
       </section>
     </Container>

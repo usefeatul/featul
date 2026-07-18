@@ -31,9 +31,9 @@ export function Hero() {
           <div className="pt-8 pb-16 sm:pt-12 sm:pb-24 mt-4">
             <HeroContent />
             <div className="relative">
-              <div className="relative mt-4 z-0 w-full overflow-hidden bg-card rounded-md border border-border shadow-2xl shadow-zinc-950/50 translate-y-[3px] outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background">
+              <div className="relative mt-4 z-0 w-full overflow-x-auto overflow-y-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background translate-y-[3px]">
                 <div
-                  className="relative w-full"
+                  className="relative min-w-[760px] sm:min-w-[960px] lg:min-w-0 lg:w-full"
                   style={{ aspectRatio: `${PREVIEW_WIDTH} / ${PREVIEW_HEIGHT}` }}
                 >
                   <Image
