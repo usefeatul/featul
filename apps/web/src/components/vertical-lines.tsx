@@ -6,8 +6,8 @@ import { cn } from "@featul/ui/lib/utils";
 export function VerticalLines({ className }: { className?: string }) {
     const pathname = usePathname();
 
-    // Hide on docs pages
-    if (pathname?.startsWith("/docs")) {
+    // Hide on docs pages and the home page (clean sky hero)
+    if (pathname === "/" || pathname?.startsWith("/docs")) {
         return null;
     }
 

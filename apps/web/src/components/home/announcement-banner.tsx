@@ -1,10 +1,22 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowIcon } from "@featul/ui/icons/arrow";
+import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 
 export default function AnnouncementBanner() {
+  // On the home page the banner matches the sky-blue navbar/hero stack
+  const isHome = usePathname() === "/";
   return (
-    <div className="fixed top-0 left-0 right-0 z-60 w-full border-b border-primary/25 bg-primary text-primary-foreground">
+    <div
+      className={cn(
+        "fixed top-0 left-0 right-0 z-60 w-full border-b text-primary-foreground",
+        isHome
+          ? "border-white/25 bg-[#0063d2]"
+          : "border-primary/25 bg-primary"
+      )}
+    >
       <Container
         maxWidth="6xl"
         className="relative px-3 sm:px-10 lg:px-12 xl:px-14"

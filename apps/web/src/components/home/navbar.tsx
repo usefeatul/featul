@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { navigationConfig } from "@/config/homeNav";
 import { Container } from "../global/container";
 import { ArrowIcon } from "@featul/ui/icons/arrow";
@@ -17,6 +18,7 @@ export default function Navbar() {
   const before = main.slice(0, 2);
   const after = main.slice(2);
 
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => {
@@ -42,27 +44,50 @@ export default function Navbar() {
     return () => media.removeEventListener("change", handleChange);
   }, []);
 
+  // Over the home hero the navbar is painted the same deep azure as the top
+  // of the sky image so the bar visually merges with the hero below it.
+  const overSky = pathname === "/" && !scrolled;
+  const linkTone = overSky
+    ? "text-white/90 hover:text-white hover:bg-white/10 hover:ring-1 hover:ring-white/25"
+    : "text-accent hover:text-foreground hover:bg-muted hover:ring-1 hover:ring-border";
+
   return (
     <header
       className={cn(
         "fixed top-10 left-0 right-0 z-50 transition-colors",
         scrolled
           ? "backdrop-blur-lg bg-background/70"
-          : "bg-background"
+          : overSky
+            ? "bg-[#0063d2]"
+            : "bg-background"
       )}
       data-component="Navbar"
     >
 
       <Container maxWidth="6xl" className="relative px-4 sm:px-10 lg:px-12 xl:px-14">
-        <LinearSeparator variant="line" className="absolute bottom-0 left-0 right-0 my-0" />
+        <LinearSeparator
+          variant="line"
+          className={cn(
+            "absolute bottom-0 left-0 right-0 my-0",
+            overSky && "opacity-0"
+          )}
+        />
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6">
           <Link
             href="/"
             aria-label="Go home"
             className="inline-flex items-center gap-2"
           >
-            <FeatulLogoIcon size={26} />
-            <span className="text-lg font-semibold tracking-tight text-foreground">
+            <FeatulLogoIcon
+              size={26}
+              className={overSky ? "text-white" : undefined}
+            />
+            <span
+              className={cn(
+                "text-lg font-semibold tracking-tight",
+                overSky ? "text-white" : "text-foreground"
+              )}
+            >
               Featul
             </span>
           </Link>
@@ -71,7 +96,10 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center rounded-md  h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className={cn(
+                  "inline-flex items-center rounded-md h-8 px-2 transition-all",
+                  linkTone
+                )}
               >
                 {item.name}
               </Link>
@@ -80,7 +108,10 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center rounded-md  h-8 px-2 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className={cn(
+                  "inline-flex items-center rounded-md h-8 px-2 transition-all",
+                  linkTone
+                )}
               >
                 {item.name}
                 {item.name === "Docs" && (
@@ -93,7 +124,10 @@ export default function Navbar() {
             ))}
           </nav>
           <div className="hidden md:flex items-center mx-2 h-4">
-            <Separator orientation="vertical" className="h-full" />
+            <Separator
+              orientation="vertical"
+              className={cn("h-full", overSky && "bg-white/40")}
+            />
           </div>
 
           {/* Auth + CTA */}
@@ -103,7 +137,10 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="text-sm font-medium inline-flex items-center rounded-md  h-8 px-3 text-accent hover:text-foreground transition-all hover:bg-muted hover:ring-1 hover:ring-border"
+                className={cn(
+                  "text-sm font-medium inline-flex items-center rounded-md h-8 px-3 transition-all",
+                  linkTone
+                )}
               >
                 {item.name}
               </Link>
