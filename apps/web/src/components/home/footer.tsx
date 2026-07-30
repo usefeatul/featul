@@ -13,11 +13,11 @@ export default function FooterSection() {
 
   return (
     <footer className="relative overflow-hidden bg-background">
-      <VerticalLines force className="absolute inset-0 z-0" />
+      <VerticalLines force className="absolute inset-0 z-20" />
       <div className="relative z-10 mx-auto max-w-6xl">
         <LinearSeparator />
       </div>
-      <Container maxWidth="6xl" className="relative z-10 px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
+      <Container maxWidth="6xl" className="relative z-30 px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="grid items-start gap-12 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
             <div className="max-w-sm">
