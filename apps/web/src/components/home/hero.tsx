@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "../global/container";
 import { HeroContent } from "./hero-content";
 import { PreviewSwitchPill } from "@/components/home/preview-switch";
@@ -19,15 +19,37 @@ const VIEW_TO_KEY: Record<DemoView, PreviewKey> = {
   changelog: "changelog",
 };
 
+const DEMO_WIDTH = 960;
+const DEMO_HEIGHT = 700;
+
 export function Hero() {
   const [active, setActive] = useState<PreviewKey>("dashboard");
-
-  // Subtle pill highlight that appears briefly and hides after first switch
   const showPillHint = usePreviewHint();
+  const shellRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    if (!shell) return;
+
+    const update = () => {
+      const width = shell.clientWidth;
+      if (width <= 0) return;
+      // Fit the desktop demo into the available width on small screens.
+      setScale(Math.min(1, width / DEMO_WIDTH));
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(shell);
+    return () => observer.disconnect();
+  }, []);
+
+  const scaledHeight = Math.round(DEMO_HEIGHT * scale);
 
   return (
     <section
-      className="relative left-1/2 mb-6 w-screen -translate-x-1/2 overflow-hidden sm:mb-8"
+      className="relative left-1/2 mb-6 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden sm:mb-8"
       data-component="Hero"
     >
       {/* Full-bleed sky backdrop */}
@@ -59,10 +81,21 @@ export function Hero() {
       </Container>
 
       <Container maxWidth="6xl" className="relative z-10 px-3 sm:px-4">
-        <div className="relative mt-10 pb-8 sm:mt-14">
+        <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
           <div className="relative">
-            <div className="relative z-0 w-full max-w-full translate-y-[3px] overflow-x-auto overflow-y-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background">
-              <div className="h-[660px] min-w-[840px] sm:h-[700px] lg:min-w-0 lg:w-full">
+            <div
+              ref={shellRef}
+              className="relative z-0 w-full max-w-full translate-y-[3px] overflow-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background"
+              style={{ height: scaledHeight }}
+            >
+              <div
+                className="origin-top-left will-change-transform"
+                style={{
+                  width: DEMO_WIDTH,
+                  height: DEMO_HEIGHT,
+                  transform: `scale(${scale})`,
+                }}
+              >
                 <DashboardDemo
                   view={KEY_TO_VIEW[active]}
                   onViewChange={(view) => setActive(VIEW_TO_KEY[view])}

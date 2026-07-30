@@ -30,10 +30,10 @@ export default function FeaturesSection() {
             </div>
           </div>
 
-        <div className="mt-10 grid gap-5 lg:grid-cols-2">
-          <article className="rounded-md border border-foreground/10 bg-white p-4 sm:p-5">
-            <div className="flex min-h-[380px] items-center justify-center rounded-md bg-[#4f9df6] p-6 sm:p-8">
-              <div className="flex min-h-[168px] w-full max-w-[430px] flex-col items-center justify-center rounded-md border border-black/10 bg-white px-6 text-center shadow-[0_10px_28px_rgba(15,23,42,0.12)]">
+        <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
+          <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
+            <div className="flex min-h-[220px] items-center justify-center rounded-md bg-[#4f9df6] p-4 sm:min-h-[380px] sm:p-8">
+              <div className="flex min-h-[140px] w-full max-w-[430px] flex-col items-center justify-center rounded-md border border-black/10 bg-white px-5 text-center shadow-[0_10px_28px_rgba(15,23,42,0.12)] sm:min-h-[168px] sm:px-6">
                 <span className="flex size-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                   <Check className="size-4" strokeWidth={2.4} />
                 </span>
@@ -54,10 +54,10 @@ export default function FeaturesSection() {
             </div>
           </article>
 
-          <article className="rounded-md border border-foreground/10 bg-white p-4 sm:p-5">
-            <div className="flex min-h-[380px] items-center justify-center rounded-md bg-[#ff955d] p-6 sm:p-8">
-              <div className="w-full max-w-[430px] space-y-3">
-                <div className="flex items-center justify-between gap-5 rounded-md border border-black/10 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.12)]">
+          <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
+            <div className="flex min-h-[260px] items-center justify-center rounded-md bg-[#ff955d] p-4 sm:min-h-[380px] sm:p-8">
+              <div className="w-full max-w-[430px] space-y-2.5 sm:space-y-3">
+                <div className="flex items-center justify-between gap-3 rounded-md border border-black/10 bg-white p-3 shadow-[0_10px_28px_rgba(15,23,42,0.12)] sm:gap-5 sm:p-4">
                   <div className="min-w-0">
                     <p className="text-foreground text-sm font-semibold">
                       Require review before roadmap changes
@@ -71,13 +71,13 @@ export default function FeaturesSection() {
                   </span>
                 </div>
 
-                <div className="rounded-md border border-black/10 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.12)]">
-                  <div className="flex items-start justify-between gap-4">
+                <div className="rounded-md border border-black/10 bg-white p-3 shadow-[0_10px_28px_rgba(15,23,42,0.12)] sm:p-4">
+                  <div className="flex items-start justify-between gap-3 sm:gap-4">
                     <div className="min-w-0">
                       <p className="text-foreground text-sm font-semibold">
                         Feature requests
                       </p>
-                      <div className="mt-2 flex items-center gap-2 text-xs">
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                         <Sparkles className="size-3.5 text-blue-600" />
                         <span className="text-accent">Featul</span>
                         <span className="font-medium text-emerald-600">+24</span>
@@ -92,8 +92,8 @@ export default function FeaturesSection() {
                     </div>
                   </div>
 
-                  <div className="mt-4 border-t border-foreground/10 pt-4">
-                    <p className="text-foreground break-words text-sm leading-7">
+                  <div className="mt-3 border-t border-foreground/10 pt-3 sm:mt-4 sm:pt-4">
+                    <p className="text-foreground break-words text-sm leading-6 sm:leading-7">
                       Customers keep asking for{" "}
                       {requestTags.map((tag) => (
                         <span

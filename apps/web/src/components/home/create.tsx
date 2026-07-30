@@ -46,18 +46,18 @@ export default function Create() {
             </div>
           </div>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-2">
+          <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
             <Link
               href="/docs/getting-started/index"
-              className="block"
+              className="block min-w-0"
               aria-label="Learn more about creating your workspace"
             >
-              <article className="rounded-md border border-foreground/10 bg-white p-4 sm:p-5">
-                <div className="flex min-h-[320px] items-center justify-center rounded-md bg-[#4f9df6] p-6 sm:min-h-[360px] sm:p-8">
-                  <div className="w-full max-w-[360px] space-y-3">
-                    <div className="rounded-md border border-black/10 bg-white p-4">
+              <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
+                <div className="flex min-h-[240px] items-center justify-center rounded-md bg-[#4f9df6] p-4 sm:min-h-[360px] sm:p-8">
+                  <div className="w-full max-w-[360px] space-y-2.5 sm:space-y-3">
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
                       <div className="flex items-center gap-3">
-                        <span className="flex size-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                           <Check className="size-4" strokeWidth={2.4} />
                         </span>
                         <div className="min-w-0">
@@ -71,9 +71,9 @@ export default function Create() {
                       </div>
                     </div>
 
-                    <div className="rounded-md border border-black/10 bg-white p-4">
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
                       <div className="flex items-center gap-3">
-                        <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-blue-500 ring-1 ring-foreground/10">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-foreground/5 text-blue-500 ring-1 ring-foreground/10">
                           <Users className="size-4" />
                         </span>
                         <div className="min-w-0">
@@ -89,7 +89,7 @@ export default function Create() {
                   </div>
                 </div>
 
-                <div className="px-1 pb-1 pt-5 sm:px-0">
+                <div className="px-1 pb-1 pt-4 sm:px-0 sm:pt-5">
                   <h3 className="text-foreground text-left text-base font-medium">
                     Create your workspace
                   </h3>
@@ -103,19 +103,19 @@ export default function Create() {
 
             <Link
               href="/docs/branding-setup/domain"
-              className="block"
+              className="block min-w-0"
               aria-label="Learn more about sharing your board"
             >
-              <article className="rounded-md border border-foreground/10 bg-white p-4 sm:p-5">
-                <div className="flex min-h-[320px] items-center justify-center rounded-md bg-[#5ec4a0] p-6 sm:min-h-[360px] sm:p-8">
-                  <div className="w-full max-w-[360px] space-y-3">
-                    <div className="rounded-md border border-black/10 bg-white p-4">
+              <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
+                <div className="flex min-h-[240px] items-center justify-center rounded-md bg-[#5ec4a0] p-4 sm:min-h-[360px] sm:p-8">
+                  <div className="w-full max-w-[360px] space-y-2.5 sm:space-y-3">
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
                       <div className="flex items-center gap-3">
-                        <span className="inline-flex size-8 items-center justify-center rounded-md bg-foreground/5 text-emerald-500 ring-1 ring-foreground/10">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-foreground/5 text-emerald-500 ring-1 ring-foreground/10">
                           <Globe className="size-4" />
                         </span>
                         <div className="min-w-0">
-                          <p className="text-foreground text-sm font-semibold">
+                          <p className="text-foreground truncate text-sm font-semibold">
                             feedback.yourbrand.com
                           </p>
                           <p className="text-accent mt-0.5 text-xs">
@@ -125,7 +125,7 @@ export default function Create() {
                       </div>
                     </div>
 
-                    <div className="rounded-md border border-black/10 bg-white p-4">
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
                       <p className="text-foreground text-sm font-semibold">
                         Public feedback board
                       </p>
@@ -145,7 +145,7 @@ export default function Create() {
                   </div>
                 </div>
 
-                <div className="px-1 pb-1 pt-5 sm:px-0">
+                <div className="px-1 pb-1 pt-4 sm:px-0 sm:pt-5">
                   <h3 className="text-foreground text-left text-base font-medium">
                     Share your board
                   </h3>
@@ -158,7 +158,7 @@ export default function Create() {
             </Link>
           </div>
 
-          <div className="mt-10">
+          <div className="mt-8 sm:mt-10">
             <p className="text-primary text-sm font-medium">
               Included from day one
             </p>
@@ -166,7 +166,7 @@ export default function Create() {
               The basics are already handled.
             </h3>
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
               {essentials.map((item) => {
                 const Icon = item.icon;
 

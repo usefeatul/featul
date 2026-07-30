@@ -159,10 +159,17 @@ export default function Navbar() {
             type="button"
             variant="nav"
             aria-label="Toggle menu"
-            className="md:hidden inline-flex items-center justify-center rounded-md  bg-muted"
+            className={cn(
+              "md:hidden inline-flex items-center justify-center rounded-md",
+              overSky
+                ? "bg-white/15 text-white hover:bg-white/25"
+                : "bg-muted"
+            )}
             onClick={() => setMobileOpen((o) => !o)}
           >
-            <MenuIcon className="text-accent size-5" />
+            <MenuIcon
+              className={cn("size-5", overSky ? "text-white" : "text-accent")}
+            />
           </Button>
         </div>
       </Container>

@@ -12,7 +12,7 @@ type Props = {
 export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
   const tabClass = (isActive: boolean) =>
     cn(
-      "border px-4 min-h-[38px] min-w-[32px] text-sm font-heading transition-all sm:px-5",
+      "border px-2.5 min-h-[34px] min-w-0 text-xs font-heading transition-all sm:min-h-[38px] sm:px-5 sm:text-sm",
       isActive
         ? "border-primary/35 bg-primary text-primary-foreground shadow-[inset_0_1px_0_hsl(var(--primary-foreground)/0.3)] ring-1 ring-primary/25 hover:bg-primary"
         : "border-border/70 bg-background/70 text-foreground/90 hover:bg-background"
@@ -24,16 +24,16 @@ export function PreviewSwitchPill({ active, onChange, showHint }: Props) {
         <div className="absolute inset-x-0 -top-[2px] h-[15px] border-t border-border bg-background"></div>
       </div>
 
-      <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
-        <div className="relative flex items-center gap-1.5 rounded-xl border border-border/80 bg-card/95 px-2 py-2 shadow-[inset_0_1px_0_hsl(var(--background)/0.95),0_14px_24px_-20px_hsl(var(--foreground)/0.5)] ring-1 ring-border/60 ring-offset-1 ring-offset-background backdrop-blur-3xl">
+      <div className="pointer-events-auto absolute left-1/2 top-0 z-30 max-w-[calc(100%-1rem)] -translate-x-1/2 -translate-y-1/2">
+        <div className="relative flex max-w-full items-center gap-1 rounded-xl border border-border/80 bg-card/95 px-1.5 py-1.5 shadow-[inset_0_1px_0_hsl(var(--background)/0.95),0_14px_24px_-20px_hsl(var(--foreground)/0.5)] ring-1 ring-border/60 ring-offset-1 ring-offset-background backdrop-blur-3xl sm:gap-1.5 sm:px-2 sm:py-2">
           {showHint && (
-            <div className="pointer-events-none absolute -inset-[2px] rounded-xl ring-2 ring-border/70 animate-pulse"></div>
+            <div className="pointer-events-none absolute -inset-[2px] animate-pulse rounded-xl ring-2 ring-border/70"></div>
           )}
 
           <div
             role="group"
             aria-label="Preview feature"
-            className="relative z-10 inline-flex items-center gap-3"
+            className="relative z-10 inline-flex max-w-full items-center gap-1 sm:gap-3"
           >
             <Button
               size="sm"

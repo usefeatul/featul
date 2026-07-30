@@ -14,42 +14,43 @@ export function ConversionHero() {
     <section className="relative my-6 sm:my-8" data-component="ConversionHero">
       <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full px-1 sm:px-6">
-          <div className="pt-6 pb-8 sm:pt-8 sm:pb-14">
-            <h2 className="font-heading text-foreground text-balance max-w-5xl sm:max-w-6xl text-xl sm:text-2xl md:text-3xl font-semibold leading-snug">
+          <div className="pb-8 pt-6 sm:pb-14 sm:pt-8">
+            <h2 className="font-heading text-foreground max-w-5xl text-balance text-xl font-semibold leading-snug sm:max-w-6xl sm:text-2xl sm:leading-snug md:text-3xl">
               Build better products with customer feedback.
-              <span className="block mt-1 text-accent/80">
-                Collect, prioritize, and ship what matters with
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-sky-200 bg-sky-50 px-1.5 py-0 text-[0.9em] text-sky-700 shadow-sm ring-1 ring-sky-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 dark:ring-offset-black">
-                  <BoardIcon className="size-6 text-sky-600 sm:size-8" />
+              <span className="text-accent/80 mt-2 block text-[0.95em] leading-relaxed sm:mt-1">
+                Collect, prioritize, and ship what matters with{" "}
+                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-sky-200 bg-sky-50 px-1.5 py-0.5 align-baseline text-[0.9em] text-sky-700 shadow-sm ring-1 ring-sky-100 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
+                  <BoardIcon className="size-4 shrink-0 text-sky-600 sm:size-8" />
                   boards
                 </span>
-                ,
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0 text-[0.9em] text-emerald-700 shadow-sm ring-1 ring-emerald-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 dark:ring-offset-black">
-                  <RoadmapIcon className="size-6 text-emerald-600 sm:size-8" />
+                ,{" "}
+                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 align-baseline text-[0.9em] text-emerald-700 shadow-sm ring-1 ring-emerald-100 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
+                  <RoadmapIcon className="size-4 shrink-0 text-emerald-600 sm:size-8" />
                   roadmaps
                 </span>
-                , and
-                <span className="group mx-1 inline-flex items-center gap-0.5 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0 text-[0.9em] text-amber-700 shadow-sm ring-1 ring-amber-100 ring-offset-1 ring-offset-white align-baseline sm:gap-1 sm:px-2 dark:ring-offset-black">
-                  <ChangelogIcon className="size-6 text-amber-600 sm:size-8" />
+                , and{" "}
+                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 align-baseline text-[0.9em] text-amber-700 shadow-sm ring-1 ring-amber-100 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
+                  <ChangelogIcon className="size-4 shrink-0 text-amber-600 sm:size-8" />
                   changelogs
                 </span>
                 .
               </span>
             </h2>
-            <p className="mt-3 text-accent/90 text-xs sm:text-sm md:text-sm leading-relaxed max-w-lg sm:max-w-xl">
+            <p className="text-accent/90 mt-3 max-w-lg text-sm leading-relaxed sm:max-w-xl sm:text-sm md:text-sm">
               Set up customer feedback in minutes. Collect requests, prioritize
               the right work, and keep users informed as you ship.
             </p>
-            <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <HotkeyLink className="w-full sm:w-auto "
-              label="Add to your website"
-               />
+            <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <HotkeyLink
+                className="w-full sm:w-auto"
+                label="Add to your website"
+              />
 
               <Button
                 asChild
                 variant="nav"
                 size="lg"
-                className="w-full sm:w-auto rounded-md text-accent"
+                className="text-accent w-full rounded-md sm:w-auto"
               >
                 <Link href="#demo" aria-label="Get a demo">
                   <span className="inline-flex items-center gap-1.5">
