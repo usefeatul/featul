@@ -49,23 +49,23 @@ export default function RoadmapRequestItem({
   const tone = getRoadmapStatusTone(item.roadmapStatus);
 
   return (
-    <div className="flex min-h-[158px] w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
-      <div className="px-4 pb-4 pt-4">
-        <div className="flex items-start gap-3">
+    <div className="flex min-h-[128px] w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
+      <div className="px-3.5 pb-3 pt-3.5">
+        <div className="flex items-start gap-2.5">
           <Link
             href={href}
-            className="min-w-0 flex-1 line-clamp-2 text-base font-semibold leading-6 text-foreground hover:text-primary"
+            className="min-w-0 flex-1 line-clamp-2 text-sm font-medium leading-5 text-foreground hover:text-primary"
           >
             {item.title}
           </Link>
           <span className="inline-flex shrink-0 items-center justify-center">
             <StatusIcon
               status={item.roadmapStatus || undefined}
-              className={`size-5 ${tone.icon}`}
+              className={`size-4 ${tone.icon}`}
             />
           </span>
         </div>
-        <p className="mt-2 line-clamp-3 text-sm leading-5 text-accent/90">
+        <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-accent/90">
           {preview}
         </p>
       </div>

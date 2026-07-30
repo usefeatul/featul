@@ -33,7 +33,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`h-full overflow-hidden rounded-sm border border-border bg-card dark:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 flex flex-col ${isOver ? "border-green-500 ring-green-500/30" : ""}`}
+      className={`h-full overflow-hidden rounded-md border border-border bg-muted/40 dark:bg-white/[0.02] transition-colors duration-200 flex flex-col ${isOver ? "border-green-500/70 bg-green-500/[0.04]" : ""}`}
       layout
       initial={false}
       transition={{
@@ -43,7 +43,7 @@ export default function RoadmapColumn({
       }}
     >
       <div
-        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between border-b border-border px-3 py-2.5"} cursor-pointer`}
+        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between border-b border-border/60 px-3 py-2.5"} cursor-pointer`}
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
@@ -103,7 +103,7 @@ export default function RoadmapColumn({
       <AnimatePresence initial={false}>
         {!collapsed ? (
           <motion.ul
-            className="min-h-[260px] flex-1 space-y-2 bg-background p-2.5"
+            className="min-h-[260px] flex-1 space-y-2 p-2"
             initial={false}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -116,7 +116,7 @@ export default function RoadmapColumn({
             {children}
             {isOver ? (
               <motion.li
-                className="mt-2 rounded-md border-2 border-dashed border-green-500"
+                className="mt-2 h-16 rounded-md border border-dashed border-green-500/70 bg-green-500/[0.04]"
                 aria-hidden
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

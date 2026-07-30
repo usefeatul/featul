@@ -34,9 +34,9 @@ export default function RoadmapRequestItemFooter({
 }) {
   return (
     <div
-      className={`mt-auto flex items-center gap-2 rounded-b-[inherit] border-t border-border/60 px-4 py-2.5 ${toneFooterClass}`}
+      className={`mt-auto flex items-center gap-2 rounded-b-[inherit] border-t border-border/60 px-3.5 py-2 ${toneFooterClass}`}
     >
-      <Avatar className="relative size-6 shrink-0 overflow-visible bg-card ring-1 ring-border/70 dark:bg-black/50">
+      <Avatar className="relative size-5.5 shrink-0 overflow-visible bg-card ring-1 ring-border/70 dark:bg-black/50">
         <AvatarImage src={avatarSrc} alt={authorLabel} />
         <AvatarFallback className="text-[10px] font-medium">
           {getInitials(authorLabel)}
@@ -48,8 +48,8 @@ export default function RoadmapRequestItemFooter({
           className="-bottom-1! -right-1! bg-background dark:bg-background"
         />
       </Avatar>
-      <div className="ml-auto grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 text-xs text-accent">
-        <span className="inline-flex h-6 min-w-0 items-center gap-1.5 truncate rounded-md border border-border/60 bg-background/70 px-2 text-xs font-medium text-accent">
+      <div className="ml-auto grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 text-xs text-accent">
+        <span className="inline-flex min-w-0 items-center gap-1.5">
           <TagIcon className="size-3.5 shrink-0 text-accent/90" size={13} />
           <span className="truncate whitespace-nowrap">{boardLabel}</span>
         </span>
