@@ -17,19 +17,31 @@ export const ChangelogIcon: React.FC<ChangelogIconProps> = ({ className = '', si
       className={className}
     >
       <title>folder</title>
-      <g fill="currentColor">
-        <path
-          d="M1.5 6.5H16.5V13.25C16.5 14.7692 15.2692 16 13.75 16H4.25C2.73079 16 1.5 14.7692 1.5 13.25V6.5Z"
-          fill="currentColor"
-          fillOpacity="0.4"
-          className="transition-transform duration-300 group-hover:translate-y-0.5 hover:translate-y-0.5"
-        ></path>
-        <path
-          d="M4.25 2C2.73079 2 1.5 3.23079 1.5 4.75V6.5H16.5V6.25C16.5 4.73079 15.2692 3.5 13.75 3.5H8.72395L8.34569 3.02827C7.82347 2.37825 7.03552 2 6.201 2H4.25Z"
-          fill="currentColor"
-          className="transition-transform duration-300 origin-bottom group-hover:-translate-y-0.5 hover:-translate-y-0.5"
-        ></path>
-      </g>
+      <path
+        d="M2.25 6.75H15.75V13.25C15.75 14.355 14.855 15.25 13.75 15.25H4.25C3.145 15.25 2.25 14.355 2.25 13.25V6.75Z"
+        fill="currentColor"
+        fillOpacity="0.3"
+        data-color="color-2"
+        className="transition-transform duration-300 group-hover:translate-y-0.5 hover:translate-y-0.5"
+      ></path>
+      <path
+        d="M2.25 6.75V4.75C2.25 3.645 3.145 2.75 4.25 2.75H6.201C6.808 2.75 7.381 3.025 7.761 3.498L8.364 4.25H13.75C14.855 4.25 15.75 5.145 15.75 6.25V6.75"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        className="transition-transform duration-300 origin-bottom group-hover:-translate-y-0.5 hover:-translate-y-0.5"
+      ></path>
+      <path
+        d="M2.25 6.75H15.75V13.25C15.75 14.355 14.855 15.25 13.75 15.25H4.25C3.145 15.25 2.25 14.355 2.25 13.25V6.75Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        className="transition-transform duration-300 group-hover:translate-y-0.5 hover:translate-y-0.5"
+      ></path>
     </svg>
   )
 }
