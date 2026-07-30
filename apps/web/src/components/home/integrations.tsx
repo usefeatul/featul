@@ -1,7 +1,7 @@
 import { Container } from "../global/container";
 import type { ComponentType } from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SlackIcon } from "@featul/ui/icons/slack";
 import { DiscordIcon } from "@featul/ui/icons/discord";
 import { NotraIcon } from "@featul/ui/icons/notra";
@@ -168,17 +168,16 @@ export default function Integrations() {
                       </div>
 
                       <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5">
-                        <div className="flex items-start justify-between gap-3">
-                          <h3 className="text-foreground text-lg font-semibold tracking-[-0.02em]">
-                            {item.name}
-                          </h3>
-                          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-foreground/10 bg-foreground/[0.02] text-primary transition-colors duration-200 group-hover:border-primary/20 group-hover:bg-primary/5">
-                            <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                          </span>
-                        </div>
+                        <h3 className="text-foreground text-lg font-semibold tracking-[-0.02em]">
+                          {item.name}
+                        </h3>
                         <p className="text-accent mt-2 flex-1 text-sm leading-6">
                           {item.description}
                         </p>
+                        <span className="text-primary mt-4 inline-flex items-center gap-1.5 text-sm font-medium transition-colors group-hover:text-primary/80">
+                          Learn more
+                          <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                        </span>
                       </div>
                     </article>
                   </Link>
