@@ -121,7 +121,7 @@ export function SettingsDialogShell({
             initial={false}
             animate={{
               width: expanded ? EXPANDED_WIDTH_PX[width] : BASE_WIDTH_PX[width],
-              minHeight: expanded ? "60dvh" : "0dvh",
+              minHeight: expanded ? "45dvh" : "0dvh",
             }}
             transition={{ type: "spring", stiffness: 300, damping: 34, mass: 0.9 }}
             style={{ maxWidth: "92vw" }}
