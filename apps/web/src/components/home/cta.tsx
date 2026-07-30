@@ -8,7 +8,10 @@ export default function CTA() {
       {/* <DotPattern className="z-0" /> */}
       <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="bg-white p-6 sm:p-8 rounded-md  border border-black/10  ring-offset-background transition-all">
+          <div
+            className="overflow-hidden rounded-md border border-black/10 bg-white bg-cover bg-center bg-no-repeat p-6 text-left ring-offset-background transition-all sm:p-8"
+            style={{ backgroundImage: "url(/image/sky.PNG)" }}
+          >
             <h2 className="font-heading text-foreground max-w-lg sm:max-w-2xl text-balance text-xl sm:text-2xl lg:text-3xl font-medium">
               <span className="text-muted-foreground">
                 Collect and prioritize feedback.
