@@ -3,11 +3,19 @@
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 
-export function VerticalLines({ className }: { className?: string }) {
+export function VerticalLines({
+    className,
+    force = false,
+}: {
+    className?: string;
+    force?: boolean;
+}) {
     const pathname = usePathname();
 
-    // Hide on docs pages and the home page (clean sky hero)
-    if (pathname === "/" || pathname?.startsWith("/docs")) {
+    // Hide the page-wide fixed instance on docs pages and the home page (the
+    // sky hero must stay clean); the home page mounts its own scoped instance
+    // below the hero with `force`.
+    if (!force && (pathname === "/" || pathname?.startsWith("/docs"))) {
         return null;
     }
 

@@ -11,6 +11,7 @@ import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/featureTwo";
 import { ConversionHero } from "@/components/home/conversion-hero";
 import { SectionStack } from "@/components/layout/section-stack";
+import { VerticalLines } from "@/components/vertical-lines";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Customer Feedback, Roadmaps & Changelogs | featul",
@@ -23,7 +24,10 @@ export default function Home() {
   return (
     <main className="min-h-screen overflow-x-clip">
       <Hero />
-      <div className="mx-auto max-w-6xl">
+      <div className="relative mx-auto max-w-6xl">
+        {/* Guide lines scoped to the content below the hero so the sky hero
+            stays clean while the rest of the page keeps them. */}
+        <VerticalLines force className="absolute inset-0 z-30" />
         <SectionStack>
           <ConversionHero />
           <FeaturesSection />
