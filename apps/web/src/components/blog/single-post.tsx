@@ -11,6 +11,8 @@ type SinglePostProps = {
   post: MarblePost;
   backHref?: string;
   showBack?: boolean;
+  /** When false, title/meta are rendered by the page sky header instead. */
+  showHeader?: boolean;
 };
 
 function estimateReadingTime(html?: string | null) {
@@ -20,7 +22,11 @@ function estimateReadingTime(html?: string | null) {
   return Math.max(1, Math.round(words / 200));
 }
 
-export function SinglePost({ post }: SinglePostProps) {
+export function getPostReadingMinutes(html?: string | null) {
+  return estimateReadingTime(html);
+}
+
+export function SinglePost({ post, showHeader = true }: SinglePostProps) {
   const date = post.publishedAt ? new Date(post.publishedAt) : null;
   const { html, items } = generateToc(post.content);
   const reading = estimateReadingTime(html);
@@ -30,75 +36,79 @@ export function SinglePost({ post }: SinglePostProps) {
   const authorName = author?.name ?? null;
 
   return (
-    <article className="py-16 md:py-24">
+    <article className={showHeader ? "py-16 md:py-24" : "pb-16 pt-2 md:pb-24"}>
       <ReadingProgress targetSelector="article" position="bottom" />
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start lg:gap-12">
         <div className="text-left w-full max-w-3xl">
-          <nav
-            aria-label="Breadcrumb"
-            className="mb-3 text-sm text-muted-foreground"
-          >
-            <Link
-              href="/blog"
-              className="inline-flex items-center h-8 px-2 -mx-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 hover:text-primary"
-            >
-              Blog
-            </Link>
-            <span aria-hidden className="mx-1">
-              ›
-            </span>
-            <span className="text-accent wrap-break-word">{post.title}</span>
-          </nav>
-
-          {/* Title/meta constrained to left column width */}
-          <header className="mb-6 text-left">
-            <h1 className="font-heading text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-tight wrap-break-words text-balance">
-              {post.title}
-            </h1>
-            {post.excerpt ? (
-              <p className="text-muted-foreground mt-3">{post.excerpt}</p>
-            ) : null}
-            {date ? (
-              <div className="mt-3 text-xs flex items-center flex-wrap gap-2">
-                <span className="text-accent">Posted on</span>
-                <time
-                  className="ml-1 text-primary"
-                  dateTime={date.toISOString()}
+          {showHeader ? (
+            <>
+              <nav
+                aria-label="Breadcrumb"
+                className="mb-3 text-sm text-muted-foreground"
+              >
+                <Link
+                  href="/blog"
+                  className="inline-flex items-center h-8 px-2 -mx-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 hover:text-primary"
                 >
-                  {date.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit",
-                  })}
-                </time>
-                {authorName || reading ? (
-                  <span className="mx-2 text-zinc-300">•</span>
+                  Blog
+                </Link>
+                <span aria-hidden className="mx-1">
+                  ›
+                </span>
+                <span className="text-accent wrap-break-word">{post.title}</span>
+              </nav>
+
+              {/* Title/meta constrained to left column width */}
+              <header className="mb-6 text-left">
+                <h1 className="font-heading text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-tight wrap-break-words text-balance">
+                  {post.title}
+                </h1>
+                {post.excerpt ? (
+                  <p className="text-muted-foreground mt-3">{post.excerpt}</p>
                 ) : null}
-                {author?.image ? (
-                  <Image
-                    src={author?.image ?? ""}
-                    alt={author?.name ?? "Author"}
-                    width={20}
-                    height={20}
-                    className="h-5 w-5 rounded-md  object-cover translate-y-[0.5px]"
-                  />
-                ) : null}
-                {authorName ? (
-                  <span className="text-black dark:text-foreground font-medium">
-                    {authorName}
-                  </span>
-                ) : null}
-                {reading ? (
-                  <>
-                    {authorName ? (
+                {date ? (
+                  <div className="mt-3 text-xs flex items-center flex-wrap gap-2">
+                    <span className="text-accent">Posted on</span>
+                    <time
+                      className="ml-1 text-primary"
+                      dateTime={date.toISOString()}
+                    >
+                      {date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "2-digit",
+                      })}
+                    </time>
+                    {authorName || reading ? (
                       <span className="mx-2 text-zinc-300">•</span>
                     ) : null}
-                    <span className="text-accent">{reading} min read</span>
-                  </>
+                    {author?.image ? (
+                      <Image
+                        src={author?.image ?? ""}
+                        alt={author?.name ?? "Author"}
+                        width={20}
+                        height={20}
+                        className="h-5 w-5 rounded-md  object-cover translate-y-[0.5px]"
+                      />
+                    ) : null}
+                    {authorName ? (
+                      <span className="text-black dark:text-foreground font-medium">
+                        {authorName}
+                      </span>
+                    ) : null}
+                    {reading ? (
+                      <>
+                        {authorName ? (
+                          <span className="mx-2 text-zinc-300">•</span>
+                        ) : null}
+                        <span className="text-accent">{reading} min read</span>
+                      </>
+                    ) : null}
+                  </div>
                 ) : null}
-              </div>
-            ) : null}
-          </header>
+              </header>
+            </>
+          ) : null}
 
           {post.coverImage ? (
             <div className="mb-8 overflow-hidden rounded-md  border w-full">
