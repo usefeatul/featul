@@ -12,6 +12,7 @@ import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./mobile-menu";
 import { LinearSeparator } from "@/components/linear-separator";
+import { isSkyPath } from "@/lib/sky-paths";
 
 export default function Navbar() {
   const main = navigationConfig.main;
@@ -46,7 +47,7 @@ export default function Navbar() {
 
   // Over sky-backed pages the navbar is painted the same deep azure as the top
   // of the sky image so the bar visually merges with the hero below it.
-  const overSky = (pathname === "/" || pathname === "/pricing") && !scrolled;
+  const overSky = isSkyPath(pathname) && !scrolled;
   const linkTone = overSky
     ? "text-white/90 hover:text-white hover:bg-white/10 hover:ring-1 hover:ring-white/25"
     : "text-accent hover:text-foreground hover:bg-muted hover:ring-1 hover:ring-border";

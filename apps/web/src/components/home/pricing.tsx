@@ -6,7 +6,7 @@ import { StarIcon } from "@featul/ui/icons/star"
 import { cn } from "@featul/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
 import Link from "next/link"
-import { Container } from "../global/container"
+import { SkySection } from "@/components/layout/sky-section"
 import {
   type BillingCycle,
   type PricingPlanKey,
@@ -18,60 +18,32 @@ export default function Pricing() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
 
   return (
-    <section
-      className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden"
-      data-component="Pricing"
-    >
-      {/* Full-bleed sky — tall + top-pinned so the tree line stays cropped out */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-[165%] bg-cover bg-[position:center_top] bg-no-repeat"
-        style={{ backgroundImage: "url(/image/sky.PNG)" }}
-      />
-      {/* Blend the sky's top edge into the solid navbar color above it */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0063d2] from-[64px] to-transparent"
-      />
-      {/* Soft white fog — blurs a white layer so the sky doesn't frost into cyan */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -bottom-10 h-36 bg-background blur-2xl sm:h-40"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent from-10% via-background/90 via-60% to-background"
-      />
+    <SkySection data-component="Pricing">
+      <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl [text-shadow:0_1px_8px_rgba(0,0,0,0.2)]">
+            <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
+          </h2>
+          <p className="mt-3 text-base text-white/90 sm:text-lg [text-shadow:0_1px_6px_rgba(0,0,0,0.25)]">
+            Start free, then move into simple flat-workspace plans for early and growing product teams.
+          </p>
+        </div>
 
-      <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
-        <section className="pb-6 pt-14 sm:pb-8 sm:pt-16 md:pb-10">
-          <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-            <div className="mx-auto max-w-4xl text-center">
-              <h2 className="font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl [text-shadow:0_1px_8px_rgba(0,0,0,0.2)]">
-                <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
-              </h2>
-              <p className="mt-3 text-base text-white/90 sm:text-lg [text-shadow:0_1px_6px_rgba(0,0,0,0.25)]">
-                Start free, then move into simple flat-workspace plans for early and growing product teams.
-              </p>
-            </div>
+        <div className="mt-4 flex justify-center sm:mt-5">
+          <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
+        </div>
 
-            <div className="mt-4 flex justify-center sm:mt-5">
-              <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
-            </div>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:mt-7 lg:grid-cols-3">
-              {PRICING_PLAN_ORDER.map((planKey) => (
-                <PricingPlanCard
-                  key={planKey}
-                  planKey={planKey}
-                  billingCycle={billingCycle}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      </Container>
-    </section>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:mt-7 lg:grid-cols-3">
+          {PRICING_PLAN_ORDER.map((planKey) => (
+            <PricingPlanCard
+              key={planKey}
+              planKey={planKey}
+              billingCycle={billingCycle}
+            />
+          ))}
+        </div>
+      </div>
+    </SkySection>
   )
 }
 

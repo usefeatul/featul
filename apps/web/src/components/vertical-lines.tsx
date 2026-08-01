@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
+import { isSkyPath } from "@/lib/sky-paths";
 
 export function VerticalLines({
     className,
@@ -15,10 +16,7 @@ export function VerticalLines({
     // Hide the page-wide fixed instance on docs pages and sky-backed pages (the
     // sky must stay clean); those pages mount their own scoped instance below
     // the sky section with `force`.
-    if (
-        !force &&
-        (pathname === "/" || pathname === "/pricing" || pathname?.startsWith("/docs"))
-    ) {
+    if (!force && (isSkyPath(pathname) || pathname?.startsWith("/docs"))) {
         return null;
     }
 
