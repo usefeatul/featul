@@ -39,7 +39,7 @@ export function SkyPageShell({
         <VerticalLines force className="absolute inset-0 z-30" />
         <Container
           maxWidth="6xl"
-          className="relative z-10 px-4 pb-12 pt-6 sm:px-10 sm:pt-8 lg:px-12 xl:px-14"
+          className="relative z-10 px-4 pb-12 pt-10 sm:px-10 sm:pt-14 lg:px-12 xl:px-14"
         >
           <div className="w-full max-w-6xl px-0 sm:px-6">
             {hasHeader ? (
