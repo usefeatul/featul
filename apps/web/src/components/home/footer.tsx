@@ -59,16 +59,10 @@ export default function FooterSection() {
             </nav>
           </div>
 
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-              <p className="text-accent text-sm">© {year} featul</p>
-              <StatusButton
-                label="Operational"
-                className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
-              />
-            </div>
+          <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-accent text-sm">© {year} featul</p>
 
-            <div className="flex items-center gap-4">
+            <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
               <Link
                 href="#"
                 target="_blank"
@@ -87,6 +81,10 @@ export default function FooterSection() {
               >
                 <TwitterIcon size={14} />
               </Link>
+              <StatusButton
+                label="Operational"
+                className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
+              />
             </div>
           </div>
         </div>
