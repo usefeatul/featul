@@ -12,10 +12,13 @@ export function VerticalLines({
 }) {
     const pathname = usePathname();
 
-    // Hide the page-wide fixed instance on docs pages and the home page (the
-    // sky hero must stay clean); the home page mounts its own scoped instance
-    // below the hero with `force`.
-    if (!force && (pathname === "/" || pathname?.startsWith("/docs"))) {
+    // Hide the page-wide fixed instance on docs pages and sky-backed pages (the
+    // sky must stay clean); those pages mount their own scoped instance below
+    // the sky section with `force`.
+    if (
+        !force &&
+        (pathname === "/" || pathname === "/pricing" || pathname?.startsWith("/docs"))
+    ) {
         return null;
     }
 

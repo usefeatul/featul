@@ -18,24 +18,48 @@ export default function Pricing() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
 
   return (
-    <section className="bg-background" data-component="Pricing">
-      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-        <section className="py-16 md:py-24">
+    <section
+      className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden"
+      data-component="Pricing"
+    >
+      {/* Full-bleed sky — tall + top-pinned so the tree line stays cropped out */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-[165%] bg-cover bg-[position:center_top] bg-no-repeat"
+        style={{ backgroundImage: "url(/image/sky.PNG)" }}
+      />
+      {/* Blend the sky's top edge into the solid navbar color above it */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0063d2] from-[64px] to-transparent"
+      />
+      {/* Soft white fog — blurs a white layer so the sky doesn't frost into cyan */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -bottom-10 h-36 bg-background blur-2xl sm:h-40"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent from-10% via-background/90 via-60% to-background"
+      />
+
+      <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
+        <section className="pb-6 pt-14 sm:pb-8 sm:pt-16 md:pb-10">
           <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-            <div className="text-center max-w-4xl mx-auto">
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
+            <div className="mx-auto max-w-4xl text-center">
+              <h2 className="font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl [text-shadow:0_1px_8px_rgba(0,0,0,0.2)]">
                 <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
               </h2>
-              <p className="text-accent mt-4 text-base sm:text-lg">
+              <p className="mt-3 text-base text-white/90 sm:text-lg [text-shadow:0_1px_6px_rgba(0,0,0,0.25)]">
                 Start free, then move into simple flat-workspace plans for early and growing product teams.
               </p>
             </div>
 
-            <div className="mt-8 flex justify-center">
+            <div className="mt-4 flex justify-center sm:mt-5">
               <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
             </div>
 
-            <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:mt-7 lg:grid-cols-3">
               {PRICING_PLAN_ORDER.map((planKey) => (
                 <PricingPlanCard
                   key={planKey}
@@ -71,7 +95,7 @@ function PricingPlanCard({
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-md border border-border/70 bg-card p-4",
+        "relative flex h-full flex-col overflow-hidden rounded-md border border-border/70 bg-card p-4 shadow-lg shadow-zinc-950/15",
       )}
     >
       {ribbon ? (
@@ -133,12 +157,12 @@ function BillingCycleTabs({
 
   return (
     <Tabs value={billingCycle} onValueChange={handleValueChange} className="gap-0">
-      <TabsList className="w-auto gap-0 overflow-visible rounded-md border border-border/70 bg-muted/40 p-0.5 pb-0 [&>div.pointer-events-none.absolute]:hidden">
+      <TabsList className="w-auto gap-0 overflow-visible rounded-md border border-white/30 bg-white/15 p-0.5 pb-0 backdrop-blur-sm [&>div.pointer-events-none.absolute]:hidden">
         <TabsTrigger
           value="monthly"
           className={cn(
-            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
-            billingCycle === "monthly" && "bg-card text-foreground dark:bg-black/50",
+            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-white/80",
+            billingCycle === "monthly" && "bg-white text-foreground shadow-sm",
           )}
         >
           Monthly
@@ -146,8 +170,8 @@ function BillingCycleTabs({
         <TabsTrigger
           value="yearly"
           className={cn(
-            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
-            billingCycle === "yearly" && "bg-card text-foreground dark:bg-black/50",
+            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-white/80",
+            billingCycle === "yearly" && "bg-white text-foreground shadow-sm",
           )}
         >
           Yearly

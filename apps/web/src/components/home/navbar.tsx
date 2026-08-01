@@ -44,9 +44,9 @@ export default function Navbar() {
     return () => media.removeEventListener("change", handleChange);
   }, []);
 
-  // Over the home hero the navbar is painted the same deep azure as the top
+  // Over sky-backed pages the navbar is painted the same deep azure as the top
   // of the sky image so the bar visually merges with the hero below it.
-  const overSky = pathname === "/" && !scrolled;
+  const overSky = (pathname === "/" || pathname === "/pricing") && !scrolled;
   const linkTone = overSky
     ? "text-white/90 hover:text-white hover:bg-white/10 hover:ring-1 hover:ring-white/25"
     : "text-accent hover:text-foreground hover:bg-muted hover:ring-1 hover:ring-border";
