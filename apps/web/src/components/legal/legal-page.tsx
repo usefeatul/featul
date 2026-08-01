@@ -22,7 +22,7 @@ export default async function LegalPage({ slug }: LegalPageProps) {
         contentClassName="flex min-h-[30vh] flex-col justify-end pb-8 pt-24 sm:pb-10 sm:pt-28"
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="max-w-3xl text-left">
             <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
               {frontmatter.title}
             </h1>
@@ -46,8 +46,8 @@ export default async function LegalPage({ slug }: LegalPageProps) {
           maxWidth="6xl"
           className="relative z-10 px-4 pb-12 pt-2 sm:px-10 lg:px-12 xl:px-14"
         >
-          <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
-            <article className="prose prose-sm prose-zinc mx-auto text-left prose-headings:text-left sm:prose-base dark:prose-invert">
+          <div className="w-full max-w-6xl px-0 sm:px-6">
+            <article className="prose prose-sm prose-zinc max-w-3xl text-left prose-headings:text-left sm:prose-base dark:prose-invert">
               <LegalMarkdown markdown={body} />
             </article>
           </div>
