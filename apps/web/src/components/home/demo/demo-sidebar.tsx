@@ -34,7 +34,7 @@ const STATUSES: DemoStatus[] = [
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-3 pb-1 pt-3 text-[10px] font-medium tracking-wider text-accent/80">
+    <div className="px-3 pb-1 pt-3 text-xs font-medium tracking-wider text-accent/80">
       {children}
     </div>
   );
@@ -57,7 +57,7 @@ function LiveClock() {
   }, []);
 
   return (
-    <span className="rounded-sm border border-border/70 bg-card px-1.5 py-0.5 text-[10px] tabular-nums text-accent">
+    <span className="rounded-sm border border-border/70 bg-card px-1.5 py-0.5 text-xs tabular-nums text-accent">
       {time ?? "––:––"}
     </span>
   );
@@ -118,10 +118,10 @@ export function DemoSidebar({
             <ConvexIcon size={28} className="-translate-x-[3px]" />
           </span>
           <span className="min-w-0 flex-1 text-left">
-            <span className="block truncate text-xs font-medium text-foreground">
+            <span className="block truncate text-[13px] font-medium text-foreground">
               {DEMO_WORKSPACE.name}
             </span>
-            <span className="block text-[9px] leading-3 text-accent">
+            <span className="block text-[10px] leading-3 text-accent">
               {DEMO_WORKSPACE.plan}
             </span>
           </span>
@@ -129,7 +129,7 @@ export function DemoSidebar({
         </button>
 
         <div className="mt-2 flex items-center justify-between px-1">
-          <span className="text-[10px] font-medium tracking-wider text-accent/80">
+          <span className="text-xs font-medium tracking-wider text-accent/80">
             TIME
           </span>
           <LiveClock />
@@ -147,7 +147,7 @@ export function DemoSidebar({
                 type="button"
                 onClick={() => onSelectStatus(isActive ? null : status)}
                 className={cn(
-                  "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors",
+                  "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-[13px] transition-colors",
                   isActive
                     ? "bg-card text-foreground ring-1 ring-border"
                     : "text-accent hover:bg-card hover:text-foreground"
@@ -157,7 +157,7 @@ export function DemoSidebar({
                 <span className="flex-1 truncate text-left">
                   {DEMO_STATUS_LABELS[status]}
                 </span>
-                <span className="rounded-sm border border-border/60 bg-card px-1 text-[9px] tabular-nums text-accent">
+                <span className="rounded-sm border border-border/60 bg-card px-1 text-[10px] tabular-nums text-accent">
                   {counts[status]}
                 </span>
               </button>
@@ -175,7 +175,7 @@ export function DemoSidebar({
                 type="button"
                 onClick={item.view ? () => onSelectView(item.view!) : undefined}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors",
+                  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[13px] transition-colors",
                   item.view ? "cursor-pointer" : "cursor-default",
                   isActive
                     ? "bg-card text-foreground ring-1 ring-border"
@@ -185,7 +185,7 @@ export function DemoSidebar({
                 <span className="text-accent">{item.icon}</span>
                 <span className="flex-1 truncate text-left">{item.label}</span>
                 {item.shortcut ? (
-                  <span className="rounded-sm border border-border/60 bg-card px-1 text-[9px] text-accent">
+                  <span className="rounded-sm border border-border/60 bg-card px-1 text-[10px] text-accent">
                     {item.shortcut}
                   </span>
                 ) : null}
@@ -198,21 +198,21 @@ export function DemoSidebar({
       <div className="space-y-0.5 p-2">
         <button
           type="button"
-          className="flex w-full cursor-default items-center gap-2 rounded-md px-2 py-1 text-xs text-accent hover:bg-card hover:text-foreground"
+          className="flex w-full cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-accent hover:bg-card hover:text-foreground"
         >
           <PlusIcon className="size-4" />
           Create Posts
         </button>
         <button
           type="button"
-          className="flex w-full cursor-default items-center gap-2 rounded-md px-2 py-1 text-xs text-accent hover:bg-card hover:text-foreground"
+          className="flex w-full cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-accent hover:bg-card hover:text-foreground"
         >
           <DocIcon className="size-4" />
           Docs
         </button>
-        <div className="flex items-center gap-2 rounded-md px-2 py-1">
+        <div className="flex items-center gap-2 rounded-md px-2 py-1.5">
           <DemoAvatar name="Jean Daly" className="size-5 text-[8px]" />
-          <span className="text-xs text-accent">Jean Daly</span>
+          <span className="text-[13px] text-accent">Jean Daly</span>
         </div>
       </div>
     </aside>

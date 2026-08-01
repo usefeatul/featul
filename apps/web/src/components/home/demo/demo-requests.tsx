@@ -96,10 +96,10 @@ function RequestRow({
         status={post.status}
         className="size-5 shrink-0 text-foreground/80"
       />
-      <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+      <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground">
         {post.title}
       </span>
-      <div className="ml-auto flex shrink-0 items-center gap-3 text-xs text-accent">
+      <div className="ml-auto flex shrink-0 items-center gap-3 text-[11px] text-accent">
         <button
           type="button"
           onClick={onToggleVote}
@@ -152,7 +152,7 @@ export function DemoRequests({
     <div className="flex h-full flex-col bg-background">
       <div className="flex items-center justify-between px-4 pb-3 pt-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-semibold text-foreground">Requests</h3>
+          <h3 className="text-[15px] font-semibold text-foreground">Requests</h3>
           {statusFilter ? (
             <button
               type="button"

@@ -28,7 +28,7 @@ export function DemoChangelog() {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="flex items-center justify-between px-4 pb-3 pt-4">
-        <h3 className="text-base font-semibold text-foreground">Changelog</h3>
+        <h3 className="text-[15px] font-semibold text-foreground">Changelog</h3>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-card px-2 py-0.5 text-[10px] text-accent">
           <span className="size-1.5 rounded-full bg-emerald-500" />
           Published

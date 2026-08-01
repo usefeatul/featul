@@ -26,7 +26,7 @@ export function DemoRoadmap() {
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-4 pb-3 pt-4">
-        <h3 className="text-base font-semibold text-foreground">Roadmap</h3>
+        <h3 className="text-[15px] font-semibold text-foreground">Roadmap</h3>
       </div>
 
       <div className="flex flex-1 gap-3 overflow-hidden px-4 pb-4">
