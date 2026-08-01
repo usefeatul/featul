@@ -102,16 +102,21 @@ export function DemoSidebar({
   return (
     <aside className="flex w-52 shrink-0 flex-col bg-background/60 text-left">
       <div className="px-3 pt-3">
-        <div className="flex items-center gap-2">
-          <FeatulLogoIcon className="size-5 shrink-0" />
+        <div className="flex items-center gap-2 pl-1">
+          <span className="inline-flex size-7 shrink-0 items-center justify-start">
+            <FeatulLogoIcon className="size-5" />
+          </span>
           <span className="text-sm font-semibold text-foreground">Featul</span>
         </div>
 
         <button
           type="button"
-          className="mt-3 flex w-full cursor-default items-center gap-2 rounded-md bg-background py-1.5"
+          className="mt-3 flex w-full cursor-default items-center gap-2 rounded-md bg-background py-1.5 pl-1"
         >
-          <ConvexIcon size={28} className="shrink-0" />
+          <span className="inline-flex size-7 shrink-0 items-center justify-start">
+            {/* Convex SVG has extra viewBox padding; nudge so the mark lines up with Featul */}
+            <ConvexIcon size={28} className="-translate-x-[3px]" />
+          </span>
           <span className="min-w-0 flex-1 text-left">
             <span className="block truncate text-xs font-medium text-foreground">
               {DEMO_WORKSPACE.name}
