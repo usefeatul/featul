@@ -20,7 +20,7 @@ const VIEW_TO_KEY: Record<DemoView, PreviewKey> = {
 };
 
 const DEMO_WIDTH = 960;
-const DEMO_HEIGHT = 700;
+const DEMO_HEIGHT = 760;
 
 export function Hero() {
   const [active, setActive] = useState<PreviewKey>("dashboard");

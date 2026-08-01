@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@featul/ui/lib/utils";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { ConvexIcon } from "@featul/ui/icons/convex";
 import { ChevronExpandIcon } from "@featul/ui/icons/chevron-expand";
 import { RoadmapIcon } from "@featul/ui/icons/roadmap";
 import { ChangelogIcon } from "@featul/ui/icons/changelog";
@@ -13,12 +14,14 @@ import { DocIcon } from "@featul/ui/icons/doc";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import {
   DEMO_STATUS_LABELS,
+  DEMO_WORKSPACE,
   demoStatusCounts,
   type DemoStatus,
   type DemoView,
 } from "./data";
 import { DemoStatusIcon } from "./demo-status-icon";
 import { DemoAvatar } from "./demo-avatar";
+
 
 const STATUSES: DemoStatus[] = [
   "planned",
@@ -97,7 +100,7 @@ export function DemoSidebar({
   ];
 
   return (
-    <aside className="flex w-52 shrink-0 flex-col border-r border-border/60 bg-background/60 text-left">
+    <aside className="flex w-52 shrink-0 flex-col bg-background/60 text-left">
       <div className="px-3 pt-3">
         <div className="flex items-center gap-2 px-1">
           <FeatulLogoIcon className="size-5" />
@@ -106,25 +109,18 @@ export function DemoSidebar({
 
         <button
           type="button"
-          className="mt-3 flex w-full cursor-default items-center gap-2 rounded-md border border-border/70 bg-card px-2 py-1.5 shadow-xs"
+          className="mt-3 flex w-full cursor-default items-center gap-2 rounded-md bg-background px-2 py-1.5"
         >
-          <span className="inline-flex size-5 shrink-0 overflow-hidden rounded-full bg-muted ring-1 ring-border/60">
-            <img
-              src="https://api.dicebear.com/9.x/shapes/svg?seed=acme"
-              alt=""
-              draggable={false}
-              className="size-full"
-            />
-          </span>
+          <ConvexIcon size={28} className="shrink-0" />
           <span className="min-w-0 flex-1">
             <span className="block truncate text-xs font-medium text-foreground">
-              acme
+              {DEMO_WORKSPACE.name}
             </span>
             <span className="block text-[9px] leading-3 text-accent">
-              Starter
+              {DEMO_WORKSPACE.plan}
             </span>
           </span>
-          <ChevronExpandIcon className="size-3.5 text-accent" />
+          <ChevronExpandIcon className="size-2.5 text-accent" />
         </button>
 
         <div className="mt-2 flex items-center justify-between px-1">
@@ -194,7 +190,7 @@ export function DemoSidebar({
         </nav>
       </div>
 
-      <div className="space-y-0.5 border-t border-border/60 p-2">
+      <div className="space-y-0.5 p-2">
         <button
           type="button"
           className="flex w-full cursor-default items-center gap-2 rounded-md px-2 py-1 text-xs text-accent hover:bg-card hover:text-foreground"

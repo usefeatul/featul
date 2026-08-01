@@ -9,13 +9,22 @@ import { DemoSidebar } from "./demo-sidebar";
 import { DemoRequests } from "./demo-requests";
 import { DemoRoadmap } from "./demo-roadmap";
 import { DemoChangelog } from "./demo-changelog";
-import type { DemoStatus, DemoView } from "./data";
+import {
+  DEMO_POSTS,
+  DEMO_WORKSPACE,
+  type DemoStatus,
+  type DemoView,
+} from "./data";
 
 const VIEW_PATHS: Record<DemoView, string> = {
-  requests: "app.featul.com/workspaces/acme",
-  roadmap: "app.featul.com/workspaces/acme/roadmap",
-  changelog: "app.featul.com/workspaces/acme/changelog",
+  requests: `app.featul.com/workspaces/${DEMO_WORKSPACE.slug}`,
+  roadmap: `app.featul.com/workspaces/${DEMO_WORKSPACE.slug}/roadmap`,
+  changelog: `app.featul.com/workspaces/${DEMO_WORKSPACE.slug}/changelog`,
 };
+
+const INITIAL_VOTES = Object.fromEntries(
+  DEMO_POSTS.map((post) => [post.id, Boolean(post.hasVoted)])
+);
 
 export function DashboardDemo({
   view,
@@ -25,7 +34,7 @@ export function DashboardDemo({
   onViewChange: (view: DemoView) => void;
 }) {
   const [statusFilter, setStatusFilter] = useState<DemoStatus | null>(null);
-  const [votes, setVotes] = useState<Record<string, boolean>>({});
+  const [votes, setVotes] = useState<Record<string, boolean>>(INITIAL_VOTES);
 
   const toggleVote = (id: string) =>
     setVotes((prev) => ({ ...prev, [id]: !prev[id] }));

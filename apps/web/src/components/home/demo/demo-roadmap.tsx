@@ -48,7 +48,7 @@ export function DemoRoadmap() {
                 </span>
               </div>
 
-              <div className="flex-1 space-y-2 overflow-hidden p-2">
+              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-2">
                 {cards.map((post) => (
                   <div
                     key={post.id}
