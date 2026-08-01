@@ -13,7 +13,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function PricingPage() {
   return (
-    <main className="min-h-screen overflow-x-clip">
+    <>
       <h1 className="font-heading sr-only">Pricing for customer feedback, roadmap, and changelog software</h1>
       <Pricing />
       <div className="relative mx-auto max-w-6xl">
@@ -21,6 +21,6 @@ export default function PricingPage() {
         <LinearSeparator variant="zigzag" />
         <Faq />
       </div>
-    </main>
+    </>
   )
 }

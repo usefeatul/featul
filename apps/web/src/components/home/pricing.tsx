@@ -6,7 +6,7 @@ import { StarIcon } from "@featul/ui/icons/star"
 import { cn } from "@featul/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
 import Link from "next/link"
-import { SkySection } from "@/components/layout/sky-section"
+import { SkyPageShell } from "@/components/layout/sky-page-shell"
 import {
   type BillingCycle,
   type PricingPlanKey,
@@ -18,35 +18,26 @@ export default function Pricing() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
 
   return (
-    <SkySection
-      data-component="Pricing"
-      contentClassName="pb-6 pt-36 sm:pb-8 sm:pt-40 md:pb-10"
+    <SkyPageShell
+      dataComponent="Pricing"
+      title="Pricing that grows with your team"
+      description="Start free, then move into simple flat-workspace plans for early and growing product teams."
+      headerClassName="mx-auto max-w-4xl text-center"
     >
-      <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl [text-shadow:0_1px_8px_rgba(0,0,0,0.2)]">
-            <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
-          </h2>
-          <p className="mt-3 text-base text-white/90 sm:text-lg [text-shadow:0_1px_6px_rgba(0,0,0,0.25)]">
-            Start free, then move into simple flat-workspace plans for early and growing product teams.
-          </p>
-        </div>
-
-        <div className="mt-4 flex justify-center sm:mt-5">
-          <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
-        </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:mt-7 lg:grid-cols-3">
-          {PRICING_PLAN_ORDER.map((planKey) => (
-            <PricingPlanCard
-              key={planKey}
-              planKey={planKey}
-              billingCycle={billingCycle}
-            />
-          ))}
-        </div>
+      <div className="flex justify-center">
+        <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
       </div>
-    </SkySection>
+
+      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {PRICING_PLAN_ORDER.map((planKey) => (
+          <PricingPlanCard
+            key={planKey}
+            planKey={planKey}
+            billingCycle={billingCycle}
+          />
+        ))}
+      </div>
+    </SkyPageShell>
   )
 }
 
@@ -132,12 +123,12 @@ function BillingCycleTabs({
 
   return (
     <Tabs value={billingCycle} onValueChange={handleValueChange} className="gap-0">
-      <TabsList className="w-auto gap-0 overflow-visible rounded-md border border-white/30 bg-white/15 p-0.5 pb-0 backdrop-blur-sm [&>div.pointer-events-none.absolute]:hidden">
+      <TabsList className="w-auto gap-0 overflow-visible rounded-md border border-border/70 bg-muted/40 p-0.5 pb-0 [&>div.pointer-events-none.absolute]:hidden">
         <TabsTrigger
           value="monthly"
           className={cn(
-            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-white/80",
-            billingCycle === "monthly" && "bg-white text-foreground shadow-sm",
+            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
+            billingCycle === "monthly" && "bg-card text-foreground dark:bg-black/50",
           )}
         >
           Monthly
@@ -145,8 +136,8 @@ function BillingCycleTabs({
         <TabsTrigger
           value="yearly"
           className={cn(
-            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-white/80",
-            billingCycle === "yearly" && "bg-white text-foreground shadow-sm",
+            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
+            billingCycle === "yearly" && "bg-card text-foreground dark:bg-black/50",
           )}
         >
           Yearly

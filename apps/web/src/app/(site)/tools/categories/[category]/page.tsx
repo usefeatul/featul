@@ -32,7 +32,7 @@ export default async function CategoryPage({ params }: Props) {
       description={cat.description}
       meta={
         <Breadcrumb className="mb-2">
-          <BreadcrumbList className="text-foreground/65">
+          <BreadcrumbList className="text-accent">
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href="/tools" className="inline-flex h-8 items-center px-2">Tools</Link>
@@ -46,7 +46,7 @@ export default async function CategoryPage({ params }: Props) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-foreground">{cat.name}</BreadcrumbPage>
+              <BreadcrumbPage>{cat.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

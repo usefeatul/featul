@@ -47,17 +47,17 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
           <div className="flex items-center gap-3">
             <Link
               href="/definitions"
-              className="inline-flex items-center gap-1 text-sm text-foreground/65 hover:text-foreground"
+              className="inline-flex items-center gap-1 text-sm text-accent hover:text-foreground"
             >
               <ChevronLeft className="size-4" />
               Back
             </Link>
-            <span className="mt-0.5 min-w-0 flex-1 truncate text-xs uppercase tracking-wide text-foreground/65">
+            <span className="mt-0.5 min-w-0 flex-1 truncate text-xs uppercase tracking-wide text-accent">
               {def.eli5}
             </span>
           </div>
           {isMobile ? (
-            <div className="text-xs text-foreground/65">
+            <div className="text-xs text-accent">
               <span>Published on {publishedLabel}</span>
               <span className="mx-2">•</span>
               <span>Written by {author}</span>
