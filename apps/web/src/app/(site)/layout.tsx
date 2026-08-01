@@ -11,7 +11,7 @@ export default function SiteLayout({
       <div className="flex min-h-screen flex-col pt-10">
         <AnnouncementBanner />
         <Navbar />
-        <div className="flex-1">{children}</div>
+        <div className="flex flex-1 flex-col">{children}</div>
         <Footer />
       </div>
     </MarketingConsentManager>

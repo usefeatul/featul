@@ -15,7 +15,7 @@ export default async function LegalPage({ slug }: LegalPageProps) {
   const body = content.replace(/^#\s+.+\n+/, "")
 
   return (
-    <main className="min-h-screen overflow-x-clip">
+    <main className="flex min-h-full flex-1 flex-col overflow-x-clip">
       <SkySection
         data-component="LegalHero"
         className="min-h-[30vh]"
@@ -40,7 +40,7 @@ export default async function LegalPage({ slug }: LegalPageProps) {
         </div>
       </SkySection>
 
-      <div className="relative mx-auto max-w-6xl">
+      <div className="relative mx-auto w-full max-w-6xl flex-1">
         <VerticalLines force className="absolute inset-0 z-30" />
         <Container
           maxWidth="6xl"

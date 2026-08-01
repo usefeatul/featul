@@ -20,7 +20,7 @@ export default async function BlogPage() {
   const res = (await getPosts()) as MarblePostListResponse | undefined;
   const posts = res?.posts ?? [];
   return (
-    <main className="min-h-screen overflow-x-clip bg-background">
+    <main className="flex min-h-full flex-1 flex-col overflow-x-clip bg-background">
       <SkySection
         data-component="BlogHero"
         className="min-h-[30vh]"
@@ -42,7 +42,7 @@ export default async function BlogPage() {
         </div>
       </SkySection>
 
-      <div className="relative mx-auto max-w-6xl">
+      <div className="relative mx-auto w-full max-w-6xl flex-1">
         <VerticalLines force className="absolute inset-0 z-30" />
         <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
           <section className="pb-10 pt-2 md:pb-14">
