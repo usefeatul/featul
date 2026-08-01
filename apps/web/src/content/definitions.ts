@@ -911,11 +911,17 @@ export const getPrimarySlug = (slug: string): string | undefined => {
 
 export const getAllDefinitionSlugs = (): string[] => DEFINITIONS.map((d) => d.slug)
 
+const isUrlSafeSlug = (value: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(value)
+
 export const getAllDefinitionParams = (): { term: string }[] => {
   const list: string[] = []
   for (const d of DEFINITIONS) {
     list.push(d.slug)
-    for (const s of d.synonyms || []) list.push(s)
+    // Only pre-render synonym routes that are valid URL slugs.
+    // Phrase synonyms like "lifetime value" 404 when used as path segments.
+    for (const s of d.synonyms || []) {
+      if (isUrlSafeSlug(s)) list.push(s)
+    }
   }
   return list.map((term) => ({ term }))
 }

@@ -5,6 +5,7 @@ import { docsSections } from "@/config/docsNav"
 import { readDocsMarkdown, type DocsPageId } from "@/lib/docs-markdown"
 import { DocsMarkdown, extractDocsToc } from "@/components/docs/DocsMarkdown"
 import { DocsToc } from "@/components/docs/DocsToc"
+import { createPageMetadata } from "@/lib/seo"
 
 type DocsPageParams = {
   slug?: string[]
@@ -64,15 +65,16 @@ export async function generateMetadata(props: DocsPageProps): Promise<Metadata> 
   if (!nav) notFound()
 
   const docs = await readDocsMarkdown(nav.item.id as DocsPageId)
+  const title = docs.frontmatter.title ?? nav.item.label
+  const description =
+    docs.frontmatter.description ||
+    `${title} — Featul documentation for product feedback, roadmaps, and changelogs.`
 
-  return {
-    title: docs.frontmatter.title ?? nav.item.label,
-    description: docs.frontmatter.description,
-    openGraph: {
-      title: docs.frontmatter.title ?? nav.item.label,
-      description: docs.frontmatter.description,
-    },
-  }
+  return createPageMetadata({
+    title,
+    description,
+    path: pathname,
+  })
 }
 
 export default async function DocsPage(props: DocsPageProps) {

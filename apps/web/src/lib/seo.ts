@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { SITE_URL, DEFAULT_OG_IMAGE } from '@/config/seo'
+import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/config/seo'
 
 const TITLE_MIN_LENGTH = 50
 const TITLE_MAX_LENGTH = 60
@@ -86,8 +86,7 @@ export function createAlternates(path?: string): Metadata['alternates'] {
 }
 
 export function pageUrl(path?: string) {
-  const p = normalizePath(path)
-  return `${SITE_URL}${p}`
+  return absoluteUrl(normalizePath(path))
 }
 
 type BaseMetaArgs = {

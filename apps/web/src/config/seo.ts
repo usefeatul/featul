@@ -11,15 +11,23 @@ function normalizeSiteUrl(input?: string) {
     }
 
     url.hash = ""
-    url.pathname = url.pathname.replace(/\/$/, "")
-
-    return url.toString()
+    // URL#toString() re-adds a trailing slash for origin-only URLs
+    // (e.g. https://www.featul.com/). Strip it so `${SITE_URL}/path`
+    // never becomes `https://www.featul.com//path`.
+    return url.toString().replace(/\/$/, "")
   } catch {
     return DEFAULT_SITE_URL
   }
 }
 
 export const SITE_URL = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)
+
+/** Join SITE_URL with a path without producing double slashes. */
+export function absoluteUrl(path = "/") {
+  const normalized = path.startsWith("/") ? path : `/${path}`
+  if (normalized === "/") return `${SITE_URL}/`
+  return `${SITE_URL}${normalized}`
+}
 
 export const DEFAULT_TITLE = "Featul"
 export const TITLE_TEMPLATE = "%s - Featul"
@@ -43,8 +51,8 @@ export function getOrganizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Featul',
-    url: SITE_URL,
-    logo: `${SITE_URL}/og.png`,
+    url: absoluteUrl('/'),
+    logo: absoluteUrl('/og.png'),
     sameAs: [],
     contactPoint: [
       {
@@ -65,13 +73,13 @@ export function getUseCaseHowToJsonLd() {
       'Step-by-step guide to centralize product feedback, run a public roadmap, and publish changelogs with Featul.',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${SITE_URL}/use-cases/product-feedback-platform`,
+      '@id': absoluteUrl('/use-cases/product-feedback-platform'),
     },
     tool: [
       {
         '@type': 'SoftwareApplication',
         name: 'Featul',
-        url: SITE_URL,
+        url: absoluteUrl('/'),
         applicationCategory: 'BusinessApplication',
       },
     ],

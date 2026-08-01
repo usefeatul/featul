@@ -67,7 +67,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
             <p>{sections.intro}</p>
             <div className="mt-6">
               <Link
-                href="/start"
+                href="https://app.featul.com/auth/sign-up"
                 className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Start Free Trial →

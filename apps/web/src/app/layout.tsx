@@ -17,7 +17,6 @@ import {
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { VerticalLines } from "@/components/vertical-lines";
-import { createAlternates } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/security";
 
 const manrope = Manrope({
@@ -41,11 +40,10 @@ export const metadata: Metadata = {
     template: TITLE_TEMPLATE,
   },
   description: DEFAULT_DESCRIPTION,
-  alternates: createAlternates("/"),
   keywords: DEFAULT_KEYWORDS,
   openGraph: {
     type: "website",
-    url: SITE_URL,
+    url: `${SITE_URL}/`,
     siteName: "Featul",
     title: "Featul",
     description:
@@ -104,21 +102,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
-        <link
-          rel="alternate"
-          href={`${SITE_URL}/`}
-          {...({ hrefLang: "en-US" } as Record<string, string>)}
-        />
-        <link
-          rel="alternate"
-          href={`${SITE_URL}/`}
-          {...({ hrefLang: "en" } as Record<string, string>)}
-        />
-        <link
-          rel="alternate"
-          href={`${SITE_URL}/`}
-          {...({ hrefLang: "x-default" } as Record<string, string>)}
-        />
         {visitorsToken ? (
           <Script
             src="https://cdn.visitors.now/v.js"

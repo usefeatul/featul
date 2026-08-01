@@ -52,15 +52,14 @@ export const metadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     images: ["/og.png"],
   },
+  // Default noindex for the app/dashboard host. Public workspace pages
+  // opt back into indexing via createWorkspaceMetadata / createPostMetadata.
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
     googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-video-preview": -1,
-      "max-snippet": -1,
+      index: false,
+      follow: false,
     },
   },
   icons: {
