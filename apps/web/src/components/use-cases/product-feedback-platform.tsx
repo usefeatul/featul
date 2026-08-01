@@ -3,6 +3,7 @@ import Script from "next/script"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/structured-data"
 import { serializeJsonLd } from "@/lib/security";
+import { SkyPageShell } from "@/components/layout/sky-page-shell"
 
 export function ProductFeedbackUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({
@@ -19,19 +20,15 @@ export function ProductFeedbackUseCase() {
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      <article className="mx-auto w-full max-w-3xl py-16 md:py-24">
-        <header className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Use case</p>
-          <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
-            Centralize product feedback and roadmap in one place
-          </h1>
-          <p className="text-accent mt-4">
-            Learn how product organizations use featul to establish a single, reliable source of feedback truth, apply
-            structured prioritization, and communicate decisions back to customers in a predictable and professional way.
-          </p>
-        </header>
-
-        <section className="space-y-3">
+      <SkyPageShell
+        dataComponent="UseCaseDetail"
+        eyebrow="Use case"
+        title={`Centralize product feedback and roadmap in one place`}
+        description={`Learn how product organizations use featul to establish a single, reliable source of feedback truth, apply
+            structured prioritization, and communicate decisions back to customers in a predictable and professional way.`}
+      >
+        <article className="max-w-3xl space-y-0 text-left">
+          <section className="space-y-3">
           <h2 className="text-xl font-semibold">Before featul vs after featul</h2>
           <p className="text-accent">
             Many teams begin with feedback distributed across multiple fragmented systems: support tickets, ad‑hoc Slack
@@ -142,7 +139,8 @@ export function ProductFeedbackUseCase() {
             </Link>
           </div>
         </section>
-      </article>
+        </article>
+      </SkyPageShell>
     </>
   )
 }

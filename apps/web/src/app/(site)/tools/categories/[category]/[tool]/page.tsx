@@ -51,8 +51,11 @@ export default async function ToolPage({ params }: Props) {
   });
 
   return (
-    <ToolsPageShell dataComponent="ToolDetail" mainClassName="min-h-screen pt-16 bg-background">
-      {/* JSON-LD for SEO: FAQ and Breadcrumbs */}
+    <ToolsPageShell
+      dataComponent="ToolDetail"
+      title={tool.name}
+      description={tool.description}
+    >
       <script
         id="tool-faq-jsonld"
         type="application/ld+json"
@@ -65,8 +68,6 @@ export default async function ToolPage({ params }: Props) {
           __html: serializeJsonLd(breadcrumbSchema),
         }}
       />
-      {/* Breadcrumb removed for a cleaner tool detail page. */}
-      {/* Page-level title and description omitted to avoid duplication; the tool component provides its own content. */}
       {ToolComponent ? <ToolComponent /> : <ToolTemplate tool={tool} />}
     </ToolsPageShell>
   );

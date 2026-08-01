@@ -3,6 +3,7 @@ import Script from "next/script"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/structured-data"
 import { serializeJsonLd } from "@/lib/security";
+import { SkyPageShell } from "@/components/layout/sky-page-shell"
 
 export function ProductLedGrowthUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({
@@ -19,20 +20,16 @@ export function ProductLedGrowthUseCase() {
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      <article className="mx-auto w-full max-w-3xl py-16 md:py-24">
-        <header className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Use case</p>
-          <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
-            Accelerate product-led growth through systematic user feedback loops
-          </h1>
-          <p className="text-accent mt-4">
-            Explore how product-led growth teams leverage continuous user feedback to optimize
+      <SkyPageShell
+        dataComponent="UseCaseDetail"
+        eyebrow="Use case"
+        title={`Accelerate product-led growth through systematic user feedback loops`}
+        description={`Explore how product-led growth teams leverage continuous user feedback to optimize
             onboarding experiences, drive feature adoption, and convert free users into paying customers
-            through data-driven product iterations.
-          </p>
-        </header>
-
-        <section className="space-y-3">
+            through data-driven product iterations.`}
+      >
+        <article className="max-w-3xl space-y-0 text-left">
+          <section className="space-y-3">
           <h2 className="text-xl font-semibold">The PLG feedback imperative</h2>
           <p className="text-accent">
             Product-led growth organizations face a fundamental challenge: scaling user acquisition
@@ -172,7 +169,8 @@ export function ProductLedGrowthUseCase() {
             </Link>
           </div>
         </section>
-      </article>
+        </article>
+      </SkyPageShell>
     </>
   )
 }

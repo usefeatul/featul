@@ -28,29 +28,30 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <ToolsPageShell
       dataComponent="ToolsCategory"
-      mainClassName="min-h-[calc(100vh-64px)] pt-16 bg-background"
+      title={cat.name}
+      description={cat.description}
+      meta={
+        <Breadcrumb className="mb-2">
+          <BreadcrumbList className="text-foreground/65">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/tools" className="inline-flex h-8 items-center px-2">Tools</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/tools/categories" className="inline-flex h-8 items-center px-2">Categories</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-foreground">{cat.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      }
     >
-      <Breadcrumb className="mb-6">
-        <BreadcrumbList className="text-accent">
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/tools" className="inline-flex h-8 items-center px-2">Tools</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/tools/categories" className="inline-flex h-8 items-center px-2">Categories</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{cat.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl">{cat.name}</h1>
-      <p className="text-accent mt-4">{cat.description}</p>
       <ToolList categorySlug={cat.slug} tools={cat.tools} />
     </ToolsPageShell>
   )

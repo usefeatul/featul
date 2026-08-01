@@ -3,6 +3,7 @@ import Script from "next/script"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/structured-data"
 import { serializeJsonLd } from "@/lib/security";
+import { SkyPageShell } from "@/components/layout/sky-page-shell"
 
 export function EnterpriseCustomerSuccessUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({
@@ -19,19 +20,15 @@ export function EnterpriseCustomerSuccessUseCase() {
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      <article className="mx-auto w-full max-w-3xl py-16 md:py-24">
-        <header className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Use case</p>
-          <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
-            Scale enterprise customer success with structured feedback programs
-          </h1>
-          <p className="text-accent mt-4">
-            Discover how enterprise customer success teams implement systematic feedback collection,
-            stakeholder alignment, and executive reporting to drive strategic account growth and retention.
-          </p>
-        </header>
-
-        <section className="space-y-3">
+      <SkyPageShell
+        dataComponent="UseCaseDetail"
+        eyebrow="Use case"
+        title={`Scale enterprise customer success with structured feedback programs`}
+        description={`Discover how enterprise customer success teams implement systematic feedback collection,
+            stakeholder alignment, and executive reporting to drive strategic account growth and retention.`}
+      >
+        <article className="max-w-3xl space-y-0 text-left">
+          <section className="space-y-3">
           <h2 className="text-xl font-semibold">The enterprise feedback challenge</h2>
           <p className="text-accent">
             Enterprise customer success teams face unique challenges: multiple stakeholders per account,
@@ -166,7 +163,8 @@ export function EnterpriseCustomerSuccessUseCase() {
             </Link>
           </div>
         </section>
-      </article>
+        </article>
+      </SkyPageShell>
     </>
   )
 }
