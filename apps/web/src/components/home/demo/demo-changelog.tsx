@@ -2,6 +2,28 @@
 
 import { DEMO_CHANGELOG } from "./data";
 
+function Section({
+  title,
+  items,
+}: {
+  title: string;
+  items: { title: string; body: string }[];
+}) {
+  return (
+    <section className="mt-4">
+      <h5 className="text-sm font-semibold text-foreground">{title}</h5>
+      <ul className="mt-2 space-y-2">
+        {items.map((item) => (
+          <li key={item.title} className="text-xs leading-5">
+            <span className="font-medium text-foreground">{item.title}.</span>{" "}
+            <span className="text-accent">{item.body}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function DemoChangelog() {
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -13,7 +35,7 @@ export function DemoChangelog() {
         </span>
       </div>
 
-      <div className="mx-auto w-full max-w-2xl flex-1 overflow-hidden px-4 pb-4 text-left">
+      <div className="mx-auto w-full max-w-2xl min-h-0 flex-1 overflow-y-auto px-4 pb-6 text-left">
         <div
           aria-hidden
           className="h-36 w-full rounded-md sm:h-44"
@@ -23,7 +45,7 @@ export function DemoChangelog() {
           }}
         />
 
-        <div className="mt-3 flex items-center gap-1.5">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
           {DEMO_CHANGELOG.tags.map((tag) => (
             <span
               key={tag}
@@ -44,19 +66,13 @@ export function DemoChangelog() {
           {DEMO_CHANGELOG.intro}
         </p>
 
-        <h5 className="mt-4 text-sm font-semibold text-foreground">
-          Highlights
-        </h5>
-        <ul className="mt-2 space-y-2">
-          {DEMO_CHANGELOG.highlights.map((highlight) => (
-            <li key={highlight.title} className="text-xs leading-5">
-              <span className="font-medium text-foreground">
-                {highlight.title}.
-              </span>{" "}
-              <span className="text-accent">{highlight.body}</span>
-            </li>
-          ))}
-        </ul>
+        <Section title="Highlights" items={DEMO_CHANGELOG.highlights} />
+        <Section title="Improvements" items={DEMO_CHANGELOG.improvements} />
+        <Section title="Fixes" items={DEMO_CHANGELOG.fixes} />
+
+        <p className="mt-5 text-xs leading-5 text-accent">
+          {DEMO_CHANGELOG.closing}
+        </p>
       </div>
     </div>
   );

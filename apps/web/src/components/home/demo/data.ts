@@ -42,7 +42,7 @@ export const DEMO_WORKSPACE = {
   slug: "convex",
 };
 
-export const DEMO_POSTS: DemoPost[] = [
+const DEMO_POSTS_BY_STATUS: DemoPost[] = [
   // Progress (6)
   {
     id: "p1",
@@ -496,6 +496,11 @@ export const DEMO_POSTS: DemoPost[] = [
   },
 ];
 
+/** Mixed status order for the dashboard list (by votes), not grouped by color. */
+export const DEMO_POSTS: DemoPost[] = [...DEMO_POSTS_BY_STATUS].sort(
+  (a, b) => b.upvotes - a.upvotes || a.id.localeCompare(b.id)
+);
+
 export function demoStatusCounts(): Record<DemoStatus, number> {
   const counts = {
     planned: 0,
@@ -511,14 +516,14 @@ export function demoStatusCounts(): Record<DemoStatus, number> {
 
 export const DEMO_CHANGELOG = {
   title: "Multi-account management and enhanced OAuth",
-  tags: ["Security", "UI"],
+  tags: ["Security", "UI", "Auth"],
   date: "September 24",
   intro:
-    "This week we focused on auth and account management. Teams can now switch between multiple accounts on the same device without losing session state, and the OAuth flow got a smarter account picker for Google and GitHub.",
+    "This week we focused on auth and account management. Teams can now switch between multiple accounts on the same device without losing session state, and the OAuth flow got a smarter account picker for Google and GitHub. We also shipped editor polish, faster board loading, and a handful of fixes that came straight from customer feedback.",
   highlights: [
     {
       title: "Multi-account switching",
-      body: "Manage several accounts on one device with instant, session-safe switching.",
+      body: "Manage several accounts on one device with instant, session-safe switching. Your last active workspace is restored automatically after each hop.",
     },
     {
       title: "Smarter OAuth sign-in",
@@ -526,7 +531,49 @@ export const DEMO_CHANGELOG = {
     },
     {
       title: "Rich changelog editor",
-      body: "Changelog entries now support markdown formatting with Tiptap marks.",
+      body: "Changelog entries now support markdown formatting with Tiptap marks, images, and callout blocks.",
+    },
+    {
+      title: "Passkey-ready sessions",
+      body: "Admins can register a passkey once and skip password prompts on trusted devices.",
     },
   ],
+  improvements: [
+    {
+      title: "Faster public boards",
+      body: "First paint on large boards is about 35% quicker thanks to leaner vote aggregates.",
+    },
+    {
+      title: "Workspace invite links",
+      body: "Share a single invite URL with an expiry date instead of emailing members one by one.",
+    },
+    {
+      title: "Keyboard triage",
+      body: "Press J / K to move between requests and 1\u20136 to jump statuses without leaving the list.",
+    },
+    {
+      title: "Branding preview",
+      body: "Logo and accent color changes now preview live on the public board before you publish.",
+    },
+  ],
+  fixes: [
+    {
+      title: "Merged vote totals",
+      body: "Merging two posts now carries every upvote forward instead of dropping the duplicate count.",
+    },
+    {
+      title: "Mention accents",
+      body: "Comment mentions work again for display names with accents or punctuation.",
+    },
+    {
+      title: "Widget open delay",
+      body: "The embed no longer stalls for a second on mobile Safari before the sheet appears.",
+    },
+    {
+      title: "Retina board covers",
+      body: "Uploaded cover images stay sharp on high-DPI displays after resize.",
+    },
+  ],
+  closing:
+    "That is everything for this release. If something still feels off, drop a note on your board or ping us in the in-app chat \u2014 we read every thread.",
 };

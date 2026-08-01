@@ -102,17 +102,17 @@ export function DemoSidebar({
   return (
     <aside className="flex w-52 shrink-0 flex-col bg-background/60 text-left">
       <div className="px-3 pt-3">
-        <div className="flex items-center gap-2 px-1">
-          <FeatulLogoIcon className="size-5" />
+        <div className="flex items-center gap-2">
+          <FeatulLogoIcon className="size-5 shrink-0" />
           <span className="text-sm font-semibold text-foreground">Featul</span>
         </div>
 
         <button
           type="button"
-          className="mt-3 flex w-full cursor-default items-center gap-2 rounded-md bg-background px-2 py-1.5"
+          className="mt-3 flex w-full cursor-default items-center gap-2 rounded-md bg-background py-1.5"
         >
           <ConvexIcon size={28} className="shrink-0" />
-          <span className="min-w-0 flex-1">
+          <span className="min-w-0 flex-1 text-left">
             <span className="block truncate text-xs font-medium text-foreground">
               {DEMO_WORKSPACE.name}
             </span>
@@ -120,7 +120,7 @@ export function DemoSidebar({
               {DEMO_WORKSPACE.plan}
             </span>
           </span>
-          <ChevronExpandIcon className="size-2.5 text-accent" />
+          <ChevronExpandIcon className="size-2.5 shrink-0 text-accent" />
         </button>
 
         <div className="mt-2 flex items-center justify-between px-1">
