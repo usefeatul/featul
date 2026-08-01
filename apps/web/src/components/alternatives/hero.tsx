@@ -20,7 +20,7 @@ export function AlternativeHero({ alt }: { alt: Alternative }) {
                 <div className="relative z-0 aspect-video w-full overflow-hidden rounded-md bg-muted ring-1 ring-border/60">
                   <Image
                     src={imageSrc}
-                    alt={`${alt.name} vs featul preview screenshot`}
+                    alt={`${alt.name} vs Featul preview screenshot`}
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 50vw"

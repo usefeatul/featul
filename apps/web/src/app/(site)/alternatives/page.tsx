@@ -5,7 +5,7 @@ import { createPageMetadata } from "@/lib/seo";
 import { Hero } from "@/components/home/hero";
 
 export const metadata = createPageMetadata({
-  title: "Best featul Alternatives for Feedback & Roadmaps",
+  title: "Best Featul Alternatives for Feedback & Roadmaps",
   description:
     "Side‑by‑side comparisons covering features, privacy, and hosting differences to help you choose confidently.",
   path: "/alternatives",
@@ -34,7 +34,7 @@ export default function AlternativesIndexPage() {
               </span>
             </div>
             <p className="text-accent mt-3 max-w-2xl text-sm sm:text-base">
-              Browse our complete list of detailed comparisons. See how featul
+              Browse our complete list of detailed comparisons. See how Featul
               stacks up against each competitor on features, pricing, and value.
             </p>
           </div>

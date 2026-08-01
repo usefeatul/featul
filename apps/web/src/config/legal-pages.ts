@@ -5,17 +5,17 @@ import type { LegalPageMeta, LegalSlug } from "@/types/legal"
 const LEGAL_PAGE_META: Record<LegalSlug, LegalPageMeta> = {
   gdpr: {
     title: "GDPR Compliance",
-    description: "featul’s approach to GDPR and data protection obligations.",
+    description: "Featul’s approach to GDPR and data protection obligations.",
     path: "/gdpr",
   },
   privacy: {
     title: "Privacy Policy",
-    description: "How featul collects, uses, and protects personal data in line with GDPR.",
+    description: "How Featul collects, uses, and protects personal data in line with GDPR.",
     path: "/privacy",
   },
   terms: {
     title: "Terms of Service",
-    description: "featul terms and conditions for using our services.",
+    description: "Featul terms and conditions for using our services.",
     path: "/terms",
   },
 }

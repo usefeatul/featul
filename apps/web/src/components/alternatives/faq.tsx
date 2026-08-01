@@ -21,7 +21,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
         <div className="max-w-5xl px-0 sm:px-6">
           <div className="max-w-xl text-left">
             <h2 className="text-balance text-3xl font-semibold">
-              Questions about {alt.name} vs featul
+              Questions about {alt.name} vs Featul
             </h2>
           </div>
 

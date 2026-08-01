@@ -16,7 +16,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
           </h2>
           <p className="text-accent mt-3">
             Quick comparison of essential capabilities across {alt.name} and
-            featul.
+            Featul.
           </p>
 
           <div className="mt-12 sm:mt-14">
@@ -28,7 +28,7 @@ export default function Compare({ alt }: { alt: Alternative }) {
                 {alt.name}
               </div>
               <div className="px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-lg font-semibold text-foreground text-right">
-                featul
+                Featul
               </div>
             </div>
 
@@ -57,11 +57,11 @@ export default function Compare({ alt }: { alt: Alternative }) {
                       {alt.name}: {String(f.competitor)}
                     </span>
                   </div>
-                  {/* featul column (mobile & desktop) */}
+                  {/* Featul column (mobile & desktop) */}
                   <div className="px-0 sm:px-4 py-2 sm:py-3 min-w-[56px] flex items-center justify-center sm:justify-end gap-2 text-right">
                     <StatusIcon value={f.featul} />
                     <span className="sr-only">
-                      featul: {String(f.featul)}
+                      Featul: {String(f.Featul)}
                     </span>
                   </div>
                 </li>

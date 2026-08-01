@@ -24,12 +24,12 @@ export function ProductFeedbackUseCase() {
         dataComponent="UseCaseDetail"
         eyebrow="Use case"
         title={`Centralize product feedback and roadmap in one place`}
-        description={`Learn how product organizations use featul to establish a single, reliable source of feedback truth, apply
+        description={`Learn how product organizations use Featul to establish a single, reliable source of feedback truth, apply
             structured prioritization, and communicate decisions back to customers in a predictable and professional way.`}
       >
         <article className="max-w-3xl space-y-0 text-left">
           <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Before featul vs after featul</h2>
+          <h2 className="text-xl font-semibold">Before Featul vs after Featul</h2>
           <p className="text-accent">
             Many teams begin with feedback distributed across multiple fragmented systems: support tickets, ad‑hoc Slack
             threads, spreadsheets maintained by individual contributors, and informal comments in community spaces. In
@@ -37,7 +37,7 @@ export function ProductFeedbackUseCase() {
             affected, and how feedback should influence the roadmap.
           </p>
           <p className="text-accent">
-            With featul, feedback, roadmap, and changelog are managed together within a single workspace. Product teams
+            With Featul, feedback, roadmap, and changelog are managed together within a single workspace. Product teams
             gain a consolidated view of demand, can clearly explain why certain initiatives are prioritized, and can
             demonstrate both internally and externally how customer input directly shapes product decisions.
           </p>
@@ -46,7 +46,7 @@ export function ProductFeedbackUseCase() {
         <section className="space-y-4 mt-10">
           <h2 className="text-xl font-semibold">1. Capture feedback from every channel</h2>
           <p className="text-accent">
-            Start by ensuring that all relevant channels feed into a single, consistent destination. With featul, you can
+            Start by ensuring that all relevant channels feed into a single, consistent destination. With Featul, you can
             bring feedback from in‑app widgets, email, support tools, and community spaces into a central feedback hub
             instead of allowing each channel to develop its own separate backlog.
           </p>
@@ -61,7 +61,7 @@ export function ProductFeedbackUseCase() {
         <section className="mt-10 space-y-4">
           <h2 className="text-xl font-semibold">2. Prioritize with a transparent roadmap</h2>
           <p className="text-accent">
-            When feedback is grouped into clear themes, it becomes easier to assess impact and urgency. featul enables
+            When feedback is grouped into clear themes, it becomes easier to assess impact and urgency. Featul enables
             teams to consolidate related requests into structured ideas, estimate the value and effort involved, and then
             convert those ideas into roadmap items that can be tracked over time.
           </p>
@@ -77,7 +77,7 @@ export function ProductFeedbackUseCase() {
           <h2 className="text-xl font-semibold">3. Close the loop with changelogs</h2>
           <p className="text-accent">
             When a feature ships, the work is not finished until customers clearly understand what has changed and how it
-            relates to their earlier requests. With featul, you can link releases back to their originating feedback,
+            relates to their earlier requests. With Featul, you can link releases back to their originating feedback,
             record the status change, and notify the customers and internal teams that were following a given item.
           </p>
           <p className="text-accent">
@@ -95,7 +95,7 @@ export function ProductFeedbackUseCase() {
             smaller customers via an in‑app feedback widget and periodic NPS surveys.
           </p>
           <p className="text-accent">
-            Using featul, the team groups all analytics‑related feedback into a single idea, attaches internal notes,
+            Using Featul, the team groups all analytics‑related feedback into a single idea, attaches internal notes,
             quantifies the number and type of customers affected, and evaluates the strategic impact. Once the work is
             prioritized, the idea is moved to “Planned” on the roadmap. Customers can subscribe to updates, and when the
             new analytics release ships, they automatically receive a clear changelog entry that explains what was
@@ -120,7 +120,7 @@ export function ProductFeedbackUseCase() {
         </section>
 
         <section className="mt-10 space-y-4">
-          <h2 className="text-xl font-semibold">Get started with featul</h2>
+          <h2 className="text-xl font-semibold">Get started with Featul</h2>
           <p className="text-accent">
             If you are ready to centralize product feedback and make roadmap decisions with greater confidence, a practical
             first step is to create your initial board, define a small number of clear categories, and invite the core

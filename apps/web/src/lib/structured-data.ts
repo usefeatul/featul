@@ -164,7 +164,7 @@ export function buildBlogPostingSchema({
     author: authors.length ? authors : undefined,
     publisher: {
       "@type": "Organization",
-      name: "featul",
+      name: "Featul",
       logo: {
         "@type": "ImageObject",
         url: `${siteUrl}/og.png`,
@@ -250,7 +250,7 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "featul",
+    name: "Featul",
     url: siteUrl,
     applicationCategory: "Product feedback, public roadmap, changelog",
     operatingSystem: "Web",
@@ -283,7 +283,7 @@ export function buildAlternativesBreadcrumbSchema({
       {
         "@type": "ListItem",
         position: 2,
-        name: `${name} vs featul`,
+        name: `${name} vs Featul`,
         item: `${siteUrl}/alternatives/${slug}`,
       },
     ],

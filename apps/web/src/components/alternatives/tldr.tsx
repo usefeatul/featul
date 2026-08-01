@@ -29,7 +29,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
               <div className="flex items-start gap-3">
                 <div>
                   <p className="text-accent mt-1 text-sm sm:text-base leading-7 text-balance sm:max-w-[60ch]">
-                    featul is a modern,
+                    Featul is a modern,
                     <span className="inline rounded-md  bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
                       privacy‑first
                     </span>

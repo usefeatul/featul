@@ -26,7 +26,7 @@ export default function Setup() {
                     <span className="inline rounded-md  bg-primary/50 px-2 py-0 text-black tracking-widest ml-1">
                       feedback.yourbrand.com
                     </span>
-                    or use featul's hosted space. Customers can browse ideas, vote on favorites, and submit new requests. No code required—just share the link.
+                    or use Featul's hosted space. Customers can browse ideas, vote on favorites, and submit new requests. No code required—just share the link.
                   </p>
                 </div>
               </div>

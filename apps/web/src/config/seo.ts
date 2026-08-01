@@ -21,8 +21,8 @@ function normalizeSiteUrl(input?: string) {
 
 export const SITE_URL = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)
 
-export const DEFAULT_TITLE = "featul"
-export const TITLE_TEMPLATE = "%s - featul"
+export const DEFAULT_TITLE = "Featul"
+export const TITLE_TEMPLATE = "%s - Featul"
 
 export const DEFAULT_DESCRIPTION =
   "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery."
@@ -42,7 +42,7 @@ export function getOrganizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'featul',
+    name: 'Featul',
     url: SITE_URL,
     logo: `${SITE_URL}/og.png`,
     sameAs: [],
@@ -60,9 +60,9 @@ export function getUseCaseHowToJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    name: 'How to centralize product feedback with featul',
+    name: 'How to centralize product feedback with Featul',
     description:
-      'Step-by-step guide to centralize product feedback, run a public roadmap, and publish changelogs with featul.',
+      'Step-by-step guide to centralize product feedback, run a public roadmap, and publish changelogs with Featul.',
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': `${SITE_URL}/use-cases/product-feedback-platform`,
@@ -70,7 +70,7 @@ export function getUseCaseHowToJsonLd() {
     tool: [
       {
         '@type': 'SoftwareApplication',
-        name: 'featul',
+        name: 'Featul',
         url: SITE_URL,
         applicationCategory: 'BusinessApplication',
       },
@@ -80,7 +80,7 @@ export function getUseCaseHowToJsonLd() {
         '@type': 'HowToStep',
         name: 'Create a central feedback board',
         text:
-          'Set up a public or private feedback board in featul to collect user ideas, requests, and bug reports in one place.',
+          'Set up a public or private feedback board in Featul to collect user ideas, requests, and bug reports in one place.',
       },
       {
         '@type': 'HowToStep',

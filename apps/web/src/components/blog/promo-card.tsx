@@ -17,7 +17,7 @@ export function PromoCard({
   title = "Featul, Simplified",
   description = "Stop guessing. Get actionable feedback, understand what users need, iterate faster, and ship with confidence.",
   ctaHref = "https://app.featul.com",
-  ctaLabel = "Sign up for featul",
+  ctaLabel = "Sign up for Featul",
   subtext = "Free to start, no cc required",
 }: PromoCardProps) {
   return (

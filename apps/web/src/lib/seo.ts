@@ -6,7 +6,7 @@ const TITLE_MAX_LENGTH = 60
 const DESCRIPTION_MIN_LENGTH = 150
 const DESCRIPTION_MAX_LENGTH = 160
 
-const TITLE_BRAND_SUFFIX = ' | featul'
+const TITLE_BRAND_SUFFIX = ' | Featul'
 const TITLE_EXTENSIONS = [
   ' app',
   ' for SaaS teams',

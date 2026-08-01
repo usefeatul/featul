@@ -46,8 +46,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: SITE_URL,
-    siteName: "featul",
-    title: "featul",
+    siteName: "Featul",
+    title: "Featul",
     description:
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
     images: [
@@ -55,13 +55,13 @@ export const metadata: Metadata = {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "featul",
+        alt: "Featul",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "featul",
+    title: "Featul",
     description:
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
     images: ["/og.png"],

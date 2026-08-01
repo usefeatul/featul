@@ -13,7 +13,7 @@ export default function AlternativesList({ items = defaultAlternatives }: { item
         >
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-foreground sm:text-base">
-              featul vs {alt.name}
+              Featul vs {alt.name}
             </p>
             {alt.summary ? (
               <p className="text-accent mt-0.5 line-clamp-1 text-xs">

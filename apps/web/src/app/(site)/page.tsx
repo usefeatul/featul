@@ -14,7 +14,7 @@ import { SectionStack } from "@/components/layout/section-stack";
 import { VerticalLines } from "@/components/vertical-lines";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Customer Feedback, Roadmaps & Changelogs | featul",
+  title: "Customer Feedback, Roadmaps & Changelogs | Featul",
   description: DEFAULT_DESCRIPTION,
   path: "/",
   absoluteTitle: true,

@@ -27,7 +27,7 @@ export default function FooterSection() {
                 className="inline-flex items-center gap-2 text-foreground hover:text-primary"
               >
                 <FeatulLogoIcon />
-                <span className="font-heading text-sm font-medium">featul</span>
+                <span className="font-heading text-sm font-medium">Featul</span>
               </Link>
               <p className="text-accent mt-4 text-sm leading-6">
                 Customer feedback, roadmaps, and changelogs in one simple
@@ -60,7 +60,7 @@ export default function FooterSection() {
           </div>
 
           <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-accent text-sm">© {year} featul</p>
+            <p className="text-accent text-sm">© {year} Featul</p>
 
             <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
               <Link

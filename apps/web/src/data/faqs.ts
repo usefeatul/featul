@@ -9,7 +9,7 @@ export const faqItems: FaqItem[] = [
     id: "item-1",
     question: "How quickly can I start collecting feedback?",
     answer:
-      "You can start in minutes. Add the featul widget, share a feedback link, or enable a public board no complex setup required.",
+      "You can start in minutes. Add the Featul widget, share a feedback link, or enable a public board no complex setup required.",
   },
   {
     id: "item-2",
@@ -25,61 +25,61 @@ export const faqItems: FaqItem[] = [
   },
   {
     id: "item-4",
-    question: "How does featul help prioritize user feedback?",
+    question: "How does Featul help prioritize user feedback?",
     answer:
       "Sort by votes, impact, or segment (plan, customer size, etc.). Link feedback to roadmap items and track progress from “Planned” to “Done.”",
   },
   {
     id: "item-5",
-    question: "Can featul help reduce customer churn?",
+    question: "Can Featul help reduce customer churn?",
     answer:
       "Close the loop by updating requesters automatically when features ship. Share clear roadmaps and release notes to build trust and retention.",
   },
   {
     id: "item-6",
-    question: "Is featul suitable for SaaS companies?",
+    question: "Is Featul suitable for SaaS companies?",
     answer:
-      "Absolutely. Product, support, and success teams use featul to centralize feedback, align priorities, and communicate updates transparently.",
+      "Absolutely. Product, support, and success teams use Featul to centralize feedback, align priorities, and communicate updates transparently.",
   },
   {
     id: "item-7",
-    question: "Can I use featul as a product roadmap tool?",
+    question: "Can I use Featul as a product roadmap tool?",
     answer:
       "Yes. Create roadmap items with statuses like Planned, In Progress, and Released. Connect them to feedback to show why each item matters.",
   },
   {
     id: "item-8",
-    question: "Does featul offer feedback tracking?",
+    question: "Does Featul offer feedback tracking?",
     answer:
       "Track every request from submission to resolution. See who asked, how many voted, and the current status at a glance.",
   },
   {
     id: "item-9",
-    question: "Can I create a product changelog with featul?",
+    question: "Can I create a product changelog with Featul?",
     answer:
       "Yes. Publish release notes directly from your completed items so customers can follow improvements without digging through tickets.",
   },
   {
     id: "item-10",
-    question: "How can featul improve customer experience management?",
+    question: "How can Featul improve customer experience management?",
     answer:
       "Unify input from users and teams, prioritize by impact, and communicate decisions clearly so customers feel heard and guided.",
   },
   {
     id: "item-11",
-    question: "Does featul support guest or anonymous feedback?",
+    question: "Does Featul support guest or anonymous feedback?",
     answer:
       "Yes. Allow anonymous posts or require email/sign-in based on your privacy needs. You can toggle this at any time.",
   },
   {
     id: "item-12",
-    question: "Can I customize featul to match my brand?",
+    question: "Can I customize Featul to match my brand?",
     answer:
       "Apply brand colors, typography, and your logo. Use a custom domain for public boards to create a seamless, on-brand experience.",
   },
   {
     id: "item-13",
-    question: "What integrations does featul offer?",
+    question: "What integrations does Featul offer?",
     answer:
       "Connect with popular tools like Slack and issue trackers. Use webhooks to sync feedback or trigger workflows in your stack.",
   },

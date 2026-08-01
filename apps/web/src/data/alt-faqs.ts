@@ -8,23 +8,23 @@ export type AlternativeFaqs = {
 export const altFaqs: Record<string, AlternativeFaqs> = {
   userjot: {
     description:
-      'Compare UserJot and featul: EU hosting by default, complete workflow with boards, roadmap and changelog, easy migration.',
+      'Compare UserJot and Featul: EU hosting by default, complete workflow with boards, roadmap and changelog, easy migration.',
     items: [
       {
         id: 'userjot-1',
-        question: 'What’s the key difference between UserJot and featul?',
+        question: 'What’s the key difference between UserJot and Featul?',
         answer:
-          'UserJot focuses on lightweight feedback capture. featul adds a complete workflow—feedback boards, public roadmap, and changelog—plus privacy-first defaults.',
+          'UserJot focuses on lightweight feedback capture. Featul adds a complete workflow—feedback boards, public roadmap, and changelog—plus privacy-first defaults.',
       },
       {
         id: 'userjot-2',
-        question: 'Does featul provide EU hosting by default?',
+        question: 'Does Featul provide EU hosting by default?',
         answer:
-          'Yes. featul prioritizes EU hosting and GDPR-friendly settings out of the box, helping teams meet regional compliance requirements.',
+          'Yes. Featul prioritizes EU hosting and GDPR-friendly settings out of the box, helping teams meet regional compliance requirements.',
       },
       {
         id: 'userjot-3',
-        question: 'Can I migrate data from UserJot to featul?',
+        question: 'Can I migrate data from UserJot to Featul?',
         answer:
           'You can import posts and set up categories, statuses, and tags to mirror your existing structure. Our team can guide larger migrations.',
       },
@@ -32,7 +32,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'userjot-4',
         question: 'How do voting and boards compare?',
         answer:
-          'Both support voting and boards. featul adds prioritization tools (tags, segments) and links feedback directly to roadmap items.',
+          'Both support voting and boards. Featul adds prioritization tools (tags, segments) and links feedback directly to roadmap items.',
       },
       {
         id: 'userjot-5',
@@ -44,25 +44,25 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'userjot-6',
         question: 'What integrations are available?',
         answer:
-          'featul integrates with Slack and offers webhooks/API for custom workflows. SSO is supported depending on plan and setup.',
+          'Featul integrates with Slack and offers webhooks/API for custom workflows. SSO is supported depending on plan and setup.',
       },
     ],
   },
   featurebase: {
     description:
-      'Compare Featurebase and featul: EU hosting, privacy defaults, unified roadmap and changelog.',
+      'Compare Featurebase and Featul: EU hosting, privacy defaults, unified roadmap and changelog.',
     items: [
       {
         id: 'featurebase-1',
-        question: 'How does featul differ from Featurebase?',
+        question: 'How does Featul differ from Featurebase?',
         answer:
-          'Both offer strong feedback and voting. featul adds privacy-first defaults, EU hosting by default, and a unified roadmap–changelog workflow.',
+          'Both offer strong feedback and voting. Featul adds privacy-first defaults, EU hosting by default, and a unified roadmap–changelog workflow.',
       },
       {
         id: 'featurebase-2',
-        question: 'Does featul focus on EU hosting and privacy?',
+        question: 'Does Featul focus on EU hosting and privacy?',
         answer:
-          'Yes. featul provides EU hosting and sensible GDPR-aligned controls without heavy configuration, ideal for privacy-conscious teams.',
+          'Yes. Featul provides EU hosting and sensible GDPR-aligned controls without heavy configuration, ideal for privacy-conscious teams.',
       },
       {
         id: 'featurebase-3',
@@ -72,7 +72,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
       },
       {
         id: 'featurebase-4',
-        question: 'Does featul include roadmap and changelog?',
+        question: 'Does Featul include roadmap and changelog?',
         answer:
           'Yes. Link feedback to roadmap items and publish release notes so customers understand what shipped and why.',
       },
@@ -80,7 +80,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'featurebase-5',
         question: 'Is SSO available?',
         answer:
-          'SSO is available depending on plan and provider. featul supports common identity setups for streamlined authentication.',
+          'SSO is available depending on plan and provider. Featul supports common identity setups for streamlined authentication.',
       },
       {
         id: 'featurebase-6',
@@ -92,17 +92,17 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
   },
   nolt: {
     description:
-      'Compare Nolt and featul: EU hosting, roadmap, changelog, and an embeddable widget.',
+      'Compare Nolt and Featul: EU hosting, roadmap, changelog, and an embeddable widget.',
     items: [
       {
         id: 'nolt-1',
-        question: 'What’s different between Nolt and featul?',
+        question: 'What’s different between Nolt and Featul?',
         answer:
-          'Nolt is great for boards and voting. featul expands the workflow with roadmap, changelog, and privacy-first hosting in the EU.',
+          'Nolt is great for boards and voting. Featul expands the workflow with roadmap, changelog, and privacy-first hosting in the EU.',
       },
       {
         id: 'nolt-2',
-        question: 'Does featul have EU hosting?',
+        question: 'Does Featul have EU hosting?',
         answer:
           'Yes EU by default, with GDPR-friendly settings to reduce legal overhead and simplify compliance.',
       },
@@ -110,13 +110,13 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'nolt-3',
         question: 'Can I embed feedback capture in my app?',
         answer:
-          'Yes. featul’s embeddable widget gathers context without switching surfaces, improving submission quality and speed.',
+          'Yes. Featul’s embeddable widget gathers context without switching surfaces, improving submission quality and speed.',
       },
       {
         id: 'nolt-4',
         question: 'Do you support roadmap and changelog?',
         answer:
-          'featul includes both. Connect feedback to roadmap items and publish release notes to keep requesters informed.',
+          'Featul includes both. Connect feedback to roadmap items and publish release notes to keep requesters informed.',
       },
       {
         id: 'nolt-5',
@@ -134,19 +134,19 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
   },
   canny: {
     description:
-      'Compare Canny and featul: EU hosting by default and a streamlined workflow.',
+      'Compare Canny and Featul: EU hosting by default and a streamlined workflow.',
     items: [
       {
         id: 'canny-1',
         question: 'What’s the biggest difference from Canny?',
         answer:
-          'featul emphasizes EU hosting and privacy-first defaults while keeping the workflow simple—boards, roadmap, and changelog linked together.',
+          'Featul emphasizes EU hosting and privacy-first defaults while keeping the workflow simple—boards, roadmap, and changelog linked together.',
       },
       {
         id: 'canny-2',
         question: 'Is EU hosting supported?',
         answer:
-          'Yes. featul provides EU hosting by default to help meet regional privacy and residency requirements.',
+          'Yes. Featul provides EU hosting by default to help meet regional privacy and residency requirements.',
       },
       {
         id: 'canny-3',
@@ -158,13 +158,13 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'canny-4',
         question: 'Do you include roadmap and changelog?',
         answer:
-          'Yes. featul links feedback to roadmap items and makes publishing release notes effortless to close the loop.',
+          'Yes. Featul links feedback to roadmap items and makes publishing release notes effortless to close the loop.',
       },
       {
         id: 'canny-5',
         question: 'Is SSO available?',
         answer:
-          'SSO is supported depending on plan and provider. featul integrates cleanly with common identity systems.',
+          'SSO is supported depending on plan and provider. Featul integrates cleanly with common identity systems.',
       },
       {
         id: 'canny-6',
@@ -176,17 +176,17 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
   },
   upvoty: {
     description:
-      'Compare Upvoty and featul: EU hosting and a complete workflow with roadmap and changelog.',
+      'Compare Upvoty and Featul: EU hosting and a complete workflow with roadmap and changelog.',
     items: [
       {
         id: 'upvoty-1',
-        question: 'How does featul differ from Upvoty?',
+        question: 'How does Featul differ from Upvoty?',
         answer:
-          'Upvoty makes voting simple. featul extends that with roadmap/changelog and EU hosting by default for privacy-focused teams.',
+          'Upvoty makes voting simple. Featul extends that with roadmap/changelog and EU hosting by default for privacy-focused teams.',
       },
       {
         id: 'upvoty-2',
-        question: 'Does featul have EU hosting and GDPR support?',
+        question: 'Does Featul have EU hosting and GDPR support?',
         answer:
           'Yes. Privacy defaults and EU hosting help you meet compliance with less effort.',
       },
@@ -206,7 +206,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'upvoty-5',
         question: 'Do you provide an API and webhooks?',
         answer:
-          'featul includes an API and webhooks so you can build automations or sync with internal tools.',
+          'Featul includes an API and webhooks so you can build automations or sync with internal tools.',
       },
       {
         id: 'upvoty-6',
@@ -223,11 +223,11 @@ export function getAlternativeFaq(slug: string): AlternativeFaqs {
   if (entry) return entry
   return {
     description:
-      'Compare any alternative with featul: EU hosting, migration, and a unified workflow.',
+      'Compare any alternative with Featul: EU hosting, migration, and a unified workflow.',
     items: [
       {
         id: 'generic-1',
-        question: 'What makes featul different?',
+        question: 'What makes Featul different?',
         answer:
           'Privacy-first EU hosting, simple setup, and an end-to-end workflow—feedback boards, public roadmap, and changelog—kept in sync.',
       },
@@ -241,7 +241,7 @@ export function getAlternativeFaq(slug: string): AlternativeFaqs {
         id: 'generic-3',
         question: 'Do you offer a public roadmap and changelog?',
         answer:
-          'featul includes both. Connect feedback to roadmap items and publish release notes to close the loop.',
+          'Featul includes both. Connect feedback to roadmap items and publish release notes to close the loop.',
       },
       {
         id: 'generic-4',
@@ -257,7 +257,7 @@ export function getAlternativeFaq(slug: string): AlternativeFaqs {
       },
       {
         id: 'generic-6',
-        question: 'How quickly can I set up featul?',
+        question: 'How quickly can I set up Featul?',
         answer:
           'You can start in minutes—enable a board, share a link, or embed our widget to collect feedback in-context.',
       },
