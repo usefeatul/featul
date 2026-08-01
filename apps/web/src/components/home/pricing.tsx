@@ -18,7 +18,10 @@ export default function Pricing() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
 
   return (
-    <SkySection data-component="Pricing">
+    <SkySection
+      data-component="Pricing"
+      contentClassName="pb-6 pt-36 sm:pb-8 sm:pt-40 md:pb-10"
+    >
       <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl [text-shadow:0_1px_8px_rgba(0,0,0,0.2)]">
