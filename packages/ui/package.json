@@ -48,6 +48,7 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./icons/*": "./src/icons/*.tsx",
+    "./icons/alternative": "./src/icons/alternative/alternative-icon.tsx",
     "./global/*": "./src/global/*.tsx"
   }
 }
