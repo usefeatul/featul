@@ -8,7 +8,7 @@ import Setup from "@/components/home/setup";
 import Create from "@/components/home/create";
 import Integrations from "@/components/home/integrations";
 import Listening from "@/components/home/listening";
-import FeaturesSection from "@/components/home/featureTwo";
+import FeaturesSection from "@/components/home/features-section";
 import { ConversionHero } from "@/components/home/conversion-hero";
 import { SectionStack } from "@/components/layout/section-stack";
 import { VerticalLines } from "@/components/vertical-lines";
