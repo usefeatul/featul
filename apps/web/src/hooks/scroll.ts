@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { escapeId } from "@/lib/toc-utils"
+import { escapeId } from "@/lib/tocutils"
 
 export function useAutoScrollActiveLink(
   activeId: string | null,

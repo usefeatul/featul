@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
-import { DocsSidebar } from "./Sidebar"
-import { DocsMobileNav } from "./MobileNav"
+import { DocsSidebar } from "./sidebar"
+import { DocsMobileNav } from "./nav"
 
 interface DocsLayoutShellProps {
   children: ReactNode

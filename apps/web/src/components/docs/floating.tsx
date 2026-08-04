@@ -10,8 +10,8 @@ import { docsSections } from "@/config/docsNav"
 import {
   getDocsCurrentPageLabel,
   getDocsCurrentSectionLabel,
-} from "../../lib/mobile-nav-utils"
-import { useIsDocsMobile } from "@/hooks/use-docs-mobile"
+} from "../../lib/nav"
+import { useIsDocsMobile } from "@/hooks/docs"
 
 export function DocsMobileFloatingNav() {
   const isMobile = useIsDocsMobile()

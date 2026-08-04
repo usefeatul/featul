@@ -1,5 +1,5 @@
-import { SkyPageShell } from "@/components/layout/sky-page-shell"
-import LegalMarkdown from "@/components/legal/legal-markdown"
+import { SkyPageShell } from "@/components/layout/shell"
+import LegalMarkdown from "@/components/legal/markdown"
 import { readLegalMarkdown } from "@/lib/markdown"
 import type { LegalSlug } from "@/types/legal"
 

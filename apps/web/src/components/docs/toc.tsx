@@ -8,10 +8,10 @@ import {
   getTocHeight,
   TOC_ITEM_HEIGHT,
   TOC_INDENT_OFFSET,
-} from "@/lib/toc-path"
+} from "@/lib/path"
 import { useId, useLayoutEffect, useMemo } from "react"
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
-import { useActiveHeading } from "@/hooks/use-active-heading"
+import { useActiveHeading } from "@/hooks/heading"
 
 interface DocsTocProps {
   items: TocItem[]

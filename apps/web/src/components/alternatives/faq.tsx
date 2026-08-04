@@ -1,9 +1,9 @@
 "use client";
 
 import { Container } from "@/components/global/container";
-import { FaqAccordion } from "@/components/shared/faq-accordion";
+import { FaqAccordion } from "@/components/shared/accordion";
 import type { Alternative } from "@/config/alternatives";
-import { getAlternativeFaq } from "@/data/alt-faqs";
+import { getAlternativeFaq } from "@/data/alt";
 
 export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
   const { description, items } = getAlternativeFaq(alt.slug);

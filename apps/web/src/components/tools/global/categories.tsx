@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { TOOL_CATEGORIES } from '@/types/tools'
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@featul/ui/components/card'
 import { CornerUpRight } from 'lucide-react'
-import { getCategoryIcon } from './category-icons'
+import { getCategoryIcon } from './icons'
 
 
 export default function CategoryList() {

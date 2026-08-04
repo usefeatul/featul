@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { SkyPageShell } from "@/components/layout/sky-page-shell";
+import { SkyPageShell } from "@/components/layout/shell";
 import { getPosts } from "@/lib/query";
-import { BlogCard } from "@/components/blog/blog-card";
+import { BlogCard } from "@/components/blog/card";
 import type { MarblePostListResponse } from "@/types/marble";
 import { createPageMetadata } from "@/lib/seo";
 

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@featul/ui/components/button"
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
-import { useIsDocsMobile } from "@/hooks/use-docs-mobile"
+import { useIsDocsMobile } from "@/hooks/docs"
 
 export function DocsMobileHeader() {
   const isMobile = useIsDocsMobile()

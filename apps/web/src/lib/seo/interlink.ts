@@ -5,7 +5,7 @@
  * and to build hub-and-spoke internal linking structure.
  */
 
-import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/content-matrix";
+import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/matrix";
 import { getDefinitionBySlug, getAllDefinitionSlugs } from "@/content/definitions";
 import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools";
 

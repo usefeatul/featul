@@ -19,8 +19,8 @@ import {
   type DemoStatus,
   type DemoView,
 } from "./data";
-import { DemoStatusIcon } from "./demo-status-icon";
-import { DemoAvatar } from "./demo-avatar";
+import { DemoStatusIcon } from "./icon";
+import { DemoAvatar } from "./avatar";
 
 
 const STATUSES: DemoStatus[] = [

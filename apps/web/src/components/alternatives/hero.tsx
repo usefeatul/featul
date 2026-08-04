@@ -1,8 +1,8 @@
 "use client";
 
 import type { Alternative } from "@/config/alternatives";
-import { SkyMarketingHero } from "@/components/layout/sky-marketing-hero";
-import { AlternativeHeroContent } from "./hero-content";
+import { SkyMarketingHero } from "@/components/layout/hero";
+import { AlternativeHeroContent } from "./content";
 import { getAltDescription } from "@/types/descriptions";
 
 export function AlternativeHero({ alt }: { alt: Alternative }) {

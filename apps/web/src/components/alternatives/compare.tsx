@@ -1,6 +1,6 @@
 import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
-import { StatusIcon } from "./status-icon";
+import { StatusIcon } from "./icon";
 import { SquareIcon } from "@featul/ui/icons/square";
 // import { AccentBar } from "@featul/ui/components/cardElements";
 

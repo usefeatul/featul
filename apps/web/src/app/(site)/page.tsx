@@ -8,10 +8,10 @@ import Setup from "@/components/home/setup";
 import Create from "@/components/home/create";
 import Integrations from "@/components/home/integrations";
 import Listening from "@/components/home/listening";
-import FeaturesSection from "@/components/home/features-section";
-import { ConversionHero } from "@/components/home/conversion-hero";
-import { SectionStack } from "@/components/layout/section-stack";
-import { VerticalLines } from "@/components/vertical-lines";
+import FeaturesSection from "@/components/home/features";
+import { ConversionHero } from "@/components/home/conversion";
+import { SectionStack } from "@/components/layout/stack";
+import { VerticalLines } from "@/components/lines";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Customer Feedback, Roadmaps & Changelogs | Featul",

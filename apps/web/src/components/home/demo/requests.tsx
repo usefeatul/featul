@@ -17,8 +17,8 @@ import {
   type DemoPost,
   type DemoStatus,
 } from "./data";
-import { DemoStatusIcon } from "./demo-status-icon";
-import { DemoAvatar } from "./demo-avatar";
+import { DemoStatusIcon } from "./icon";
+import { DemoAvatar } from "./avatar";
 
 function Toolbar() {
   const items = [

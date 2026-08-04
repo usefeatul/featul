@@ -4,9 +4,9 @@ import type {
   ReadingProgressProps,
   ScrollBehaviorOption,
 } from "../../types/reading";
-import { usePrefersReducedMotion } from "../../hooks/use-prefers-reduced-motion";
-import { useReadingProgress } from "../../hooks/use-reading-progress";
-import { ReadingProgressButton } from "./reading-progress-button";
+import { usePrefersReducedMotion } from "../../hooks/motion";
+import { useReadingProgress } from "../../hooks/progress";
+import { ReadingProgressButton } from "./button";
 
 export function ReadingProgress({
   targetSelector = "article",

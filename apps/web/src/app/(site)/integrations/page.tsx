@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/global/container";
-import { INTEGRATIONS } from "@/lib/data/programmatic/content-matrix";
+import { INTEGRATIONS } from "@/lib/data/programmatic/matrix";
 import {
   Card,
   CardHeader,

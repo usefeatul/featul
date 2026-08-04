@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
-import { SkyPageShell } from "@/components/layout/sky-page-shell"
+import { SkyPageShell } from "@/components/layout/shell"
 import type { Definition } from "@/types/definitions"
 
 export default function DefinitionsIndex({ items }: { items: Definition[] }) {

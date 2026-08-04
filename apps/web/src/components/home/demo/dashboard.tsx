@@ -8,10 +8,10 @@ import { LockIcon } from "@featul/ui/icons/lock";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { StarIcon } from "@featul/ui/icons/star";
 import { XMarkIcon } from "@featul/ui/icons/xmark";
-import { DemoSidebar } from "./demo-sidebar";
-import { DemoRequests } from "./demo-requests";
-import { DemoRoadmap } from "./demo-roadmap";
-import { DemoChangelog } from "./demo-changelog";
+import { DemoSidebar } from "./sidebar";
+import { DemoRequests } from "./requests";
+import { DemoRoadmap } from "./roadmap";
+import { DemoChangelog } from "./changelog";
 import {
   DEMO_POSTS,
   DEMO_WORKSPACE,

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { TOOL_CATEGORIES } from "@/types/tools"
-import CategoryList from "@/components/tools/global/category-list"
-import ToolsPageShell from "@/components/tools/global/tool-shell"
+import CategoryList from "@/components/tools/global/categories"
+import ToolsPageShell from "@/components/tools/global/shell"
 import { createPageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import React from "react";
 import { notFound } from "next/navigation";
-import ToolsPageShell from "@/components/tools/global/tool-shell";
+import ToolsPageShell from "@/components/tools/global/shell";
 import {
   getCategoryBySlug,
   getToolBySlugs,
@@ -15,7 +15,7 @@ import { SITE_URL } from "@/config/seo";
 import {
   buildToolFaqSchema,
   buildBreadcrumbSchema,
-} from "@/lib/structured-data";
+} from "@/lib/schema";
 
 type Props = { params: Promise<{ category: string; tool: string }> };
 

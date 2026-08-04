@@ -1,7 +1,7 @@
 import Navbar from "@/components/home/navbar"
 import Footer from "@/components/home/footer"
-import AnnouncementBanner from "@/components/home/announcement-banner"
-import MarketingConsentManager from "@/components/legal/marketing-consent-manager"
+import AnnouncementBanner from "@/components/home/banner"
+import MarketingConsentManager from "@/components/legal/consent"
 
 export default function SiteLayout({
   children,

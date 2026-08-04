@@ -1,7 +1,7 @@
 "use client";
 
 import { Container } from "../global/container";
-import { HotkeyLink } from "../global/hotkey-link";
+import { HotkeyLink } from "../global/hotkey";
 import { BoardIcon } from "@featul/ui/icons/board";
 import { RoadmapIcon } from "@featul/ui/icons/roadmap";
 import { ChangelogIcon } from "@featul/ui/icons/changelog";

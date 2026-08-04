@@ -1,6 +1,6 @@
 import Script from "next/script";
 import { serializeJsonLd } from "@/lib/security";
-import { buildFaqPageSchema } from "@/lib/structured-data";
+import { buildFaqPageSchema } from "@/lib/schema";
 
 export type FaqItem = { q: string; a: string };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { LinearSeparator } from "@/components/linear-separator";
+import { LinearSeparator } from "@/components/separator";
 
 interface SectionStackProps {
     children: React.ReactNode;

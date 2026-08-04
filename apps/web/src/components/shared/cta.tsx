@@ -1,7 +1,7 @@
 "use client";
 
-import { HotkeyLink } from "@/components/global/hotkey-link";
-import { LiveDemo } from "@/components/global/live-demo";
+import { HotkeyLink } from "@/components/global/hotkey";
+import { LiveDemo } from "@/components/global/demo";
 import { cn } from "@featul/ui/lib/utils";
 
 type HeroCtaProps = {

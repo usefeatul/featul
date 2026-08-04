@@ -1,9 +1,9 @@
 import { Container } from "@/components/global/container";
 import { getAllAlternatives } from "@/config/alternatives";
 import AlternativesList from "@/components/alternatives/list";
-import { AlternativesIndexHero } from "@/components/alternatives/index-hero";
+import { AlternativesIndexHero } from "@/components/alternatives/index";
 import { createPageMetadata } from "@/lib/seo";
-import { VerticalLines } from "@/components/vertical-lines";
+import { VerticalLines } from "@/components/lines";
 
 export const metadata = createPageMetadata({
   title: "Best Featul Alternatives for Feedback & Roadmaps",

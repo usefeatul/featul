@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
-import { isSkyPath } from "@/lib/sky-paths";
+import { isSkyPath } from "@/lib/sky";
 
 export function VerticalLines({
     className,

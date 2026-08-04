@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { UseCaseTemplate } from "@/components/seo/templates/UseCaseTemplate";
+import { UseCaseTemplate } from "@/components/seo/templates/usecase";
 import { generateUseCasePage } from "@/lib/data/programmatic/generators";
 import { getRelatedPages } from "@/lib/seo/interlink";
-import { getAllUseCaseSlugs as getAllProgrammaticSlugs } from "@/lib/data/programmatic/content-matrix";
-import { getAllUseCaseSlugs as getOriginalSlugs, getUseCaseBySlug } from "@/types/use-cases";
-import { USE_CASE_COMPONENTS } from "@/types/use-case-registry";
+import { getAllUseCaseSlugs as getAllProgrammaticSlugs } from "@/lib/data/programmatic/matrix";
+import { getAllUseCaseSlugs as getOriginalSlugs, getUseCaseBySlug } from "@/types/scenarios";
+import { USE_CASE_COMPONENTS } from "@/types/cases";
 import { createArticleMetadata } from "@/lib/seo";
 
 /**

@@ -1,11 +1,11 @@
 "use client"
 
-import { DocsMobileHeader } from "./MobileHeader"
-import { DocsMobileFloatingNav } from "./MobileFloatingNav"
+import { DocsMobileHeader } from "./header"
+import { DocsMobileFloatingNav } from "./floating"
 export {
   getDocsCurrentPageLabel,
   getDocsCurrentSectionLabel,
-} from "../../lib/mobile-nav-utils"
+} from "../../lib/nav"
 
 export function DocsMobileNav() {
   return (

@@ -5,7 +5,7 @@ import BackLink from "@/components/tools/global/backlink"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@featul/ui/components/card"
 import { Label } from "@featul/ui/components/label"
 import { Input } from "@featul/ui/components/input"
-import StatusBadge from "@/components/tools/global/status-badge"
+import StatusBadge from "@/components/tools/global/badge"
 
 export default function StickinessCalculator() {
   const [dau, setDau] = useState<number>(1200)

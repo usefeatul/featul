@@ -8,8 +8,8 @@ import { cn } from "@featul/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
 import Link from "next/link"
 import Faq from "@/components/home/faq"
-import { LinearSeparator } from "@/components/linear-separator"
-import { SkyPageShell } from "@/components/layout/sky-page-shell"
+import { LinearSeparator } from "@/components/separator"
+import { SkyPageShell } from "@/components/layout/shell"
 import {
   type BillingCycle,
   type PricingPlanKey,

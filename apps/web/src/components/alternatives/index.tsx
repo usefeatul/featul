@@ -1,7 +1,7 @@
 "use client";
 
-import { SkyMarketingHero } from "@/components/layout/sky-marketing-hero";
-import { AlternativesIndexHeroContent } from "./index-hero-content";
+import { SkyMarketingHero } from "@/components/layout/hero";
+import { AlternativesIndexHeroContent } from "./intro";
 
 export function AlternativesIndexHero() {
   return (

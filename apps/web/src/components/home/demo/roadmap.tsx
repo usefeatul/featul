@@ -8,8 +8,8 @@ import {
   DEMO_STATUS_LABELS,
   type DemoStatus,
 } from "./data";
-import { DemoStatusIcon } from "./demo-status-icon";
-import { DemoAvatar } from "./demo-avatar";
+import { DemoStatusIcon } from "./icon";
+import { DemoAvatar } from "./avatar";
 
 const COLUMNS = ["planned", "progress", "review"] as const satisfies readonly DemoStatus[];
 

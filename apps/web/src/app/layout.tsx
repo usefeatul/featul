@@ -9,14 +9,14 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
-import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
+import OrganizationJsonLd from "@/components/seo/organization";
 import {
   buildSiteNavigationSchema,
   buildSoftwareApplicationSchema,
-} from "@/lib/structured-data";
+} from "@/lib/schema";
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
-import { VerticalLines } from "@/components/vertical-lines";
+import { VerticalLines } from "@/components/lines";
 import { serializeJsonLd } from "@/lib/security";
 
 const manrope = Manrope({

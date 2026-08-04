@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Container } from "../global/container";
-import { HeroContent } from "./hero-content";
-import { DashboardDemo } from "./demo/dashboard-demo";
+import { HeroContent } from "./content";
+import { DashboardDemo } from "./demo/dashboard";
 import type { DemoView } from "./demo/data";
 
 const DEMO_WIDTH = 960;

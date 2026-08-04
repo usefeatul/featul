@@ -1,7 +1,7 @@
 "use client";
 
-import { HeroCta } from "@/components/shared/hero-cta";
-import { HeroHighlights } from "@/components/shared/hero-highlights";
+import { HeroCta } from "@/components/shared/cta";
+import { HeroHighlights } from "@/components/shared/highlights";
 
 export function AlternativesIndexHeroContent() {
   return (

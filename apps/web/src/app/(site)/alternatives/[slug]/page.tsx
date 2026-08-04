@@ -15,9 +15,9 @@ import {
 } from "@/config/alternatives";
 import { serializeJsonLd } from "@/lib/security";
 
-import { SectionStack } from "@/components/layout/section-stack";
+import { SectionStack } from "@/components/layout/stack";
 import { SITE_URL } from "@/config/seo";
-import { buildAlternativesBreadcrumbSchema } from "@/lib/structured-data";
+import { buildAlternativesBreadcrumbSchema } from "@/lib/schema";
 
 export async function generateStaticParams() {
   return getAlternativeSlugs().map((slug) => ({ slug }));

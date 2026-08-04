@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { SkyPageShell } from "@/components/layout/sky-page-shell"
+import { SkyPageShell } from "@/components/layout/shell"
 
 type ToolsPageShellProps = {
   children: ReactNode

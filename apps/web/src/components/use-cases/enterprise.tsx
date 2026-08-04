@@ -1,9 +1,9 @@
 import Link from "next/link"
 import Script from "next/script"
 import { SITE_URL } from "@/config/seo"
-import { buildUseCasesBreadcrumbSchema } from "@/lib/structured-data"
+import { buildUseCasesBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security";
-import { SkyPageShell } from "@/components/layout/sky-page-shell"
+import { SkyPageShell } from "@/components/layout/shell"
 
 export function EnterpriseCustomerSuccessUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({

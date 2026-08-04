@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import { USE_CASES } from "@/types/use-cases"
-import UseCaseCardList from "@/components/use-cases/global/use-case-card-list"
-import { SkyPageShell } from "@/components/layout/sky-page-shell"
+import { USE_CASES } from "@/types/scenarios"
+import UseCaseCardList from "@/components/use-cases/global/cards"
+import { SkyPageShell } from "@/components/layout/shell"
 import { createPageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({

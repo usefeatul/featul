@@ -10,8 +10,8 @@
 
 import Link from "next/link";
 import Script from "next/script";
-import { RelatedLinks } from "@/components/seo/RelatedLinks";
-import { SkyPageShell } from "@/components/layout/sky-page-shell";
+import { RelatedLinks } from "@/components/seo/links";
+import { SkyPageShell } from "@/components/layout/shell";
 import type { UseCasePageData } from "@/lib/data/programmatic/generators";
 import type { RelatedLink } from "@/lib/seo/interlink";
 import { SITE_URL } from "@/config/seo";
@@ -19,7 +19,7 @@ import { serializeJsonLd } from "@/lib/security";
 import {
   buildFaqPageSchema,
   buildUseCasesBreadcrumbSchema,
-} from "@/lib/structured-data";
+} from "@/lib/schema";
 
 interface Props {
   data: UseCasePageData;

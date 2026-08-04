@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
-import DefinitionDetail from "@/components/definitions/DefinitionDetail"
-import DefinedTermJsonLd from "@/components/seo/DefinedTermJsonLd"
-import FaqJsonLd from "@/components/seo/FaqJsonLd"
+import DefinitionDetail from "@/components/definitions/detail"
+import DefinedTermJsonLd from "@/components/seo/term"
+import FaqJsonLd from "@/components/seo/jsonld"
 import { createPageMetadata } from "@/lib/seo"
 import { getDefinitionBySlug, getAllDefinitionParams, getPrimarySlug } from "@/content/definitions"
 import { SITE_URL } from "@/config/seo"
-import { buildDefinitionBreadcrumbSchema } from "@/lib/structured-data"
+import { buildDefinitionBreadcrumbSchema } from "@/lib/schema"
 import Script from "next/script"
 import { serializeJsonLd } from "@/lib/security";
 

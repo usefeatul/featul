@@ -2,8 +2,8 @@
 
 import type { ReactNode } from "react"
 import { Container } from "@/components/global/container"
-import { SkySection } from "@/components/layout/sky-section"
-import { VerticalLines } from "@/components/vertical-lines"
+import { SkySection } from "@/components/layout/section"
+import { VerticalLines } from "@/components/lines"
 import { cn } from "@featul/ui/lib/utils"
 
 type SkyPageShellProps = {

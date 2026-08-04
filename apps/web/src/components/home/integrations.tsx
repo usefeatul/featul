@@ -9,7 +9,7 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { HorizontalScrollControls } from "./horizontal-scroll-controls";
+import { HorizontalScrollControls } from "./scroll";
 
 type IntegrationItem = {
   slug: string;

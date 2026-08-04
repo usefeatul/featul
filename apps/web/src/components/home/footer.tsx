@@ -5,8 +5,8 @@ import { StatusButton } from "@/components/home/status";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
 import { TwitterIcon } from "@featul/ui/icons/twitter";
-import { LinearSeparator } from "@/components/linear-separator";
-import { VerticalLines } from "@/components/vertical-lines";
+import { LinearSeparator } from "@/components/separator";
+import { VerticalLines } from "@/components/lines";
 
 export default function FooterSection() {
   const year = new Date().getFullYear();

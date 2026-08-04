@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { ArrowIcon } from "@featul/ui/icons/arrow";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
-import { isSkyPath } from "@/lib/sky-paths";
+import { isSkyPath } from "@/lib/sky";
 
 export default function AnnouncementBanner() {
   // On sky-backed pages the banner matches the sky-blue navbar/hero stack

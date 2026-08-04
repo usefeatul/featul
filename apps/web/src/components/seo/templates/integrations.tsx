@@ -16,7 +16,7 @@ import { serializeJsonLd } from "@/lib/security";
 import {
   buildFaqPageSchema,
   buildIntegrationsBreadcrumbSchema,
-} from "@/lib/structured-data";
+} from "@/lib/schema";
 import {
   Accordion,
   AccordionContent,

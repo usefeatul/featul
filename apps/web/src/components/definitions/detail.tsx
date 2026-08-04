@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { SkyPageShell } from "@/components/layout/sky-page-shell";
+import { SkyPageShell } from "@/components/layout/shell";
 import { getDefinitionContent } from "@/content/definitions";
 import type { Definition } from "@/types/definitions";
 import { useIsMobile } from "@featul/ui/hooks/use-mobile";

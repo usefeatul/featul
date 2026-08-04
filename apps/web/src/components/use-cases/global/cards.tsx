@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { USE_CASES } from "@/types/use-cases"
+import { USE_CASES } from "@/types/scenarios"
 import {
   Card,
   CardHeader,

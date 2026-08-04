@@ -1,7 +1,7 @@
 "use client";
 
-import { HeroCta } from "@/components/shared/hero-cta";
-import { HeroHighlights } from "@/components/shared/hero-highlights";
+import { HeroCta } from "@/components/shared/cta";
+import { HeroHighlights } from "@/components/shared/highlights";
 import { AlternativeIcon } from "@featul/ui/icons/alternative";
 import { useEffect, useState } from "react";
 import { getAltDescription } from "@/types/descriptions";

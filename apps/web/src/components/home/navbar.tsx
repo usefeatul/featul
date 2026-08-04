@@ -10,9 +10,9 @@ import { Separator } from "@featul/ui/components/separator";
 import { useEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
-import { MobileMenu } from "./mobile-menu";
-import { LinearSeparator } from "@/components/linear-separator";
-import { isSkyPath } from "@/lib/sky-paths";
+import { MobileMenu } from "./menu";
+import { LinearSeparator } from "@/components/separator";
+import { isSkyPath } from "@/lib/sky";
 
 export default function Navbar() {
   const main = navigationConfig.main;

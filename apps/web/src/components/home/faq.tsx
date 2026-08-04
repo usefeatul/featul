@@ -1,7 +1,7 @@
 'use client'
 
 import { Container } from '../global/container'
-import { FaqAccordion } from '@/components/shared/faq-accordion'
+import { FaqAccordion } from '@/components/shared/accordion'
 import { faqItems } from '@/data/faqs'
 
 type FAQsFourProps = {

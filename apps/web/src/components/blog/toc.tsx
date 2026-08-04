@@ -2,11 +2,11 @@
 import { cn } from "@featul/ui/lib/utils"
 import type { TocItem } from "@/lib/toc"
 import { useRef, useState } from "react"
-import { usePrefersReducedMotion } from "../../hooks/use-prefers-reduced-motion"
+import { usePrefersReducedMotion } from "../../hooks/motion"
 import { ScrollArea } from "@featul/ui/components/scroll-area"
-import { useActiveHeading } from "@/hooks/use-active-heading"
-import { useAutoScrollActiveLink } from "@/hooks/use-auto-scroll-active-link"
-import { scrollToHeading, scrollToHeadingInContainer, updateUrlHash } from "@/lib/toc-utils"
+import { useActiveHeading } from "@/hooks/heading"
+import { useAutoScrollActiveLink } from "@/hooks/scroll"
+import { scrollToHeading, scrollToHeadingInContainer, updateUrlHash } from "@/lib/tocutils"
 
 type TableOfContentsProps = {
   items: TocItem[]

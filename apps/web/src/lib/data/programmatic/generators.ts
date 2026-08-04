@@ -5,8 +5,8 @@
  * These ensure each page has distinct, intent-matched content.
  */
 
-import type { CompetitorEntry, IntegrationEntry, UseCaseEntry } from "./content-matrix";
-import { COMPETITORS, INTEGRATIONS, USE_CASES } from "./content-matrix";
+import type { CompetitorEntry, IntegrationEntry, UseCaseEntry } from "./matrix";
+import { COMPETITORS, INTEGRATIONS, USE_CASES } from "./matrix";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types

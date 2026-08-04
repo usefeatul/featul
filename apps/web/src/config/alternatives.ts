@@ -163,7 +163,7 @@ export const alternatives: Alternative[] = [
 ]
 
 // Import from content-matrix for programmatic competitors
-import { COMPETITORS, type CompetitorEntry } from '@/lib/data/programmatic/content-matrix'
+import { COMPETITORS, type CompetitorEntry } from '@/lib/data/programmatic/matrix'
 
 /**
  * Convert a CompetitorEntry from content-matrix to Alternative format

@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import type { TocItem as TocItemType } from "@/lib/toc"
 import { docsSections } from "@/config/docsNav"
-import { readDocsMarkdown, type DocsPageId } from "@/lib/docs-markdown"
-import { DocsMarkdown, extractDocsToc } from "@/components/docs/DocsMarkdown"
-import { DocsToc } from "@/components/docs/DocsToc"
+import { readDocsMarkdown, type DocsPageId } from "@/lib/docs"
+import { DocsMarkdown, extractDocsToc } from "@/components/docs/markdown"
+import { DocsToc } from "@/components/docs/toc"
 import { createPageMetadata } from "@/lib/seo"
 
 type DocsPageParams = {

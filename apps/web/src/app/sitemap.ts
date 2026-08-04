@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 import { getPosts } from "@/lib/query"
 import { getAllCompetitorSlugs, getAllIntegrationSlugs, getAllUseCaseSlugs } from "@/lib/data/programmatic"
-import { getAllUseCaseSlugs as getOriginalUseCaseSlugs } from "@/types/use-cases"
+import { getAllUseCaseSlugs as getOriginalUseCaseSlugs } from "@/types/scenarios"
 import { getAllCategorySlugs, getAllToolParams } from "@/types/tools"
 import { getAllDefinitionSlugs } from "@/content/definitions"
 import { docsSections } from "@/config/docsNav"
