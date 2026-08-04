@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { serializeJsonLd } from "@/lib/security";
 import {
   Card,
   CardContent,
@@ -152,46 +151,6 @@ export default function EngagementRateTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: [
-            {
-              "@type": "Question",
-              name: "How is engagement rate calculated?",
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "Engagement rate = Engagements ÷ Impressions × 100%.",
-              },
-            },
-            {
-              "@type": "Question",
-              name: "What counts as an engagement?",
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "Interactions such as likes, comments, shares, clicks, or saves.",
-              },
-            },
-            {
-              "@type": "Question",
-              name: "What is a good engagement rate?",
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "It varies by platform and content type; benchmark against your historical performance and audience.",
-              },
-            },
-            {
-              "@type": "Question",
-              name: "How can I improve engagement?",
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "Publish relevant content, optimize timing and CTAs, use platform‑native formats, and iterate via testing.",
-              },
-            },
-          ],
-        })}
-      </script>
     </div>
   );
 }

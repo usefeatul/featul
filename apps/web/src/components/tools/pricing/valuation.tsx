@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import  BackLink  from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 
 function parseNumber(value: string): number {
@@ -149,54 +148,6 @@ export default function SaasValuationTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'How is SaaS valuation estimated here?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'This tool multiplies ARR by a revenue multiple and shows ±1x sensitivity.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'What affects multiples?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Growth, gross margin, net dollar retention, profitability, efficiency, and market sentiment typically drive multiple ranges.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How should I pick the multiple?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Use public comps and private transaction reports; adjust for your growth, margin, and retention profile and present a range.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Multiples vs. DCF?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Multiples are quick market-based benchmarks; DCF incorporates time value and profit trajectories. Use both for triangulation.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Do I adjust for cash and debt?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Yes. Enterprise value typically equals equity value plus debt minus cash; consider these adjustments when reconciling to equity value.'
-              }
-            }
-          ]
-        })}
-      </script>
     </div>
   );
 }

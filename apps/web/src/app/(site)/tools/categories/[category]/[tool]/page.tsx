@@ -16,6 +16,8 @@ import {
   buildToolFaqSchema,
   buildBreadcrumbSchema,
 } from "@/lib/schema";
+import { getRelatedPages } from "@/lib/seo/interlink";
+import { RelatedLinks } from "@/components/seo/links";
 
 type Props = { params: Promise<{ category: string; tool: string }> };
 
@@ -49,6 +51,10 @@ export default async function ToolPage({ params }: Props) {
     toolSlug,
     toolName: tool.name,
   });
+  const relatedLinks = getRelatedPages({
+    currentSlug: toolSlug,
+    currentType: "tool",
+  });
 
   return (
     <ToolsPageShell
@@ -69,6 +75,7 @@ export default async function ToolPage({ params }: Props) {
         }}
       />
       {ToolComponent ? <ToolComponent /> : <ToolTemplate tool={tool} />}
+      <RelatedLinks links={relatedLinks} title="Related resources" />
     </ToolsPageShell>
   );
 }

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { DEFAULT_DESCRIPTION } from "@/config/seo";
+import { faqItems } from "@/data/faqs";
+import { buildFaqPageSchema } from "@/lib/schema";
+import { serializeJsonLd } from "@/lib/security";
 import { Hero } from "@/components/home/hero";
 import Faq from "@/components/home/faq";
 import StatsSection from "@/components/home/cta";
@@ -21,8 +24,17 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function Home() {
+  const faqSchema = buildFaqPageSchema(
+    faqItems.map((item) => ({ question: item.question, answer: item.answer })),
+  );
+
   return (
     <main className="min-h-screen overflow-x-clip">
+      <script
+        id="home-faq-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
+      />
       <Hero />
       <div className="relative mx-auto max-w-6xl">
         {/* Guide lines scoped to the content below the hero so the sky hero

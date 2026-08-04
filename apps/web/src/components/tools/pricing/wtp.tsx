@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import  BackLink  from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 
 function parseList(csv: string): number[] {
@@ -137,54 +136,6 @@ export default function WtpSurveyTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'What data do I input?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Comma or space-separated list of WTP survey responses in price units.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How is the recommended price derived?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'We summarize mean, median, and use the 25th–75th percentile band as a robust target range.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'What is willingness to pay (WTP)?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'The maximum price a customer is willing to pay for the perceived value of a product or service.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Van Westendorp vs. Gabor-Granger?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Van Westendorp uses four price perception questions; Gabor-Granger tests discrete price choices. Conjoint adds feature trade-offs.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How many responses do I need?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Aim for 100+ representative responses; more is better for stable estimates. Use bootstrapping when samples are smaller.'
-              }
-            }
-          ]
-        })}
-      </script>
     </div>
   );
 }

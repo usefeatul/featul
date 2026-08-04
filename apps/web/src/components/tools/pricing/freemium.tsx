@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import  BackLink  from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 
 function parseNumber(value: string): number {
@@ -165,54 +164,6 @@ export default function FreemiumConversionTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'How is freemium conversion calculated?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Overall conversion equals activation × paywall exposure × purchase rate.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'What is a good freemium conversion rate?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Ranges vary widely by product; many PLG products see 0.5–5% overall. Focus on improving activation first, then paywall exposure, then purchase.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Where should I place the paywall?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Gate high‑value moments after value discovery (e.g., limits, premium features). Avoid blocking core setup before first value.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Trial vs. freemium?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Trials add urgency for complex products; freemium suits habitual, self‑serve use. Many products combine both via free tier plus premium trial prompts.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How do I validate improvements?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Use cohort analysis, randomized experiments, and track retention and upgrade quality to ensure durable gains.'
-              }
-            }
-          ]
-        })}
-      </script>
     </div>
   );
 }

@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import BackLink from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 function parseNumber(value: string): number {
   const cleaned = value.replace(/[^0-9.-]/g, "");
@@ -161,18 +160,6 @@ export default function FunnelConversionTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            { '@type': 'Question', name: 'How is overall conversion calculated?', acceptedAnswer: { '@type': 'Answer', text: 'Multiply each stage rate and apply to top‑of‑funnel volume to get final conversions and overall rate.' } },
-            { '@type': 'Question', name: 'Which stage should I optimize?', acceptedAnswer: { '@type': 'Answer', text: 'Start with the largest drop‑off and test improvements with clear metrics and segment breakdowns.' } },
-            { '@type': 'Question', name: 'What is a funnel?', acceptedAnswer: { '@type': 'Answer', text: 'A funnel models sequential user steps (e.g., visit, signup, activate, purchase) to measure progression and drop‑offs.' } },
-            { '@type': 'Question', name: 'How do cohorts help funnel analysis?', acceptedAnswer: { '@type': 'Answer', text: 'Cohorts group users by shared traits or start times, revealing stage differences and guiding targeted improvements.' } },
-          ],
-        })}
-      </script>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { USE_CASES as PROGRAMMATIC_USE_CASES } from "@/lib/data/programmatic/matrix";
+
 export type UseCaseItem = {
   slug: string;
   name: string;
@@ -47,3 +49,21 @@ export const getUseCaseBySlug = (slug: string) =>
   USE_CASES.find((u) => u.slug === slug);
 
 export const getAllUseCaseSlugs = () => USE_CASES.map((u) => u.slug);
+
+/** Merges hand-crafted and programmatic use cases for hub/index pages. */
+export function getAllUseCasesForIndex(): UseCaseItem[] {
+  const originalSlugs = new Set(USE_CASES.map((u) => u.slug));
+  const programmaticItems: UseCaseItem[] = PROGRAMMATIC_USE_CASES.filter(
+    (uc) => !originalSlugs.has(uc.slug),
+  ).map((uc) => ({
+    slug: uc.slug,
+    name: uc.title,
+    description: uc.solutions[0] ?? uc.title,
+    cardTitle: uc.title,
+    cardDescription: uc.painPoints[0] ?? uc.title,
+    badge: uc.industry ?? uc.persona ?? "Use case",
+    isNew: true,
+  }));
+
+  return [...USE_CASES, ...programmaticItems];
+}

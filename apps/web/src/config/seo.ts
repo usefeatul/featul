@@ -53,7 +53,9 @@ export function getOrganizationJsonLd() {
     name: 'Featul',
     url: absoluteUrl('/'),
     logo: absoluteUrl('/og.png'),
-    sameAs: [],
+    sameAs: [
+      "https://github.com/usefeatul/feautl",
+    ],
     contactPoint: [
       {
         '@type': 'ContactPoint',

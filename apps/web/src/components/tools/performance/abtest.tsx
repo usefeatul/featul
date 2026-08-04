@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import BackLink from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 function parseNumber(value: string): number {
   const cleaned = value.replace(/[^0-9.-]/g, "");
@@ -212,19 +211,6 @@ export default function AbTestSignificanceTool() {
         </ul>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            { '@type': 'Question', name: 'How do I test A/B significance?', acceptedAnswer: { '@type': 'Answer', text: 'Use a two‑proportion z‑test to compare conversion rates and compute a p‑value.' } },
-            { '@type': 'Question', name: 'What alpha should I use?', acceptedAnswer: { '@type': 'Answer', text: 'Commonly 5% (0.05). Lower alpha reduces false positives but requires larger samples.' } },
-            { '@type': 'Question', name: 'What is a p‑value?', acceptedAnswer: { '@type': 'Answer', text: 'The p‑value is the probability of observing a result as extreme as your data if there were no true effect.' } },
-            { '@type': 'Question', name: 'How long should I run an A/B test?', acceptedAnswer: { '@type': 'Answer', text: 'Run until you reach the pre‑computed sample size and cover typical seasonality; avoid peeking at results early.' } },
-            { '@type': 'Question', name: 'What is the difference between statistical and practical significance?', acceptedAnswer: { '@type': 'Answer', text: 'Statistical significance reduces the chance the result is due to noise; practical significance considers magnitude, cost, and business impact.' } },
-          ],
-        })}
-      </script>
     </div>
   );
 }

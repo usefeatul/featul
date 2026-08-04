@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 import { AlternativeHero } from "@/components/alternatives/hero";
 import TLDR from "@/components/alternatives/tldr";
 import Compare from "@/components/alternatives/compare";
@@ -13,11 +12,13 @@ import {
   getAlternativeBySlug,
   getAlternativeSlugs,
 } from "@/config/alternatives";
+import { getRelatedPages } from "@/lib/seo/interlink";
+import { RelatedLinks } from "@/components/seo/links";
+import { getAlternativeFaq } from "@/data/alt";
 import { serializeJsonLd } from "@/lib/security";
-
 import { SectionStack } from "@/components/layout/stack";
 import { SITE_URL } from "@/config/seo";
-import { buildAlternativesBreadcrumbSchema } from "@/lib/schema";
+import { buildAlternativesBreadcrumbSchema, buildFaqPageSchema } from "@/lib/schema";
 
 export async function generateStaticParams() {
   return getAlternativeSlugs().map((slug) => ({ slug }));
@@ -50,17 +51,30 @@ export default async function AlternativePage({
   const alt = getAlternativeBySlug(slug);
   if (!alt) return notFound();
 
+  const { items: faqItems } = getAlternativeFaq(slug);
+  const faqSchema = buildFaqPageSchema(
+    faqItems.map((item) => ({ question: item.question, answer: item.answer })),
+  );
+  const relatedLinks = getRelatedPages({
+    currentSlug: slug,
+    currentType: "competitor",
+  });
+
   return (
     <main className="min-h-screen overflow-x-clip">
-      <Script
+      <script
         id="alternatives-breadcrumb-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: serializeJsonLd(
             buildAlternativesBreadcrumbSchema({ siteUrl: SITE_URL, slug, name: alt.name })
           ),
         }}
+      />
+      <script
+        id="alternatives-faq-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <AlternativeHero alt={alt} />
       <div className="relative mx-auto max-w-6xl">
@@ -69,6 +83,7 @@ export default async function AlternativePage({
           <Compare alt={alt} />
           <WhyBetter alt={alt} />
           <AlternativeFAQs alt={alt} />
+          <RelatedLinks links={relatedLinks} title="Related comparisons" />
           <StatsSection />
         </SectionStack>
       </div>

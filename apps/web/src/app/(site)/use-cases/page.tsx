@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { USE_CASES } from "@/types/scenarios"
+import { getAllUseCasesForIndex } from "@/types/scenarios"
 import UseCaseCardList from "@/components/use-cases/global/cards"
 import { SkyPageShell } from "@/components/layout/shell"
 import { createPageMetadata } from "@/lib/seo"
@@ -12,7 +12,7 @@ export const metadata: Metadata = createPageMetadata({
 })
 
 export default function UseCasesIndexPage() {
-  const totalUseCases = USE_CASES.length
+  const totalUseCases = getAllUseCasesForIndex().length
   return (
     <SkyPageShell
       dataComponent="UseCasesIndex"

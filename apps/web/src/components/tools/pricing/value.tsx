@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import  BackLink  from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 
 function parseNumber(value: string): number {
@@ -149,54 +148,6 @@ export default function ValueBasedPricingTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'What is value-based pricing?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'A pricing approach that sets prices based on perceived customer value rather than cost-plus alone.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How do I measure WTP?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Use Van Westendorp, Gabor-Granger, or conjoint studies to estimate willingness to pay and value drivers.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How do I choose a price metric?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Pick a unit aligned to realized value (per seat, per usage, per feature) to improve fairness and upgrade paths.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How do I use the calculator?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Enter average willingness to pay, unit cost, and target margin to see price floors and a suggested target.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'What are common pitfalls?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Poor sampling, anchoring bias, ignoring segments, and setting prices above perceived value; revisit WTP as product value evolves.'
-              }
-            }
-          ]
-        })}
-      </script>
     </div>
   );
 }

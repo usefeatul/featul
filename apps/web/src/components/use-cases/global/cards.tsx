@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { USE_CASES } from "@/types/scenarios"
+import { getAllUseCasesForIndex } from "@/types/scenarios"
 import {
   Card,
   CardHeader,
@@ -10,9 +10,11 @@ import {
 import { CornerUpRight, Lightbulb } from "lucide-react"
 
 export default function UseCaseCardList() {
+  const useCases = getAllUseCasesForIndex()
+
   return (
     <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {USE_CASES.map((useCase) => (
+      {useCases.map((useCase) => (
         <Link
           key={useCase.slug}
           href={`/use-cases/${useCase.slug}`}

@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import  BackLink  from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 
 function parseNumber(value: string): number {
@@ -180,54 +179,6 @@ export default function TierPricingOptimizerTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'How are tier shares handled?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Shares are normalized to sum to 100% so the weighted ARPU remains consistent.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How many tiers should I offer?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Three tiers (good‑better‑best) is a common starting point; add enterprise and/or add‑ons when segment needs diverge.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'What is a decoy tier?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'A tier intentionally less attractive to make the middle or premium tier appear more valuable by comparison.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Add‑ons vs. tiers?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Use tiers for core value bundles; add‑ons for specialized needs (advanced features, higher limits). Avoid overlapping benefits.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Should I grandfather existing customers?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Grandfathering reduces churn during price changes; offer upgrade paths with clear added value for new prices.'
-              }
-            }
-          ]
-        })}
-      </script>
     </div>
   );
 }

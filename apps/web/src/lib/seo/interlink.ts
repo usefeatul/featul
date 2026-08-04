@@ -7,7 +7,7 @@
 
 import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/matrix";
 import { getDefinitionBySlug, getAllDefinitionSlugs } from "@/content/definitions";
-import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools";
+import { getCategoryBySlug, getAllCategorySlugs, findToolBySlug, findToolForDefinition } from "@/types/tools";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -98,11 +98,14 @@ function addCompetitorRelated(slug: string, links: RelatedLink[]) {
 
     // Add related tools
     for (const toolSlug of competitor.relatedTools.slice(0, 2)) {
-        links.push({
-            href: `/tools`,
-            label: `${toolSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`,
-            type: "tool",
-        });
+        const resolved = findToolBySlug(toolSlug);
+        if (resolved) {
+            links.push({
+                href: `/tools/categories/${resolved.categorySlug}/${resolved.tool.slug}`,
+                label: resolved.tool.name,
+                type: "tool",
+            });
+        }
     }
 
     // Add other competitors
@@ -190,11 +193,14 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
 
     // Add related tools (limit to 1)
     for (const toolSlug of useCase.relatedTools.slice(0, 1)) {
-        links.push({
-            href: `/tools`,
-            label: `${toolSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`,
-            type: "tool",
-        });
+        const resolved = findToolBySlug(toolSlug);
+        if (resolved) {
+            links.push({
+                href: `/tools/categories/${resolved.categorySlug}/${resolved.tool.slug}`,
+                label: resolved.tool.name,
+                type: "tool",
+            });
+        }
     }
 
     // Add integrations (cross-hub connection)
@@ -226,6 +232,15 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
 }
 
 function addDefinitionRelated(slug: string, links: RelatedLink[]) {
+    const relatedTool = findToolForDefinition(slug);
+    if (relatedTool) {
+        links.push({
+            href: `/tools/categories/${relatedTool.categorySlug}/${relatedTool.tool.slug}`,
+            label: `${relatedTool.tool.name} calculator`,
+            type: "tool",
+        });
+    }
+
     // Add tools hub
     links.push({
         href: "/tools",
@@ -255,6 +270,19 @@ function addDefinitionRelated(slug: string, links: RelatedLink[]) {
 }
 
 function addToolRelated(slug: string, links: RelatedLink[]) {
+    const match = findToolBySlug(slug);
+    if (match) {
+        const defSlug = slug.replace(/-calculator$/, "");
+        const def = getDefinitionBySlug(defSlug);
+        if (def) {
+            links.push({
+                href: `/definitions/${defSlug}`,
+                label: `What is ${def.name}?`,
+                type: "definition",
+            });
+        }
+    }
+
     // Add definitions hub
     links.push({
         href: "/definitions",

@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import  BackLink  from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 
 function parseNumber(value: string): number {
@@ -190,62 +189,6 @@ export default function DiscountImpactTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'How do discounts affect revenue?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Discounts lower price but may raise conversion; the net effect depends on uplift magnitude and margin.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'What conversion uplift is needed to break even?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Break-even uplift u satisfies (1−d)(1+u) ≥ 1, so u ≥ d/(1−d). For a 20% discount, uplift must be at least 25%.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How should I set baselines for analysis?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Use typical price and conversion for the same audience and season; validate via A/B tests where possible.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Do discounts hurt margins?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Yes, discounts reduce unit margin. Pair this with contribution margin analysis to ensure promotions remain profitable.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Should I stack coupons or run continuous promos?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Avoid continual discounting and stacking; it anchors perceived value to sale prices and can cannibalize full-price purchases.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How do I measure true uplift?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Use randomized A/B tests, segment analysis, and consider pull-forward demand to isolate incremental conversions.'
-              }
-            }
-          ]
-        })}
-      </script>
     </div>
   );
 }

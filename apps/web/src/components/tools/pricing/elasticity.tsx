@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@featul/ui/components/card";
 import { Input } from "@featul/ui/components/input";
 import  BackLink  from "../global/backlink";
-import { serializeJsonLd } from "@/lib/security";
 
 function parseNumber(value: string): number {
   const cleaned = value.replace(/[^0-9.-]/g, "");
@@ -177,54 +176,6 @@ export default function PriceElasticityTool() {
         </p>
       </div>
 
-      <script type="application/ld+json" suppressHydrationWarning>
-        {serializeJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'What is price elasticity?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Price elasticity of demand measures how quantity demanded changes in response to price changes, calculated as %ΔQ ÷ %ΔP.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'When does increasing price raise revenue?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'If demand is inelastic (|E| < 1), moderate price increases can raise revenue. Always check margin and retention risk.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'Arc vs. point elasticity?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Arc (midpoint) elasticity averages changes between points to reduce base bias; point elasticity uses the change relative to a single baseline.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How many data points do I need?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Two points provide a rough estimate; more points across different price levels help fit a demand curve and improve accuracy.'
-              }
-            },
-            {
-              '@type': 'Question',
-              name: 'How do I account for seasonality?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Run tests over comparable periods and segment by channel or cohort; use time series controls for seasonal variation.'
-              }
-            }
-          ]
-        })}
-      </script>
     </div>
   );
 }
