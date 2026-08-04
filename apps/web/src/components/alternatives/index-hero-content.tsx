@@ -1,41 +1,22 @@
 "use client";
+
 import { HotkeyLink } from "@/components/global/hotkey-link";
 import { LiveDemo } from "@/components/global/live-demo";
-import { useEffect, useState } from "react";
-import { getAltDescription } from "@/types/descriptions";
 
-export function AlternativeHeroContent({
-  name,
-  description,
-  slug,
-}: {
-  name: string;
-  description?: string;
-  slug: string;
-}) {
-  const [clientDescription, setClientDescription] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    setClientDescription(getAltDescription(slug, 'random'));
-  }, [slug]);
-
+export function AlternativesIndexHeroContent() {
   return (
-    <div className="text-left" data-component="AlternativeHeroContent">
+    <div className="text-left" data-component="AlternativesIndexHeroContent">
       <h1 className="max-w-3xl font-heading text-[2rem] font-semibold leading-[1.15] tracking-tight text-white text-balance sm:text-5xl sm:leading-tight md:text-6xl">
-        The simple alternative to{" "}
+        Featul alternatives,{" "}
         <span className="inline-flex items-center rounded-md bg-white/20 px-1.5 py-[2px] align-baseline text-white backdrop-blur-sm sm:px-2">
-          {name}
+          compared side by side
         </span>
       </h1>
 
       <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance [text-shadow:0_1px_6px_rgba(0,0,0,0.25)] sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
-        {clientDescription ?? description ?? (
-          <>
-            Compare {name} and Featul — transparent by design, focused on
-            simplicity and user first UX. Organized feedback boards,
-            auto-syncing roadmaps, and self-writing changelogs.
-          </>
-        )}
+        Side-by-side comparisons covering features, privacy, and hosting
+        differences — so you can choose the right feedback platform with
+        confidence.
       </p>
 
       <div className="mt-6 flex flex-col items-stretch justify-start gap-3 sm:mt-8 sm:flex-row sm:items-center sm:gap-4">

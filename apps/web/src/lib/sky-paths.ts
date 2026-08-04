@@ -9,9 +9,16 @@ const SKY_PATHS = new Set([
   "/tools/categories",
   "/definitions",
   "/use-cases",
+  "/alternatives",
 ])
 
-const SKY_PREFIXES = ["/blog/", "/tools/", "/definitions/", "/use-cases/"]
+const SKY_PREFIXES = [
+  "/blog/",
+  "/tools/",
+  "/definitions/",
+  "/use-cases/",
+  "/alternatives/",
+]
 
 export function isSkyPath(pathname: string | null | undefined): boolean {
   if (!pathname) return false

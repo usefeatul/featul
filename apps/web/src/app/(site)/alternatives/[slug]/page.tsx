@@ -51,7 +51,7 @@ export default async function AlternativePage({
   if (!alt) return notFound();
 
   return (
-    <main className="pt-16">
+    <main className="min-h-screen overflow-x-clip">
       <Script
         id="alternatives-breadcrumb-jsonld"
         type="application/ld+json"
@@ -62,9 +62,9 @@ export default async function AlternativePage({
           ),
         }}
       />
-      <div className="mx-auto max-w-6xl">
+      <AlternativeHero alt={alt} />
+      <div className="relative mx-auto max-w-6xl">
         <SectionStack>
-          <AlternativeHero alt={alt} />
           <TLDR alt={alt} />
           <Compare alt={alt} />
           <WhyBetter alt={alt} />
