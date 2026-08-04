@@ -8,6 +8,8 @@ import { cn } from "@featul/ui/lib/utils"
 
 type SkyPageShellProps = {
   children: ReactNode
+  /** Rendered inside max-w-6xl but outside the padded Container (full rail width). */
+  below?: ReactNode
   dataComponent?: string
   eyebrow?: ReactNode
   title?: ReactNode
@@ -18,6 +20,7 @@ type SkyPageShellProps = {
 
 export function SkyPageShell({
   children,
+  below,
   dataComponent,
   eyebrow,
   title,
@@ -39,7 +42,10 @@ export function SkyPageShell({
         <VerticalLines force className="absolute inset-0 z-30" />
         <Container
           maxWidth="6xl"
-          className="relative z-10 px-4 pb-12 pt-10 sm:px-10 sm:pt-14 lg:px-12 xl:px-14"
+          className={cn(
+            "relative z-10 px-4 pt-10 sm:px-10 sm:pt-14 lg:px-12 xl:px-14",
+            below ? "pb-0" : "pb-10 sm:pb-12",
+          )}
         >
           <div className="w-full max-w-6xl px-0 sm:px-6">
             {hasHeader ? (
@@ -79,6 +85,7 @@ export function SkyPageShell({
             {children}
           </div>
         </Container>
+        {below ? <div className="relative z-10 pb-10 sm:pb-12">{below}</div> : null}
       </div>
     </main>
   )
