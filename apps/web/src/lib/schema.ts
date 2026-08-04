@@ -351,3 +351,96 @@ export function buildIntegrationsBreadcrumbSchema({
     ],
   };
 }
+
+type BuildToolCategoryBreadcrumbParams = {
+  siteUrl: string;
+  categorySlug: string;
+  categoryName: string;
+};
+
+export function buildToolCategoryBreadcrumbSchema({
+  siteUrl,
+  categorySlug,
+  categoryName,
+}: BuildToolCategoryBreadcrumbParams) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Tools",
+        item: `${siteUrl}/tools`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Categories",
+        item: `${siteUrl}/tools/categories`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: categoryName,
+        item: `${siteUrl}/tools/categories/${categorySlug}`,
+      },
+    ],
+  };
+}
+
+type BuildDocsBreadcrumbParams = {
+  siteUrl: string;
+  pathname: string;
+  sectionLabel: string;
+  pageTitle: string;
+};
+
+export function buildDocsBreadcrumbSchema({
+  siteUrl,
+  pathname,
+  sectionLabel,
+  pageTitle,
+}: BuildDocsBreadcrumbParams) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Documentation",
+        item: `${siteUrl}/docs/getting-started`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: sectionLabel,
+        item: `${siteUrl}${pathname}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: normalizeJsonLdText(pageTitle),
+        item: `${siteUrl}${pathname}`,
+      },
+    ],
+  };
+}
+
+export function buildWebSiteSchema(siteUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Featul",
+    url: `${siteUrl}/`,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}

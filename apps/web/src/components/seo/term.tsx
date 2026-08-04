@@ -1,4 +1,3 @@
-import Script from "next/script"
 import { pageUrl } from "@/lib/seo"
 import { serializeJsonLd } from "@/lib/security";
 
@@ -13,8 +12,11 @@ export default function DefinedTermJsonLd({ name, description, path, alternateNa
     alternateName: alternateNames && alternateNames.length ? alternateNames : undefined,
   }
   return (
-    <Script id="schema-defined-term" type="application/ld+json" strategy="afterInteractive">
-      {serializeJsonLd(data)}
-    </Script>
+    <script
+      id="schema-defined-term"
+      type="application/ld+json"
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
+    />
   )
 }

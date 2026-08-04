@@ -12,7 +12,6 @@ import { SITE_URL } from "@/config/seo"
 import { buildBlogPostingSchema, buildBlogBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security"
 import { generateToc } from "@/lib/toc"
-import Script from "next/script"
 
 export const revalidate = 30
 
@@ -45,20 +44,22 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <>
-      <Script
+      <script
         id="blog-posting-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
-      >
-        {serializeJsonLd(buildBlogPostingSchema({ siteUrl: SITE_URL, slug, post }))}
-      </Script>
-      <Script
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(buildBlogPostingSchema({ siteUrl: SITE_URL, slug, post })),
+        }}
+      />
+      <script
         id="blog-breadcrumb-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
-      >
-        {serializeJsonLd(buildBlogBreadcrumbSchema({ siteUrl: SITE_URL, slug, title: post.title }))}
-      </Script>
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(buildBlogBreadcrumbSchema({ siteUrl: SITE_URL, slug, title: post.title })),
+        }}
+      />
 
       <SkyPageShell
         dataComponent="BlogPost"

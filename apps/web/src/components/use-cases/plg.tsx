@@ -1,5 +1,4 @@
 import Link from "next/link"
-import Script from "next/script"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security";
@@ -14,10 +13,10 @@ export function ProductLedGrowthUseCase() {
 
   return (
     <>
-      <Script
+      <script
         id="usecase-breadcrumb-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
       <SkyPageShell

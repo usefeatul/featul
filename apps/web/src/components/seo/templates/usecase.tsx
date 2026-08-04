@@ -9,7 +9,6 @@
  */
 
 import Link from "next/link";
-import Script from "next/script";
 import { RelatedLinks } from "@/components/seo/links";
 import { SkyPageShell } from "@/components/layout/shell";
 import type { UseCasePageData } from "@/lib/data/programmatic/generators";
@@ -38,16 +37,16 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
 
   return (
     <>
-      <Script
+      <script
         id="usecase-faq-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
-      <Script
+      <script
         id="usecase-breadcrumb-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
 

@@ -1,4 +1,3 @@
-import Script from "next/script";
 import { serializeJsonLd } from "@/lib/security";
 import { buildFaqPageSchema } from "@/lib/schema";
 
@@ -8,12 +7,11 @@ export default function FaqJsonLd({ faqs }: { faqs: FaqItem[] }) {
   const data = buildFaqPageSchema(faqs);
 
   return (
-    <Script
+    <script
       id="schema-faq"
       type="application/ld+json"
-      strategy="afterInteractive"
-    >
-      {serializeJsonLd(data)}
-    </Script>
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
+    />
   );
 }

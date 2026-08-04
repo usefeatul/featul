@@ -5,6 +5,9 @@ import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools"
 import ToolList from "@/components/tools/global/list"
 import ToolsPageShell from "@/components/tools/global/shell"
 import { createPageMetadata } from "@/lib/seo"
+import { SITE_URL } from "@/config/seo"
+import { buildToolCategoryBreadcrumbSchema } from "@/lib/schema"
+import { serializeJsonLd } from "@/lib/security"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@featul/ui/components/breadcrumb"
 
 type Props = { params: Promise<{ category: string }> }
@@ -25,13 +28,26 @@ export default async function CategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(category)
   if (!cat) return notFound()
 
+  const breadcrumbSchema = buildToolCategoryBreadcrumbSchema({
+    siteUrl: SITE_URL,
+    categorySlug: category,
+    categoryName: cat.name,
+  })
+
   return (
     <ToolsPageShell
       dataComponent="ToolsCategory"
       title={cat.name}
       description={cat.description}
       meta={
-        <Breadcrumb className="mb-2">
+        <>
+          <script
+            id="tool-category-breadcrumb-jsonld"
+            type="application/ld+json"
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
+          />
+          <Breadcrumb className="mb-2">
           <BreadcrumbList className="text-accent">
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
@@ -50,6 +66,7 @@ export default async function CategoryPage({ params }: Props) {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        </>
       }
     >
       <ToolList categorySlug={cat.slug} tools={cat.tools} />

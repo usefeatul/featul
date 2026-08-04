@@ -9,6 +9,23 @@ import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/matri
 import { getDefinitionBySlug, getAllDefinitionSlugs } from "@/content/definitions";
 import { getCategoryBySlug, getAllCategorySlugs, findToolBySlug, findToolForDefinition } from "@/types/tools";
 
+const DEFINITION_SLUG_ALIASES: Record<string, string> = {
+    "changelog": "retention-rate",
+    "product-updates": "retention-rate",
+    "release-management": "retention-rate",
+    "product-analytics": "stickiness",
+    "user-engagement": "stickiness",
+    "roadmap": "ttfv",
+    "product-management": "cohort-analysis",
+    "open-source": "retention-rate",
+    "community-management": "retention-rate",
+    "mobile-analytics": "stickiness",
+    "user-feedback": "retention-rate",
+    "product-feedback": "retention-rate",
+    "feature-voting": "retention-rate",
+    "product-validation": "ttfv",
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
@@ -86,10 +103,10 @@ function addCompetitorRelated(slug: string, links: RelatedLink[]) {
 
     // Add related definitions
     for (const defSlug of competitor.relatedDefinitions.slice(0, 2)) {
-        const def = getDefinitionBySlug(defSlug);
+        const def = resolveDefinition(defSlug);
         if (def) {
             links.push({
-                href: `/definitions/${defSlug}`,
+                href: `/definitions/${def.slug}`,
                 label: `What is ${def.name}?`,
                 type: "definition",
             });
@@ -117,6 +134,8 @@ function addCompetitorRelated(slug: string, links: RelatedLink[]) {
             type: "competitor",
         });
     }
+
+    ensureCompetitorLinkFloor(links);
 }
 
 function addIntegrationRelated(slug: string, links: RelatedLink[]) {
@@ -323,6 +342,31 @@ function addGenericRelated(links: RelatedLink[]) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper: resolve any slug to a link (for priority slugs)
 // ─────────────────────────────────────────────────────────────────────────────
+
+function resolveDefinition(slug: string) {
+    return getDefinitionBySlug(DEFINITION_SLUG_ALIASES[slug] ?? slug);
+}
+
+function ensureCompetitorLinkFloor(links: RelatedLink[]) {
+    const fallbacks: RelatedLink[] = [
+        { href: "/alternatives", label: "Compare All Alternatives", type: "hub" },
+        { href: "/use-cases/product-feedback-platform", label: "Product Feedback Use Case", type: "use-case" },
+        { href: "/integrations/slack", label: "Slack Integration", type: "integration" },
+        { href: "/definitions/churn-rate", label: "What is Churn Rate?", type: "definition" },
+        {
+            href: "/tools/categories/customer-metrics/churn-calculator",
+            label: "Churn Calculator",
+            type: "tool",
+        },
+    ];
+
+    for (const link of fallbacks) {
+        if (links.length >= 3) break;
+        if (!links.some((existing) => existing.href === link.href)) {
+            links.push(link);
+        }
+    }
+}
 
 function resolveSlugToLink(slug: string): RelatedLink | null {
     // Check definitions

@@ -453,12 +453,20 @@ export const getAllToolParams = () =>
 
 /** Resolve a tool slug to its category and metadata (for internal linking). */
 export function findToolBySlug(toolSlug: string) {
+  const normalized = TOOL_SLUG_ALIASES[toolSlug] ?? toolSlug;
   for (const cat of TOOL_CATEGORIES) {
-    const tool = cat.tools.find((t) => t.slug === toolSlug);
+    const tool = cat.tools.find((t) => t.slug === normalized);
     if (tool) return { categorySlug: cat.slug, tool };
   }
   return undefined;
 }
+
+const TOOL_SLUG_ALIASES: Record<string, string> = {
+  "retention-calculator": "retention-rate",
+  "dau-mau-calculator": "stickiness-calculator",
+  "churn-rate-calculator": "churn-calculator",
+  "nps-calculator": "nps-calculator",
+};
 
 /** Map a definition slug to a related calculator when one exists. */
 export function findToolForDefinition(defSlug: string) {

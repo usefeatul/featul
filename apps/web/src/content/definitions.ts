@@ -911,6 +911,13 @@ export const getPrimarySlug = (slug: string): string | undefined => {
 
 export const getAllDefinitionSlugs = (): string[] => DEFINITIONS.map((d) => d.slug)
 
+export function getDefinitionLastModified(slug: string): Date | undefined {
+  const def = getDefinitionBySlug(slug)
+  if (!def?.publishedAt) return undefined
+  const date = new Date(def.publishedAt)
+  return Number.isNaN(date.getTime()) ? undefined : date
+}
+
 const isUrlSafeSlug = (value: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(value)
 
 export const getAllDefinitionParams = (): { term: string }[] => {

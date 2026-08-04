@@ -13,6 +13,7 @@ import OrganizationJsonLd from "@/components/seo/organization";
 import {
   buildSiteNavigationSchema,
   buildSoftwareApplicationSchema,
+  buildWebSiteSchema,
 } from "@/lib/schema";
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
@@ -138,6 +139,14 @@ export default function RootLayout({
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: serializeJsonLd(buildSoftwareApplicationSchema(SITE_URL)),
+          }}
+        />
+        <script
+          id="website-jsonld"
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(buildWebSiteSchema(SITE_URL)),
           }}
         />
       </head>

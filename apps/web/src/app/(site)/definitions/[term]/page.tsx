@@ -9,7 +9,6 @@ import { SITE_URL } from "@/config/seo"
 import { buildDefinitionBreadcrumbSchema } from "@/lib/schema"
 import { getRelatedPages } from "@/lib/seo/interlink";
 import { RelatedLinks } from "@/components/seo/links";
-import Script from "next/script"
 import { serializeJsonLd } from "@/lib/security";
 
 export async function generateStaticParams() {
@@ -47,11 +46,15 @@ export default async function DefinitionPage({ params }: { params: Promise<{ ter
       </div>
       <DefinedTermJsonLd name={def.name} description={def.short} path={`/definitions/${def.slug}`} alternateNames={def.synonyms} />
       {def.faqs && def.faqs.length ? <FaqJsonLd faqs={def.faqs} /> : null}
-      <Script
+      <script
         id="definition-breadcrumb-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildDefinitionBreadcrumbSchema({ siteUrl: SITE_URL, slug: def.slug, name: def.name })) }}
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(
+            buildDefinitionBreadcrumbSchema({ siteUrl: SITE_URL, slug: def.slug, name: def.name }),
+          ),
+        }}
       />
     </>
   )

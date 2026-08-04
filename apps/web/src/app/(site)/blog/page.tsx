@@ -4,15 +4,26 @@ import { getPosts } from "@/lib/query";
 import { BlogCard } from "@/components/blog/card";
 import type { MarblePostListResponse } from "@/types/marble";
 import { createPageMetadata } from "@/lib/seo";
+import { absoluteUrl } from "@/config/seo";
 
 export const revalidate = 30;
 
-export const metadata: Metadata = createPageMetadata({
+const blogPageMetadata = createPageMetadata({
   title: "Product Feedback & Roadmap Blog",
   description:
     "Essays on customer‑driven development, alignment, and shipping with clarity.",
   path: "/blog",
 });
+
+export const metadata: Metadata = {
+  ...blogPageMetadata,
+  alternates: {
+    ...blogPageMetadata.alternates,
+    types: {
+      "application/rss+xml": absoluteUrl("/blog/feed.xml"),
+    },
+  },
+};
 
 export default async function BlogPage() {
   const res = (await getPosts()) as MarblePostListResponse | undefined;

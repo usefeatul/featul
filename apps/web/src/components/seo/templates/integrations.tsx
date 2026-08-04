@@ -10,7 +10,6 @@
  */
 
 import Link from "next/link";
-import Script from "next/script";
 import { Container } from "@/components/global/container";
 import { serializeJsonLd } from "@/lib/security";
 import {
@@ -81,23 +80,22 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-background pt-16">
-      {/* JSON-LD Schemas */}
-      <Script
+      <script
         id="integration-faq-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
-      <Script
+      <script
         id="integration-breadcrumb-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      <Script
+      <script
         id="integration-software-jsonld"
         type="application/ld+json"
-        strategy="afterInteractive"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(softwareSchema) }}
       />
 
