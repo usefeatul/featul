@@ -132,19 +132,19 @@ export default function SignIn({
       }}
       footer={
         <>
-          <p className="text-accent-foreground text-center text-sm font-normal mb-4">
+          <p className={`${styles.footerTextCls} mb-4`}>
             Don't have an account ?
             {embedded && onSwitchMode ? (
               <Button
                 type="button"
                 variant="link"
-                className="px-2"
+                className={styles.linkButtonCls}
                 onClick={onSwitchMode}
               >
                 Create account
               </Button>
             ) : (
-              <Button asChild variant="link" className="px-2">
+              <Button asChild variant="link" className={styles.linkButtonCls}>
                 <Link
                   href={
                     safeRedirectParam
@@ -163,7 +163,7 @@ export default function SignIn({
               type="button"
               onClick={handlePasskeySignIn}
               disabled={isLoading}
-              className="text-sm font-medium text-foreground/80 hover:text-foreground flex items-center gap-2 transition-colors cursor-pointer"
+              className={styles.secondaryActionCls}
             >
               Sign in with passkey
             </button>
@@ -180,13 +180,13 @@ export default function SignIn({
       />
 
       <div className={styles.dividerCls}>
-        <hr className="border-dashed" />
-        <span className="text-muted-foreground text-xs">Or use email</span>
-        <hr className="border-dashed" />
+        <hr className={styles.dividerHrCls} />
+        <span className={styles.dividerTextCls}>Or use email</span>
+        <hr className={styles.dividerHrCls} />
       </div>
 
       <div className={styles.fieldSpacingCls}>
-        <Label htmlFor="email" className="block text-sm">
+        <Label htmlFor="email" className={styles.labelCls}>
           Email
         </Label>
         <Input
@@ -204,11 +204,11 @@ export default function SignIn({
 
       <div className={styles.pwdSpacingCls}>
         <div className="flex items-center justify-between">
-          <Label htmlFor="pwd" className="text-sm">
+          <Label htmlFor="pwd" className={styles.labelCls}>
             Password
           </Label>
           <Button asChild variant="link" size="sm">
-            <Link href="/auth/forgot-password" className="text-sm">
+            <Link href="/auth/forgot-password" className={styles.linkButtonCls}>
               Forgot your Password ?
             </Link>
           </Button>
@@ -236,7 +236,7 @@ export default function SignIn({
           <LastUsedTag tone="onPrimary" />
         ) : null}
       </LoadingButton>
-      {error && <p className="text-destructive text-xs mt-2 text-center">{error}</p>}
+      {error && <p className={`${styles.errorTextCls} mt-2`}>{error}</p>}
     </AuthLayout>
   );
 }

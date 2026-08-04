@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { SkyBackdrop } from "@/components/global/SkyBackdrop";
 
 type NotFoundSceneProps = {
   defaultHref: string;
@@ -23,11 +24,7 @@ export default function NotFoundScene({ defaultHref }: NotFoundSceneProps) {
 
   return (
     <main className="fixed inset-0 overflow-hidden">
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-cover bg-[position:center_top]"
-        style={{ backgroundImage: "url(/image/sky.PNG)" }}
-      />
+      <SkyBackdrop />
 
       <Link
         href="/"

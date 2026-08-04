@@ -21,6 +21,7 @@ import {
 import { resetPassword as resetPasswordOtp } from "../../utils/otp";
 import { normalizeInternalRedirectPath } from "@/utils/path";
 import { useOtpVerification } from "@/hooks/useOtpVerification";
+import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 
 export default function SetPassword() {
     const router = useRouter();
@@ -37,6 +38,7 @@ export default function SetPassword() {
     const [isSetting, setIsSetting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [step, setStep] = useState<"send" | "otp" | "password">("send");
+    const styles = getAuthLayoutStyles(false);
     const { sendCode, verifyCode: verifyOtp } = useOtpVerification({
         email,
         code,
@@ -129,171 +131,158 @@ export default function SetPassword() {
         }
     };
     return (
-        <section className="flex flex-1 bg-background px-4 sm:px-6 py-8 sm:py-12 items-center justify-center">
-            <form
-                noValidate
-                className="bg-background m-auto h-fit w-full max-w-sm"
-                onSubmit={handleSubmit}
-            >
-                <div className="p-6 sm:p-8 pb-5 sm:pb-6">
-                    <div className="text-center">
-                        <h1 className="mb-2 mt-4 text-xl sm:text-2xl font-semibold text-center">
-                            Set a Password
-                        </h1>
+        <AuthLayout
+            title="Set a Password"
+            onSubmit={handleSubmit}
+            footer={
+                <p className={styles.footerTextCls}>
+                    Changed your mind?
+                    <Button asChild variant="link" className={styles.linkButtonCls}>
+                        <Link href={redirectUrl}>Go back</Link>
+                    </Button>
+                </p>
+            }
+        >
+            {step === "send" && (
+                <>
+                    <div className={styles.fieldSpacingCls}>
+                        <Label htmlFor="email" className={styles.labelCls}>
+                            Email
+                        </Label>
+                        <Input
+                            type="email"
+                            id="email"
+                            value={email}
+                            disabled
+                            className="bg-muted"
+                        />
+                        <p className={styles.mutedTextCls}>
+                            This is the email associated with your account
+                        </p>
+                    </div>
+                    <LoadingButton
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                        type="submit"
+                        loading={isSending}
+                    >
+                        Send Verification Code
+                    </LoadingButton>
+                </>
+            )}
+
+            {step === "otp" && (
+                <div className="space-y-4">
+                    <div className="space-y-3">
+                        <InputOTP
+                            maxLength={6}
+                            value={code}
+                            onChange={(value) => {
+                                setCode(value);
+                                setSubmitted(false);
+                                setError("");
+                            }}
+                            containerClassName="justify-center gap-2"
+                            aria-label="One-time password"
+                            aria-invalid={submitted && Boolean(error)}
+                            aria-describedby={
+                                submitted && error ? "code-error" : undefined
+                            }
+                        >
+                            <InputOTPGroup>
+                                {Array.from({ length: 6 }).map((_, index) => (
+                                    <InputOTPSlot
+                                        key={index}
+                                        index={index}
+                                        className="h-10 w-9 text-base"
+                                    />
+                                ))}
+                            </InputOTPGroup>
+                        </InputOTP>
+                        <p className={styles.helperTextCls}>
+                            Enter the 6-digit code from your email
+                        </p>
                     </div>
 
-                    <div className="mt-6 space-y-6">
-                        {/* Step 1: Send Code */}
-                        {step === "send" && (
-                            <>
-                                <div className="space-y-2">
-                                    <Label htmlFor="email" className="block text-sm">
-                                        Email
-                                    </Label>
-                                    <Input
-                                        type="email"
-                                        id="email"
-                                        value={email}
-                                        disabled
-                                        className="bg-muted"
-                                    />
-                                    <p className="text-xs text-muted-foreground">
-                                        This is the email associated with your account
-                                    </p>
-                                </div>
-                                <LoadingButton
-                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                                    type="submit"
-                                    loading={isSending}
-                                >
-                                    Send Verification Code
-                                </LoadingButton>
-                            </>
-                        )}
+                    {submitted && error && (
+                        <p id="code-error" className={styles.errorTextCls}>
+                            {error}
+                        </p>
+                    )}
 
-                        {/* Step 2: OTP Verification */}
-                        {step === "otp" && (
-                            <div className="space-y-4">
-                                <div className="space-y-3">
-                                    <InputOTP
-                                        maxLength={6}
-                                        value={code}
-                                        onChange={(value) => {
-                                            setCode(value);
-                                            setSubmitted(false);
-                                            setError("");
-                                        }}
-                                        containerClassName="justify-center gap-2"
-                                        aria-label="One-time password"
-                                        aria-invalid={submitted && Boolean(error)}
-                                        aria-describedby={
-                                            submitted && error ? "code-error" : undefined
-                                        }
-                                    >
-                                        <InputOTPGroup>
-                                            {Array.from({ length: 6 }).map((_, index) => (
-                                                <InputOTPSlot
-                                                    key={index}
-                                                    index={index}
-                                                    className="h-10 w-9 text-base"
-                                                />
-                                            ))}
-                                        </InputOTPGroup>
-                                    </InputOTP>
-                                    <p className="text-xs text-accent text-center">
-                                        Enter the 6-digit code from your email
-                                    </p>
-                                </div>
+                    <LoadingButton className="w-full" type="submit" loading={isVerifying}>
+                        Verify Code
+                    </LoadingButton>
+                    <LoadingButton
+                        className="w-full"
+                        type="button"
+                        variant="card"
+                        onClick={sendCode}
+                        loading={isSending}
+                    >
+                        Resend Code
+                    </LoadingButton>
+                </div>
+            )}
 
-                                {submitted && error && (
-                                    <p id="code-error" className="text-destructive text-center text-xs">
-                                        {error}
-                                    </p>
-                                )}
-
-                                <LoadingButton className="w-full" type="submit" loading={isVerifying}>
-                                    Verify Code
-                                </LoadingButton>
-                                <LoadingButton
-                                    className="w-full"
-                                    type="button"
-                                    variant="card"
-                                    onClick={sendCode}
-                                    loading={isSending}
-                                >
-                                    Resend Code
-                                </LoadingButton>
-                            </div>
-                        )}
-
-                        {/* Step 3: Set Password */}
-                        {step === "password" && (
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="password" className="block text-sm">
-                                        New Password
-                                    </Label>
-                                    <Input
-                                        type="password"
-                                        required
-                                        id="password"
-                                        autoComplete="new-password"
-                                        placeholder="••••••••"
-                                        className="placeholder:text-accent/50"
-                                        value={password}
-                                        onChange={(e) => {
-                                            setPassword(e.target.value);
-                                            setSubmitted(false);
-                                            setError("");
-                                        }}
-                                        pattern={strongPasswordPattern}
-                                        title="8+ chars, uppercase, lowercase, number and symbol"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword" className="block text-sm">
-                                        Confirm Password
-                                    </Label>
-                                    <Input
-                                        type="password"
-                                        required
-                                        id="confirmPassword"
-                                        autoComplete="new-password"
-                                        placeholder="••••••••"
-                                        className="placeholder:text-accent/50"
-                                        value={confirmPassword}
-                                        onChange={(e) => {
-                                            setConfirmPassword(e.target.value);
-                                            setSubmitted(false);
-                                            setError("");
-                                        }}
-                                    />
-                                </div>
-
-                                {submitted && error && (
-                                    <p id="password-error" className="text-destructive text-center text-xs">
-                                        {error}
-                                    </p>
-                                )}
-
-                                <LoadingButton className="w-full" type="submit" loading={isSetting}>
-                                    Set Password
-                                </LoadingButton>
-                            </div>
-                        )}
+            {step === "password" && (
+                <div className="space-y-4">
+                    <div className={styles.fieldSpacingCls}>
+                        <Label htmlFor="password" className={styles.labelCls}>
+                            New Password
+                        </Label>
+                        <Input
+                            type="password"
+                            required
+                            id="password"
+                            autoComplete="new-password"
+                            placeholder="••••••••"
+                            className="placeholder:text-accent/50"
+                            value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                setSubmitted(false);
+                                setError("");
+                            }}
+                            pattern={strongPasswordPattern}
+                            title="8+ chars, uppercase, lowercase, number and symbol"
+                        />
                     </div>
-                </div>
 
-                <div className="p-3">
-                    <p className="text-accent-foreground text-center text-sm font-normal">
-                        Changed your mind?
-                        <Button asChild variant="link" className="px-2 text-primary">
-                            <Link href={redirectUrl}>Go back</Link>
-                        </Button>
-                    </p>
+                    <div className={styles.fieldSpacingCls}>
+                        <Label htmlFor="confirmPassword" className={styles.labelCls}>
+                            Confirm Password
+                        </Label>
+                        <Input
+                            type="password"
+                            required
+                            id="confirmPassword"
+                            autoComplete="new-password"
+                            placeholder="••••••••"
+                            className="placeholder:text-accent/50"
+                            value={confirmPassword}
+                            onChange={(e) => {
+                                setConfirmPassword(e.target.value);
+                                setSubmitted(false);
+                                setError("");
+                            }}
+                        />
+                    </div>
+
+                    {submitted && error && (
+                        <p id="password-error" className={styles.errorTextCls}>
+                            {error}
+                        </p>
+                    )}
+
+                    <LoadingButton
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                        type="submit"
+                        loading={isSetting}
+                    >
+                        Set Password
+                    </LoadingButton>
                 </div>
-            </form>
-        </section>
+            )}
+        </AuthLayout>
     );
 }

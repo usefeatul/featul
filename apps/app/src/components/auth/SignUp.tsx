@@ -95,19 +95,19 @@ export default function SignUp({
         handleSubmit();
       }}
       footer={
-        <p className="text-accent-foreground text-center text-sm font-normal">
+        <p className={styles.footerTextCls}>
           Already have an account?
           {embedded && onSwitchMode ? (
             <Button
               type="button"
               variant="link"
-              className="px-2 text-primary"
+              className={styles.linkButtonCls}
               onClick={onSwitchMode}
             >
               Sign in
             </Button>
           ) : (
-            <Button asChild variant="link" className="px-2 text-primary">
+            <Button asChild variant="link" className={styles.linkButtonCls}>
               <Link
                 href={
                   safeRedirectParam
@@ -130,13 +130,13 @@ export default function SignUp({
       />
 
       <div className={styles.dividerCls}>
-        <hr className="border-dashed" />
-        <span className="text-muted-foreground text-xs">Or use email</span>
-        <hr className="border-dashed" />
+        <hr className={styles.dividerHrCls} />
+        <span className={styles.dividerTextCls}>Or use email</span>
+        <hr className={styles.dividerHrCls} />
       </div>
 
       <div className={styles.fieldSpacingCls}>
-        <Label htmlFor="email" className="block text-sm">
+        <Label htmlFor="email" className={styles.labelCls}>
           Email
         </Label>
         <Input
@@ -152,7 +152,7 @@ export default function SignUp({
       </div>
 
       <div className={styles.fieldSpacingCls}>
-        <Label htmlFor="password" className="block text-sm">
+        <Label htmlFor="password" className={styles.labelCls}>
           Password
         </Label>
         <Input
@@ -172,7 +172,7 @@ export default function SignUp({
           }
         />
         {submitted && getPasswordError(password) && (
-          <p id="password-error" className="text-destructive text-xs">
+          <p id="password-error" className={styles.errorTextCls}>
             {getPasswordError(password)}
           </p>
         )}
@@ -185,7 +185,7 @@ export default function SignUp({
       >
         Sign Up
       </LoadingButton>
-      {error && <p className="text-destructive text-xs mt-2 text-center">{error}</p>}
+      {error && <p className={`${styles.errorTextCls} mt-2`}>{error}</p>}
     </AuthLayout>
   );
 }
