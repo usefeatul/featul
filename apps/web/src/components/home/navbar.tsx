@@ -146,7 +146,12 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
-            <Button asChild size="sm" className="font-heading ">
+            <Button
+              asChild
+              size="sm"
+              variant="nav"
+              className="font-heading border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+            >
               <Link
                 href="https://app.featul.com"
                 data-sln-event="cta: start for free clicked"

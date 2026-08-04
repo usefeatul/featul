@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import React, { useCallback, useEffect } from "react";
-import { Button } from "@featul/ui/components/button";
+import { Button, type buttonVariants } from "@featul/ui/components/button";
+import type { VariantProps } from "class-variance-authority";
 
 type HotkeyLinkProps = {
   hotkey?: string;
   className?: string;
   children?: React.ReactNode;
   label?: string;
+  variant?: VariantProps<typeof buttonVariants>["variant"];
 };
 
 export function HotkeyLink({
@@ -16,6 +18,7 @@ export function HotkeyLink({
   className,
   children,
   label,
+  variant = "default",
 }: HotkeyLinkProps) {
   const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL;
   const handleKeyDown = useCallback(
@@ -55,7 +58,7 @@ export function HotkeyLink({
   }, [hotkey, DASHBOARD_URL]);
 
   return (
-    <Button asChild size="lg" className={className}>
+    <Button asChild size="lg" variant={variant} className={className}>
       <Link
         href={DASHBOARD_URL ?? "#"}
         onKeyDown={handleKeyDown}

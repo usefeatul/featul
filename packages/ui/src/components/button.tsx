@@ -71,7 +71,7 @@ function Button({
   children,
   ...props
 }: ButtonProps) {
-  const baseClass = cn(buttonVariants({ variant, size, className }));
+  const baseClass = cn(buttonVariants({ variant, size }), className);
 
   if (asChild) {
     const child = React.Children.only(children) as React.ReactElement<any>;

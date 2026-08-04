@@ -10,6 +10,9 @@ type HeroCtaProps = {
   className?: string;
 };
 
+const heroButtonClassName =
+  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto";
+
 export function HeroCta({
   hotkeyLabel,
   liveDemoClassName,
@@ -22,12 +25,16 @@ export function HeroCta({
         className,
       )}
     >
-      <HotkeyLink className="w-full sm:w-auto" label={hotkeyLabel} />
-      <LiveDemo
+      <HotkeyLink
+        variant="nav"
         className={cn(
-          "min-h-[40px] w-full min-w-[40px] text-accent sm:w-auto",
-          liveDemoClassName,
+          heroButtonClassName,
+          "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
         )}
+        label={hotkeyLabel}
+      />
+      <LiveDemo
+        className={cn(heroButtonClassName, "text-accent", liveDemoClassName)}
       />
     </div>
   );

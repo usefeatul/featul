@@ -42,7 +42,8 @@ export function ConversionHero() {
             </p>
             <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
               <HotkeyLink
-                className="w-full sm:w-auto"
+                variant="nav"
+                className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
                 label="Add to your website"
               />
 
@@ -50,7 +51,7 @@ export function ConversionHero() {
                 asChild
                 variant="nav"
                 size="lg"
-                className="text-accent w-full rounded-md sm:w-auto"
+                className="h-10 min-h-[40px] w-full min-w-[40px] text-accent sm:w-auto"
               >
                 <Link href="#demo" aria-label="Get a demo">
                   <span className="inline-flex items-center gap-1.5">

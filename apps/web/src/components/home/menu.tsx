@@ -71,7 +71,11 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 {item.name}
               </Link>
             ))}
-            <Button asChild className="font-semibold w-full">
+            <Button
+              asChild
+              variant="nav"
+              className="w-full font-semibold border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+            >
               <Link
                 href="https://app.featul.com/auth/sign-up"
                 data-sln-event="cta: start for free clicked"

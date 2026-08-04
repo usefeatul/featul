@@ -23,8 +23,11 @@ export default function CTA() {
               SaaS teams.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <HotkeyLink className="w-full sm:w-auto" />
-              <LiveDemo className="w-full sm:w-auto border-white/70 bg-white/95 text-accent shadow-sm hover:bg-white" />
+              <HotkeyLink
+                variant="nav"
+                className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              />
+              <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-white/70 bg-white/95 text-accent shadow-sm hover:bg-white" />
             </div>
           </div>
         </div>
