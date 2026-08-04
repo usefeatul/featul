@@ -97,7 +97,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const visitorsToken = process.env.VISITORS_TOKEN?.trim();
-  const selineToken = process.env.NEXT_PUBLIC_SELINE_TOKEN?.trim();
 
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
@@ -107,13 +106,6 @@ export default function RootLayout({
             src="https://cdn.visitors.now/v.js"
             data-token={visitorsToken}
             data-persist=""
-            strategy="afterInteractive"
-          />
-        ) : null}
-        {selineToken ? (
-          <Script
-            src="https://cdn.seline.com/seline.js"
-            data-token={selineToken}
             strategy="afterInteractive"
           />
         ) : null}
