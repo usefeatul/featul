@@ -2,29 +2,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Container } from "../global/container";
 import { HeroContent } from "./hero-content";
-import { PreviewSwitchPill } from "@/components/home/preview-switch";
-import { usePreviewHint, type PreviewKey } from "../../hooks/usePreviewHint";
 import { DashboardDemo } from "./demo/dashboard-demo";
 import type { DemoView } from "./demo/data";
-
-const KEY_TO_VIEW: Record<PreviewKey, DemoView> = {
-  dashboard: "requests",
-  roadmap: "roadmap",
-  changelog: "changelog",
-};
-
-const VIEW_TO_KEY: Record<DemoView, PreviewKey> = {
-  requests: "dashboard",
-  roadmap: "roadmap",
-  changelog: "changelog",
-};
 
 const DEMO_WIDTH = 960;
 const DEMO_HEIGHT = 760;
 
 export function Hero() {
-  const [active, setActive] = useState<PreviewKey>("dashboard");
-  const showPillHint = usePreviewHint();
+  const [view, setView] = useState<DemoView>("requests");
   const shellRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
@@ -63,10 +48,14 @@ export function Hero() {
         aria-hidden
         className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0063d2] from-[64px] to-transparent"
       />
-      {/* Below the demo cut line the section returns to the page background */}
+      {/* Soft fog into the page background — keeps the demo sharp */}
       <div
         aria-hidden
-        className="absolute inset-x-0 bottom-0 h-[35px] bg-background"
+        className="pointer-events-none absolute inset-x-0 -bottom-8 z-[1] h-24 bg-background blur-2xl sm:h-32"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-12 bg-gradient-to-b from-transparent to-background sm:h-16"
       />
 
       <Container
@@ -82,31 +71,21 @@ export function Hero() {
 
       <Container maxWidth="6xl" className="relative z-10 px-3 sm:px-4">
         <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
-          <div className="relative">
+          <div
+            ref={shellRef}
+            className="relative z-0 w-full max-w-full translate-y-[3px] overflow-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background"
+            style={{ height: scaledHeight }}
+          >
             <div
-              ref={shellRef}
-              className="relative z-0 w-full max-w-full translate-y-[3px] overflow-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background"
-              style={{ height: scaledHeight }}
+              className="origin-top-left will-change-transform"
+              style={{
+                width: DEMO_WIDTH,
+                height: DEMO_HEIGHT,
+                transform: `scale(${scale})`,
+              }}
             >
-              <div
-                className="origin-top-left will-change-transform"
-                style={{
-                  width: DEMO_WIDTH,
-                  height: DEMO_HEIGHT,
-                  transform: `scale(${scale})`,
-                }}
-              >
-                <DashboardDemo
-                  view={KEY_TO_VIEW[active]}
-                  onViewChange={(view) => setActive(VIEW_TO_KEY[view])}
-                />
-              </div>
+              <DashboardDemo view={view} onViewChange={setView} />
             </div>
-            <PreviewSwitchPill
-              active={active}
-              onChange={setActive}
-              showHint={showPillHint}
-            />
           </div>
         </div>
       </Container>
