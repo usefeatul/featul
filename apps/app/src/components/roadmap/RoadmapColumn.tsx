@@ -8,7 +8,10 @@ import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
 import StatusIcon from "@/components/requests/StatusIcon";
 import RoadmapEmptyColumn from "@/components/roadmap/RoadmapEmptyColumn";
+import { ROADMAP_WIP_LIMITS } from "@/lib/roadmap";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@featul/ui/lib/utils";
 
 export default function RoadmapColumn({
   id,
@@ -19,6 +22,7 @@ export default function RoadmapColumn({
   onCreate,
   children,
   disableMotion,
+  sortableItemIds = [],
 }: {
   id: string;
   label: string;
@@ -28,8 +32,11 @@ export default function RoadmapColumn({
   onCreate?: (status: string) => void;
   children: React.ReactNode;
   disableMotion?: boolean;
+  sortableItemIds?: string[];
 }) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const wipLimit = ROADMAP_WIP_LIMITS[id as keyof typeof ROADMAP_WIP_LIMITS];
+  const isOverWip = typeof wipLimit === "number" && count > wipLimit;
 
   return (
     <motion.div
@@ -74,6 +81,11 @@ export default function RoadmapColumn({
                 className="size-4 text-foreground/80 shrink-0"
               />
               <div className="truncate text-sm font-medium">{label}</div>
+              {isOverWip ? (
+                <span className="rounded-sm bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300">
+                  WIP {count}/{wipLimit}
+                </span>
+              ) : null}
             </div>
             <div className="flex items-center gap-2">
               {onCreate ? (
@@ -104,7 +116,10 @@ export default function RoadmapColumn({
       <AnimatePresence initial={false}>
         {!collapsed ? (
           <motion.ul
-            className="min-h-[260px] flex-1 space-y-2 p-2"
+            className={cn(
+              "min-h-[260px] flex-1 space-y-2 p-2",
+              isOverWip && "ring-1 ring-amber-500/20",
+            )}
             initial={false}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -114,7 +129,9 @@ export default function RoadmapColumn({
               duration: disableMotion ? 0 : 0.32,
             }}
           >
-            {children}
+            <SortableContext items={sortableItemIds} strategy={verticalListSortingStrategy}>
+              {children}
+            </SortableContext>
             {count === 0 && !isOver ? (
               <RoadmapEmptyColumn
                 label={label}

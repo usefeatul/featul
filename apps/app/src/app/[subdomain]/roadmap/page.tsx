@@ -1,54 +1,54 @@
 export const revalidate = 30
 
 import type { Metadata } from "next"
-import DomainRoadmapItem from "@/components/subdomain/DomainRoadmapItem"
-import { getPlannedRoadmapPosts, getSidebarPositionBySlug, getWorkspacePostsCount } from "@/lib/workspace"
+import RoadmapBoard from "@/components/roadmap/RoadmapBoard"
+import { getSidebarPositionBySlug, getWorkspacePosts, getWorkspacePostsCount } from "@/lib/workspace"
+import { toRequestItemData } from "@/lib/request-item"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import EmptyDomainPosts from "@/components/subdomain/EmptyPosts"
-import { SortPopover } from "@/components/subdomain/SortPopover"
 import { SearchAction } from "@/components/subdomain/SearchAction"
 import { SubmitIdeaCard } from "@/components/subdomain/SubmitIdeaCard"
-import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPagination"
 import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
 import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
-import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
-import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
-import {
-  parsePositiveIntSearchParam,
-  resolveSearchParams,
-} from "@/utils/search-params"
+import { ROADMAP_PAGE_SIZE } from "@/lib/roadmap"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
   return createWorkspaceSectionMetadata(subdomain, "roadmap")
 }
 
-const PAGE_SIZE = 20
+const PUBLIC_ROADMAP_STATUSES = ["planned", "progress", "review", "completed"]
 
 export default async function RoadmapPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ subdomain: string }>
-  searchParams?: Promise<{ page?: string; order?: "newest" | "oldest" }>
 }) {
   const { subdomain } = await params
-  const sp = (await resolveSearchParams(searchParams)) ?? {}
   const slug = subdomain
-  const page = parsePositiveIntSearchParam(sp.page)
-  const offset = (page - 1) * PAGE_SIZE
-  const order = sp.order === "oldest" ? "oldest" : "newest"
 
-  const items = await getPlannedRoadmapPosts(slug, { limit: PAGE_SIZE, offset, order })
-  const totalCount = await getWorkspacePostsCount(slug, { statuses: ["planned"], publicOnly: true })
-  const sidebarPosition = await getSidebarPositionBySlug(slug)
+  const [rows, totalCount, sidebarPosition] = await Promise.all([
+    getWorkspacePosts(slug, {
+      statuses: PUBLIC_ROADMAP_STATUSES,
+      limit: ROADMAP_PAGE_SIZE,
+      publicOnly: true,
+    }),
+    getWorkspacePostsCount(slug, {
+      statuses: PUBLIC_ROADMAP_STATUSES,
+      publicOnly: true,
+    }),
+    getSidebarPositionBySlug(slug),
+  ])
+
+  const items = rows.map(toRequestItemData)
+
   return (
     <SubdomainListLayout
       subdomain={subdomain}
       slug={slug}
       sidebarPosition={sidebarPosition}
       sortBasePath="/roadmap"
-      sortKeepParams={["page"]}
+      sortKeepParams={[]}
     >
       <div>
         <SubdomainListHeader
@@ -56,42 +56,22 @@ export default async function RoadmapPage({
           sidebarPosition={sidebarPosition}
           mobileTitlePosition={sidebarPosition === "left" ? "top" : "bottom"}
           breakpoint="lg"
-          mobileActions={
-            <>
-              <SortPopover
-                subdomain={subdomain}
-                slug={slug}
-                basePath="/roadmap"
-                keepParams={["page"]}
-              />
-              <SearchAction slug={slug} />
-            </>
-          }
+          mobileActions={<SearchAction slug={slug} />}
         />
-        <div className="lg:hidden mb-4">
+        <div className="mb-4 lg:hidden">
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
-        <SubdomainListCard>
-          {(items || []).length === 0 ? (
-            <EmptyDomainPosts subdomain={subdomain} slug={slug} />
-          ) : (
-            <SubdomainListItems>
-              {(items || []).map((it) => (
-                <DomainRoadmapItem
-                  key={it.id}
-                  item={{ id: it.id, title: it.title, slug: it.slug, roadmapStatus: it.roadmapStatus, content: it.content, boardSlug: it.boardSlug }}
-                />
-              ))}
-            </SubdomainListItems>
-          )}
-        </SubdomainListCard>
-        <PublicRequestPagination
-          page={page}
-          pageSize={PAGE_SIZE}
-          totalCount={totalCount}
-          basePath="/roadmap"
-          keepParams={["order"]}
-        />
+        {items.length === 0 ? (
+          <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+        ) : (
+          <RoadmapBoard
+            workspaceSlug={slug}
+            items={items}
+            totalCount={totalCount}
+            readOnly
+            linkBase="/p"
+          />
+        )}
       </div>
     </SubdomainListLayout>
   )

@@ -39,5 +39,6 @@ export function toRequestItemData(row: RequestItemRow): RequestItemData {
     isLocked: row.isLocked ?? undefined,
     isFeatured: row.isFeatured ?? undefined,
     reportCount: row.reportCount ?? undefined,
+    roadmapOrder: row.roadmapOrder ?? undefined,
   }
 }

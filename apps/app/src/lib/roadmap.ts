@@ -4,6 +4,19 @@ export const ROADMAP_STATUSES = ["planned", "progress", "review", "completed", "
 
 export type RoadmapStatus = (typeof ROADMAP_STATUSES)[number]
 
+export const ROADMAP_WIP_LIMITS: Partial<Record<RoadmapStatus, number>> = {
+  progress: 8,
+  review: 6,
+}
+
+export const ROADMAP_DEFAULT_COLLAPSED: Partial<Record<RoadmapStatus, boolean>> = {
+  closed: true,
+  pending: true,
+}
+
+export const ROADMAP_PAGE_SIZE = 150
+export const ROADMAP_POLL_INTERVAL_MS = 45_000
+
 const ROADMAP_STATUS_ALIASES: Record<string, RoadmapStatus> = {
   pending: "pending",
   review: "review",
@@ -47,6 +60,7 @@ type SortableRoadmapItem = {
   upvotes: number
   publishedAt: string | null
   createdAt: string
+  roadmapOrder?: number
 }
 
 export function sortRoadmapItems<T extends SortableRoadmapItem>(
@@ -64,11 +78,51 @@ export function sortRoadmapItems<T extends SortableRoadmapItem>(
         new Date(b.publishedAt ?? b.createdAt).getTime(),
     )
   }
+  if (order === "newest") {
+    return sorted.sort((a, b) => {
+      const orderDiff = (a.roadmapOrder ?? 0) - (b.roadmapOrder ?? 0)
+      if (orderDiff !== 0) return orderDiff
+      return (
+        new Date(b.publishedAt ?? b.createdAt).getTime() -
+        new Date(a.publishedAt ?? a.createdAt).getTime()
+      )
+    })
+  }
   return sorted.sort(
     (a, b) =>
       new Date(b.publishedAt ?? b.createdAt).getTime() -
       new Date(a.publishedAt ?? a.createdAt).getTime(),
   )
+}
+
+export function groupItemsByBoard<T extends { boardSlug: string; boardName: string }>(
+  items: T[],
+): Array<{ boardSlug: string; boardName: string; items: T[] }> {
+  const map = new Map<string, { boardSlug: string; boardName: string; items: T[] }>()
+  for (const item of items) {
+    const existing = map.get(item.boardSlug)
+    if (existing) {
+      existing.items.push(item)
+      continue
+    }
+    map.set(item.boardSlug, {
+      boardSlug: item.boardSlug,
+      boardName: item.boardName,
+      items: [item],
+    })
+  }
+  return Array.from(map.values()).sort((a, b) => a.boardName.localeCompare(b.boardName))
+}
+
+export function buildRoadmapReorderUpdates<T extends { id: string; roadmapStatus?: string | null }>(
+  status: string,
+  orderedItems: T[],
+) {
+  return orderedItems.map((item, index) => ({
+    postId: item.id,
+    roadmapStatus: status,
+    roadmapOrder: index,
+  }))
 }
 
 type FilterableRoadmapItem = {

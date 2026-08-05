@@ -4,6 +4,7 @@ import React from "react";
 import { useSearchParams } from "next/navigation";
 import {
   filterRoadmapItems,
+  groupItemsByBoard,
   groupItemsByStatus,
   sortRoadmapItems,
 } from "@/lib/roadmap";
@@ -16,6 +17,8 @@ export function useRoadmapFilters(items: RequestItemData[]) {
     () => parseRoadmapFiltersFromSearchParams(searchParams),
     [searchParams],
   );
+
+  const swimlanes = searchParams.get("swimlanes") === "1";
 
   const filteredItems = React.useMemo(
     () => filterRoadmapItems(items, filters),
@@ -45,8 +48,10 @@ export function useRoadmapFilters(items: RequestItemData[]) {
   return {
     filters,
     grouped,
+    swimlanes,
     hasActiveFilters,
     totalVisible,
     totalItems: items.length,
+    groupItemsByBoard,
   };
 }

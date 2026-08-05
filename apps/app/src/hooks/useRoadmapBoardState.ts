@@ -1,12 +1,19 @@
 "use client";
 
 import React from "react";
-import { PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   ROADMAP_STATUSES,
+  buildRoadmapReorderUpdates,
   encodeCollapsed,
   groupItemsByStatus,
   normalizeRoadmapStatus,
@@ -18,6 +25,29 @@ type Item = RequestItemData;
 
 const isRoadmapStatus = (value: string): value is RoadmapStatus =>
   (ROADMAP_STATUSES as readonly string[]).includes(value);
+
+function flattenGrouped(grouped: Record<string, Item[]>): Item[] {
+  const result: Item[] = [];
+  for (const status of ROADMAP_STATUSES) {
+    const column = grouped[status] || [];
+    column.forEach((item, index) => {
+      result.push({
+        ...item,
+        roadmapStatus: status,
+        roadmapOrder: index,
+      });
+    });
+  }
+  return result;
+}
+
+function cloneGrouped(grouped: Record<string, Item[]>): Record<string, Item[]> {
+  const next: Record<string, Item[]> = {};
+  for (const status of ROADMAP_STATUSES) {
+    next[status] = [...(grouped[status] || [])];
+  }
+  return next;
+}
 
 export const toRoadmapCardItem = (item: Item) => ({
   id: item.id,
@@ -40,6 +70,8 @@ export const toRoadmapCardItem = (item: Item) => ({
   isFeatul: item.isFeatul,
   isPinned: item.isPinned,
   isFeatured: item.isFeatured,
+  reportCount: item.reportCount,
+  tags: item.tags,
 });
 
 export function useRoadmapBoardState({
@@ -124,82 +156,117 @@ export function useRoadmapBoardState({
     setActiveId(id);
   }, []);
 
-  const setItemRoadmapStatus = React.useCallback(
-    (itemId: string, roadmapStatus: string | null) => {
-      setItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === itemId ? { ...item, roadmapStatus } : item,
-        ),
-      );
-    },
-    [],
-  );
-
-  const updateStatusCountsOptimistically = React.useCallback(
-    (from: RoadmapStatus, to: RoadmapStatus) => {
-      queryClient.setQueryData<Record<string, number> | undefined>(
-        statusCountsQueryKey,
-        (prevCounts) => {
-          if (!prevCounts) return prevCounts;
-          const nextCounts: Record<string, number> = { ...prevCounts };
-          if (typeof nextCounts[from] === "number") {
-            nextCounts[from] = Math.max(0, (nextCounts[from] || 0) - 1);
-          }
-          nextCounts[to] = (nextCounts[to] || 0) + 1;
-          return nextCounts;
-        },
-      );
-    },
-    [queryClient, statusCountsQueryKey],
-  );
-
   const invalidateStatusCounts = React.useCallback(() => {
     queryClient.invalidateQueries({ queryKey: statusCountsQueryKey });
   }, [queryClient, statusCountsQueryKey]);
 
-  const handleDragEnd = React.useCallback(
-    async (overId?: string) => {
-      const dragged = items.find((item) => item.id === activeId);
-      setActiveId(null);
-      if (!dragged) return;
-
-      const target = (overId || "").toLowerCase();
-      if (!isRoadmapStatus(target)) return;
-      if ((dragged.roadmapStatus || "pending").toLowerCase() === target) return;
-
-      const previousStatus = normalizeRoadmapStatus(
-        dragged.roadmapStatus || "pending",
+  const persistLayout = React.useCallback(
+    async (nextGrouped: Record<string, Item[]>, previousItems: Item[]) => {
+      const updates = (ROADMAP_STATUSES as readonly string[]).flatMap((status) =>
+        buildRoadmapReorderUpdates(status, nextGrouped[status] || []),
       );
-      const nextStatus = normalizeRoadmapStatus(target);
-
-      setItemRoadmapStatus(dragged.id, target);
-      updateStatusCountsOptimistically(previousStatus, nextStatus);
-      setSavingId(dragged.id);
+      if (updates.length === 0) return;
 
       try {
-        await client.board.updatePostMeta.$post({
-          postId: dragged.id,
-          roadmapStatus: target,
+        await client.board.reorderRoadmapPosts.$post({
+          workspaceSlug,
+          updates,
         });
         invalidateStatusCounts();
-        toast.success("Status updated");
+        toast.success("Roadmap updated", {
+          action: {
+            label: "Undo",
+            onClick: async () => {
+              setItems(previousItems);
+              const undoUpdates = (ROADMAP_STATUSES as readonly string[]).flatMap(
+                (status) =>
+                  buildRoadmapReorderUpdates(
+                    status,
+                    groupItemsByStatus(previousItems)[status] || [],
+                  ),
+              );
+              try {
+                await client.board.reorderRoadmapPosts.$post({
+                  workspaceSlug,
+                  updates: undoUpdates,
+                });
+                invalidateStatusCounts();
+              } catch {
+                toast.error("Failed to undo move");
+              }
+            },
+          },
+        });
       } catch (err: unknown) {
-        setItemRoadmapStatus(dragged.id, previousStatus || null);
-        invalidateStatusCounts();
+        setItems(previousItems);
         const message =
-          err instanceof Error ? err.message : "Failed to update status";
+          err instanceof Error ? err.message : "Failed to update roadmap";
         toast.error(message);
-      } finally {
-        setSavingId(null);
       }
     },
-    [
-      activeId,
-      invalidateStatusCounts,
-      items,
-      setItemRoadmapStatus,
-      updateStatusCountsOptimistically,
-    ],
+    [invalidateStatusCounts, workspaceSlug],
+  );
+
+  const handleDragEnd = React.useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+      setActiveId(null);
+      if (!over) return;
+
+      const activeItem = items.find((item) => item.id === String(active.id));
+      if (!activeItem) return;
+
+      const previousItems = items;
+      const nextGrouped = cloneGrouped(grouped);
+      const activeStatus = normalizeRoadmapStatus(activeItem.roadmapStatus);
+      const overId = String(over.id);
+
+      let targetStatus = activeStatus;
+      let targetIndex = (nextGrouped[activeStatus] || []).findIndex(
+        (item) => item.id === activeItem.id,
+      );
+
+      if (isRoadmapStatus(overId)) {
+        targetStatus = overId;
+        targetIndex = (nextGrouped[targetStatus] || []).length;
+      } else {
+        const overItem = items.find((item) => item.id === overId);
+        if (!overItem) return;
+        targetStatus = normalizeRoadmapStatus(overItem.roadmapStatus);
+        targetIndex = (nextGrouped[targetStatus] || []).findIndex(
+          (item) => item.id === overId,
+        );
+        if (targetIndex < 0) {
+          targetIndex = (nextGrouped[targetStatus] || []).length;
+        }
+      }
+
+      const sourceColumn = [...(nextGrouped[activeStatus] || [])];
+      const sourceIndex = sourceColumn.findIndex((item) => item.id === activeItem.id);
+      if (sourceIndex < 0) return;
+
+      if (activeStatus === targetStatus) {
+        if (sourceIndex === targetIndex) return;
+        nextGrouped[activeStatus] = arrayMove(sourceColumn, sourceIndex, targetIndex);
+      } else {
+        const [moving] = sourceColumn.splice(sourceIndex, 1);
+        if (!moving) return;
+        const destColumn = [...(nextGrouped[targetStatus] || [])];
+        destColumn.splice(targetIndex, 0, {
+          ...moving,
+          roadmapStatus: targetStatus,
+        });
+        nextGrouped[activeStatus] = sourceColumn;
+        nextGrouped[targetStatus] = destColumn;
+      }
+
+      const nextItems = flattenGrouped(nextGrouped);
+      setItems(nextItems);
+      setSavingId(activeItem.id);
+      await persistLayout(nextGrouped, previousItems);
+      setSavingId(null);
+    },
+    [grouped, items, persistLayout],
   );
 
   const setColumnCollapsed = React.useCallback(
@@ -208,6 +275,21 @@ export function useRoadmapBoardState({
     },
     [],
   );
+
+  const replaceItems = React.useCallback((nextItems: Item[]) => {
+    setItems(nextItems);
+  }, []);
+
+  const appendItems = React.useCallback((nextItems: Item[]) => {
+    setItems((prev) => {
+      const existingIds = new Set(prev.map((item) => item.id));
+      const merged = [...prev];
+      for (const item of nextItems) {
+        if (!existingIds.has(item.id)) merged.push(item);
+      }
+      return merged;
+    });
+  }, []);
 
   return {
     sensors,
@@ -220,5 +302,7 @@ export function useRoadmapBoardState({
     handleDragStart,
     handleDragEnd,
     setColumnCollapsed,
+    replaceItems,
+    appendItems,
   };
 }

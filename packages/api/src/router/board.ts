@@ -3,7 +3,7 @@ import { eq, and, sql, inArray, asc, type SQLWrapper } from "drizzle-orm"
 import { z } from "zod"
 import { j, publicProcedure, privateProcedure } from "../jstack"
 import { workspace, board, post, postTag, tag, comment, user, workspaceMember, vote, activityLog } from "@featul/db"
-import { byIdSchema, updatePostMetaSchema, updatePostBoardSchema } from "../validators/post"
+import { byIdSchema, updatePostMetaSchema, updatePostBoardSchema, reorderRoadmapPostsSchema, bulkUpdateRoadmapStatusSchema, listRoadmapPostsSchema } from "../validators/post"
 import { HTTPException } from "hono/http-exception"
 import { byBoardInputSchema, boardSlugSchema } from "../validators/board"
 import { checkSlugInputSchema } from "../validators/workspace"
@@ -843,6 +843,7 @@ export function createBoardRouter() {
 
         const patch: Partial<typeof post.$inferSelect> = {}
         if (input.roadmapStatus !== undefined) patch.roadmapStatus = input.roadmapStatus
+        if (input.roadmapOrder !== undefined) patch.roadmapOrder = input.roadmapOrder
         if (input.isPinned !== undefined) patch.isPinned = input.isPinned
         if (input.isLocked !== undefined) patch.isLocked = input.isLocked
         if (input.isFeatured !== undefined) patch.isFeatured = input.isFeatured
@@ -939,6 +940,191 @@ export function createBoardRouter() {
         })
 
         return c.superjson({ ok: true })
+      }),
+
+    reorderRoadmapPosts: privateProcedure
+      .input(reorderRoadmapPostsSchema)
+      .post(async ({ ctx, input, c }) => {
+        const [ws] = await ctx.db
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
+          .from(workspace)
+          .where(eq(workspace.slug, input.workspaceSlug))
+          .limit(1)
+        if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+        let allowed = ws.ownerId === ctx.session.user.id
+        if (!allowed) {
+          const [member] = await ctx.db
+            .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+            .from(workspaceMember)
+            .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+            .limit(1)
+          const perms = (member?.permissions || {}) as Record<string, boolean>
+          if (member?.role === "admin" || perms?.canManageBoards || perms?.canModerateAllBoards) allowed = true
+        }
+        if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+
+        const postIds = input.updates.map((update) => update.postId)
+        const rows = await ctx.db
+          .select({ id: post.id, boardId: post.boardId })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .where(and(eq(board.workspaceId, ws.id), inArray(post.id, postIds)))
+
+        if (rows.length !== postIds.length) {
+          throw new HTTPException(400, { message: "One or more posts were not found in this workspace" })
+        }
+
+        await Promise.all(
+          input.updates.map((update) =>
+            ctx.db
+              .update(post)
+              .set({
+                roadmapStatus: update.roadmapStatus,
+                roadmapOrder: update.roadmapOrder,
+                updatedAt: new Date(),
+              })
+              .where(eq(post.id, update.postId)),
+          ),
+        )
+
+        return c.superjson({ ok: true })
+      }),
+
+    bulkUpdateRoadmapStatus: privateProcedure
+      .input(bulkUpdateRoadmapStatusSchema)
+      .post(async ({ ctx, input, c }) => {
+        const [ws] = await ctx.db
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
+          .from(workspace)
+          .where(eq(workspace.slug, input.workspaceSlug))
+          .limit(1)
+        if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+        let allowed = ws.ownerId === ctx.session.user.id
+        if (!allowed) {
+          const [member] = await ctx.db
+            .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
+            .from(workspaceMember)
+            .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, ctx.session.user.id)))
+            .limit(1)
+          const perms = (member?.permissions || {}) as Record<string, boolean>
+          if (member?.role === "admin" || perms?.canManageBoards || perms?.canModerateAllBoards) allowed = true
+        }
+        if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
+
+        const validPosts = await ctx.db
+          .select({ id: post.id })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .where(and(eq(board.workspaceId, ws.id), inArray(post.id, input.postIds)))
+
+        if (validPosts.length === 0) {
+          throw new HTTPException(400, { message: "No matching posts found" })
+        }
+
+        await ctx.db
+          .update(post)
+          .set({ roadmapStatus: input.roadmapStatus, updatedAt: new Date() })
+          .where(inArray(post.id, validPosts.map((row: { id: string }) => row.id)))
+
+        return c.superjson({ ok: true, count: input.postIds.length })
+      }),
+
+    listRoadmapPosts: privateProcedure
+      .input(listRoadmapPostsSchema)
+      .get(async ({ ctx, input, c }) => {
+        const [ws] = await ctx.db
+          .select({ id: workspace.id })
+          .from(workspace)
+          .where(eq(workspace.slug, input.slug))
+          .limit(1)
+        if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
+
+        const limit = Math.min(Math.max(Number(input.limit ?? 150), 1), 500)
+        const offset = Math.max(Number(input.offset ?? 0), 0)
+
+        const rows = await ctx.db
+          .select({
+            id: post.id,
+            title: post.title,
+            slug: post.slug,
+            content: post.content,
+            image: post.image,
+            commentCount: post.commentCount,
+            upvotes: post.upvotes,
+            roadmapStatus: post.roadmapStatus,
+            roadmapOrder: post.roadmapOrder,
+            publishedAt: post.publishedAt,
+            createdAt: post.createdAt,
+            boardSlug: board.slug,
+            boardName: board.name,
+            authorImage: user.image,
+            authorName: user.name,
+            isAnonymous: post.isAnonymous,
+            authorId: post.authorId,
+            isPinned: post.isPinned,
+            isLocked: post.isLocked,
+            isFeatured: post.isFeatured,
+            role: workspaceMember.role,
+            reportCount: sql<number>`(SELECT count(*) FROM post_report WHERE post_report.post_id = ${post.id})`,
+          })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .leftJoin(user, eq(post.authorId, user.id))
+          .leftJoin(
+            workspaceMember,
+            and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, ws.id)),
+          )
+          .where(eq(board.workspaceId, ws.id))
+          .orderBy(asc(post.roadmapOrder), sql`${post.createdAt} DESC`)
+          .limit(limit)
+          .offset(offset)
+
+        const postIds = rows.map((row: { id: string }) => row.id)
+        const tagsByPostId: Record<string, Array<{ id: string; name: string; color: string | null; slug: string }>> = {}
+        if (postIds.length > 0) {
+          const tagRows = await ctx.db
+            .select({
+              postId: postTag.postId,
+              id: tag.id,
+              name: tag.name,
+              color: tag.color,
+              slug: tag.slug,
+            })
+            .from(postTag)
+            .innerJoin(tag, eq(postTag.tagId, tag.id))
+            .where(inArray(postTag.postId, postIds))
+
+          for (const tagRow of tagRows) {
+            const bucket = tagsByPostId[tagRow.postId] ?? []
+            bucket.push({
+              id: tagRow.id,
+              name: tagRow.name,
+              color: tagRow.color,
+              slug: tagRow.slug,
+            })
+            tagsByPostId[tagRow.postId] = bucket
+          }
+        }
+
+        const countRow = await ctx.db
+          .select({ count: sql<number>`count(*)` })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .where(eq(board.workspaceId, ws.id))
+          .limit(1)
+
+        return c.superjson({
+          posts: rows.map((row: (typeof rows)[number]) => ({
+            ...row,
+            tags: tagsByPostId[row.id] || [],
+            reportCount: Number(row.reportCount || 0),
+          })),
+          totalCount: Number(countRow[0]?.count || 0),
+          limit,
+          offset,
+        })
       }),
   })
 }

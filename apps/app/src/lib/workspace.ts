@@ -327,6 +327,7 @@ export async function getWorkspacePosts(
       commentCount: post.commentCount,
       upvotes: post.upvotes,
       roadmapStatus: post.roadmapStatus,
+      roadmapOrder: post.roadmapOrder,
       publishedAt: post.publishedAt,
       createdAt: post.createdAt,
       boardSlug: board.slug,

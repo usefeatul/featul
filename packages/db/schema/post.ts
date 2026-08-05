@@ -24,6 +24,7 @@ export const post = pgTable(
       enum: ['draft', 'published', 'archived', 'spam', 'pending_approval'],
     }).default('published'),
     roadmapStatus: text('roadmap_status'),
+    roadmapOrder: integer('roadmap_order').notNull().default(0),
     upvotes: integer('upvotes').default(0),
     commentCount: integer('comment_count').default(0),
     isPinned: boolean('is_pinned').default(false),

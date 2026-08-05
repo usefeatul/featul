@@ -22,9 +22,36 @@ export const byIdSchema = z.object({ postId: z.string().min(1) })
 export const updatePostMetaSchema = z.object({
   postId: z.string().min(1),
   roadmapStatus: z.string().min(1).max(64).optional(),
+  roadmapOrder: z.number().int().min(0).max(100000).optional(),
   isPinned: z.boolean().optional(),
   isLocked: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+})
+
+export const reorderRoadmapPostsSchema = z.object({
+  workspaceSlug: z.string().min(1),
+  updates: z
+    .array(
+      z.object({
+        postId: z.string().min(1),
+        roadmapStatus: z.string().min(1).max(64),
+        roadmapOrder: z.number().int().min(0).max(100000),
+      }),
+    )
+    .min(1)
+    .max(500),
+})
+
+export const bulkUpdateRoadmapStatusSchema = z.object({
+  workspaceSlug: z.string().min(1),
+  postIds: z.array(z.string().min(1)).min(1).max(100),
+  roadmapStatus: z.string().min(1).max(64),
+})
+
+export const listRoadmapPostsSchema = z.object({
+  slug: z.string().min(1),
+  limit: z.number().int().min(1).max(500).optional(),
+  offset: z.number().int().min(0).max(100000).optional(),
 })
 
 export const updatePostBoardSchema = z.object({

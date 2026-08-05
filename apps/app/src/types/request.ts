@@ -74,6 +74,7 @@ export interface RequestItemData extends RequestFlags {
   isFeatul?: boolean
   tags?: TagSummary[]
   reportCount?: number
+  roadmapOrder?: number
 }
 
 export type RequestDetailData = {
