@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
+import { sidebarBadgeClassName } from "./sidebar-badge";
 
 function SidebarItem({
   item,
@@ -47,11 +48,11 @@ function SidebarItem({
       />
       <span className="transition-colors">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className="ml-auto rounded-sm bg-card dark:bg-black/50 px-1.5 py-0.5 text-xs font-extralight text-accent dark:text-accent tabular-nums border border-border ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:ring-offset-black ">
+        <span className={cn("ml-auto", sidebarBadgeClassName(count < 10))}>
           {count}
         </span>
       ) : shortcut ? (
-        <span className="ml-auto rounded-sm bg-card dark:bg-black/50 px-1.5 py-0.5 text-xs font-extralight text-accent dark:text-accent border border-border ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:ring-offset-black">
+        <span className={cn("ml-auto", sidebarBadgeClassName(true))}>
           {shortcut}
         </span>
       ) : null}

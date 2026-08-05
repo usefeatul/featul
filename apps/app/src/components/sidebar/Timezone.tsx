@@ -7,6 +7,7 @@ import { getSlugFromPath } from "../../config/nav";
 import { formatTime12h } from "@/lib/time";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@featul/ui/components/tooltip";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";
+import { sidebarBadgeClassName } from "./sidebar-badge";
 
 interface TimezoneProps {
   className?: string;
@@ -58,7 +59,7 @@ export default function Timezone({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="ml-auto rounded-sm border border-border bg-card px-1.5 py-0.5 text-xs font-extralight tabular-nums text-accent ring-1 ring-border/20 ring-offset-1 ring-offset-white dark:bg-black/50 dark:text-accent dark:ring-offset-black">
+              <span className={cn("ml-auto px-1.5", sidebarBadgeClassName(false))}>
                 {time}
               </span>
             </TooltipTrigger>
