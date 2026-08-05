@@ -81,14 +81,13 @@ export default function CommentList({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border bg-background dark:bg-background p-3.5">
-        <CommentForm
-          postId={postId}
-          onSuccess={handleCommentSuccess}
-          workspaceSlug={workspaceSlug}
-          surface={surface}
-        />
-      </div>
+      <CommentForm
+        postId={postId}
+        onSuccess={handleCommentSuccess}
+        workspaceSlug={workspaceSlug}
+        surface={surface}
+        expandable
+      />
       {commentCount === 0 && !isLoading ? (
         <div className="p-6 text-center">
           <p className="text-sm text-accent">
@@ -96,7 +95,7 @@ export default function CommentList({
           </p>
         </div>
       ) : (
-        <div className="space-y-4 relative">
+        <div className="relative space-y-4">
           {comments.length > 0 && (
             <CommentThread
               postId={postId}

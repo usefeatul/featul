@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import MentionList from "./MentionList"
 import { Textarea } from "@featul/ui/components/textarea"
 import { Button } from "@featul/ui/components/button"
@@ -27,6 +27,7 @@ interface CommentFormProps {
   workspaceSlug?: string
   surface?: CommentSurface
   defaultInternal?: boolean
+  expandable?: boolean
 }
 
 export default function CommentForm({
@@ -40,9 +41,11 @@ export default function CommentForm({
   workspaceSlug,
   surface = "workspace",
   defaultInternal = false,
+  expandable = false,
 }: CommentFormProps) {
   const [content, setContent] = useState("")
   const [isInternal, setIsInternal] = useState(defaultInternal)
+  const [expanded, setExpanded] = useState(!expandable || autoFocus)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const canMarkInternal = surface === "workspace" && Boolean(workspaceSlug)
   const internalForced = Boolean(parentId && defaultInternal)
@@ -80,12 +83,43 @@ export default function CommentForm({
     resetForm,
   })
 
-  return (
+  useEffect(() => {
+    if (expanded && expandable) {
+      textareaRef.current?.focus()
+    }
+  }, [expanded, expandable])
+
+  const collapseIfEmpty = () => {
+    if (!expandable) return
+    if (!content.trim() && !uploadedImage) {
+      setExpanded(false)
+      onCancel?.()
+    }
+  }
+
+  if (expandable && !expanded) {
+    return (
+      <button
+        type="button"
+        onClick={() => setExpanded(true)}
+        className="w-full rounded-md border bg-background px-3.5 py-2.5 text-left text-sm text-accent transition-colors hover:bg-muted/30 dark:bg-background"
+      >
+        {placeholder}
+      </button>
+    )
+  }
+
+  const form = (
     <form
       onSubmit={(e) =>
         handleSubmit(e, content, uploadedImage, internalForced || isInternal)
       }
       className="space-y-2.5"
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          collapseIfEmpty()
+        }
+      }}
     >
       <div className="relative">
         <Textarea
@@ -98,15 +132,18 @@ export default function CommentForm({
             checkForMention(next, caret)
           }}
           placeholder={placeholder}
-          className="min-h-[60px] resize-none text-sm shadow-none placeholder:text-accent border-none focus-visible:ring-0"
-          autoFocus={autoFocus}
+          className={cn(
+            "resize-none border-none text-sm shadow-none placeholder:text-accent focus-visible:ring-0",
+            expandable ? "min-h-[72px]" : "min-h-[60px]",
+          )}
+          autoFocus={autoFocus || expandable}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}
         />
 
         {mentionOpen && filteredCandidates.length > 0 && textareaRef.current && (
           <MentionList
-            candidates={filteredCandidates.map(u => ({ id: u.userId, ...u }))}
+            candidates={filteredCandidates.map((u) => ({ id: u.userId, ...u }))}
             selectedIndex={mentionIndex}
             onSelect={(user) => insertMention(user.name)}
             className="left-2 top-full mt-1"
@@ -114,19 +151,18 @@ export default function CommentForm({
         )}
       </div>
 
-      {/* Image Preview */}
       {uploadedImage && (
         <div className="relative inline-block">
           <div className="relative">
             <ContentImage
               url={uploadedImage.url}
               alt={uploadedImage.name}
-              className="max-w-[120px] max-h-20"
+              className="max-h-20 max-w-[120px]"
             />
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="absolute -top-1 -right-1 rounded-xl bg-destructive text-destructive-foreground p-0.5 hover:bg-destructive/90 transition-colors z-10 cursor-pointer"
+              className="absolute -top-1 -right-1 z-10 cursor-pointer rounded-xl bg-destructive p-0.5 text-destructive-foreground transition-colors hover:bg-destructive/90"
               disabled={isPending || uploadingImage}
               aria-label="Remove image"
             >
@@ -150,7 +186,7 @@ export default function CommentForm({
             type="button"
             size="xs"
             variant="card"
-            className="h-8 w-8 p-0 rounded-md dark:bg-black/40"
+            className="h-8 w-8 rounded-md p-0 dark:bg-black/40"
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -158,7 +194,7 @@ export default function CommentForm({
             {uploadingImage ? (
               <LoaderIcon className="h-4 w-4 animate-spin" />
             ) : (
-              <ImageIcon className="size-4 " />
+              <ImageIcon className="size-4" />
             )}
           </Button>
 
@@ -171,26 +207,28 @@ export default function CommentForm({
                   variant="card"
                   onClick={() => setIsInternal((prev) => !prev)}
                   className={cn(
-                    "h-8 w-8 p-0 rounded-md dark:bg-black/40",
-                    isInternal && "bg-muted border-green-600/40 text-green-600 dark:text-green-400"
+                    "h-8 w-8 rounded-md p-0 dark:bg-black/40",
+                    isInternal && "border-green-600/40 bg-muted text-green-600 dark:text-green-400",
                   )}
                   disabled={isPending || uploadingImage || internalForced}
                   aria-label={
-                    isInternal
-                      ? "Disable internal comment"
-                      : "Enable internal comment"
+                    isInternal ? "Disable internal comment" : "Enable internal comment"
                   }
                   aria-pressed={isInternal}
                 >
                   <LockIcon
                     className={cn(
                       "size-4",
-                      isInternal && "text-green-600 dark:text-green-400"
+                      isInternal && "text-green-600 dark:text-green-400",
                     )}
                   />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
+              <TooltipContent
+                side="top"
+                sideOffset={4}
+                className="w-auto whitespace-nowrap px-2 py-1 text-xs"
+              >
                 {internalForced
                   ? "Internal reply"
                   : isInternal
@@ -206,22 +244,20 @@ export default function CommentForm({
             type="submit"
             size="xs"
             variant="card"
-            disabled={
-              (!content.trim() && !uploadedImage) || isPending || uploadingImage
-            }
+            disabled={(!content.trim() && !uploadedImage) || isPending || uploadingImage}
           >
-            {isPending ? (
-              <LoaderIcon className="h-3 w-3 animate-spin" />
-            ) : (
-              buttonText
-            )}
+            {isPending ? <LoaderIcon className="h-3 w-3 animate-spin" /> : buttonText}
           </Button>
-          {onCancel && (
+          {(onCancel || expandable) && (
             <Button
               type="button"
               size="xs"
               variant="nav"
-              onClick={onCancel}
+              onClick={() => {
+                resetForm()
+                if (expandable) setExpanded(false)
+                onCancel?.()
+              }}
               disabled={isPending || uploadingImage}
             >
               Cancel
@@ -231,4 +267,12 @@ export default function CommentForm({
       </div>
     </form>
   )
+
+  if (expandable) {
+    return (
+      <div className="rounded-md border bg-background p-3.5 dark:bg-background">{form}</div>
+    )
+  }
+
+  return form
 }

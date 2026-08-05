@@ -4,8 +4,7 @@ import Link from "next/link"
 import { Button } from "@featul/ui/components/button"
 import { cn } from "@featul/ui/lib/utils"
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
-import { MergePopover } from "./MergePopover"
-import { DeletePostButton } from "./DeletePostButton"
+import { RequestOverflowMenu } from "./RequestOverflowMenu"
 import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 
 type NavItem = {
@@ -25,9 +24,19 @@ export interface RequestNavigationProps {
   showActions?: boolean
 }
 
-export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions }: RequestNavigationProps) {
+export default function RequestNavigation({
+  postId,
+  workspaceSlug,
+  prev,
+  next,
+  prevHref,
+  nextHref,
+  backHref,
+  className,
+  showActions,
+}: RequestNavigationProps) {
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center gap-2", className)}>
       <Toolbar size="sm" variant="plain">
         <Button
           asChild
@@ -39,12 +48,12 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           {backHref ? (
             <Link href={backHref} aria-label="Back to requests">
               <ChevronLeftIcon className="size-3" />
-              <span className="text-xs font-medium ">Back</span>
+              <span className="text-xs font-medium">Back</span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
               <ChevronLeftIcon className="size-3.5 opacity-50" />
-              <span className="text-xs font-medium opacity-50 ">Back</span>
+              <span className="text-xs font-medium opacity-50">Back</span>
             </span>
           )}
         </Button>
@@ -57,14 +66,23 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           disabled={!prevHref}
         >
           {prevHref ? (
-            <Link href={prevHref} title={prev?.title ? `Previous: ${prev.title} (Z)` : "Previous (Z)"} aria-label="Previous post" aria-keyshortcuts="z">
+            <Link
+              href={prevHref}
+              title={prev?.title ? `Previous: ${prev.title} (Z)` : "Previous (Z)"}
+              aria-label="Previous post"
+              aria-keyshortcuts="z"
+            >
               <span className="text-xs font-medium">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+              <span className="hidden sm:inline-flex h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight tabular-nums text-accent dark:bg-black">
+                Z
+              </span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
               <span className="text-xs font-medium opacity-50">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+              <span className="hidden sm:inline-flex h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight tabular-nums text-accent dark:bg-black">
+                Z
+              </span>
             </span>
           )}
         </Button>
@@ -77,13 +95,22 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           disabled={!nextHref}
         >
           {nextHref ? (
-            <Link href={nextHref} title={next?.title ? `Next: ${next.title} (X)` : "Next (X)"} aria-label="Next post" aria-keyshortcuts="x">
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent h-5">X</span>
+            <Link
+              href={nextHref}
+              title={next?.title ? `Next: ${next.title} (X)` : "Next (X)"}
+              aria-label="Next post"
+              aria-keyshortcuts="x"
+            >
+              <span className="hidden sm:inline-flex h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight text-accent dark:bg-black">
+                X
+              </span>
               <span className="text-xs font-medium">Next</span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent h-5">X</span>
+              <span className="hidden sm:inline-flex h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight text-accent dark:bg-black">
+                X
+              </span>
               <span className="text-xs font-medium opacity-50">Next</span>
             </span>
           )}
@@ -91,11 +118,7 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
       </Toolbar>
 
       {showActions ? (
-        <Toolbar size="sm" variant="plain">
-          <MergePopover postId={postId} workspaceSlug={workspaceSlug} />
-          <ToolbarSeparator />
-          <DeletePostButton postId={postId} workspaceSlug={workspaceSlug} backHref={backHref} />
-        </Toolbar>
+        <RequestOverflowMenu postId={postId} workspaceSlug={workspaceSlug} backHref={backHref} />
       ) : null}
     </div>
   )
