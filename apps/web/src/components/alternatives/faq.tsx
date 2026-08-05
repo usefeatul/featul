@@ -14,7 +14,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
         <div className="max-w-5xl px-0 sm:px-6">
           <div className="max-w-xl">
             <FaqAccordion
-              title={`Questions about ${alt.name} vs Featul`}
+              title={`FAQs about ${alt.name} alternatives`}
               description={description}
               items={items}
               limit={6}

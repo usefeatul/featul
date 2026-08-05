@@ -9,7 +9,9 @@ import StatsSection from "@/components/home/cta";
 import { getAltDescription } from "@/types/descriptions";
 import { createArticleMetadata } from "@/lib/seo";
 import {
+  ALTERNATIVES_UPDATED_ISO,
   getAlternativeBySlug,
+  getAlternativePageTitle,
   getAlternativeSlugs,
 } from "@/config/alternatives";
 import { getRelatedPages } from "@/lib/seo/interlink";
@@ -32,9 +34,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const alt = getAlternativeBySlug(slug);
   if (!alt) return {};
-  const title = `${alt.name} vs Featul`;
-  const rawDescription = getAltDescription(slug, 'first');
-  const description = rawDescription.length > 160 ? `${rawDescription.slice(0, 157)}…` : rawDescription;
+  const title = getAlternativePageTitle(alt.name);
+  const rawDescription = getAltDescription(slug, "first");
+  const description =
+    rawDescription.length > 160
+      ? `${rawDescription.slice(0, 157)}…`
+      : rawDescription;
   return createArticleMetadata({
     title,
     description,
@@ -76,6 +81,9 @@ export default async function AlternativePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
+      <time dateTime={ALTERNATIVES_UPDATED_ISO} className="sr-only">
+        Updated {ALTERNATIVES_UPDATED_ISO}
+      </time>
       <AlternativeHero alt={alt} />
       <div className="relative mx-auto max-w-6xl">
         <SectionStack>

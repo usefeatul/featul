@@ -130,7 +130,7 @@ function addCompetitorRelated(slug: string, links: RelatedLink[]) {
     for (const other of others) {
         links.push({
             href: `/alternatives/${other.slug}`,
-            label: `Featul vs ${other.name}`,
+            label: `${other.name} alternatives`,
             type: "competitor",
         });
     }
@@ -181,7 +181,7 @@ function addIntegrationRelated(slug: string, links: RelatedLink[]) {
     if (topCompetitor) {
         links.push({
             href: `/alternatives/${topCompetitor.slug}`,
-            label: `Featul vs ${topCompetitor.name}`,
+            label: `${topCompetitor.name} alternatives`,
             type: "competitor",
         });
     }
@@ -237,7 +237,7 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
     if (topCompetitor) {
         links.push({
             href: `/alternatives/${topCompetitor.slug}`,
-            label: `Featul vs ${topCompetitor.name}`,
+            label: `${topCompetitor.name} alternatives`,
             type: "competitor",
         });
     }
@@ -378,7 +378,7 @@ function resolveSlugToLink(slug: string): RelatedLink | null {
     // Check competitors
     const competitor = COMPETITORS.find((c) => c.slug === slug);
     if (competitor) {
-        return { href: `/alternatives/${slug}`, label: `Featul vs ${competitor.name}`, type: "competitor" };
+        return { href: `/alternatives/${slug}`, label: `${competitor.name} alternatives`, type: "competitor" };
     }
 
     // Check integrations

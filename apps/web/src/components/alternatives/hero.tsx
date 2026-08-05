@@ -13,7 +13,7 @@ export function AlternativeHero({ alt }: { alt: Alternative }) {
     >
       <AlternativeHeroContent
         name={alt.name}
-        description={getAltDescription(alt.slug, "slug-hash")}
+        description={getAltDescription(alt.slug, "first")}
         slug={alt.slug}
         website={alt.website}
       />

@@ -283,7 +283,7 @@ export function buildAlternativesBreadcrumbSchema({
       {
         "@type": "ListItem",
         position: 2,
-        name: `${name} vs Featul`,
+        name: `${name} Alternatives`,
         item: `${siteUrl}/alternatives/${slug}`,
       },
     ],

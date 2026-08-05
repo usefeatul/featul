@@ -1,3 +1,5 @@
+import { COMPETITORS } from '@/lib/data/programmatic/matrix'
+
 export const alternativeDescriptions: Record<string, string[]> = {
   userjot: [
     "UserJot gives you unlimited users and posts on their free plan, but you'll need external hosting. Featul provides open source flexibility with self hosting and combines feedback, roadmap, and changelog in one platform.",
@@ -25,6 +27,7 @@ export const alternativeDescriptions: Record<string, string[]> = {
     "Teams may choose Upvoty for hosted convenience. Organizations prefer Featul for complete stack ownership with transparent roadmap publication.",
   ],
 }
+
 function hashIndex(key: string, length: number): number {
   if (length <= 1) return 0
   let h = 0
@@ -32,15 +35,27 @@ function hashIndex(key: string, length: number): number {
   return h % length
 }
 
-export function getAltDescription(slug: string, strategy: 'slug-hash' | 'first' | 'random' = 'slug-hash'): string {
+function competitorFallbackDescription(slug: string): string | undefined {
+  const competitor = COMPETITORS.find((c) => c.slug === slug)
+  if (!competitor) return undefined
+
+  const advantage = competitor.victoryPoints[0] || 'EU hosting and a unified feedback workflow'
+  return `Looking for ${competitor.name} alternatives? Featul is a privacy-first feedback platform with ${advantage.toLowerCase()}. Compare Featul vs ${competitor.name} on boards, roadmaps, changelogs, and GDPR-friendly hosting.`
+}
+
+export function getAltDescription(
+  slug: string,
+  strategy: 'slug-hash' | 'first' = 'first',
+): string {
   const list = alternativeDescriptions[slug] ?? []
-  const fallback = `Compare ${slug} and Featul across feedback, roadmap, and changelog.`
+  const competitorFallback = competitorFallbackDescription(slug)
+  const fallback =
+    competitorFallback ??
+    `Looking for ${slug} alternatives? Compare Featul vs ${slug} across feedback boards, public roadmaps, and changelogs with privacy-first EU hosting.`
+
   if (!list.length) return fallback
   if (strategy === 'first') return list[0] ?? fallback
-  if (strategy === 'random') {
-    const idx = Math.floor(Math.random() * list.length)
-    return list[idx] ?? fallback
-  }
+
   const idx = hashIndex(slug, list.length)
   return list[idx] ?? fallback
 }

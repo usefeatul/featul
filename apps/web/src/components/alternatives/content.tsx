@@ -5,8 +5,6 @@ import { HeroHighlights } from "@/components/shared/highlights";
 import { AlternativeIcon } from "@featul/ui/icons/alternative";
 import { Button } from "@featul/ui/components/button";
 import { LinkIcon } from "@featul/ui/icons/link";
-import { useEffect, useState } from "react";
-import { getAltDescription } from "@/types/descriptions";
 import { cn } from "@featul/ui/lib/utils";
 
 const FEATUL_SIGN_IN_URL = "https://app.featul.com/auth/sign-in";
@@ -25,17 +23,11 @@ export function AlternativeHeroContent({
   slug: string;
   website?: string;
 }) {
-  const [clientDescription, setClientDescription] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    setClientDescription(getAltDescription(slug, 'random'));
-  }, [slug]);
-
   return (
     <div className="text-left" data-component="AlternativeHeroContent">
       <h1 className="max-w-3xl font-heading font-semibold tracking-tight text-white">
         <span className="block text-[2rem] leading-[1.15] text-balance sm:text-5xl sm:leading-tight md:text-6xl">
-          The simple alternative to
+          Best {name} alternative
         </span>
 
         <span className="mt-4 flex items-center gap-3 sm:mt-5 sm:gap-4">
@@ -70,23 +62,22 @@ export function AlternativeHeroContent({
               href={website}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-xl bg-white/20 px-3 py-1.5 text-[2rem] leading-none text-white backdrop-blur-sm transition-colors hover:bg-white/30 sm:rounded-2xl sm:px-4 sm:py-2 sm:text-5xl md:text-6xl"
+              className="inline-flex items-center rounded-xl bg-white/20 px-3 py-1.5 text-[1.35rem] leading-none text-white backdrop-blur-sm transition-colors hover:bg-white/30 sm:rounded-2xl sm:px-4 sm:py-2 sm:text-3xl md:text-4xl"
             >
-              {name}
+              Featul vs {name}
             </Link>
           ) : (
-            <span className="inline-flex items-center rounded-xl bg-white/20 px-3 py-1.5 text-[2rem] leading-none text-white backdrop-blur-sm sm:rounded-2xl sm:px-4 sm:py-2 sm:text-5xl md:text-6xl">
-              {name}
+            <span className="inline-flex items-center rounded-xl bg-white/20 px-3 py-1.5 text-[1.35rem] leading-none text-white backdrop-blur-sm sm:rounded-2xl sm:px-4 sm:py-2 sm:text-3xl md:text-4xl">
+              Featul vs {name}
             </span>
           )}
         </span>
       </h1>
 
       <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance [text-shadow:0_1px_6px_rgba(0,0,0,0.25)] sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
-        {clientDescription ?? description ?? (
+        {description ?? (
           <>
-            Compare {name} and Featul — transparent by design, focused on
-            simplicity and user first UX. Organized feedback boards,
+            Compare {name} and Featul — privacy-first feedback boards,
             auto-syncing roadmaps, and self-writing changelogs.
           </>
         )}

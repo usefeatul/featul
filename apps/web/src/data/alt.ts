@@ -1,9 +1,55 @@
 import type { FaqItem } from '@/data/faqs'
+import { COMPETITORS } from '@/lib/data/programmatic/matrix'
 
 export type AlternativeFaqs = {
   description: string
   items: FaqItem[]
 }
+
+function buildCompetitorFaqs(slug: string): AlternativeFaqs | null {
+  const competitor = COMPETITORS.find((c) => c.slug === slug)
+  if (!competitor) return null
+
+  const advantage = competitor.victoryPoints[0] || 'privacy-first EU hosting'
+  const tradeoff = competitor.tradeoffs[0] || `${competitor.name} may fit teams that already rely on its ecosystem`
+
+  return {
+    description: `Compare ${competitor.name} and Featul: ${advantage.toLowerCase()}, migration support, and a unified feedback workflow.`,
+    items: [
+      {
+        id: `${slug}-1`,
+        question: `Is Featul a good ${competitor.name} alternative?`,
+        answer: `Yes. Featul is built as a privacy-first alternative to ${competitor.name}, with ${advantage.toLowerCase()}, plus feedback boards, public roadmaps, and changelogs in one tool.`,
+      },
+      {
+        id: `${slug}-2`,
+        question: `How does Featul compare to ${competitor.name}?`,
+        answer: `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul differentiates with ${competitor.victoryPoints.slice(0, 2).map((p) => p.toLowerCase()).join(' and ')}.`,
+      },
+      {
+        id: `${slug}-3`,
+        question: `When should I stay with ${competitor.name}?`,
+        answer: `${tradeoff}. Choose Featul if you want EU hosting defaults, simpler setup, and a connected feedback-to-changelog workflow.`,
+      },
+      {
+        id: `${slug}-4`,
+        question: `Can I migrate from ${competitor.name} to Featul?`,
+        answer: `Yes. You can import feedback and recreate categories, tags, and statuses to mirror your ${competitor.name} setup. Our team can guide larger migrations.`,
+      },
+      {
+        id: `${slug}-5`,
+        question: `Does Featul include roadmap and changelog like ${competitor.name}?`,
+        answer: `Featul includes public roadmaps and changelogs linked to feedback, so requesters can see progress from planned work through to release notes.`,
+      },
+      {
+        id: `${slug}-6`,
+        question: `How quickly can I replace ${competitor.name} with Featul?`,
+        answer: `Most teams can stand up a branded feedback board in minutes, share a public roadmap, and embed the widget without a long implementation project.`,
+      },
+    ],
+  }
+}
+
 
 export const altFaqs: Record<string, AlternativeFaqs> = {
   userjot: {
@@ -221,6 +267,10 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
 export function getAlternativeFaq(slug: string): AlternativeFaqs {
   const entry = altFaqs[slug]
   if (entry) return entry
+
+  const generated = buildCompetitorFaqs(slug)
+  if (generated) return generated
+
   return {
     description:
       'Compare any alternative with Featul: EU hosting, migration, and a unified workflow.',

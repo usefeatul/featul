@@ -12,14 +12,21 @@ export interface Alternative {
   slug: string
   name: string
   website?: string
+  tagline?: string
   summary?: string
   description?: string
   tags?: string[]
   pros?: string[]
   cons?: string[]
+  victoryPoints?: string[]
+  tradeoffs?: string[]
   image?: string
   features: ComparisonFeature[]
 }
+
+/** Displayed on comparison pages for freshness signals. */
+export const ALTERNATIVES_UPDATED_LABEL = 'August 2026'
+export const ALTERNATIVES_UPDATED_ISO = '2026-08-01'
 
 // Base features we commonly compare across tools
 const baseFeatures: Omit<ComparisonFeature, 'competitor'>[] = [
@@ -174,11 +181,13 @@ function competitorToAlternative(competitor: CompetitorEntry): Alternative {
     slug: competitor.slug,
     name: competitor.name,
     website: competitor.website,
-    summary: `${competitor.name} ${competitor.tagline.toLowerCase()}. Featul offers ${competitor.victoryPoints[0]?.toLowerCase() || 'a privacy-first alternative'}.`,
+    tagline: competitor.tagline,
+    summary: `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul offers ${competitor.victoryPoints[0]?.toLowerCase() || 'a privacy-first alternative'} with a unified feedback, roadmap, and changelog workflow.`,
     tags: ['feedback', 'roadmap', 'voting'],
     pros: competitor.tradeoffs.slice(0, 2),
-    cons: [
-    ], // Neutral approach - show what they do well, not what they lack
+    cons: [],
+    victoryPoints: competitor.victoryPoints,
+    tradeoffs: competitor.tradeoffs,
     image: '/image/image.jpeg',
     features: withCompetitor({
       eu_hosting: competitor.victoryPoints.some(v => v.toLowerCase().includes('eu')) ? 'partial' : false,
@@ -195,12 +204,26 @@ function competitorToAlternative(competitor: CompetitorEntry): Alternative {
   }
 }
 
-export function getAlternativeBySlug(slug: string): Alternative | undefined {
-  // First, check manually defined alternatives
-  const manual = alternatives.find((a) => a.slug === slug)
-  if (manual) return manual
+function enrichAlternative(alt: Alternative): Alternative {
+  const competitor = COMPETITORS.find((c) => c.slug === alt.slug)
+  if (!competitor) return alt
 
-  // Fall back to programmatic competitors from content-matrix
+  return {
+    ...alt,
+    website: alt.website ?? competitor.website,
+    tagline: alt.tagline ?? competitor.tagline,
+    victoryPoints: alt.victoryPoints?.length ? alt.victoryPoints : competitor.victoryPoints,
+    tradeoffs: alt.tradeoffs?.length ? alt.tradeoffs : competitor.tradeoffs,
+    summary:
+      alt.summary ??
+      `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul offers ${competitor.victoryPoints[0]?.toLowerCase() || 'a privacy-first alternative'}.`,
+  }
+}
+
+export function getAlternativeBySlug(slug: string): Alternative | undefined {
+  const manual = alternatives.find((a) => a.slug === slug)
+  if (manual) return enrichAlternative(manual)
+
   const competitor = COMPETITORS.find((c) => c.slug === slug)
   if (competitor) return competitorToAlternative(competitor)
 
@@ -211,7 +234,7 @@ export function getAllAlternatives(): Alternative[] {
   const merged = new Map<string, Alternative>()
 
   for (const alt of alternatives) {
-    merged.set(alt.slug, alt)
+    merged.set(alt.slug, enrichAlternative(alt))
   }
 
   for (const competitor of COMPETITORS) {
@@ -225,4 +248,8 @@ export function getAllAlternatives(): Alternative[] {
 
 export function getAlternativeSlugs(): string[] {
   return getAllAlternatives().map((alternative) => alternative.slug)
+}
+
+export function getAlternativePageTitle(name: string): string {
+  return `${name} Alternatives | Featul vs ${name}`
 }

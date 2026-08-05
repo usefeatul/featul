@@ -5,9 +5,9 @@ import { AlternativesIndexHero } from "@/components/alternatives/index";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
-  title: "Best Featul Alternatives for Feedback & Roadmaps",
+  title: "Featul vs Competitors | Feedback Tool Alternatives",
   description:
-    "Side‑by‑side comparisons covering features, privacy, and hosting differences to help you choose confidently.",
+    "Compare Featul with Canny, Featurebase, Nolt, Productboard, and other feedback tools. Side-by-side looks at features, privacy, EU hosting, and roadmaps.",
   path: "/alternatives",
 });
 
@@ -35,8 +35,8 @@ export default function AlternativesIndexPage() {
                 </span>
               </div>
               <p className="text-accent mt-3 max-w-2xl text-sm sm:text-base">
-                Browse our complete list of detailed comparisons. See how Featul
-                stacks up against each competitor on features, pricing, and value.
+                Browse detailed competitor alternatives pages. See how Featul
+                stacks up on features, privacy, EU hosting, and roadmaps.
               </p>
             </div>
 
