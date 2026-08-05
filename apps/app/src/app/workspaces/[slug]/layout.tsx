@@ -14,7 +14,6 @@ import {
 } from "@/lib/workspace";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
 import FilterSummary from "@/components/requests/FilterSummary";
-import RoadmapFilterSummary from "@/components/roadmap/RoadmapFilterSummary";
 import {
   getServerSession,
   listServerDeviceAccounts,
@@ -85,7 +84,6 @@ export default async function WorkspaceLayout({
         <EditorHeaderProvider>
           <WorkspaceHeader />
           <FilterSummary />
-          <RoadmapFilterSummary />
           {children}
         </EditorHeaderProvider>
       </main>
