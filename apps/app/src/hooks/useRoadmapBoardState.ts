@@ -80,7 +80,7 @@ export function useRoadmapBoardState({
   }, [workspaceSlug]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
   const queryClient = useQueryClient();
   const statusCountsQueryKey = React.useMemo(

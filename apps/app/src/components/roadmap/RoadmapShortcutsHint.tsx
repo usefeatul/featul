@@ -13,7 +13,7 @@ const SHORTCUTS = [
   { keys: "[  ]", label: "Previous / next column" },
   { keys: "Shift + ← →", label: "Jump between columns" },
   { keys: "Shift + Home / End", label: "First / last column" },
-  { keys: "Drag handle", label: "Move cards between columns" },
+  { keys: "Drag card", label: "Move cards between columns" },
   { keys: "Right-click card", label: "Quick actions menu" },
 ];
 
