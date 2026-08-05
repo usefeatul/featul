@@ -1,12 +1,7 @@
 /**
  * IntegrationsTemplate - Smart template for Integration pages
  *
- * Renders a structured integration page with:
- * - Dynamic hero with integration details
- * - Benefits section
- * - "How it works" steps
- * - FAQs with schema markup
- * - Related pages section (from interlink.ts)
+ * Matches marketing sky-hero pattern used on home / alternatives pages.
  */
 
 import Link from "next/link";
@@ -22,40 +17,24 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@featul/ui/components/accordion";
-import { Button } from "@featul/ui/components/button";
 import type { IntegrationPageData } from "@/lib/data/programmatic/generators";
 import type { RelatedLink } from "@/lib/seo/interlink";
 import { SITE_URL } from "@/config/seo";
-import { ArrowLeft } from "lucide-react";
-import type { ComponentType } from "react";
-import { SlackIcon } from "@featul/ui/icons/slack";
-import { DiscordIcon } from "@featul/ui/icons/discord";
-import { NotraIcon } from "@featul/ui/icons/notra";
-import { NoltIcon } from "@featul/ui/icons/nolt";
-import { CannyIcon } from "@featul/ui/icons/canny";
-import { ProductBoardIcon } from "@featul/ui/icons/productboard";
-import { IntegrationIcon } from "@featul/ui/icons/integration";
+import { IntegrationHero } from "@/components/integrations/hero";
+import { HotkeyLink } from "@/components/global/hotkey";
+import { LiveDemo } from "@/components/global/demo";
+import { RelatedLinks } from "@/components/seo/links";
+import { SectionStack } from "@/components/layout/stack";
+import { SquareIcon } from "@featul/ui/icons/square";
+import { SetupIcon } from "@featul/ui/icons/setup";
 
 interface Props {
   data: IntegrationPageData;
   relatedLinks: RelatedLink[];
 }
 
-type IconProps = { className?: string; size?: number };
-
-const INTEGRATION_ICONS: Record<string, ComponentType<IconProps>> = {
-  slack: SlackIcon,
-  discord: DiscordIcon,
-  notra: NotraIcon,
-  nolt: NoltIcon,
-  canny: CannyIcon,
-  productboard: ProductBoardIcon,
-};
-
 export function IntegrationsTemplate({ data, relatedLinks }: Props) {
   const { meta, integration, sections, faqs } = data;
-  const IntegrationLogo =
-    INTEGRATION_ICONS[integration.slug] ?? IntegrationIcon;
 
   const faqSchema = buildFaqPageSchema(faqs);
   const breadcrumbSchema = buildIntegrationsBreadcrumbSchema({
@@ -64,7 +43,6 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
     name: integration.name,
   });
 
-  // Build SoftwareApplication Schema (for the Integration)
   const softwareSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -79,7 +57,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
   };
 
   return (
-    <main className="min-h-[calc(100vh-64px)] bg-background pt-16">
+    <main className="min-h-screen overflow-x-clip">
       <script
         id="integration-faq-jsonld"
         type="application/ld+json"
@@ -99,143 +77,148 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(softwareSchema) }}
       />
 
-      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-        <section className="py-8 sm:py-12" data-component="IntegrationDetail">
-          <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-            <p className="text-sm text-accent mb-2">
-              <Link href="/integrations" className="hover:text-primary">
-                Integrations
-              </Link>
-              {" / "}
-              {integration.name}
-            </p>
+      <IntegrationHero
+        name={integration.name}
+        description={sections.intro}
+        slug={integration.slug}
+        website={integration.website}
+      />
 
-            <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl">
-              {meta.h1}
-            </h1>
-            <p className="text-accent mt-4 max-w-3xl">{sections.intro}</p>
-
-            <div className="mt-6 flex flex-wrap items-center gap-2">
-              <Link
-                href="https://app.featul.com/auth/sign-in"
-                className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                Connect {integration.name}
-              </Link>
-              <Button asChild variant="nav">
-                <Link
-                  href={integration.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <IntegrationLogo className="size-4" />
-                  Visit {integration.name}
-                </Link>
-              </Button>
-            </div>
-
-            <div className="mt-12 border-y border-border/70">
-              <section className="py-10">
-                <h2 className="text-xl font-semibold">Integration Benefits</h2>
-                <p className="mt-2 text-sm text-accent">
-                  What you get by connecting {integration.name}.
+      <div className="relative mx-auto max-w-6xl">
+        <SectionStack>
+          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <section className="py-16" data-component="IntegrationBenefits">
+              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+                <SquareIcon aria-hidden className="size-5 text-primary" />
+                <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                  Why connect {integration.name}
+                </h2>
+                <p className="mt-3 text-accent">
+                  What your team gets when Featul and {integration.name} work
+                  together.
                 </p>
-                <ul className="mt-6 space-y-3 text-accent">
+                <ul className="mt-10 space-y-4">
                   {sections.benefits.map((benefit, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-3 leading-relaxed"
+                      className="flex items-start gap-3 text-accent leading-relaxed"
                     >
-                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground/60" />
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
                       <span>{benefit.description}</span>
                     </li>
                   ))}
                 </ul>
-              </section>
+              </div>
+            </section>
+          </Container>
 
-              <section className="border-t border-border/70 py-10">
-                <h2 className="text-xl font-semibold">How to Connect</h2>
-                <p className="mt-2 text-sm text-accent">
-                  Follow these steps to set up the integration.
+          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <section className="py-16" data-component="IntegrationHowTo">
+              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+                <SetupIcon aria-hidden className="size-5 text-primary" opacity={1} />
+                <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                  How to connect
+                </h2>
+                <p className="mt-3 text-accent">
+                  A short setup path from Featul into {integration.name}.
                 </p>
-                <ol className="mt-6 space-y-3 text-accent">
+                <ol className="mt-10 space-y-5">
                   {sections.howItWorks.map((step, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-3 leading-relaxed"
+                      className="flex items-start gap-3 text-accent leading-relaxed"
                     >
-                      <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                      <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-foreground">
                         {i + 1}
                       </span>
                       <span>{step}</span>
                     </li>
                   ))}
                 </ol>
-              </section>
+              </div>
+            </section>
+          </Container>
 
-              <section className="border-t border-border/70 py-10">
-                <h2 className="text-xl font-semibold">
-                  Frequently Asked Questions
-                </h2>
-                <p className="mt-2 text-sm text-accent">
-                  Common setup and usage questions.
-                </p>
-                <Accordion
-                  type="single"
-                  collapsible
-                  className="mt-6 w-full border-y border-border/60"
+          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <section className="py-10 sm:py-14" data-component="IntegrationVerdict">
+              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+                <div
+                  className="rounded-md bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
+                  style={{ backgroundImage: "url(/image/sky.PNG)" }}
                 >
-                  {faqs.map((faq, i) => (
-                    <AccordionItem
-                      key={i}
-                      id={`faq-${integration.slug}-${i + 1}`}
-                      value={`faq-${integration.slug}-${i + 1}`}
-                      className="px-0"
-                    >
-                      <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
-                        {faq.question}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-sm leading-relaxed text-accent">
-                        {faq.answer}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </section>
-
-              {relatedLinks.length > 0 ? (
-                <section className="border-t border-border/70 py-10">
-                  <h2 className="text-xl font-semibold">Related Resources</h2>
-                  <p className="mt-2 text-sm text-accent">
-                    Explore more pages related to this integration.
+                  <p className="text-sm text-white/85">
+                    {meta.h1}
                   </p>
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {relatedLinks.map((link, i) => (
-                      <Link
-                        key={i}
-                        href={link.href}
-                        className="rounded-md border border-border px-3 py-1.5 text-sm text-accent hover:text-primary"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
+                  <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-white sm:text-2xl lg:text-3xl">
+                    Connect {integration.name} and keep feedback moving.
+                  </h2>
+                  <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
+                    Set up in minutes. Triage where your team already works.
+                  </p>
+                  <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
+                    <HotkeyLink
+                      variant="nav"
+                      label={`Connect ${integration.name}`}
+                      className="h-10 min-h-[40px] w-full min-w-[40px] border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground sm:w-auto"
+                    />
+                    <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] border-white/60 bg-white text-accent hover:bg-white/95 sm:w-auto" />
                   </div>
-                </section>
-              ) : null}
-            </div>
+                </div>
+              </div>
+            </section>
+          </Container>
 
-            <div className="mt-6">
-              <Link
-                href="/integrations"
-                className="inline-flex h-8 items-center rounded-md px-2 text-sm text-accent hover:text-primary"
-              >
-                <ArrowLeft className="mr-1 h-4 w-4" />
-                View all integrations
-              </Link>
+          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <section className="py-16 md:py-24" data-component="IntegrationFaqs">
+              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+                <div className="max-w-xl">
+                  <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                    FAQs about {integration.name}
+                  </h2>
+                  <p className="mt-3 text-accent">
+                    Common setup and usage questions.
+                  </p>
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="mt-8 w-full border-y border-border/60"
+                  >
+                    {faqs.map((faq, i) => (
+                      <AccordionItem
+                        key={i}
+                        id={`faq-${integration.slug}-${i + 1}`}
+                        value={`faq-${integration.slug}-${i + 1}`}
+                        className="px-0"
+                      >
+                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-sm leading-relaxed text-accent">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
+              </div>
+            </section>
+          </Container>
+
+          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+              <RelatedLinks links={relatedLinks} title="Related resources" />
+              <div className="pb-10">
+                <Link
+                  href="/integrations"
+                  className="text-sm text-accent hover:text-primary"
+                >
+                  View all integrations
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
-      </Container>
+          </Container>
+        </SectionStack>
+      </div>
     </main>
   );
 }

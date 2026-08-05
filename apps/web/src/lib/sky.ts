@@ -10,6 +10,7 @@ const SKY_PATHS = new Set([
   "/definitions",
   "/use-cases",
   "/alternatives",
+  "/integrations",
 ])
 
 const SKY_PREFIXES = [
@@ -18,6 +19,7 @@ const SKY_PREFIXES = [
   "/definitions/",
   "/use-cases/",
   "/alternatives/",
+  "/integrations/",
 ]
 
 export function isSkyPath(pathname: string | null | undefined): boolean {
