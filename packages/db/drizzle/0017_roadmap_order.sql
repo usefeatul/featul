@@ -1,1 +1,0 @@
-ALTER TABLE "post" ADD COLUMN IF NOT EXISTS "roadmap_order" integer DEFAULT 0 NOT NULL;
