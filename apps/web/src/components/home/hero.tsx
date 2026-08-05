@@ -29,8 +29,8 @@ export function Hero() {
     const update = () => {
       const width = shell.clientWidth;
       if (width <= 0) return;
-      // Fit the desktop demo into the available width on small screens.
-      setScale(Math.min(1, width / DEMO_WIDTH));
+      // Always fill the shell so no empty strip shows on the right.
+      setScale(width / DEMO_WIDTH);
     };
 
     update();
@@ -82,7 +82,7 @@ export function Hero() {
         <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
           <div
             ref={shellRef}
-            className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-card"
+            className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-background"
             style={{ height: scaledHeight }}
           >
             <div
