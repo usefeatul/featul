@@ -6,6 +6,7 @@ import Compare from "@/components/alternatives/compare";
 import WhyBetter from "@/components/alternatives/why";
 import AlternativeFAQs from "@/components/alternatives/faq";
 import StatsSection from "@/components/home/cta";
+import { Container } from "@/components/global/container";
 import { getAltDescription } from "@/types/descriptions";
 import { createArticleMetadata } from "@/lib/seo";
 import {
@@ -91,7 +92,11 @@ export default async function AlternativePage({
           <Compare alt={alt} />
           <WhyBetter alt={alt} />
           <AlternativeFAQs alt={alt} />
-          <RelatedLinks links={relatedLinks} title="Related comparisons" />
+          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+              <RelatedLinks links={relatedLinks} title="Related comparisons" />
+            </div>
+          </Container>
           <StatsSection />
         </SectionStack>
       </div>
