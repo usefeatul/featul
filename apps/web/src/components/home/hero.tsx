@@ -113,7 +113,7 @@ export function Hero() {
                     onClick={() => setView(tab.id)}
                     whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                     className={cn(
-                      "relative cursor-pointer rounded-md px-3.5 py-1.5 text-xs transition-colors duration-200",
+                      "relative cursor-pointer rounded-md px-3.5 py-1.5 font-heading text-xs transition-colors duration-200",
                       active
                         ? "font-semibold text-[#0063d2]"
                         : "font-medium text-[#005eb8]/75 hover:bg-white/25 hover:text-[#0063d2]",
