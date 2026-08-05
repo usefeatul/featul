@@ -5,7 +5,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
-import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
+import { GripVertical } from "lucide-react";
 
 export default function RoadmapDraggable({
   id,
@@ -47,14 +47,14 @@ export default function RoadmapDraggable({
           type="button"
           {...listeners}
           {...sanitizedAttributes}
-          className="flex w-7 shrink-0 cursor-grab items-center justify-center border-r border-border/60 text-accent/70 transition-colors hover:bg-muted/40 hover:text-accent active:cursor-grabbing"
+          className="group/handle flex w-6 shrink-0 cursor-grab items-center justify-center border-r border-border/40 text-accent/35 transition-colors hover:bg-muted/30 hover:text-accent/70 active:cursor-grabbing"
           aria-label="Drag to move card"
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
           }}
         >
-          <MoveVerticalIcon className="size-3.5" size={14} />
+          <GripVertical className="size-3.5 opacity-70 transition-opacity group-hover/handle:opacity-100" strokeWidth={2} />
         </button>
         <div className="min-w-0 flex-1">{children}</div>
       </div>
