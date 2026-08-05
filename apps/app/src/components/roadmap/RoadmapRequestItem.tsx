@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import StatusIcon from "@/components/requests/StatusIcon";
 import RoadmapRequestItemFooter from "@/components/roadmap/RoadmapRequestItemFooter";
+import { FlagRibbon } from "@/components/global/FlagRibbon";
 import {
   buildRoadmapPreview,
   formatRoadmapCardDate,
@@ -21,12 +21,16 @@ export type RoadmapItemData = {
   createdAt?: string | null;
   publishedAt?: string | null;
   commentCount: number;
+  upvotes: number;
+  hasVoted?: boolean;
   authorImage?: string | null;
   authorName?: string | null;
   authorId?: string | null;
   role?: "admin" | "member" | "viewer" | null;
   isOwner?: boolean;
   isFeatul?: boolean;
+  isPinned?: boolean;
+  isFeatured?: boolean;
 };
 
 export default function RoadmapRequestItem({
@@ -49,22 +53,15 @@ export default function RoadmapRequestItem({
   const tone = getRoadmapStatusTone(item.roadmapStatus);
 
   return (
-    <div className="flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
+    <div className="relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
+      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       <div className="min-h-0 flex-1 px-3.5 pb-3 pt-3.5">
-        <div className="flex items-start gap-2.5">
-          <Link
-            href={href}
-            className="line-clamp-2 min-h-10 min-w-0 flex-1 text-sm font-medium leading-5 text-foreground hover:text-primary"
-          >
-            {item.title}
-          </Link>
-          <span className="inline-flex shrink-0 items-center justify-center">
-            <StatusIcon
-              status={item.roadmapStatus || undefined}
-              className={`size-4 ${tone.icon}`}
-            />
-          </span>
-        </div>
+        <Link
+          href={href}
+          className="line-clamp-2 block min-h-10 text-sm font-medium leading-5 text-foreground hover:text-primary"
+        >
+          {item.title}
+        </Link>
         <p className="mt-1.5 line-clamp-2 min-h-10 text-xs leading-5 text-accent/90">
           {preview}
         </p>
@@ -76,6 +73,9 @@ export default function RoadmapRequestItem({
         boardLabel={boardLabel}
         dateLabel={dateLabel}
         commentCount={commentCount}
+        postId={item.id}
+        upvotes={item.upvotes}
+        hasVoted={item.hasVoted}
         role={item.role}
         isOwner={item.isOwner}
         isFeatul={item.isFeatul}

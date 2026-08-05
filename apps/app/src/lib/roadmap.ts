@@ -1,3 +1,5 @@
+import type { SortOrder } from "@/types/sort";
+
 export const ROADMAP_STATUSES = ["planned", "progress", "review", "completed", "pending", "closed"] as const
 
 export type RoadmapStatus = (typeof ROADMAP_STATUSES)[number]
@@ -39,4 +41,75 @@ export function groupItemsByStatus<T extends { roadmapStatus?: string | null }>(
     ;(acc[key] || (acc[key] = [])).push(it)
   }
   return acc
+}
+
+type SortableRoadmapItem = {
+  upvotes: number
+  publishedAt: string | null
+  createdAt: string
+}
+
+export function sortRoadmapItems<T extends SortableRoadmapItem>(
+  items: T[],
+  order: SortOrder,
+): T[] {
+  const sorted = [...items]
+  if (order === "likes") {
+    return sorted.sort((a, b) => b.upvotes - a.upvotes)
+  }
+  if (order === "oldest") {
+    return sorted.sort(
+      (a, b) =>
+        new Date(a.publishedAt ?? a.createdAt).getTime() -
+        new Date(b.publishedAt ?? b.createdAt).getTime(),
+    )
+  }
+  return sorted.sort(
+    (a, b) =>
+      new Date(b.publishedAt ?? b.createdAt).getTime() -
+      new Date(a.publishedAt ?? a.createdAt).getTime(),
+  )
+}
+
+type FilterableRoadmapItem = {
+  title: string
+  content: string | null
+  boardName: string
+  boardSlug: string
+  tags?: Array<{ slug: string }>
+}
+
+export function filterRoadmapItems<T extends FilterableRoadmapItem>(
+  items: T[],
+  filters: { search: string; board: string[]; tag: string[] },
+): T[] {
+  let result = items
+  const query = filters.search.trim().toLowerCase()
+
+  if (query) {
+    result = result.filter((item) => {
+      const plainContent = (item.content || "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase()
+      return (
+        item.title.toLowerCase().includes(query) ||
+        plainContent.includes(query) ||
+        item.boardName.toLowerCase().includes(query)
+      )
+    })
+  }
+
+  if (filters.board.length) {
+    result = result.filter((item) => filters.board.includes(item.boardSlug))
+  }
+
+  if (filters.tag.length) {
+    result = result.filter((item) =>
+      (item.tags || []).some((tag) => filters.tag.includes(tag.slug)),
+    )
+  }
+
+  return result
 }

@@ -14,6 +14,11 @@ import { getSlugFromPath, workspaceBase } from "@/config/nav"
 import { buildRequestsUrl } from "@/utils/request"
 import { useFilterBarVisibility } from "@/hooks/useFilterBarVisibility"
 import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
+import {
+  buildRoadmapUrl,
+  parseRoadmapFiltersFromSearchParams,
+} from "@/utils/roadmap-url"
+import { SORT_OPTIONS } from "@/types/sort"
 
 const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
@@ -29,17 +34,53 @@ export default function FilterSummary({ className = "" }: { className?: string }
   const sp = useSearchParams()
   const router = useRouter()
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname])
+  const isRoadmapPage = pathname.includes("/roadmap")
 
-  const { status, board: boards, tag: tags, order } = React.useMemo(
+  const requestFilters = React.useMemo(
     () => parseRequestFiltersFromSearchParams(sp),
-    [sp]
+    [sp],
   )
-  const count = status.length + boards.length + tags.length + (order === "oldest" ? 1 : 0)
+  const roadmapFilters = React.useMemo(
+    () => parseRoadmapFiltersFromSearchParams(sp),
+    [sp],
+  )
+
+  const status = isRoadmapPage ? [] : requestFilters.status
+  const boards = isRoadmapPage ? roadmapFilters.board : requestFilters.board
+  const tags = isRoadmapPage ? roadmapFilters.tag : requestFilters.tag
+  const order = isRoadmapPage ? roadmapFilters.order : requestFilters.order
+  const search = isRoadmapPage ? roadmapFilters.search : requestFilters.search
+
+  const count =
+    status.length +
+    boards.length +
+    tags.length +
+    (order === "oldest" || order === "likes" ? 1 : 0) +
+    (search ? 1 : 0)
   const hasAnyFilters = count > 0
   const { isVisible, handleClearAll } = useFilterBarVisibility({
     hasAnyFilters,
-    buildClearAllHref: () => workspaceBase(slug),
+    buildClearAllHref: () =>
+      isRoadmapPage ? `/workspaces/${slug}/roadmap` : workspaceBase(slug),
   })
+
+  const pushFilterUrl = React.useCallback(
+    (
+      overrides: Partial<{
+        status: string[]
+        board: string[]
+        tag: string[]
+        order: string
+        search: string
+      }>,
+    ) => {
+      const href = isRoadmapPage
+        ? buildRoadmapUrl(slug, sp, overrides)
+        : buildRequestsUrl(slug, sp, overrides)
+      React.startTransition(() => router.push(href, { scroll: false }))
+    },
+    [isRoadmapPage, router, slug, sp],
+  )
 
   const { data: boardsBySlug = {} } = useQuery({
     queryKey: ["boards-map", slug],
@@ -76,45 +117,54 @@ export default function FilterSummary({ className = "" }: { className?: string }
 
   const removeStatus = (v: string) => {
     const next = status.filter((s) => s !== v)
-    const hasOthers = boards.length + tags.length + (order === "oldest" ? 1 : 0) > 0
+    const hasOthers =
+      boards.length + tags.length + (order !== "newest" ? 1 : 0) + (search ? 1 : 0) > 0
     if (next.length === 0 && !hasOthers) {
       handleClearAll()
       return
     }
-    const href = buildRequestsUrl(slug, sp, { status: next })
-    React.startTransition(() => router.push(href, { scroll: false }))
+    pushFilterUrl({ status: next })
   }
 
   const removeBoard = (v: string) => {
     const next = boards.filter((b) => b !== v)
-    const hasOthers = status.length + tags.length + (order === "oldest" ? 1 : 0) > 0
+    const hasOthers =
+      status.length + tags.length + (order !== "newest" ? 1 : 0) + (search ? 1 : 0) > 0
     if (next.length === 0 && !hasOthers) {
       handleClearAll()
       return
     }
-    const href = buildRequestsUrl(slug, sp, { board: next })
-    React.startTransition(() => router.push(href, { scroll: false }))
+    pushFilterUrl({ board: next })
   }
 
   const removeTag = (v: string) => {
     const next = tags.filter((t) => t !== v)
-    const hasOthers = status.length + boards.length + (order === "oldest" ? 1 : 0) > 0
+    const hasOthers =
+      status.length + boards.length + (order !== "newest" ? 1 : 0) + (search ? 1 : 0) > 0
     if (next.length === 0 && !hasOthers) {
       handleClearAll()
       return
     }
-    const href = buildRequestsUrl(slug, sp, { tag: next })
-    React.startTransition(() => router.push(href, { scroll: false }))
+    pushFilterUrl({ tag: next })
   }
 
   const removeOrder = () => {
-    const hasOthers = status.length + boards.length + tags.length > 0
+    const hasOthers = status.length + boards.length + tags.length + (search ? 1 : 0) > 0
     if (!hasOthers) {
       handleClearAll()
       return
     }
-    const href = buildRequestsUrl(slug, sp, { order: "newest" })
-    React.startTransition(() => router.push(href, { scroll: false }))
+    pushFilterUrl({ order: "newest" })
+  }
+
+  const removeSearch = () => {
+    const hasOthers =
+      status.length + boards.length + tags.length + (order !== "newest" ? 1 : 0) > 0
+    if (!hasOthers) {
+      handleClearAll()
+      return
+    }
+    pushFilterUrl({ search: "" })
   }
 
   const statusLabel = (v: string) => {
@@ -136,6 +186,20 @@ export default function FilterSummary({ className = "" }: { className?: string }
           className="bg-white dark:bg-black/60 pointer-events-auto mx-auto flex max-w-[90vw] items-center gap-2 border-t-transparent overflow-hidden rounded-xs shadow-sm px-1 py-0.5  backdrop-blur-lg supports-backdrop-filter:bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border border-border"
         >
           <div className="flex items-center  gap-2 overflow-x-auto px-0.5 py-0.5 flex-1 scrollbar-hide">
+            {search ? (
+              <div key="search">
+                <Button
+                  type="button"
+                  onClick={removeSearch}
+                  variant="nav"
+                  size="xs"
+                  aria-label={`Remove search ${search}`}
+                >
+                  <span className="truncate">Search: {search}</span>
+                  <XMarkIcon className="ml-1 size-3 opacity-60" />
+                </Button>
+              </div>
+            ) : null}
             {status.map((s) => (
               <div key={`status-${s}`}>
                 <Button
@@ -178,16 +242,19 @@ export default function FilterSummary({ className = "" }: { className?: string }
                 </Button>
               </div>
             ))}
-            {order === "oldest" ? (
-              <div key="order-oldest">
+            {order !== "newest" ? (
+              <div key={`order-${order}`}>
                 <Button
                   type="button"
                   onClick={removeOrder}
                   variant="nav"
                   size="xs"
-                  aria-label="Remove sort oldest"
+                  aria-label={`Remove sort ${order}`}
                 >
-                  <span className="truncate">Oldest first</span>
+                  <span className="truncate">
+                    {SORT_OPTIONS.find((option) => option.value === order)?.label ||
+                      order}
+                  </span>
                   <XMarkIcon className="ml-1 size-3" />
                 </Button>
               </div>

@@ -8,12 +8,14 @@ import RoadmapColumn from "@/components/roadmap/RoadmapColumn";
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable";
 import RoadmapKeyboardShortcuts from "@/components/roadmap/RoadmapKeyboardShortcuts";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
+import { RequestItemContextMenu } from "@/components/requests/RequestItemContextMenu";
 import { ROADMAP_STATUSES, statusLabel } from "@/lib/roadmap";
 import {
   toRoadmapCardItem,
   useRoadmapBoardState,
 } from "@/hooks/useRoadmapBoardState";
 import { useRoadmapCanvasNavigation } from "@/hooks/useRoadmapCanvasNavigation";
+import { useRoadmapFilters } from "@/hooks/useRoadmapFilters";
 import type { RequestItemData } from "@/types/request";
 import type { PostUser } from "@/types/post";
 
@@ -31,6 +33,7 @@ export default function RoadmapBoard({
   initialCollapsedByStatus?: Record<string, boolean>;
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
+  const [createPostStatus, setCreatePostStatus] = React.useState("pending");
   const {
     boardScrollRef,
     setColumnRef,
@@ -39,7 +42,7 @@ export default function RoadmapBoard({
   } = useRoadmapCanvasNavigation(ROADMAP_STATUSES);
   const {
     sensors,
-    grouped,
+    items,
     activeId,
     activeItem,
     savingId,
@@ -52,8 +55,11 @@ export default function RoadmapBoard({
     initialItems,
     initialCollapsedByStatus,
   });
+  const { grouped, hasActiveFilters, totalVisible, totalItems } =
+    useRoadmapFilters(items);
 
-  const openCreatePost = React.useCallback(() => {
+  const openCreatePost = React.useCallback((status = "pending") => {
+    setCreatePostStatus(status);
     setCreatePostOpen(true);
   }, []);
 
@@ -67,7 +73,12 @@ export default function RoadmapBoard({
   );
 
   return (
-    <section className="space-y-4 min-w-0 h-full min-h-[72vh]">
+    <section className="min-h-[72vh] min-w-0 space-y-3">
+      {hasActiveFilters ? (
+        <p className="text-xs text-accent">
+          Showing {totalVisible} of {totalItems} items
+        </p>
+      ) : null}
       <DndContext
         sensors={sensors}
         onDragStart={({ active }) => handleDragStart(String(active.id))}
@@ -80,16 +91,16 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="w-full h-full min-h-[72vh] min-w-0 overflow-x-auto bg-background pb-2 [scrollbar-width:thin]"
+          className="h-full min-h-[72vh] w-full min-w-0 overflow-x-auto bg-background pb-2 [scrollbar-width:thin] snap-x snap-mandatory md:snap-none"
         >
-          <div className="flex min-w-full min-h-[72vh] flex-col gap-4 md:flex-row md:items-stretch">
+          <div className="flex min-h-[72vh] min-w-max gap-4 md:min-w-full md:flex-row md:items-stretch">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
               const itemsForStatus = grouped[s];
               return (
                 <div
                   key={s}
                   ref={(node) => setColumnRef(s, node)}
-                  className={`w-full md:h-full ${collapsedByStatus[s] ? "md:w-20 md:flex-none" : "md:min-w-[300px] md:flex-1 lg:min-w-[320px]"}`}
+                  className={`w-[85vw] shrink-0 snap-center sm:w-[320px] md:h-full md:w-auto ${collapsedByStatus[s] ? "md:w-20 md:flex-none" : "md:min-w-[300px] md:flex-1 lg:min-w-[320px]"}`}
                 >
                   <RoadmapColumn
                     id={s}
@@ -107,12 +118,18 @@ export default function RoadmapBoard({
                             key={it.id}
                             id={it.id}
                             isDragging={activeId === it.id}
-                            className={isSaving ? "border-primary/60" : ""}
+                            isSaving={isSaving}
                           >
-                            <RoadmapRequestItem
-                              item={toRoadmapCardItem(it)}
+                            <RequestItemContextMenu
+                              item={it}
                               workspaceSlug={workspaceSlug}
-                            />
+                              className="h-full"
+                            >
+                              <RoadmapRequestItem
+                                item={toRoadmapCardItem(it)}
+                                workspaceSlug={workspaceSlug}
+                              />
+                            </RequestItemContextMenu>
                           </RoadmapDraggable>
                         );
                       })}
@@ -126,7 +143,7 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className="pointer-events-none overflow-hidden rounded-md border border-border bg-card shadow-lg"
+              className="pointer-events-none h-[152px] w-[min(320px,85vw)] overflow-hidden rounded-md border border-border bg-background shadow-lg"
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}
@@ -143,6 +160,7 @@ export default function RoadmapBoard({
           onOpenChange={setCreatePostOpen}
           workspaceSlug={workspaceSlug}
           user={currentUser}
+          initialStatus={createPostStatus}
         />
       </DndContext>
     </section>

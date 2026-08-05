@@ -9,6 +9,7 @@ import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
+import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
@@ -27,6 +28,7 @@ export default function WorkspaceHeader() {
   const workspaceSlug = idx >= 0 ? (parts[idx + 1] ?? "") : "";
   const rest = idx >= 0 ? parts.slice(idx + 2) : [];
   const showRequestsActions = rest.length === 0 || rest[0] === "requests";
+  const showRoadmapActions = rest[0] === "roadmap" && rest.length === 1;
   const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
   const isMemberDetail = rest[0] === "members" && rest.length > 1;
@@ -70,6 +72,8 @@ export default function WorkspaceHeader() {
           </Toolbar>
         ) : showRequestsActions ? (
           <HeaderActions />
+        ) : showRoadmapActions ? (
+          <RoadmapHeaderActions />
         ) : showChangelogActions ? (
           <Toolbar size="sm">
             <ImportNotraDialog workspaceSlug={workspaceSlug} />
