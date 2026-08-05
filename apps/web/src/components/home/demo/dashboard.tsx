@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RotateCw } from "lucide-react";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
@@ -12,6 +13,7 @@ import { DemoSidebar } from "./sidebar";
 import { DemoRequests } from "./requests";
 import { DemoRoadmap } from "./roadmap";
 import { DemoChangelog } from "./changelog";
+import { demoAvatarUrl } from "./avatar";
 import {
   DEMO_POSTS,
   DEMO_WORKSPACE,
@@ -34,31 +36,6 @@ const TABS: { id: DemoView; label: string }[] = [
 const INITIAL_VOTES = Object.fromEntries(
   DEMO_POSTS.map((post) => [post.id, Boolean(post.hasVoted)])
 );
-
-function RefreshIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden
-      className={className}
-    >
-      <path
-        d="M13.65 2.35A7 7 0 1 0 14.5 8"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-      <path
-        d="M14.5 2.5v3.2h-3.2"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function ExtensionIcon({ className }: { className?: string }) {
   return (
@@ -161,7 +138,7 @@ export function DashboardDemo({
             <ChevronRightIcon className="size-3.5" />
           </span>
           <span className="flex size-6 items-center justify-center rounded-full text-accent/70">
-            <RefreshIcon className="size-3.5" />
+            <RotateCw className="size-3.5" strokeWidth={2} aria-hidden />
           </span>
         </div>
 
@@ -177,8 +154,13 @@ export function DashboardDemo({
           <span className="flex size-6 items-center justify-center rounded-full text-accent/55">
             <ExtensionIcon className="size-3.5" />
           </span>
-          <span className="mx-0.5 flex size-5 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-blue-600 text-[9px] font-semibold text-white">
-            J
+          <span className="mx-0.5 inline-flex size-5 shrink-0 overflow-hidden rounded-full ring-1 ring-border/60">
+            <img
+              src={demoAvatarUrl("Jordan")}
+              alt=""
+              draggable={false}
+              className="size-full object-cover"
+            />
           </span>
           <span className="flex size-6 items-center justify-center rounded-full text-accent/70">
             <svg viewBox="0 0 16 16" fill="currentColor" className="size-3.5">
