@@ -66,7 +66,7 @@ export function AlternativeHeroContent({
       <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
         {description ?? (
           <>
-            Compare {name} and Featul — privacy-first feedback boards,
+            Compare {name} and Featul: privacy-first feedback boards,
             auto-syncing roadmaps, and self-writing changelogs.
           </>
         )}

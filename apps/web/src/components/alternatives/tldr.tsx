@@ -83,7 +83,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                 <span className="ml-1 inline rounded-md bg-primary/40 px-1.5 py-0 text-black">
                   end‑to‑end workflow
                 </span>
-                —feedback boards, public roadmap, and changelog.
+                : feedback boards, public roadmap, and changelog.
               </p>
               {victoryPoints.length > 0 ? (
                 <ul className="mt-4 space-y-2 text-sm leading-6 text-accent">

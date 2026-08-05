@@ -24,7 +24,7 @@ export default function Verdict({ alt }: VerdictProps) {
             </p>
 
             <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-white sm:text-2xl lg:text-3xl">
-              Switch from {alt.name} to Featul — keep the workflow, gain{" "}
+              Switch from {alt.name} to Featul. Keep the workflow, gain{" "}
               {topWin}.
             </h2>
 

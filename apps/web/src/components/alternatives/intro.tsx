@@ -15,7 +15,7 @@ export function AlternativesIndexHeroContent() {
 
       <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance [text-shadow:0_1px_6px_rgba(0,0,0,0.25)] sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
         Honest comparisons of Featul against Canny, Featurebase, Nolt, Productboard,
-        and other feedback tools — covering features, privacy, and hosting.
+        and other feedback tools, covering features, privacy, and hosting.
       </p>
 
       <HeroCta />
