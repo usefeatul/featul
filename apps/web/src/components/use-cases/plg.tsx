@@ -2,7 +2,7 @@ import Link from "next/link"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security";
-import { SkyPageShell } from "@/components/layout/shell"
+import { UseCaseDetailShell } from "@/components/use-cases/shell"
 
 export function ProductLedGrowthUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({
@@ -19,15 +19,12 @@ export function ProductLedGrowthUseCase() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      <SkyPageShell
-        dataComponent="UseCaseDetail"
-        eyebrow="Use case"
-        title={`Accelerate product-led growth through systematic user feedback loops`}
-        description={`Explore how product-led growth teams leverage continuous user feedback to optimize
-            onboarding experiences, drive feature adoption, and convert free users into paying customers
-            through data-driven product iterations.`}
+      <UseCaseDetailShell
+        badge="Growth strategy"
+        title="Accelerate product-led growth through systematic user feedback loops"
+        description="Explore how PLG teams use continuous feedback to improve onboarding, drive adoption, and convert free users into paying customers."
       >
-        <article className="max-w-3xl space-y-0 text-left">
+        <article className="space-y-0 text-left">
           <section className="space-y-3">
           <h2 className="text-xl font-semibold">The PLG feedback imperative</h2>
           <p className="text-accent">
@@ -169,7 +166,7 @@ export function ProductLedGrowthUseCase() {
           </div>
         </section>
         </article>
-      </SkyPageShell>
+      </UseCaseDetailShell>
     </>
   )
 }

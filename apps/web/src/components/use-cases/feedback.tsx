@@ -2,7 +2,7 @@ import Link from "next/link"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security";
-import { SkyPageShell } from "@/components/layout/shell"
+import { UseCaseDetailShell } from "@/components/use-cases/shell"
 
 export function ProductFeedbackUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({
@@ -19,14 +19,12 @@ export function ProductFeedbackUseCase() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      <SkyPageShell
-        dataComponent="UseCaseDetail"
-        eyebrow="Use case"
-        title={`Centralize product feedback and roadmap in one place`}
-        description={`Learn how product organizations use Featul to establish a single, reliable source of feedback truth, apply
-            structured prioritization, and communicate decisions back to customers in a predictable and professional way.`}
+      <UseCaseDetailShell
+        badge="Product feedback"
+        title="Centralize product feedback and roadmap in one place"
+        description="Learn how product organizations use Featul to establish a single source of feedback truth, prioritize with a public roadmap, and close the loop with changelogs."
       >
-        <article className="max-w-3xl space-y-0 text-left">
+        <article className="space-y-0 text-left">
           <section className="space-y-3">
           <h2 className="text-xl font-semibold">Before Featul vs after Featul</h2>
           <p className="text-accent">
@@ -139,7 +137,7 @@ export function ProductFeedbackUseCase() {
           </div>
         </section>
         </article>
-      </SkyPageShell>
+      </UseCaseDetailShell>
     </>
   )
 }

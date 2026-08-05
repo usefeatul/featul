@@ -2,7 +2,7 @@ import Link from "next/link"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security";
-import { SkyPageShell } from "@/components/layout/shell"
+import { UseCaseDetailShell } from "@/components/use-cases/shell"
 
 export function EnterpriseCustomerSuccessUseCase() {
   const breadcrumbSchema = buildUseCasesBreadcrumbSchema({
@@ -19,14 +19,12 @@ export function EnterpriseCustomerSuccessUseCase() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      <SkyPageShell
-        dataComponent="UseCaseDetail"
-        eyebrow="Use case"
-        title={`Scale enterprise customer success with structured feedback programs`}
-        description={`Discover how enterprise customer success teams implement systematic feedback collection,
-            stakeholder alignment, and executive reporting to drive strategic account growth and retention.`}
+      <UseCaseDetailShell
+        badge="Customer success"
+        title="Scale enterprise customer success with structured feedback programs"
+        description="Discover how enterprise CS teams run systematic feedback collection, stakeholder alignment, and reporting to drive retention and account growth."
       >
-        <article className="max-w-3xl space-y-0 text-left">
+        <article className="space-y-0 text-left">
           <section className="space-y-3">
           <h2 className="text-xl font-semibold">The enterprise feedback challenge</h2>
           <p className="text-accent">
@@ -163,7 +161,7 @@ export function EnterpriseCustomerSuccessUseCase() {
           </div>
         </section>
         </article>
-      </SkyPageShell>
+      </UseCaseDetailShell>
     </>
   )
 }
