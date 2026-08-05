@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./menu";
-import { LinearSeparator } from "@/components/separator";
 import { isSkyPath } from "@/lib/sky";
 
 export default function Navbar() {
@@ -66,13 +65,6 @@ export default function Navbar() {
     >
 
       <Container maxWidth="6xl" className="relative px-4 sm:px-10 lg:px-12 xl:px-14">
-        <LinearSeparator
-          variant="line"
-          className={cn(
-            "absolute bottom-0 left-0 right-0 my-0",
-            overSky && "opacity-0"
-          )}
-        />
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6">
           <Link
             href="/"
