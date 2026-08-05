@@ -3,7 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navigationConfig } from "@/config/homeNav";
 import { Container } from "../global/container";
-import { ArrowIcon } from "@featul/ui/icons/arrow";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
 import { Separator } from "@featul/ui/components/separator";
@@ -107,12 +106,6 @@ export default function Navbar() {
                 )}
               >
                 {item.name}
-                {item.name === "Docs" && (
-                  <ArrowIcon
-                    aria-hidden
-                    className="ml-1 size-4 align-middle"
-                  />
-                )}
               </Link>
             ))}
           </nav>
