@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
+import { SITE_URL } from "@/config/seo";
 import { StatusIcon } from "./icon";
 import { SquareIcon } from "@featul/ui/icons/square";
 // import { AccentBar } from "@featul/ui/components/cardElements";
-
 
 export default function Compare({ alt }: { alt: Alternative }) {
   return (
@@ -25,10 +26,26 @@ export default function Compare({ alt }: { alt: Alternative }) {
                 Feature
               </div>
               <div className="px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-lg font-semibold text-foreground text-right">
-                {alt.name}
+                {alt.website ? (
+                  <Link
+                    href={alt.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary hover:underline underline-offset-4"
+                  >
+                    {alt.name}
+                  </Link>
+                ) : (
+                  alt.name
+                )}
               </div>
               <div className="px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-lg font-semibold text-foreground text-right">
-                Featul
+                <Link
+                  href={SITE_URL}
+                  className="hover:text-primary hover:underline underline-offset-4"
+                >
+                  Featul
+                </Link>
               </div>
             </div>
 
