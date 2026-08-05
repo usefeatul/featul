@@ -30,12 +30,16 @@ export const toRoadmapCardItem = (item: Item) => ({
   createdAt: item.createdAt,
   publishedAt: item.publishedAt,
   commentCount: item.commentCount,
+  upvotes: item.upvotes,
+  hasVoted: item.hasVoted,
   authorImage: item.authorImage,
   authorName: item.authorName,
   authorId: item.authorId,
   role: item.role,
   isOwner: item.isOwner,
   isFeatul: item.isFeatul,
+  isPinned: item.isPinned,
+  isFeatured: item.isFeatured,
 });
 
 export function useRoadmapBoardState({
@@ -59,6 +63,21 @@ export function useRoadmapBoardState({
     }
     return acc;
   });
+
+  React.useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
+
+  React.useEffect(() => {
+    const handlePostDeleted = (event: Event) => {
+      const detail = (event as CustomEvent<{ postId?: string; workspaceSlug?: string }>).detail;
+      if (!detail?.postId || detail.workspaceSlug !== workspaceSlug) return;
+      setItems((prevItems) => prevItems.filter((item) => item.id !== detail.postId));
+    };
+
+    window.addEventListener("post:deleted", handlePostDeleted);
+    return () => window.removeEventListener("post:deleted", handlePostDeleted);
+  }, [workspaceSlug]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -192,6 +211,7 @@ export function useRoadmapBoardState({
 
   return {
     sensors,
+    items,
     grouped,
     activeId,
     activeItem,

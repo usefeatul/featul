@@ -7,6 +7,7 @@ import { MoveHorizontalIcon } from "@featul/ui/icons/horizontal";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
 import StatusIcon from "@/components/requests/StatusIcon";
+import RoadmapEmptyColumn from "@/components/roadmap/RoadmapEmptyColumn";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function RoadmapColumn({
@@ -24,7 +25,7 @@ export default function RoadmapColumn({
   count: number;
   collapsed?: boolean;
   onToggle?: (next: boolean) => void;
-  onCreate?: () => void;
+  onCreate?: (status: string) => void;
   children: React.ReactNode;
   disableMotion?: boolean;
 }) {
@@ -86,7 +87,7 @@ export default function RoadmapColumn({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onCreate();
+                    onCreate(id);
                   }}
                 >
                   <FillPlusIcon className="size-4" size={16} />
@@ -114,6 +115,12 @@ export default function RoadmapColumn({
             }}
           >
             {children}
+            {count === 0 && !isOver ? (
+              <RoadmapEmptyColumn
+                label={label}
+                onCreate={onCreate ? () => onCreate(id) : undefined}
+              />
+            ) : null}
             {isOver ? (
               <motion.li
                 className="mt-2 h-16 rounded-md border border-dashed border-green-500/70 bg-green-500/[0.04]"
