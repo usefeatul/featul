@@ -17,7 +17,6 @@ import {
 } from "@/lib/schema";
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
-import { VerticalLines } from "@/components/lines";
 import { serializeJsonLd } from "@/lib/security";
 
 const manrope = Manrope({
@@ -152,7 +151,6 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         {children}
-        <VerticalLines />
       </body>
     </html>
   );

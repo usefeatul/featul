@@ -1,5 +1,4 @@
 import React from "react";
-import { LinearSeparator } from "@/components/separator";
 
 interface SectionStackProps {
     children: React.ReactNode;
@@ -13,12 +12,7 @@ export function SectionStack({ children }: SectionStackProps) {
     return (
         <>
             {childrenArray.map((child, index) => (
-                <React.Fragment key={index}>
-                    {child}
-                    {index < childrenArray.length - 1 && (
-                        <LinearSeparator variant="zigzag" />
-                    )}
-                </React.Fragment>
+                <React.Fragment key={index}>{child}</React.Fragment>
             ))}
         </>
     );

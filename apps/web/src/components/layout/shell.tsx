@@ -3,7 +3,6 @@
 import type { ReactNode } from "react"
 import { Container } from "@/components/global/container"
 import { SkySection } from "@/components/layout/section"
-import { VerticalLines } from "@/components/lines"
 import { cn } from "@featul/ui/lib/utils"
 
 type SkyPageShellProps = {
@@ -39,7 +38,6 @@ export function SkyPageShell({
       <SkySection data-component={dataComponent ? `${dataComponent}Sky` : undefined} />
 
       <div className="relative mx-auto w-full max-w-6xl flex-1">
-        <VerticalLines force className="absolute inset-0 z-30" />
         <Container
           maxWidth="6xl"
           className={cn(

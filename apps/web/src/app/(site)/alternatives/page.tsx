@@ -3,7 +3,6 @@ import { getAllAlternatives } from "@/config/alternatives";
 import AlternativesList from "@/components/alternatives/list";
 import { AlternativesIndexHero } from "@/components/alternatives/index";
 import { createPageMetadata } from "@/lib/seo";
-import { VerticalLines } from "@/components/lines";
 
 export const metadata = createPageMetadata({
   title: "Best Featul Alternatives for Feedback & Roadmaps",
@@ -21,7 +20,6 @@ export default function AlternativesIndexPage() {
     <main className="min-h-screen overflow-x-clip">
       <AlternativesIndexHero />
       <div className="relative mx-auto max-w-6xl">
-        <VerticalLines force className="absolute inset-0 z-30" />
         <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14 pb-14 sm:pb-20">
           <section className="mt-4">
             <div className="border-b border-border/70 pb-6 sm:pb-8">

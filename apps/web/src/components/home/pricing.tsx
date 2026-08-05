@@ -8,7 +8,6 @@ import { cn } from "@featul/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
 import Link from "next/link"
 import Faq from "@/components/home/faq"
-import { LinearSeparator } from "@/components/separator"
 import { SkyPageShell } from "@/components/layout/shell"
 import {
   type BillingCycle,
@@ -26,12 +25,7 @@ export default function Pricing() {
       title="Pricing that grows with your team"
       description="Start free, then move into simple flat-workspace plans for early and growing product teams."
       headerClassName="mx-auto max-w-4xl text-center"
-      below={
-        <>
-          <LinearSeparator variant="zigzag" />
-          <Faq />
-        </>
-      }
+      below={<Faq />}
     >
       <div className="flex justify-center">
         <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
