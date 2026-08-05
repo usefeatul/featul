@@ -41,7 +41,7 @@ export default async function BlogPage() {
           No posts yet. Connect Marble or add content to your workspace.
         </div>
       ) : (
-        <div className="grid max-w-[700px] grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-[repeat(2,minmax(0,1fr))]">
+        <div className="grid max-w-[720px] grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
           {posts.map((post) => (
             <BlogCard key={post.id} post={post} />
           ))}
