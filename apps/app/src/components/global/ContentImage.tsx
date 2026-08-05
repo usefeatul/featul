@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@featul/ui/components/dialog";
+import { XMarkIcon } from "@featul/ui/icons/xmark";
 import { cn } from "@featul/ui/lib/utils";
 
 interface ContentImageProps {
@@ -48,20 +55,30 @@ export default function ContentImage({
         </div>
       </div>
 
-      <SettingsDialogShell
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        title={alt}
-        width="xxl"
-      >
-        <div className="relative flex items-center justify-center overflow-auto max-h-[85vh]">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent
+          fluid
+          showCloseButton={false}
+          overlayClassName="bg-black/45 backdrop-blur-md dark:bg-black/85"
+          onOpenAutoFocus={(event) => event.preventDefault()}
+          className="fixed inset-0 top-0 left-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 items-center justify-center border-none bg-transparent p-4 shadow-none ring-0 ring-offset-0 sm:max-w-none"
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>{alt}</DialogTitle>
+          </DialogHeader>
+          <DialogClose
+            className="absolute top-4 right-4 z-10 inline-flex size-9 items-center justify-center rounded-full bg-black/40 text-white opacity-90 transition-opacity hover:bg-black/55 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            aria-label="Close image preview"
+          >
+            <XMarkIcon size={16} />
+          </DialogClose>
           <img
             src={url}
             alt={alt}
-            className="w-full max-w-full h-auto max-h-[83vh] object-contain rounded-md"
+            className="max-h-[55dvh] max-w-[min(90vw,800px)] object-contain"
           />
-        </div>
-      </SettingsDialogShell>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
