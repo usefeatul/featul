@@ -59,7 +59,7 @@ export default function ContentImage({
         <DialogContent
           fluid
           showCloseButton={false}
-          overlayClassName="bg-black/45 backdrop-blur-md dark:bg-black/85"
+          overlayClassName="bg-white/70 backdrop-blur-md dark:bg-black/85"
           onOpenAutoFocus={(event) => event.preventDefault()}
           className="fixed inset-0 top-0 left-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 items-center justify-center border-none bg-transparent p-4 shadow-none ring-0 ring-offset-0 sm:max-w-none"
         >
@@ -67,7 +67,7 @@ export default function ContentImage({
             <DialogTitle>{alt}</DialogTitle>
           </DialogHeader>
           <DialogClose
-            className="absolute top-4 right-4 z-10 inline-flex size-9 items-center justify-center rounded-full bg-black/40 text-white opacity-90 transition-opacity hover:bg-black/55 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            className="absolute top-4 right-4 z-10 inline-flex size-9 items-center justify-center rounded-full text-foreground opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Close image preview"
           >
             <XMarkIcon size={16} />
