@@ -4,9 +4,9 @@ import Link from "next/link"
 import { Button } from "@featul/ui/components/button"
 import { cn } from "@featul/ui/lib/utils"
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
-import { MergePopover } from "./MergePopover"
-import { DeletePostButton } from "./DeletePostButton"
+import { RequestOverflowMenu } from "./RequestOverflowMenu"
 import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
+import type { RequestFlags } from "@/types/request"
 
 type NavItem = {
   slug: string
@@ -23,28 +23,44 @@ export interface RequestNavigationProps {
   backHref?: string
   className?: string
   showActions?: boolean
+  flags?: RequestFlags
+  onFlagsChange?: (value: RequestFlags) => void
+  canEditFlags?: boolean
 }
 
-export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions }: RequestNavigationProps) {
+export default function RequestNavigation({
+  postId,
+  workspaceSlug,
+  prev,
+  next,
+  prevHref,
+  nextHref,
+  backHref,
+  className,
+  showActions,
+  flags,
+  onFlagsChange,
+  canEditFlags,
+}: RequestNavigationProps) {
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center gap-2", className)}>
       <Toolbar size="sm" variant="plain">
         <Button
           asChild
           variant="nav"
           size="sm"
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+          className="h-8 gap-2 rounded-none border-none px-3 shadow-none hover:bg-background focus-visible:ring-0 focus-visible:ring-offset-0"
           disabled={!backHref}
         >
           {backHref ? (
             <Link href={backHref} aria-label="Back to requests">
               <ChevronLeftIcon className="size-3" />
-              <span className="text-xs font-medium ">Back</span>
+              <span className="text-xs font-medium">Back</span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
               <ChevronLeftIcon className="size-3.5 opacity-50" />
-              <span className="text-xs font-medium opacity-50 ">Back</span>
+              <span className="text-xs font-medium opacity-50">Back</span>
             </span>
           )}
         </Button>
@@ -53,18 +69,27 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           asChild
           variant="nav"
           size="sm"
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+          className="h-8 gap-2 rounded-none border-none px-3 shadow-none hover:bg-background focus-visible:ring-0 focus-visible:ring-offset-0"
           disabled={!prevHref}
         >
           {prevHref ? (
-            <Link href={prevHref} title={prev?.title ? `Previous: ${prev.title} (Z)` : "Previous (Z)"} aria-label="Previous post" aria-keyshortcuts="z">
+            <Link
+              href={prevHref}
+              title={prev?.title ? `Previous: ${prev.title} (Z)` : "Previous (Z)"}
+              aria-label="Previous post"
+              aria-keyshortcuts="z"
+            >
               <span className="text-xs font-medium">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+              <span className="hidden h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight tabular-nums text-accent sm:inline-flex dark:bg-black">
+                Z
+              </span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
               <span className="text-xs font-medium opacity-50">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+              <span className="hidden h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight tabular-nums text-accent sm:inline-flex dark:bg-black">
+                Z
+              </span>
             </span>
           )}
         </Button>
@@ -73,17 +98,26 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           asChild
           variant="nav"
           size="sm"
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+          className="h-8 gap-2 rounded-none border-none px-3 shadow-none hover:bg-background focus-visible:ring-0 focus-visible:ring-offset-0"
           disabled={!nextHref}
         >
           {nextHref ? (
-            <Link href={nextHref} title={next?.title ? `Next: ${next.title} (X)` : "Next (X)"} aria-label="Next post" aria-keyshortcuts="x">
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent h-5">X</span>
+            <Link
+              href={nextHref}
+              title={next?.title ? `Next: ${next.title} (X)` : "Next (X)"}
+              aria-label="Next post"
+              aria-keyshortcuts="x"
+            >
+              <span className="hidden h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight text-accent sm:inline-flex dark:bg-black">
+                X
+              </span>
               <span className="text-xs font-medium">Next</span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent h-5">X</span>
+              <span className="hidden h-5 items-center justify-center rounded-sm border bg-card px-1.5 text-xs font-extralight text-accent sm:inline-flex dark:bg-black">
+                X
+              </span>
               <span className="text-xs font-medium opacity-50">Next</span>
             </span>
           )}
@@ -91,11 +125,14 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
       </Toolbar>
 
       {showActions ? (
-        <Toolbar size="sm" variant="plain">
-          <MergePopover postId={postId} workspaceSlug={workspaceSlug} />
-          <ToolbarSeparator />
-          <DeletePostButton postId={postId} workspaceSlug={workspaceSlug} backHref={backHref} />
-        </Toolbar>
+        <RequestOverflowMenu
+          postId={postId}
+          workspaceSlug={workspaceSlug}
+          backHref={backHref}
+          flags={flags}
+          onFlagsChange={onFlagsChange}
+          canEditFlags={canEditFlags}
+        />
       ) : null}
     </div>
   )
