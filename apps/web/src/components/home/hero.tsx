@@ -71,9 +71,12 @@ export function Hero() {
 
       <Container maxWidth="6xl" className="relative z-10 px-3 sm:px-4">
         <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
+          <p className="mb-3 text-center text-xs font-medium tracking-wide text-white/75 sm:mb-4 sm:text-sm">
+            Click the tabs to explore the product
+          </p>
           <div
             ref={shellRef}
-            className="relative z-0 w-full max-w-full translate-y-[3px] overflow-hidden rounded-md border border-border bg-card shadow-2xl shadow-zinc-950/50 outline-none ring-2 ring-border/60 ring-offset-2 ring-offset-background"
+            className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-card"
             style={{ height: scaledHeight }}
           >
             <div

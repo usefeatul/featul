@@ -89,14 +89,14 @@ export function DashboardDemo({
   return (
     <div className="flex h-full flex-col bg-background">
       {/* Chrome tab strip */}
-      <div className="flex items-end gap-1 bg-muted/70 px-2 pt-1.5">
+      <div className="flex items-end gap-1 border-b border-border/40 bg-muted/60 px-2 pt-1.5">
         <div className="mb-2.5 flex shrink-0 items-center gap-1.5 pl-1.5 pr-2">
           <span className="size-2.5 rounded-full bg-[#ff5f57]" />
           <span className="size-2.5 rounded-full bg-[#febc2e]" />
           <span className="size-2.5 rounded-full bg-[#28c840]" />
         </div>
 
-        <div className="flex min-w-0 flex-1 items-end gap-px overflow-hidden">
+        <div className="flex min-w-0 flex-1 items-end gap-0.5 overflow-hidden">
           {TABS.map((tab) => {
             const active = tab.id === view;
             return (
@@ -105,10 +105,10 @@ export function DashboardDemo({
                 type="button"
                 onClick={() => onViewChange(tab.id)}
                 className={[
-                  "group relative flex h-8 max-w-[180px] min-w-0 flex-1 items-center gap-1.5 px-2.5 text-left text-[11px] transition-colors",
+                  "group relative flex max-w-[180px] min-w-0 flex-1 cursor-pointer items-center gap-1.5 px-2.5 text-left text-[11px] transition-colors",
                   active
-                    ? "z-10 rounded-t-lg bg-card text-foreground"
-                    : "rounded-t-md text-accent hover:bg-background/50",
+                    ? "z-10 -mb-px h-[34px] rounded-t-lg bg-card text-foreground"
+                    : "h-7 rounded-t-md text-accent/90 hover:bg-background/50 hover:text-foreground/80",
                 ].join(" ")}
                 aria-current={active ? "page" : undefined}
               >
@@ -118,7 +118,12 @@ export function DashboardDemo({
                     active ? "shrink-0 text-foreground" : "shrink-0 text-accent"
                   }
                 />
-                <span className="min-w-0 flex-1 truncate font-medium">
+                <span
+                  className={[
+                    "min-w-0 flex-1 truncate",
+                    active ? "font-semibold" : "font-medium",
+                  ].join(" ")}
+                >
                   {tab.label}
                 </span>
                 <span
@@ -160,7 +165,7 @@ export function DashboardDemo({
           </span>
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-muted/80 px-3 py-1">
+        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md bg-muted/80 px-3 py-1">
           <LockIcon className="size-2.5 shrink-0 text-accent/70" />
           <span className="min-w-0 flex-1 truncate text-[11px] text-foreground/80">
             {VIEW_PATHS[view]}
