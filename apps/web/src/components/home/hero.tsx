@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 import { HeroContent } from "./content";
 import { DashboardDemo } from "./demo/dashboard";
@@ -8,10 +10,17 @@ import type { DemoView } from "./demo/data";
 const DEMO_WIDTH = 960;
 const DEMO_HEIGHT = 760;
 
+const DEMO_TABS: { id: DemoView; label: string }[] = [
+  { id: "requests", label: "Featul" },
+  { id: "roadmap", label: "Roadmap" },
+  { id: "changelog", label: "Changelog" },
+];
+
 export function Hero() {
   const [view, setView] = useState<DemoView>("requests");
   const shellRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const shell = shellRef.current;
@@ -71,9 +80,6 @@ export function Hero() {
 
       <Container maxWidth="6xl" className="relative z-10 px-3 sm:px-4">
         <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
-          <p className="mb-3 text-center text-xs font-medium tracking-wide text-white/75 sm:mb-4 sm:text-sm">
-            Click the tabs to explore the product
-          </p>
           <div
             ref={shellRef}
             className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-card"
@@ -88,6 +94,47 @@ export function Hero() {
               }}
             >
               <DashboardDemo view={view} onViewChange={setView} />
+            </div>
+          </div>
+
+          <div className="mt-4 flex justify-center sm:mt-5">
+            <div
+              className="relative inline-flex flex-wrap items-center justify-center gap-1 rounded-md border border-white/55 bg-white/20 p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_8px_32px_rgba(0,99,210,0.14)] backdrop-blur-3xl supports-[backdrop-filter]:bg-white/28"
+              role="tablist"
+              aria-label="Explore product views"
+            >
+              {DEMO_TABS.map((tab) => {
+                const active = tab.id === view;
+                return (
+                  <motion.button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    onClick={() => setView(tab.id)}
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+                    className={cn(
+                      "relative cursor-pointer rounded-md px-3.5 py-1.5 text-xs transition-colors duration-200",
+                      active
+                        ? "font-semibold text-[#0063d2]"
+                        : "font-medium text-[#005eb8]/75 hover:bg-white/25 hover:text-[#0063d2]",
+                    )}
+                    aria-selected={active}
+                  >
+                    {active ? (
+                      <motion.span
+                        layoutId="hero-demo-tab-pill"
+                        className="absolute inset-0 rounded-md border border-white/80 bg-white/70 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.95),0_4px_16px_rgba(255,255,255,0.35)] backdrop-blur-md supports-[backdrop-filter]:bg-white/75"
+                        transition={
+                          shouldReduceMotion
+                            ? { duration: 0 }
+                            : { type: "spring", stiffness: 420, damping: 34 }
+                        }
+                      />
+                    ) : null}
+                    <span className="relative z-10">{tab.label}</span>
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
         </div>
