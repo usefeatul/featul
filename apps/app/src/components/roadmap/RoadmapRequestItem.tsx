@@ -55,7 +55,7 @@ export default function RoadmapRequestItem({
   return (
     <div className="relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
-      <div className="min-h-0 flex-1 px-3 pb-3 pt-3.5">
+      <div className="min-h-0 flex-1 px-3.5 pb-3 pt-3.5 pr-8">
         <Link
           href={href}
           className="line-clamp-2 block min-h-10 text-sm font-medium leading-5 text-foreground hover:text-primary"

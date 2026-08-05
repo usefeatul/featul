@@ -34,7 +34,7 @@ export default function RoadmapDraggable({
         transform: transform ? CSS.Translate.toString(transform) : undefined,
       }}
       className={cn(
-        "h-[152px] overflow-hidden rounded-md border border-border bg-background shadow-xs transition-[border-color,box-shadow,opacity] hover:border-foreground/20 hover:shadow-sm dark:hover:border-white/15",
+        "group/card relative h-[152px] overflow-hidden rounded-md border border-border bg-background shadow-xs transition-[border-color,box-shadow,opacity] hover:border-foreground/20 hover:shadow-sm dark:hover:border-white/15",
         isSaving && "border-primary/60 opacity-80",
         isDragging && "opacity-0",
         className,
@@ -42,22 +42,20 @@ export default function RoadmapDraggable({
       layout
       transition={{ type: "spring", stiffness: 180, damping: 36 }}
     >
-      <div className="flex h-full min-w-0">
-        <button
-          type="button"
-          {...listeners}
-          {...sanitizedAttributes}
-          className="group/handle flex w-6 shrink-0 cursor-grab items-center justify-center border-r border-border/40 text-accent/35 transition-colors hover:bg-muted/30 hover:text-accent/70 active:cursor-grabbing"
-          aria-label="Drag to move card"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-          }}
-        >
-          <GripVertical className="size-3.5 opacity-70 transition-opacity group-hover/handle:opacity-100" strokeWidth={2} />
-        </button>
-        <div className="min-w-0 flex-1">{children}</div>
-      </div>
+      <button
+        type="button"
+        {...listeners}
+        {...sanitizedAttributes}
+        className="absolute right-1.5 top-1.5 z-10 flex size-6 cursor-grab items-center justify-center rounded-md text-accent/45 opacity-0 transition-[opacity,background-color,color] hover:bg-muted/70 hover:text-accent group-hover/card:opacity-100 active:cursor-grabbing"
+        aria-label="Drag to move card"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <GripVertical className="size-3.5" strokeWidth={2} />
+      </button>
+      <div className="h-full min-w-0">{children}</div>
     </motion.li>
   );
 }
