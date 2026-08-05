@@ -81,22 +81,33 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
           </div>
 
           {tradeoffs.length > 0 ? (
-            <div className="mt-16 rounded-md border border-foreground/10 bg-white p-5 sm:p-6">
-              <h3 className="text-foreground text-base sm:text-lg font-medium">
-                When {alt.name} might still be a better fit
-              </h3>
-              <ul className="mt-4 space-y-3 text-accent text-sm sm:text-base leading-7">
-                {tradeoffs.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/50" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-accent mt-4 text-sm sm:text-base leading-7">
-                Choose Featul if you want {victoryPoints[0]?.toLowerCase() || "a privacy-first workflow"}
-                {" "}and a single place for boards, roadmap, and release notes.
-              </p>
+            <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+              <div className="rounded-md border border-foreground/10 p-5 sm:p-6">
+                <h3 className="text-base font-medium text-foreground sm:text-lg">
+                  When {alt.name} might still fit
+                </h3>
+                <ul className="mt-4 space-y-3 text-sm leading-7 text-accent sm:text-base">
+                  {tradeoffs.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/30" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-md border border-primary/20 bg-primary/[0.04] p-5 sm:p-6">
+                <h3 className="text-base font-medium text-foreground sm:text-lg">
+                  Choose Featul when you want
+                </h3>
+                <ul className="mt-4 space-y-3 text-sm leading-7 text-accent sm:text-base">
+                  {victoryPoints.slice(0, 3).map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ) : null}
         </div>
