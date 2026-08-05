@@ -78,63 +78,68 @@ export function Hero() {
         </div>
       </Container>
 
-      <Container maxWidth="6xl" className="relative z-10 px-3 sm:px-4">
-        <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
-          <div
-            ref={shellRef}
-            className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-background"
-            style={{ height: scaledHeight }}
-          >
+      <Container
+        maxWidth="6xl"
+        className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14"
+      >
+        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+          <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
             <div
-              className="origin-top-left will-change-transform"
-              style={{
-                width: DEMO_WIDTH,
-                height: DEMO_HEIGHT,
-                transform: `scale(${scale})`,
-              }}
+              ref={shellRef}
+              className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-background"
+              style={{ height: scaledHeight }}
             >
-              <DashboardDemo view={view} onViewChange={setView} />
+              <div
+                className="origin-top-left will-change-transform"
+                style={{
+                  width: DEMO_WIDTH,
+                  height: DEMO_HEIGHT,
+                  transform: `scale(${scale})`,
+                }}
+              >
+                <DashboardDemo view={view} onViewChange={setView} />
+              </div>
             </div>
-          </div>
 
-          <div className="mt-4 flex justify-center sm:mt-5">
-            <div
-              className="relative inline-flex flex-wrap items-center justify-center gap-1 rounded-md border border-white/55 bg-white/20 p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_8px_32px_rgba(0,99,210,0.14)] backdrop-blur-3xl supports-[backdrop-filter]:bg-white/28"
-              role="tablist"
-              aria-label="Explore product views"
-            >
-              {DEMO_TABS.map((tab) => {
-                const active = tab.id === view;
-                return (
-                  <motion.button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    onClick={() => setView(tab.id)}
-                    whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-                    className={cn(
-                      "relative cursor-pointer rounded-md px-3.5 py-1.5 font-heading text-xs transition-colors duration-200",
-                      active
-                        ? "font-semibold text-[#0063d2]"
-                        : "font-medium text-[#005eb8]/75 hover:bg-white/25 hover:text-[#0063d2]",
-                    )}
-                    aria-selected={active}
-                  >
-                    {active ? (
-                      <motion.span
-                        layoutId="hero-demo-tab-pill"
-                        className="absolute inset-0 rounded-md border border-white/80 bg-white/70 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.95),0_4px_16px_rgba(255,255,255,0.35)] backdrop-blur-md supports-[backdrop-filter]:bg-white/75"
-                        transition={
-                          shouldReduceMotion
-                            ? { duration: 0 }
-                            : { type: "spring", stiffness: 420, damping: 34 }
-                        }
-                      />
-                    ) : null}
-                    <span className="relative z-10">{tab.label}</span>
-                  </motion.button>
-                );
-              })}
+            <div className="mt-4 flex justify-center sm:mt-5">
+              <div
+                className="relative inline-flex flex-wrap items-center justify-center gap-1 rounded-md border border-white/55 bg-white/20 p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_8px_32px_rgba(0,99,210,0.14)] backdrop-blur-3xl supports-[backdrop-filter]:bg-white/28"
+                role="tablist"
+                aria-label="Explore product views"
+              >
+                {DEMO_TABS.map((tab) => {
+                  const active = tab.id === view;
+                  return (
+                    <motion.button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      onClick={() => setView(tab.id)}
+                      whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+                      className={cn(
+                        "relative cursor-pointer rounded-md px-3.5 py-1.5 font-heading text-xs transition-colors duration-200",
+                        active
+                          ? "font-semibold text-[#0063d2]"
+                          : "font-medium text-[#005eb8]/75 hover:bg-white/25 hover:text-[#0063d2]",
+                      )}
+                      aria-selected={active}
+                    >
+                      {active ? (
+                        <motion.span
+                          layoutId="hero-demo-tab-pill"
+                          className="absolute inset-0 rounded-md border border-white/80 bg-white/70 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.95),0_4px_16px_rgba(255,255,255,0.35)] backdrop-blur-md supports-[backdrop-filter]:bg-white/75"
+                          transition={
+                            shouldReduceMotion
+                              ? { duration: 0 }
+                              : { type: "spring", stiffness: 420, damping: 34 }
+                          }
+                        />
+                      ) : null}
+                      <span className="relative z-10">{tab.label}</span>
+                    </motion.button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

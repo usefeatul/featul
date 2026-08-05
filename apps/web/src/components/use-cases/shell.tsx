@@ -19,12 +19,14 @@ export function UseCaseDetailShell({
   return (
     <main className="min-h-screen overflow-x-clip">
       <UseCaseHero title={title} description={description} badge={badge} />
-      {/* Match SkyMarketingHero dashboard image gutter (px-3 sm:px-4) */}
+      {/* Match SkyMarketingHero dashboard image gutter */}
       <Container
         maxWidth="6xl"
-        className="relative z-10 px-3 pb-14 text-left sm:px-4 sm:pb-20"
+        className="relative z-10 px-4 pb-14 text-left sm:px-10 sm:pb-20 lg:px-12 xl:px-14"
       >
-        <div className="w-full max-w-3xl">{children}</div>
+        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+          <div className="w-full max-w-3xl">{children}</div>
+        </div>
       </Container>
     </main>
   );
