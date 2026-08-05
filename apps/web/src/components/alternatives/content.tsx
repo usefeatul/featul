@@ -30,29 +30,29 @@ export function AlternativeHeroContent({
           Best {name} alternative
         </span>
 
-        <span className="mt-4 flex items-center gap-3 sm:mt-5 sm:gap-4">
+        <span className="mt-4 flex items-stretch gap-3 sm:mt-5 sm:gap-4">
           {website ? (
             <Link
               href={website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex shrink-0 items-center justify-center rounded-xl bg-white p-2 shadow-[0_8px_28px_rgba(0,0,0,0.15)] ring-1 ring-white/70 transition-opacity hover:opacity-90 sm:rounded-2xl sm:p-2.5"
+              className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-white p-2 shadow-[0_8px_28px_rgba(0,0,0,0.15)] ring-1 ring-white/70 transition-opacity hover:opacity-90 sm:size-16 sm:rounded-2xl sm:p-2.5 md:size-[4.5rem]"
               aria-label={`Visit ${name} website`}
             >
               <AlternativeIcon
                 slug={slug}
                 alt={`${name} logo`}
                 size={64}
-                className="h-11 w-11 rounded-lg object-cover sm:h-12 sm:w-12 md:h-14 md:w-14"
+                className="size-full rounded-lg object-cover"
               />
             </Link>
           ) : (
-            <span className="flex shrink-0 items-center justify-center rounded-xl bg-white p-2 shadow-[0_8px_28px_rgba(0,0,0,0.15)] ring-1 ring-white/70 sm:rounded-2xl sm:p-2.5">
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-white p-2 shadow-[0_8px_28px_rgba(0,0,0,0.15)] ring-1 ring-white/70 sm:size-16 sm:rounded-2xl sm:p-2.5 md:size-[4.5rem]">
               <AlternativeIcon
                 slug={slug}
                 alt={`${name} logo`}
                 size={64}
-                className="h-11 w-11 rounded-lg object-cover sm:h-12 sm:w-12 md:h-14 md:w-14"
+                className="size-full rounded-lg object-cover"
               />
             </span>
           )}
@@ -62,12 +62,12 @@ export function AlternativeHeroContent({
               href={website}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-xl bg-white/20 px-3 py-1.5 text-[1.35rem] leading-none text-white backdrop-blur-sm transition-colors hover:bg-white/30 sm:rounded-2xl sm:px-4 sm:py-2 sm:text-3xl md:text-4xl"
+              className="inline-flex h-14 items-center rounded-xl bg-white/20 px-3 text-2xl leading-none text-white backdrop-blur-sm transition-colors hover:bg-white/30 sm:h-16 sm:rounded-2xl sm:px-4 sm:text-3xl md:h-[4.5rem] md:text-4xl"
             >
               Featul vs {name}
             </Link>
           ) : (
-            <span className="inline-flex items-center rounded-xl bg-white/20 px-3 py-1.5 text-[1.35rem] leading-none text-white backdrop-blur-sm sm:rounded-2xl sm:px-4 sm:py-2 sm:text-3xl md:text-4xl">
+            <span className="inline-flex h-14 items-center rounded-xl bg-white/20 px-3 text-2xl leading-none text-white backdrop-blur-sm sm:h-16 sm:rounded-2xl sm:px-4 sm:text-3xl md:h-[4.5rem] md:text-4xl">
               Featul vs {name}
             </span>
           )}
