@@ -16,36 +16,63 @@ export const statusOptions = [
     { label: "Closed", value: "closed" },
 ]
 
+export function getStatusLabel(status: string | null | undefined) {
+    return statusOptions.find((option) => option.value === status)?.label ?? "Pending"
+}
+
+function SubmenuBack({ onBack }: { onBack: () => void }) {
+    return (
+        <>
+            <PopoverListItem onClick={onBack}>
+                <ArrowLeftIcon className="size-4 shrink-0" />
+                <span className="text-sm">Back</span>
+            </PopoverListItem>
+            <PopoverSeparator />
+        </>
+    )
+}
+
 interface StatusSubmenuProps {
     currentStatus: string
     isPending: boolean
+    updatingStatus: string | null
     onBack: () => void
     onUpdateStatus: (status: string) => void
 }
 
-export function StatusSubmenu({ currentStatus, isPending, onBack, onUpdateStatus }: StatusSubmenuProps) {
+export function StatusSubmenu({
+    currentStatus,
+    isPending,
+    updatingStatus,
+    onBack,
+    onUpdateStatus,
+}: StatusSubmenuProps) {
     return (
         <PopoverList className="max-h-none! overflow-visible">
-            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-start gap-2">
-                <ArrowLeftIcon className="size-4" />
-                <span className="text-sm">Back</span>
-            </PopoverListItem>
-            <PopoverSeparator />
-            {statusOptions.map((option) => (
-                <PopoverListItem
-                    key={option.value}
-                    onClick={() => onUpdateStatus(option.value)}
-                    disabled={isPending || currentStatus === option.value}
-                    className={currentStatus === option.value ? "opacity-50 pointer-events-none" : ""}
-                >
-                    {isPending && currentStatus === option.value ? (
-                        <LoaderIcon className="size-4 animate-spin" />
-                    ) : (
-                        <StatusIcon status={option.value} className="size-4" />
-                    )}
-                    <span className="text-sm">{option.label}</span>
-                </PopoverListItem>
-            ))}
+            <SubmenuBack onBack={onBack} />
+            {statusOptions.map((option) => {
+                const isCurrent = currentStatus === option.value
+                const isUpdating = isPending && updatingStatus === option.value
+
+                return (
+                    <PopoverListItem
+                        key={option.value}
+                        onClick={() => onUpdateStatus(option.value)}
+                        disabled={isPending || isCurrent}
+                    >
+                        <div className="size-4 flex items-center justify-center shrink-0">
+                            {isUpdating ? (
+                                <LoaderIcon className="size-4 animate-spin" />
+                            ) : isCurrent ? (
+                                <CheckIcon className="size-3.5" />
+                            ) : (
+                                <StatusIcon status={option.value} className="size-4" />
+                            )}
+                        </div>
+                        <span className="text-sm">{option.label}</span>
+                    </PopoverListItem>
+                )
+            })}
         </PopoverList>
     )
 }
@@ -60,13 +87,9 @@ interface TagsSubmenuProps {
 export function TagsSubmenu({ availableTags, optimisticTags, onBack, onToggleTag }: TagsSubmenuProps) {
     return (
         <PopoverList>
-            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-start gap-2">
-                <ArrowLeftIcon className="size-4" />
-                <span className="text-sm ">Back</span>
-            </PopoverListItem>
-            <PopoverSeparator />
+            <SubmenuBack onBack={onBack} />
             {availableTags.length === 0 ? (
-                <div className="p-2 text-xs text-muted-foreground text-center">No tags available</div>
+                <div className="px-3 py-3 text-xs text-muted-foreground">No tags</div>
             ) : (
                 availableTags.map((tag) => {
                     const isChecked = optimisticTags.some((t) => t.id === tag.id)
@@ -78,12 +101,11 @@ export function TagsSubmenu({ availableTags, optimisticTags, onBack, onToggleTag
                                 e.stopPropagation()
                                 onToggleTag(tag.id)
                             }}
-                            className="gap-2"
                         >
                             <div className="size-4 flex items-center justify-center shrink-0">
-                                {isChecked && <CheckIcon className="size-3.5" />}
+                                {isChecked ? <CheckIcon className="size-3.5" /> : null}
                             </div>
-                            <span className="text-sm truncate">{tag.name}</span>
+                            <span className="text-sm">{tag.name}</span>
                         </PopoverListItem>
                     )
                 })
@@ -101,11 +123,7 @@ interface FlagsSubmenuProps {
 export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps) {
     return (
         <PopoverList>
-            <PopoverListItem onClick={onBack} className="text-muted-foreground text-center justify-start gap-2">
-                <ArrowLeftIcon className="size-4" />
-                <span className="text-sm">Back</span>
-            </PopoverListItem>
-            <PopoverSeparator />
+            <SubmenuBack onBack={onBack} />
             {REQUEST_FLAG_OPTIONS.map((option) => {
                 const isChecked = !!flags[option.key]
                 return (
@@ -116,12 +134,11 @@ export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps)
                             e.stopPropagation()
                             onToggleFlag(option.key)
                         }}
-                        className="gap-2"
                     >
                         <div className="size-4 flex items-center justify-center shrink-0">
-                            {isChecked && <CheckIcon className="size-3.5" />}
+                            {isChecked ? <CheckIcon className="size-3.5" /> : null}
                         </div>
-                        <span className="text-sm truncate">{option.label}</span>
+                        <span className="text-sm">{option.label}</span>
                     </PopoverListItem>
                 )
             })}

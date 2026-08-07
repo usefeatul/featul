@@ -123,6 +123,7 @@ export default function RoadmapBoard({
                             <RequestItemContextMenu
                               item={it}
                               workspaceSlug={workspaceSlug}
+                              requestHref={`/workspaces/${workspaceSlug}/requests/${it.slug}`}
                               className="h-full"
                             >
                               <RoadmapRequestItem

@@ -62,6 +62,11 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
+      requestHref={href}
+      listKey={workspaceSlug}
+      isSelecting={isSelectingMode}
+      isSelected={isSelectedMode}
+      onToggle={onToggle}
       className={rowClassName}
       onClick={handleRowClick}
     >
