@@ -66,13 +66,14 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       onClick={handleRowClick}
     >
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
-      <SelectionControl
-        visible={isSelectingMode}
-        checked={isSelectedMode}
-        label={isSelectedMode ? "Deselect post" : "Select post"}
-        onCheckedChange={(v) => onToggle?.(v)}
-        onClick={(e) => e.stopPropagation()}
-      />
+      {isSelectingMode ? (
+        <SelectionControl
+          checked={isSelectedMode}
+          label={isSelectedMode ? "Deselect post" : "Select post"}
+          onCheckedChange={(v) => onToggle?.(v)}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ) : null}
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <Link
         href={href}

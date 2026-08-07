@@ -47,13 +47,14 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
     return (
         <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug} onClick={handleRowClick}>
             <div className={rowClassName}>
-                <SelectionControl
-                    visible={isSelectingMode}
-                    checked={isSelectedMode}
-                    label={isSelectedMode ? "Deselect entry" : "Select entry"}
-                    onCheckedChange={(v) => onToggle?.(v)}
-                    onClick={(e) => e.stopPropagation()}
-                />
+                {isSelectingMode ? (
+                    <SelectionControl
+                        checked={isSelectedMode}
+                        label={isSelectedMode ? "Deselect entry" : "Select entry"}
+                        onCheckedChange={(v) => onToggle?.(v)}
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                ) : null}
                 <Link
                     href={`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`}
                     className={cn(

@@ -34,7 +34,6 @@ export function SelectionToolbar({
       aria-label="Bulk selection actions"
     >
       <SelectionControl
-        visible
         checked={allSelected}
         label={
           allSelected
