@@ -307,7 +307,7 @@ export function WorkspaceSearchAction({
         width="wide"
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
-          <div className="flex items-center justify-between border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-between border-t border-border px-4 py-2.5 text-sm text-muted-foreground">
             <span>
               {currentSearch
                 ? `Filtering by "${currentSearch}"`
@@ -335,6 +335,7 @@ export function WorkspaceSearchAction({
           onValueChange={setValue}
           placeholder={placeholder}
           aria-label={placeholder}
+          className="text-sm"
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault();
