@@ -1,9 +1,9 @@
 "use client"
 
 import { Button } from "@featul/ui/components/button"
-import { Checkbox } from "@featul/ui/components/checkbox"
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { cn } from "@featul/ui/lib/utils"
+import { SelectionControl } from "./SelectionControl"
 
 export interface SelectionToolbarProps {
   allSelected: boolean
@@ -29,19 +29,19 @@ export function SelectionToolbar({
 
   return (
     <div
-      className="sticky top-0 z-10 flex h-10 items-center gap-2.5 border-b border-border/70 bg-card/95 px-3 backdrop-blur-sm sm:px-4"
+      className="sticky top-0 z-10 flex h-10 items-center gap-3 border-b border-border/70 bg-card/95 px-3 backdrop-blur-sm sm:px-4"
       role="toolbar"
       aria-label="Bulk selection actions"
     >
-      <Checkbox
+      <SelectionControl
+        visible
         checked={allSelected}
-        onCheckedChange={onToggleAll}
-        aria-label={
+        label={
           allSelected
             ? "Clear page selection"
             : `Select all ${totalCount} on this page`
         }
-        className="size-4 shrink-0 cursor-pointer rounded-sm border-muted-foreground/35 shadow-none data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+        onCheckedChange={() => onToggleAll()}
       />
 
       {hasSelection ? (
