@@ -295,9 +295,15 @@ export function WorkspaceSearchAction({
         footer={
           <div className="flex items-center justify-between bg-muted/25 px-4 py-2.5 text-sm text-muted-foreground">
             <span>
-              {currentSearch
-                ? `Filtering by "${currentSearch}"`
-                : "Search by title or content"}
+              {currentSearch ? (
+                <>
+                  Filtering by &ldquo;
+                  <span className="font-heading">{currentSearch}</span>
+                  &rdquo;
+                </>
+              ) : (
+                "Search by title or content"
+              )}
             </span>
             <div className="flex items-center gap-3">
               <KeyboardHint keys={enterKey} label="Filter" />
