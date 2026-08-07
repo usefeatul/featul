@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import type { RequestItemData } from "@/types/request";
 
 import { BoardsDropdown } from "./BoardsDropdown";
@@ -15,7 +15,7 @@ import { SubdomainListCard } from "./SubdomainListCard";
 import { SubdomainListItems } from "./SubdomainListItems";
 import PostCard from "@/components/subdomain/PostCard";
 import { SubdomainListEmptyState } from "./SubdomainListEmptyState";
-import { SubdomainSearchResultsHeader } from "./SubdomainSearchResultsHeader";
+import { SubdomainActiveSearchHeader } from "./SubdomainActiveSearchHeader";
 import EmptyDomainPosts from "./EmptyPosts";
 
 type Item = RequestItemData;
@@ -44,8 +44,6 @@ export function MainContent({
   linkPrefix?: string;
 }) {
   const search = useSearchParams();
-  const pathname = usePathname() || "/";
-  const router = useRouter();
   const boardParam = search.get("board") || undefined;
   const searchQuery = (search.get("search") || "").trim();
   const paginationBasePath = selectedBoard ? `/board/${selectedBoard}` : "/";
@@ -89,15 +87,6 @@ export function MainContent({
       window.removeEventListener("post:deleted", handlePostDeleted);
     };
   }, []);
-
-  const clearSearch = React.useCallback(() => {
-    const url = new URL(pathname, "http://dummy");
-    search.forEach((value, key) => {
-      if (key !== "search") url.searchParams.set(key, value);
-    });
-    const query = url.searchParams.toString();
-    router.push(`${url.pathname}${query ? `?${query}` : ""}`);
-  }, [pathname, router, search]);
 
   return (
     <SubdomainListLayout
@@ -143,10 +132,9 @@ export function MainContent({
         </div>
         <SubdomainListCard>
           {searchQuery ? (
-            <SubdomainSearchResultsHeader
+            <SubdomainActiveSearchHeader
               query={searchQuery}
               totalCount={totalCount}
-              onClear={clearSearch}
             />
           ) : null}
           {items.length === 0 ? (

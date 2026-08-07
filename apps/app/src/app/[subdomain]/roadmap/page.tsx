@@ -13,6 +13,8 @@ import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
 import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
 import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
 import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
+import { SubdomainActiveSearchHeader } from "@/components/subdomain/SubdomainActiveSearchHeader"
+import { SubdomainListEmptyState } from "@/components/subdomain/SubdomainListEmptyState"
 import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
@@ -30,7 +32,7 @@ export default async function RoadmapPage({
   searchParams,
 }: {
   params: Promise<{ subdomain: string }>
-  searchParams?: Promise<{ page?: string; order?: "newest" | "oldest" }>
+  searchParams?: Promise<{ page?: string; order?: "newest" | "oldest"; search?: string }>
 }) {
   const { subdomain } = await params
   const sp = (await resolveSearchParams(searchParams)) ?? {}
@@ -38,9 +40,19 @@ export default async function RoadmapPage({
   const page = parsePositiveIntSearchParam(sp.page)
   const offset = (page - 1) * PAGE_SIZE
   const order = sp.order === "oldest" ? "oldest" : "newest"
+  const search = (sp.search || "").trim()
 
-  const items = await getPlannedRoadmapPosts(slug, { limit: PAGE_SIZE, offset, order })
-  const totalCount = await getWorkspacePostsCount(slug, { statuses: ["planned"], publicOnly: true })
+  const items = await getPlannedRoadmapPosts(slug, {
+    limit: PAGE_SIZE,
+    offset,
+    order,
+    search: search || undefined,
+  })
+  const totalCount = await getWorkspacePostsCount(slug, {
+    statuses: ["planned"],
+    search: search || undefined,
+    publicOnly: true,
+  })
   const sidebarPosition = await getSidebarPositionBySlug(slug)
   return (
     <SubdomainListLayout
@@ -48,7 +60,7 @@ export default async function RoadmapPage({
       slug={slug}
       sidebarPosition={sidebarPosition}
       sortBasePath="/roadmap"
-      sortKeepParams={["page"]}
+      sortKeepParams={["page", "search"]}
     >
       <div>
         <SubdomainListHeader
@@ -62,7 +74,7 @@ export default async function RoadmapPage({
                 subdomain={subdomain}
                 slug={slug}
                 basePath="/roadmap"
-                keepParams={["page"]}
+                keepParams={["page", "search"]}
               />
               <SearchAction slug={slug} />
             </>
@@ -72,8 +84,18 @@ export default async function RoadmapPage({
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
         <SubdomainListCard>
+          {search ? (
+            <SubdomainActiveSearchHeader query={search} totalCount={totalCount} />
+          ) : null}
           {(items || []).length === 0 ? (
-            <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+            search ? (
+              <SubdomainListEmptyState
+                title="No results found"
+                description="Try different keywords or clear your search."
+              />
+            ) : (
+              <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+            )
           ) : (
             <SubdomainListItems>
               {(items || []).map((it) => (
@@ -90,7 +112,7 @@ export default async function RoadmapPage({
           pageSize={PAGE_SIZE}
           totalCount={totalCount}
           basePath="/roadmap"
-          keepParams={["order"]}
+          keepParams={["order", "search"]}
         />
       </div>
     </SubdomainListLayout>

@@ -2,11 +2,7 @@
 
 import React from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  filterRoadmapItems,
-  groupItemsByStatus,
-  sortRoadmapItems,
-} from "@/lib/roadmap";
+import { groupItemsByStatus, sortRoadmapItems } from "@/lib/roadmap";
 import { parseRoadmapFiltersFromSearchParams } from "@/utils/roadmap-url";
 import type { RequestItemData } from "@/types/request";
 
@@ -17,19 +13,14 @@ export function useRoadmapFilters(items: RequestItemData[]) {
     [searchParams],
   );
 
-  const filteredItems = React.useMemo(
-    () => filterRoadmapItems(items, filters),
-    [filters, items],
-  );
-
   const grouped = React.useMemo(() => {
-    const byStatus = groupItemsByStatus(filteredItems);
+    const byStatus = groupItemsByStatus(items);
     const next: Record<string, RequestItemData[]> = {};
     for (const [status, statusItems] of Object.entries(byStatus)) {
       next[status] = sortRoadmapItems(statusItems, filters.order);
     }
     return next;
-  }, [filteredItems, filters.order]);
+  }, [filters.order, items]);
 
   const hasActiveFilters =
     filters.search.length > 0 ||

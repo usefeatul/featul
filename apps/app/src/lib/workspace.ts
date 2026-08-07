@@ -26,6 +26,7 @@ import type {
 import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
 import type { DomainInfo } from "../types/domain";
+import { buildPostFtsFilter } from "@featul/api/shared/post-search";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import {
   getBrandingBySlug,
@@ -171,11 +172,8 @@ function buildPostFilters({
   if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
   if (tagPostIds && tagPostIds.length > 0)
     filters.push(inArray(post.id, tagPostIds));
-  if (search) {
-    filters.push(
-      sql`to_tsvector('english', coalesce(${post.title}, '') || ' ' || coalesce(${post.content}, '')) @@ plainto_tsquery('english', ${search})`
-    );
-  }
+  const ftsFilter = buildPostFtsFilter(search);
+  if (ftsFilter) filters.push(ftsFilter);
   return filters;
 }
 
@@ -512,7 +510,12 @@ export async function getWorkspaceBoards(
 
 export async function getPlannedRoadmapPosts(
   slug: string,
-  opts?: { limit?: number; offset?: number; order?: "newest" | "oldest" }
+  opts?: {
+    limit?: number;
+    offset?: number;
+    order?: "newest" | "oldest";
+    search?: string;
+  }
 ) {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return [];
@@ -536,11 +539,13 @@ export async function getPlannedRoadmapPosts(
   const limit = opts?.limit;
   const offset = opts?.offset;
   const order = opts?.order;
+  const search = (opts?.search || "").trim();
   return getWorkspacePosts(slug, {
     statuses: ["planned"],
     limit,
     offset,
     order,
+    search: search || undefined,
     publicOnly: true,
   });
 }

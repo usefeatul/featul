@@ -7,6 +7,7 @@ import {
 } from "@/utils/search-params"
 import type { RequestItemData } from "@/types/request"
 import { parseRequestFiltersFromRecord } from "@/utils/request-filters"
+import { boardSlugsForSearch } from "@featul/api/shared/post-search"
 
 const PAGE_SIZE = 20
 
@@ -75,7 +76,7 @@ export async function loadRequestsPageData({
   }
 
   // Process board/tag filters (clear boards when searching)
-  const boardSlugs = search ? [] : normalizeSlugList(boardRaw)
+  const boardSlugs = boardSlugsForSearch(search, normalizeSlugList(boardRaw))
   const tagSlugs = normalizeSlugList(tagRaw)
 
   // Fetch data

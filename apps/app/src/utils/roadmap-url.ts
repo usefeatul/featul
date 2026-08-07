@@ -1,5 +1,9 @@
 import { parseSortOrder, type SortOrder } from "@/types/sort";
 import { encodeArray, parseArrayParam } from "@/utils/request";
+import {
+  getSingleSearchParam,
+  type SearchParamValue,
+} from "@/utils/search-params";
 
 type SearchParamsLike = { get: (key: string) => string | null };
 
@@ -8,6 +12,13 @@ export type ParsedRoadmapFilters = {
   tag: string[];
   order: SortOrder;
   search: string;
+};
+
+export type RoadmapFilterQueryShape = {
+  board?: SearchParamValue;
+  tag?: SearchParamValue;
+  order?: SearchParamValue;
+  search?: SearchParamValue;
 };
 
 export function parseRoadmapFiltersFromSearchParams(
@@ -19,6 +30,17 @@ export function parseRoadmapFiltersFromSearchParams(
     order: parseSortOrder(params.get("order")),
     search: params.get("search") || "",
   };
+}
+
+export function parseRoadmapFiltersFromRecord(
+  record: RoadmapFilterQueryShape,
+): ParsedRoadmapFilters {
+  const params: SearchParamsLike = {
+    get: (key: string) =>
+      getSingleSearchParam(record[key as keyof RoadmapFilterQueryShape]) ||
+      null,
+  };
+  return parseRoadmapFiltersFromSearchParams(params);
 }
 
 export function buildRoadmapUrl(
