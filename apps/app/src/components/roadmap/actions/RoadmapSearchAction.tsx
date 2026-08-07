@@ -38,8 +38,10 @@ export default function RoadmapSearchAction({
       currentSearch={currentSearch}
       className={className}
       buttonVariant="card"
+      placeholder="Search roadmap…"
       showNoResults
       onSearchSubmit={runSearch}
+      onClearSearch={() => runSearch("")}
       onResultSelect={(result: WorkspaceSearchResult) => {
         setPendingHref(`/workspaces/${slug}/requests/${result.slug}`);
       }}

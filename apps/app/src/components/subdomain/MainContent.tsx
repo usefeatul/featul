@@ -1,7 +1,9 @@
 "use client"
 
 import React from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { XMarkIcon } from "@featul/ui/icons/xmark";
+import { Button } from "@featul/ui/components/button";
 import type { RequestItemData } from "@/types/request";
 
 import { BoardsDropdown } from "./BoardsDropdown";
@@ -14,6 +16,7 @@ import { SubdomainListLayout } from "./SubdomainListLayout";
 import { SubdomainListCard } from "./SubdomainListCard";
 import { SubdomainListItems } from "./SubdomainListItems";
 import PostCard from "@/components/subdomain/PostCard";
+import { SubdomainListEmptyState } from "./SubdomainListEmptyState";
 import EmptyDomainPosts from "./EmptyPosts";
 
 type Item = RequestItemData;
@@ -42,10 +45,17 @@ export function MainContent({
   linkPrefix?: string;
 }) {
   const search = useSearchParams();
+  const pathname = usePathname() || "/";
+  const router = useRouter();
   const boardParam = search.get("board") || undefined;
+  const searchQuery = (search.get("search") || "").trim();
   const paginationBasePath = selectedBoard ? `/board/${selectedBoard}` : "/";
-  const paginationKeepParams = selectedBoard ? ["order"] : ["board", "order"];
-  const sortKeepParams = selectedBoard ? ["page"] : ["page", "board"];
+  const paginationKeepParams = selectedBoard
+    ? ["order", "search"]
+    : ["board", "order", "search"];
+  const sortKeepParams = selectedBoard
+    ? ["page", "search"]
+    : ["page", "board", "search"];
   const [listItems, setListItems] = React.useState<Item[]>(items || []);
   React.useEffect(() => {
     setListItems(items || []);
@@ -80,6 +90,15 @@ export function MainContent({
       window.removeEventListener("post:deleted", handlePostDeleted);
     };
   }, []);
+
+  const clearSearch = React.useCallback(() => {
+    const url = new URL(pathname, "http://dummy");
+    search.forEach((value, key) => {
+      if (key !== "search") url.searchParams.set(key, value);
+    });
+    const query = url.searchParams.toString();
+    router.push(`${url.pathname}${query ? `?${query}` : ""}`);
+  }, [pathname, router, search]);
 
   return (
     <SubdomainListLayout
@@ -123,9 +142,30 @@ export function MainContent({
         <div className="md:hidden mb-4">
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
+        {searchQuery ? (
+          <div className="mb-3 flex items-center gap-2">
+            <Button
+              type="button"
+              variant="nav"
+              size="xs"
+              onClick={clearSearch}
+              aria-label={`Clear search ${searchQuery}`}
+            >
+              <span className="truncate">Search: {searchQuery}</span>
+              <XMarkIcon className="ml-1 size-3 opacity-60" />
+            </Button>
+          </div>
+        ) : null}
         <SubdomainListCard>
           {items.length === 0 ? (
-            <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+            searchQuery ? (
+              <SubdomainListEmptyState
+                title="No results found"
+                description={`No posts match "${searchQuery}". Try different keywords or clear your search.`}
+              />
+            ) : (
+              <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+            )
           ) : (
             <SubdomainListItems>
               {listItems.map((p) => {

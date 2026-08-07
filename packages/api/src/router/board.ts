@@ -390,6 +390,8 @@ export function createBoardRouter() {
             slug: post.slug,
             createdAt: post.createdAt,
             upvotes: post.upvotes,
+            boardName: board.name,
+            boardSlug: board.slug,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))

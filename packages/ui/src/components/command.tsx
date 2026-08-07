@@ -31,6 +31,7 @@ type CommandDialogProps = Omit<
 > & {
   title?: string
   children?: React.ReactNode
+  footer?: React.ReactNode
   width?: "default" | "wide" | "widest" | "xl" | "xxl"
   offsetY?: string | number
   icon?: React.ReactNode
@@ -39,6 +40,7 @@ type CommandDialogProps = Omit<
 function CommandDialog({
   title = "Command Palette",
   children,
+  footer,
   width = "default",
   offsetY = "15%",
   icon,
@@ -67,10 +69,13 @@ function CommandDialog({
             {title}
           </DialogTitle>
         </DialogHeader>
-        <div className="bg-card rounded-xl p-2 dark:bg-black/40 border border-border">
-          <Command className="">
-            {children}
-          </Command>
+        <div className="bg-card overflow-hidden rounded-xl border border-border dark:bg-black/40">
+          <div className="p-2">
+            <Command className="">
+              {children}
+            </Command>
+          </div>
+          {footer}
         </div>
       </DialogContent>
     </Dialog>

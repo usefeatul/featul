@@ -29,7 +29,7 @@ export default async function BoardPage({
   searchParams,
 }: {
   params: Promise<{ subdomain: string; slug: string }>
-  searchParams: Promise<{ page?: string; order?: "newest" | "oldest" | "likes" }>
+  searchParams: Promise<{ page?: string; order?: "newest" | "oldest" | "likes"; search?: string }>
 }) {
   const { subdomain, slug: boardSlug } = await params
   const sp = (await resolveSearchParams(searchParams)) ?? {}
@@ -44,12 +44,14 @@ export default async function BoardPage({
   const page = parsePositiveIntSearchParam(sp.page)
   const offset = (page - 1) * PAGE_SIZE
   const order = parseSortOrderParam(sp.order, "likes")
+  const search = (sp.search || "").trim()
 
   const rows = await getWorkspacePosts(subdomain, {
     order,
     limit: PAGE_SIZE,
     offset,
-    boardSlugs: [boardSlug],
+    boardSlugs: search ? undefined : [boardSlug],
+    search: search || undefined,
     publicOnly: true,
   })
 
@@ -65,7 +67,8 @@ export default async function BoardPage({
   )
 
   const totalCount = await getWorkspacePostsCount(subdomain, {
-    boardSlugs: [boardSlug],
+    boardSlugs: search ? undefined : [boardSlug],
+    search: search || undefined,
     publicOnly: true,
   })
   const sidebarPosition = await getSidebarPositionBySlug(subdomain)

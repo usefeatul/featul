@@ -50,6 +50,8 @@ export function SearchAction({ slug, className = "" }: SearchActionProps) {
       currentSearch={currentSearch}
       className={className}
       buttonVariant="nav"
+      placeholder="Search feedback…"
+      showNoResults
       onSearchSubmit={runSearch}
       onClearSearch={clearSearch}
       onResultSelect={(result: WorkspaceSearchResult) => {
