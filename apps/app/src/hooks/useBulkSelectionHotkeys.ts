@@ -8,8 +8,10 @@ interface UseBulkSelectionHotkeysParams {
   isSelecting: boolean;
   isPending: boolean;
   selectedCount: number;
+  confirmOpen: boolean;
   setConfirmOpen: (open: boolean) => void;
   selectingRef: { current: boolean };
+  onExitSelection: () => void;
 }
 
 export function useBulkSelectionHotkeys({
@@ -17,8 +19,10 @@ export function useBulkSelectionHotkeys({
   isSelecting,
   isPending,
   selectedCount,
+  confirmOpen,
   setConfirmOpen,
   selectingRef,
+  onExitSelection,
 }: UseBulkSelectionHotkeysParams) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -35,6 +39,14 @@ export function useBulkSelectionHotkeys({
       }
 
       const key = typeof event.key === "string" ? event.key.toLowerCase() : "";
+
+      if (key === "escape") {
+        if (!isSelecting) return;
+        if (confirmOpen) return;
+        event.preventDefault();
+        onExitSelection();
+        return;
+      }
 
       if ((event.metaKey || event.ctrlKey) && key === "d") {
         event.preventDefault();
@@ -57,7 +69,9 @@ export function useBulkSelectionHotkeys({
     isSelecting,
     isPending,
     selectedCount,
+    confirmOpen,
     setConfirmOpen,
     selectingRef,
+    onExitSelection,
   ]);
 }

@@ -118,6 +118,13 @@ export const WORKSPACE_SHORTCUTS: WorkspaceShortcut[] = [
     bindings: [{ keys: ["D"] }],
   },
   {
+    id: "exit-bulk-selection",
+    group: "Lists and bulk actions",
+    title: "Exit bulk selection",
+    description: "Leave selection mode and clear the current selection.",
+    bindings: [{ keys: ["Escape"] }],
+  },
+  {
     id: "list-prev-page",
     group: "Lists and bulk actions",
     title: "Previous list page",

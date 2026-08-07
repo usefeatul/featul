@@ -46,7 +46,12 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   }, [isSelectingMode, isSelectedMode, onToggle])
   const rowClassName = cn(
     "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
-    isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
+    isSelectingMode
+      ? "cursor-pointer transition-colors"
+      : "hover:bg-background dark:hover:bg-background transition-colors",
+    isSelectingMode &&
+      isSelectedMode &&
+      "bg-primary/[0.06] ring-1 ring-inset ring-primary/20 dark:bg-primary/[0.08]",
   )
   const actionsClassName = cn(
     "ml-auto flex items-center gap-3 text-xs text-accent",

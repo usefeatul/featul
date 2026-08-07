@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import RequestItem from "./RequestItem";
 import type { RequestItemData } from "@/types/request";
 import EmptyRequests from "./EmptyRequests";
+import { BulkDeletePreview } from "@/components/global/BulkDeletePreview";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useBulkDeleteRequests } from "../../hooks/useBulkDeleteRequests";
@@ -58,8 +59,17 @@ function RequestListBase(props: RequestListProps) {
     initialIsSelecting,
     initialSelectedIds,
     isPending,
+    confirmOpen,
     setConfirmOpen,
   });
+
+  const selectedTitles = useMemo(
+    () =>
+      listItems
+        .filter((item) => selectedIdsSet.has(item.id))
+        .map((item) => item.title ?? "Untitled post"),
+    [listItems, selectedIdsSet],
+  );
 
   if (listItems.length === 0) {
     if (isRefetching) {
@@ -74,6 +84,8 @@ function RequestListBase(props: RequestListProps) {
         <SelectionToolbar
           allSelected={allSelected}
           selectedCount={selectedCount}
+          totalCount={listItems.length}
+          itemLabel="post"
           isPending={isPending}
           onToggleAll={toggleAll}
           onConfirmDelete={() => setConfirmOpen(true)}
@@ -99,8 +111,11 @@ function RequestListBase(props: RequestListProps) {
         isPending={isPending}
         onOpenChange={setConfirmOpen}
         onConfirm={handleBulkDelete}
-        title="Delete selected posts?"
-        description={`This will permanently delete ${selectedCount} ${selectedCount === 1 ? "post" : "posts"}.`}
+        title={`Delete ${selectedCount} ${selectedCount === 1 ? "post" : "posts"}?`}
+        description="This action cannot be undone. Comments, votes, and activity for these posts will be removed."
+        details={
+          <BulkDeletePreview titles={selectedTitles} itemLabel="post" />
+        }
       />
     </div>
   );
