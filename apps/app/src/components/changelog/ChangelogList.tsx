@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data";
 import ChangelogItem from "./ChangelogItem";
-import { BulkDeletePreview } from "@/components/global/BulkDeletePreview";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { SelectionToolbar } from "@/components/requests/SelectionToolbar";
 import { useBulkDeleteChangelog } from "../../hooks/useBulkDeleteChangelog";
@@ -60,14 +59,6 @@ export function ChangelogList({
     setConfirmOpen,
   });
 
-  const selectedTitles = useMemo(
-    () =>
-      listItems
-        .filter((item) => selectedIdsSet.has(item.id))
-        .map((item) => item.title ?? "Untitled entry"),
-    [listItems, selectedIdsSet],
-  );
-
   if (listItems.length === 0) {
     if (isRefetching) {
       return null;
@@ -113,9 +104,6 @@ export function ChangelogList({
         onConfirm={handleBulkDelete}
         title={`Delete ${selectedCount} ${selectedCount === 1 ? "entry" : "entries"}?`}
         description="This action cannot be undone. These changelog entries will be permanently removed."
-        details={
-          <BulkDeletePreview titles={selectedTitles} itemLabel="entry" />
-        }
         confirmClassName="h-8 px-4 text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground"
       />
     </div>

@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import RequestItem from "./RequestItem";
 import type { RequestItemData } from "@/types/request";
 import EmptyRequests from "./EmptyRequests";
-import { BulkDeletePreview } from "@/components/global/BulkDeletePreview";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useBulkDeleteRequests } from "../../hooks/useBulkDeleteRequests";
@@ -63,14 +62,6 @@ function RequestListBase(props: RequestListProps) {
     setConfirmOpen,
   });
 
-  const selectedTitles = useMemo(
-    () =>
-      listItems
-        .filter((item) => selectedIdsSet.has(item.id))
-        .map((item) => item.title ?? "Untitled post"),
-    [listItems, selectedIdsSet],
-  );
-
   if (listItems.length === 0) {
     if (isRefetching) {
       return null;
@@ -118,9 +109,6 @@ function RequestListBase(props: RequestListProps) {
         onConfirm={handleBulkDelete}
         title={`Delete ${selectedCount} ${selectedCount === 1 ? "post" : "posts"}?`}
         description="This action cannot be undone. Comments, votes, and activity for these posts will be removed."
-        details={
-          <BulkDeletePreview titles={selectedTitles} itemLabel="post" />
-        }
       />
     </div>
   );
