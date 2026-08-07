@@ -2,6 +2,7 @@
 
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@featul/ui/lib/utils";
 import {
   WorkspaceSearchAction,
   type WorkspaceSearchResult,
@@ -48,7 +49,11 @@ export function SearchAction({ slug, className = "" }: SearchActionProps) {
     <WorkspaceSearchAction
       workspaceSlug={slug}
       currentSearch={currentSearch}
-      className={className}
+      className={cn(
+        className,
+        currentSearch &&
+          "bg-primary/10 ring-1 ring-primary/30 dark:bg-primary/15",
+      )}
       buttonVariant="nav"
       placeholder="Search feedback…"
       showNoResults

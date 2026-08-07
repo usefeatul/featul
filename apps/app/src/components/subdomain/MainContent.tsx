@@ -2,8 +2,6 @@
 
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
-import { Button } from "@featul/ui/components/button";
 import type { RequestItemData } from "@/types/request";
 
 import { BoardsDropdown } from "./BoardsDropdown";
@@ -17,6 +15,7 @@ import { SubdomainListCard } from "./SubdomainListCard";
 import { SubdomainListItems } from "./SubdomainListItems";
 import PostCard from "@/components/subdomain/PostCard";
 import { SubdomainListEmptyState } from "./SubdomainListEmptyState";
+import { SubdomainSearchResultsHeader } from "./SubdomainSearchResultsHeader";
 import EmptyDomainPosts from "./EmptyPosts";
 
 type Item = RequestItemData;
@@ -142,26 +141,19 @@ export function MainContent({
         <div className="md:hidden mb-4">
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
-        {searchQuery ? (
-          <div className="mb-3 flex items-center gap-2">
-            <Button
-              type="button"
-              variant="nav"
-              size="xs"
-              onClick={clearSearch}
-              aria-label={`Clear search ${searchQuery}`}
-            >
-              <span className="truncate">Search: {searchQuery}</span>
-              <XMarkIcon className="ml-1 size-3 opacity-60" />
-            </Button>
-          </div>
-        ) : null}
         <SubdomainListCard>
+          {searchQuery ? (
+            <SubdomainSearchResultsHeader
+              query={searchQuery}
+              totalCount={totalCount}
+              onClear={clearSearch}
+            />
+          ) : null}
           {items.length === 0 ? (
             searchQuery ? (
               <SubdomainListEmptyState
                 title="No results found"
-                description={`No posts match "${searchQuery}". Try different keywords or clear your search.`}
+                description="Try different keywords or clear your search."
               />
             ) : (
               <EmptyDomainPosts subdomain={subdomain} slug={slug} />
