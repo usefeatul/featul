@@ -49,7 +49,7 @@ export function ChangelogList({
     selectedCount,
     selectedIdsSet,
     toggleAll,
-    toggleId,
+    toggleAtIndex,
   } = useSelectableList({
     listKey,
     itemIds,
@@ -89,14 +89,19 @@ export function ChangelogList({
         />
       )}
       <ul className="m-0 list-none p-0">
-        {listItems.map((entry) => (
+        {listItems.map((entry, index) => (
           <ChangelogItem
             key={entry.id}
             item={entry}
             workspaceSlug={workspaceSlug}
             isSelecting={isSelectingForRender}
             isSelected={selectedIdsSet.has(entry.id)}
-            onToggle={(checked) => toggleId(entry.id, checked)}
+            onToggle={(checked, meta) =>
+              toggleAtIndex(entry.id, index, {
+                checked,
+                shiftKey: meta?.shiftKey,
+              })
+            }
           />
         ))}
       </ul>

@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation"
 import StatusIcon from "./StatusIcon"
 import { CommentsIcon } from "@featul/ui/icons/comments"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
-import { Checkbox } from "@featul/ui/components/checkbox"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import { randomAvatarUrl } from "@/utils/avatar"
@@ -16,6 +15,11 @@ import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import type { RequestItemData } from "@/types/request"
+import { SelectionControl } from "./SelectionControl"
+import {
+  getSelectableRowClassName,
+  type SelectionToggleMeta,
+} from "@/utils/selection-row"
 
 interface RequestItemProps {
   item: RequestItemData
@@ -23,7 +27,7 @@ interface RequestItemProps {
   linkBase?: string
   isSelecting?: boolean
   isSelected?: boolean
-  onToggle?: (checked: boolean) => void
+  onToggle?: (checked: boolean, meta?: SelectionToggleMeta) => void
   disableLink?: boolean
 }
 
@@ -42,16 +46,12 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     if (!isSelectingMode) return
     e.preventDefault()
     e.stopPropagation()
-    onToggle?.(!isSelectedMode)
+    onToggle?.(!isSelectedMode, { shiftKey: e.shiftKey })
   }, [isSelectingMode, isSelectedMode, onToggle])
-  const rowClassName = cn(
+  const rowClassName = getSelectableRowClassName(
+    isSelectingMode,
+    isSelectedMode,
     "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
-    isSelectingMode
-      ? "cursor-pointer transition-colors"
-      : "hover:bg-background dark:hover:bg-background transition-colors",
-    isSelectingMode &&
-      isSelectedMode &&
-      "bg-primary/[0.06] ring-1 ring-inset ring-primary/20 dark:bg-primary/[0.08]",
   )
   const actionsClassName = cn(
     "ml-auto flex items-center gap-3 text-xs text-accent",
@@ -66,15 +66,13 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       onClick={handleRowClick}
     >
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
-      {isSelectingMode ? (
-        <Checkbox
-          checked={isSelectedMode}
-          onCheckedChange={(v) => onToggle?.(Boolean(v))}
-          aria-label="Select post"
-          onClick={(e) => e.stopPropagation()}
-          className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
-        />
-      ) : null}
+      <SelectionControl
+        visible={isSelectingMode}
+        checked={isSelectedMode}
+        label={isSelectedMode ? "Deselect post" : "Select post"}
+        onCheckedChange={(v) => onToggle?.(v)}
+        onClick={(e) => e.stopPropagation()}
+      />
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <Link
         href={href}

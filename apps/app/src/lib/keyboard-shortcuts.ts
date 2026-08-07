@@ -104,7 +104,8 @@ export const WORKSPACE_SHORTCUTS: WorkspaceShortcut[] = [
     id: "toggle-bulk-selection",
     group: "Lists and bulk actions",
     title: "Toggle bulk selection",
-    description: "Turn multi-select mode on or off in workspace lists.",
+    description:
+      "Turn multi-select mode on or off in workspace lists. Shift-click rows to select a range.",
     bindings: [
       { label: "Mac", keys: ["Command", "D"] },
       { label: "Windows", keys: ["Ctrl", "D"] },

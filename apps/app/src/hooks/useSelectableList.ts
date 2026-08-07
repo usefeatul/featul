@@ -6,6 +6,7 @@ import {
   clearSelection,
   removeSelectedIds,
   selectAllForKey,
+  selectRangeForKey,
   setSelecting,
   toggleSelectionId,
   useSelection,
@@ -20,6 +21,11 @@ type UseSelectableListParams = SelectionHydrationState & {
   setConfirmOpen: (open: boolean) => void;
 };
 
+type ToggleAtIndexOptions = {
+  checked?: boolean;
+  shiftKey?: boolean;
+};
+
 type UseSelectableListResult = {
   allSelected: boolean;
   isSelectingForRender: boolean;
@@ -27,7 +33,11 @@ type UseSelectableListResult = {
   selectedIdsForRender: string[];
   selectedIdsSet: Set<string>;
   toggleAll: () => void;
-  toggleId: (id: string, checked?: boolean) => void;
+  toggleAtIndex: (
+    id: string,
+    index: number,
+    options?: ToggleAtIndexOptions,
+  ) => void;
   exitSelection: () => void;
 };
 
@@ -43,6 +53,7 @@ export function useSelectableList({
   const selection = useSelection(listKey);
   const isSelecting = selection.isSelecting;
   const selectingRef = useRef(isSelecting);
+  const lastToggledIndexRef = useRef<number | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -52,6 +63,12 @@ export function useSelectableList({
   useEffect(() => {
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!isSelecting) {
+      lastToggledIndexRef.current = null;
+    }
+  }, [isSelecting]);
 
   const isSelectingForRender = hydrated
     ? isSelecting
@@ -67,6 +84,7 @@ export function useSelectableList({
     clearSelection(listKey);
     setSelecting(listKey, false);
     setConfirmOpen(false);
+    lastToggledIndexRef.current = null;
   }, [listKey, setConfirmOpen]);
 
   useBulkSelectionHotkeys({
@@ -91,19 +109,32 @@ export function useSelectableList({
   );
   const selectedCount = selectedIdsForRender.length;
 
-  const toggleId = useCallback(
-    (id: string, checked?: boolean) => {
-      toggleSelectionId(listKey, id, checked);
+  const toggleAtIndex = useCallback(
+    (id: string, index: number, options?: ToggleAtIndexOptions) => {
+      const { checked, shiftKey } = options ?? {};
+      const anchor = lastToggledIndexRef.current;
+
+      if (shiftKey && anchor !== null) {
+        const start = Math.min(anchor, index);
+        const end = Math.max(anchor, index);
+        selectRangeForKey(listKey, itemIds.slice(start, end + 1));
+      } else {
+        toggleSelectionId(listKey, id, checked);
+      }
+
+      lastToggledIndexRef.current = index;
     },
-    [listKey],
+    [listKey, itemIds],
   );
 
   const toggleAll = useCallback(() => {
     if (allSelected) {
       removeSelectedIds(listKey, itemIds);
+      lastToggledIndexRef.current = null;
       return;
     }
     selectAllForKey(listKey, itemIds);
+    lastToggledIndexRef.current = itemIds.length > 0 ? itemIds.length - 1 : null;
   }, [allSelected, listKey, itemIds]);
 
   return {
@@ -113,7 +144,7 @@ export function useSelectableList({
     selectedIdsForRender,
     selectedIdsSet,
     toggleAll,
-    toggleId,
+    toggleAtIndex,
     exitSelection,
   };
 }

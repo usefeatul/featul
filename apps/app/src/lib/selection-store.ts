@@ -156,6 +156,11 @@ export function selectAllForKey(key: string, ids: string[]) {
   notify()
 }
 
+export function selectRangeForKey(key: string, ids: string[]) {
+  if (ids.length === 0) return
+  selectAllForKey(key, ids)
+}
+
 export function clearSelection(key: string) {
   const s = ensure(key)
   s.selected.clear()

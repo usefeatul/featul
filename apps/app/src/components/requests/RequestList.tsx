@@ -52,7 +52,7 @@ function RequestListBase(props: RequestListProps) {
     selectedCount,
     selectedIdsSet,
     toggleAll,
-    toggleId,
+    toggleAtIndex,
   } = useSelectableList({
     listKey,
     itemIds,
@@ -92,7 +92,7 @@ function RequestListBase(props: RequestListProps) {
         />
       )}
       <ul className="m-0 list-none p-0">
-        {listItems.map((p) => (
+        {listItems.map((p, index) => (
           <RequestItem
             key={p.id}
             item={p}
@@ -100,7 +100,12 @@ function RequestListBase(props: RequestListProps) {
             linkBase={linkBase}
             isSelecting={isSelectingForRender}
             isSelected={selectedIdsSet.has(p.id)}
-            onToggle={(checked) => toggleId(p.id, checked)}
+            onToggle={(checked, meta) =>
+              toggleAtIndex(p.id, index, {
+                checked,
+                shiftKey: meta?.shiftKey,
+              })
+            }
             disableLink={isSelectingForRender}
           />
         ))}
