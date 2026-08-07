@@ -15,11 +15,11 @@ import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import type { RequestItemData } from "@/types/request"
-import { SelectionControl } from "./SelectionControl"
+import { SelectionControl } from "@/components/selection/SelectionControl"
 import {
   getSelectableRowClassName,
   type SelectionToggleMeta,
-} from "@/utils/selection-row"
+} from "@/components/selection/selection-row"
 
 interface RequestItemProps {
   item: RequestItemData

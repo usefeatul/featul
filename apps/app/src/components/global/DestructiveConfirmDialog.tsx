@@ -14,7 +14,6 @@ type DestructiveConfirmDialogProps = {
   onConfirm: () => void;
   title: string;
   description?: string;
-  details?: React.ReactNode;
   confirmLabel?: string;
   pendingLabel?: string;
   confirmClassName?: string;
@@ -27,7 +26,6 @@ export function DestructiveConfirmDialog({
   onConfirm,
   title,
   description,
-  details,
   confirmLabel = "Delete",
   pendingLabel = "Deleting...",
   confirmClassName = "h-8 bg-red-500 px-4 text-sm text-white hover:bg-red-600",
@@ -39,7 +37,6 @@ export function DestructiveConfirmDialog({
       title={title}
       description={description}
     >
-      {details ? <div className="mb-2">{details}</div> : null}
       <AlertDialogFooter className="mt-2 flex justify-end gap-2">
         <AlertDialogCancel disabled={isPending} className="h-8 px-3 text-sm">
           Cancel

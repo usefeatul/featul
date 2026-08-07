@@ -11,11 +11,11 @@ import { ChangelogDraftIcon } from "@featul/ui/icons/changelog-draft"
 import { ChangelogPublishedIcon } from "@featul/ui/icons/changelog-published"
 import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 import { ChangelogItemContextMenu } from "./ChangelogItemContextMenu"
-import { SelectionControl } from "@/components/requests/SelectionControl"
+import { SelectionControl } from "@/components/selection/SelectionControl"
 import {
     getSelectableRowClassName,
     type SelectionToggleMeta,
-} from "@/utils/selection-row"
+} from "@/components/selection/selection-row"
 
 interface ChangelogItemProps {
     item: ChangelogEntryWithTags

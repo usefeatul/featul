@@ -2,39 +2,46 @@
 
 import { useCallback, useEffect, useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
-import { client } from "@featul/api/client";
 import { toast } from "sonner";
+import { pluralizeItemLabel } from "@/components/selection/pluralize";
 import { getSelectedIds, removeSelectedIds } from "@/lib/selection-store";
-import type {
-  ChangelogDeletedEventDetail,
-  ChangelogPageRefreshingDetail,
-} from "@/types/events";
-import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data";
 
-interface UseBulkDeleteChangelogParams {
-  workspaceSlug: string;
+type DeleteResult = { ok: boolean };
+
+type UseBulkDeleteParams<T> = {
   listKey: string;
-  listItems: ChangelogEntryWithTags[];
+  listItems: T[];
+  getItemId: (item: T) => string;
+  itemLabel: string;
+  itemLabelPlural?: string;
   initialTotalCount?: number;
-  onItemsChange: (next: ChangelogEntryWithTags[]) => void;
+  onItemsChange: (next: T[]) => void;
   onComplete?: () => void;
-}
+  deleteOne: (id: string) => Promise<DeleteResult>;
+  onDeleted?: (okIds: string[], listItems: T[]) => void | Promise<void>;
+  onPageEmpty?: () => void;
+};
 
-interface UseBulkDeleteChangelogResult {
+type UseBulkDeleteResult = {
   isPending: boolean;
   isRefetching: boolean;
   totalCount: number | null;
   handleBulkDelete: () => void;
-}
+};
 
-export function useBulkDeleteChangelog({
-  workspaceSlug,
+export function useBulkDelete<T>({
   listKey,
   listItems,
+  getItemId,
+  itemLabel,
+  itemLabelPlural,
   initialTotalCount,
   onItemsChange,
   onComplete,
-}: UseBulkDeleteChangelogParams): UseBulkDeleteChangelogResult {
+  deleteOne,
+  onDeleted,
+  onPageEmpty,
+}: UseBulkDeleteParams<T>): UseBulkDeleteResult {
   const router = useRouter();
   const [isRefetching, setIsRefetching] = useState(false);
   const [totalCount, setTotalCount] = useState<number | null>(
@@ -53,27 +60,16 @@ export function useBulkDeleteChangelog({
       try {
         const ids = getSelectedIds(listKey);
         if (ids.length === 0) {
-          if (onComplete) {
-            onComplete();
-          }
+          onComplete?.();
           return;
         }
 
-        // Loop through and delete each entry
-        const results = await Promise.allSettled(
-          ids.map((entryId) =>
-            client.changelog.entriesDelete.$post({
-              slug: workspaceSlug,
-              entryId,
-            }),
-          ),
-        );
-
+        const results = await Promise.all(ids.map((id) => deleteOne(id)));
         const okIds: string[] = [];
-        const failed: number = results.reduce((acc, r, idx) => {
+        const failed = results.reduce((acc, result, idx) => {
           const id = ids[idx];
           if (!id) return acc + 1;
-          if (r.status === "fulfilled" && r.value?.ok) {
+          if (result.ok) {
             okIds.push(id);
             return acc;
           }
@@ -81,20 +77,12 @@ export function useBulkDeleteChangelog({
         }, 0);
 
         if (okIds.length > 0) {
-          okIds.forEach((entryId) => {
-            const detail: ChangelogDeletedEventDetail = {
-              entryId,
-              workspaceSlug,
-            };
-            window.dispatchEvent(
-              new CustomEvent<ChangelogDeletedEventDetail>(
-                "changelog:deleted",
-                { detail },
-              ),
-            );
-          });
+          await onDeleted?.(okIds, listItems);
 
-          const remainingItems = listItems.filter((i) => !okIds.includes(i.id));
+          const okIdSet = new Set(okIds);
+          const remainingItems = listItems.filter(
+            (item) => !okIdSet.has(getItemId(item)),
+          );
           const nextLength = remainingItems.length;
           const prevTotal = totalCount;
           const nextTotal =
@@ -115,44 +103,41 @@ export function useBulkDeleteChangelog({
             nextTotal > 0
           ) {
             setIsRefetching(true);
-            const detail: ChangelogPageRefreshingDetail = { workspaceSlug };
-            window.dispatchEvent(
-              new CustomEvent<ChangelogPageRefreshingDetail>(
-                "changelog:page-refreshing",
-                { detail },
-              ),
-            );
-            router.refresh();
-          } else {
-            router.refresh();
+            onPageEmpty?.();
           }
 
+          router.refresh();
           toast.success(
-            `Deleted ${okIds.length} ${okIds.length === 1 ? "entry" : "entries"}`,
+            `Deleted ${okIds.length} ${pluralizeItemLabel(itemLabel, okIds.length, itemLabelPlural)}`,
           );
         }
 
         if (failed > 0) {
           toast.error(
-            `Failed to delete ${failed} ${failed === 1 ? "entry" : "entries"}`,
+            `Failed to delete ${failed} ${pluralizeItemLabel(itemLabel, failed, itemLabelPlural)}`,
           );
         }
       } catch {
-        toast.error("Failed to delete entries");
+        toast.error(
+          `Failed to delete ${pluralizeItemLabel(itemLabel, 2, itemLabelPlural)}`,
+        );
       } finally {
-        if (onComplete) {
-          onComplete();
-        }
+        onComplete?.();
       }
     });
   }, [
     listKey,
     listItems,
-    workspaceSlug,
+    getItemId,
+    itemLabel,
+    itemLabelPlural,
     totalCount,
     router,
     onComplete,
     onItemsChange,
+    deleteOne,
+    onDeleted,
+    onPageEmpty,
   ]);
 
   return {

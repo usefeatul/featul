@@ -9,13 +9,18 @@ export function getSelectableRowClassName(
     baseClassName,
     isSelecting && "cursor-pointer select-none",
     isSelecting && !isSelected && "hover:bg-muted/20",
-    isSelecting &&
-      isSelected &&
-      "bg-muted/45 dark:bg-muted/20",
-    !isSelecting && "hover:bg-background dark:hover:bg-background transition-colors",
+    isSelecting && isSelected && "bg-muted/45 dark:bg-muted/20",
+    !isSelecting &&
+      "hover:bg-background dark:hover:bg-background transition-colors",
   )
 }
 
 export type SelectionToggleMeta = {
   shiftKey?: boolean
+}
+
+export type SelectionItemProps = {
+  isSelecting?: boolean
+  isSelected?: boolean
+  onToggle?: (checked: boolean, meta?: SelectionToggleMeta) => void
 }

@@ -4,12 +4,14 @@ import { Button } from "@featul/ui/components/button"
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { cn } from "@featul/ui/lib/utils"
 import { SelectionControl } from "./SelectionControl"
+import { pluralizeItemLabel } from "./pluralize"
 
 export interface SelectionToolbarProps {
   allSelected: boolean
   selectedCount: number
   totalCount: number
   itemLabel: string
+  itemLabelPlural?: string
   isPending: boolean
   onToggleAll: () => void
   onConfirmDelete: () => void
@@ -20,12 +22,17 @@ export function SelectionToolbar({
   selectedCount,
   totalCount,
   itemLabel,
+  itemLabelPlural,
   isPending,
   onToggleAll,
   onConfirmDelete,
 }: SelectionToolbarProps) {
   const hasSelection = selectedCount > 0
-  const pluralLabel = selectedCount === 1 ? itemLabel : `${itemLabel}s`
+  const pluralLabel = pluralizeItemLabel(
+    itemLabel,
+    selectedCount,
+    itemLabelPlural,
+  )
 
   return (
     <div

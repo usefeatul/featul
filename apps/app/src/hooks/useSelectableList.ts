@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useBulkSelectionHotkeys } from "@/hooks/useBulkSelectionHotkeys";
+import type { SelectionItemProps } from "@/components/selection/selection-row";
 import {
   clearSelection,
   removeSelectedIds,
   selectAllForKey,
-  selectRangeForKey,
   setSelecting,
   toggleSelectionId,
   useSelection,
@@ -30,14 +30,9 @@ type UseSelectableListResult = {
   allSelected: boolean;
   isSelectingForRender: boolean;
   selectedCount: number;
-  selectedIdsForRender: string[];
   selectedIdsSet: Set<string>;
   toggleAll: () => void;
-  toggleAtIndex: (
-    id: string,
-    index: number,
-    options?: ToggleAtIndexOptions,
-  ) => void;
+  getItemSelectionProps: (id: string, index: number) => SelectionItemProps;
   exitSelection: () => void;
 };
 
@@ -75,8 +70,9 @@ export function useSelectableList({
     : (initialIsSelecting ?? isSelecting);
   const selectedIdsForRender = useMemo(() => {
     if (hydrated) return selection.selectedIds;
-    if (initialSelectedIds && Array.isArray(initialSelectedIds))
+    if (initialSelectedIds && Array.isArray(initialSelectedIds)) {
       return initialSelectedIds;
+    }
     return selection.selectedIds;
   }, [hydrated, selection.selectedIds, initialSelectedIds]);
 
@@ -117,7 +113,7 @@ export function useSelectableList({
       if (shiftKey && anchor !== null) {
         const start = Math.min(anchor, index);
         const end = Math.max(anchor, index);
-        selectRangeForKey(listKey, itemIds.slice(start, end + 1));
+        selectAllForKey(listKey, itemIds.slice(start, end + 1));
       } else {
         toggleSelectionId(listKey, id, checked);
       }
@@ -134,17 +130,27 @@ export function useSelectableList({
       return;
     }
     selectAllForKey(listKey, itemIds);
-    lastToggledIndexRef.current = itemIds.length > 0 ? itemIds.length - 1 : null;
+    lastToggledIndexRef.current =
+      itemIds.length > 0 ? itemIds.length - 1 : null;
   }, [allSelected, listKey, itemIds]);
+
+  const getItemSelectionProps = useCallback(
+    (id: string, index: number): SelectionItemProps => ({
+      isSelecting: isSelectingForRender,
+      isSelected: selectedIdsSet.has(id),
+      onToggle: (checked, meta) =>
+        toggleAtIndex(id, index, { checked, shiftKey: meta?.shiftKey }),
+    }),
+    [isSelectingForRender, selectedIdsSet, toggleAtIndex],
+  );
 
   return {
     allSelected,
     isSelectingForRender,
     selectedCount,
-    selectedIdsForRender,
     selectedIdsSet,
     toggleAll,
-    toggleAtIndex,
+    getItemSelectionProps,
     exitSelection,
   };
 }
