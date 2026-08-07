@@ -15,10 +15,8 @@ import { LayersIcon } from "@featul/ui/icons/layers";
 import { TagIcon } from "@featul/ui/icons/tag";
 import { FlagIcon } from "@featul/ui/icons/flag";
 import { EditIcon } from "@featul/ui/icons/edit";
-import { CopyLinkIcon } from "@featul/ui/icons/copy-link";
 import { SelectBoxIcon } from "@featul/ui/icons/select-box";
 import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
-import { toast } from "sonner";
 import { useRequestItemActions } from "../../hooks/useRequestItemActions";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { BULK_DELETE_CONFIRM_CLASS } from "@/components/selection/constants";
@@ -144,17 +142,6 @@ export function RequestItemContextMenu({
     closeMenu();
   };
 
-  const handleCopyLink = async () => {
-    try {
-      const url = `${window.location.origin}${requestHref}`;
-      await navigator.clipboard.writeText(url);
-      toast.success("Link copied");
-      closeMenu();
-    } catch {
-      toast.error("Failed to copy link");
-    }
-  };
-
   const handleStartSelection = () => {
     if (!listKey) return;
     setSelecting(listKey, true);
@@ -208,11 +195,6 @@ export function RequestItemContextMenu({
           icon={<EditIcon className="size-4" />}
           label="Open"
           onClick={handleOpenRequest}
-        />
-        <MenuItem
-          icon={<CopyLinkIcon className="size-4" />}
-          label="Copy link"
-          onClick={handleCopyLink}
         />
         {listKey ? (
           <MenuItem
