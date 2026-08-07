@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
+import { Heart } from "lucide-react";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
+import { CommentsIcon } from "@featul/ui/icons/comments";
 import { EnterKeyIcon } from "@featul/ui/icons/enter-key";
 import { EscapeKeyIcon } from "@featul/ui/icons/escape-key";
 import { Button } from "@featul/ui/components/button";
@@ -21,12 +23,16 @@ import { useQuery } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@featul/ui/lib/utils";
+import StatusIcon from "@/components/requests/StatusIcon";
+import { statusLabel } from "@/lib/roadmap";
 
 export type WorkspaceSearchResult = {
   id: string;
   title: string;
   slug: string;
   upvotes?: number;
+  commentCount?: number;
+  roadmapStatus?: string | null;
   boardName?: string | null;
   boardSlug?: string;
 };
@@ -45,6 +51,44 @@ type WorkspaceSearchActionProps = {
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_MS = 300;
+
+function SearchResultItem({
+  result,
+  query,
+}: {
+  result: WorkspaceSearchResult;
+  query: string;
+}) {
+  const status = result.roadmapStatus || "pending";
+
+  return (
+    <div className="min-w-0 flex-1">
+      <div className="flex min-w-0 items-center gap-1.5 text-[11px] text-accent">
+        <StatusIcon status={status} className="size-3.5 shrink-0 opacity-90" />
+        <span className="shrink-0 capitalize">{statusLabel(status)}</span>
+        {result.boardName ? (
+          <>
+            <span className="text-muted-foreground/40">·</span>
+            <span className="truncate text-muted-foreground">{result.boardName}</span>
+          </>
+        ) : null}
+      </div>
+      <p className="mt-1 truncate text-sm font-medium text-foreground">
+        <HighlightMatch text={result.title} query={query} />
+      </p>
+      <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <Heart className="size-3.5 opacity-70" aria-hidden />
+          <span className="tabular-nums">{result.upvotes ?? 0}</span>
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <CommentsIcon className="size-3.5 opacity-70" aria-hidden />
+          <span className="tabular-nums">{result.commentCount ?? 0}</span>
+        </span>
+      </div>
+    </div>
+  );
+}
 
 function useIsMac() {
   const [isMac, setIsMac] = React.useState(false);
@@ -316,34 +360,23 @@ export function WorkspaceSearchAction({
             </SearchStatusMessage>
           ) : null}
           {!isSearching && hasQuery && results.length > 0 ? (
-            <CommandGroup
-              heading={`${results.length} result${results.length === 1 ? "" : "s"}`}
-            >
+            <CommandGroup>
               {results.map((result) => (
                 <CommandItem
                   key={result.id}
                   value={`${result.title} ${result.boardName || ""}`}
-                  onSelect={() => {
-                    setOpen(false);
-                    onResultSelect(result);
-                  }}
-                  className="items-start py-2.5"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-foreground">
-                      <HighlightMatch text={result.title} query={debouncedQuery} />
-                    </p>
-                    {result.boardName ? (
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                        {result.boardName}
-                        {typeof result.upvotes === "number"
-                          ? ` · ${result.upvotes} vote${result.upvotes === 1 ? "" : "s"}`
-                          : null}
-                      </p>
-                    ) : null}
-                  </div>
-                  <ChevronRightIcon className="size-3.5 shrink-0 opacity-40" size={14} />
-                </CommandItem>
+                    onSelect={() => {
+                      setOpen(false);
+                      onResultSelect(result);
+                    }}
+                    className="items-start gap-3 py-3"
+                  >
+                    <SearchResultItem result={result} query={debouncedQuery} />
+                    <ChevronRightIcon
+                      className="mt-1 size-3.5 shrink-0 opacity-40"
+                      size={14}
+                    />
+                  </CommandItem>
               ))}
             </CommandGroup>
           ) : null}

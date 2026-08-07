@@ -390,6 +390,8 @@ export function createBoardRouter() {
             slug: post.slug,
             createdAt: post.createdAt,
             upvotes: post.upvotes,
+            commentCount: post.commentCount,
+            roadmapStatus: post.roadmapStatus,
             boardName: board.name,
             boardSlug: board.slug,
           })
