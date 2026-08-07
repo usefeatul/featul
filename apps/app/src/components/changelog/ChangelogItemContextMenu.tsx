@@ -1,125 +1,112 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import { useChangelogEntryActions } from "../../hooks/useChangelogEntryActions"
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { PopoverList, PopoverSeparator } from "@featul/ui/components/popover";
+import { EditIcon } from "@featul/ui/icons/edit";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { TrashIcon } from "@featul/ui/icons/trash";
+import { PenIcon } from "@featul/ui/icons/pen";
+import { useChangelogEntryActions } from "@/hooks/useChangelogEntryActions";
+import { useContextMenuPosition } from "@/hooks/useContextMenuPosition";
+import { ChangelogDeleteDialog } from "./ChangelogDeleteDialog";
+import { ContextMenuShell } from "@/components/global/ContextMenuShell";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-    PopoverList,
-    PopoverListItem,
-    PopoverSeparator,
-} from "@featul/ui/components/popover"
-import { EditIcon } from "@featul/ui/icons/edit"
-import { LoaderIcon } from "@featul/ui/icons/loader"
-import { TrashIcon } from "@featul/ui/icons/trash"
-import { PenIcon } from "@featul/ui/icons/pen"
-import { ChangelogDeleteDialog } from "./ChangelogDeleteDialog"
-import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
+  CONTEXT_MENU_DESTRUCTIVE_CLASS,
+  ContextMenuItem,
+} from "@/components/global/ContextMenuItem";
+import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data";
 
 interface ChangelogItemContextMenuProps {
-    children: React.ReactNode
-    item: ChangelogEntryWithTags
-    workspaceSlug: string
-    onClick?: React.MouseEventHandler<HTMLDivElement>
+  children: React.ReactNode;
+  item: ChangelogEntryWithTags;
+  workspaceSlug: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export function ChangelogItemContextMenu({
-    children,
-    item,
-    workspaceSlug,
-    onClick,
+  children,
+  item,
+  workspaceSlug,
+  onClick,
 }: ChangelogItemContextMenuProps) {
-    const router = useRouter()
-    const { publish, unpublish, isPending } = useChangelogEntryActions({
-        workspaceSlug,
-        entryId: item.id
-    })
-    const [open, setOpen] = React.useState(false)
-    const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
-    const [position, setPosition] = React.useState<{ x: number; y: number } | null>(null)
+  const router = useRouter();
+  const menu = useContextMenuPosition();
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const { publish, unpublish, isPending } = useChangelogEntryActions({
+    workspaceSlug,
+    entryId: item.id,
+  });
 
-    const handleContextMenu = (e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setPosition({ x: e.clientX, y: e.clientY })
-        setOpen(true)
-    }
+  const handleEdit = () => {
+    router.push(`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`);
+    menu.close();
+  };
 
-    const onEdit = () => {
-        router.push(`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`)
-    }
+  return (
+    <>
+      <ChangelogDeleteDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        workspaceSlug={workspaceSlug}
+        entryId={item.id}
+      />
 
-    const onDelete = () => {
-        setShowDeleteDialog(true)
-    }
-
-    return (
-        <>
-            <ChangelogDeleteDialog
-                open={showDeleteDialog}
-                onOpenChange={setShowDeleteDialog}
-                workspaceSlug={workspaceSlug}
-                entryId={item.id}
+      <ContextMenuShell
+        open={menu.open}
+        onOpenChange={menu.handleOpenChange}
+        position={menu.position}
+        onContextMenu={menu.openAt}
+        onClick={onClick}
+        menu={
+          <PopoverList>
+            <ContextMenuItem
+              icon={<EditIcon className="size-4" />}
+              label="Edit"
+              onClick={handleEdit}
             />
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    {/* Virtual trigger positioned at mouse coordinates */}
-                    <div
-                        className="fixed w-px h-px z-50 pointer-events-none opacity-0"
-                        style={{
-                            top: position?.y ?? 0,
-                            left: position?.x ?? 0,
-                        }}
-                    />
-                </PopoverTrigger>
 
-                <div onContextMenu={handleContextMenu} onClick={onClick}>
-                    {children}
-                </div>
+            {item.status === "draft" ? (
+              <ContextMenuItem
+                icon={
+                  isPending ? (
+                    <LoaderIcon className="size-4 animate-spin" />
+                  ) : (
+                    <LoaderIcon className="size-4" />
+                  )
+                }
+                label="Publish"
+                onClick={publish}
+              />
+            ) : null}
 
-                <PopoverContent align="start" className="fit" list>
-                    <PopoverList>
-                        <PopoverListItem onClick={onEdit}>
-                            <EditIcon className="size-4" />
-                            <span className="text-sm">Edit</span>
-                        </PopoverListItem>
+            {item.status === "published" ? (
+              <ContextMenuItem
+                icon={
+                  isPending ? (
+                    <LoaderIcon className="size-4 animate-spin" />
+                  ) : (
+                    <PenIcon className="size-4" />
+                  )
+                }
+                label="Unpublish"
+                onClick={unpublish}
+              />
+            ) : null}
 
-                        {item.status === "draft" && (
-                            <PopoverListItem onClick={publish} disabled={isPending}>
-                                {isPending ? (
-                                    <LoaderIcon className="size-4 animate-spin" />
-                                ) : (
-                                    <LoaderIcon className="size-4" />
-                                )}
-                                <span className="text-sm">Publish</span>
-                            </PopoverListItem>
-                        )}
+            <PopoverSeparator />
 
-                        {item.status === "published" && (
-                            <PopoverListItem onClick={unpublish} disabled={isPending}>
-                                {isPending ? (
-                                    <LoaderIcon className="size-4 animate-spin" />
-                                ) : (
-                                    <PenIcon className="size-4" />
-                                )}
-                                <span className="text-sm">Unpublish</span>
-                            </PopoverListItem>
-                        )}
-
-                        <PopoverSeparator />
-
-                        <PopoverListItem
-                            onClick={onDelete}
-                            className="text-destructive hover:text-destructive focus:text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
-                        >
-                            <TrashIcon className="size-4" />
-                            <span className="text-sm">Delete</span>
-                        </PopoverListItem>
-                    </PopoverList>
-                </PopoverContent>
-            </Popover>
-        </>
-    )
+            <ContextMenuItem
+              icon={<TrashIcon className="size-4" />}
+              label="Delete"
+              onClick={() => setShowDeleteDialog(true)}
+              className={CONTEXT_MENU_DESTRUCTIVE_CLASS}
+            />
+          </PopoverList>
+        }
+      >
+        {children}
+      </ContextMenuShell>
+    </>
+  );
 }
