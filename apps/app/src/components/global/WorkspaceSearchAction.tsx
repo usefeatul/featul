@@ -5,8 +5,6 @@ import { Heart } from "lucide-react";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { CommentsIcon } from "@featul/ui/icons/comments";
-import { EnterKeyIcon } from "@featul/ui/icons/enter-key";
-import { EscapeKeyIcon } from "@featul/ui/icons/escape-key";
 import { Button } from "@featul/ui/components/button";
 import {
   CommandDialog,
@@ -99,22 +97,11 @@ function useIsMac() {
   return isMac;
 }
 
-function KeyboardHint({
-  icon,
-  label,
-  ariaKey,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  ariaKey: string;
-}) {
+function KeyboardHint({ keys, label }: { keys: string; label: string }) {
   return (
     <span className="flex items-center gap-1.5">
-      <kbd
-        aria-label={ariaKey}
-        className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-border bg-muted px-2 py-1 text-foreground"
-      >
-        {icon}
+      <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-border bg-muted px-2 py-1 font-heading text-[11px] leading-none text-foreground">
+        {keys}
       </kbd>
       <span>{label}</span>
     </span>
@@ -281,8 +268,8 @@ export function WorkspaceSearchAction({
 
   const isMac = useIsMac();
   const platformKey = isMac ? "⌘" : "Ctrl";
-  const enterKeyLabel = isMac ? "Return" : "Enter";
-  const escKeyLabel = "Escape";
+  const enterKey = isMac ? "Return" : "Enter";
+  const escKey = "Esc";
 
   return (
     <>
@@ -313,18 +300,8 @@ export function WorkspaceSearchAction({
                 : "Search by title or content"}
             </span>
             <div className="flex items-center gap-3">
-              <KeyboardHint
-                icon={<EnterKeyIcon size={13} className="opacity-90" />}
-                label="Filter"
-                ariaKey={enterKeyLabel}
-              />
-              {canClear ? (
-                <KeyboardHint
-                  icon={<EscapeKeyIcon size={13} className="opacity-90" />}
-                  label="Clear"
-                  ariaKey={escKeyLabel}
-                />
-              ) : null}
+              <KeyboardHint keys={enterKey} label="Filter" />
+              {canClear ? <KeyboardHint keys={escKey} label="Clear" /> : null}
             </div>
           </div>
         }
@@ -390,9 +367,7 @@ export function WorkspaceSearchAction({
                   <span>
                     View all results for &ldquo;{trimmedValue}&rdquo;
                   </span>
-                  <CommandShortcut>
-                    <EnterKeyIcon size={12} className="opacity-70" />
-                  </CommandShortcut>
+                  <CommandShortcut>{enterKey}</CommandShortcut>
                 </CommandItem>
               </CommandGroup>
             </>
