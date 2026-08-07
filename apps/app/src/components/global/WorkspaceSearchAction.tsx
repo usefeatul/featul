@@ -4,7 +4,6 @@ import React from "react";
 import { Heart } from "lucide-react";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
 import { CommentsIcon } from "@featul/ui/icons/comments";
 import { EnterKeyIcon } from "@featul/ui/icons/enter-key";
 import { EscapeKeyIcon } from "@featul/ui/icons/escape-key";
@@ -24,7 +23,6 @@ import { client } from "@featul/api/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
-import { statusLabel } from "@/lib/roadmap";
 
 export type WorkspaceSearchResult = {
   id: string;
@@ -62,21 +60,22 @@ function SearchResultItem({
   const status = result.roadmapStatus || "pending";
 
   return (
-    <div className="min-w-0 flex-1">
-      <div className="flex min-w-0 items-center gap-1.5 text-[11px] text-accent">
-        <StatusIcon status={status} className="size-3.5 shrink-0 opacity-90" />
-        <span className="shrink-0 capitalize">{statusLabel(status)}</span>
+    <>
+      <StatusIcon
+        status={status}
+        className="size-[18px] shrink-0 self-center text-foreground/80"
+      />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          <HighlightMatch text={result.title} query={query} />
+        </p>
         {result.boardName ? (
-          <>
-            <span className="text-muted-foreground/40">·</span>
-            <span className="truncate text-muted-foreground">{result.boardName}</span>
-          </>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            {result.boardName}
+          </p>
         ) : null}
       </div>
-      <p className="mt-1 truncate text-sm font-medium text-foreground">
-        <HighlightMatch text={result.title} query={query} />
-      </p>
-      <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground">
+      <div className="flex shrink-0 items-center gap-3 self-center text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <Heart className="size-3.5 opacity-70" aria-hidden />
           <span className="tabular-nums">{result.upvotes ?? 0}</span>
@@ -86,7 +85,7 @@ function SearchResultItem({
           <span className="tabular-nums">{result.commentCount ?? 0}</span>
         </span>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -307,7 +306,7 @@ export function WorkspaceSearchAction({
         width="wide"
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
-          <div className="flex items-center justify-between border-t border-border px-4 py-2.5 text-sm text-muted-foreground">
+          <div className="flex items-center justify-between bg-muted/25 px-4 py-2.5 text-sm text-muted-foreground">
             <span>
               {currentSearch
                 ? `Filtering by "${currentSearch}"`
@@ -361,23 +360,19 @@ export function WorkspaceSearchAction({
             </SearchStatusMessage>
           ) : null}
           {!isSearching && hasQuery && results.length > 0 ? (
-            <CommandGroup>
+            <CommandGroup className="gap-0.5 px-1 py-1">
               {results.map((result) => (
                 <CommandItem
                   key={result.id}
                   value={`${result.title} ${result.boardName || ""}`}
-                    onSelect={() => {
-                      setOpen(false);
-                      onResultSelect(result);
-                    }}
-                    className="items-start gap-3 py-3"
-                  >
-                    <SearchResultItem result={result} query={debouncedQuery} />
-                    <ChevronRightIcon
-                      className="mt-1 size-3.5 shrink-0 opacity-40"
-                      size={14}
-                    />
-                  </CommandItem>
+                  onSelect={() => {
+                    setOpen(false);
+                    onResultSelect(result);
+                  }}
+                  className="my-0.5 items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-muted/40 aria-selected:bg-muted/70 aria-selected:text-foreground"
+                >
+                  <SearchResultItem result={result} query={debouncedQuery} />
+                </CommandItem>
               ))}
             </CommandGroup>
           ) : null}
