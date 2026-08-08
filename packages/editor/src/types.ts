@@ -100,3 +100,7 @@ export type MentionSuggestionItem = {
 export type MentionSuggestionSource =
     | MentionSuggestionItem[]
     | (() => MentionSuggestionItem[]);
+
+export type AdditionalSlashSuggestionsSource =
+    | SuggestionItem[]
+    | ((props: { editor: Editor; query: string }) => SuggestionItem[] | Promise<SuggestionItem[]>);

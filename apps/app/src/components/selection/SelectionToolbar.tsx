@@ -14,7 +14,9 @@ export interface SelectionToolbarProps {
   itemLabelPlural?: string
   isPending: boolean
   onToggleAll: () => void
-  onConfirmDelete: () => void
+  onConfirmDelete?: () => void
+  hideDelete?: boolean
+  className?: string
 }
 
 export function SelectionToolbar({
@@ -26,6 +28,8 @@ export function SelectionToolbar({
   isPending,
   onToggleAll,
   onConfirmDelete,
+  hideDelete = false,
+  className,
 }: SelectionToolbarProps) {
   const hasSelection = selectedCount > 0
   const pluralLabel = pluralizeItemLabel(
@@ -36,7 +40,10 @@ export function SelectionToolbar({
 
   return (
     <div
-      className="sticky top-0 z-10 flex h-10 items-center gap-3 border-b border-border/70 bg-card/95 px-3 backdrop-blur-sm sm:px-4"
+      className={cn(
+        "sticky top-0 z-10 flex h-10 w-full items-center gap-3 border-b border-border/70 bg-card/95 backdrop-blur-sm",
+        className ?? "px-3 sm:px-4",
+      )}
       role="toolbar"
       aria-label="Bulk selection actions"
     >
@@ -58,7 +65,7 @@ export function SelectionToolbar({
         <span className="text-xs text-muted-foreground">Tap rows to select</span>
       )}
 
-      <div className="ml-auto">
+      <div className={cn("ml-auto", hideDelete && "hidden")}>
         <Button
           type="button"
           variant="card"

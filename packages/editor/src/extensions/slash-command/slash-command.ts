@@ -277,14 +277,22 @@ export const SlashCommand = Node.create<SlashOptions>({
 /**
  * Configure slash command with default suggestions and Floating UI renderer
  */
-export const configureSlashCommand = () =>
+export const configureSlashCommand = (
+  additionalSlashSuggestions?: import("../../types").AdditionalSlashSuggestionsSource,
+) =>
 	SlashCommand.configure({
 		suggestion: {
 			items: async ({ editor, query }) => {
 				if (!defaultSlashSuggestions) {
 					return [];
 				}
-				const items = await defaultSlashSuggestions({ editor, query });
+				const defaultItems = await defaultSlashSuggestions({ editor, query });
+				const extraItems =
+					typeof additionalSlashSuggestions === "function"
+						? await additionalSlashSuggestions({ editor, query })
+						: (additionalSlashSuggestions ?? []);
+
+				const items = [...extraItems, ...defaultItems];
 
 				if (!query) {
 					return items;

@@ -29,6 +29,7 @@ import {
 	useCurrentEditor,
 	useFeatulEditor as usefeatulEditor,
 	type Editor as TiptapEditor,
+	type AdditionalSlashSuggestionsSource,
 	type JSONContent,
 	type MentionSuggestionItem,
 } from "@featul/editor";
@@ -101,6 +102,7 @@ export interface FeedEditorRef {
 	getContent: () => JSONContent | undefined;
 	getMarkdown: () => string | undefined;
 	setContentFromMarkdown: (markdown: string) => void;
+	setStreamingMarkdown: (markdown: string) => void;
 }
 
 export interface FeedEditorProps {
@@ -112,6 +114,7 @@ export interface FeedEditorProps {
 	mentionSuggestions?: MentionSuggestionItem[];
 	/** Upload handler for images (slash command, drag & drop, paste) */
 	onImageUpload?: (file: File) => Promise<string>;
+	additionalSlashSuggestions?: AdditionalSlashSuggestionsSource;
 }
 
 /**
@@ -130,6 +133,7 @@ export const FeedEditor = forwardRef(
 			editable = true,
 			mentionSuggestions,
 			onImageUpload,
+			additionalSlashSuggestions,
 		}: FeedEditorProps,
 		ref: ForwardedRef<FeedEditorRef>,
 	) => {
@@ -148,6 +152,7 @@ export const FeedEditor = forwardRef(
 			editable,
 			imageUpload: onImageUpload ? { upload: onImageUpload } : undefined,
 			mentionSuggestions: getMentionSuggestions,
+			additionalSlashSuggestions,
 			onUpdate: ({ editor }) => {
 				onUpdate?.(editor.getJSON());
 			},
@@ -164,6 +169,13 @@ export const FeedEditor = forwardRef(
 				setContentFromMarkdown: (markdown: string) => {
 					if (!editor) return;
 					editor.commands.setContent(markdown, { contentType: "markdown" });
+				},
+				setStreamingMarkdown: (markdown: string) => {
+					if (!editor) return;
+					editor.commands.setContent(markdown, {
+						contentType: "markdown",
+						emitUpdate: true,
+					});
 				},
 			}),
 			[editor],
