@@ -20,6 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@featul/ui/lib/utils";
+import { filterToolbarButtonClass } from "@/utils/filter-toolbar";
 import StatusIcon from "@/components/requests/StatusIcon";
 
 export type WorkspaceSearchResult = {
@@ -270,6 +271,7 @@ export function WorkspaceSearchAction({
   const platformKey = isMac ? "⌘" : "Ctrl";
   const enterKey = isMac ? "Return" : "Enter";
   const escKey = "Esc";
+  const isSearchActive = Boolean(currentSearch.trim());
 
   return (
     <>
@@ -280,7 +282,8 @@ export function WorkspaceSearchAction({
         size="icon-sm"
         aria-label={`Search (${platformKey}K)`}
         title={`Search (${platformKey}K)`}
-        className={className}
+        aria-pressed={isSearchActive}
+        className={filterToolbarButtonClass(isSearchActive, className)}
         onClick={() => setOpen(true)}
       >
         <SearchIcon className="w-4 h-4" size={16} />

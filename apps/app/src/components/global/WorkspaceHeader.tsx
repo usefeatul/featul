@@ -9,6 +9,7 @@ import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
+import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
@@ -43,8 +44,10 @@ export default function WorkspaceHeader() {
   if (!title && !showRequestsActions && !isMemberDetail) return null;
 
   return (
-    <div className="mt-4 mb-6.5">
-      <div className="flex items-center justify-between">
+    <>
+      {showRequestsActions || showRoadmapActions ? <FilterDynamicIsland /> : null}
+      <div className="mt-4 mb-6.5">
+        <div className="flex items-center justify-between gap-3">
         {title ? (
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-heading leading-tight font-semibold">
@@ -127,7 +130,8 @@ export default function WorkspaceHeader() {
               ))}
           </div>
         ) : null}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

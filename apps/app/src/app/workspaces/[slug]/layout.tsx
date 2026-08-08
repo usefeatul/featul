@@ -13,7 +13,6 @@ import {
   getWorkspaceDomainInfoBySlug,
 } from "@/lib/workspace";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
-import FilterSummary from "@/components/requests/FilterSummary";
 import {
   getServerSession,
   listServerDeviceAccounts,
@@ -83,7 +82,6 @@ export default async function WorkspaceLayout({
       <main className="w-full min-w-0 lg:flex-1 px-2 sm:px-3 md:px-4 lg:px-0 pb-10 lg:pb-0">
         <EditorHeaderProvider>
           <WorkspaceHeader />
-          <FilterSummary />
           {children}
         </EditorHeaderProvider>
       </main>

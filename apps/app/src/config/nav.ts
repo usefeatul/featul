@@ -62,3 +62,7 @@ export function buildBottomNav(): NavItem[] {
 export function workspaceBase(slug: string) {
   return w(slug, "")
 }
+
+export function requestsBase(slug: string) {
+  return w(slug, "/requests")
+}

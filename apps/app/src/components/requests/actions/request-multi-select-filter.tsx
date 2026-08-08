@@ -12,12 +12,13 @@ import {
 import { Button } from "@featul/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useFilterPopover } from "@/lib/filter-store";
-import { getSlugFromPath, workspaceBase } from "@/config/nav";
+import { getSlugFromPath } from "@/config/nav";
 import {
   buildRequestsUrl,
   toggleValue,
   isAllSelected as isAllSel,
 } from "@/utils/request";
+import { filterToolbarButtonClass } from "@/utils/filter-toolbar";
 import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters";
 
 type MultiSelectFilterKey = "status" | "board" | "tag";
@@ -72,14 +73,6 @@ export function useRequestMultiSelectFilter({
 
   const updateSelection = React.useCallback(
     (next: string[]) => {
-      if (next.length === 0) {
-        const href = workspaceBase(slug);
-        React.startTransition(() => {
-          router.replace(href, { scroll: false });
-        });
-        return;
-      }
-
       const href = buildRequestsUrl(slug, sp, {
         [filterKey]: next,
       } as Partial<{
@@ -138,7 +131,8 @@ export function RequestMultiSelectFilter({
           variant="card"
           size="icon-sm"
           aria-label={ariaLabel}
-          className={className}
+          aria-pressed={selected.length > 0}
+          className={filterToolbarButtonClass(selected.length > 0, className)}
         >
           {icon}
         </Button>

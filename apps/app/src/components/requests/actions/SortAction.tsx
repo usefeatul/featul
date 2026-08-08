@@ -8,6 +8,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { buildRequestsUrl } from "@/utils/request"
 import { type SortOrder, SORT_OPTIONS } from "@/types/sort"
 import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
+import { filterToolbarButtonClass } from "@/utils/filter-toolbar"
 
 interface SortActionProps {
   className?: string
@@ -28,6 +29,7 @@ export default function SortAction({ className = "" }: SortActionProps) {
     () => parseRequestFiltersFromSearchParams(searchParams).order,
     [searchParams]
   )
+  const isActive = currentOrder !== "newest"
 
   const handleOrderChange = React.useCallback((newOrder: SortOrder) => {
     const href = buildRequestsUrl(slug, searchParams, { order: newOrder })
@@ -43,7 +45,8 @@ export default function SortAction({ className = "" }: SortActionProps) {
           variant="card"
           size="icon-sm"
           aria-label="Sort"
-          className={className}
+          aria-pressed={isActive}
+          className={filterToolbarButtonClass(isActive, className)}
         >
           <ArrowUpDownIcon className="size-4" />
         </Button>
