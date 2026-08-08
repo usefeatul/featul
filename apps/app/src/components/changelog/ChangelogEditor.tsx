@@ -11,9 +11,10 @@ import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import { AiIcon } from "@featul/ui/icons/ai";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
-import ChangelogAiBar from "./ChangelogAiBar";
+import ChangelogAiPanel from "./ChangelogAiPanel";
 import { fetchWorkspaceMembers } from "@/lib/team-client";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -43,6 +44,7 @@ export function ChangelogEditor({
     const router = useRouter();
     const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
+    const [isAiOpen, setIsAiOpen] = useState(false);
 
     const {
         editorRef,
@@ -105,6 +107,14 @@ export function ChangelogEditor({
     useEffect(() => {
         setActions([
             {
+                key: "ai",
+                label: "AI",
+                type: "button",
+                variant: "card",
+                icon: <AiIcon className="size-4" />,
+                onClick: () => setIsAiOpen(true),
+            },
+            {
                 key: "status",
                 label: "Published", // Label for Switch
                 type: "switch",
@@ -139,7 +149,7 @@ export function ChangelogEditor({
 
     return (
         <div className="min-h-screen bg-background">
-            <main className="mx-auto max-w-3xl px-4 pt-0 pb-[120px] lg:pb-[96px]">
+            <main className="mx-auto max-w-3xl px-4 pt-0 pb-10">
                 {/* Cover Image (when present) */}
                 {coverImage && (
                     <CoverImageUploader
@@ -208,11 +218,12 @@ export function ChangelogEditor({
                 </div>
             </main>
             {ENABLE_CHANGELOG_AI ? (
-                <ChangelogAiBar
+                <ChangelogAiPanel
+                    open={isAiOpen}
+                    onOpenChange={setIsAiOpen}
                     workspaceSlug={workspaceSlug}
                     editorRef={editorRef}
                     title={title}
-                    summary={summary}
                     setTitle={(value) => { setTitle(value); setIsDirty(true); }}
                     setSummary={(value) => { setSummary(value); setIsDirty(true); }}
                     setIsDirty={setIsDirty}
