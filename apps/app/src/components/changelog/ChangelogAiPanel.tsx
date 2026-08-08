@@ -66,35 +66,55 @@ const REFINE_ACTIONS: Array<{
   { action: "summary", label: "Summary", description: "Write the list preview line" },
 ];
 
-function OptionPill<T extends string>({
-  active,
+function AiSegmentedControl<T extends string>({
   label,
-  hint,
-  onClick,
+  options,
+  value,
+  onChange,
 }: {
-  active: boolean;
   label: string;
-  hint?: string;
-  onClick: () => void;
+  options: Array<{ value: T; label: string; hint?: string }>;
+  value: T;
+  onChange: (value: T) => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "rounded-md border px-3 py-2 text-left transition-all",
-        active
-          ? "border-primary/50 bg-primary/8 shadow-sm"
-          : "border-border bg-card hover:border-border/80 hover:bg-muted/20 dark:bg-black/20",
-      )}
-    >
-      <span className="block text-xs font-medium text-foreground">{label}</span>
-      {hint ? (
-        <span className="mt-0.5 block text-[10px] leading-tight text-muted-foreground">
-          {hint}
-        </span>
-      ) : null}
-    </button>
+    <div>
+      <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <div
+        className="flex rounded-md border border-border bg-background p-0.5 dark:bg-black/30"
+        role="radiogroup"
+        aria-label={label}
+      >
+        {options.map((option) => {
+          const isActive = value === option.value;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              role="radio"
+              aria-checked={isActive}
+              onClick={() => onChange(option.value)}
+              className={cn(
+                "flex-1 cursor-pointer rounded-sm px-2 py-2 text-center transition-colors",
+                isActive
+                  ? "bg-muted text-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+              )}
+            >
+              <span className="block text-xs font-medium">{option.label}</span>
+              {option.hint ? (
+                <span className="mt-0.5 block text-[10px] leading-tight text-muted-foreground">
+                  {option.hint}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -331,10 +351,10 @@ export function ChangelogAiPanel({
                 key={tab.id}
                 type="button"
                 className={cn(
-                  "flex-1 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
+                  "flex-1 cursor-pointer rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
                   activeTab === tab.id
                     ? "bg-muted text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
+                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
                 )}
                 onClick={() => setActiveTab(tab.id)}
               >
@@ -391,88 +411,83 @@ export function ChangelogAiPanel({
             </div>
 
             {selectedPosts.length > 0 ? (
-              <div className="border-t border-b border-border/70 px-5 py-3">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Will write about
-                  <span className="ml-1.5 normal-case tracking-normal text-foreground/70">
-                    ({selectedPosts.length})
-                  </span>
-                </p>
-                <ul className="mt-2 space-y-1.5">
-                  {selectedPosts.slice(0, 4).map((post) => (
-                    <li
-                      key={post.id}
-                      className="truncate text-xs leading-relaxed text-foreground"
-                    >
-                      {post.title}
-                    </li>
-                  ))}
-                  {selectedPosts.length > 4 ? (
-                    <li className="text-xs text-muted-foreground">
-                      +{selectedPosts.length - 4} more
-                    </li>
-                  ) : null}
-                </ul>
+              <div className="border-t border-b border-border/70">
+                <div className="px-5 py-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    Will write about
+                    <span className="ml-1.5 normal-case tracking-normal text-foreground/70">
+                      ({selectedPosts.length})
+                    </span>
+                  </p>
+                  <ul className="mt-2 space-y-1.5">
+                    {selectedPosts.slice(0, 4).map((post) => (
+                      <li
+                        key={post.id}
+                        className="truncate text-xs leading-relaxed text-foreground"
+                      >
+                        {post.title}
+                      </li>
+                    ))}
+                    {selectedPosts.length > 4 ? (
+                      <li className="text-xs text-muted-foreground">
+                        +{selectedPosts.length - 4} more
+                      </li>
+                    ) : null}
+                  </ul>
+                </div>
               </div>
             ) : null}
 
             <div
               className={cn(
-                "bg-muted/10 px-5 py-4 dark:bg-black/10",
+                "bg-muted/10 dark:bg-black/10",
                 selectedPosts.length === 0 && "border-t border-border/70",
               )}
             >
-              <div className="mb-4 grid grid-cols-2 gap-2">
-                {DETAIL_OPTIONS.map((option) => (
-                  <OptionPill
-                    key={option.value}
-                    active={detailLevel === option.value}
-                    label={option.label}
-                    hint={option.hint}
-                    onClick={() => setDetailLevel(option.value)}
+              <div className="border-b border-border/70 px-5 py-4">
+                <AiSegmentedControl
+                  label="Length"
+                  options={DETAIL_OPTIONS}
+                  value={detailLevel}
+                  onChange={setDetailLevel}
+                />
+              </div>
+
+              <div className="border-b border-border/70 px-5 py-4">
+                <AiSegmentedControl
+                  label="Tone"
+                  options={TONE_OPTIONS}
+                  value={tone}
+                  onChange={setTone}
+                />
+              </div>
+
+              <div className="space-y-4 px-5 py-4">
+                <div>
+                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    Context{" "}
+                    <span className="normal-case tracking-normal text-muted-foreground/80">
+                      (optional)
+                    </span>
+                  </p>
+                  <TextareaAutosize
+                    value={prompt}
+                    onChange={(event) => setPrompt(event.target.value)}
+                    minRows={2}
+                    maxRows={4}
+                    placeholder="Mention audience, rollout notes, or extra context"
+                    className="w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20"
                   />
-                ))}
-              </div>
-
-              <div className="mb-4">
-                <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Tone
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {TONE_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => setTone(option.value)}
-                      className={cn(
-                        "rounded-sm border px-2.5 py-1 text-xs font-medium transition-colors",
-                        tone === option.value
-                          ? "border-primary/40 bg-primary/8 text-foreground"
-                          : "border-border bg-card text-muted-foreground hover:text-foreground dark:bg-black/20",
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
                 </div>
+
+                <Button
+                  className="w-full cursor-pointer"
+                  onClick={() => runAction("generateFromPosts")}
+                  disabled={isLoading || selectedPostIds.length === 0}
+                >
+                  Generate detailed draft
+                </Button>
               </div>
-
-              <TextareaAutosize
-                value={prompt}
-                onChange={(event) => setPrompt(event.target.value)}
-                minRows={2}
-                maxRows={4}
-                placeholder="Optional: mention audience, rollout notes, or extra context"
-                className="mb-3 w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20"
-              />
-
-              <Button
-                className="w-full"
-                onClick={() => runAction("generateFromPosts")}
-                disabled={isLoading || selectedPostIds.length === 0}
-              >
-                Generate detailed draft
-              </Button>
             </div>
           </>
         ) : (
@@ -490,7 +505,7 @@ export function ChangelogAiPanel({
                     type="button"
                     disabled={isLoading}
                     onClick={() => runAction(item.action)}
-                    className="rounded-md border border-border bg-card px-3 py-3 text-left transition-colors hover:border-border/80 hover:bg-muted/20 disabled:opacity-50 dark:bg-black/20"
+                    className="cursor-pointer rounded-md border border-border bg-card px-3 py-3 text-left transition-colors hover:border-border/80 hover:bg-muted/20 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-black/20"
                   >
                     <p className="text-sm font-medium text-foreground">{item.label}</p>
                     <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
@@ -521,7 +536,7 @@ export function ChangelogAiPanel({
                 <Button
                   variant="nav"
                   size="icon-sm"
-                  className="absolute right-2 bottom-2"
+                  className="absolute right-2 bottom-2 cursor-pointer"
                   onClick={() => runAction("prompt")}
                   disabled={isLoading || !prompt.trim()}
                   aria-label="Run custom prompt"
