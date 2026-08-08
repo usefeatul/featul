@@ -10,6 +10,10 @@ import {
   getWorkspaceNameForAi,
   type AiAction,
 } from "./changelog-ai-context";
+import {
+  parseStructuredChangelogStream,
+  usesStructuredChangelogStream,
+} from "./changelog-ai-stream-parser";
 
 const AI_STREAM_SYSTEM_PROMPT = [
   "You are an expert product changelog writer for SaaS products.",
@@ -26,6 +30,8 @@ const AI_STREAM_SUMMARY_SYSTEM_PROMPT = [
 
 type StreamEvent =
   | { type: "delta"; text: string }
+  | { type: "title"; text: string }
+  | { type: "summary"; text: string }
   | {
       type: "done";
       contentMarkdown?: string;
@@ -72,10 +78,18 @@ function buildStreamUserPrompt(input: {
   const base = buildAiUserPrompt(input);
 
   if (input.action === "summary") {
+    return [base, "Output format: plain text summary only."].join("\n\n");
+  }
+
+  if (usesStructuredChangelogStream(input.action)) {
     return [
       base,
-      "Output format: plain text summary only.",
-    ].join("\n\n");
+      "Output format (use exactly this structure, in this order):",
+      "TITLE: <clear, compelling title>",
+      "SUMMARY: <2-3 sentence list preview, <= 512 characters>",
+      "---",
+      "<markdown body with ## headings and bullets. Do not repeat the title as # heading.>",
+    ].join("\n");
   }
 
   return [
@@ -83,6 +97,40 @@ function buildStreamUserPrompt(input: {
     "Output format: GitHub-flavored Markdown body only.",
     "Do not include a JSON object or code fences.",
   ].join("\n\n");
+}
+
+function emitStructuredStreamEvents(
+  accumulated: string,
+  state: {
+    sentTitle: boolean;
+    sentSummaryLength: number;
+    sentBodyLength: number;
+  },
+  send: (event: StreamEvent) => void,
+) {
+  const parsed = parseStructuredChangelogStream(accumulated);
+
+  if (!state.sentTitle && parsed.title && /^TITLE:.+\r?\n/im.test(accumulated)) {
+    send({ type: "title", text: parsed.title.slice(0, 256) });
+    state.sentTitle = true;
+  }
+
+  if (
+    parsed.summary &&
+    parsed.summary.length > state.sentSummaryLength &&
+    /^SUMMARY:/im.test(accumulated)
+  ) {
+    send({ type: "summary", text: parsed.summary.slice(0, 512) });
+    state.sentSummaryLength = parsed.summary.length;
+  }
+
+  if (parsed.body.length > state.sentBodyLength) {
+    const delta = parsed.body.slice(state.sentBodyLength);
+    if (delta) {
+      send({ type: "delta", text: delta });
+      state.sentBodyLength = parsed.body.length;
+    }
+  }
 }
 
 export async function createChangelogAiStreamResponse(req: Request) {
@@ -197,6 +245,8 @@ export async function createChangelogAiStreamResponse(req: Request) {
       ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
       : AI_STREAM_SYSTEM_PROMPT;
 
+  const structured = usesStructuredChangelogStream(parsedInput.action);
+
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
@@ -206,6 +256,11 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
       try {
         let accumulated = "";
+        const structuredState = {
+          sentTitle: false,
+          sentSummaryLength: 0,
+          sentBodyLength: 0,
+        };
 
         await streamOpenRouterChat(
           {
@@ -219,6 +274,12 @@ export async function createChangelogAiStreamResponse(req: Request) {
           },
           async (text) => {
             accumulated += text;
+
+            if (structured) {
+              emitStructuredStreamEvents(accumulated, structuredState, send);
+              return;
+            }
+
             send({ type: "delta", text });
           },
         );
@@ -234,6 +295,18 @@ export async function createChangelogAiStreamResponse(req: Request) {
           send({
             type: "done",
             summary: trimmed.slice(0, 512),
+          });
+          controller.close();
+          return;
+        }
+
+        if (structured) {
+          const parsed = parseStructuredChangelogStream(trimmed);
+          send({
+            type: "done",
+            title: parsed.title?.slice(0, 256) ?? parsedInput.title,
+            summary: parsed.summary?.slice(0, 512),
+            contentMarkdown: parsed.body.trim(),
           });
           controller.close();
           return;

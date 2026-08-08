@@ -2,6 +2,8 @@ import type { AiAction, AiDetailLevel, AiTone } from "@/components/changelog/cha
 
 export type ChangelogAiStreamEvent =
   | { type: "delta"; text: string }
+  | { type: "title"; text: string }
+  | { type: "summary"; text: string }
   | {
       type: "done";
       contentMarkdown?: string;
@@ -22,7 +24,9 @@ export type ChangelogAiStreamInput = {
 };
 
 type StreamHandlers = {
-  onDelta?: (text: string, accumulated: string) => void;
+  onTitle?: (text: string) => void;
+  onSummary?: (text: string) => void;
+  onDelta?: (text: string, accumulatedBody: string) => void;
   onDone?: (event: Extract<ChangelogAiStreamEvent, { type: "done" }>) => void;
 };
 
@@ -40,6 +44,38 @@ function parseSseEvents(raw: string): ChangelogAiStreamEvent[] {
   }
 
   return events;
+}
+
+function handleStreamEvent(
+  event: ChangelogAiStreamEvent,
+  handlers: StreamHandlers,
+  state: { body: string; summary: string },
+) {
+  if (event.type === "title") {
+    handlers.onTitle?.(event.text);
+    return;
+  }
+
+  if (event.type === "summary") {
+    state.summary = event.text;
+    handlers.onSummary?.(event.text);
+    return;
+  }
+
+  if (event.type === "delta") {
+    state.body += event.text;
+    handlers.onDelta?.(event.text, state.body);
+    return;
+  }
+
+  if (event.type === "done") {
+    handlers.onDone?.(event);
+    return;
+  }
+
+  if (event.type === "error") {
+    throw new Error(event.message);
+  }
 }
 
 export async function streamChangelogAiAssist(
@@ -66,7 +102,7 @@ export async function streamChangelogAiAssist(
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
-  let accumulated = "";
+  const state = { body: "", summary: "" };
 
   while (true) {
     const { done, value } = await reader.read();
@@ -81,30 +117,16 @@ export async function streamChangelogAiAssist(
       boundary = buffer.indexOf("\n\n");
 
       for (const event of parseSseEvents(chunk)) {
-        if (event.type === "delta") {
-          accumulated += event.text;
-          handlers.onDelta?.(event.text, accumulated);
-        } else if (event.type === "done") {
-          handlers.onDone?.(event);
-        } else if (event.type === "error") {
-          throw new Error(event.message);
-        }
+        handleStreamEvent(event, handlers, state);
       }
     }
   }
 
   if (buffer.trim()) {
     for (const event of parseSseEvents(buffer)) {
-      if (event.type === "delta") {
-        accumulated += event.text;
-        handlers.onDelta?.(event.text, accumulated);
-      } else if (event.type === "done") {
-        handlers.onDone?.(event);
-      } else if (event.type === "error") {
-        throw new Error(event.message);
-      }
+      handleStreamEvent(event, handlers, state);
     }
   }
 
-  return accumulated;
+  return state.body || state.summary;
 }

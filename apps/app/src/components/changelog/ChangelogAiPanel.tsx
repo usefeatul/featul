@@ -254,15 +254,43 @@ export function ChangelogAiPanel({
     onOpenChange(false);
 
     const contentMarkdown = editorRef.current?.getMarkdown();
+    const usesStructuredSections =
+      action === "generateFromPosts" || action === "prompt";
 
     if (action !== "summary") {
       editorRef.current?.focus();
-      if (action === "generateFromPosts" || action === "prompt") {
+      if (usesStructuredSections) {
+        setTitle("");
+        setSummary("");
+      }
+      if (usesStructuredSections || action === "format" || action === "improve" || action === "expand") {
         editorRef.current?.setStreamingMarkdown("");
       }
     }
 
     let lastPreviewAt = 0;
+    let pendingBody: string | null = null;
+    let bodyFrame: number | null = null;
+
+    const flushBodyPreview = () => {
+      bodyFrame = null;
+      if (pendingBody === null) return;
+      const markdown = pendingBody;
+      pendingBody = null;
+
+      if (action === "summary") {
+        setSummary(markdown.slice(0, 512));
+      } else {
+        editorRef.current?.setStreamingMarkdown(markdown);
+      }
+      setIsDirty(true);
+    };
+
+    const scheduleBodyPreview = (markdown: string) => {
+      pendingBody = markdown;
+      if (bodyFrame !== null) return;
+      bodyFrame = window.requestAnimationFrame(flushBodyPreview);
+    };
 
     try {
       await streamChangelogAiAssist(
@@ -280,19 +308,32 @@ export function ChangelogAiPanel({
           detailLevel: action === "generateFromPosts" ? detailLevel : undefined,
         },
         {
-          onDelta: (_text, accumulated) => {
-            const now = Date.now();
-            if (now - lastPreviewAt < 80) return;
-            lastPreviewAt = now;
-
-            if (action === "summary") {
-              setSummary(accumulated.slice(0, 512));
-            } else {
-              editorRef.current?.setStreamingMarkdown(accumulated);
-            }
+          onTitle: (text) => {
+            setTitle(text.slice(0, 256));
             setIsDirty(true);
           },
+          onSummary: (text) => {
+            setSummary(text.slice(0, 512));
+            setIsDirty(true);
+          },
+          onDelta: (_text, accumulated) => {
+            if (action === "summary") {
+              const now = Date.now();
+              if (now - lastPreviewAt < 16) return;
+              lastPreviewAt = now;
+              setSummary(accumulated.slice(0, 512));
+              setIsDirty(true);
+              return;
+            }
+
+            scheduleBodyPreview(accumulated);
+          },
           onDone: (event) => {
+            if (bodyFrame !== null) {
+              window.cancelAnimationFrame(bodyFrame);
+              bodyFrame = null;
+            }
+            pendingBody = null;
             applyAiResult({
               title: event.title,
               contentMarkdown: event.contentMarkdown,
@@ -309,6 +350,9 @@ export function ChangelogAiPanel({
       const msg = err instanceof Error ? err.message : "Failed to run AI assist";
       toast.error(msg, { id: toastId });
     } finally {
+      if (bodyFrame !== null) {
+        window.cancelAnimationFrame(bodyFrame);
+      }
       setIsLoading(false);
       setIsStreaming(false);
     }
