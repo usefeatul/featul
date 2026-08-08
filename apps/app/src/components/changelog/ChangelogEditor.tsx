@@ -16,7 +16,7 @@ import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import ChangelogAiBar from "./ChangelogAiBar";
 import { fetchWorkspaceMembers } from "@/lib/team-client";
 
-const ENABLE_CHANGELOG_AI = false;
+const ENABLE_CHANGELOG_AI = true;
 
 interface ChangelogEditorProps {
     workspaceSlug: string;
@@ -179,9 +179,19 @@ export function ChangelogEditor({
                     value={title}
                     onChange={(e) => { setTitle(e.target.value); setIsDirty(true); }}
                     placeholder="Enter a title"
-                    className="w-full resize-none border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-8 overflow-hidden"
+                    className="w-full resize-none border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-4 overflow-hidden"
                     minRows={1}
                     autoFocus={mode === "create"}
+                />
+
+                {/* Summary */}
+                <TextareaAutosize
+                    value={summary}
+                    onChange={(e) => { setSummary(e.target.value); setIsDirty(true); }}
+                    placeholder="Short summary for list previews (optional)"
+                    className="w-full resize-none border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-8 overflow-hidden"
+                    minRows={1}
+                    maxRows={3}
                 />
 
                 {/* Content Editor */}

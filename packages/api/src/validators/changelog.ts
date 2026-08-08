@@ -30,13 +30,23 @@ export const updateEntrySchema = z.object({
   status: z.enum(["draft", "published"]).optional(),
 });
 
+export const aiToneSchema = z.enum(["user-friendly", "technical", "brief"]);
+
 export const aiAssistSchema = z
   .object({
     slug: bySlugSchema.shape.slug,
-    action: z.enum(["prompt", "format", "improve", "summary"]),
+    action: z.enum([
+      "prompt",
+      "format",
+      "improve",
+      "summary",
+      "generateFromPosts",
+    ]),
     prompt: z.string().min(1).max(2000).optional(),
     title: z.string().max(256).optional(),
     contentMarkdown: z.string().min(1).max(20000).optional(),
+    sourcePostIds: z.array(z.string().min(1)).min(1).max(20).optional(),
+    tone: aiToneSchema.optional(),
   })
   .superRefine((val, ctx) => {
     if (val.action === "prompt" && !val.prompt) {
@@ -46,7 +56,20 @@ export const aiAssistSchema = z
         path: ["prompt"],
       });
     }
-    if (val.action !== "prompt" && !val.contentMarkdown) {
+    if (val.action === "generateFromPosts") {
+      if (!val.sourcePostIds || val.sourcePostIds.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "sourcePostIds is required for action=generateFromPosts",
+          path: ["sourcePostIds"],
+        });
+      }
+    }
+    if (
+      val.action !== "prompt" &&
+      val.action !== "generateFromPosts" &&
+      !val.contentMarkdown
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "contentMarkdown is required for this action",
@@ -54,6 +77,11 @@ export const aiAssistSchema = z
       });
     }
   });
+
+export const aiSourcePostsListSchema = z.object({
+  slug: bySlugSchema.shape.slug,
+  limit: z.number().int().min(1).max(50).optional(),
+});
 
 const notraStatuses = ["draft", "published"] as const;
 

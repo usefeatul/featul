@@ -15,8 +15,16 @@ import {
   importNotraSchema,
   saveNotraConnectionSchema,
   aiAssistSchema,
+  aiSourcePostsListSchema,
 } from "../validators/changelog";
 import { sendOpenRouterChat } from "../services/openrouter";
+import {
+  buildAiUserPrompt,
+  fetchAiSourcePostsByIds,
+  fetchAiSourcePostsList,
+  getWorkspaceNameForAi,
+  type AiAction,
+} from "../services/changelog-ai-context";
 import {
   deleteStoredNotraConnection,
   getStoredNotraConnection,
@@ -31,71 +39,12 @@ import {
   SecretCryptoError,
 } from "../services/secret-crypto";
 
-type AiAction = "prompt" | "format" | "improve" | "summary";
-
 const AI_SYSTEM_PROMPT = [
   "You are a product changelog writing assistant.",
   "Return ONLY valid JSON. No markdown fences, no commentary.",
   "JSON keys: title, contentMarkdown, summary. Omit keys you are not asked to return.",
   "contentMarkdown must be GitHub-flavored Markdown.",
 ].join(" ");
-
-function buildAiUserPrompt(input: {
-  action: AiAction;
-  prompt?: string;
-  title?: string;
-  contentMarkdown?: string;
-}) {
-  const titleLine = input.title?.trim() ? `Title: ${input.title.trim()}` : "";
-  const contentBlock = input.contentMarkdown
-    ? `Content (Markdown):\n${input.contentMarkdown}`
-    : "";
-
-  switch (input.action) {
-    case "prompt":
-      return [
-        "Write a changelog entry based on the prompt below.",
-        "Requirements:",
-        "- Provide a short, clear title.",
-        "- Write a concise Markdown body with headings or bullets when helpful.",
-        "- Provide a 1-2 sentence summary (<= 512 characters).",
-        titleLine ? `Current title (if helpful): ${titleLine}` : "",
-        "Prompt:",
-        input.prompt || "",
-      ]
-        .filter(Boolean)
-        .join("\n");
-    case "format":
-      return [
-        "Fix formatting and structure without changing meaning.",
-        "Return JSON with contentMarkdown only.",
-        titleLine,
-        contentBlock,
-      ]
-        .filter(Boolean)
-        .join("\n\n");
-    case "improve":
-      return [
-        "Improve clarity and concision without changing meaning.",
-        "Return JSON with contentMarkdown only.",
-        titleLine,
-        contentBlock,
-      ]
-        .filter(Boolean)
-        .join("\n\n");
-    case "summary":
-      return [
-        "Write a concise 1-2 sentence summary (<= 512 characters).",
-        "Return JSON with summary only.",
-        titleLine,
-        contentBlock,
-      ]
-        .filter(Boolean)
-        .join("\n\n");
-    default:
-      return "";
-  }
-}
 
 function parseAiJson(text: string) {
   const start = text.indexOf("{");
@@ -135,28 +84,76 @@ async function getChangelogBoardId(
 
 export function createChangelogAutomationProcedures() {
   return {
+    aiSourcePostsList: privateProcedure
+      .input(aiSourcePostsListSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const posts = await fetchAiSourcePostsList({
+          db: ctx.db,
+          workspaceId: ws.id,
+          limit: input.limit,
+        });
+
+        return c.superjson({ ok: true, posts });
+      }),
+
     aiAssist: privateProcedure
       .input(aiAssistSchema)
       .post(async ({ ctx, input, c }) => {
-        await requireBoardManagerBySlug(ctx, input.slug);
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto");
         const temperatureByAction: Record<AiAction, number> = {
           prompt: 0.6,
+          generateFromPosts: 0.5,
           format: 0.2,
           improve: 0.4,
           summary: 0.2,
         };
+        const maxTokensByAction: Partial<Record<AiAction, number>> = {
+          generateFromPosts: 1400,
+        };
+
+        let sourcePosts;
+        if (input.action === "generateFromPosts" && input.sourcePostIds?.length) {
+          sourcePosts = await fetchAiSourcePostsByIds({
+            db: ctx.db,
+            workspaceId: ws.id,
+            postIds: input.sourcePostIds,
+          });
+
+          if (sourcePosts.length === 0) {
+            throw new HTTPException(400, {
+              message: "No valid shipped feedback items were found for generation",
+            });
+          }
+        }
+
+        const workspaceName = await getWorkspaceNameForAi({
+          db: ctx.db,
+          workspaceId: ws.id,
+        });
 
         try {
           const result = await sendOpenRouterChat({
             model,
             messages: [
               { role: "system", content: AI_SYSTEM_PROMPT },
-              { role: "user", content: buildAiUserPrompt(input) },
+              {
+                role: "user",
+                content: buildAiUserPrompt({
+                  action: input.action,
+                  prompt: input.prompt,
+                  title: input.title,
+                  contentMarkdown: input.contentMarkdown,
+                  tone: input.tone,
+                  workspaceName,
+                  sourcePosts,
+                }),
+              },
             ],
             temperature: temperatureByAction[input.action],
-            max_tokens: 900,
+            max_tokens: maxTokensByAction[input.action] ?? 900,
             response_format: { type: "json_object" },
           });
 
