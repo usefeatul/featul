@@ -13,7 +13,6 @@ import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
-import ChangelogAiMenu from "./ChangelogAiMenu";
 import { fetchWorkspaceMembers } from "@/lib/team-client";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -41,7 +40,8 @@ export function ChangelogEditor({
     availableTags,
 }: ChangelogEditorProps) {
     const router = useRouter();
-    const { setActions, clearActions } = useEditorHeaderActions();
+    const { setActions, clearActions, setChangelogAiActive, changelogAiBridgeRef } =
+        useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
 
     const {
@@ -100,6 +100,24 @@ export function ChangelogEditor({
             isCancelled = true;
         };
     }, [workspaceSlug]);
+
+    useEffect(() => {
+        if (!ENABLE_CHANGELOG_AI) return;
+        setChangelogAiActive(true);
+        return () => setChangelogAiActive(false);
+    }, [setChangelogAiActive]);
+
+    useEffect(() => {
+        if (!ENABLE_CHANGELOG_AI) return;
+        changelogAiBridgeRef.current = {
+            workspaceSlug,
+            title,
+            editorRef,
+            setTitle,
+            setSummary,
+            setIsDirty,
+        };
+    });
 
     // Register actions with the header context
     useEffect(() => {
@@ -207,16 +225,6 @@ export function ChangelogEditor({
                     />
                 </div>
             </main>
-            {ENABLE_CHANGELOG_AI ? (
-                <ChangelogAiMenu
-                    workspaceSlug={workspaceSlug}
-                    editorRef={editorRef}
-                    title={title}
-                    setTitle={(value) => { setTitle(value); setIsDirty(true); }}
-                    setSummary={(value) => { setSummary(value); setIsDirty(true); }}
-                    setIsDirty={setIsDirty}
-                />
-            ) : null}
         </div>
     );
 }

@@ -14,6 +14,7 @@ import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
+import { ChangelogAiToolbar } from "@/components/changelog/ChangelogAiMenu";
 
 function resolveTitle(segment: string): string {
   const s = segment.toLowerCase();
@@ -96,8 +97,12 @@ export default function WorkspaceHeader() {
           editorContext &&
           editorContext.actions.length > 0 ? (
           <div className="flex items-center gap-0 bg-card rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black divide-x divide-border overflow-hidden">
-            {editorContext.toolbarSlot ? (
-              <div className="flex items-center">{editorContext.toolbarSlot}</div>
+            {editorContext.changelogAiActive ? (
+              <div className="flex items-center">
+                <ChangelogAiToolbar
+                  bridgeRef={editorContext.changelogAiBridgeRef}
+                />
+              </div>
             ) : null}
 
             {editorContext.actions
