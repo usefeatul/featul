@@ -404,19 +404,25 @@ export function ChangelogAiPanel({
         ) : (
           <>
             <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-              <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
+              <p className="text-xs leading-relaxed text-muted-foreground">
                 Use these on the current entry. For thin drafts, start with{" "}
                 <span className="font-medium text-foreground">Expand</span> to add
                 depth before publishing.
               </p>
-              <div className="grid grid-cols-2 gap-2">
+            </div>
+
+            <div className="border-t border-border/70 bg-muted/10 dark:bg-black/10">
+              <div className="space-y-2 border-b border-border/70 px-5 py-4">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  Quick actions
+                </p>
                 {REFINE_ACTIONS.map((item) => (
                   <button
                     key={item.action}
                     type="button"
                     disabled={isLoading}
                     onClick={() => runAction(item.action)}
-                    className="cursor-pointer rounded-md border border-border bg-card px-3 py-3 text-left transition-colors hover:border-border/80 hover:bg-muted/20 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-black/20"
+                    className="w-full cursor-pointer rounded-md border border-border bg-card px-3 py-3 text-left transition-colors hover:border-border/80 hover:bg-muted/20 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-black/20"
                   >
                     <p className="text-sm font-medium text-foreground">{item.label}</p>
                     <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
@@ -425,25 +431,26 @@ export function ChangelogAiPanel({
                   </button>
                 ))}
               </div>
-            </div>
 
-            <div className="border-t border-border bg-muted/10 px-5 py-4 dark:bg-black/10">
-              <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                Custom prompt
-              </p>
-              <div className="space-y-2">
-                <TextareaAutosize
-                  value={prompt}
-                  onChange={(event) => setPrompt(event.target.value)}
-                  onEnterPress={() => runAction("prompt")}
-                  minRows={3}
-                  maxRows={6}
-                  placeholder="Ask for a full changelog with sections, bullets, and user benefits"
-                  className={cn(
-                    "w-full resize-none rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
-                    isLoading && "opacity-70",
-                  )}
-                />
+              <div className="space-y-4 px-5 py-4">
+                <div>
+                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    Custom prompt
+                  </p>
+                  <TextareaAutosize
+                    value={prompt}
+                    onChange={(event) => setPrompt(event.target.value)}
+                    onEnterPress={() => runAction("prompt")}
+                    minRows={3}
+                    maxRows={6}
+                    placeholder="Ask for a full changelog with sections, bullets, and user benefits"
+                    className={cn(
+                      "w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
+                      isLoading && "opacity-70",
+                    )}
+                  />
+                </div>
+
                 <Button
                   className="w-full cursor-pointer"
                   onClick={() => runAction("prompt")}
