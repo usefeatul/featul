@@ -11,10 +11,9 @@ import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
-import { AiIcon } from "@featul/ui/icons/ai";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
-import ChangelogAiSection from "./ChangelogAiSection";
+import ChangelogAiMenu from "./ChangelogAiMenu";
 import { fetchWorkspaceMembers } from "@/lib/team-client";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -44,7 +43,6 @@ export function ChangelogEditor({
     const router = useRouter();
     const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
-    const [isAiExpanded, setIsAiExpanded] = useState(mode === "create");
 
     const {
         editorRef,
@@ -106,14 +104,6 @@ export function ChangelogEditor({
     // Register actions with the header context
     useEffect(() => {
         setActions([
-            {
-                key: "ai",
-                label: "AI",
-                type: "button",
-                variant: "card",
-                icon: <AiIcon className="size-4" />,
-                onClick: () => setIsAiExpanded((open) => !open),
-            },
             {
                 key: "status",
                 label: "Published", // Label for Switch
@@ -199,23 +189,10 @@ export function ChangelogEditor({
                     value={summary}
                     onChange={(e) => { setSummary(e.target.value); setIsDirty(true); }}
                     placeholder="Short summary for list previews (optional)"
-                    className="w-full resize-none border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-6 overflow-hidden"
+                    className="w-full resize-none border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-8 overflow-hidden"
                     minRows={1}
                     maxRows={3}
                 />
-
-                {ENABLE_CHANGELOG_AI ? (
-                    <ChangelogAiSection
-                        expanded={isAiExpanded}
-                        onExpandedChange={setIsAiExpanded}
-                        workspaceSlug={workspaceSlug}
-                        editorRef={editorRef}
-                        title={title}
-                        setTitle={(value) => { setTitle(value); setIsDirty(true); }}
-                        setSummary={(value) => { setSummary(value); setIsDirty(true); }}
-                        setIsDirty={setIsDirty}
-                    />
-                ) : null}
 
                 {/* Content Editor */}
                 <div className="[&_.ProseMirror]:outline-none [&_.ProseMirror]:border-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
@@ -230,6 +207,16 @@ export function ChangelogEditor({
                     />
                 </div>
             </main>
+            {ENABLE_CHANGELOG_AI ? (
+                <ChangelogAiMenu
+                    workspaceSlug={workspaceSlug}
+                    editorRef={editorRef}
+                    title={title}
+                    setTitle={(value) => { setTitle(value); setIsDirty(true); }}
+                    setSummary={(value) => { setSummary(value); setIsDirty(true); }}
+                    setIsDirty={setIsDirty}
+                />
+            ) : null}
         </div>
     );
 }

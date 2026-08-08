@@ -96,6 +96,10 @@ export default function WorkspaceHeader() {
           editorContext &&
           editorContext.actions.length > 0 ? (
           <div className="flex items-center gap-0 bg-card rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black divide-x divide-border overflow-hidden">
+            {editorContext.toolbarSlot ? (
+              <div className="flex items-center">{editorContext.toolbarSlot}</div>
+            ) : null}
+
             {editorContext.actions
               .filter((action) => action.type === "switch")
               .map((action) => (

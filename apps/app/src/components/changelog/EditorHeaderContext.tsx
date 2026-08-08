@@ -18,12 +18,15 @@ interface EditorHeaderContextValue {
     actions: EditorAction[]
     setActions: (actions: EditorAction[]) => void
     clearActions: () => void
+    toolbarSlot: ReactNode | null
+    setToolbarSlot: (node: ReactNode | null) => void
 }
 
 const EditorHeaderContext = createContext<EditorHeaderContextValue | null>(null)
 
 export function EditorHeaderProvider({ children }: { children: ReactNode }) {
     const [actions, setActionsState] = useState<EditorAction[]>([])
+    const [toolbarSlot, setToolbarSlotState] = useState<ReactNode | null>(null)
 
     const setActions = useCallback((newActions: EditorAction[]) => {
         setActionsState(newActions)
@@ -33,8 +36,12 @@ export function EditorHeaderProvider({ children }: { children: ReactNode }) {
         setActionsState([])
     }, [])
 
+    const setToolbarSlot = useCallback((node: ReactNode | null) => {
+        setToolbarSlotState(node)
+    }, [])
+
     return (
-        <EditorHeaderContext.Provider value={{ actions, setActions, clearActions }}>
+        <EditorHeaderContext.Provider value={{ actions, setActions, clearActions, toolbarSlot, setToolbarSlot }}>
             {children}
         </EditorHeaderContext.Provider>
     )
