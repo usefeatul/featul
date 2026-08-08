@@ -33,6 +33,8 @@ export default function FilterDynamicIsland() {
   }, []);
 
   React.useLayoutEffect(() => {
+    if (!isVisible) return;
+
     const node = contentRef.current;
     if (!node) return;
 
@@ -46,7 +48,7 @@ export default function FilterDynamicIsland() {
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
-  }, [expanded, count, preview, itemKeys]);
+  }, [expanded, count, preview, itemKeys, isVisible]);
 
   React.useEffect(() => {
     if (!expanded) return;
@@ -77,11 +79,13 @@ export default function FilterDynamicIsland() {
     }
   }, [isVisible]);
 
-  if (!isVisible) return null;
-
   const islandTransition: Transition = reduceMotion
     ? { duration: 0 }
     : { duration: 0.28, ease: EASE };
+
+  const visibilityTransition: Transition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.32, ease: EASE };
 
   const contentTransition: Transition = reduceMotion
     ? { duration: 0 }
@@ -91,26 +95,37 @@ export default function FilterDynamicIsland() {
     ? "Collapse active filters"
     : `${count} active filter${count === 1 ? "" : "s"}`;
 
+  if (reduceMotion && !isVisible) return null;
+
   return (
-    <div
-      className="pointer-events-none fixed inset-x-0 top-0 z-[100] flex justify-center"
-      aria-live="polite"
-    >
-      <motion.div
-        ref={islandRef}
-        initial={false}
-        animate={{ width: width ?? "auto" }}
-        transition={islandTransition}
-        onClick={toggleExpanded}
-        aria-expanded={expanded}
-        aria-label={islandLabel}
-        className={cn(
-          "pointer-events-auto cursor-pointer overflow-hidden rounded-t-none rounded-b-md",
-          "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950",
-          "border border-t-0 border-white/10 dark:border-black/10",
-          "shadow-[0_10px_32px_-14px_rgba(0,0,0,0.65)] dark:shadow-[0_10px_32px_-14px_rgba(0,0,0,0.2)]",
-        )}
-      >
+    <AnimatePresence initial={false}>
+      {isVisible ? (
+        <div
+          key="filter-dynamic-island"
+          className="pointer-events-none fixed inset-x-0 top-0 z-[100] flex justify-center"
+          aria-live="polite"
+        >
+          <motion.div
+            ref={islandRef}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0, width: width ?? "auto" }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{
+              opacity: visibilityTransition,
+              y: visibilityTransition,
+              width: islandTransition,
+            }}
+            style={{ originY: 0 }}
+            onClick={toggleExpanded}
+            aria-expanded={expanded}
+            aria-label={islandLabel}
+            className={cn(
+              "pointer-events-auto cursor-pointer overflow-hidden rounded-t-none rounded-b-md",
+              "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950",
+              "border border-t-0 border-white/10 dark:border-black/10",
+              "shadow-[0_10px_32px_-14px_rgba(0,0,0,0.65)] dark:shadow-[0_10px_32px_-14px_rgba(0,0,0,0.2)]",
+            )}
+          >
         <div
           ref={contentRef}
           className="inline-flex w-max max-w-[min(24rem,calc(100vw-2rem))] flex-col px-3 pt-2"
@@ -190,7 +205,9 @@ export default function FilterDynamicIsland() {
             ) : null}
           </AnimatePresence>
         </div>
-      </motion.div>
-    </div>
+          </motion.div>
+        </div>
+      ) : null}
+    </AnimatePresence>
   );
 }
