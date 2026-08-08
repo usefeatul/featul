@@ -31,6 +31,7 @@ export const updateEntrySchema = z.object({
 });
 
 export const aiToneSchema = z.enum(["user-friendly", "technical", "brief"]);
+export const aiDetailLevelSchema = z.enum(["standard", "detailed"]);
 
 export const aiAssistSchema = z
   .object({
@@ -39,6 +40,7 @@ export const aiAssistSchema = z
       "prompt",
       "format",
       "improve",
+      "expand",
       "summary",
       "generateFromPosts",
     ]),
@@ -47,6 +49,7 @@ export const aiAssistSchema = z
     contentMarkdown: z.string().min(1).max(20000).optional(),
     sourcePostIds: z.array(z.string().min(1)).min(1).max(20).optional(),
     tone: aiToneSchema.optional(),
+    detailLevel: aiDetailLevelSchema.optional(),
   })
   .superRefine((val, ctx) => {
     if (val.action === "prompt" && !val.prompt) {

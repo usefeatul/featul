@@ -5,10 +5,39 @@ export type AiAction =
   | "prompt"
   | "format"
   | "improve"
+  | "expand"
   | "summary"
   | "generateFromPosts";
 
 export type AiTone = "user-friendly" | "technical" | "brief";
+export type AiDetailLevel = "standard" | "detailed";
+
+const CHANGELOG_BODY_STRUCTURE = [
+  "Use this Markdown structure:",
+  "1. Opening paragraph: set context and summarize what shipped.",
+  "2. For each major update, add an ## heading.",
+  "3. Under each heading include:",
+  "   - A paragraph on what changed and why users care",
+  "   - A bullet list with 2-4 concrete improvements or behaviors",
+  "   - Optional short note on how to use it, if relevant",
+  "4. Optional closing paragraph thanking users for feedback.",
+].join("\n");
+
+const DETAIL_GUIDANCE: Record<AiDetailLevel, string> = {
+  standard:
+    "Target length: roughly 200-450 words in contentMarkdown. Be thorough but not exhaustive.",
+  detailed:
+    "Target length: roughly 450-900 words in contentMarkdown for multi-item releases, or 250-500 for a single item. Write a full, publish-ready entry — not a short blurb.",
+};
+
+const TONE_GUIDANCE: Record<AiTone, string> = {
+  "user-friendly":
+    "Audience: end users. Use plain language, focus on outcomes and benefits, avoid internal jargon.",
+  technical:
+    "Audience: technical users. Include implementation details, APIs, settings, or constraints where helpful.",
+  brief:
+    "Keep the entry shorter, but still use headings and bullets. Aim for clarity over length.",
+};
 
 export type AiSourcePost = {
   id: string;
@@ -24,15 +53,6 @@ export type AiSourcePost = {
 };
 
 const SHIPPABLE_STATUSES = ["completed", "progress"] as const;
-
-const TONE_GUIDANCE: Record<AiTone, string> = {
-  "user-friendly":
-    "Write for end users. Avoid jargon. Focus on benefits and what changed for them.",
-  technical:
-    "Write for technical users. Include implementation details where helpful.",
-  brief:
-    "Keep it very concise. Prefer short bullets and minimal prose.",
-};
 
 function truncateText(value: string, maxLength: number) {
   const trimmed = value.trim();
@@ -227,6 +247,7 @@ export function buildAiUserPrompt(input: {
   title?: string;
   contentMarkdown?: string;
   tone?: AiTone;
+  detailLevel?: AiDetailLevel;
   workspaceName?: string;
   sourcePosts?: AiSourcePost[];
 }) {
@@ -240,31 +261,39 @@ export function buildAiUserPrompt(input: {
   const sourcePostsBlock = input.sourcePosts?.length
     ? `Shipped or in-progress feedback items:\n${formatSourcePostsBlock(input.sourcePosts)}`
     : "";
+  const itemCount = input.sourcePosts?.length ?? 0;
+  const detailLevel = input.detailLevel ?? "detailed";
 
   switch (input.action) {
     case "prompt":
       return [
-        "Write a changelog entry based on the prompt below.",
+        "Write a polished changelog entry based on the prompt below.",
         "Requirements:",
-        "- Provide a short, clear title.",
-        "- Write a concise Markdown body with headings or bullets when helpful.",
-        "- Provide a 1-2 sentence summary (<= 512 characters).",
+        "- Provide a clear, compelling title.",
+        "- Write a substantive Markdown body — not just a few sentences.",
+        "- Provide a 2-3 sentence summary (<= 512 characters).",
+        DETAIL_GUIDANCE.detailed,
+        CHANGELOG_BODY_STRUCTURE,
+        TONE_GUIDANCE[input.tone ?? "user-friendly"],
         workspaceLine,
         titleLine ? `Current title (if helpful): ${titleLine}` : "",
         "Prompt:",
         input.prompt || "",
       ]
         .filter(Boolean)
-        .join("\n");
+        .join("\n\n");
     case "generateFromPosts":
       return [
-        "Write a changelog entry for the shipped or in-progress feedback items below.",
+        `Write a polished, publish-ready changelog entry covering ${itemCount} shipped feedback item${itemCount === 1 ? "" : "s"}.`,
         "Requirements:",
-        "- Provide a short, clear title covering the selected updates.",
-        "- Write a user-facing Markdown body with headings or bullets.",
-        "- Reference the original user requests naturally when helpful.",
+        "- Title: clear and compelling (max 12 words).",
+        "- Summary: 2-3 sentences previewing the release (<= 512 characters).",
+        "- Body: comprehensive Markdown that explains what shipped and why it matters.",
+        "- Reference original user requests naturally when the feedback context supports it.",
         "- Mention vote counts only when they add credibility.",
-        "- Provide a 1-2 sentence summary (<= 512 characters).",
+        "- Do NOT write a thin update with only a few sentences.",
+        DETAIL_GUIDANCE[detailLevel],
+        CHANGELOG_BODY_STRUCTURE,
         TONE_GUIDANCE[input.tone ?? "user-friendly"],
         workspaceLine,
         sourcePostsBlock,
@@ -277,6 +306,7 @@ export function buildAiUserPrompt(input: {
     case "format":
       return [
         "Fix formatting and structure without changing meaning.",
+        "Preserve or improve headings, paragraphs, and bullet lists.",
         "Return JSON with contentMarkdown only.",
         titleLine,
         contentBlock,
@@ -285,7 +315,20 @@ export function buildAiUserPrompt(input: {
         .join("\n\n");
     case "improve":
       return [
-        "Improve clarity and concision without changing meaning.",
+        "Improve clarity, flow, and polish without losing important detail.",
+        "Make the writing sound more professional and user-friendly.",
+        "If the entry is too thin, expand key sections with helpful context.",
+        "Return JSON with contentMarkdown only.",
+        titleLine,
+        contentBlock,
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+    case "expand":
+      return [
+        "Expand this changelog entry with more useful detail.",
+        "Add missing context, user benefits, examples, and concrete bullet points.",
+        "Use headings and lists where helpful. Do not remove existing information.",
         "Return JSON with contentMarkdown only.",
         titleLine,
         contentBlock,
@@ -294,7 +337,7 @@ export function buildAiUserPrompt(input: {
         .join("\n\n");
     case "summary":
       return [
-        "Write a concise 1-2 sentence summary (<= 512 characters).",
+        "Write a compelling 2-3 sentence summary (<= 512 characters) that previews the entry.",
         "Return JSON with summary only.",
         titleLine,
         contentBlock,

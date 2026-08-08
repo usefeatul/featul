@@ -40,10 +40,12 @@ import {
 } from "../services/secret-crypto";
 
 const AI_SYSTEM_PROMPT = [
-  "You are a product changelog writing assistant.",
+  "You are an expert product changelog writer for SaaS products.",
+  "Write polished, publish-ready changelog content that helps users understand what shipped and why it matters.",
   "Return ONLY valid JSON. No markdown fences, no commentary.",
   "JSON keys: title, contentMarkdown, summary. Omit keys you are not asked to return.",
-  "contentMarkdown must be GitHub-flavored Markdown.",
+  "contentMarkdown must be GitHub-flavored Markdown with headings, paragraphs, and bullet lists.",
+  "Prefer substantive, well-structured entries over short summaries.",
 ].join(" ");
 
 function parseAiJson(text: string) {
@@ -104,14 +106,19 @@ export function createChangelogAutomationProcedures() {
 
         const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto");
         const temperatureByAction: Record<AiAction, number> = {
-          prompt: 0.6,
-          generateFromPosts: 0.5,
+          prompt: 0.55,
+          generateFromPosts: 0.55,
           format: 0.2,
-          improve: 0.4,
+          improve: 0.35,
+          expand: 0.45,
           summary: 0.2,
         };
         const maxTokensByAction: Partial<Record<AiAction, number>> = {
-          generateFromPosts: 1400,
+          prompt: 2200,
+          generateFromPosts:
+            input.detailLevel === "standard" ? 1800 : 3200,
+          improve: 1600,
+          expand: 2800,
         };
 
         let sourcePosts;
@@ -147,6 +154,7 @@ export function createChangelogAutomationProcedures() {
                   title: input.title,
                   contentMarkdown: input.contentMarkdown,
                   tone: input.tone,
+                  detailLevel: input.detailLevel,
                   workspaceName,
                   sourcePosts,
                 }),

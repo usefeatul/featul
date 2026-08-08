@@ -19,8 +19,15 @@ import StatusIcon from "@/components/requests/StatusIcon";
 import { SelectionControl } from "@/components/selection/SelectionControl";
 import type { FeedEditorRef } from "@/components/editor/editor";
 
-type AiAction = "prompt" | "format" | "improve" | "summary" | "generateFromPosts";
+type AiAction =
+  | "prompt"
+  | "format"
+  | "improve"
+  | "expand"
+  | "summary"
+  | "generateFromPosts";
 type AiTone = "user-friendly" | "technical" | "brief";
+type AiDetailLevel = "standard" | "detailed";
 type AiPanelTab = "shipped" | "refine";
 
 type SourcePost = {
@@ -43,10 +50,15 @@ interface ChangelogAiPanelProps {
   setIsDirty: (value: boolean) => void;
 }
 
-const TONE_OPTIONS: Array<{ value: AiTone; label: string; description: string }> = [
-  { value: "user-friendly", label: "Friendly", description: "Clear, benefit-focused copy" },
-  { value: "technical", label: "Technical", description: "Detailed, implementation-aware" },
-  { value: "brief", label: "Brief", description: "Short bullets, minimal prose" },
+const TONE_OPTIONS: Array<{ value: AiTone; label: string }> = [
+  { value: "user-friendly", label: "Friendly" },
+  { value: "technical", label: "Technical" },
+  { value: "brief", label: "Brief" },
+];
+
+const DETAIL_OPTIONS: Array<{ value: AiDetailLevel; label: string; hint: string }> = [
+  { value: "detailed", label: "Detailed", hint: "Full release notes" },
+  { value: "standard", label: "Standard", hint: "Balanced length" },
 ];
 
 const REFINE_ACTIONS: Array<{
@@ -54,15 +66,48 @@ const REFINE_ACTIONS: Array<{
   label: string;
   description: string;
 }> = [
-  { action: "format", label: "Format", description: "Fix structure and markdown" },
-  { action: "improve", label: "Improve", description: "Sharpen clarity and flow" },
-  { action: "summary", label: "Summary", description: "Write a list preview line" },
+  { action: "expand", label: "Expand", description: "Add depth, examples, and detail" },
+  { action: "improve", label: "Improve", description: "Polish clarity and flow" },
+  { action: "format", label: "Format", description: "Fix headings, lists, and structure" },
+  { action: "summary", label: "Summary", description: "Write the list preview line" },
 ];
 
 function formatStatusLabel(status: string | null) {
   if (status === "completed") return "Completed";
   if (status === "progress") return "In progress";
   return status ?? "Unknown";
+}
+
+function OptionPill<T extends string>({
+  active,
+  label,
+  hint,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  hint?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "rounded-md border px-3 py-2 text-left transition-all",
+        active
+          ? "border-primary/50 bg-primary/8 shadow-sm"
+          : "border-border bg-card hover:border-border/80 hover:bg-muted/20 dark:bg-black/20",
+      )}
+    >
+      <span className="block text-xs font-medium text-foreground">{label}</span>
+      {hint ? (
+        <span className="mt-0.5 block text-[10px] leading-tight text-muted-foreground">
+          {hint}
+        </span>
+      ) : null}
+    </button>
+  );
 }
 
 export function ChangelogAiPanel({
@@ -77,16 +122,16 @@ export function ChangelogAiPanel({
 }: ChangelogAiPanelProps) {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Generating draft…");
   const [activeTab, setActiveTab] = useState<AiPanelTab>("shipped");
   const [tone, setTone] = useState<AiTone>("user-friendly");
+  const [detailLevel, setDetailLevel] = useState<AiDetailLevel>("detailed");
   const [sourcePosts, setSourcePosts] = useState<SourcePost[]>([]);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
 
   useEffect(() => {
-    if (!open) {
-      return;
-    }
+    if (!open) return;
 
     let cancelled = false;
 
@@ -108,18 +153,13 @@ export function ChangelogAiPanel({
 
         setSourcePosts(data.posts as SourcePost[]);
       } catch {
-        if (!cancelled) {
-          setSourcePosts([]);
-        }
+        if (!cancelled) setSourcePosts([]);
       } finally {
-        if (!cancelled) {
-          setIsLoadingPosts(false);
-        }
+        if (!cancelled) setIsLoadingPosts(false);
       }
     };
 
     loadSourcePosts();
-
     return () => {
       cancelled = true;
     };
@@ -127,6 +167,11 @@ export function ChangelogAiPanel({
 
   const allSelected =
     sourcePosts.length > 0 && selectedPostIds.length === sourcePosts.length;
+
+  const selectedPosts = useMemo(
+    () => sourcePosts.filter((post) => selectedPostIds.includes(post.id)),
+    [sourcePosts, selectedPostIds],
+  );
 
   const applyAiResult = (data: {
     title?: unknown;
@@ -170,6 +215,16 @@ export function ChangelogAiPanel({
       }
     }
 
+    const messages: Partial<Record<AiAction, string>> = {
+      generateFromPosts: "Writing your changelog draft…",
+      prompt: "Generating from your prompt…",
+      expand: "Expanding with more detail…",
+      improve: "Polishing your entry…",
+      format: "Fixing formatting…",
+      summary: "Writing summary…",
+    };
+
+    setLoadingMessage(messages[action] ?? "Working…");
     setIsLoading(true);
     try {
       const contentMarkdown =
@@ -187,7 +242,8 @@ export function ChangelogAiPanel({
         title: title.trim() || undefined,
         contentMarkdown: contentMarkdown?.trim() || undefined,
         sourcePostIds: action === "generateFromPosts" ? selectedPostIds : undefined,
-        tone: action === "generateFromPosts" ? tone : undefined,
+        tone: action === "generateFromPosts" || action === "prompt" ? tone : undefined,
+        detailLevel: action === "generateFromPosts" ? detailLevel : undefined,
       });
       const data = await res.json().catch(() => ({}));
 
@@ -199,14 +255,10 @@ export function ChangelogAiPanel({
 
       applyAiResult(data);
 
-      if (action === "prompt") {
-        setPrompt("");
-      }
+      if (action === "prompt") setPrompt("");
 
-      toast.success("AI draft applied");
-      if (action === "generateFromPosts") {
-        onOpenChange(false);
-      }
+      toast.success("AI changes applied");
+      if (action === "generateFromPosts") onOpenChange(false);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to run AI assist";
       toast.error(msg);
@@ -233,64 +285,73 @@ export function ChangelogAiPanel({
     setSelectedPostIds(sourcePosts.map((post) => post.id));
   };
 
-  const selectedCountLabel = useMemo(() => {
-    if (selectedPostIds.length === 0) return "Select items to generate";
-    return `${selectedPostIds.length} selected`;
-  }, [selectedPostIds.length]);
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 border-border p-0 sm:max-w-[420px]"
+        className="flex w-full flex-col gap-0 overflow-hidden border-border p-0 sm:max-w-[460px]"
       >
-        <SheetHeader className="border-b border-border px-5 py-4 pr-12 text-left">
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-md border border-border bg-card dark:bg-black/40">
+        {isLoading ? (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background/90 backdrop-blur-sm">
+            <LoaderIcon className="size-5 animate-spin text-primary" />
+            <p className="text-sm font-medium text-foreground">{loadingMessage}</p>
+            <p className="max-w-[240px] text-center text-xs text-muted-foreground">
+              This may take a few seconds for detailed drafts.
+            </p>
+          </div>
+        ) : null}
+
+        <SheetHeader className="space-y-3 border-b border-border bg-card/40 px-5 py-4 pr-12 text-left dark:bg-black/20">
+          <div className="flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-background shadow-sm">
               <AiIcon className="size-4 text-primary" />
             </div>
-            <div>
-              <SheetTitle className="text-base font-semibold">Write with AI</SheetTitle>
-              <SheetDescription className="text-xs">
-                Draft changelogs from shipped feedback or refine what you already wrote.
+            <div className="min-w-0">
+              <SheetTitle className="text-base font-semibold tracking-tight">
+                Write with AI
+              </SheetTitle>
+              <SheetDescription className="mt-1 text-xs leading-relaxed">
+                Turn shipped feedback into a detailed changelog, or refine what you
+                already wrote.
               </SheetDescription>
             </div>
           </div>
-        </SheetHeader>
 
-        <div className="border-b border-border px-5 py-3">
-          <div className="flex rounded-md border border-border bg-card p-0.5 dark:bg-black/40">
-            <button
-              type="button"
-              className={cn(
-                "flex-1 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
-                activeTab === "shipped"
-                  ? "bg-muted text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-              onClick={() => setActiveTab("shipped")}
-            >
-              Shipped items
-            </button>
-            <button
-              type="button"
-              className={cn(
-                "flex-1 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
-                activeTab === "refine"
-                  ? "bg-muted text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-              onClick={() => setActiveTab("refine")}
-            >
-              Refine entry
-            </button>
+          <div className="flex rounded-md border border-border bg-background p-0.5 dark:bg-black/30">
+            {(
+              [
+                { id: "shipped", label: "From feedback" },
+                { id: "refine", label: "Refine entry" },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={cn(
+                  "flex-1 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
+                  activeTab === tab.id
+                    ? "bg-muted text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
-        </div>
+        </SheetHeader>
 
         {activeTab === "shipped" ? (
           <>
-            <div className="flex items-center justify-between border-b border-border px-5 py-2.5">
-              <span className="text-xs text-muted-foreground">{selectedCountLabel}</span>
+            <div className="flex items-center justify-between border-b border-border/70 px-5 py-2.5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-foreground">Shipped items</span>
+                {selectedPostIds.length > 0 ? (
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium tabular-nums text-primary">
+                    {selectedPostIds.length}
+                  </span>
+                ) : null}
+              </div>
               {sourcePosts.length > 0 ? (
                 <button
                   type="button"
@@ -304,20 +365,20 @@ export function ChangelogAiPanel({
 
             <div className="min-h-0 flex-1 overflow-y-auto">
               {isLoadingPosts ? (
-                <div className="flex items-center gap-2 px-5 py-8 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 px-5 py-10 text-sm text-muted-foreground">
                   <LoaderIcon className="size-4 animate-spin" />
                   Loading shipped items…
                 </div>
               ) : sourcePosts.length === 0 ? (
-                <div className="mx-5 my-6 rounded-md border border-dashed border-border bg-card px-4 py-8 text-center dark:bg-black/20">
-                  <p className="text-sm font-medium text-foreground">No shipped items yet</p>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    Move feedback to In progress or Completed on your roadmap, then come back
-                    here to generate a changelog draft.
+                <div className="mx-5 my-8 rounded-md border border-dashed border-border bg-muted/20 px-4 py-10 text-center">
+                  <p className="text-sm font-medium text-foreground">Nothing to ship yet</p>
+                  <p className="mx-auto mt-2 max-w-[280px] text-xs leading-relaxed text-muted-foreground">
+                    Mark feedback as In progress or Completed on your roadmap, then
+                    generate a changelog that references what users asked for.
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-border/70">
+                <div className="space-y-2 p-3">
                   {sourcePosts.map((post) => {
                     const checked = selectedPostIds.includes(post.id);
                     return (
@@ -326,10 +387,10 @@ export function ChangelogAiPanel({
                         type="button"
                         onClick={() => togglePostSelection(post.id, !checked)}
                         className={cn(
-                          "flex w-full items-start gap-3 px-5 py-3 text-left transition-colors",
+                          "flex w-full items-start gap-3 rounded-md border px-3 py-3 text-left transition-all",
                           checked
-                            ? "bg-primary/5"
-                            : "bg-card hover:bg-muted/30 dark:bg-black/20 dark:hover:bg-black/30",
+                            ? "border-primary/40 bg-primary/5 shadow-sm"
+                            : "border-border/70 bg-card hover:border-border hover:bg-muted/20 dark:bg-black/20",
                         )}
                       >
                         <SelectionControl
@@ -341,13 +402,13 @@ export function ChangelogAiPanel({
                           onClick={(event) => event.stopPropagation()}
                         />
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start justify-between gap-2">
                             <p className="text-sm font-medium leading-snug text-foreground">
                               {post.title}
                             </p>
                             {post.upvotes > 0 ? (
-                              <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
-                                {post.upvotes} votes
+                              <span className="shrink-0 rounded-sm bg-muted px-1.5 py-0.5 text-[10px] tabular-nums text-muted-foreground">
+                                {post.upvotes}
                               </span>
                             ) : null}
                           </div>
@@ -371,30 +432,60 @@ export function ChangelogAiPanel({
               )}
             </div>
 
-            <div className="mt-auto border-t border-border bg-background px-5 py-4">
-              <div className="mb-3">
+            <div className="border-t border-border bg-muted/10 px-5 py-4 dark:bg-black/10">
+              {selectedPosts.length > 0 ? (
+                <div className="mb-4 rounded-md border border-border/70 bg-background px-3 py-2.5 dark:bg-black/20">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    Will write about
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {selectedPosts.slice(0, 4).map((post) => (
+                      <span
+                        key={post.id}
+                        className="max-w-full truncate rounded-sm border border-border bg-card px-2 py-0.5 text-[11px] text-foreground dark:bg-black/30"
+                      >
+                        {post.title}
+                      </span>
+                    ))}
+                    {selectedPosts.length > 4 ? (
+                      <span className="rounded-sm px-2 py-0.5 text-[11px] text-muted-foreground">
+                        +{selectedPosts.length - 4} more
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="mb-4 grid grid-cols-2 gap-2">
+                {DETAIL_OPTIONS.map((option) => (
+                  <OptionPill
+                    key={option.value}
+                    active={detailLevel === option.value}
+                    label={option.label}
+                    hint={option.hint}
+                    onClick={() => setDetailLevel(option.value)}
+                  />
+                ))}
+              </div>
+
+              <div className="mb-4">
                 <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                   Tone
                 </p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {TONE_OPTIONS.map((option) => (
                     <button
                       key={option.value}
                       type="button"
                       onClick={() => setTone(option.value)}
                       className={cn(
-                        "rounded-md border px-2 py-2 text-left transition-colors",
+                        "rounded-sm border px-2.5 py-1 text-xs font-medium transition-colors",
                         tone === option.value
-                          ? "border-primary/40 bg-primary/5"
-                          : "border-border bg-card hover:bg-muted/30 dark:bg-black/20",
+                          ? "border-primary/40 bg-primary/8 text-foreground"
+                          : "border-border bg-card text-muted-foreground hover:text-foreground dark:bg-black/20",
                       )}
                     >
-                      <span className="block text-xs font-medium text-foreground">
-                        {option.label}
-                      </span>
-                      <span className="mt-0.5 block text-[10px] leading-tight text-muted-foreground">
-                        {option.description}
-                      </span>
+                      {option.label}
                     </button>
                   ))}
                 </div>
@@ -405,8 +496,8 @@ export function ChangelogAiPanel({
                 onChange={(event) => setPrompt(event.target.value)}
                 minRows={2}
                 maxRows={4}
-                placeholder="Optional instructions for the draft"
-                className="mb-3 w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20"
+                placeholder="Optional: mention audience, rollout notes, or extra context"
+                className="mb-3 w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20"
               />
 
               <Button
@@ -414,44 +505,37 @@ export function ChangelogAiPanel({
                 onClick={() => runAction("generateFromPosts")}
                 disabled={isLoading || selectedPostIds.length === 0}
               >
-                {isLoading ? (
-                  <>
-                    <LoaderIcon className="size-4 animate-spin" />
-                    Generating draft…
-                  </>
-                ) : (
-                  "Generate draft"
-                )}
+                Generate detailed draft
               </Button>
             </div>
           </>
         ) : (
           <>
             <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-              <p className="mb-3 text-xs text-muted-foreground">
-                Quick actions for the current entry. Add content in the editor first for
-                format, improve, and summary.
+              <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
+                Use these on the current entry. For thin drafts, start with{" "}
+                <span className="font-medium text-foreground">Expand</span> to add
+                depth before publishing.
               </p>
-              <div className="grid gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {REFINE_ACTIONS.map((item) => (
                   <button
                     key={item.action}
                     type="button"
                     disabled={isLoading}
                     onClick={() => runAction(item.action)}
-                    className="flex items-start justify-between gap-3 rounded-md border border-border bg-card px-3 py-3 text-left transition-colors hover:bg-muted/30 disabled:opacity-50 dark:bg-black/20"
+                    className="rounded-md border border-border bg-card px-3 py-3 text-left transition-colors hover:border-border/80 hover:bg-muted/20 disabled:opacity-50 dark:bg-black/20"
                   >
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{item.label}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{item.description}</p>
-                    </div>
-                    <AiIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                    <p className="text-sm font-medium text-foreground">{item.label}</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                      {item.description}
+                    </p>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="mt-auto border-t border-border bg-background px-5 py-4">
+            <div className="border-t border-border bg-muted/10 px-5 py-4 dark:bg-black/10">
               <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                 Custom prompt
               </p>
@@ -462,9 +546,9 @@ export function ChangelogAiPanel({
                   onEnterPress={() => runAction("prompt")}
                   minRows={3}
                   maxRows={6}
-                  placeholder="Describe what changed, or ask AI to rewrite this entry"
+                  placeholder="Ask for a full changelog with sections, bullets, and user benefits"
                   className={cn(
-                    "w-full resize-none rounded-md border border-border bg-card px-3 py-2.5 pr-12 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
+                    "w-full resize-none rounded-md border border-border bg-background px-3 py-2.5 pr-12 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
                     isLoading && "opacity-70",
                   )}
                 />
