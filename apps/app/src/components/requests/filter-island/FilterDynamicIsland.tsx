@@ -70,7 +70,7 @@ export default function FilterDynamicIsland() {
             <div
               ref={contentRef}
               className={cn(
-                "inline-flex w-max flex-col px-3 pt-2",
+                "inline-flex w-max flex-col pt-2",
                 FILTER_ISLAND_MAX_WIDTH_CLASS,
               )}
             >

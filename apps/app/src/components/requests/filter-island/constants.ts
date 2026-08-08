@@ -17,6 +17,9 @@ export const FILTER_ISLAND_CLEAR_ALL_CLASS =
 export const FILTER_ISLAND_CHIP_CLASS =
   "inline-flex h-6 max-w-[8.5rem] cursor-pointer items-center gap-1 rounded-sm border border-white/10 bg-white/10 px-2 text-[11px] text-white transition-colors hover:bg-white/18 dark:border-black/10 dark:bg-black/8 dark:text-neutral-950 dark:hover:bg-black/12";
 
+export const FILTER_ISLAND_DIVIDER_CLASS =
+  "w-full border-t border-white/10 dark:border-black/10";
+
 export type FilterIslandTransitions = {
   island: Transition;
   visibility: Transition;

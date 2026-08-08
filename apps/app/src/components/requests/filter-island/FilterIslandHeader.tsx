@@ -24,7 +24,7 @@ export function FilterIslandHeader({
   return (
     <div
       className={cn(
-        "flex h-7 items-center whitespace-nowrap",
+        "flex h-7 items-center whitespace-nowrap px-3",
         expanded ? "w-full justify-between gap-3" : "gap-2",
       )}
     >

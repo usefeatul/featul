@@ -6,7 +6,7 @@ import {
   type Transition,
 } from "framer-motion";
 import { XMarkIcon } from "@featul/ui/icons/xmark";
-import { FILTER_ISLAND_CHIP_CLASS } from "@/components/requests/filter-island/constants";
+import { FILTER_ISLAND_CHIP_CLASS, FILTER_ISLAND_DIVIDER_CLASS } from "@/components/requests/filter-island/constants";
 import type { ActiveFilterItem } from "@/hooks/useActivePageFilters";
 
 type FilterIslandChipsProps = {
@@ -31,7 +31,11 @@ export function FilterIslandChips({
           transition={transition}
           className="overflow-hidden"
         >
-          <div className="flex flex-wrap items-center gap-1.5 pb-2.5 pt-2">
+          <div
+            aria-hidden
+            className={FILTER_ISLAND_DIVIDER_CLASS}
+          />
+          <div className="flex flex-wrap items-center gap-1.5 px-3 pb-2.5 pt-2">
             {items.map((item) => (
               <button
                 key={item.key}
