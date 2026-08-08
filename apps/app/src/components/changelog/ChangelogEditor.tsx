@@ -53,6 +53,8 @@ export function ChangelogEditor({
     const [aiPanelTab, setAiPanelTab] = useState<AiPanelTab>("shipped");
     const [autoRunAction, setAutoRunAction] = useState<AiQuickAction | null>(null);
 
+    const [isAiGenerating, setIsAiGenerating] = useState(false);
+
     const {
         editorRef,
         title,
@@ -68,7 +70,13 @@ export function ChangelogEditor({
         setIsDirty,
         handleImageUpload,
         handleSave,
-    } = useChangelogEntry({ workspaceSlug, mode, entryId, initialData });
+    } = useChangelogEntry({
+        workspaceSlug,
+        mode,
+        entryId,
+        initialData,
+        autoSaveSuspended: isAiGenerating,
+    });
 
     const openAiPanel = useCallback((tab: AiPanelTab) => {
         setAiPanelTab(tab);
@@ -248,6 +256,7 @@ export function ChangelogEditor({
                     title={title}
                     setTitle={setTitle}
                     setIsDirty={setIsDirty}
+                    onGeneratingChange={setIsAiGenerating}
                     initialTab={aiPanelTab}
                     autoRunAction={autoRunAction}
                     onAutoRunActionHandled={() => setAutoRunAction(null)}

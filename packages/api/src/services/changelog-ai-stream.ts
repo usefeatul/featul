@@ -13,13 +13,17 @@ import {
   type AiAction,
 } from "./changelog-ai-context";
 import {
-  parseStructuredChangelogStream,
+  extractTitleLine,
+  isValidChangelogTitle,
+  resolveAiChangelogTitle,
   usesStructuredChangelogStream,
 } from "./changelog-ai-stream-parser";
 
 const AI_STREAM_TITLE_SYSTEM_PROMPT = [
   "You are an expert product changelog writer.",
-  "Return ONLY a TITLE line in the requested format.",
+  "Return ONLY one TITLE line in the requested format.",
+  "The title must be specific, descriptive, and 5-12 words.",
+  "Never use generic titles like 'Product update', 'Release', or single-word titles.",
   "Start line 1 with TITLE: immediately. No preamble.",
 ].join(" ");
 
@@ -124,6 +128,59 @@ function emitBodyStreamEvents(
   state.sentBodyLength = body.length;
 }
 
+async function generateChangelogTitle(input: {
+  model: string;
+  action: Extract<AiAction, "prompt" | "generateFromPosts">;
+  temperature: number;
+  prompt?: string;
+  tone?: "user-friendly" | "technical" | "brief";
+  workspaceName?: string;
+  sourcePosts?: Awaited<ReturnType<typeof fetchAiSourcePostsByIds>>;
+}) {
+  const requestTitle = async (extraInstruction?: string) => {
+    let raw = "";
+    await streamOpenRouterChat(
+      {
+        model: input.model,
+        messages: [
+          { role: "system", content: AI_STREAM_TITLE_SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: [
+              buildTitleStreamPrompt({
+                action: input.action,
+                prompt: input.prompt,
+                tone: input.tone,
+                workspaceName: input.workspaceName,
+                sourcePosts: input.sourcePosts,
+              }),
+              extraInstruction,
+            ]
+              .filter(Boolean)
+              .join("\n\n"),
+          },
+        ],
+        temperature: Math.min(input.temperature, 0.35),
+        max_tokens: 120,
+      },
+      (text) => {
+        raw += text;
+      },
+    );
+    return raw;
+  };
+
+  let titleRaw = await requestTitle();
+  const firstTitle = extractTitleLine(titleRaw);
+  if (!firstTitle || !isValidChangelogTitle(firstTitle)) {
+    titleRaw = await requestTitle(
+      "The previous title was too generic or invalid. Rewrite it to explicitly mention the shipped feedback topics below.",
+    );
+  }
+
+  return resolveAiChangelogTitle(titleRaw, input.sourcePosts);
+}
+
 async function streamStructuredChangelog(input: {
   model: string;
   action: Extract<AiAction, "prompt" | "generateFromPosts">;
@@ -136,51 +193,14 @@ async function streamStructuredChangelog(input: {
   sourcePosts?: Awaited<ReturnType<typeof fetchAiSourcePostsByIds>>;
   send: (event: StreamEvent) => void;
 }) {
+  const finalTitle = await generateChangelogTitle(input);
+  input.send({ type: "title", text: finalTitle });
+
   const structuredState = {
-    sentTitleLength: 0,
     sentBodyLength: 0,
   };
 
-  let titleRaw = "";
-  await streamOpenRouterChat(
-    {
-      model: input.model,
-      messages: [
-        { role: "system", content: AI_STREAM_TITLE_SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: buildTitleStreamPrompt({
-            action: input.action,
-            prompt: input.prompt,
-            tone: input.tone,
-            workspaceName: input.workspaceName,
-            sourcePosts: input.sourcePosts,
-          }),
-        },
-      ],
-      temperature: Math.min(input.temperature, 0.4),
-      max_tokens: 80,
-    },
-    (text) => {
-      titleRaw += text;
-      const parsed = parseStructuredChangelogStream(titleRaw);
-      if (parsed.title && parsed.title.length > structuredState.sentTitleLength) {
-        input.send({ type: "title", text: parsed.title.slice(0, 256) });
-        structuredState.sentTitleLength = parsed.title.length;
-      }
-    },
-  );
-
-  const meta = parseStructuredChangelogStream(titleRaw.trim());
-  const finalTitle = (meta.title || "Product update").slice(0, 256);
-
-  if (finalTitle.length > structuredState.sentTitleLength) {
-    input.send({ type: "title", text: finalTitle });
-    structuredState.sentTitleLength = finalTitle.length;
-  }
-
   let body = "";
-  structuredState.sentBodyLength = 0;
   await streamOpenRouterChat(
     {
       model: input.model,
@@ -212,39 +232,6 @@ async function streamStructuredChangelog(input: {
     title: finalTitle,
     contentMarkdown: body.trim(),
   };
-}
-
-function emitStructuredStreamEvents(
-  accumulated: string,
-  state: {
-    sentTitleLength: number;
-    sentSummaryLength: number;
-    sentBodyLength: number;
-  },
-  send: (event: StreamEvent) => void,
-) {
-  const parsed = parseStructuredChangelogStream(accumulated);
-
-  if (parsed.title && parsed.title.length > state.sentTitleLength) {
-    send({ type: "title", text: parsed.title.slice(0, 256) });
-    state.sentTitleLength = parsed.title.length;
-  }
-
-  if (
-    parsed.summary &&
-    parsed.summary.length > state.sentSummaryLength
-  ) {
-    send({ type: "summary", text: parsed.summary.slice(0, 512) });
-    state.sentSummaryLength = parsed.summary.length;
-  }
-
-  if (parsed.body.length > state.sentBodyLength) {
-    const delta = parsed.body.slice(state.sentBodyLength);
-    if (delta) {
-      send({ type: "delta", text: delta });
-      state.sentBodyLength = parsed.body.length;
-    }
-  }
 }
 
 export async function createChangelogAiStreamResponse(req: Request) {

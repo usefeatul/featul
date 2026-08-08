@@ -41,6 +41,7 @@ interface ChangelogAiPanelProps {
   setTitle: (value: string) => void;
   editorRef: RefObject<FeedEditorRef | null>;
   setIsDirty: (value: boolean) => void;
+  onGeneratingChange?: (generating: boolean) => void;
   initialTab?: AiPanelTab;
   autoRunAction?: Exclude<AiAction, "prompt" | "generateFromPosts" | "summary"> | null;
   onAutoRunActionHandled?: () => void;
@@ -127,6 +128,7 @@ export function ChangelogAiPanel({
   setTitle,
   editorRef,
   setIsDirty,
+  onGeneratingChange,
   initialTab,
   autoRunAction,
   onAutoRunActionHandled,
@@ -197,12 +199,10 @@ export function ChangelogAiPanel({
   }) => {
     if (data.title && typeof data.title === "string") {
       setTitle(data.title);
-      setIsDirty(true);
     }
 
     if (data.contentMarkdown && typeof data.contentMarkdown === "string") {
       editorRef.current?.setContentFromMarkdown(data.contentMarkdown);
-      setIsDirty(true);
     }
   };
 
@@ -241,6 +241,7 @@ export function ChangelogAiPanel({
     setLoadingMessage(startMessage);
     setIsLoading(true);
     setIsStreaming(true);
+    onGeneratingChange?.(true);
     onOpenChange(false);
 
     const contentMarkdown = editorRef.current?.getMarkdown();
@@ -248,33 +249,28 @@ export function ChangelogAiPanel({
       action === "generateFromPosts" || action === "prompt";
 
     editorRef.current?.focus();
-    if (usesStructuredSections) {
-      setTitle("");
-    }
-    if (
-      usesStructuredSections ||
-      action === "format" ||
-      action === "improve" ||
-      action === "expand"
-    ) {
-      editorRef.current?.setStreamingMarkdown("");
-    }
 
     let pendingBody: string | null = null;
     let bodyFrame: number | null = null;
+    let bodyStreamStarted = false;
 
     const flushBodyPreview = () => {
       bodyFrame = null;
       if (pendingBody === null) return;
       const markdown = pendingBody;
       pendingBody = null;
-      editorRef.current?.setStreamingMarkdown(markdown);
-      setIsDirty(true);
-    };
 
-    const updateBodyPreview = (markdown: string) => {
+      if (!bodyStreamStarted) {
+        bodyStreamStarted = true;
+        editorRef.current?.beginAiStream();
+      }
+
+      if (usesStructuredSections) {
+        editorRef.current?.updateStreamingMarkdown(markdown);
+        return;
+      }
+
       editorRef.current?.setStreamingMarkdown(markdown);
-      setIsDirty(true);
     };
 
     const scheduleBodyPreview = (markdown: string) => {
@@ -300,15 +296,11 @@ export function ChangelogAiPanel({
         },
         {
           onTitle: (text) => {
-            setTitle(text.slice(0, 256));
-            setIsDirty(true);
+            if (text.trim()) {
+              setTitle(text.slice(0, 256));
+            }
           },
           onDelta: (_text, accumulated) => {
-            if (usesStructuredSections) {
-              updateBodyPreview(accumulated);
-              return;
-            }
-
             scheduleBodyPreview(accumulated);
           },
           onDone: (event) => {
@@ -321,6 +313,7 @@ export function ChangelogAiPanel({
               title: event.title,
               contentMarkdown: event.contentMarkdown,
             });
+            setIsDirty(true);
           },
         },
       );
@@ -337,6 +330,7 @@ export function ChangelogAiPanel({
       }
       setIsLoading(false);
       setIsStreaming(false);
+      onGeneratingChange?.(false);
     }
   };
 

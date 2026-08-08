@@ -371,25 +371,34 @@ export function buildTitleStreamPrompt(input: {
 
   if (input.action === "generateFromPosts") {
     return [
-      "Write a clear changelog title from the shipped feedback below.",
+      "Write one specific changelog title for the shipped feedback below.",
+      "Requirements:",
+      "- 5-12 words",
+      "- Name the actual features or improvements shipped",
+      "- Do NOT use generic titles like 'Product update', 'Release', or 'Changelog'",
       tone,
       workspaceLine,
       sourcePostsBlock,
       input.prompt?.trim() ? `Notes: ${input.prompt.trim()}` : "",
       "Output format (line 1 must start with TITLE:):",
-      "TITLE: <clear title, max 12 words>",
+      "TITLE: <specific descriptive title>",
+      "Example: TITLE: Faster roadmap filters and bulk triage actions",
     ]
       .filter(Boolean)
       .join("\n");
   }
 
   return [
-    "Write a clear changelog title from the prompt below.",
+    "Write one specific changelog title for the request below.",
+    "Requirements:",
+    "- 5-12 words",
+    "- Name the actual topic being shipped",
+    "- Do NOT use generic titles like 'Product update', 'Release', or 'Changelog'",
     tone,
     workspaceLine,
     input.prompt?.trim() ? `Prompt: ${input.prompt.trim()}` : "",
     "Output format (line 1 must start with TITLE:):",
-    "TITLE: <clear title, max 12 words>",
+    "TITLE: <specific descriptive title>",
   ]
     .filter(Boolean)
     .join("\n");

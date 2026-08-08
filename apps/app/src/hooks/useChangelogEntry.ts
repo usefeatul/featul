@@ -13,6 +13,7 @@ interface UseChangelogEntryProps {
     workspaceSlug: string;
     mode: "create" | "edit";
     entryId?: string;
+    autoSaveSuspended?: boolean;
     initialData?: {
         title: string;
         content: JSONContent;
@@ -27,6 +28,7 @@ export function useChangelogEntry({
     workspaceSlug,
     mode,
     entryId,
+    autoSaveSuspended = false,
     initialData,
 }: UseChangelogEntryProps) {
     const router = useRouter();
@@ -127,13 +129,13 @@ export function useChangelogEntry({
 
     // Auto-save effect
     useEffect(() => {
-        if (isDirty && !isSaving) {
+        if (isDirty && !isSaving && !autoSaveSuspended) {
             const timer = setTimeout(() => {
                 handleSave();
             }, 5000); // Auto-save after 5 seconds
             return () => clearTimeout(timer);
         }
-    }, [isDirty, isSaving, handleSave]);
+    }, [isDirty, isSaving, autoSaveSuspended, handleSave]);
 
     return {
         editorRef,
