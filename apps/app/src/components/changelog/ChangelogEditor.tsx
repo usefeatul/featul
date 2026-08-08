@@ -16,11 +16,8 @@ import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import { fetchWorkspaceMembers } from "@/lib/team-client";
 import ChangelogAiPanel from "./ChangelogAiPanel";
-import {
-    getChangelogAiSlashSuggestions,
-    type AiPanelTab,
-    type AiQuickAction,
-} from "./changelog-ai-slash";
+import type { AiPanelTab, AiQuickAction } from "@/features/changelog-ai/types";
+import { getChangelogAiSlashSuggestions } from "./changelog-ai-slash";
 
 const ENABLE_CHANGELOG_AI = true;
 

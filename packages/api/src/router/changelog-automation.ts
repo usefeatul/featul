@@ -19,12 +19,14 @@ import {
 } from "../validators/changelog";
 import { sendOpenRouterChat } from "../services/openrouter";
 import {
+  AI_TEMPERATURE_BY_ACTION,
   buildAiUserPrompt,
   fetchAiSourcePostsByIds,
   fetchAiSourcePostsList,
+  getMaxTokensByAction,
   getWorkspaceNameForAi,
   type AiAction,
-} from "../services/changelog-ai-context";
+} from "../changelog-ai";
 import {
   deleteStoredNotraConnection,
   getStoredNotraConnection,
@@ -105,21 +107,6 @@ export function createChangelogAutomationProcedures() {
         const ws = await requireBoardManagerBySlug(ctx, input.slug);
 
         const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto");
-        const temperatureByAction: Record<AiAction, number> = {
-          prompt: 0.55,
-          generateFromPosts: 0.55,
-          format: 0.2,
-          improve: 0.35,
-          expand: 0.45,
-          summary: 0.2,
-        };
-        const maxTokensByAction: Partial<Record<AiAction, number>> = {
-          prompt: 2200,
-          generateFromPosts:
-            input.detailLevel === "standard" ? 1800 : 3200,
-          improve: 1600,
-          expand: 2800,
-        };
 
         let sourcePosts;
         if (input.action === "generateFromPosts" && input.sourcePostIds?.length) {
@@ -160,8 +147,8 @@ export function createChangelogAutomationProcedures() {
                 }),
               },
             ],
-            temperature: temperatureByAction[input.action],
-            max_tokens: maxTokensByAction[input.action] ?? 900,
+            temperature: AI_TEMPERATURE_BY_ACTION[input.action],
+            max_tokens: getMaxTokensByAction(input.action, input.detailLevel),
             response_format: { type: "json_object" },
           });
 

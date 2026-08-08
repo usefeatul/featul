@@ -10,9 +10,7 @@ import {
   AlignLeft,
 } from "lucide-react";
 
-export type AiPanelTab = "shipped" | "refine";
-
-export type AiQuickAction = "format" | "improve" | "expand";
+import type { AiPanelTab, AiQuickAction } from "@/features/changelog-ai/types";
 
 type SlashAiHandlers = {
   onOpenPanel: (tab: AiPanelTab) => void;
