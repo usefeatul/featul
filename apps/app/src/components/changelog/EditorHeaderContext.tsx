@@ -5,11 +5,8 @@ import {
   useContext,
   useState,
   useCallback,
-  useRef,
   type ReactNode,
-  type RefObject,
 } from "react"
-import type { ChangelogAiBridge } from "./changelog-ai-bridge"
 
 interface EditorAction {
     key: string
@@ -27,17 +24,12 @@ interface EditorHeaderContextValue {
     actions: EditorAction[]
     setActions: (actions: EditorAction[]) => void
     clearActions: () => void
-    changelogAiBridgeRef: RefObject<ChangelogAiBridge | null>
-    setChangelogAiActive: (active: boolean) => void
-    changelogAiActive: boolean
 }
 
 const EditorHeaderContext = createContext<EditorHeaderContextValue | null>(null)
 
 export function EditorHeaderProvider({ children }: { children: ReactNode }) {
     const [actions, setActionsState] = useState<EditorAction[]>([])
-    const [changelogAiActive, setChangelogAiActiveState] = useState(false)
-    const changelogAiBridgeRef = useRef<ChangelogAiBridge | null>(null)
 
     const setActions = useCallback((newActions: EditorAction[]) => {
         setActionsState(newActions)
@@ -47,22 +39,12 @@ export function EditorHeaderProvider({ children }: { children: ReactNode }) {
         setActionsState([])
     }, [])
 
-    const setChangelogAiActive = useCallback((active: boolean) => {
-        setChangelogAiActiveState(active)
-        if (!active) {
-            changelogAiBridgeRef.current = null
-        }
-    }, [])
-
     return (
         <EditorHeaderContext.Provider
             value={{
                 actions,
                 setActions,
                 clearActions,
-                changelogAiBridgeRef,
-                setChangelogAiActive,
-                changelogAiActive,
             }}
         >
             {children}

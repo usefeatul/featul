@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FeedEditor } from "@/components/editor/editor";
 import type { JSONContent, MentionSuggestionItem } from "@featul/editor";
@@ -11,9 +11,16 @@ import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import { AiIcon } from "@featul/ui/icons/ai";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import { fetchWorkspaceMembers } from "@/lib/team-client";
+import ChangelogAiPanel from "./ChangelogAiPanel";
+import {
+    getChangelogAiSlashSuggestions,
+    type AiPanelTab,
+    type AiQuickAction,
+} from "./changelog-ai-slash";
 
 const ENABLE_CHANGELOG_AI = true;
 
@@ -40,9 +47,11 @@ export function ChangelogEditor({
     availableTags,
 }: ChangelogEditorProps) {
     const router = useRouter();
-    const { setActions, clearActions, setChangelogAiActive, changelogAiBridgeRef } =
-        useEditorHeaderActions();
+    const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
+    const [isAiOpen, setIsAiOpen] = useState(false);
+    const [aiPanelTab, setAiPanelTab] = useState<AiPanelTab>("shipped");
+    const [autoRunAction, setAutoRunAction] = useState<AiQuickAction | null>(null);
 
     const {
         editorRef,
@@ -62,6 +71,28 @@ export function ChangelogEditor({
         handleImageUpload,
         handleSave,
     } = useChangelogEntry({ workspaceSlug, mode, entryId, initialData });
+
+    const openAiPanel = useCallback((tab: AiPanelTab) => {
+        setAiPanelTab(tab);
+        setIsAiOpen(true);
+    }, []);
+
+    const additionalSlashSuggestions = useCallback(
+        ({ query }: { query: string }) => {
+            if (query && !query.startsWith("ai")) {
+                return [];
+            }
+
+            return getChangelogAiSlashSuggestions({
+                onOpenPanel: openAiPanel,
+                onQuickAction: (action) => {
+                    setAutoRunAction(action);
+                    openAiPanel("refine");
+                },
+            });
+        },
+        [openAiPanel],
+    );
 
     useEffect(() => {
         let isCancelled = false;
@@ -102,29 +133,25 @@ export function ChangelogEditor({
     }, [workspaceSlug]);
 
     useEffect(() => {
-        if (!ENABLE_CHANGELOG_AI) return;
-        setChangelogAiActive(true);
-        return () => setChangelogAiActive(false);
-    }, [setChangelogAiActive]);
-
-    useEffect(() => {
-        if (!ENABLE_CHANGELOG_AI) return;
-        changelogAiBridgeRef.current = {
-            workspaceSlug,
-            title,
-            editorRef,
-            setTitle,
-            setSummary,
-            setIsDirty,
-        };
-    });
-
-    // Register actions with the header context
-    useEffect(() => {
         setActions([
+            ...(ENABLE_CHANGELOG_AI
+                ? [
+                      {
+                          key: "ai",
+                          label: "AI",
+                          type: "button" as const,
+                          variant: "card" as const,
+                          icon: <AiIcon className="size-4" />,
+                          onClick: () => {
+                              setAiPanelTab("shipped");
+                              setIsAiOpen(true);
+                          },
+                      },
+                  ]
+                : []),
             {
                 key: "status",
-                label: "Published", // Label for Switch
+                label: "Published",
                 type: "switch",
                 checked: !isDraft,
                 onClick: () => {
@@ -137,7 +164,6 @@ export function ChangelogEditor({
                 label: "Save",
                 type: "button",
                 variant: "card",
-                // Show InfoIcon if dirty (unsaved), TickIcon if clean (saved), Loader if saving
                 icon: isSaving ? <LoaderIcon className="size-4 animate-spin" /> : isDirty ? <InfoIcon className="size-4" /> : <TickIcon className="size-4" />,
                 onClick: handleSave,
                 disabled: isSaving,
@@ -158,7 +184,6 @@ export function ChangelogEditor({
     return (
         <div className="min-h-screen bg-background">
             <main className="mx-auto max-w-3xl px-4 pt-0 pb-10">
-                {/* Cover Image (when present) */}
                 {coverImage && (
                     <CoverImageUploader
                         workspaceSlug={workspaceSlug}
@@ -170,8 +195,7 @@ export function ChangelogEditor({
                     />
                 )}
 
-                {/* Tags and Add Cover Image Row */}
-                <div className="mb-4 flex items-center gap-1 flex-wrap">
+                <div className="mb-4 flex flex-wrap items-center gap-1">
                     <TagSelector
                         availableTags={availableTags}
                         selectedTags={selectedTags}
@@ -181,7 +205,6 @@ export function ChangelogEditor({
                         }}
                     />
 
-                    {/* Add Cover Image Button (Always visible) */}
                     <CoverImageUploader
                         workspaceSlug={workspaceSlug}
                         coverImage={null}
@@ -192,39 +215,59 @@ export function ChangelogEditor({
                     />
                 </div>
 
-                {/* Title */}
                 <TextareaAutosize
                     value={title}
-                    onChange={(e) => { setTitle(e.target.value); setIsDirty(true); }}
+                    onChange={(e) => {
+                        setTitle(e.target.value);
+                        setIsDirty(true);
+                    }}
                     placeholder="Enter a title"
-                    className="w-full resize-none border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-4 overflow-hidden"
+                    className="mb-4 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
                     minRows={1}
                     autoFocus={mode === "create"}
                 />
 
-                {/* Summary */}
                 <TextareaAutosize
                     value={summary}
-                    onChange={(e) => { setSummary(e.target.value); setIsDirty(true); }}
+                    onChange={(e) => {
+                        setSummary(e.target.value);
+                        setIsDirty(true);
+                    }}
                     placeholder="Short summary for list previews (optional)"
-                    className="w-full resize-none border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-8 overflow-hidden"
+                    className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
                     minRows={1}
                     maxRows={3}
                 />
 
-                {/* Content Editor */}
-                <div className="[&_.ProseMirror]:outline-none [&_.ProseMirror]:border-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
+                <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
                     <FeedEditor
                         ref={editorRef}
                         initialContent={initialData?.content}
-                        placeholder="Start typing or press '/' for commands"
+                        placeholder="Start typing or type /ai for AI commands"
                         className="min-h-[400px]"
                         mentionSuggestions={mentionSuggestions}
                         onImageUpload={handleImageUpload}
+                        additionalSlashSuggestions={additionalSlashSuggestions}
                         onUpdate={() => setIsDirty(true)}
                     />
                 </div>
             </main>
+
+            {ENABLE_CHANGELOG_AI ? (
+                <ChangelogAiPanel
+                    open={isAiOpen}
+                    onOpenChange={setIsAiOpen}
+                    workspaceSlug={workspaceSlug}
+                    editorRef={editorRef}
+                    title={title}
+                    setTitle={setTitle}
+                    setSummary={setSummary}
+                    setIsDirty={setIsDirty}
+                    initialTab={aiPanelTab}
+                    autoRunAction={autoRunAction}
+                    onAutoRunActionHandled={() => setAutoRunAction(null)}
+                />
+            ) : null}
         </div>
     );
 }

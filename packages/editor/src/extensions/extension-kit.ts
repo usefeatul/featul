@@ -46,6 +46,8 @@ export type ExtensionKitOptions = {
   imageUpload?: ImageUploadOptions;
   /** Mention suggestions shown after typing '@' */
   mentionSuggestions?: MentionSuggestionSource;
+  /** Extra slash command items merged before defaults */
+  additionalSlashSuggestions?: import("../types").AdditionalSlashSuggestionsSource;
 };
 
 /**
@@ -57,6 +59,7 @@ export const ExtensionKit = ({
   placeholder,
   imageUpload,
   mentionSuggestions,
+  additionalSlashSuggestions,
 }: ExtensionKitOptions = {}) => {
   let dragHandleElement: HTMLElement | null = null;
 
@@ -174,7 +177,7 @@ export const ExtensionKit = ({
     }),
 
     // Slash command
-    configureSlashCommand(),
+    configureSlashCommand(additionalSlashSuggestions),
 
     // Enables selecting a range of nodes, required by drag-handle block reordering
     NodeRange,
