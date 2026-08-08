@@ -18,6 +18,9 @@ import { client } from "@featul/api/client";
 import { SelectionToolbar } from "@/components/selection/SelectionToolbar";
 import type { FeedEditorRef } from "@/components/editor/editor";
 import AiSourcePostItem, { type AiSourcePost } from "./AiSourcePostItem";
+import {
+  streamChangelogAiAssist,
+} from "@/lib/changelog-ai-stream-client";
 
 type AiAction =
   | "prompt"
@@ -133,6 +136,7 @@ export function ChangelogAiPanel({
 }: ChangelogAiPanelProps) {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Generating draft…");
   const [activeTab, setActiveTab] = useState<AiPanelTab>("shipped");
   const [tone, setTone] = useState<AiTone>("user-friendly");
@@ -224,7 +228,7 @@ export function ChangelogAiPanel({
       return;
     }
 
-    if (action !== "prompt" && action !== "generateFromPosts") {
+    if (action !== "prompt" && action !== "generateFromPosts" && action !== "summary") {
       const markdown = editorRef.current?.getMarkdown();
       if (!markdown || !markdown.trim()) {
         toast.error("Add some content before using this action");
@@ -241,46 +245,72 @@ export function ChangelogAiPanel({
       summary: "Writing summary…",
     };
 
-    setLoadingMessage(messages[action] ?? "Working…");
+    const startMessage = messages[action] ?? "Working…";
+    const toastId = toast.loading(startMessage);
+
+    setLoadingMessage(startMessage);
     setIsLoading(true);
-    try {
-      const contentMarkdown =
-        action === "prompt" || action === "generateFromPosts"
-          ? undefined
-          : editorRef.current?.getMarkdown();
+    setIsStreaming(true);
+    onOpenChange(false);
 
-      const res = await client.changelog.aiAssist.$post({
-        slug: workspaceSlug,
-        action,
-        prompt:
-          action === "prompt" || action === "generateFromPosts"
-            ? prompt.trim() || undefined
-            : undefined,
-        title: title.trim() || undefined,
-        contentMarkdown: contentMarkdown?.trim() || undefined,
-        sourcePostIds: action === "generateFromPosts" ? selectedPostIds : undefined,
-        tone: action === "generateFromPosts" || action === "prompt" ? tone : undefined,
-        detailLevel: action === "generateFromPosts" ? detailLevel : undefined,
-      });
-      const data = await res.json().catch(() => ({}));
+    const contentMarkdown = editorRef.current?.getMarkdown();
 
-      if (!res.ok || !("ok" in data) || !data.ok) {
-        const msg = (data as { message?: string })?.message || "Failed to run AI assist";
-        toast.error(msg);
-        return;
+    if (action !== "summary") {
+      editorRef.current?.focus();
+      if (action === "generateFromPosts" || action === "prompt") {
+        editorRef.current?.setStreamingMarkdown("");
       }
+    }
 
-      applyAiResult(data);
+    let lastPreviewAt = 0;
+
+    try {
+      await streamChangelogAiAssist(
+        {
+          slug: workspaceSlug,
+          action,
+          prompt:
+            action === "prompt" || action === "generateFromPosts"
+              ? prompt.trim() || undefined
+              : undefined,
+          title: title.trim() || undefined,
+          contentMarkdown: contentMarkdown?.trim() || undefined,
+          sourcePostIds: action === "generateFromPosts" ? selectedPostIds : undefined,
+          tone: action === "generateFromPosts" || action === "prompt" ? tone : undefined,
+          detailLevel: action === "generateFromPosts" ? detailLevel : undefined,
+        },
+        {
+          onDelta: (_text, accumulated) => {
+            const now = Date.now();
+            if (now - lastPreviewAt < 80) return;
+            lastPreviewAt = now;
+
+            if (action === "summary") {
+              setSummary(accumulated.slice(0, 512));
+            } else {
+              editorRef.current?.setStreamingMarkdown(accumulated);
+            }
+            setIsDirty(true);
+          },
+          onDone: (event) => {
+            applyAiResult({
+              title: event.title,
+              contentMarkdown: event.contentMarkdown,
+              summary: event.summary,
+            });
+          },
+        },
+      );
 
       if (action === "prompt") setPrompt("");
 
-      toast.success("AI changes applied");
-      if (action === "generateFromPosts") onOpenChange(false);
+      toast.success("AI changes applied", { id: toastId });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to run AI assist";
-      toast.error(msg);
+      toast.error(msg, { id: toastId });
     } finally {
       setIsLoading(false);
+      setIsStreaming(false);
     }
   };
 
@@ -314,7 +344,7 @@ export function ChangelogAiPanel({
         side="right"
         className="flex w-full flex-col gap-0 overflow-hidden border-border p-0 sm:max-w-[460px]"
       >
-        {isLoading ? (
+        {isLoading && !isStreaming ? (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background/90 backdrop-blur-sm">
             <LoaderIcon className="size-5 animate-spin text-primary" />
             <p className="text-sm font-medium text-foreground">{loadingMessage}</p>

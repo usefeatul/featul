@@ -102,6 +102,7 @@ export interface FeedEditorRef {
 	getContent: () => JSONContent | undefined;
 	getMarkdown: () => string | undefined;
 	setContentFromMarkdown: (markdown: string) => void;
+	setStreamingMarkdown: (markdown: string) => void;
 }
 
 export interface FeedEditorProps {
@@ -168,6 +169,13 @@ export const FeedEditor = forwardRef(
 				setContentFromMarkdown: (markdown: string) => {
 					if (!editor) return;
 					editor.commands.setContent(markdown, { contentType: "markdown" });
+				},
+				setStreamingMarkdown: (markdown: string) => {
+					if (!editor) return;
+					editor.commands.setContent(markdown, {
+						contentType: "markdown",
+						emitUpdate: true,
+					});
 				},
 			}),
 			[editor],
