@@ -67,8 +67,10 @@ export default function FilterDynamicIsland() {
         transition={islandTransition}
         style={{ originY: 0 }}
         className={cn(
-          "pointer-events-auto transform-gpu overflow-hidden rounded-t-none rounded-b-md bg-neutral-950 text-white",
-          "border border-t-0 border-white/10 shadow-[0_10px_32px_-14px_rgba(0,0,0,0.65)]",
+          "pointer-events-auto transform-gpu overflow-hidden rounded-t-none rounded-b-md",
+          "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950",
+          "border border-t-0 border-white/10 dark:border-black/10",
+          "shadow-[0_10px_32px_-14px_rgba(0,0,0,0.65)] dark:shadow-[0_10px_32px_-14px_rgba(0,0,0,0.2)]",
         )}
       >
         <div className="px-3 pt-2">
@@ -84,19 +86,21 @@ export default function FilterDynamicIsland() {
               }
               className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-left"
             >
-              <ListFilterIcon className="size-3.5 shrink-0 text-white/70" />
+              <ListFilterIcon className="size-3.5 shrink-0 text-white/70 dark:text-neutral-950/70" />
 
               {!expanded ? (
                 <span className="flex min-w-0 items-center gap-1.5 text-[11px] font-medium">
-                  <span className="tabular-nums text-white/90">{count}</span>
-                  <span className="text-white/30">·</span>
-                  <span className="truncate text-white/75">
+                  <span className="tabular-nums text-white/90 dark:text-neutral-950/90">
+                    {count}
+                  </span>
+                  <span className="text-white/30 dark:text-neutral-950/30">·</span>
+                  <span className="truncate text-white/75 dark:text-neutral-950/75">
                     {preview}
                     {count > 2 ? ` +${count - 2}` : ""}
                   </span>
                 </span>
               ) : (
-                <span className="text-[11px] font-medium text-white/85">
+                <span className="text-[11px] font-medium text-white/85 dark:text-neutral-950/85">
                   {count} filter{count === 1 ? "" : "s"}
                 </span>
               )}
@@ -110,7 +114,7 @@ export default function FilterDynamicIsland() {
                   handleClearAll();
                   setExpanded(false);
                 }}
-                className="shrink-0 cursor-pointer rounded-sm px-1.5 py-0.5 text-[11px] font-medium text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+                className="shrink-0 cursor-pointer rounded-sm px-1.5 py-0.5 text-[11px] font-medium text-white/55 transition-colors hover:bg-white/10 hover:text-white dark:text-neutral-950/55 dark:hover:bg-black/8 dark:hover:text-neutral-950"
               >
                 Clear all
               </button>
@@ -134,10 +138,10 @@ export default function FilterDynamicIsland() {
                       item.onRemove();
                     }}
                     aria-label={`Remove ${item.label} filter`}
-                    className="inline-flex h-6 max-w-[8.5rem] cursor-pointer items-center gap-1 rounded-sm border border-white/10 bg-white/10 px-2 text-[11px] text-white transition-colors hover:bg-white/18"
+                    className="inline-flex h-6 max-w-[8.5rem] cursor-pointer items-center gap-1 rounded-sm border border-white/10 bg-white/10 px-2 text-[11px] text-white transition-colors hover:bg-white/18 dark:border-black/10 dark:bg-black/8 dark:text-neutral-950 dark:hover:bg-black/12"
                   >
                     <span className="truncate">{item.label}</span>
-                    <XMarkIcon className="size-2.5 shrink-0 text-white/60" />
+                    <XMarkIcon className="size-2.5 shrink-0 text-white/60 dark:text-neutral-950/60" />
                   </button>
                 ))}
               </div>
