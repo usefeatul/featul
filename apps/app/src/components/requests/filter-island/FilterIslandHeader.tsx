@@ -4,6 +4,7 @@ import { ListFilterIcon } from "@featul/ui/icons/list-filter";
 import { cn } from "@featul/ui/lib/utils";
 import {
   FILTER_ISLAND_CLEAR_ALL_CLASS,
+  FILTER_ISLAND_INSET_X_CLASS,
   FILTER_ISLAND_MUTED_ICON_CLASS,
 } from "@/components/requests/filter-island/constants";
 import { getFilterPreviewSuffix } from "@/components/requests/filter-island/utils";
@@ -24,13 +25,14 @@ export function FilterIslandHeader({
   return (
     <div
       className={cn(
-        "flex h-7 items-center whitespace-nowrap px-3",
-        expanded ? "w-full justify-between gap-3" : "gap-2",
+        "flex h-6 items-center whitespace-nowrap",
+        FILTER_ISLAND_INSET_X_CLASS,
+        expanded ? "w-full justify-between gap-2" : "gap-1.5",
       )}
     >
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1.5">
         <ListFilterIcon
-          className={cn("size-3.5 shrink-0", FILTER_ISLAND_MUTED_ICON_CLASS)}
+          className={cn("size-3 shrink-0", FILTER_ISLAND_MUTED_ICON_CLASS)}
         />
 
         {!expanded ? (

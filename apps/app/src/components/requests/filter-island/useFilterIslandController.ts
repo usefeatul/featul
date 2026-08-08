@@ -6,17 +6,13 @@ import { getFilterIslandTransitions } from "@/components/requests/filter-island/
 
 type UseFilterIslandControllerOptions = {
   isVisible: boolean;
-  measureKey: string;
 };
 
 export function useFilterIslandController({
   isVisible,
-  measureKey,
 }: UseFilterIslandControllerOptions) {
   const [expanded, setExpanded] = React.useState(false);
   const islandRef = React.useRef<HTMLDivElement>(null);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const [width, setWidth] = React.useState<number>();
   const reduceMotion = useReducedMotion();
 
   const collapse = React.useCallback(() => {
@@ -26,24 +22,6 @@ export function useFilterIslandController({
   const toggleExpanded = React.useCallback(() => {
     setExpanded((value) => !value);
   }, []);
-
-  React.useLayoutEffect(() => {
-    if (!isVisible) return;
-
-    const node = contentRef.current;
-    if (!node) return;
-
-    const measure = () => {
-      const next = Math.ceil(node.getBoundingClientRect().width);
-      setWidth((current) => (current === next ? current : next));
-    };
-
-    measure();
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [expanded, isVisible, measureKey]);
 
   React.useEffect(() => {
     if (!expanded) return;
@@ -81,12 +59,10 @@ export function useFilterIslandController({
 
   return {
     collapse,
-    contentRef,
     expanded,
     islandRef,
     reduceMotion,
     toggleExpanded,
     transitions,
-    width,
   };
 }

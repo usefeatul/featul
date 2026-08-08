@@ -12,18 +12,24 @@ export const FILTER_ISLAND_MUTED_ICON_CLASS =
   "text-white/70 dark:text-neutral-950/70";
 
 export const FILTER_ISLAND_CLEAR_ALL_CLASS =
-  "shrink-0 cursor-pointer rounded-sm px-1.5 py-0.5 text-[11px] font-medium text-white/55 transition-colors hover:bg-white/10 hover:text-white dark:text-neutral-950/55 dark:hover:bg-black/8 dark:hover:text-neutral-950";
+  "shrink-0 cursor-pointer rounded-sm px-1 py-px text-[11px] font-medium text-white/55 transition-colors hover:bg-white/10 hover:text-white dark:text-neutral-950/55 dark:hover:bg-black/8 dark:hover:text-neutral-950";
 
 export const FILTER_ISLAND_CHIP_CLASS =
-  "inline-flex h-6 max-w-[8.5rem] cursor-pointer items-center gap-1 rounded-sm border border-white/10 bg-white/10 px-2 text-[11px] text-white transition-colors hover:bg-white/18 dark:border-black/10 dark:bg-black/8 dark:text-neutral-950 dark:hover:bg-black/12";
+  "inline-flex h-6 max-w-[9rem] cursor-pointer items-center gap-1.5 rounded-sm border border-white/10 bg-white/10 px-2.5 py-0.5 text-[11px] leading-none text-white transition-colors hover:bg-white/18 dark:border-black/10 dark:bg-black/8 dark:text-neutral-950 dark:hover:bg-black/12";
+
+export const FILTER_ISLAND_CONTENT_CLASS = "inline-flex w-max flex-col py-1.5";
+
+export const FILTER_ISLAND_INSET_X_CLASS = "px-2.5";
+
+export const FILTER_ISLAND_CHIPS_ROW_CLASS =
+  "flex flex-wrap items-center gap-1.5 px-2.5 pb-1.5 pt-1.5";
 
 export const FILTER_ISLAND_DIVIDER_CLASS =
   "w-full border-t border-white/10 dark:border-black/10";
 
 export type FilterIslandTransitions = {
-  island: Transition;
+  layout: Transition;
   visibility: Transition;
-  content: Transition;
 };
 
 export function getFilterIslandTransitions(
@@ -31,15 +37,13 @@ export function getFilterIslandTransitions(
 ): FilterIslandTransitions {
   if (reduceMotion) {
     return {
-      island: { duration: 0 },
+      layout: { duration: 0 },
       visibility: { duration: 0 },
-      content: { duration: 0 },
     };
   }
 
   return {
-    island: { duration: 0.28, ease: FILTER_ISLAND_EASE },
-    visibility: { duration: 0.32, ease: FILTER_ISLAND_EASE },
-    content: { duration: 0.24, ease: FILTER_ISLAND_EASE },
+    layout: { duration: 0.28, ease: FILTER_ISLAND_EASE },
+    visibility: { duration: 0.28, ease: FILTER_ISLAND_EASE },
   };
 }

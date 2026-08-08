@@ -6,6 +6,7 @@ import { cn } from "@featul/ui/lib/utils";
 import { FilterIslandChips } from "@/components/requests/filter-island/FilterIslandChips";
 import { FilterIslandHeader } from "@/components/requests/filter-island/FilterIslandHeader";
 import {
+  FILTER_ISLAND_CONTENT_CLASS,
   FILTER_ISLAND_MAX_WIDTH_CLASS,
   FILTER_ISLAND_SHELL_CLASS,
 } from "@/components/requests/filter-island/constants";
@@ -17,24 +18,14 @@ export default function FilterDynamicIsland() {
   const { isVisible, count, items, preview, handleClearAll: clearAllFilters } =
     useActivePageFilters();
 
-  const measureKey = React.useMemo(
-    () => items.map((item) => item.key).join("|"),
-    [items],
-  );
-
   const {
     collapse,
-    contentRef,
     expanded,
     islandRef,
     reduceMotion,
     toggleExpanded,
     transitions,
-    width,
-  } = useFilterIslandController({
-    isVisible,
-    measureKey: `${measureKey}:${count}:${preview}`,
-  });
+  } = useFilterIslandController({ isVisible });
 
   const handleClearAll = React.useCallback(() => {
     clearAllFilters();
@@ -46,33 +37,30 @@ export default function FilterDynamicIsland() {
   return (
     <AnimatePresence initial={false}>
       {isVisible ? (
-        <div
+        <motion.div
           key="filter-dynamic-island"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={transitions.visibility}
           className="pointer-events-none fixed inset-x-0 top-0 z-[100] flex justify-center"
           aria-live="polite"
         >
           <motion.div
             ref={islandRef}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0, width: width ?? "auto" }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{
-              opacity: transitions.visibility,
-              y: transitions.visibility,
-              width: transitions.island,
-            }}
-            style={{ originY: 0 }}
+            layout={!reduceMotion}
+            transition={{ layout: transitions.layout }}
             onClick={toggleExpanded}
             aria-expanded={expanded}
             aria-label={getFilterIslandLabel(count, expanded)}
-            className={FILTER_ISLAND_SHELL_CLASS}
+            className={cn(
+              FILTER_ISLAND_SHELL_CLASS,
+              "w-fit transform-gpu",
+              FILTER_ISLAND_MAX_WIDTH_CLASS,
+            )}
           >
             <div
-              ref={contentRef}
-              className={cn(
-                "inline-flex w-max flex-col pt-2",
-                FILTER_ISLAND_MAX_WIDTH_CLASS,
-              )}
+              className={cn(FILTER_ISLAND_CONTENT_CLASS, "min-w-0 w-max max-w-full")}
             >
               <FilterIslandHeader
                 count={count}
@@ -81,14 +69,20 @@ export default function FilterDynamicIsland() {
                 onClearAll={handleClearAll}
               />
 
-              <FilterIslandChips
-                expanded={expanded}
-                items={items}
-                transition={transitions.content}
-              />
+              <div
+                className={cn(
+                  "grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                  expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                  !reduceMotion && "motion-reduce:transition-none",
+                )}
+              >
+                <div className="min-h-0 overflow-hidden">
+                  {expanded ? <FilterIslandChips items={items} /> : null}
+                </div>
+              </div>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       ) : null}
     </AnimatePresence>
   );
