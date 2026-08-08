@@ -6,6 +6,8 @@ import { limitPrivate, applyRateLimitHeaders } from "./ratelimiter";
 import { streamOpenRouterChat, resolveOpenRouterStreamModel } from "./openrouter";
 import {
   buildAiUserPrompt,
+  buildBodyStreamPrompt,
+  buildTitleStreamPrompt,
   fetchAiSourcePostsByIds,
   getWorkspaceNameForAi,
   type AiAction,
@@ -15,11 +17,21 @@ import {
   usesStructuredChangelogStream,
 } from "./changelog-ai-stream-parser";
 
-const AI_STREAM_SYSTEM_PROMPT = [
-  "You are an expert product changelog writer for SaaS products.",
-  "Return ONLY the requested output format. No preamble, JSON, markdown fences, or commentary.",
-  "Use GitHub-flavored Markdown with headings, paragraphs, and bullet lists in the body.",
-  "Start your response immediately on line 1.",
+const AI_STREAM_TITLE_SYSTEM_PROMPT = [
+  "You are an expert product changelog writer.",
+  "Return ONLY a TITLE line in the requested format.",
+  "Start line 1 with TITLE: immediately. No preamble.",
+].join(" ");
+
+const AI_STREAM_BODY_SYSTEM_PROMPT = [
+  "You are an expert product changelog writer.",
+  "Return ONLY the markdown body. No TITLE, SUMMARY, JSON, or fences.",
+  "Use GitHub-flavored Markdown with ## headings and bullet lists.",
+].join(" ");
+
+const AI_STREAM_REFINE_SYSTEM_PROMPT = [
+  "You are an expert product changelog writer.",
+  "Return ONLY the requested markdown output. No JSON, fences, or commentary.",
 ].join(" ");
 
 const AI_STREAM_SUMMARY_SYSTEM_PROMPT = [
@@ -41,7 +53,7 @@ type StreamEvent =
   | { type: "error"; message: string };
 
 function encodeSseEvent(event: StreamEvent) {
-  return `data: ${JSON.stringify(event)}\n\n`;
+  return `: ${Date.now()}\ndata: ${JSON.stringify(event)}\n\n`;
 }
 
 function extractTitleFromMarkdown(markdown: string, fallback?: string) {
@@ -86,7 +98,6 @@ function buildStreamUserPrompt(input: {
       base,
       "Output format (exact order, start line 1 with TITLE:):",
       "TITLE: <clear title>",
-      "SUMMARY: <2-3 sentence preview, <= 512 characters>",
       "---",
       "<markdown body with ## headings and bullets>",
     ].join("\n");
@@ -97,6 +108,110 @@ function buildStreamUserPrompt(input: {
     "Output format: GitHub-flavored Markdown body only.",
     "Do not include a JSON object or code fences.",
   ].join("\n\n");
+}
+
+function emitBodyStreamEvents(
+  body: string,
+  state: { sentBodyLength: number },
+  send: (event: StreamEvent) => void,
+) {
+  if (body.length <= state.sentBodyLength) return;
+
+  const delta = body.slice(state.sentBodyLength);
+  if (!delta) return;
+
+  send({ type: "delta", text: delta });
+  state.sentBodyLength = body.length;
+}
+
+async function streamStructuredChangelog(input: {
+  model: string;
+  action: Extract<AiAction, "prompt" | "generateFromPosts">;
+  temperature: number;
+  maxBodyTokens: number;
+  prompt?: string;
+  tone?: "user-friendly" | "technical" | "brief";
+  detailLevel?: "standard" | "detailed";
+  workspaceName?: string;
+  sourcePosts?: Awaited<ReturnType<typeof fetchAiSourcePostsByIds>>;
+  send: (event: StreamEvent) => void;
+}) {
+  const structuredState = {
+    sentTitleLength: 0,
+    sentBodyLength: 0,
+  };
+
+  let titleRaw = "";
+  await streamOpenRouterChat(
+    {
+      model: input.model,
+      messages: [
+        { role: "system", content: AI_STREAM_TITLE_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: buildTitleStreamPrompt({
+            action: input.action,
+            prompt: input.prompt,
+            tone: input.tone,
+            workspaceName: input.workspaceName,
+            sourcePosts: input.sourcePosts,
+          }),
+        },
+      ],
+      temperature: Math.min(input.temperature, 0.4),
+      max_tokens: 80,
+    },
+    (text) => {
+      titleRaw += text;
+      const parsed = parseStructuredChangelogStream(titleRaw);
+      if (parsed.title && parsed.title.length > structuredState.sentTitleLength) {
+        input.send({ type: "title", text: parsed.title.slice(0, 256) });
+        structuredState.sentTitleLength = parsed.title.length;
+      }
+    },
+  );
+
+  const meta = parseStructuredChangelogStream(titleRaw.trim());
+  const finalTitle = (meta.title || "Product update").slice(0, 256);
+
+  if (finalTitle.length > structuredState.sentTitleLength) {
+    input.send({ type: "title", text: finalTitle });
+    structuredState.sentTitleLength = finalTitle.length;
+  }
+
+  let body = "";
+  structuredState.sentBodyLength = 0;
+  await streamOpenRouterChat(
+    {
+      model: input.model,
+      messages: [
+        { role: "system", content: AI_STREAM_BODY_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: buildBodyStreamPrompt({
+            action: input.action,
+            title: finalTitle,
+            prompt: input.prompt,
+            tone: input.tone,
+            detailLevel: input.detailLevel,
+            workspaceName: input.workspaceName,
+            sourcePosts: input.sourcePosts,
+          }),
+        },
+      ],
+      temperature: input.temperature,
+      max_tokens: input.maxBodyTokens,
+    },
+    (text) => {
+      body += text;
+      emitBodyStreamEvents(body, structuredState, input.send);
+    },
+  );
+
+  return {
+    title: finalTitle,
+    contentMarkdown: body.trim(),
+  };
 }
 
 function emitStructuredStreamEvents(
@@ -240,6 +355,40 @@ export async function createChangelogAiStreamResponse(req: Request) {
           return;
         }
 
+        send({ type: "status", phase: "generating" });
+
+        if (structured) {
+          const result = await streamStructuredChangelog({
+            model,
+            action: parsedInput.action as Extract<
+              AiAction,
+              "generateFromPosts" | "prompt"
+            >,
+            temperature: temperatureByAction[parsedInput.action],
+            maxBodyTokens: maxTokensByAction[parsedInput.action] ?? 900,
+            prompt: parsedInput.prompt,
+            tone: parsedInput.tone,
+            detailLevel: parsedInput.detailLevel,
+            workspaceName,
+            sourcePosts,
+            send,
+          });
+
+          if (!result.contentMarkdown) {
+            send({ type: "error", message: "AI response was empty" });
+            controller.close();
+            return;
+          }
+
+          send({
+            type: "done",
+            title: result.title,
+            contentMarkdown: result.contentMarkdown,
+          });
+          controller.close();
+          return;
+        }
+
         const userPrompt = buildStreamUserPrompt({
           action: parsedInput.action,
           prompt: parsedInput.prompt,
@@ -254,16 +403,9 @@ export async function createChangelogAiStreamResponse(req: Request) {
         const systemPrompt =
           parsedInput.action === "summary"
             ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
-            : AI_STREAM_SYSTEM_PROMPT;
-
-        send({ type: "status", phase: "generating" });
+            : AI_STREAM_REFINE_SYSTEM_PROMPT;
 
         let accumulated = "";
-        const structuredState = {
-          sentTitleLength: 0,
-          sentSummaryLength: 0,
-          sentBodyLength: 0,
-        };
 
         await streamOpenRouterChat(
           {
@@ -277,12 +419,6 @@ export async function createChangelogAiStreamResponse(req: Request) {
           },
           (text) => {
             accumulated += text;
-
-            if (structured) {
-              emitStructuredStreamEvents(accumulated, structuredState, send);
-              return;
-            }
-
             send({ type: "delta", text });
           },
         );
@@ -298,18 +434,6 @@ export async function createChangelogAiStreamResponse(req: Request) {
           send({
             type: "done",
             summary: trimmed.slice(0, 512),
-          });
-          controller.close();
-          return;
-        }
-
-        if (structured) {
-          const parsed = parseStructuredChangelogStream(trimmed);
-          send({
-            type: "done",
-            title: parsed.title?.slice(0, 256) ?? parsedInput.title,
-            summary: parsed.summary?.slice(0, 512),
-            contentMarkdown: parsed.body.trim(),
           });
           controller.close();
           return;

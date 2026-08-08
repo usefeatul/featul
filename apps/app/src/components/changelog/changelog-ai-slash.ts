@@ -8,12 +8,11 @@ import {
   Maximize2,
   Wand2,
   AlignLeft,
-  ListOrdered,
 } from "lucide-react";
 
 export type AiPanelTab = "shipped" | "refine";
 
-export type AiQuickAction = "format" | "improve" | "expand" | "summary";
+export type AiQuickAction = "format" | "improve" | "expand";
 
 type SlashAiHandlers = {
   onOpenPanel: (tab: AiPanelTab) => void;
@@ -80,17 +79,6 @@ export function getChangelogAiSlashSuggestions(
         runSlashCommand(editor, range, () => {
           handlers.onOpenPanel("refine");
           handlers.onQuickAction("format");
-        }),
-    },
-    {
-      title: "Write summary",
-      description: "Generate the list preview line.",
-      searchTerms: ["ai", "summary", "preview", "excerpt"],
-      icon: ListOrdered,
-      command: ({ editor, range }) =>
-        runSlashCommand(editor, range, () => {
-          handlers.onOpenPanel("refine");
-          handlers.onQuickAction("summary");
         }),
     },
     {

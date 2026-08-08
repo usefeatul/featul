@@ -353,3 +353,77 @@ export function buildAiUserPrompt(input: {
       return "";
   }
 }
+
+export function buildTitleStreamPrompt(input: {
+  action: Extract<AiAction, "prompt" | "generateFromPosts">;
+  prompt?: string;
+  tone?: AiTone;
+  workspaceName?: string;
+  sourcePosts?: AiSourcePost[];
+}) {
+  const workspaceLine = input.workspaceName
+    ? `Product: ${input.workspaceName}`
+    : "";
+  const sourcePostsBlock = input.sourcePosts?.length
+    ? formatSourcePostsBlock(input.sourcePosts)
+    : "";
+  const tone = TONE_GUIDANCE[input.tone ?? "user-friendly"];
+
+  if (input.action === "generateFromPosts") {
+    return [
+      "Write a clear changelog title from the shipped feedback below.",
+      tone,
+      workspaceLine,
+      sourcePostsBlock,
+      input.prompt?.trim() ? `Notes: ${input.prompt.trim()}` : "",
+      "Output format (line 1 must start with TITLE:):",
+      "TITLE: <clear title, max 12 words>",
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  return [
+    "Write a clear changelog title from the prompt below.",
+    tone,
+    workspaceLine,
+    input.prompt?.trim() ? `Prompt: ${input.prompt.trim()}` : "",
+    "Output format (line 1 must start with TITLE:):",
+    "TITLE: <clear title, max 12 words>",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+export function buildBodyStreamPrompt(input: {
+  action: Extract<AiAction, "prompt" | "generateFromPosts">;
+  title: string;
+  prompt?: string;
+  tone?: AiTone;
+  detailLevel?: AiDetailLevel;
+  workspaceName?: string;
+  sourcePosts?: AiSourcePost[];
+}) {
+  const workspaceLine = input.workspaceName
+    ? `Product: ${input.workspaceName}`
+    : "";
+  const sourcePostsBlock = input.sourcePosts?.length
+    ? formatSourcePostsBlock(input.sourcePosts)
+    : "";
+  const detailLevel = input.detailLevel ?? "detailed";
+
+  return [
+    "Write the full changelog body in GitHub-flavored Markdown.",
+    "Use ## headings and bullet lists. Do not repeat the title as # heading.",
+    TONE_GUIDANCE[input.tone ?? "user-friendly"],
+    DETAIL_GUIDANCE[detailLevel],
+    CHANGELOG_BODY_STRUCTURE,
+    workspaceLine,
+    `Title: ${input.title}`,
+    sourcePostsBlock,
+    input.prompt?.trim() ? `Notes: ${input.prompt.trim()}` : "",
+    "Output format: markdown body only.",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}

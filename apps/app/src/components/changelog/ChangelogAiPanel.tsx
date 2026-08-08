@@ -39,11 +39,10 @@ interface ChangelogAiPanelProps {
   workspaceSlug: string;
   title: string;
   setTitle: (value: string) => void;
-  setSummary: (value: string) => void;
   editorRef: RefObject<FeedEditorRef | null>;
   setIsDirty: (value: boolean) => void;
   initialTab?: AiPanelTab;
-  autoRunAction?: Exclude<AiAction, "prompt" | "generateFromPosts"> | null;
+  autoRunAction?: Exclude<AiAction, "prompt" | "generateFromPosts" | "summary"> | null;
   onAutoRunActionHandled?: () => void;
 }
 
@@ -59,14 +58,13 @@ const DETAIL_OPTIONS: Array<{ value: AiDetailLevel; label: string; hint: string 
 ];
 
 const REFINE_ACTIONS: Array<{
-  action: Exclude<AiAction, "prompt" | "generateFromPosts">;
+  action: Exclude<AiAction, "prompt" | "generateFromPosts" | "summary">;
   label: string;
   description: string;
 }> = [
   { action: "expand", label: "Expand", description: "Add depth, examples, and detail" },
   { action: "improve", label: "Improve", description: "Polish clarity and flow" },
   { action: "format", label: "Format", description: "Fix headings, lists, and structure" },
-  { action: "summary", label: "Summary", description: "Write the list preview line" },
 ];
 
 function AiSegmentedControl<T extends string>({
@@ -127,7 +125,6 @@ export function ChangelogAiPanel({
   workspaceSlug,
   title,
   setTitle,
-  setSummary,
   editorRef,
   setIsDirty,
   initialTab,
@@ -197,7 +194,6 @@ export function ChangelogAiPanel({
   const applyAiResult = (data: {
     title?: unknown;
     contentMarkdown?: unknown;
-    summary?: unknown;
   }) => {
     if (data.title && typeof data.title === "string") {
       setTitle(data.title);
@@ -206,11 +202,6 @@ export function ChangelogAiPanel({
 
     if (data.contentMarkdown && typeof data.contentMarkdown === "string") {
       editorRef.current?.setContentFromMarkdown(data.contentMarkdown);
-      setIsDirty(true);
-    }
-
-    if (data.summary && typeof data.summary === "string") {
-      setSummary(data.summary);
       setIsDirty(true);
     }
   };
@@ -228,7 +219,7 @@ export function ChangelogAiPanel({
       return;
     }
 
-    if (action !== "prompt" && action !== "generateFromPosts" && action !== "summary") {
+    if (action !== "prompt" && action !== "generateFromPosts") {
       const markdown = editorRef.current?.getMarkdown();
       if (!markdown || !markdown.trim()) {
         toast.error("Add some content before using this action");
@@ -242,7 +233,6 @@ export function ChangelogAiPanel({
       expand: "Expanding with more detail…",
       improve: "Polishing your entry…",
       format: "Fixing formatting…",
-      summary: "Writing summary…",
     };
 
     const startMessage = messages[action] ?? "Working…";
@@ -257,15 +247,17 @@ export function ChangelogAiPanel({
     const usesStructuredSections =
       action === "generateFromPosts" || action === "prompt";
 
-    if (action !== "summary") {
-      editorRef.current?.focus();
-      if (usesStructuredSections) {
-        setTitle("…");
-        setSummary("");
-      }
-      if (usesStructuredSections || action === "format" || action === "improve" || action === "expand") {
-        editorRef.current?.setStreamingMarkdown("");
-      }
+    editorRef.current?.focus();
+    if (usesStructuredSections) {
+      setTitle("");
+    }
+    if (
+      usesStructuredSections ||
+      action === "format" ||
+      action === "improve" ||
+      action === "expand"
+    ) {
+      editorRef.current?.setStreamingMarkdown("");
     }
 
     let pendingBody: string | null = null;
@@ -276,22 +268,11 @@ export function ChangelogAiPanel({
       if (pendingBody === null) return;
       const markdown = pendingBody;
       pendingBody = null;
-
-      if (action === "summary") {
-        setSummary(markdown.slice(0, 512));
-      } else {
-        editorRef.current?.setStreamingMarkdown(markdown);
-      }
+      editorRef.current?.setStreamingMarkdown(markdown);
       setIsDirty(true);
     };
 
     const updateBodyPreview = (markdown: string) => {
-      if (action === "summary") {
-        setSummary(markdown.slice(0, 512));
-        setIsDirty(true);
-        return;
-      }
-
       editorRef.current?.setStreamingMarkdown(markdown);
       setIsDirty(true);
     };
@@ -322,16 +303,7 @@ export function ChangelogAiPanel({
             setTitle(text.slice(0, 256));
             setIsDirty(true);
           },
-          onSummary: (text) => {
-            setSummary(text.slice(0, 512));
-            setIsDirty(true);
-          },
           onDelta: (_text, accumulated) => {
-            if (action === "summary") {
-              updateBodyPreview(accumulated);
-              return;
-            }
-
             if (usesStructuredSections) {
               updateBodyPreview(accumulated);
               return;
@@ -348,7 +320,6 @@ export function ChangelogAiPanel({
             applyAiResult({
               title: event.title,
               contentMarkdown: event.contentMarkdown,
-              summary: event.summary,
             });
           },
         },

@@ -57,8 +57,6 @@ export function ChangelogEditor({
         editorRef,
         title,
         setTitle,
-        summary,
-        setSummary,
         coverImage,
         setCoverImage,
         selectedTags,
@@ -222,21 +220,9 @@ export function ChangelogEditor({
                         setIsDirty(true);
                     }}
                     placeholder="Enter a title"
-                    className="mb-4 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
+                    className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
                     minRows={1}
                     autoFocus={mode === "create"}
-                />
-
-                <TextareaAutosize
-                    value={summary}
-                    onChange={(e) => {
-                        setSummary(e.target.value);
-                        setIsDirty(true);
-                    }}
-                    placeholder="Short summary for list previews (optional)"
-                    className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
-                    minRows={1}
-                    maxRows={3}
                 />
 
                 <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
@@ -261,7 +247,6 @@ export function ChangelogEditor({
                     editorRef={editorRef}
                     title={title}
                     setTitle={setTitle}
-                    setSummary={setSummary}
                     setIsDirty={setIsDirty}
                     initialTab={aiPanelTab}
                     autoRunAction={autoRunAction}
