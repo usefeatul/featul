@@ -390,30 +390,38 @@ export function ChangelogAiPanel({
               )}
             </div>
 
-            <div className="border-t border-border bg-muted/10 px-5 py-4 dark:bg-black/10">
-              {selectedPosts.length > 0 ? (
-                <div className="mb-4 rounded-md border border-border/70 bg-background px-3 py-2.5 dark:bg-black/20">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                    Will write about
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {selectedPosts.slice(0, 4).map((post) => (
-                      <span
-                        key={post.id}
-                        className="max-w-full truncate rounded-sm border border-border bg-card px-2 py-0.5 text-[11px] text-foreground dark:bg-black/30"
-                      >
-                        {post.title}
-                      </span>
-                    ))}
-                    {selectedPosts.length > 4 ? (
-                      <span className="rounded-sm px-2 py-0.5 text-[11px] text-muted-foreground">
-                        +{selectedPosts.length - 4} more
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              ) : null}
+            {selectedPosts.length > 0 ? (
+              <div className="border-t border-b border-border/70 px-5 py-3">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  Will write about
+                  <span className="ml-1.5 normal-case tracking-normal text-foreground/70">
+                    ({selectedPosts.length})
+                  </span>
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {selectedPosts.slice(0, 4).map((post) => (
+                    <li
+                      key={post.id}
+                      className="truncate text-xs leading-relaxed text-foreground"
+                    >
+                      {post.title}
+                    </li>
+                  ))}
+                  {selectedPosts.length > 4 ? (
+                    <li className="text-xs text-muted-foreground">
+                      +{selectedPosts.length - 4} more
+                    </li>
+                  ) : null}
+                </ul>
+              </div>
+            ) : null}
 
+            <div
+              className={cn(
+                "bg-muted/10 px-5 py-4 dark:bg-black/10",
+                selectedPosts.length === 0 && "border-t border-border/70",
+              )}
+            >
               <div className="mb-4 grid grid-cols-2 gap-2">
                 {DETAIL_OPTIONS.map((option) => (
                   <OptionPill
@@ -455,7 +463,7 @@ export function ChangelogAiPanel({
                 minRows={2}
                 maxRows={4}
                 placeholder="Optional: mention audience, rollout notes, or extra context"
-                className="mb-3 w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20"
+                className="mb-3 w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20"
               />
 
               <Button
@@ -506,7 +514,7 @@ export function ChangelogAiPanel({
                   maxRows={6}
                   placeholder="Ask for a full changelog with sections, bullets, and user benefits"
                   className={cn(
-                    "w-full resize-none rounded-md border border-border bg-background px-3 py-2.5 pr-12 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
+                    "w-full resize-none rounded-md border border-border bg-background px-3 py-2.5 pr-12 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
                     isLoading && "opacity-70",
                   )}
                 />
