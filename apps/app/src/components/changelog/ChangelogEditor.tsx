@@ -14,7 +14,7 @@ import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { AiIcon } from "@featul/ui/icons/ai";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
-import ChangelogAiPanel from "./ChangelogAiPanel";
+import ChangelogAiSection from "./ChangelogAiSection";
 import { fetchWorkspaceMembers } from "@/lib/team-client";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -44,7 +44,7 @@ export function ChangelogEditor({
     const router = useRouter();
     const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
-    const [isAiOpen, setIsAiOpen] = useState(false);
+    const [isAiExpanded, setIsAiExpanded] = useState(mode === "create");
 
     const {
         editorRef,
@@ -112,7 +112,7 @@ export function ChangelogEditor({
                 type: "button",
                 variant: "card",
                 icon: <AiIcon className="size-4" />,
-                onClick: () => setIsAiOpen(true),
+                onClick: () => setIsAiExpanded((open) => !open),
             },
             {
                 key: "status",
@@ -199,10 +199,23 @@ export function ChangelogEditor({
                     value={summary}
                     onChange={(e) => { setSummary(e.target.value); setIsDirty(true); }}
                     placeholder="Short summary for list previews (optional)"
-                    className="w-full resize-none border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-8 overflow-hidden"
+                    className="w-full resize-none border-none bg-transparent text-base text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-6 overflow-hidden"
                     minRows={1}
                     maxRows={3}
                 />
+
+                {ENABLE_CHANGELOG_AI ? (
+                    <ChangelogAiSection
+                        expanded={isAiExpanded}
+                        onExpandedChange={setIsAiExpanded}
+                        workspaceSlug={workspaceSlug}
+                        editorRef={editorRef}
+                        title={title}
+                        setTitle={(value) => { setTitle(value); setIsDirty(true); }}
+                        setSummary={(value) => { setSummary(value); setIsDirty(true); }}
+                        setIsDirty={setIsDirty}
+                    />
+                ) : null}
 
                 {/* Content Editor */}
                 <div className="[&_.ProseMirror]:outline-none [&_.ProseMirror]:border-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
@@ -217,18 +230,6 @@ export function ChangelogEditor({
                     />
                 </div>
             </main>
-            {ENABLE_CHANGELOG_AI ? (
-                <ChangelogAiPanel
-                    open={isAiOpen}
-                    onOpenChange={setIsAiOpen}
-                    workspaceSlug={workspaceSlug}
-                    editorRef={editorRef}
-                    title={title}
-                    setTitle={(value) => { setTitle(value); setIsDirty(true); }}
-                    setSummary={(value) => { setSummary(value); setIsDirty(true); }}
-                    setIsDirty={setIsDirty}
-                />
-            ) : null}
         </div>
     );
 }
