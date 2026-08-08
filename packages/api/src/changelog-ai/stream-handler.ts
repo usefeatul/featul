@@ -1,8 +1,11 @@
 import { HTTPException } from "hono/http-exception";
 import { aiAssistSchema } from "../validators/changelog";
 import { requireBoardManagerBySlug } from "../shared/access";
-import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
-import { applyRateLimitHeaders, limitPrivate } from "../services/ratelimiter";
+import { applyRateLimitHeaders } from "../services/ratelimiter";
+import {
+  authorizePrivateChangelogAiRequest,
+  changelogAiJsonResponse,
+} from "./auth";
 import {
   resolveOpenRouterStreamModel,
   streamOpenRouterChat,
@@ -29,39 +32,19 @@ import {
 import type { AiAction, ChangelogAiStreamEvent, StructuredGenerationAction } from "./types";
 
 export async function createChangelogAiStreamResponse(req: Request) {
-  enforceTrustedBrowserOrigin(req);
-
-  const session = await import("@featul/auth/auth").then(({ auth }) =>
-    auth.api.getSession({ headers: req.headers }),
-  );
-
-  if (!session?.user) {
-    return new Response(JSON.stringify({ message: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  const authResult = await authorizePrivateChangelogAiRequest(req);
+  if (authResult instanceof Response) {
+    return authResult;
   }
 
-  const rateLimit = await limitPrivate(req, session.user.id);
-  if (!rateLimit.success) {
-    return new Response(JSON.stringify({ message: "Too Many Requests" }), {
-      status: 429,
-      headers: {
-        "Content-Type": "application/json",
-        "Retry-After": String(Math.max(1, rateLimit.reset)),
-      },
-    });
-  }
+  const { session, rateLimit } = authResult;
 
   let parsedInput;
   try {
     const json = await req.json();
     parsedInput = aiAssistSchema.parse(json);
   } catch {
-    return new Response(JSON.stringify({ message: "Invalid request" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return changelogAiJsonResponse(400, { message: "Invalid request" });
   }
 
   const { db } = await import("@featul/db");
@@ -74,10 +57,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
     const message =
       err instanceof HTTPException ? err.message : "Forbidden";
     const status = err instanceof HTTPException ? err.status : 403;
-    return new Response(JSON.stringify({ message }), {
-      status,
-      headers: { "Content-Type": "application/json" },
-    });
+    return changelogAiJsonResponse(status, { message });
   }
 
   const model = resolveOpenRouterStreamModel(parsedInput.action);

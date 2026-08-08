@@ -36,4 +36,9 @@ export {
   usesStructuredChangelogStream,
 } from "./title";
 
+export {
+  authorizePrivateChangelogAiRequest,
+  changelogAiJsonResponse,
+} from "./auth";
+
 export { createChangelogAiStreamResponse } from "./stream-handler";
