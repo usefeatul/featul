@@ -3,7 +3,7 @@ import { aiAssistSchema } from "../validators/changelog";
 import { requireBoardManagerBySlug } from "../shared/access";
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
 import { limitPrivate, applyRateLimitHeaders } from "./ratelimiter";
-import { streamOpenRouterChat } from "./openrouter";
+import { streamOpenRouterChat, resolveOpenRouterStreamModel } from "./openrouter";
 import {
   buildAiUserPrompt,
   fetchAiSourcePostsByIds,
@@ -17,10 +17,9 @@ import {
 
 const AI_STREAM_SYSTEM_PROMPT = [
   "You are an expert product changelog writer for SaaS products.",
-  "Write polished, publish-ready changelog content that helps users understand what shipped and why it matters.",
-  "Return ONLY the requested output format. No JSON, no markdown fences, no commentary before or after.",
-  "Use GitHub-flavored Markdown with headings, paragraphs, and bullet lists when writing body content.",
-  "Prefer substantive, well-structured entries over short summaries.",
+  "Return ONLY the requested output format. No preamble, JSON, markdown fences, or commentary.",
+  "Use GitHub-flavored Markdown with headings, paragraphs, and bullet lists in the body.",
+  "Start your response immediately on line 1.",
 ].join(" ");
 
 const AI_STREAM_SUMMARY_SYSTEM_PROMPT = [
@@ -29,6 +28,7 @@ const AI_STREAM_SUMMARY_SYSTEM_PROMPT = [
 ].join(" ");
 
 type StreamEvent =
+  | { type: "status"; phase: "preparing" | "generating" }
   | { type: "delta"; text: string }
   | { type: "title"; text: string }
   | { type: "summary"; text: string }
@@ -84,11 +84,11 @@ function buildStreamUserPrompt(input: {
   if (usesStructuredChangelogStream(input.action)) {
     return [
       base,
-      "Output format (use exactly this structure, in this order):",
-      "TITLE: <clear, compelling title>",
-      "SUMMARY: <2-3 sentence list preview, <= 512 characters>",
+      "Output format (exact order, start line 1 with TITLE:):",
+      "TITLE: <clear title>",
+      "SUMMARY: <2-3 sentence preview, <= 512 characters>",
       "---",
-      "<markdown body with ## headings and bullets. Do not repeat the title as # heading.>",
+      "<markdown body with ## headings and bullets>",
     ].join("\n");
   }
 
@@ -102,7 +102,7 @@ function buildStreamUserPrompt(input: {
 function emitStructuredStreamEvents(
   accumulated: string,
   state: {
-    sentTitle: boolean;
+    sentTitleLength: number;
     sentSummaryLength: number;
     sentBodyLength: number;
   },
@@ -110,15 +110,14 @@ function emitStructuredStreamEvents(
 ) {
   const parsed = parseStructuredChangelogStream(accumulated);
 
-  if (!state.sentTitle && parsed.title && /^TITLE:.+\r?\n/im.test(accumulated)) {
+  if (parsed.title && parsed.title.length > state.sentTitleLength) {
     send({ type: "title", text: parsed.title.slice(0, 256) });
-    state.sentTitle = true;
+    state.sentTitleLength = parsed.title.length;
   }
 
   if (
     parsed.summary &&
-    parsed.summary.length > state.sentSummaryLength &&
-    /^SUMMARY:/im.test(accumulated)
+    parsed.summary.length > state.sentSummaryLength
   ) {
     send({ type: "summary", text: parsed.summary.slice(0, 512) });
     state.sentSummaryLength = parsed.summary.length;
@@ -185,7 +184,8 @@ export async function createChangelogAiStreamResponse(req: Request) {
     });
   }
 
-  const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto");
+  const model = resolveOpenRouterStreamModel(parsedInput.action);
+  const structured = usesStructuredChangelogStream(parsedInput.action);
   const temperatureByAction: Record<AiAction, number> = {
     prompt: 0.55,
     generateFromPosts: 0.55,
@@ -203,50 +203,6 @@ export async function createChangelogAiStreamResponse(req: Request) {
     summary: 256,
   };
 
-  let sourcePosts;
-  if (
-    parsedInput.action === "generateFromPosts" &&
-    parsedInput.sourcePostIds?.length
-  ) {
-    sourcePosts = await fetchAiSourcePostsByIds({
-      db,
-      workspaceId: workspace.id,
-      postIds: parsedInput.sourcePostIds,
-    });
-
-    if (sourcePosts.length === 0) {
-      return new Response(
-        JSON.stringify({
-          message: "No valid shipped feedback items were found for generation",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
-      );
-    }
-  }
-
-  const workspaceName = await getWorkspaceNameForAi({
-    db,
-    workspaceId: workspace.id,
-  });
-
-  const userPrompt = buildStreamUserPrompt({
-    action: parsedInput.action,
-    prompt: parsedInput.prompt,
-    title: parsedInput.title,
-    contentMarkdown: parsedInput.contentMarkdown,
-    tone: parsedInput.tone,
-    detailLevel: parsedInput.detailLevel,
-    workspaceName,
-    sourcePosts,
-  });
-
-  const systemPrompt =
-    parsedInput.action === "summary"
-      ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
-      : AI_STREAM_SYSTEM_PROMPT;
-
-  const structured = usesStructuredChangelogStream(parsedInput.action);
-
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
@@ -255,9 +211,56 @@ export async function createChangelogAiStreamResponse(req: Request) {
       };
 
       try {
+        send({ type: "status", phase: "preparing" });
+
+        const needsSourcePosts =
+          parsedInput.action === "generateFromPosts" &&
+          Boolean(parsedInput.sourcePostIds?.length);
+
+        const [sourcePosts, workspaceName] = await Promise.all([
+          needsSourcePosts
+            ? fetchAiSourcePostsByIds({
+                db,
+                workspaceId: workspace.id,
+                postIds: parsedInput.sourcePostIds!,
+              })
+            : Promise.resolve(undefined),
+          getWorkspaceNameForAi({
+            db,
+            workspaceId: workspace.id,
+          }),
+        ]);
+
+        if (needsSourcePosts && (!sourcePosts || sourcePosts.length === 0)) {
+          send({
+            type: "error",
+            message: "No valid shipped feedback items were found for generation",
+          });
+          controller.close();
+          return;
+        }
+
+        const userPrompt = buildStreamUserPrompt({
+          action: parsedInput.action,
+          prompt: parsedInput.prompt,
+          title: parsedInput.title,
+          contentMarkdown: parsedInput.contentMarkdown,
+          tone: parsedInput.tone,
+          detailLevel: parsedInput.detailLevel,
+          workspaceName,
+          sourcePosts,
+        });
+
+        const systemPrompt =
+          parsedInput.action === "summary"
+            ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
+            : AI_STREAM_SYSTEM_PROMPT;
+
+        send({ type: "status", phase: "generating" });
+
         let accumulated = "";
         const structuredState = {
-          sentTitle: false,
+          sentTitleLength: 0,
           sentSummaryLength: 0,
           sentBodyLength: 0,
         };
@@ -272,7 +275,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
             temperature: temperatureByAction[parsedInput.action],
             max_tokens: maxTokensByAction[parsedInput.action] ?? 900,
           },
-          async (text) => {
+          (text) => {
             accumulated += text;
 
             if (structured) {
@@ -335,6 +338,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
     "Content-Type": "text/event-stream; charset=utf-8",
     "Cache-Control": "no-cache, no-transform",
     Connection: "keep-alive",
+    "X-Accel-Buffering": "no",
   });
   applyRateLimitHeaders(
     { header: (key: string, value: string) => headers.set(key, value) },

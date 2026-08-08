@@ -80,7 +80,7 @@ function formatSourcePostsBlock(posts: AiSourcePost[]) {
         ? [
             "Latest status update:",
             `Title: ${item.latestUpdate.title}`,
-            `Content: ${truncateText(item.latestUpdate.content, 600)}`,
+            `Content: ${truncateText(item.latestUpdate.content, 300)}`,
           ].join("\n")
         : null;
 
@@ -88,7 +88,7 @@ function formatSourcePostsBlock(posts: AiSourcePost[]) {
         `${index + 1}. ${item.title}`,
         voteLine,
         statusLine,
-        `Original request: ${truncateText(item.content, 800)}`,
+        `Original request: ${truncateText(item.content, 400)}`,
         updateBlock,
       ]
         .filter(Boolean)
@@ -151,53 +151,58 @@ export async function fetchAiSourcePostsByIds(params: {
     return [];
   }
 
-  const rows = (await params.db
-    .select({
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      upvotes: post.upvotes,
-      roadmapStatus: post.roadmapStatus,
-      updatedAt: post.updatedAt,
-    })
-    .from(post)
-    .innerJoin(board, eq(post.boardId, board.id))
-    .where(
-      and(
-        eq(board.workspaceId, params.workspaceId),
-        inArray(post.id, params.postIds),
-        inArray(post.roadmapStatus, [...SHIPPABLE_STATUSES]),
-        eq(post.status, "published"),
-      ),
-    )) as Array<{
-    id: string;
-    title: string;
-    content: string;
-    upvotes: number | null;
-    roadmapStatus: string | null;
-    updatedAt: Date | null;
-  }>;
-
-  const updates = (await params.db
-    .select({
-      postId: postUpdate.postId,
-      title: postUpdate.title,
-      content: postUpdate.content,
-      createdAt: postUpdate.createdAt,
-    })
-    .from(postUpdate)
-    .where(
-      and(
-        inArray(postUpdate.postId, params.postIds),
-        eq(postUpdate.isPublic, true),
-      ),
-    )
-    .orderBy(desc(postUpdate.createdAt))) as Array<{
-    postId: string;
-    title: string;
-    content: string;
-    createdAt: Date | null;
-  }>;
+  const [rows, updates] = await Promise.all([
+    params.db
+      .select({
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        upvotes: post.upvotes,
+        roadmapStatus: post.roadmapStatus,
+        updatedAt: post.updatedAt,
+      })
+      .from(post)
+      .innerJoin(board, eq(post.boardId, board.id))
+      .where(
+        and(
+          eq(board.workspaceId, params.workspaceId),
+          inArray(post.id, params.postIds),
+          inArray(post.roadmapStatus, [...SHIPPABLE_STATUSES]),
+          eq(post.status, "published"),
+        ),
+      ) as Promise<
+      Array<{
+        id: string;
+        title: string;
+        content: string;
+        upvotes: number | null;
+        roadmapStatus: string | null;
+        updatedAt: Date | null;
+      }>
+    >,
+    params.db
+      .select({
+        postId: postUpdate.postId,
+        title: postUpdate.title,
+        content: postUpdate.content,
+        createdAt: postUpdate.createdAt,
+      })
+      .from(postUpdate)
+      .where(
+        and(
+          inArray(postUpdate.postId, params.postIds),
+          eq(postUpdate.isPublic, true),
+        ),
+      )
+      .orderBy(desc(postUpdate.createdAt)) as Promise<
+      Array<{
+        postId: string;
+        title: string;
+        content: string;
+        createdAt: Date | null;
+      }>
+    >,
+  ]);
 
   const latestUpdateByPostId = new Map<
     string,

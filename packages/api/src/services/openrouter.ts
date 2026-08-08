@@ -34,7 +34,23 @@ export async function streamOpenRouterChat(
   }>) {
     const text = chunk.choices?.[0]?.delta?.content
     if (typeof text === "string" && text.length > 0) {
-      await onDelta(text)
+      void onDelta(text)
     }
   }
+}
+
+export function resolveOpenRouterStreamModel(action: string) {
+  const streamModel = String(process.env.OPENROUTER_STREAM_MODEL || "").trim()
+  if (streamModel) return streamModel
+
+  const configuredModel = String(process.env.OPENROUTER_MODEL || "").trim()
+  if (configuredModel && configuredModel !== "openrouter/auto") {
+    return configuredModel
+  }
+
+  if (action === "generateFromPosts" || action === "prompt") {
+    return "google/gemini-2.0-flash-001"
+  }
+
+  return configuredModel || "google/gemini-2.0-flash-001"
 }

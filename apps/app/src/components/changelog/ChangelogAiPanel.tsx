@@ -260,7 +260,7 @@ export function ChangelogAiPanel({
     if (action !== "summary") {
       editorRef.current?.focus();
       if (usesStructuredSections) {
-        setTitle("");
+        setTitle("…");
         setSummary("");
       }
       if (usesStructuredSections || action === "format" || action === "improve" || action === "expand") {
@@ -268,7 +268,6 @@ export function ChangelogAiPanel({
       }
     }
 
-    let lastPreviewAt = 0;
     let pendingBody: string | null = null;
     let bodyFrame: number | null = null;
 
@@ -283,6 +282,17 @@ export function ChangelogAiPanel({
       } else {
         editorRef.current?.setStreamingMarkdown(markdown);
       }
+      setIsDirty(true);
+    };
+
+    const updateBodyPreview = (markdown: string) => {
+      if (action === "summary") {
+        setSummary(markdown.slice(0, 512));
+        setIsDirty(true);
+        return;
+      }
+
+      editorRef.current?.setStreamingMarkdown(markdown);
       setIsDirty(true);
     };
 
@@ -318,11 +328,12 @@ export function ChangelogAiPanel({
           },
           onDelta: (_text, accumulated) => {
             if (action === "summary") {
-              const now = Date.now();
-              if (now - lastPreviewAt < 16) return;
-              lastPreviewAt = now;
-              setSummary(accumulated.slice(0, 512));
-              setIsDirty(true);
+              updateBodyPreview(accumulated);
+              return;
+            }
+
+            if (usesStructuredSections) {
+              updateBodyPreview(accumulated);
               return;
             }
 

@@ -1,6 +1,7 @@
 import type { AiAction, AiDetailLevel, AiTone } from "@/components/changelog/changelog-ai-stream-types";
 
 export type ChangelogAiStreamEvent =
+  | { type: "status"; phase: "preparing" | "generating" }
   | { type: "delta"; text: string }
   | { type: "title"; text: string }
   | { type: "summary"; text: string }
@@ -24,6 +25,7 @@ export type ChangelogAiStreamInput = {
 };
 
 type StreamHandlers = {
+  onStatus?: (phase: "preparing" | "generating") => void;
   onTitle?: (text: string) => void;
   onSummary?: (text: string) => void;
   onDelta?: (text: string, accumulatedBody: string) => void;
@@ -51,6 +53,11 @@ function handleStreamEvent(
   handlers: StreamHandlers,
   state: { body: string; summary: string },
 ) {
+  if (event.type === "status") {
+    handlers.onStatus?.(event.phase);
+    return;
+  }
+
   if (event.type === "title") {
     handlers.onTitle?.(event.text);
     return;

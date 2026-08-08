@@ -23,7 +23,7 @@ export function parseStructuredChangelogStream(raw: string): ParsedStructuredStr
     };
   }
 
-  const titleMatch = text.match(/^TITLE:\s*(.+?)(?:\r?\n|$)/im);
+  const titleMatch = text.match(/^TITLE:\s*([^\r\n]*)/im);
   const title = titleMatch?.[1]?.trim() || null;
   const afterTitle = titleMatch
     ? text.slice(titleMatch.index! + titleMatch[0].length)
