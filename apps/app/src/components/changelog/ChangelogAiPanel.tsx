@@ -431,7 +431,7 @@ export function ChangelogAiPanel({
               <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                 Custom prompt
               </p>
-              <div className="relative">
+              <div className="space-y-2">
                 <TextareaAutosize
                   value={prompt}
                   onChange={(event) => setPrompt(event.target.value)}
@@ -440,23 +440,16 @@ export function ChangelogAiPanel({
                   maxRows={6}
                   placeholder="Ask for a full changelog with sections, bullets, and user benefits"
                   className={cn(
-                    "w-full resize-none rounded-md border border-border bg-background px-3 py-2.5 pr-12 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
+                    "w-full resize-none rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
                     isLoading && "opacity-70",
                   )}
                 />
                 <Button
-                  variant="nav"
-                  size="icon-sm"
-                  className="absolute right-2 bottom-2 cursor-pointer"
+                  className="w-full cursor-pointer"
                   onClick={() => runAction("prompt")}
                   disabled={isLoading || !prompt.trim()}
-                  aria-label="Run custom prompt"
                 >
-                  {isLoading ? (
-                    <LoaderIcon className="size-4 animate-spin" />
-                  ) : (
-                    <AiIcon className="size-4" />
-                  )}
+                  Run custom prompt
                 </Button>
               </div>
             </div>
