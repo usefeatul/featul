@@ -12,22 +12,9 @@ import { toSlug } from "../shared/slug"
 import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access"
 import { createHash } from "crypto"
 import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
-
-async function hasWorkspaceAccess(ctx: any, workspaceId: string, ownerId: string, userId: string): Promise<boolean> {
-  if (ownerId === userId) return true
-  const [member] = await ctx.db
-    .select({ id: workspaceMember.id })
-    .from(workspaceMember)
-    .where(
-      and(
-        eq(workspaceMember.workspaceId, workspaceId),
-        eq(workspaceMember.userId, userId),
-        eq(workspaceMember.isActive, true)
-      )
-    )
-    .limit(1)
-  return Boolean(member?.id)
-}
+import { buildPostFtsFilter, boardSlugsForSearch } from "../shared/post-search"
+import { resolveIncludePrivateBoardPosts } from "../shared/workspace-search-access"
+import { hasWorkspaceContentAccess } from "../shared/storage-access"
 
 export function createBoardRouter() {
   return j.router({
@@ -374,14 +361,25 @@ export function createBoardRouter() {
       .input(z.object({ slug: checkSlugInputSchema.shape.slug, q: z.string().min(2).max(128) }))
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
           .limit(1)
         if (!ws) return c.superjson({ posts: [] })
 
-        const q = input.q.trim()
-        const wildcard = `%${q}%`
+        const ftsFilter = buildPostFtsFilter(input.q.trim())
+        if (!ftsFilter) return c.superjson({ posts: [] })
+
+        const includePrivateBoards = await resolveIncludePrivateBoardPosts(ctx, c, ws)
+
+        const filters: SQLWrapper[] = [
+          eq(board.workspaceId, ws.id),
+          eq(board.isSystem, false),
+          ftsFilter,
+        ]
+        if (!includePrivateBoards) {
+          filters.push(eq(board.isPublic, true))
+        }
 
         const rows = await ctx.db
           .select({
@@ -390,10 +388,14 @@ export function createBoardRouter() {
             slug: post.slug,
             createdAt: post.createdAt,
             upvotes: post.upvotes,
+            commentCount: post.commentCount,
+            roadmapStatus: post.roadmapStatus,
+            boardName: board.name,
+            boardSlug: board.slug,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(board.isPublic, true), sql`(${post.title} ilike ${wildcard} or ${post.content} ilike ${wildcard})`))
+          .where(and(...filters))
           .orderBy(sql`least(100, ${post.upvotes}) desc`, sql`${post.createdAt} desc`)
           .limit(15)
 
@@ -419,7 +421,12 @@ export function createBoardRouter() {
         if (!b) return c.superjson({ posts: [] })
 
         const userId = String(ctx.session.user.id || "")
-        const canAccessWorkspace = await hasWorkspaceAccess(ctx, ws.id, ws.ownerId, userId)
+        const canAccessWorkspace = await hasWorkspaceContentAccess({
+          ctx,
+          workspaceId: ws.id,
+          workspaceOwnerId: ws.ownerId,
+          userId,
+        })
         if (!b.isPublic && !canAccessWorkspace) {
           throw new HTTPException(403, { message: "Forbidden" })
         }
@@ -526,12 +533,12 @@ export function createBoardRouter() {
 
         if (!targetPostAccess) return c.superjson({ post: null })
 
-        const canAccessWorkspace = await hasWorkspaceAccess(
+        const canAccessWorkspace = await hasWorkspaceContentAccess({
           ctx,
-          targetPostAccess.workspaceId,
-          targetPostAccess.workspaceOwnerId,
-          userId
-        )
+          workspaceId: targetPostAccess.workspaceId,
+          workspaceOwnerId: targetPostAccess.workspaceOwnerId,
+          userId,
+        })
         if (!targetPostAccess.boardIsPublic && !canAccessWorkspace) {
           throw new HTTPException(403, { message: "Forbidden" })
         }
@@ -763,7 +770,7 @@ export function createBoardRouter() {
       )
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
           .limit(1)
@@ -771,16 +778,25 @@ export function createBoardRouter() {
 
         const statuses = Array.isArray(input.statuses) ? input.statuses : []
         const normalizedStatuses = statuses.map((s: string) => String(s).trim().toLowerCase()).filter(Boolean)
-        const boardSlugs = (input.search ? [] : (input.boardSlugs || []).map((b: string) => String(b).trim().toLowerCase()).filter(Boolean))
+        const boardSlugs = boardSlugsForSearch(
+          input.search,
+          (input.boardSlugs || []).map((b: string) => String(b).trim().toLowerCase()).filter(Boolean),
+        )
         const tagSlugs = (input.tagSlugs || []).map((t: string) => String(t).trim().toLowerCase()).filter(Boolean)
+        const ftsFilter = buildPostFtsFilter(input.search)
 
-        const filters: SQLWrapper[] = [eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(board.isPublic, true)]
+        const includePrivateBoards = await resolveIncludePrivateBoardPosts(ctx, c, ws)
+
+        const filters: SQLWrapper[] = [
+          eq(board.workspaceId, ws.id),
+          eq(board.isSystem, false),
+        ]
+        if (!includePrivateBoards) {
+          filters.push(eq(board.isPublic, true))
+        }
         if (normalizedStatuses.length > 0) filters.push(inArray(post.roadmapStatus, normalizedStatuses))
         if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs))
-        if ((input.search || '').trim()) {
-          const q = `%${String(input.search).trim()}%`
-          filters.push(sql`(${post.title} ilike ${q} or ${post.content} ilike ${q})`)
-        }
+        if (ftsFilter) filters.push(ftsFilter)
 
         let row: { count: number } | undefined
         if (tagSlugs.length > 0) {

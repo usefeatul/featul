@@ -5,13 +5,13 @@ import { eq } from "drizzle-orm"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, getWorkspaceBoards } from "@/lib/workspace"
 import { readHasVotedForPost } from "@/lib/vote.server"
-import { toRequestItemData } from "@/lib/request-item"
+import { toRequestItemData } from "@/lib/request/item"
 import { MainContent } from "@/components/subdomain/MainContent"
 import {
   parsePositiveIntSearchParam,
   parseSortOrderParam,
   resolveSearchParams,
-} from "@/utils/search-params"
+} from "@/utils/search/params"
 import type { RequestItemData } from "@/types/request"
 
 export const revalidate = 0
@@ -28,7 +28,7 @@ export default async function SitePage({
   searchParams,
 }: {
   params: Promise<{ subdomain: string; slug: string }>
-  searchParams: Promise<{ page?: string; board?: string; order?: "newest" | "oldest" | "likes" }>
+  searchParams: Promise<{ page?: string; board?: string; order?: "newest" | "oldest" | "likes"; search?: string }>
 }) {
   const { subdomain, slug } = await params
   const sp = (await resolveSearchParams(searchParams)) ?? {}
@@ -44,12 +44,14 @@ export default async function SitePage({
   const offset = (page - 1) * PAGE_SIZE
   const boardSlug = sp.board || undefined
   const order = parseSortOrderParam(sp.order, "likes")
+  const search = (sp.search || "").trim()
 
   const rows = await getWorkspacePosts(slug, {
     order,
     limit: PAGE_SIZE,
     offset,
-    boardSlugs: boardSlug ? [boardSlug] : undefined,
+    boardSlugs: search ? undefined : boardSlug ? [boardSlug] : undefined,
+    search: search || undefined,
     publicOnly: true,
   })
 
@@ -63,7 +65,8 @@ export default async function SitePage({
   )
 
   const totalCount = await getWorkspacePostsCount(slug, {
-    boardSlugs: boardSlug ? [boardSlug] : undefined,
+    boardSlugs: search ? undefined : boardSlug ? [boardSlug] : undefined,
+    search: search || undefined,
     publicOnly: true,
   })
   const sidebarPosition = await getSidebarPositionBySlug(slug)

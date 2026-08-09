@@ -1,6 +1,6 @@
 ---
 title: GDPR Compliance
-description: featul’s approach to GDPR and data protection obligations.
+description: Featul’s approach to GDPR and data protection obligations.
 path: /gdpr
 lastUpdated: 31 October 2025
 ---
@@ -9,12 +9,12 @@ lastUpdated: 31 October 2025
 
 **Last updated:** 31 October 2025
 
-**featul** is committed to protecting Personal Data and complying with the EU General Data Protection Regulation (GDPR). This page summarizes our practices as controller and processor, our lawful bases, your rights, and key safeguards.
+**Featul** is committed to protecting Personal Data and complying with the EU General Data Protection Regulation (GDPR). This page summarizes our practices as controller and processor, our lawful bases, your rights, and key safeguards.
 
 ## Roles and Responsibilities
 
 ### Data Controller
-**featul** acts as the data controller for Personal Data that we collect and process for our own purposes, including:
+**Featul** acts as the data controller for Personal Data that we collect and process for our own purposes, including:
 
 - **Account Management**: User registration, authentication, profile management, and account settings
 - **Billing and Payments**: Subscription management, payment processing, invoicing, and financial records
@@ -24,7 +24,7 @@ lastUpdated: 31 October 2025
 - **Security and Fraud Prevention**: Authentication, access control, threat detection, and abuse prevention
 
 ### Data Processor
-**featul** acts as a data processor when handling Customer Data that you submit to or generate within our Service. In this capacity, we process data solely on your instructions and in accordance with our Data Processing Addendum (DPA), which incorporates:
+**Featul** acts as a data processor when handling Customer Data that you submit to or generate within our Service. In this capacity, we process data solely on your instructions and in accordance with our Data Processing Addendum (DPA), which incorporates:
 
 - **Processing Instructions**: Specific purposes and methods for data processing as directed by you
 - **Data Subject Rights**: Mechanisms to facilitate access, correction, deletion, and portability requests

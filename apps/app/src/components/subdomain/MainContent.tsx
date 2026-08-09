@@ -14,6 +14,8 @@ import { SubdomainListLayout } from "./SubdomainListLayout";
 import { SubdomainListCard } from "./SubdomainListCard";
 import { SubdomainListItems } from "./SubdomainListItems";
 import PostCard from "@/components/subdomain/PostCard";
+import { SubdomainListEmptyState } from "./SubdomainListEmptyState";
+import { SubdomainActiveSearchHeader } from "./SubdomainActiveSearchHeader";
 import EmptyDomainPosts from "./EmptyPosts";
 
 type Item = RequestItemData;
@@ -43,9 +45,14 @@ export function MainContent({
 }) {
   const search = useSearchParams();
   const boardParam = search.get("board") || undefined;
+  const searchQuery = (search.get("search") || "").trim();
   const paginationBasePath = selectedBoard ? `/board/${selectedBoard}` : "/";
-  const paginationKeepParams = selectedBoard ? ["order"] : ["board", "order"];
-  const sortKeepParams = selectedBoard ? ["page"] : ["page", "board"];
+  const paginationKeepParams = selectedBoard
+    ? ["order", "search"]
+    : ["board", "order", "search"];
+  const sortKeepParams = selectedBoard
+    ? ["page", "search"]
+    : ["page", "board", "search"];
   const [listItems, setListItems] = React.useState<Item[]>(items || []);
   React.useEffect(() => {
     setListItems(items || []);
@@ -124,8 +131,21 @@ export function MainContent({
           <SubmitIdeaCard subdomain={subdomain} slug={slug} />
         </div>
         <SubdomainListCard>
+          {searchQuery ? (
+            <SubdomainActiveSearchHeader
+              query={searchQuery}
+              totalCount={totalCount}
+            />
+          ) : null}
           {items.length === 0 ? (
-            <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+            searchQuery ? (
+              <SubdomainListEmptyState
+                title="No results found"
+                description="Try different keywords or clear your search."
+              />
+            ) : (
+              <EmptyDomainPosts subdomain={subdomain} slug={slug} />
+            )
           ) : (
             <SubdomainListItems>
               {listItems.map((p) => {

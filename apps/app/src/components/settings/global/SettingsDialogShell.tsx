@@ -1,7 +1,35 @@
 "use client"
 
 import React from "react"
+import { motion } from "framer-motion"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
+import MaximizeIcon from "@featul/ui/icons/maximize"
+import MinimizeIcon from "@featul/ui/icons/minimize"
+
+const DialogExpandedContext = React.createContext(false)
+
+/** Whether the surrounding SettingsDialogShell is currently expanded. */
+export function useDialogExpanded() {
+  return React.useContext(DialogExpandedContext)
+}
+
+type DialogWidth = "default" | "wide" | "widest" | "xl" | "xxl"
+
+const BASE_WIDTH_PX: Record<DialogWidth, number> = {
+  default: 420,
+  wide: 490,
+  widest: 650,
+  xl: 750,
+  xxl: 1070,
+}
+
+const EXPANDED_WIDTH_PX: Record<DialogWidth, number> = {
+  default: 560,
+  wide: 640,
+  widest: 800,
+  xl: 880,
+  xxl: 1200,
+}
 
 type SettingsDialogShellProps = {
   open: boolean
@@ -9,9 +37,11 @@ type SettingsDialogShellProps = {
   title: string
   description?: string
   /** "default" matches 450/380, "wide" matches 520/420, "widest" matches 680/800, "xl" matches 900/960, "xxl" matches 1040/1120 */
-  width?: "default" | "wide" | "widest" | "xl" | "xxl"
+  width?: DialogWidth
   offsetY?: string | number
   icon?: React.ReactNode
+  /** Shows an expand/collapse toggle that grows the dialog with a framer-motion animation. */
+  expandable?: boolean
   children: React.ReactNode
 }
 
@@ -23,18 +53,19 @@ export function SettingsDialogShell({
   width = "default",
   offsetY = "50%",
   icon,
+  expandable = false,
   children,
 }: SettingsDialogShellProps) {
-  const styleWidth =
-    width === "xxl"
-      ? { width: "min(92vw, 1070px)", maxWidth: "none" as const }
-      : width === "xl"
-      ? { width: "min(92vw, 750px)", maxWidth: "none" as const }
-      : width === "widest"
-      ? { width: "min(92vw, 650px)", maxWidth: "none" as const }
-      : width === "wide"
-      ? { width: "min(92vw, 490px)", maxWidth: "none" as const }
-      : { width: "min(92vw, 420px)", maxWidth: "none" as const }
+  const [expanded, setExpanded] = React.useState(false)
+
+  React.useEffect(() => {
+    if (!open) setExpanded(false)
+  }, [open])
+
+  const styleWidth = {
+    width: `min(92vw, ${BASE_WIDTH_PX[width]}px)`,
+    maxWidth: "none" as const,
+  }
 
   const topValue = typeof offsetY === "number" ? `${offsetY}%` : offsetY
   const positionStyle: React.CSSProperties & { ["--tw-translate-y"]?: string } = {
@@ -42,23 +73,68 @@ export function SettingsDialogShell({
     ["--tw-translate-y"]: `-${topValue}`,
   }
 
+  const header = (
+    <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+      <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+        {icon}
+        {title}
+      </DialogTitle>
+      {expandable ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="absolute top-3 right-8 inline-flex items-center justify-center rounded-xs opacity-70 transition-opacity hover:opacity-100 cursor-pointer"
+          aria-label={expanded ? "Collapse dialog" : "Expand dialog"}
+          title={expanded ? "Collapse" : "Expand"}
+        >
+          {expanded ? <MinimizeIcon size={14} /> : <MaximizeIcon size={14} />}
+        </button>
+      ) : null}
+    </DialogHeader>
+  )
+
+  const body = (
+    <div
+      className={`bg-card rounded-xl p-2 dark:bg-black/60 border border-border ${expandable ? "flex min-h-0 flex-1 flex-col" : ""}`}
+    >
+      {description ? (
+        <DialogDescription className="text-sm mb-2">
+          {description}
+        </DialogDescription>
+      ) : null}
+      <DialogExpandedContext.Provider value={expanded}>
+        {children}
+      </DialogExpandedContext.Provider>
+    </div>
+  )
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className={`max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1`}>
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-          <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
-            {icon}
-            {title}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="bg-card rounded-xl p-2 dark:bg-black/60 border border-border">
-          {description ? (
-            <DialogDescription className="text-sm mb-2">
-              {description}
-            </DialogDescription>
-          ) : null}
-          {children}
-        </div>
+      <DialogContent
+        fluid
+        style={{ ...(expandable ? {} : styleWidth), ...positionStyle }}
+        className={`max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1`}
+      >
+        {expandable ? (
+          <motion.div
+            className="flex min-w-0 flex-col gap-1"
+            initial={false}
+            animate={{
+              width: expanded ? EXPANDED_WIDTH_PX[width] : BASE_WIDTH_PX[width],
+              minHeight: expanded ? "45dvh" : "0dvh",
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 34, mass: 0.9 }}
+            style={{ maxWidth: "92vw" }}
+          >
+            {header}
+            {body}
+          </motion.div>
+        ) : (
+          <>
+            {header}
+            {body}
+          </>
+        )}
       </DialogContent>
     </Dialog>
   )

@@ -9,8 +9,8 @@ import {
   setFeedbackBoardsCache,
   useFeedbackBoardsSettings,
   type FeedbackBoardSettings,
-} from "./feedback-board-settings";
-export type { FeedbackBoardSettings } from "./feedback-board-settings";
+} from "./useFeedbackBoardSettings";
+export type { FeedbackBoardSettings } from "./useFeedbackBoardSettings";
 
 export type ToggleKey = keyof Pick<
   FeedbackBoardSettings,

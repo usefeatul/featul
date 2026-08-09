@@ -40,7 +40,11 @@ export function createPageMetadata({ title, description, path, image, absoluteTi
     title: titleProp,
     description,
     alternates: { canonical: baseUrl ? fullUrl : canonical },
-    ...(indexable === false ? { robots: { index: false, follow: false } } : {}),
+    ...(indexable === false
+      ? { robots: { index: false, follow: false } }
+      : indexable === true
+        ? { robots: { index: true, follow: true } }
+        : {}),
     openGraph: {
       url: fullUrl,
       type: 'website',
@@ -70,6 +74,7 @@ export async function createWorkspaceMetadata(slug: string): Promise<Metadata> {
     absoluteTitle: true,
     baseUrl,
     includeBrand: false,
+    indexable: true,
   })
   return {
     ...meta,
@@ -105,6 +110,7 @@ export async function createPostMetadata(subdomain: string, postSlug: string, pa
     absoluteTitle: true,
     baseUrl,
     includeBrand: false,
+    indexable: true,
   })
 
   return {
@@ -137,6 +143,7 @@ export async function createWorkspaceSectionMetadata(slug: string, section: 'fee
     absoluteTitle: true,
     baseUrl,
     includeBrand: false,
+    indexable: true,
   })
   return {
     ...meta,

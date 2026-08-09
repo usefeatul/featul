@@ -1,0 +1,101 @@
+"use client"
+import { cn } from "@featul/ui/lib/utils"
+import type { TocItem } from "@/lib/toc"
+import { useRef, useState } from "react"
+import { usePrefersReducedMotion } from "../../hooks/motion"
+import { ScrollArea } from "@featul/ui/components/scroll-area"
+import { useActiveHeading } from "@/hooks/heading"
+import { useAutoScrollActiveLink } from "@/hooks/scroll"
+import { scrollToHeading, scrollToHeadingInContainer, updateUrlHash } from "@/lib/tocutils"
+
+type TableOfContentsProps = {
+  items: TocItem[]
+  className?: string
+  title?: string
+  scrollContainerSelector?: string
+}
+
+export function TableOfContents({ items, className, title = "Table of content", scrollContainerSelector }: TableOfContentsProps) {
+  const activeId = useActiveHeading(items, scrollContainerSelector)
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const [expanded, setExpanded] = useState(false)
+  const navRef = useRef<HTMLDivElement | null>(null)
+  useAutoScrollActiveLink(activeId, expanded, navRef as React.RefObject<HTMLElement>)
+  if (!items?.length) return null
+
+  function onAnchorClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+    e.preventDefault()
+    if (scrollContainerSelector) {
+      scrollToHeadingInContainer(id, prefersReducedMotion, scrollContainerSelector)
+    } else {
+      scrollToHeading(id, prefersReducedMotion)
+    }
+    updateUrlHash(id)
+  }
+  return (
+    <nav
+      ref={navRef}
+      aria-label="Table of contents"
+      className={cn(
+        "text-sm text-accent",
+        className
+      )}
+       data-component="TableOfContents"
+    >
+      <div className="text-md font-bold text-foreground mb-2">{title}</div>
+      {expanded ? (
+        <ul className="space-y-1 list-none pl-0 m-0">
+          {items.map((item) => (
+            <li key={item.id} className={cn("leading-snug text-left")}> 
+              <a
+                href={`#${item.id}`}
+                onClick={(e) => onAnchorClick(e, item.id)}
+                className={cn(
+                  "block py-1 text-left text-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
+                  item.level === 2 ? "font-light" : "font-normal",
+                  activeId === item.id && "text-foreground font-medium"
+                )}
+                aria-current={activeId === item.id ? "page" : undefined}
+              >
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ScrollArea className="pr-1 h-[9rem]">
+          <ul className="space-y-1 list-none pl-0 m-0">
+            {items.map((item) => (
+              <li key={item.id} className={cn("leading-snug text-left")}> 
+                <a
+                  href={`#${item.id}`}
+                  onClick={(e) => onAnchorClick(e, item.id)}
+                  className={cn(
+                    "block py-1 text-left text-md text-muted-foreground truncate transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md",
+                    item.level === 2 ? "font-light" : "font-normal",
+                    activeId === item.id && "text-foreground font-medium"
+                  )}
+                  aria-current={activeId === item.id ? "page" : undefined}
+                >
+                  {item.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
+      )}
+      {items.length > 5 && (
+        <div className="mt-2 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="text-xs text-accent hover:text-primary cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md"
+            aria-expanded={expanded}
+          >
+            {expanded ? "Show less" : "Show more"}
+          </button>
+        </div>
+      )}
+    </nav>
+  )
+}

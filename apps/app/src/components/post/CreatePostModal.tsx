@@ -20,12 +20,14 @@ export function CreatePostModal({
   open,
   onOpenChange,
   workspaceSlug,
-  user
+  user,
+  initialStatus = "pending",
 }: {
   open: boolean
   onOpenChange: (v: boolean) => void
   workspaceSlug: string
   user?: PostUser
+  initialStatus?: string
 }) {
   const router = useRouter()
   const { boards, selectedBoard, setSelectedBoard } = useWorkspaceBoards({
@@ -34,9 +36,15 @@ export function CreatePostModal({
   })
 
   // New State for Status and Tags
-  const [status, setStatus] = useState("pending")
+  const [status, setStatus] = useState(initialStatus)
   const [availableTags, setAvailableTags] = useState<TagSummary[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+
+  useEffect(() => {
+    if (open) {
+      setStatus(initialStatus)
+    }
+  }, [open, initialStatus])
 
   const {
     uploadedImage,
@@ -61,7 +69,7 @@ export function CreatePostModal({
       onOpenChange(false)
       setUploadedImage(null)
       // Reset fields
-      setStatus("pending")
+      setStatus(initialStatus)
       setSelectedTags([])
     },
     onCreated: (post) => {
@@ -134,8 +142,9 @@ export function CreatePostModal({
       width="widest"
       offsetY="10%"
       icon={<DocumentTextIcon className="size-3.5" />}
+      expandable
     >
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
         <PostHeader
           user={user || null}
           initials={user?.name?.[0] || "?"}

@@ -5,9 +5,26 @@
  * and to build hub-and-spoke internal linking structure.
  */
 
-import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/content-matrix";
+import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/matrix";
 import { getDefinitionBySlug, getAllDefinitionSlugs } from "@/content/definitions";
-import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools";
+import { getCategoryBySlug, getAllCategorySlugs, findToolBySlug, findToolForDefinition } from "@/types/tools";
+
+const DEFINITION_SLUG_ALIASES: Record<string, string> = {
+    "changelog": "retention-rate",
+    "product-updates": "retention-rate",
+    "release-management": "retention-rate",
+    "product-analytics": "stickiness",
+    "user-engagement": "stickiness",
+    "roadmap": "ttfv",
+    "product-management": "cohort-analysis",
+    "open-source": "retention-rate",
+    "community-management": "retention-rate",
+    "mobile-analytics": "stickiness",
+    "user-feedback": "retention-rate",
+    "product-feedback": "retention-rate",
+    "feature-voting": "retention-rate",
+    "product-validation": "ttfv",
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -86,10 +103,10 @@ function addCompetitorRelated(slug: string, links: RelatedLink[]) {
 
     // Add related definitions
     for (const defSlug of competitor.relatedDefinitions.slice(0, 2)) {
-        const def = getDefinitionBySlug(defSlug);
+        const def = resolveDefinition(defSlug);
         if (def) {
             links.push({
-                href: `/definitions/${defSlug}`,
+                href: `/definitions/${def.slug}`,
                 label: `What is ${def.name}?`,
                 type: "definition",
             });
@@ -98,11 +115,14 @@ function addCompetitorRelated(slug: string, links: RelatedLink[]) {
 
     // Add related tools
     for (const toolSlug of competitor.relatedTools.slice(0, 2)) {
-        links.push({
-            href: `/tools`,
-            label: `${toolSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`,
-            type: "tool",
-        });
+        const resolved = findToolBySlug(toolSlug);
+        if (resolved) {
+            links.push({
+                href: `/tools/categories/${resolved.categorySlug}/${resolved.tool.slug}`,
+                label: resolved.tool.name,
+                type: "tool",
+            });
+        }
     }
 
     // Add other competitors
@@ -110,10 +130,12 @@ function addCompetitorRelated(slug: string, links: RelatedLink[]) {
     for (const other of others) {
         links.push({
             href: `/alternatives/${other.slug}`,
-            label: `Featul vs ${other.name}`,
+            label: `${other.name} alternatives`,
             type: "competitor",
         });
     }
+
+    ensureCompetitorLinkFloor(links);
 }
 
 function addIntegrationRelated(slug: string, links: RelatedLink[]) {
@@ -159,7 +181,7 @@ function addIntegrationRelated(slug: string, links: RelatedLink[]) {
     if (topCompetitor) {
         links.push({
             href: `/alternatives/${topCompetitor.slug}`,
-            label: `Featul vs ${topCompetitor.name}`,
+            label: `${topCompetitor.name} alternatives`,
             type: "competitor",
         });
     }
@@ -190,11 +212,14 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
 
     // Add related tools (limit to 1)
     for (const toolSlug of useCase.relatedTools.slice(0, 1)) {
-        links.push({
-            href: `/tools`,
-            label: `${toolSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`,
-            type: "tool",
-        });
+        const resolved = findToolBySlug(toolSlug);
+        if (resolved) {
+            links.push({
+                href: `/tools/categories/${resolved.categorySlug}/${resolved.tool.slug}`,
+                label: resolved.tool.name,
+                type: "tool",
+            });
+        }
     }
 
     // Add integrations (cross-hub connection)
@@ -212,7 +237,7 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
     if (topCompetitor) {
         links.push({
             href: `/alternatives/${topCompetitor.slug}`,
-            label: `Featul vs ${topCompetitor.name}`,
+            label: `${topCompetitor.name} alternatives`,
             type: "competitor",
         });
     }
@@ -226,6 +251,15 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
 }
 
 function addDefinitionRelated(slug: string, links: RelatedLink[]) {
+    const relatedTool = findToolForDefinition(slug);
+    if (relatedTool) {
+        links.push({
+            href: `/tools/categories/${relatedTool.categorySlug}/${relatedTool.tool.slug}`,
+            label: `${relatedTool.tool.name} calculator`,
+            type: "tool",
+        });
+    }
+
     // Add tools hub
     links.push({
         href: "/tools",
@@ -255,6 +289,19 @@ function addDefinitionRelated(slug: string, links: RelatedLink[]) {
 }
 
 function addToolRelated(slug: string, links: RelatedLink[]) {
+    const match = findToolBySlug(slug);
+    if (match) {
+        const defSlug = slug.replace(/-calculator$/, "");
+        const def = getDefinitionBySlug(defSlug);
+        if (def) {
+            links.push({
+                href: `/definitions/${defSlug}`,
+                label: `What is ${def.name}?`,
+                type: "definition",
+            });
+        }
+    }
+
     // Add definitions hub
     links.push({
         href: "/definitions",
@@ -296,6 +343,31 @@ function addGenericRelated(links: RelatedLink[]) {
 // Helper: resolve any slug to a link (for priority slugs)
 // ─────────────────────────────────────────────────────────────────────────────
 
+function resolveDefinition(slug: string) {
+    return getDefinitionBySlug(DEFINITION_SLUG_ALIASES[slug] ?? slug);
+}
+
+function ensureCompetitorLinkFloor(links: RelatedLink[]) {
+    const fallbacks: RelatedLink[] = [
+        { href: "/alternatives", label: "Compare All Alternatives", type: "hub" },
+        { href: "/use-cases/product-feedback-platform", label: "Product Feedback Use Case", type: "use-case" },
+        { href: "/integrations/slack", label: "Slack Integration", type: "integration" },
+        { href: "/definitions/churn-rate", label: "What is Churn Rate?", type: "definition" },
+        {
+            href: "/tools/categories/customer-metrics/churn-calculator",
+            label: "Churn Calculator",
+            type: "tool",
+        },
+    ];
+
+    for (const link of fallbacks) {
+        if (links.length >= 3) break;
+        if (!links.some((existing) => existing.href === link.href)) {
+            links.push(link);
+        }
+    }
+}
+
 function resolveSlugToLink(slug: string): RelatedLink | null {
     // Check definitions
     const def = getDefinitionBySlug(slug);
@@ -306,7 +378,7 @@ function resolveSlugToLink(slug: string): RelatedLink | null {
     // Check competitors
     const competitor = COMPETITORS.find((c) => c.slug === slug);
     if (competitor) {
-        return { href: `/alternatives/${slug}`, label: `Featul vs ${competitor.name}`, type: "competitor" };
+        return { href: `/alternatives/${slug}`, label: `${competitor.name} alternatives`, type: "competitor" };
     }
 
     // Check integrations

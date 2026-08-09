@@ -3,7 +3,7 @@
 import React from "react"
 import { cn } from "@featul/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
-import { type BillingCycle } from "./billing-data"
+import { type BillingCycle } from "./data"
 
 type BillingCycleSegmentProps = {
   billingCycle: BillingCycle

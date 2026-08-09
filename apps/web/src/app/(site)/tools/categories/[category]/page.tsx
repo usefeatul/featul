@@ -2,9 +2,12 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getCategoryBySlug, getAllCategorySlugs } from "@/types/tools"
-import ToolList from "@/components/tools/global/tool-list"
-import ToolsPageShell from "@/components/tools/global/tool-shell"
+import ToolList from "@/components/tools/global/list"
+import ToolsPageShell from "@/components/tools/global/shell"
 import { createPageMetadata } from "@/lib/seo"
+import { SITE_URL } from "@/config/seo"
+import { buildToolCategoryBreadcrumbSchema } from "@/lib/schema"
+import { serializeJsonLd } from "@/lib/security"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@featul/ui/components/breadcrumb"
 
 type Props = { params: Promise<{ category: string }> }
@@ -25,32 +28,47 @@ export default async function CategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(category)
   if (!cat) return notFound()
 
+  const breadcrumbSchema = buildToolCategoryBreadcrumbSchema({
+    siteUrl: SITE_URL,
+    categorySlug: category,
+    categoryName: cat.name,
+  })
+
   return (
     <ToolsPageShell
       dataComponent="ToolsCategory"
-      mainClassName="min-h-[calc(100vh-64px)] pt-16 bg-background"
+      title={cat.name}
+      description={cat.description}
+      meta={
+        <>
+          <script
+            id="tool-category-breadcrumb-jsonld"
+            type="application/ld+json"
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
+          />
+          <Breadcrumb className="mb-2">
+          <BreadcrumbList className="text-accent">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/tools" className="inline-flex h-8 items-center px-2">Tools</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/tools/categories" className="inline-flex h-8 items-center px-2">Categories</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{cat.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        </>
+      }
     >
-      <Breadcrumb className="mb-6">
-        <BreadcrumbList className="text-accent">
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/tools" className="inline-flex h-8 items-center px-2">Tools</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/tools/categories" className="inline-flex h-8 items-center px-2">Categories</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{cat.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl">{cat.name}</h1>
-      <p className="text-accent mt-4">{cat.description}</p>
       <ToolList categorySlug={cat.slug} tools={cat.tools} />
     </ToolsPageShell>
   )

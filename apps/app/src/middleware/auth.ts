@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getSessionCookie } from "better-auth/cookies"
-import { resolveSafeInternalRedirect } from "@/lib/auth-redirect"
+import { resolveSafeInternalRedirect } from "@/lib/auth/redirect"
 
 function resolveSignedInDestination(
   req: NextRequest,
@@ -27,7 +27,7 @@ function resolveSignedInDestination(
 
 export function handleAuthRedirects(req: NextRequest) {
   const pathname = req.nextUrl.pathname
-  if (pathname.startsWith("/auth/sign-in") || pathname.startsWith("/auth/sign-up")) {
+  if (pathname.startsWith("/auth/signin") || pathname.startsWith("/auth/signup")) {
     const sessionCookie = getSessionCookie(req)
     if (sessionCookie) {
       const url = resolveSignedInDestination(req, { includeStartFallback: true })
@@ -55,7 +55,7 @@ export function enforceWorkspaceAuth(req: NextRequest) {
   if (needsAuth) {
     const cookie = getSessionCookie(req)
     if (!cookie) {
-      const url = new URL("/auth/sign-in", req.url)
+      const url = new URL("/auth/signin", req.url)
       url.searchParams.set("redirect", `${pathname}${req.nextUrl.search}`)
       return NextResponse.redirect(url)
     }

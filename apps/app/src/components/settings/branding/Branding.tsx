@@ -3,12 +3,12 @@
 import React from "react";
 import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import {
   loadBrandingBySlug,
   saveBranding,
   updateWorkspaceName,
-} from "../../../lib/branding-service";
+} from "../../../lib/branding/service";
 import { toast } from "sonner";
 import { Switch } from "@featul/ui/components/switch";
 import {
@@ -19,14 +19,14 @@ import ThemePicker from "./ThemePicker";
 import LogoUploader from "./LogoUploader";
 import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
-import { setWorkspaceLogo } from "@/lib/branding-store";
+import { setWorkspaceLogo } from "@/lib/branding/store";
 import { Input } from "@featul/ui/components/input";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
-import { fetchWorkspaceBySlug } from "@/lib/workspace-client";
+import { fetchWorkspaceBySlug } from "@/lib/workspace/client";
 import type { BrandingConfig } from "../../../types/branding";
-import { updateWorkspaceLogoInCache, updateWorkspaceNameInCache } from "./branding-cache";
+import { updateWorkspaceLogoInCache, updateWorkspaceNameInCache } from "./cache";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 interface BrandingSectionProps {

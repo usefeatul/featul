@@ -5,8 +5,8 @@ import RequestList from "@/components/requests/RequestList";
 import PostCountSeed from "@/components/requests/PostCountSeed";
 import RequestPagination from "@/components/requests/RequestPagination";
 import { createPageMetadata } from "@/lib/seo";
-import { readInitialSelectionState } from "@/lib/selection-server";
-import { resolveSearchParams } from "@/utils/search-params";
+import { readInitialSelectionState } from "@/lib/selection/server";
+import { resolveSearchParams } from "@/utils/search/params";
 import { loadRequestsPageData, type RequestsSearchParams } from "./data";
 
 export const dynamic = "force-dynamic";

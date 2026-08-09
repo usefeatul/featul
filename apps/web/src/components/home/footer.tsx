@@ -5,17 +5,13 @@ import { StatusButton } from "@/components/home/status";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
 import { TwitterIcon } from "@featul/ui/icons/twitter";
-import { LinearSeparator } from "@/components/linear-separator";
 
 export default function FooterSection() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-background">
-      <div className="mx-auto max-w-6xl">
-        <LinearSeparator />
-      </div>
-      <Container maxWidth="6xl" className="px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
+    <footer className="relative overflow-hidden bg-background">
+      <Container maxWidth="6xl" className="relative z-30 px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="grid items-start gap-12 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
             <div className="max-w-sm">
@@ -25,7 +21,7 @@ export default function FooterSection() {
                 className="inline-flex items-center gap-2 text-foreground hover:text-primary"
               >
                 <FeatulLogoIcon />
-                <span className="font-heading text-sm font-medium">featul</span>
+                <span className="font-heading text-sm font-medium">Featul</span>
               </Link>
               <p className="text-accent mt-4 text-sm leading-6">
                 Customer feedback, roadmaps, and changelogs in one simple
@@ -57,16 +53,10 @@ export default function FooterSection() {
             </nav>
           </div>
 
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-              <p className="text-accent text-sm">© {year} featul</p>
-              <StatusButton
-                label="Operational"
-                className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
-              />
-            </div>
+          <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-accent text-sm">© {year} Featul</p>
 
-            <div className="flex items-center gap-4">
+            <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
               <Link
                 href="#"
                 target="_blank"
@@ -85,6 +75,10 @@ export default function FooterSection() {
               >
                 <TwitterIcon size={14} />
               </Link>
+              <StatusButton
+                label="Operational"
+                className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
+              />
             </div>
           </div>
         </div>

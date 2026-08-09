@@ -77,6 +77,7 @@ export function useFeatulEditor(options: useFeatulEditorOptions) {
 		placeholder,
 		imageUpload,
 		mentionSuggestions,
+		additionalSlashSuggestions,
 		extensions = [],
 		...restOptions
 	} = options;
@@ -85,6 +86,7 @@ export function useFeatulEditor(options: useFeatulEditorOptions) {
 		placeholder,
 		imageUpload,
 		mentionSuggestions,
+		additionalSlashSuggestions,
 	});
 
 	const editor = useEditor({
@@ -107,5 +109,6 @@ export type useFeatulEditorOptions = Omit<UseEditorOptions, "extensions"> & {
 	placeholder?: string;
 	imageUpload?: import("../types").ImageUploadOptions;
 	mentionSuggestions?: MentionSuggestionSource;
+	additionalSlashSuggestions?: import("../types").AdditionalSlashSuggestionsSource;
 	extensions?: EditorExtensions;
 };

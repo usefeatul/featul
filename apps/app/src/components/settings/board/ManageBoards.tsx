@@ -20,7 +20,7 @@ import {
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import PlanNotice from "../global/PlanNotice";
 import ModalCreateBoard from "../feedback/ModalCreateBoard";
 import { MoreVertical } from "lucide-react";
@@ -29,7 +29,7 @@ import {
   setFeedbackBoardsCache,
   useFeedbackBoardsSettings,
   type FeedbackBoardSettings,
-} from "@/hooks/feedback-board-settings";
+} from "@/hooks/useFeedbackBoardSettings";
 import { getPlanLimits, normalizePlan } from "@/lib/plan";
 
 export default function ManageBoards({

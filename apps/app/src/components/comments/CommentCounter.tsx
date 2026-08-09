@@ -14,7 +14,7 @@ import {
   type CommentDeletedEventDetail,
   type CommentListResponse,
   type CommentSurface,
-} from "@/lib/comment-shared"
+} from "@/lib/comment/shared"
 
 interface CommentCounterProps {
   postId: string

@@ -7,7 +7,7 @@ import {
   filterActivityItems,
   getAvailableStatuses,
   type ActivityCategory,
-} from "@/components/team/member-activity-utils"
+} from "@/components/team/activity/utils"
 
 interface UseMemberActivityFiltersInput {
   items: ActivityItem[]

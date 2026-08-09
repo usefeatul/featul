@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation"
 import StatusIcon from "./StatusIcon"
 import { CommentsIcon } from "@featul/ui/icons/comments"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
-import { Checkbox } from "@featul/ui/components/checkbox"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import { randomAvatarUrl } from "@/utils/avatar"
@@ -16,6 +15,11 @@ import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import type { RequestItemData } from "@/types/request"
+import { SelectionControl } from "@/components/selection/SelectionControl"
+import {
+  getSelectableRowClassName,
+  type SelectionToggleMeta,
+} from "@/components/selection/Row"
 
 interface RequestItemProps {
   item: RequestItemData
@@ -23,7 +27,7 @@ interface RequestItemProps {
   linkBase?: string
   isSelecting?: boolean
   isSelected?: boolean
-  onToggle?: (checked: boolean) => void
+  onToggle?: (checked: boolean, meta?: SelectionToggleMeta) => void
   disableLink?: boolean
 }
 
@@ -42,11 +46,12 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     if (!isSelectingMode) return
     e.preventDefault()
     e.stopPropagation()
-    onToggle?.(!isSelectedMode)
+    onToggle?.(!isSelectedMode, { shiftKey: e.shiftKey })
   }, [isSelectingMode, isSelectedMode, onToggle])
-  const rowClassName = cn(
+  const rowClassName = getSelectableRowClassName(
+    isSelectingMode,
+    isSelectedMode,
     "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
-    isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
   )
   const actionsClassName = cn(
     "ml-auto flex items-center gap-3 text-xs text-accent",
@@ -57,24 +62,28 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     <RequestItemContextMenu
       item={item}
       workspaceSlug={workspaceSlug}
+      requestHref={href}
+      listKey={workspaceSlug}
+      isSelecting={isSelectingMode}
+      isSelected={isSelectedMode}
+      onToggle={onToggle}
       className={rowClassName}
       onClick={handleRowClick}
     >
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
       {isSelectingMode ? (
-        <Checkbox
+        <SelectionControl
           checked={isSelectedMode}
-          onCheckedChange={(v) => onToggle?.(Boolean(v))}
-          aria-label="Select post"
+          label={isSelectedMode ? "Deselect post" : "Select post"}
+          onCheckedChange={(v) => onToggle?.(v)}
           onClick={(e) => e.stopPropagation()}
-          className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
         />
       ) : null}
       <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
       <Link
         href={href}
         className={cn(
-          "flex-1 min-w-0 truncate text-sm font-medium",
+          "min-w-0 flex-1 truncate text-sm font-medium",
           isLinkDisabled ? "text-foreground/60 cursor-default pointer-events-none" : "text-foreground"
         )}
         onClick={(e) => {

@@ -29,6 +29,7 @@ import {
 	useCurrentEditor,
 	useFeatulEditor as usefeatulEditor,
 	type Editor as TiptapEditor,
+	type AdditionalSlashSuggestionsSource,
 	type JSONContent,
 	type MentionSuggestionItem,
 } from "@featul/editor";
@@ -101,6 +102,9 @@ export interface FeedEditorRef {
 	getContent: () => JSONContent | undefined;
 	getMarkdown: () => string | undefined;
 	setContentFromMarkdown: (markdown: string) => void;
+	setStreamingMarkdown: (markdown: string) => void;
+	beginAiStream: () => void;
+	updateStreamingMarkdown: (markdown: string) => void;
 }
 
 export interface FeedEditorProps {
@@ -112,6 +116,7 @@ export interface FeedEditorProps {
 	mentionSuggestions?: MentionSuggestionItem[];
 	/** Upload handler for images (slash command, drag & drop, paste) */
 	onImageUpload?: (file: File) => Promise<string>;
+	additionalSlashSuggestions?: AdditionalSlashSuggestionsSource;
 }
 
 /**
@@ -130,6 +135,7 @@ export const FeedEditor = forwardRef(
 			editable = true,
 			mentionSuggestions,
 			onImageUpload,
+			additionalSlashSuggestions,
 		}: FeedEditorProps,
 		ref: ForwardedRef<FeedEditorRef>,
 	) => {
@@ -141,6 +147,10 @@ export const FeedEditor = forwardRef(
 			() => mentionSuggestionsRef.current,
 			[],
 		);
+		const streamStateRef = useRef({
+			lastAppliedLength: 0,
+			lastGoodMarkdown: "",
+		});
 
 		const editor = usefeatulEditor({
 			content: initialContent,
@@ -148,6 +158,7 @@ export const FeedEditor = forwardRef(
 			editable,
 			imageUpload: onImageUpload ? { upload: onImageUpload } : undefined,
 			mentionSuggestions: getMentionSuggestions,
+			additionalSlashSuggestions,
 			onUpdate: ({ editor }) => {
 				onUpdate?.(editor.getJSON());
 			},
@@ -164,6 +175,69 @@ export const FeedEditor = forwardRef(
 				setContentFromMarkdown: (markdown: string) => {
 					if (!editor) return;
 					editor.commands.setContent(markdown, { contentType: "markdown" });
+				},
+				setStreamingMarkdown: (markdown: string) => {
+					if (!editor) return;
+					editor.commands.setContent(markdown, {
+						contentType: "markdown",
+						emitUpdate: true,
+					});
+				},
+				beginAiStream: () => {
+					if (!editor) return;
+					streamStateRef.current = {
+						lastAppliedLength: 0,
+						lastGoodMarkdown: "",
+					};
+					editor.commands.setContent("", { emitUpdate: false });
+				},
+				updateStreamingMarkdown: (markdown: string) => {
+					if (!editor || !markdown.trim()) return;
+
+					const state = streamStateRef.current;
+					if (markdown.length <= state.lastAppliedLength) return;
+
+					const grewBy = markdown.length - state.lastAppliedLength;
+					const isFirstUpdate = state.lastAppliedLength === 0;
+					const onBoundary =
+						markdown.endsWith("\n\n") ||
+						(markdown.endsWith("\n") && grewBy >= 12);
+
+					if (isFirstUpdate) {
+						if (markdown.trim().length < 16) return;
+					} else if (!onBoundary && grewBy < 48) {
+						return;
+					}
+
+					const prevTextLen = editor.state.doc.textContent.length;
+					editor.commands.setContent(markdown, {
+						contentType: "markdown",
+						emitUpdate: false,
+					});
+					const nextTextLen = editor.state.doc.textContent.length;
+
+					if (nextTextLen === 0 && markdown.trim().length > 0) {
+						if (state.lastGoodMarkdown) {
+							editor.commands.setContent(state.lastGoodMarkdown, {
+								contentType: "markdown",
+								emitUpdate: false,
+							});
+						}
+						return;
+					}
+
+					if (prevTextLen > 30 && nextTextLen < prevTextLen * 0.5) {
+						if (state.lastGoodMarkdown) {
+							editor.commands.setContent(state.lastGoodMarkdown, {
+								contentType: "markdown",
+								emitUpdate: false,
+							});
+						}
+						return;
+					}
+
+					state.lastAppliedLength = markdown.length;
+					state.lastGoodMarkdown = markdown;
 				},
 			}),
 			[editor],

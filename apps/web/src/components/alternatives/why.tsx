@@ -1,3 +1,4 @@
+import type { ComponentType, SVGProps } from "react";
 import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
 import { AccentBar } from "@featul/ui/components/cardElements";
@@ -8,125 +9,107 @@ import { ChartIcon } from "@featul/ui/icons/chart";
 import { UsersIcon } from "@featul/ui/icons/users";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
+type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { opacity?: number }>;
+
+const POINT_ICONS: IconComponent[] = [
+  ShieldIcon,
+  SetupIcon,
+  FeatherIcon,
+  ChartIcon,
+  UsersIcon,
+  BookmarkIcon,
+];
+
+const DEFAULT_VICTORY_POINTS = [
+  "EU hosting and GDPR-friendly defaults out of the box",
+  "Unified feedback boards, public roadmap, and changelog",
+  "Faster setup without enterprise implementation overhead",
+];
+
+function pointTitle(point: string): string {
+  const cleaned = point.replace(/\.$/, "").trim();
+  if (cleaned.length <= 56) return cleaned;
+  return `${cleaned.slice(0, 53).trimEnd()}…`;
+}
+
+function pointBody(point: string, name: string): string {
+  return `${point.replace(/\.$/, "")}. Compared with ${name}, this helps product teams move from raw feedback to shipped updates without juggling separate tools.`;
+}
+
 export default function WhyBetter({ alt }: { alt: Alternative }) {
+  const victoryPoints = (alt.victoryPoints?.length ? alt.victoryPoints : DEFAULT_VICTORY_POINTS).slice(0, 4);
+  const tradeoffs = (alt.tradeoffs?.length ? alt.tradeoffs : alt.pros ?? []).slice(0, 2);
+  const tagline = alt.tagline?.toLowerCase() || "product feedback";
+
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
-            Why organizations choose featul over {alt.name}
+            Why teams choose Featul over {alt.name}
           </h2>
 
           <div className="mt-10 flex items-start gap-2">
             <AccentBar width={8} />
             <p className="text-accent text-sm sm:text-base">
-              While {alt.name} provides feedback collection, featul offers a fundamentally different approach prioritizing data sovereignty, rapid implementation, and workflows that adapt to your processes rather than forcing you to adapt to rigid systems.
+              {alt.name} is known for {tagline}. Featul is a strong {alt.name}{" "}
+              alternative when you want privacy-first defaults, a connected
+              feedback-to-changelog workflow, and less setup overhead.
             </p>
           </div>
 
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-14 items-start">
-            <div className="sm:relative sm:mt-2">
-              <div className="flex items-start gap-3">
-                <ShieldIcon className="size-4 sm:size-5 text-primary" opacity={1} />
-                <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Complete data ownership and compliance
-                </h3>
-              </div>
-              <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
-                <p>
-                  Maintain complete control over your feedback data with EU hosting and built-in GDPR compliance. featul ensures your data remains portable migrate, self-host, or integrate without losing valuable insights.
-                </p>
-                <p>
-                  Unlike platforms that lock you into proprietary formats, our open export standards protect your investment and give you the freedom to evolve your tech stack without starting from zero.
-                </p>
-              </div>
-            </div>
-
-            <div className="sm:relative sm:mt-8">
-              <div className="flex items-start gap-3">
-                <SetupIcon className="size-4 sm:size-5 text-primary" opacity={1} />
-                <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Enterprise-grade deployment in minutes
-                </h3>
-              </div>
-              <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
-                <p>
-                  Deploy a branded feedback portal with a single line of code. Pre-configured workflows and tagging eliminate setup complexity start collecting feedback immediately without infrastructure changes.
-                </p>
-                <p>
-                  Traditional enterprise systems require weeks of implementation. featul reverses this paradigm, letting you share hosted spaces instantly while maintaining your existing user experience flow.
-                </p>
-              </div>
-            </div>
-
-            <div className="sm:relative sm:mt-12">
-              <div className="flex items-start gap-3">
-                <FeatherIcon className="size-4 sm:size-5 text-primary" opacity={1} />
-                <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Performance-optimized architecture
-                </h3>
-              </div>
-              <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
-                <p>
-                  Our lightweight widget loads fast with lazy-loading and intelligent caching. Collect comprehensive feedback without impacting your site&apos;s performance or user experience.
-                </p>
-                <p>
-                  Every millisecond matters for conversion rates. Our performance-first approach ensures you gather insights while maintaining the speed that keeps users engaged and satisfied.
-                </p>
-              </div>
-            </div>
-
-            <div className="sm:relative sm:mt-0">
-              <div className="flex items-start gap-3">
-                <ChartIcon className="size-4 sm:size-5 text-primary" opacity={1} />
-                <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Intuitive workflow design
-                </h3>
-              </div>
-              <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
-                <p>
-                  Avoid feature bloat with a focused approach. Our unified workflow connects feedback collection, prioritization, and roadmapping in one coherent system no maze of unused configuration options.
-                </p>
-                <p>
-                  Enterprise software should solve problems, not create them. We focus on capabilities that directly improve your team&apos;s ability to act on customer feedback efficiently.
-                </p>
-              </div>
-            </div>
-
-            <div className="sm:relative sm:mt-16">
-              <div className="flex items-start gap-3">
-                <UsersIcon className="size-4 sm:size-5 text-primary" opacity={1} />
-                <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Direct access to product expertise
-                </h3>
-              </div>
-              <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
-                <p>
-                  Skip generic support responses. Communicate directly with our engineering team for actionable solutions based on deep technical understanding, not scripted replies.
-                </p>
-                <p>
-                  Get expert guidance from the team who built the platform. We help you maximize value quickly, whether you’re cloud-hosted or self-hosted.
-                </p>
-              </div>
-            </div>
-
-            <div className="sm:relative sm:mt-6">
-              <div className="flex items-start gap-3">
-                <BookmarkIcon className="size-4 sm:size-5 text-primary" opacity={1} />
-                <h3 className="text-foreground text-base sm:text-lg font-medium">
-                  Thoughtful user experience
-                </h3>
-              </div>
-              <div className="text-accent mt-2 text-sm sm:text-base leading-7 space-y-4">
-                <p>
-                  Built-in accessibility and automatic roadmap-changelog sync eliminate manual coordination. Small efficiencies compound, letting your team focus on strategic decisions rather than administrative tasks.
-                </p>
-                <p>
-                  The details matter from keyboard navigation to consistent spacing. These thoughtful touches make daily work smoother and keep teams focused on outcomes, not tool management.
-                </p>
-              </div>
-            </div>
+            {victoryPoints.map((point, index) => {
+              const Icon = POINT_ICONS[index % POINT_ICONS.length]!;
+              return (
+                <div
+                  key={point}
+                  className={index % 2 === 1 ? "sm:relative sm:mt-8" : "sm:relative sm:mt-2"}
+                >
+                  <div className="flex items-start gap-3">
+                    <Icon className="size-4 sm:size-5 text-primary" opacity={1} />
+                    <h3 className="text-foreground text-base sm:text-lg font-medium">
+                      {pointTitle(point)}
+                    </h3>
+                  </div>
+                  <p className="text-accent mt-2 text-sm sm:text-base leading-7">
+                    {pointBody(point, alt.name)}
+                  </p>
+                </div>
+              );
+            })}
           </div>
+
+          {tradeoffs.length > 0 ? (
+            <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+              <div className="rounded-md border border-foreground/10 p-5 sm:p-6">
+                <h3 className="text-base font-medium text-foreground sm:text-lg">
+                  When {alt.name} might still fit
+                </h3>
+                <ul className="mt-4 space-y-3 text-sm leading-7 text-accent sm:text-base">
+                  {tradeoffs.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/30" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-md border border-primary/20 bg-primary/[0.04] p-5 sm:p-6">
+                <h3 className="text-base font-medium text-foreground sm:text-lg">
+                  Choose Featul when you want
+                </h3>
+                <ul className="mt-4 space-y-3 text-sm leading-7 text-accent sm:text-base">
+                  {victoryPoints.slice(0, 3).map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
     </Container>

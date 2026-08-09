@@ -17,7 +17,7 @@ export default function UserInfo({ user: userProp }: { user?: User }) {
     setLoading(true)
     try {
       await authClient.signOut()
-      router.push("/auth/sign-in")
+      router.push("/auth/signin")
     } finally {
       setLoading(false)
     }

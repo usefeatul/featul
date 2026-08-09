@@ -13,7 +13,7 @@ import {
   toCommentListResponse,
   type CommentListResponse,
   type CommentSurface,
-} from "@/lib/comment-shared"
+} from "@/lib/comment/shared"
 
 interface CommentListProps {
   postId: string

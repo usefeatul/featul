@@ -14,9 +14,10 @@ import {
   InputOTPSlot,
 } from "@featul/ui/components/opt";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import { resolvePostAuthPath } from "@/lib/post/redirect";
 
 type VerificationMethod = "totp" | "backup";
 
@@ -33,8 +34,8 @@ export default function TwoFactorChallenge() {
   const [error, setError] = useState("");
 
   const signInHref = safeRedirectParam
-    ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}`
-    : "/auth/sign-in";
+    ? `/auth/signin?redirect=${encodeURIComponent(safeRedirectParam)}`
+    : "/auth/signin";
 
   const activeCode = method === "totp" ? totpCode.trim() : backupCode.trim();
 
@@ -43,9 +44,9 @@ export default function TwoFactorChallenge() {
     setError("");
   };
 
-  const handleSuccess = () => {
+  const handleSuccess = async () => {
     toast.success("Two-factor verification complete");
-    router.push(redirect);
+    router.push(await resolvePostAuthPath(safeRedirectParam));
   };
 
   const handleSubmit = async () => {
@@ -111,16 +112,16 @@ export default function TwoFactorChallenge() {
         void handleSubmit();
       }}
       footer={
-        <p className="text-accent-foreground text-center text-sm font-normal">
+        <p className={styles.footerTextCls}>
           Need to start over?
-          <Button asChild variant="link" className="px-2 text-primary">
+          <Button asChild variant="link" className={styles.linkButtonCls}>
             <Link href={signInHref}>Back to sign in</Link>
           </Button>
         </p>
       }
     >
       <div className="space-y-3">
-        <p className="text-sm text-muted-foreground text-center">
+        <p className={`${styles.mutedTextCls} text-center text-sm`}>
           Enter the code from your authenticator app, or use a backup code if you
           do not have your device.
         </p>
@@ -169,13 +170,13 @@ export default function TwoFactorChallenge() {
               ))}
             </InputOTPGroup>
           </InputOTP>
-          <p className="text-xs text-accent text-center">
+          <p className={styles.helperTextCls}>
             Enter the current 6-digit code from your authenticator app.
           </p>
         </div>
       ) : (
         <div className={styles.fieldSpacingCls}>
-          <Label htmlFor="backup-code" className="block text-sm">
+          <Label htmlFor="backup-code" className={styles.labelCls}>
             Backup code
           </Label>
           <Input
@@ -188,30 +189,34 @@ export default function TwoFactorChallenge() {
               resetErrorState();
             }}
           />
-          <p className="text-xs text-accent text-center">
+          <p className={styles.helperTextCls}>
             Backup codes are single-use. Enter one exactly as it was saved.
           </p>
         </div>
       )}
 
-      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/80">
+      <div className={`flex items-center justify-center gap-2 ${styles.mutedTextCls}`}>
         <Checkbox
           id="trust-device"
           checked={trustDevice}
           onCheckedChange={(value) => setTrustDevice(value === true)}
         />
-        <Label htmlFor="trust-device" className="text-xs font-normal text-muted-foreground/80">
+        <Label htmlFor="trust-device" className={`text-xs font-normal ${styles.mutedTextCls}`}>
           Remember this device for 30 days
         </Label>
       </div>
 
       {submitted && error ? (
-        <p id="two-factor-error" className="text-destructive text-center text-xs">
+        <p id="two-factor-error" className={styles.errorTextCls}>
           {error}
         </p>
       ) : null}
 
-      <LoadingButton className="w-full" type="submit" loading={isSubmitting}>
+      <LoadingButton
+        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        type="submit"
+        loading={isSubmitting}
+      >
         Verify and continue
       </LoadingButton>
     </AuthLayout>

@@ -1,3 +1,5 @@
+import type { SortOrder } from "@/types/sort";
+
 export const ROADMAP_STATUSES = ["planned", "progress", "review", "completed", "pending", "closed"] as const
 
 export type RoadmapStatus = (typeof ROADMAP_STATUSES)[number]
@@ -39,4 +41,32 @@ export function groupItemsByStatus<T extends { roadmapStatus?: string | null }>(
     ;(acc[key] || (acc[key] = [])).push(it)
   }
   return acc
+}
+
+type SortableRoadmapItem = {
+  upvotes: number
+  publishedAt: string | null
+  createdAt: string
+}
+
+export function sortRoadmapItems<T extends SortableRoadmapItem>(
+  items: T[],
+  order: SortOrder,
+): T[] {
+  const sorted = [...items]
+  if (order === "likes") {
+    return sorted.sort((a, b) => b.upvotes - a.upvotes)
+  }
+  if (order === "oldest") {
+    return sorted.sort(
+      (a, b) =>
+        new Date(a.publishedAt ?? a.createdAt).getTime() -
+        new Date(b.publishedAt ?? b.createdAt).getTime(),
+    )
+  }
+  return sorted.sort(
+    (a, b) =>
+      new Date(b.publishedAt ?? b.createdAt).getTime() -
+      new Date(a.publishedAt ?? a.createdAt).getTime(),
+  )
 }

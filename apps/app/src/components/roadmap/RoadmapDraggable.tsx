@@ -4,17 +4,20 @@ import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
+import { cn } from "@featul/ui/lib/utils";
 
 export default function RoadmapDraggable({
   id,
   children,
   className = "",
   isDragging = false,
+  isSaving = false,
 }: {
   id: string;
   children: React.ReactNode;
   className?: string;
   isDragging?: boolean;
+  isSaving?: boolean;
 }) {
   const { setNodeRef, listeners, attributes, transform } = useDraggable({ id });
   const sanitizedAttributes = React.useMemo(() => {
@@ -22,6 +25,7 @@ export default function RoadmapDraggable({
     const { ["aria-describedby"]: _omit, ...rest } = attributes;
     return rest;
   }, [attributes]);
+
   return (
     <motion.li
       ref={setNodeRef}
@@ -30,15 +34,16 @@ export default function RoadmapDraggable({
       style={{
         transform: transform ? CSS.Translate.toString(transform) : undefined,
       }}
-      className={
-        "overflow-hidden rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_rgba(15,23,42,0.09)] dark:shadow-[0_1px_4px_rgba(0,0,0,0.55)] transition-[border-color,box-shadow] hover:border-border hover:shadow-[0_10px_22px_rgba(15,23,42,0.09)] dark:hover:border-white/15 dark:hover:shadow-[0_14px_30px_rgba(0,0,0,0.68),0_0_0_1px_rgba(255,255,255,0.05)] cursor-grab select-none active:cursor-grabbing " +
-        (isDragging ? "opacity-0 " : "") +
-        (className ? className : "")
-      }
+      className={cn(
+        "h-[152px] cursor-grab overflow-hidden rounded-md border border-border bg-background shadow-xs transition-[border-color,box-shadow,opacity] hover:border-foreground/20 hover:shadow-sm active:cursor-grabbing dark:hover:border-white/15",
+        isSaving && "border-primary/60 opacity-80",
+        isDragging && "opacity-0",
+        className,
+      )}
       layout
       transition={{ type: "spring", stiffness: 180, damping: 36 }}
     >
-      {children}
+      <div className="h-full min-w-0">{children}</div>
     </motion.li>
   );
 }

@@ -9,12 +9,12 @@ import { MemberActivity } from "@/components/team/MemberActivity"
 import { MemberTopPosts } from "@/components/team/MemberTopPosts"
 import { useMemberActivityQuery } from "@/components/team/useMemberActivityQuery"
 import { cn } from "@featul/ui/lib/utils"
-import { teamQueryKeys } from "@/lib/team-query-keys"
+import { teamQueryKeys } from "@/lib/team/keys"
 import {
   EMPTY_MEMBER_STATS,
   fetchMemberStats,
   fetchWorkspaceMembers,
-} from "@/lib/team-client"
+} from "@/lib/team/client"
 import type { MemberStats, MemberTopPost } from "@/lib/team"
 
 interface Props {

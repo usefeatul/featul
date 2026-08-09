@@ -4,7 +4,7 @@ import { Button } from "@featul/ui/components/button"
 import { LoadingSpinner } from "@/components/settings/global/LoadingSpinner"
 import { MemberActivityDaySection } from "@/components/team/MemberActivityDaySection"
 import { MemberActivityFilters } from "@/components/team/MemberActivityFilters"
-import type { ActivityCategory } from "@/components/team/member-activity-utils"
+import type { ActivityCategory } from "@/components/team/activity/utils"
 import { useMemberActivityFilters } from "@/components/team/useMemberActivityFilters"
 import type { ActivityItem } from "@/types/activity"
 

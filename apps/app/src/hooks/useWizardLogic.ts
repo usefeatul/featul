@@ -11,6 +11,7 @@ import {
   isReservedWorkspaceSlug,
 } from "../lib/validators";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
+import { markPendingWelcomeTour } from "@/lib/welcome/tour";
 
 function extractNameFromDomain(domain: string): string {
   const part = domain.split(".")[0]?.trim() || "";
@@ -18,7 +19,12 @@ function extractNameFromDomain(domain: string): string {
   return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
 }
 
-export function useWizardLogic() {
+type UseWizardLogicOptions = {
+  /** True when creating the user's first workspace (from /start). */
+  isFirstWorkspace?: boolean;
+};
+
+export function useWizardLogic(options: UseWizardLogicOptions = {}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -172,7 +178,13 @@ export function useWizardLogic() {
         queryClient.setQueryData(["workspace", createdSlug], data.workspace);
       }
 
-      router.push(`/workspaces/${createdSlug}`);
+      const isFirstWorkspace = Boolean(data?.isFirstWorkspace);
+      if (isFirstWorkspace) {
+        markPendingWelcomeTour();
+      }
+      const welcomeQuery = isFirstWorkspace ? "?welcome=1" : "";
+
+      router.push(`/workspaces/${createdSlug}${welcomeQuery}`);
     } catch (e: unknown) {
       const message = (e as { message?: string })?.message || "Failed to create workspace";
       toast.error(message);

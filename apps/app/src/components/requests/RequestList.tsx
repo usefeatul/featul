@@ -4,9 +4,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import RequestItem from "./RequestItem";
 import type { RequestItemData } from "@/types/request";
 import EmptyRequests from "./EmptyRequests";
-import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
-import { SelectionToolbar } from "./SelectionToolbar";
-import { useBulkDeleteRequests } from "../../hooks/useBulkDeleteRequests";
+import { SelectableListShell } from "@/components/selection/SelectableListShell";
+import { useBulkDeleteRequests } from "@/hooks/useBulkDeleteList";
 import { useSelectableList } from "@/hooks/useSelectableList";
 
 interface RequestListProps {
@@ -45,19 +44,13 @@ function RequestListBase(props: RequestListProps) {
     setListItems(items);
   }, [items]);
 
-  const {
-    allSelected,
-    isSelectingForRender,
-    selectedCount,
-    selectedIdsSet,
-    toggleAll,
-    toggleId,
-  } = useSelectableList({
+  const selection = useSelectableList({
     listKey,
     itemIds,
     initialIsSelecting,
     initialSelectedIds,
     isPending,
+    confirmOpen,
     setConfirmOpen,
   });
 
@@ -69,40 +62,27 @@ function RequestListBase(props: RequestListProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
-      {isSelectingForRender && (
-        <SelectionToolbar
-          allSelected={allSelected}
-          selectedCount={selectedCount}
-          isPending={isPending}
-          onToggleAll={toggleAll}
-          onConfirmDelete={() => setConfirmOpen(true)}
+    <SelectableListShell
+      isPending={isPending}
+      selection={selection}
+      confirmOpen={confirmOpen}
+      setConfirmOpen={setConfirmOpen}
+      handleBulkDelete={handleBulkDelete}
+      itemLabel="post"
+      deleteDescription="This action cannot be undone. Comments, votes, and activity for these posts will be removed."
+      totalCount={listItems.length}
+    >
+      {listItems.map((item, index) => (
+        <RequestItem
+          key={item.id}
+          item={item}
+          workspaceSlug={workspaceSlug}
+          linkBase={linkBase}
+          disableLink={selection.isSelectingForRender}
+          {...selection.getItemSelectionProps(item.id, index)}
         />
-      )}
-      <ul className="m-0 list-none p-0">
-        {listItems.map((p) => (
-          <RequestItem
-            key={p.id}
-            item={p}
-            workspaceSlug={workspaceSlug}
-            linkBase={linkBase}
-            isSelecting={isSelectingForRender}
-            isSelected={selectedIdsSet.has(p.id)}
-            onToggle={(checked) => toggleId(p.id, checked)}
-            disableLink={isSelectingForRender}
-          />
-        ))}
-      </ul>
-
-      <DestructiveConfirmDialog
-        open={confirmOpen}
-        isPending={isPending}
-        onOpenChange={setConfirmOpen}
-        onConfirm={handleBulkDelete}
-        title="Delete selected posts?"
-        description={`This will permanently delete ${selectedCount} ${selectedCount === 1 ? "post" : "posts"}.`}
-      />
-    </div>
+      ))}
+    </SelectableListShell>
   );
 }
 

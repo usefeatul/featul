@@ -1,7 +1,7 @@
 import Navbar from "@/components/home/navbar"
 import Footer from "@/components/home/footer"
-import AnnouncementBanner from "@/components/home/announcement-banner"
-import MarketingConsentManager from "@/components/legal/marketing-consent-manager"
+import AnnouncementBanner from "@/components/home/banner"
+import MarketingConsentManager from "@/components/legal/consent"
 
 export default function SiteLayout({
   children,
@@ -11,7 +11,7 @@ export default function SiteLayout({
       <div className="flex min-h-screen flex-col pt-10">
         <AnnouncementBanner />
         <Navbar />
-        <div className="flex-1">{children}</div>
+        <div className="flex flex-1 flex-col">{children}</div>
         <Footer />
       </div>
     </MarketingConsentManager>

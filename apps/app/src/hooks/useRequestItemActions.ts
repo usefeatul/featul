@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { deletePostById, dispatchPostDeletedEvent } from "@/lib/post-deletion";
+import { deletePostById, dispatchPostDeletedEvent } from "@/lib/post/deletion";
 
 export function useRequestItemActions({
   requestId,

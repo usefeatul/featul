@@ -13,7 +13,7 @@ import {
 } from "@featul/ui/components/opt";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import {
   strongPasswordPattern,
   getPasswordError,
@@ -37,8 +37,8 @@ export default function ForgotPassword() {
   const [step, setStep] = useState<"request" | "otp" | "password">("request");
   const styles = getAuthLayoutStyles(false);
   const twoFactorHref = safeRedirectParam
-    ? `/auth/two-factor?redirect=${encodeURIComponent(safeRedirectParam)}`
-    : "/auth/two-factor";
+    ? `/auth/twofactor?redirect=${encodeURIComponent(safeRedirectParam)}`
+    : "/auth/twofactor";
   const { sendCode: sendResetCode, verifyCode: verifyOtp } = useOtpVerification({
     email,
     code,
@@ -134,14 +134,14 @@ export default function ForgotPassword() {
       title="Forgot your password"
       onSubmit={handleSubmit}
       footer={
-        <p className="text-accent-foreground text-center text-sm font-normal">
+        <p className={styles.footerTextCls}>
           Remembered your password?
-          <Button asChild variant="link" className="px-2 text-primary">
+          <Button asChild variant="link" className={styles.linkButtonCls}>
             <Link
               href={
                 safeRedirectParam
-                  ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}`
-                  : "/auth/sign-in"
+                  ? `/auth/signin?redirect=${encodeURIComponent(safeRedirectParam)}`
+                  : "/auth/signin"
               }
             >
               Sign in
@@ -154,7 +154,7 @@ export default function ForgotPassword() {
       {step === "request" && (
         <>
           <div className={styles.fieldSpacingCls}>
-            <Label htmlFor="email" className="block text-sm">
+            <Label htmlFor="email" className={styles.labelCls}>
               Email
             </Label>
             <Input
@@ -167,7 +167,7 @@ export default function ForgotPassword() {
             />
           </div>
           <LoadingButton
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
             type="submit"
             loading={isSending}
           >
@@ -203,13 +203,13 @@ export default function ForgotPassword() {
                 ))}
               </InputOTPGroup>
             </InputOTP>
-            <p className="text-xs text-accent text-center">
+            <p className={styles.helperTextCls}>
               Enter the 6-digit code from your email
             </p>
           </div>
 
           {submitted && error && (
-            <p id="code-error" className="text-destructive text-center text-xs">
+            <p id="code-error" className={styles.errorTextCls}>
               {error}
             </p>
           )}
@@ -233,7 +233,7 @@ export default function ForgotPassword() {
       {step === "password" && (
         <div className="space-y-4">
           <div className={styles.fieldSpacingCls}>
-            <Label htmlFor="password" className="block text-sm">
+            <Label htmlFor="password" className={styles.labelCls}>
               New Password
             </Label>
             <Input
@@ -255,7 +255,7 @@ export default function ForgotPassword() {
           </div>
 
           {submitted && error && (
-            <p id="password-error" className="text-destructive text-center text-xs">
+            <p id="password-error" className={styles.errorTextCls}>
               {error}
             </p>
           )}

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import RequestDetail from "@/components/requests/RequestDetail"
-import { resolveSearchParams } from "@/utils/search-params"
+import { resolveSearchParams } from "@/utils/search/params"
 import { loadRequestDetailPageData, type RequestDetailSearchParams } from "./data"
 
 export const revalidate = 0

@@ -12,5 +12,5 @@ export const metadata: Metadata = createPageMetadata({
 })
 
 export default function Page() {
-  redirect("/auth/sign-in")
+  redirect("/auth/signin")
 }

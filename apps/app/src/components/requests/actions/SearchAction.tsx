@@ -40,6 +40,7 @@ export default function SearchAction({
       buttonVariant="card"
       showNoResults
       onSearchSubmit={runSearch}
+      onClearSearch={() => runSearch("")}
       onResultSelect={(result: WorkspaceSearchResult) => {
         setPendingHref(`/workspaces/${slug}/requests/${result.slug}`);
       }}

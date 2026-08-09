@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import AccountServer from "@/components/account/AccountServer"
 import { createPageMetadata } from "@/lib/seo"
-import { getAccountSectionMeta } from "@/config/account-sections"
+import { getAccountSectionMeta } from "@/config/account/sections"
 import { getServerSession, listServerSessions, listServerAccounts, listServerPasskeys } from "@featul/auth/session"
 import { redirect } from "next/navigation"
 
@@ -24,7 +24,7 @@ export default async function AccountSectionPage({ params }: Props) {
   const { slug, section } = await params
   const session = await getServerSession()
   if (!session?.user) {
-    redirect(`/auth/sign-in?redirect=/workspaces/${slug}/account/${encodeURIComponent(section)}`)
+    redirect(`/auth/signin?redirect=/workspaces/${slug}/account/${encodeURIComponent(section)}`)
   }
   const [initialSessions, initialAccounts, initialPasskeys] = await Promise.all([
     section === "security" ? listServerSessions() : Promise.resolve(undefined),

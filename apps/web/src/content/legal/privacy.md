@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy
-description: How featul collects, uses, and protects personal data in line with GDPR.
+description: How Featul collects, uses, and protects personal data in line with GDPR.
 path: /privacy
 lastUpdated: 31 October 2025
 ---
@@ -9,13 +9,13 @@ lastUpdated: 31 October 2025
 
 **Last updated:** 31 October 2025
 
-This Privacy Policy explains how **featul** ("featul", "we", "us", "our") collects, uses, discloses, and protects Personal Data when you visit our websites or use our services (the "Service"). We process Personal Data in accordance with applicable data protection laws, including the EU General Data Protection Regulation (GDPR).
+This Privacy Policy explains how **Featul** ("Featul", "we", "us", "our") collects, uses, discloses, and protects Personal Data when you visit our websites or use our services (the "Service"). We process Personal Data in accordance with applicable data protection laws, including the EU General Data Protection Regulation (GDPR).
 
 For questions or to exercise your rights, contact us at [contact@featul.com](mailto:contact@featul.com).
 
 ## Data Controller
 
-When we determine the purposes and means of processing, featul acts as the data controller. When we process Customer Data on behalf of our customers, we act as a data processor under the terms of our DPA.
+When we determine the purposes and means of processing, Featul acts as the data controller. When we process Customer Data on behalf of our customers, we act as a data processor under the terms of our DPA.
 
 ## Personal Data We Collect
 

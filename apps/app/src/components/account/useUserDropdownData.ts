@@ -5,11 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@featul/auth/client";
 import { client } from "@featul/api/client";
 import { getDisplayUser, getInitials } from "@/utils/user";
-import { accountQueryKeys } from "./query-keys";
+import { accountQueryKeys } from "./keys";
 import {
   buildAccountsList,
   normalizeDeviceAccountsPayload,
-} from "./device-account-utils";
+} from "./device/utils";
 import type {
   CurrentSessionState,
   DeviceAccount,

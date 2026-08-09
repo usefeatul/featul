@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { IntegrationsTemplate } from "@/components/seo/templates/IntegrationsTemplate";
+import { IntegrationsTemplate } from "@/components/seo/templates/integrations";
 import { generateIntegrationPage } from "@/lib/data/programmatic/generators";
 import { getRelatedPages } from "@/lib/seo/interlink";
-import { getAllIntegrationSlugs } from "@/lib/data/programmatic/content-matrix";
+import { getAllIntegrationSlugs } from "@/lib/data/programmatic/matrix";
 import { createArticleMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {

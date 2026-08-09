@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import DefinitionsIndex from "@/components/definitions/DefinitionsIndex"
+import DefinitionsIndex from "@/components/definitions/index"
 import { createPageMetadata } from "@/lib/seo"
 import { DEFINITIONS } from "@/content/definitions"
 

@@ -2,11 +2,11 @@
 
 import React from "react"
 import { Button } from "@featul/ui/components/button"
-import { formatActivityStatusLabel } from "@/lib/activity-status"
+import { formatActivityStatusLabel } from "@/lib/activity/status"
 import {
   CATEGORY_FILTERS,
   type ActivityCategory,
-} from "@/components/team/member-activity-utils"
+} from "@/components/team/activity/utils"
 
 interface MemberActivityFiltersProps {
   categoryFilter: ActivityCategory

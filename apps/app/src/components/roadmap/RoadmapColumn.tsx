@@ -7,6 +7,7 @@ import { MoveHorizontalIcon } from "@featul/ui/icons/horizontal";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
 import StatusIcon from "@/components/requests/StatusIcon";
+import RoadmapEmptyColumn from "@/components/roadmap/RoadmapEmptyColumn";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function RoadmapColumn({
@@ -24,7 +25,7 @@ export default function RoadmapColumn({
   count: number;
   collapsed?: boolean;
   onToggle?: (next: boolean) => void;
-  onCreate?: () => void;
+  onCreate?: (status: string) => void;
   children: React.ReactNode;
   disableMotion?: boolean;
 }) {
@@ -33,7 +34,7 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`h-full overflow-hidden rounded-sm border border-border bg-card dark:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black transition-colors duration-200 flex flex-col ${isOver ? "border-green-500 ring-green-500/30" : ""}`}
+      className={`h-full overflow-hidden rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border transition-colors duration-200 flex flex-col ${isOver ? "border-green-500/70 bg-green-500/[0.04]" : ""}`}
       layout
       initial={false}
       transition={{
@@ -43,7 +44,7 @@ export default function RoadmapColumn({
       }}
     >
       <div
-        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between border-b border-border px-3 py-2.5"} cursor-pointer`}
+        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between border-b border-border/60 px-3 py-2.5"} cursor-pointer`}
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
@@ -86,7 +87,7 @@ export default function RoadmapColumn({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onCreate();
+                    onCreate(id);
                   }}
                 >
                   <FillPlusIcon className="size-4" size={16} />
@@ -103,7 +104,7 @@ export default function RoadmapColumn({
       <AnimatePresence initial={false}>
         {!collapsed ? (
           <motion.ul
-            className="min-h-[260px] flex-1 space-y-2 bg-background p-2.5"
+            className="min-h-[260px] flex-1 space-y-2 p-2"
             initial={false}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -114,9 +115,15 @@ export default function RoadmapColumn({
             }}
           >
             {children}
+            {count === 0 && !isOver ? (
+              <RoadmapEmptyColumn
+                label={label}
+                onCreate={onCreate ? () => onCreate(id) : undefined}
+              />
+            ) : null}
             {isOver ? (
               <motion.li
-                className="mt-2 rounded-md border-2 border-dashed border-green-500"
+                className="mt-2 h-16 rounded-md border border-dashed border-green-500/70 bg-green-500/[0.04]"
                 aria-hidden
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

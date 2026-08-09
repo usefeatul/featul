@@ -3,9 +3,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data";
 import ChangelogItem from "./ChangelogItem";
-import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
-import { SelectionToolbar } from "@/components/requests/SelectionToolbar";
-import { useBulkDeleteChangelog } from "../../hooks/useBulkDeleteChangelog";
+import { SelectableListShell } from "@/components/selection/SelectableListShell";
+import { useBulkDeleteChangelog } from "@/hooks/useBulkDeleteList";
 import { useSelectableList } from "@/hooks/useSelectableList";
 import EmptyChangelog from "./EmptyChangelog";
 
@@ -42,19 +41,13 @@ export function ChangelogList({
     setListItems(items);
   }, [items]);
 
-  const {
-    allSelected,
-    isSelectingForRender,
-    selectedCount,
-    selectedIdsSet,
-    toggleAll,
-    toggleId,
-  } = useSelectableList({
+  const selection = useSelectableList({
     listKey,
     itemIds,
     initialIsSelecting,
     initialSelectedIds,
     isPending,
+    confirmOpen,
     setConfirmOpen,
   });
 
@@ -66,38 +59,25 @@ export function ChangelogList({
   }
 
   return (
-    <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
-      {isSelectingForRender && (
-        <SelectionToolbar
-          allSelected={allSelected}
-          selectedCount={selectedCount}
-          isPending={isPending}
-          onToggleAll={toggleAll}
-          onConfirmDelete={() => setConfirmOpen(true)}
+    <SelectableListShell
+      isPending={isPending}
+      selection={selection}
+      confirmOpen={confirmOpen}
+      setConfirmOpen={setConfirmOpen}
+      handleBulkDelete={handleBulkDelete}
+      itemLabel="entry"
+      itemLabelPlural="entries"
+      deleteDescription="This action cannot be undone. These changelog entries will be permanently removed."
+      totalCount={listItems.length}
+    >
+      {listItems.map((entry, index) => (
+        <ChangelogItem
+          key={entry.id}
+          item={entry}
+          workspaceSlug={workspaceSlug}
+          {...selection.getItemSelectionProps(entry.id, index)}
         />
-      )}
-      <ul className="m-0 list-none p-0">
-        {listItems.map((entry) => (
-          <ChangelogItem
-            key={entry.id}
-            item={entry}
-            workspaceSlug={workspaceSlug}
-            isSelecting={isSelectingForRender}
-            isSelected={selectedIdsSet.has(entry.id)}
-            onToggle={(checked) => toggleId(entry.id, checked)}
-          />
-        ))}
-      </ul>
-
-      <DestructiveConfirmDialog
-        open={confirmOpen}
-        isPending={isPending}
-        onOpenChange={setConfirmOpen}
-        onConfirm={handleBulkDelete}
-        title="Delete selected entries?"
-        description={`This will permanently delete ${selectedCount} ${selectedCount === 1 ? "entry" : "entries"}.`}
-        confirmClassName="h-8 px-4 text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-      />
-    </div>
+      ))}
+    </SelectableListShell>
   );
 }

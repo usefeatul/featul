@@ -11,9 +11,10 @@ function normalizeSiteUrl(input?: string) {
     }
 
     url.hash = ""
-    url.pathname = url.pathname.replace(/\/$/, "")
-
-    return url.toString()
+    // URL#toString() re-adds a trailing slash for origin-only URLs
+    // (e.g. https://www.featul.com/). Strip it so `${SITE_URL}/path`
+    // never becomes `https://www.featul.com//path`.
+    return url.toString().replace(/\/$/, "")
   } catch {
     return DEFAULT_SITE_URL
   }
@@ -21,8 +22,15 @@ function normalizeSiteUrl(input?: string) {
 
 export const SITE_URL = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)
 
-export const DEFAULT_TITLE = "featul"
-export const TITLE_TEMPLATE = "%s - featul"
+/** Join SITE_URL with a path without producing double slashes. */
+export function absoluteUrl(path = "/") {
+  const normalized = path.startsWith("/") ? path : `/${path}`
+  if (normalized === "/") return `${SITE_URL}/`
+  return `${SITE_URL}${normalized}`
+}
+
+export const DEFAULT_TITLE = "Featul"
+export const TITLE_TEMPLATE = "%s - Featul"
 
 export const DEFAULT_DESCRIPTION =
   "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery."
@@ -42,10 +50,12 @@ export function getOrganizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'featul',
-    url: SITE_URL,
-    logo: `${SITE_URL}/og.png`,
-    sameAs: [],
+    name: 'Featul',
+    url: absoluteUrl('/'),
+    logo: absoluteUrl('/og.png'),
+    sameAs: [
+      "https://github.com/usefeatul/feautl",
+    ],
     contactPoint: [
       {
         '@type': 'ContactPoint',
@@ -56,44 +66,3 @@ export function getOrganizationJsonLd() {
   }
 }
 
-export function getUseCaseHowToJsonLd() {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'HowTo',
-    name: 'How to centralize product feedback with featul',
-    description:
-      'Step-by-step guide to centralize product feedback, run a public roadmap, and publish changelogs with featul.',
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `${SITE_URL}/use-cases/product-feedback-platform`,
-    },
-    tool: [
-      {
-        '@type': 'SoftwareApplication',
-        name: 'featul',
-        url: SITE_URL,
-        applicationCategory: 'BusinessApplication',
-      },
-    ],
-    step: [
-      {
-        '@type': 'HowToStep',
-        name: 'Create a central feedback board',
-        text:
-          'Set up a public or private feedback board in featul to collect user ideas, requests, and bug reports in one place.',
-      },
-      {
-        '@type': 'HowToStep',
-        name: 'Prioritize with a public roadmap',
-        text:
-          'Group feedback into themes, prioritize items with your team, and communicate what you are working on via a transparent roadmap.',
-      },
-      {
-        '@type': 'HowToStep',
-        name: 'Close the loop with changelogs',
-        text:
-          'Publish release notes and changelogs that automatically link back to the feedback and keep customers in the loop.',
-      },
-    ],
-  }
-}

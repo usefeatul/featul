@@ -4,7 +4,7 @@ import React from "react"
 import { Input } from "@featul/ui/components/input"
 import BoardDialogIcon from "@featul/ui/icons/board-dialog"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
-import { LoadingButton } from "@/components/global/loading-button"
+import { LoadingButton } from "@/components/global/LoadingButton"
 import { toSlug } from "@/lib/slug"
 
 export default function ModalCreateBoard({ open, onOpenChange, onSave, saving }: { open: boolean; onOpenChange: (v: boolean) => void; onSave: (params: { name: string; slug?: string }) => void; saving?: boolean }) {

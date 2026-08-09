@@ -106,8 +106,9 @@ export default function CreatePostModal({
         width="widest"
         offsetY="10%"
         icon={<DocumentTextIcon className="size-3.5" />}
+        expandable
       >
-        <form onSubmit={handleSubmit} className="flex flex-col h-full pb-3">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col pb-3">
           <PostHeader
             user={user}
             initials={initials}

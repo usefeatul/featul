@@ -15,7 +15,7 @@ import {
   invalidateWorkspaceImportQueries,
   parseImportResultPayload,
   readImportErrorMessage,
-} from "./import-utils";
+} from "./import";
 
 type Props = {
   slug: string;

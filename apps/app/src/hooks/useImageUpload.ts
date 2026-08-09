@@ -1,7 +1,7 @@
-import { getCommentImageUploadUrl } from "@/lib/comment-service";
-import { useSignedImageUpload } from "./shared-image-upload";
+import { getCommentImageUploadUrl } from "@/lib/comment/service";
+import { useSignedImageUpload } from "./useSignedImageUpload";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
-export { type UploadedImage } from "./shared-image-upload";
+export { type UploadedImage } from "./useSignedImageUpload";
 
 export function useImageUpload(postId: string) {
   return useSignedImageUpload({

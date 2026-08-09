@@ -22,7 +22,7 @@ export default function SignOutButton({ className = "", label = "Sign out" }: Pr
     try {
       await authClient.signOut();
       toast.success("Signed out");
-      router.replace("/auth/sign-in");
+      router.replace("/auth/signin");
     } catch {
       toast.error("Failed to sign out");
     } finally {

@@ -5,7 +5,7 @@ import { cn } from "@featul/ui/lib/utils"
 
 type SubdomainListEmptyStateProps = {
   title: string
-  description?: string
+  description?: ReactNode
   children?: ReactNode
   className?: string
 }

@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Manrope, Sora } from "next/font/google";
 import { Providers } from "../components/providers/providers";
 import MainThemeProvider from "@/components/global/MainThemeProvider";
-import WidgetTestEmbed from "@/components/widget/embed";
+// import WidgetTestEmbed from "@/components/widget/embed";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 //
@@ -14,7 +14,7 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
-import { buildSoftwareApplicationSchema } from "@/lib/structured-data";
+import { buildSoftwareApplicationSchema } from "@/lib/structured/data";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -52,15 +52,14 @@ export const metadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     images: ["/og.png"],
   },
+  // Default noindex for the app/dashboard host. Public workspace pages
+  // opt back into indexing via createWorkspaceMetadata / createPostMetadata.
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
     googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-video-preview": -1,
-      "max-snippet": -1,
+      index: false,
+      follow: false,
     },
   },
   icons: {
@@ -105,7 +104,7 @@ export default function RootLayout({
         <Providers>
           <MainThemeProvider>{children}</MainThemeProvider>
         </Providers>
-        <WidgetTestEmbed />
+        {/* <WidgetTestEmbed /> */}
         {/* <Script
           id="userjot-widget"
           strategy="afterInteractive"

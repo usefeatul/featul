@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
+import { DebugTools } from "@featul/ui/global/debug-tools";
 import Script from "next/script";
 import "./globals.css";
 import {
@@ -9,15 +10,14 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
-import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
+import OrganizationJsonLd from "@/components/seo/organization";
 import {
   buildSiteNavigationSchema,
   buildSoftwareApplicationSchema,
-} from "@/lib/structured-data";
+  buildWebSiteSchema,
+} from "@/lib/schema";
 import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
-import { VerticalLines } from "@/components/vertical-lines";
-import { createAlternates } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/security";
 
 const manrope = Manrope({
@@ -41,13 +41,12 @@ export const metadata: Metadata = {
     template: TITLE_TEMPLATE,
   },
   description: DEFAULT_DESCRIPTION,
-  alternates: createAlternates("/"),
   keywords: DEFAULT_KEYWORDS,
   openGraph: {
     type: "website",
-    url: SITE_URL,
-    siteName: "featul",
-    title: "featul",
+    url: `${SITE_URL}/`,
+    siteName: "Featul",
+    title: "Featul",
     description:
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
     images: [
@@ -55,13 +54,13 @@ export const metadata: Metadata = {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "featul",
+        alt: "Featul",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "featul",
+    title: "Featul",
     description:
       "Privacy‑first, EU‑hosted product feedback, public roadmap, and changelog—built for alignment and customer‑driven delivery.",
     images: ["/og.png"],
@@ -99,38 +98,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const visitorsToken = process.env.VISITORS_TOKEN?.trim();
-  const selineToken = process.env.NEXT_PUBLIC_SELINE_TOKEN?.trim();
 
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
-        <link
-          rel="alternate"
-          href={`${SITE_URL}/`}
-          {...({ hrefLang: "en-US" } as Record<string, string>)}
-        />
-        <link
-          rel="alternate"
-          href={`${SITE_URL}/`}
-          {...({ hrefLang: "en" } as Record<string, string>)}
-        />
-        <link
-          rel="alternate"
-          href={`${SITE_URL}/`}
-          {...({ hrefLang: "x-default" } as Record<string, string>)}
-        />
         {visitorsToken ? (
           <Script
             src="https://cdn.visitors.now/v.js"
             data-token={visitorsToken}
             data-persist=""
-            strategy="afterInteractive"
-          />
-        ) : null}
-        {selineToken ? (
-          <Script
-            src="https://cdn.seline.com/seline.js"
-            data-token={selineToken}
             strategy="afterInteractive"
           />
         ) : null}
@@ -165,10 +141,18 @@ export default function RootLayout({
             __html: serializeJsonLd(buildSoftwareApplicationSchema(SITE_URL)),
           }}
         />
+        <script
+          id="website-jsonld"
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(buildWebSiteSchema(SITE_URL)),
+          }}
+        />
       </head>
       <body suppressHydrationWarning>
         {children}
-        <VerticalLines />
+        <DebugTools />
       </body>
     </html>
   );

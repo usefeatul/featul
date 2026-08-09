@@ -10,7 +10,7 @@ import {
   setFeedbackBoardsCache,
   type FeedbackBoardSettings,
   useFeedbackBoardsSettings,
-} from "@/hooks/feedback-board-settings";
+} from "@/hooks/useFeedbackBoardSettings";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 export default function RoadmapVisibility({

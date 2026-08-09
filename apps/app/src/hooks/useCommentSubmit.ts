@@ -11,7 +11,7 @@ import {
   getCommentsQueryKey,
   type CommentCreatedEventDetail,
   type CommentSurface,
-} from "@/lib/comment-shared"
+} from "@/lib/comment/shared"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 interface UseCommentSubmitProps {

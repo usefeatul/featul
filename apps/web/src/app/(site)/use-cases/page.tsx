@@ -1,37 +1,53 @@
-import type { Metadata } from "next"
-import { Container } from "@/components/global/container"
-import { USE_CASES } from "@/types/use-cases"
-import UseCaseCardList from "@/components/use-cases/global/use-case-card-list"
-import { createPageMetadata } from "@/lib/seo"
+import type { Metadata } from "next";
+import { getAllUseCasesForIndex } from "@/types/scenarios";
+import { Container } from "@/components/global/container";
+import { UseCasesIndexHero } from "@/components/use-cases/index";
+import UseCasesList from "@/components/use-cases/list";
+import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Use Cases for Product Feedback & Roadmaps",
+  title: "Use Cases | Product Feedback & Roadmap Guides",
   description:
-    "Explore practical use cases for featul, from centralizing product feedback to running a transparent public roadmap and changelog.",
+    "Explore practical Featul use cases: centralize product feedback, run transparent roadmaps, and keep customers in the loop with changelogs.",
   path: "/use-cases",
-})
+});
 
 export default function UseCasesIndexPage() {
-  const totalUseCases = USE_CASES.length
+  const useCases = getAllUseCasesForIndex();
+
   return (
-    <main className="min-[height:calc(100vh-64px)] pt-16 bg-background">
-      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-        <section className="py-8 sm:py-12" data-component="UseCasesIndex">
-          <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
-            <p className="text-sm text-accent">
-              Use cases • {totalUseCases} guide{totalUseCases > 1 ? "s" : ""}
-            </p>
-            <h1 className="font-heading text-balance text-3xl font-bold md:text-4xl lg:text-5xl mt-4">
-              See how teams actually use featul
-            </h1>
-            <p className="text-accent mt-4 max-w-2xl">
-              Scenario-based guides that show how product-led teams centralize
-              feedback, align on roadmaps, and keep customers in the loop.
-            </p>
-            <UseCaseCardList />
-          </div>
-        </section>
-      </Container>
+    <main className="min-h-screen overflow-x-clip">
+      <UseCasesIndexHero />
+      <div className="relative mx-auto max-w-6xl">
+        <Container
+          maxWidth="6xl"
+          className="relative z-10 px-4 pb-14 sm:px-10 sm:pb-20 lg:px-12 xl:px-14"
+        >
+          <section className="mt-4">
+            <div className="border-b border-border/70 pb-6 sm:pb-8">
+              <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
+                Use cases
+              </p>
+              <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+                <h2 className="text-balance font-heading text-xl font-bold sm:text-2xl lg:text-3xl">
+                  Guides for real product teams
+                </h2>
+                <span className="inline-flex items-center text-xs font-medium text-accent">
+                  {useCases.length} guide{useCases.length === 1 ? "" : "s"}
+                </span>
+              </div>
+              <p className="mt-3 max-w-2xl text-sm text-accent sm:text-base">
+                Scenario-based walkthroughs for feedback, roadmaps, growth, and
+                customer success.
+              </p>
+            </div>
+
+            <div className="mt-2">
+              <UseCasesList items={useCases} />
+            </div>
+          </section>
+        </Container>
+      </div>
     </main>
-  )
+  );
 }

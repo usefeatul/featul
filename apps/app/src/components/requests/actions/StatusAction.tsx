@@ -5,7 +5,7 @@ import { ListFilterIcon } from "@featul/ui/icons/list-filter";
 import {
   RequestMultiSelectFilter,
   useRequestMultiSelectFilter,
-} from "./request-multi-select-filter";
+} from "./MultiSelectFilter";
 
 const options = [
   { label: "Pending", value: "pending" },

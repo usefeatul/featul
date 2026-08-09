@@ -10,6 +10,8 @@ import type { BoardSummary, PostUser } from "@/types/post"
 import { getPostTitleMinError } from "@/hooks/postSubmitGuard"
 import { readApiErrorMessage } from "@/hooks/postApiError"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
+import { normalizeRoadmapStatus } from "@/lib/roadmap"
+import { workspaceQueryKeys } from "@/lib/workspace/client"
 
 interface UsePostSubmissionProps {
   workspaceSlug: string
@@ -90,6 +92,31 @@ export function usePostSubmission({
           onSuccess()
 
           try {
+            const createdStatus = normalizeRoadmapStatus(roadmapStatus || "pending")
+            queryClient.setQueryData<Record<string, number> | null>(
+              workspaceQueryKeys.statusCounts(workspaceSlug),
+              (prev) => {
+                if (!prev) return prev
+                return {
+                  ...prev,
+                  [createdStatus]: (prev[createdStatus] || 0) + 1,
+                }
+              },
+            )
+            queryClient.invalidateQueries({
+              queryKey: workspaceQueryKeys.statusCounts(workspaceSlug),
+            })
+            queryClient.invalidateQueries({
+              predicate: (query) => {
+                const key = query.queryKey
+                return (
+                  Array.isArray(key) &&
+                  key.length > 1 &&
+                  key[0] === "post-count" &&
+                  key[1] === workspaceSlug
+                )
+              },
+            })
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
           } catch {

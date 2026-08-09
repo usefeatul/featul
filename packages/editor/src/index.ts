@@ -79,6 +79,7 @@ export type { ExtensionKitOptions } from "./extensions";
 export { ExtensionKit } from "./extensions";
 export { lowlight } from "./lib/lowlight";
 export type {
+  AdditionalSlashSuggestionsSource,
   EditorButtonProps,
   EditorIcon,
   EditorSlashMenuProps,

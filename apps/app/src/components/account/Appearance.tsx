@@ -4,9 +4,9 @@ import React from "react"
 import { cn } from "@featul/ui/lib/utils"
 import SectionCard from "@/components/settings/global/SectionCard"
 import { useTheme } from "next-themes"
-import { DarkMode } from "./theme-holder/dark-theme"
-import { LightMode } from "./theme-holder/light-theme"
-import { SystemMode } from "./theme-holder/system-theme"
+import { DarkMode } from "./theme/DarkTheme"
+import { LightMode } from "./theme/LightTheme"
+import { SystemMode } from "./theme/SystemTheme"
 
 type ThemeOption = "light" | "dark" | "system"
 

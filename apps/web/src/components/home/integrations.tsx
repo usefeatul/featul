@@ -1,5 +1,4 @@
 import { Container } from "../global/container";
-import { Card } from "@featul/ui/components/card";
 import type { ComponentType } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -10,7 +9,7 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { HorizontalScrollControls } from "./horizontal-scroll-controls";
+import { HorizontalScrollControls } from "./scroll";
 
 type IntegrationItem = {
   slug: string;
@@ -30,7 +29,7 @@ const integrations: IntegrationItem[] = [
     status: "Available",
     icon: SlackIcon,
     panelClassName:
-      "bg-[radial-gradient(circle_at_top_left,#36C5F030_0%,transparent_36%),radial-gradient(circle_at_top_right,#2EB67D2E_0%,transparent_38%),radial-gradient(circle_at_bottom_left,#E01E5A22_0%,transparent_34%),radial-gradient(circle_at_bottom_right,#ECB22E24_0%,transparent_36%),linear-gradient(135deg,#f7f0e8_0%,#edf3ec_100%)]",
+      "bg-[radial-gradient(circle_at_top_left,#36C5F038_0%,transparent_36%),radial-gradient(circle_at_top_right,#2EB67D34_0%,transparent_38%),radial-gradient(circle_at_bottom_left,#E01E5A26_0%,transparent_34%),radial-gradient(circle_at_bottom_right,#ECB22E28_0%,transparent_36%),linear-gradient(160deg,#f8f3ec_0%,#e8f2ea_100%)]",
   },
   {
     slug: "discord",
@@ -40,7 +39,7 @@ const integrations: IntegrationItem[] = [
     status: "Available",
     icon: DiscordIcon,
     panelClassName:
-      "bg-[radial-gradient(circle_at_top_left,#5865F240_0%,transparent_42%),radial-gradient(circle_at_bottom_right,#5865F220_0%,transparent_38%),linear-gradient(135deg,#eef1ff_0%,#dfe7ff_100%)]",
+      "bg-[radial-gradient(circle_at_top_left,#5865F248_0%,transparent_42%),radial-gradient(circle_at_bottom_right,#5865F226_0%,transparent_38%),linear-gradient(160deg,#eef1ff_0%,#d9e2ff_100%)]",
   },
   {
     slug: "notra",
@@ -50,110 +49,142 @@ const integrations: IntegrationItem[] = [
     status: "Available",
     icon: NotraIcon,
     panelClassName:
-      "bg-[radial-gradient(circle_at_top_left,#C8B2EE42_0%,transparent_40%),radial-gradient(circle_at_bottom_right,#C8B2EE22_0%,transparent_38%),linear-gradient(135deg,#f4effa_0%,#e5eced_100%)]",
+      "bg-[radial-gradient(circle_at_top_left,#C8B2EE48_0%,transparent_40%),radial-gradient(circle_at_bottom_right,#C8B2EE26_0%,transparent_38%),linear-gradient(160deg,#f5f0fa_0%,#e2eaec_100%)]",
   },
   {
     slug: "nolt",
     name: "Nolt",
-    description:
-      "Import requests and comments from Nolt into featul.",
+    description: "Import requests and comments from Nolt into Featul.",
     status: "Coming soon",
     icon: NoltIcon,
     panelClassName:
-      "bg-[radial-gradient(circle_at_top_left,#FB736F3D_0%,transparent_38%),radial-gradient(circle_at_bottom_right,#FA6B6620_0%,transparent_34%),linear-gradient(135deg,#fff1f0_0%,#e9f0f2_100%)]",
+      "bg-[radial-gradient(circle_at_top_left,#FB736F44_0%,transparent_38%),radial-gradient(circle_at_bottom_right,#FA6B6626_0%,transparent_34%),linear-gradient(160deg,#fff2f0_0%,#e8f0f2_100%)]",
   },
   {
     slug: "canny",
     name: "Canny",
-    description:
-      "Bring feature requests and comments over from Canny.",
+    description: "Bring feature requests and comments over from Canny.",
     status: "Coming soon",
     icon: CannyIcon,
     panelClassName:
-      "bg-[radial-gradient(circle_at_top_left,#525DF940_0%,transparent_40%),radial-gradient(circle_at_bottom_right,#A7ACFC24_0%,transparent_34%),linear-gradient(135deg,#eef0ff_0%,#e4e8f7_100%)]",
+      "bg-[radial-gradient(circle_at_top_left,#525DF948_0%,transparent_40%),radial-gradient(circle_at_bottom_right,#A7ACFC28_0%,transparent_34%),linear-gradient(160deg,#eef0ff_0%,#e0e5f6_100%)]",
   },
   {
     slug: "productboard",
     name: "ProductBoard",
-    description:
-      "Migrate posts, boards, and comments from ProductBoard.",
+    description: "Migrate posts, boards, and comments from ProductBoard.",
     status: "Coming soon",
     icon: ProductBoardIcon,
     panelClassName:
-      "bg-[radial-gradient(circle_at_top_left,#0071E132_0%,transparent_36%),radial-gradient(circle_at_top_right,#FDC50128_0%,transparent_34%),radial-gradient(circle_at_bottom_left,#F6413728_0%,transparent_34%),linear-gradient(135deg,#f6f2ea_0%,#ebf0ec_100%)]",
+      "bg-[radial-gradient(circle_at_top_left,#0071E138_0%,transparent_36%),radial-gradient(circle_at_top_right,#FDC50130_0%,transparent_34%),radial-gradient(circle_at_bottom_left,#F6413730_0%,transparent_34%),linear-gradient(160deg,#f7f3ea_0%,#e8efeb_100%)]",
   },
 ];
 
 export default function Integrations() {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-      <section data-component="Integrations" className="my-6 sm:my-8 py-8 sm:py-12">
+      <section
+        data-component="Integrations"
+        className="my-10 max-w-full overflow-x-clip sm:my-14"
+      >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="max-w-3xl text-left">
-            <h2 className="font-heading text-foreground text-2xl sm:text-3xl lg:text-3xl font-semibold">
-              Integrate with your favorite tools
-            </h2>
-            <div className="mt-3 flex items-start gap-2">
-              <AccentBar width={8} />
-              <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
-                Connect notifications, imports, and migration paths so feedback
-                stays close to the tools your team already uses.
-              </p>
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-3xl text-left">
+              <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
+                Integrate with your favorite tools
+              </h2>
+              <div className="mt-3 flex items-start gap-2">
+                <AccentBar width={8} />
+                <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
+                  Connect notifications, imports, and migration paths so feedback
+                  stays close to the tools your team already uses.
+                </p>
+              </div>
             </div>
+
+            <HorizontalScrollControls
+              targetId="home-integrations-slider"
+              className="flex shrink-0 items-center gap-2 self-end"
+              backwardLabel="Show previous integrations"
+              forwardLabel="Show next integrations"
+            />
           </div>
 
-          <div
-            id="home-integrations-slider"
-            className="mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 scroll-smooth [-webkit-overflow-scrolling:touch] scrollbar-hide md:grid md:grid-cols-2 md:gap-3 md:overflow-visible md:pb-0 lg:grid-cols-3 lg:gap-4"
-          >
-            {integrations.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={`/integrations/${item.slug}`}
-                  className="group block h-full min-w-full shrink-0 snap-start md:min-w-0"
-                  aria-label={`Learn more about ${item.name}`}
-                >
-                  <Card className="h-full gap-0 rounded-md border border-foreground/8 bg-white p-3 shadow-none ring-1 ring-black/5">
-                    <div
-                      className={`relative overflow-hidden rounded-md border border-black/5 ${item.panelClassName}`}
-                    >
-                      <div className="flex min-h-[132px] items-center justify-center p-3 sm:min-h-[148px] sm:p-4">
-                        <div className="flex min-h-[88px] w-full max-w-[200px] items-center justify-center rounded-md border border-white/70 bg-white px-5 py-6">
-                          <Icon className="size-10 sm:size-12" />
+          <div className="relative mt-10">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-background to-transparent sm:w-12"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-background to-transparent sm:w-12"
+            />
+
+            <div
+              id="home-integrations-slider"
+              className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 [-webkit-overflow-scrolling:touch] lg:gap-4"
+              role="region"
+              aria-label="Integrations carousel"
+              tabIndex={0}
+            >
+              {integrations.map((item) => {
+                const Icon = item.icon;
+                const isAvailable = item.status === "Available";
+
+                return (
+                  <Link
+                    key={item.name}
+                    href={`/integrations/${item.slug}`}
+                    className="group block w-[min(82vw,280px)] shrink-0 snap-start sm:w-[min(46vw,300px)] lg:w-[min(32vw,310px)]"
+                    aria-label={`Learn more about ${item.name}`}
+                  >
+                    <article className="flex h-full flex-col overflow-hidden rounded-md border border-foreground/10 bg-white transition-[transform,box-shadow,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:border-foreground/15 group-hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
+                      <div
+                        className={`relative flex min-h-[168px] items-center justify-center overflow-hidden sm:min-h-[188px] ${item.panelClassName}`}
+                      >
+                        <div
+                          aria-hidden
+                          className="absolute inset-0 opacity-40 [background-image:linear-gradient(to_right,rgba(255,255,255,0.35)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.35)_1px,transparent_1px)] [background-size:22px_22px]"
+                        />
+
+                        <span
+                          className={`absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium backdrop-blur-sm ${
+                            isAvailable
+                              ? "border-emerald-200/80 bg-white/85 text-emerald-700"
+                              : "border-foreground/10 bg-white/85 text-accent"
+                          }`}
+                        >
+                          <span
+                            className={`size-1.5 rounded-full ${
+                              isAvailable ? "bg-emerald-500" : "bg-amber-400"
+                            }`}
+                          />
+                          {item.status}
+                        </span>
+
+                        <div className="relative z-10 flex size-[88px] items-center justify-center rounded-md border border-white/80 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.12)] transition-transform duration-200 group-hover:scale-[1.03] sm:size-[96px]">
+                          <Icon className="size-11 sm:size-12" />
                         </div>
                       </div>
-                    </div>
 
-                    <div className="px-2 pb-2 pt-4 sm:px-3">
-                      <div className="flex items-start gap-3">
-                        <h3 className="text-foreground text-xl font-semibold tracking-[-0.02em]">
+                      <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5">
+                        <h3 className="text-foreground text-lg font-semibold tracking-[-0.02em]">
                           {item.name}
                         </h3>
-                      </div>
-                      <p className="text-accent mt-2.5 text-sm leading-6 sm:text-base">
-                        {item.description}
-                      </p>
-                      <div className="mt-4 flex items-center gap-3">
-                        <span className="text-primary inline-flex items-center gap-2 text-sm font-medium transition-colors group-hover:text-primary/80">
+                        <p className="text-accent mt-2 flex-1 text-sm leading-6">
+                          {item.description}
+                        </p>
+                        <span className="text-primary mt-4 inline-flex items-center gap-1.5 text-sm font-medium transition-colors group-hover:text-primary/80">
                           Learn more
-                          <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                          <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
                         </span>
                       </div>
-                    </div>
-                  </Card>
-                </Link>
-              );
-            })}
+                    </article>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-
-          <HorizontalScrollControls
-            targetId="home-integrations-slider"
-            className="mt-4 flex items-center justify-end gap-2 md:hidden"
-            backwardLabel="Scroll integrations backward"
-            forwardLabel="Scroll integrations forward"
-          />
         </div>
       </section>
     </Container>

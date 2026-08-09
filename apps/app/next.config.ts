@@ -1,6 +1,16 @@
 import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    async redirects() {
+        return [
+            { source: '/auth/sign-in', destination: '/auth/signin', permanent: true },
+            { source: '/auth/sign-up', destination: '/auth/signup', permanent: true },
+            { source: '/auth/forgot-password', destination: '/auth/forgot', permanent: true },
+            { source: '/auth/set-password', destination: '/auth/setpassword', permanent: true },
+            { source: '/auth/two-factor', destination: '/auth/twofactor', permanent: true },
+            { source: '/api/changelog/ai-stream', destination: '/api/changelog/stream', permanent: true },
+        ];
+    },
     images: {
         remotePatterns: [
           { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },

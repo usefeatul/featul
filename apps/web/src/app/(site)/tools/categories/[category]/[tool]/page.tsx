@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import React from "react";
 import { notFound } from "next/navigation";
-import ToolsPageShell from "@/components/tools/global/tool-shell";
+import ToolsPageShell from "@/components/tools/global/shell";
 import {
   getCategoryBySlug,
   getToolBySlugs,
@@ -15,7 +15,9 @@ import { SITE_URL } from "@/config/seo";
 import {
   buildToolFaqSchema,
   buildBreadcrumbSchema,
-} from "@/lib/structured-data";
+} from "@/lib/schema";
+import { getRelatedPages } from "@/lib/seo/interlink";
+import { RelatedLinks } from "@/components/seo/links";
 
 type Props = { params: Promise<{ category: string; tool: string }> };
 
@@ -49,10 +51,17 @@ export default async function ToolPage({ params }: Props) {
     toolSlug,
     toolName: tool.name,
   });
+  const relatedLinks = getRelatedPages({
+    currentSlug: toolSlug,
+    currentType: "tool",
+  });
 
   return (
-    <ToolsPageShell dataComponent="ToolDetail" mainClassName="min-h-screen pt-16 bg-background">
-      {/* JSON-LD for SEO: FAQ and Breadcrumbs */}
+    <ToolsPageShell
+      dataComponent="ToolDetail"
+      title={tool.name}
+      description={tool.description}
+    >
       <script
         id="tool-faq-jsonld"
         type="application/ld+json"
@@ -65,9 +74,8 @@ export default async function ToolPage({ params }: Props) {
           __html: serializeJsonLd(breadcrumbSchema),
         }}
       />
-      {/* Breadcrumb removed for a cleaner tool detail page. */}
-      {/* Page-level title and description omitted to avoid duplication; the tool component provides its own content. */}
       {ToolComponent ? <ToolComponent /> : <ToolTemplate tool={tool} />}
+      <RelatedLinks links={relatedLinks} title="Related resources" />
     </ToolsPageShell>
   );
 }

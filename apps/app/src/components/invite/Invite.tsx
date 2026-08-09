@@ -18,7 +18,7 @@ import InviteActionState from "@/components/invite/InviteActionState";
 import InviteErrorPanel from "@/components/invite/InviteErrorPanel";
 import InviteReadyPanel from "@/components/invite/InviteReadyPanel";
 import InviteSkeleton from "@/components/invite/InviteSkeleton";
-import { getInviteRoleBadgeClass } from "@/components/invite/invite-shared";
+import { getInviteRoleBadgeClass } from "@/components/invite/shared";
 
 type InviteScreen =
   | "loading"
@@ -137,7 +137,7 @@ export default function Invite({
         sessionResult.status === "fulfilled" ? sessionResult.value : null;
 
       if (!session?.data?.user) {
-        router.replace(`/auth/sign-in?redirect=/invite/${nextToken}`);
+        router.replace(`/auth/signin?redirect=/invite/${nextToken}`);
         return;
       }
 

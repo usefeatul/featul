@@ -1,6 +1,12 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react"
 
 interface EditorAction {
     key: string
@@ -34,7 +40,13 @@ export function EditorHeaderProvider({ children }: { children: ReactNode }) {
     }, [])
 
     return (
-        <EditorHeaderContext.Provider value={{ actions, setActions, clearActions }}>
+        <EditorHeaderContext.Provider
+            value={{
+                actions,
+                setActions,
+                clearActions,
+            }}
+        >
             {children}
         </EditorHeaderContext.Provider>
     )

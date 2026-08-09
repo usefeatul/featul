@@ -3,8 +3,8 @@
 import React from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import type { ActivityItem, PaginatedActivity } from "@/types/activity"
-import { fetchMemberActivity } from "@/lib/team-client"
-import { teamQueryKeys } from "@/lib/team-query-keys"
+import { fetchMemberActivity } from "@/lib/team/client"
+import { teamQueryKeys } from "@/lib/team/keys"
 import type { MemberActivityCategory } from "@/lib/team"
 
 interface UseMemberActivityQueryInput {

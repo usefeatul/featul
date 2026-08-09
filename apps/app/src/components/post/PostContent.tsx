@@ -5,6 +5,7 @@ import { Input } from "@featul/ui/components/input"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 import ContentImage from "@/components/global/ContentImage"
 import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
+import { useDialogExpanded } from "@/components/settings/global/SettingsDialogShell"
 
 export interface UploadedImage {
   url: string
@@ -31,8 +32,11 @@ export function PostContent({
   uploadingImage,
   handleRemoveImage,
 }: PostContentProps) {
+  const expanded = useDialogExpanded()
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+
   return (
-    <div className="px-3 md:px-4 flex flex-col gap-2">
+    <div className="px-3 md:px-4 flex min-h-0 flex-1 flex-col gap-2">
       <Input
         variant="plain"
         placeholder="Post title"
@@ -42,14 +46,20 @@ export function PostContent({
         maxLength={100}
         className="text-lg md:text-xl  font-semibold h-auto py-2 placeholder:text-accent "
       />
-      <TextareaAutosize
-        placeholder="Add post contents"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        minRows={2}
-        maxRows={10}
-        className="w-full resize-none min-h-[72px] max-h-[32dvh] overflow-y-auto py-2 text-base placeholder:text-accent wrap-break-word border-none outline-none"
-      />
+      <div
+        className="flex min-h-0 flex-1 cursor-text flex-col"
+        onClick={() => textareaRef.current?.focus()}
+      >
+        <TextareaAutosize
+          ref={textareaRef}
+          placeholder="Add post contents"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          minRows={2}
+          maxRows={expanded ? 22 : 10}
+          className={`w-full resize-none min-h-[72px] overflow-y-auto py-2 text-base placeholder:text-accent wrap-break-word border-none outline-none ${expanded ? "max-h-[52dvh]" : "max-h-[32dvh]"}`}
+        />
+      </div>
       
       {/* Image Preview */}
       {uploadedImage && (

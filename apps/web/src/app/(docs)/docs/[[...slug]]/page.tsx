@@ -2,9 +2,13 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import type { TocItem as TocItemType } from "@/lib/toc"
 import { docsSections } from "@/config/docsNav"
-import { readDocsMarkdown, type DocsPageId } from "@/lib/docs-markdown"
-import { DocsMarkdown, extractDocsToc } from "@/components/docs/DocsMarkdown"
-import { DocsToc } from "@/components/docs/DocsToc"
+import { readDocsMarkdown, type DocsPageId } from "@/lib/docs"
+import { DocsMarkdown, extractDocsToc } from "@/components/docs/markdown"
+import { DocsToc } from "@/components/docs/toc"
+import { createPageMetadata } from "@/lib/seo"
+import { SITE_URL } from "@/config/seo"
+import { buildDocsBreadcrumbSchema } from "@/lib/schema"
+import { serializeJsonLd } from "@/lib/security"
 
 type DocsPageParams = {
   slug?: string[]
@@ -64,15 +68,16 @@ export async function generateMetadata(props: DocsPageProps): Promise<Metadata> 
   if (!nav) notFound()
 
   const docs = await readDocsMarkdown(nav.item.id as DocsPageId)
+  const title = docs.frontmatter.title ?? nav.item.label
+  const description =
+    docs.frontmatter.description ||
+    `${title} — Featul documentation for product feedback, roadmaps, and changelogs.`
 
-  return {
-    title: docs.frontmatter.title ?? nav.item.label,
-    description: docs.frontmatter.description,
-    openGraph: {
-      title: docs.frontmatter.title ?? nav.item.label,
-      description: docs.frontmatter.description,
-    },
-  }
+  return createPageMetadata({
+    title,
+    description,
+    path: pathname,
+  })
 }
 
 export default async function DocsPage(props: DocsPageProps) {
@@ -85,9 +90,22 @@ export default async function DocsPage(props: DocsPageProps) {
 
   const docs = await readDocsMarkdown(nav.item.id as DocsPageId)
   const tocItems: TocItemType[] = toTocItems(docs.content)
+  const pageTitle = docs.frontmatter.title ?? nav.item.label
+  const breadcrumbSchema = buildDocsBreadcrumbSchema({
+    siteUrl: SITE_URL,
+    pathname,
+    sectionLabel: nav.sectionLabel,
+    pageTitle,
+  })
 
   return (
     <>
+      <script
+        id="docs-breadcrumb-jsonld"
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
+      />
       {/* Fixed TOC on the right */}
       <aside className="hidden xl:block pointer-events-none fixed top-10 right-1 z-20">
         <div className="w-50 max-w-xs pointer-events-auto">

@@ -2,17 +2,18 @@ import { db, board, post, user, workspaceMember, postTag, tag, postReport } from
 import { and, eq, sql } from "drizzle-orm"
 import { readHasVotedForPost } from "@/lib/vote.server"
 import { getPostNavigation, normalizeStatus } from "@/lib/workspace"
-import { normalizeSlugList } from "@/utils/search-params"
+import { normalizeSlugList } from "@/utils/search/params"
 import {
   buildPostSelect,
   ensureAuthorAvatar,
   loadMergedPostData,
   loadPostComments,
   loadWorkspaceBySlug,
-} from "@/lib/request-detail"
+} from "@/lib/request/detail"
 import type { RequestDetailData } from "@/types/request"
 import type { CommentData } from "@/types/comment"
-import { parseRequestFiltersFromRecord } from "@/utils/request-filters"
+import { parseRequestFiltersFromRecord } from "@/utils/request/filters"
+import { isOnboardingPost } from "@/lib/onboarding/post"
 
 export type RequestDetailSearchParams = Record<string, string | string[] | undefined>
 
@@ -94,6 +95,7 @@ export async function loadRequestDetailPageData({
     role,
     isOwner,
     isFeatul: rawPost.authorId === "featul-founder",
+    isOnboarding: isOnboardingPost(rawPost.metadata),
     tags,
     hasVoted,
     reportCount,

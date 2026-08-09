@@ -19,8 +19,10 @@ import { EditIcon } from "@featul/ui/icons/edit"
 import { MergePopover } from "./MergePopover"
 import { DeletePostButton } from "./DeletePostButton"
 import { useIsMobile } from "@featul/ui/hooks/use-mobile"
-import EditPostModal from "../subdomain/request-detail/EditPostModal"
+import EditPostModal from "../subdomain/request/EditPostModal"
 import type { RequestDetailData } from "@/types/request"
+import { isOnboardingPost } from "@/lib/onboarding/post"
+import { OnboardingPostContent } from "./OnboardingPostContent"
 
 type RequestDetailProps = {
   post: RequestDetailData
@@ -44,7 +46,10 @@ export default function RequestDetail({
   const isMobile = useIsMobile()
   const [editOpen, setEditOpen] = useState(false)
   const canEdit = (post.role === "admin" || post.isOwner) && !readonly
-  const normalizedContent = post.content?.replace(/\n{2,}/g, "\n")
+  const showOnboardingContent = isOnboardingPost(post.metadata)
+  const normalizedContent = showOnboardingContent
+    ? post.content
+    : post.content?.replace(/\n{2,}/g, "\n")
   const editButtonClassName = isMobile
     ? "absolute right-0 -top-1 h-7 w-7 p-0 text-muted-foreground"
     : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
@@ -115,9 +120,13 @@ export default function RequestDetail({
                   </Button>
                 ) : null}
                 {normalizedContent ? (
-                  <div className="prose text-sm text-accent dark:prose-invert wrap-break-word whitespace-pre-wrap leading-6 min-w-0">
-                    {normalizedContent}
-                  </div>
+                  showOnboardingContent ? (
+                    <OnboardingPostContent content={normalizedContent} />
+                  ) : (
+                    <div className="prose text-sm text-accent dark:prose-invert wrap-break-word whitespace-pre-wrap leading-6 min-w-0">
+                      {normalizedContent}
+                    </div>
+                  )
                 ) : null}
                 {post.image ? (
                   <div className="flex justify-start">

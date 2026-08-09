@@ -1,12 +1,14 @@
 "use client"
 
 import React from "react"
+import { AnimatePresence, animate, motion } from "framer-motion"
 import { Button } from "@featul/ui/components/button"
 import { StarIcon } from "@featul/ui/icons/star"
 import { cn } from "@featul/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
 import Link from "next/link"
-import { Container } from "../global/container"
+import Faq from "@/components/home/faq"
+import { SkyPageShell } from "@/components/layout/shell"
 import {
   type BillingCycle,
   type PricingPlanKey,
@@ -18,36 +20,27 @@ export default function Pricing() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
 
   return (
-    <section className="bg-background" data-component="Pricing">
-      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-        <section className="py-16 md:py-24">
-          <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-            <div className="text-center max-w-4xl mx-auto">
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
-                <span className="md:whitespace-nowrap">Pricing that grows with your team</span>
-              </h2>
-              <p className="text-accent mt-4 text-base sm:text-lg">
-                Start free, then move into simple flat-workspace plans for early and growing product teams.
-              </p>
-            </div>
+    <SkyPageShell
+      dataComponent="Pricing"
+      title="Pricing that grows with your team"
+      description="Start free, then move into simple flat-workspace plans for early and growing product teams."
+      headerClassName="mx-auto max-w-4xl text-center"
+      below={<Faq />}
+    >
+      <div className="flex justify-center">
+        <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
+      </div>
 
-            <div className="mt-8 flex justify-center">
-              <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
-            </div>
-
-            <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {PRICING_PLAN_ORDER.map((planKey) => (
-                <PricingPlanCard
-                  key={planKey}
-                  planKey={planKey}
-                  billingCycle={billingCycle}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      </Container>
-    </section>
+      <div className="mt-8 mb-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3 sm:mb-12">
+        {PRICING_PLAN_ORDER.map((planKey) => (
+          <PricingPlanCard
+            key={planKey}
+            planKey={planKey}
+            billingCycle={billingCycle}
+          />
+        ))}
+      </div>
+    </SkyPageShell>
   )
 }
 
@@ -71,7 +64,7 @@ function PricingPlanCard({
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-md border border-border/70 bg-card p-4",
+        "relative flex h-full flex-col overflow-hidden rounded-md border border-border/70 bg-card p-4 shadow-lg shadow-zinc-950/15",
       )}
     >
       {ribbon ? (
@@ -93,11 +86,22 @@ function PricingPlanCard({
         </div>
       </div>
 
-      <div className="relative z-10 mb-4 text-4xl font-semibold tracking-tight text-foreground">
-        {billingCycle === "yearly" ? `$${plan.yearlyPrice}` : `$${plan.monthlyPrice}`}
-        <span className="ml-1 text-sm font-normal text-accent">
-          /{billingCycle === "yearly" ? "year" : "mo"}
-        </span>
+      <div className="relative z-10 mb-4 flex items-baseline text-4xl font-semibold tracking-tight text-foreground">
+        <AnimatedPrice
+          value={billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice}
+        />
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={billingCycle}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="ml-1 text-sm font-normal text-accent"
+          >
+            /{billingCycle === "yearly" ? "year" : "mo"}
+          </motion.span>
+        </AnimatePresence>
       </div>
 
       <ul className="relative z-10 mb-4 flex-1 space-y-1.5 text-sm text-accent">
@@ -115,6 +119,31 @@ function PricingPlanCard({
       </div>
     </div>
   )
+}
+
+function AnimatedPrice({ value }: { value: number }) {
+  const [displayValue, setDisplayValue] = React.useState(value)
+  const previousValue = React.useRef(value)
+
+  React.useEffect(() => {
+    const from = previousValue.current
+    previousValue.current = value
+
+    if (from === value) {
+      setDisplayValue(value)
+      return
+    }
+
+    const controls = animate(from, value, {
+      duration: 0.55,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (latest) => setDisplayValue(Math.round(latest)),
+    })
+
+    return () => controls.stop()
+  }, [value])
+
+  return <span>${displayValue}</span>
 }
 
 function BillingCycleTabs({

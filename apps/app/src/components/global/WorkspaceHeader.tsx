@@ -9,6 +9,8 @@ import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
+import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
+import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
@@ -27,6 +29,7 @@ export default function WorkspaceHeader() {
   const workspaceSlug = idx >= 0 ? (parts[idx + 1] ?? "") : "";
   const rest = idx >= 0 ? parts.slice(idx + 2) : [];
   const showRequestsActions = rest.length === 0 || rest[0] === "requests";
+  const showRoadmapActions = rest[0] === "roadmap" && rest.length === 1;
   const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
   const isMemberDetail = rest[0] === "members" && rest.length > 1;
@@ -41,8 +44,10 @@ export default function WorkspaceHeader() {
   if (!title && !showRequestsActions && !isMemberDetail) return null;
 
   return (
-    <div className="mt-4 mb-6.5">
-      <div className="flex items-center justify-between">
+    <>
+      {showRequestsActions || showRoadmapActions ? <FilterDynamicIsland /> : null}
+      <div className="mt-4 mb-6.5">
+        <div className="flex items-center justify-between gap-3">
         {title ? (
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-heading leading-tight font-semibold">
@@ -70,6 +75,8 @@ export default function WorkspaceHeader() {
           </Toolbar>
         ) : showRequestsActions ? (
           <HeaderActions />
+        ) : showRoadmapActions ? (
+          <RoadmapHeaderActions />
         ) : showChangelogActions ? (
           <Toolbar size="sm">
             <ImportNotraDialog workspaceSlug={workspaceSlug} />
@@ -123,7 +130,8 @@ export default function WorkspaceHeader() {
               ))}
           </div>
         ) : null}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

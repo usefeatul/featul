@@ -15,7 +15,7 @@ export const metadata: Metadata = createPageMetadata({
 export default async function NewWorkspacePage() {
   const session = await getServerSession()
   if (!session?.user) {
-    redirect("/auth/sign-in?redirect=/workspaces/new")
+    redirect("/auth/signin?redirect=/workspaces/new")
   }
   return (
     <div className="min-h-screen bg-background">

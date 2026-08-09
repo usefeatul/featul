@@ -13,7 +13,6 @@ import {
   getWorkspaceDomainInfoBySlug,
 } from "@/lib/workspace";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
-import FilterSummary from "@/components/requests/FilterSummary";
 import {
   getServerSession,
   listServerDeviceAccounts,
@@ -21,6 +20,8 @@ import {
 import { redirect } from "next/navigation";
 import UnauthorizedWorkspace from "@/components/global/Unauthorized";
 import { EditorHeaderProvider } from "@/components/changelog/EditorHeaderContext";
+import { WelcomeTourGate } from "@/components/onboarding/WelcomeTourGate";
+import { Suspense } from "react";
 
 export const revalidate = 30;
 
@@ -35,7 +36,7 @@ export default async function WorkspaceLayout({
   const session = await getServerSession();
   const userId = session?.user?.id || null;
   if (!userId) {
-    redirect(`/auth/sign-in?redirect=/workspaces/${slug}`);
+    redirect(`/auth/signin?redirect=/workspaces/${slug}`);
   }
   const [
     branding,
@@ -83,7 +84,6 @@ export default async function WorkspaceLayout({
       <main className="w-full min-w-0 lg:flex-1 px-2 sm:px-3 md:px-4 lg:px-0 pb-10 lg:pb-0">
         <EditorHeaderProvider>
           <WorkspaceHeader />
-          <FilterSummary />
           {children}
         </EditorHeaderProvider>
       </main>
@@ -98,6 +98,15 @@ export default async function WorkspaceLayout({
         initialDeviceAccounts={deviceAccounts}
       />
       <WorkspaceShortcutsDrawer />
+      {ws ? (
+        <Suspense fallback={null}>
+          <WelcomeTourGate
+            userId={userId}
+            workspaceName={ws.name}
+            workspaceSlug={ws.slug}
+          />
+        </Suspense>
+      ) : null}
     </Container>
   );
 }

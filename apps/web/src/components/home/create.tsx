@@ -1,148 +1,203 @@
 import Link from "next/link";
-import { Container } from "../global/container";
+import { Check, Globe, Users } from "lucide-react";
+
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { ArrowRight } from "lucide-react";
+import { Container } from "../global/container";
 import { DomainIcon } from "@featul/ui/icons/domain";
 import { CsvIcon } from "@featul/ui/icons/csv";
 import { MemberIcon } from "@featul/ui/icons/member";
-
-const setupCards = [
-  {
-    title: "Create your workspace",
-    description:
-      "Sign up with email, choose your workspace, and get your feedback portal live without touching your codebase.",
-    href: "/docs/getting-started/index",
-    number: "01",
-    meta: "Workspace, boards, roles",
-  },
-  {
-    title: "Share your board",
-    description:
-      "Use your workspace subdomain or custom domain to collect votes, comments, and new requests in one place.",
-    href: "/docs/branding-setup/domain",
-    number: "02",
-    meta: "Subdomain or custom domain",
-  },
-] as const;
 
 const essentials = [
   {
     title: "Custom domain and branding",
     description: "Use your domain, logo, colors, and theme.",
     icon: DomainIcon,
-    iconClassName: "border border-sky-200 bg-sky-100 text-sky-600",
+    iconClassName: "bg-foreground/5 text-sky-400 ring-1 ring-foreground/10",
   },
   {
     title: "Team roles and invites",
     description: "Invite teammates and collaborate in one workspace.",
     icon: MemberIcon,
-    iconClassName:
-      "border border-emerald-200 bg-emerald-100 text-emerald-600",
+    iconClassName: "bg-foreground/5 text-emerald-400 ring-1 ring-foreground/10",
   },
   {
     title: "CSV import and export",
     description: "Move feedback data in or out whenever you need.",
     icon: CsvIcon,
-    iconClassName: "border border-amber-200 bg-amber-100 text-amber-600",
+    iconClassName: "bg-foreground/5 text-amber-400 ring-1 ring-foreground/10",
   },
 ] as const;
 
 export default function Create() {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-      <section className="my-6 sm:my-8">
-        <div className="bg-background py-4 sm:py-6">
-          <div className="mx-auto w-full px-1 sm:px-6 max-w-5xl ">
-            <div>
-              <h2 className="font-heading text-foreground mt-4 text-2xl sm:text-3xl lg:text-3xl font-semibold">
-                Up and running in 30 seconds
-              </h2>
-              <div className="mt-10 flex items-start gap-2">
-                <AccentBar width={8} />
-                <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
-                  Create a workspace, invite your team, and share a branded
-                  feedback board without adding setup work to your roadmap.
-                </p>
-              </div>
+      <section className="my-10 sm:my-14" data-component="Create">
+        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+          <div className="max-w-3xl text-left">
+            <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
+              Up and running in 30 seconds
+            </h2>
+            <div className="mt-3 flex items-start gap-2">
+              <AccentBar width={8} />
+              <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
+                Create a workspace, invite your team, and share a branded
+                feedback board without adding setup work to your roadmap.
+              </p>
             </div>
+          </div>
 
-            <div className="mt-8 rounded-md border border-foreground/10 bg-white">
-              <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
-                <div className="border-b border-foreground/10 p-5 sm:p-6 lg:border-b-0 lg:border-r">
-                  <div className="space-y-6">
-                    {setupCards.map((card) => (
-                      <div key={card.title} className="pb-1">
-                        <div className="mb-2 flex items-center justify-between gap-3">
-                          <span className="text-primary text-sm font-semibold tabular-nums">
-                            {card.number}
-                          </span>
-                          <span className="text-accent text-xs">
-                            {card.meta}
-                          </span>
-                        </div>
+          <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
+            <Link
+              href="/docs/getting-started/index"
+              className="block min-w-0"
+              aria-label="Learn more about creating your workspace"
+            >
+              <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
+                <div className="flex min-h-[240px] items-center justify-center rounded-md bg-[#4f9df6] p-4 sm:min-h-[360px] sm:p-8">
+                  <div className="w-full max-w-[360px] space-y-2.5 sm:space-y-3">
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                          <Check className="size-4" strokeWidth={2.4} />
+                        </span>
                         <div className="min-w-0">
-                          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                            <h3 className="text-foreground text-lg font-semibold tracking-[-0.02em]">
-                              {card.title}
-                            </h3>
-                          </div>
-                          <p className="text-accent mt-2 max-w-[54ch] text-sm leading-6 sm:text-base">
-                            {card.description}
+                          <p className="text-foreground text-sm font-semibold">
+                            Workspace ready
                           </p>
-                          <Link
-                            href={card.href}
-                            className="text-primary mt-3 inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary/80"
-                          >
-                            Learn more
-                            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                          </Link>
+                          <p className="text-accent mt-0.5 text-xs">
+                            Boards and roles included
+                          </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                <div className="flex h-full flex-col p-5 sm:p-6">
-                  <div>
-                    <p className="text-primary text-sm font-medium">
-                      Included from day one
-                    </p>
-                    <h3 className="text-foreground mt-1 text-lg font-semibold">
-                      The basics are already handled.
-                    </h3>
-                  </div>
-                  <div className="mt-6 flex flex-1 flex-col justify-between gap-5">
-                    {essentials.map((item) => {
-                      const Icon = item.icon;
-
-                      return (
-                        <div key={item.title} className="flex gap-3">
-                          <Icon
-                            className={`mt-0.5 size-7 shrink-0 rounded-md p-1.5 ${item.iconClassName}`}
-                          />
-                          <div>
-                            <h4 className="text-foreground text-sm font-semibold">
-                              {item.title}
-                            </h4>
-                            <p className="text-accent mt-1 text-sm leading-6">
-                              {item.description}
-                            </p>
-                          </div>
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-foreground/5 text-blue-500 ring-1 ring-foreground/10">
+                          <Users className="size-4" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-foreground text-sm font-semibold">
+                            Invite your team
+                          </p>
+                          <p className="text-accent mt-0.5 text-xs">
+                            Owners, admins, and members
+                          </p>
                         </div>
-                      );
-                    })}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="border-t border-foreground/10 px-5 py-4 sm:px-6">
-                <div className="flex items-start gap-2">
-                  <AccentBar width={6} />
-                  <p className="text-accent/80 text-sm">
-                    Seriously, it's that simple. Most teams collect feedback within minutes of signup.
+
+                <div className="px-1 pb-1 pt-4 sm:px-0 sm:pt-5">
+                  <h3 className="text-foreground text-left text-base font-medium">
+                    Create your workspace
+                  </h3>
+                  <p className="text-accent mt-1 max-w-xl text-left text-sm leading-6">
+                    Sign up with email, choose your workspace, and get your
+                    feedback portal live without touching your codebase.
                   </p>
                 </div>
-              </div>
+              </article>
+            </Link>
+
+            <Link
+              href="/docs/branding-setup/domain"
+              className="block min-w-0"
+              aria-label="Learn more about sharing your board"
+            >
+              <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
+                <div className="flex min-h-[240px] items-center justify-center rounded-md bg-[#5ec4a0] p-4 sm:min-h-[360px] sm:p-8">
+                  <div className="w-full max-w-[360px] space-y-2.5 sm:space-y-3">
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-foreground/5 text-emerald-500 ring-1 ring-foreground/10">
+                          <Globe className="size-4" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-foreground truncate text-sm font-semibold">
+                            feedback.yourbrand.com
+                          </p>
+                          <p className="text-accent mt-0.5 text-xs">
+                            Custom domain connected
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
+                      <p className="text-foreground text-sm font-semibold">
+                        Public feedback board
+                      </p>
+                      <p className="text-accent mt-2 text-xs leading-5">
+                        Collect votes, comments, and new requests in one place
+                        your customers already recognize.
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <span className="rounded-md bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-700">
+                          Live
+                        </span>
+                        <span className="rounded-md bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700">
+                          Branded
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-1 pb-1 pt-4 sm:px-0 sm:pt-5">
+                  <h3 className="text-foreground text-left text-base font-medium">
+                    Share your board
+                  </h3>
+                  <p className="text-accent mt-1 max-w-xl text-left text-sm leading-6">
+                    Use your workspace subdomain or custom domain to collect
+                    votes, comments, and new requests in one place.
+                  </p>
+                </div>
+              </article>
+            </Link>
+          </div>
+
+          <div className="mt-8 sm:mt-10">
+            <p className="text-primary text-sm font-medium">
+              Included from day one
+            </p>
+            <h3 className="text-foreground mt-1 text-lg font-semibold tracking-[-0.02em]">
+              The basics are already handled.
+            </h3>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+              {essentials.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div
+                    key={item.title}
+                    className="rounded-md border border-foreground/10 bg-white p-4 sm:p-5"
+                  >
+                    <span
+                      className={`inline-flex size-8 items-center justify-center rounded-md p-1.5 ${item.iconClassName}`}
+                    >
+                      <Icon className="size-4" />
+                    </span>
+                    <h4 className="text-foreground mt-3 text-sm font-medium">
+                      {item.title}
+                    </h4>
+                    <p className="text-accent mt-1.5 text-sm leading-6">
+                      {item.description}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
+          </div>
+
+          <div className="mt-8 flex items-start gap-2">
+            <AccentBar width={6} />
+            <p className="text-accent text-sm leading-6">
+              Seriously, it&apos;s that simple. Most teams collect feedback
+              within minutes of signup.
+            </p>
           </div>
         </div>
       </section>

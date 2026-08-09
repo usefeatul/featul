@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FeedEditor } from "@/components/editor/editor";
 import type { JSONContent, MentionSuggestionItem } from "@featul/editor";
@@ -11,12 +11,15 @@ import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import { AiIcon } from "@featul/ui/icons/ai";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
-import ChangelogAiBar from "./ChangelogAiBar";
-import { fetchWorkspaceMembers } from "@/lib/team-client";
+import { fetchWorkspaceMembers } from "@/lib/team/client";
+import ChangelogAiPanel from "./ChangelogAiPanel";
+import type { AiPanelTab, AiQuickAction } from "@/features/changelog/types";
+import { getChangelogAiSlashSuggestions } from "./ai/slash";
 
-const ENABLE_CHANGELOG_AI = false;
+const ENABLE_CHANGELOG_AI = true;
 
 interface ChangelogEditorProps {
     workspaceSlug: string;
@@ -43,13 +46,16 @@ export function ChangelogEditor({
     const router = useRouter();
     const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
+    const [isAiOpen, setIsAiOpen] = useState(false);
+    const [aiPanelTab, setAiPanelTab] = useState<AiPanelTab>("shipped");
+    const [autoRunAction, setAutoRunAction] = useState<AiQuickAction | null>(null);
+
+    const [isAiGenerating, setIsAiGenerating] = useState(false);
 
     const {
         editorRef,
         title,
         setTitle,
-        summary,
-        setSummary,
         coverImage,
         setCoverImage,
         selectedTags,
@@ -61,7 +67,35 @@ export function ChangelogEditor({
         setIsDirty,
         handleImageUpload,
         handleSave,
-    } = useChangelogEntry({ workspaceSlug, mode, entryId, initialData });
+    } = useChangelogEntry({
+        workspaceSlug,
+        mode,
+        entryId,
+        initialData,
+        autoSaveSuspended: isAiGenerating,
+    });
+
+    const openAiPanel = useCallback((tab: AiPanelTab) => {
+        setAiPanelTab(tab);
+        setIsAiOpen(true);
+    }, []);
+
+    const additionalSlashSuggestions = useCallback(
+        ({ query }: { query: string }) => {
+            if (query && !query.startsWith("ai")) {
+                return [];
+            }
+
+            return getChangelogAiSlashSuggestions({
+                onOpenPanel: openAiPanel,
+                onQuickAction: (action) => {
+                    setAutoRunAction(action);
+                    openAiPanel("refine");
+                },
+            });
+        },
+        [openAiPanel],
+    );
 
     useEffect(() => {
         let isCancelled = false;
@@ -101,12 +135,26 @@ export function ChangelogEditor({
         };
     }, [workspaceSlug]);
 
-    // Register actions with the header context
     useEffect(() => {
         setActions([
+            ...(ENABLE_CHANGELOG_AI
+                ? [
+                      {
+                          key: "ai",
+                          label: "AI",
+                          type: "button" as const,
+                          variant: "card" as const,
+                          icon: <AiIcon className="size-4" />,
+                          onClick: () => {
+                              setAiPanelTab("shipped");
+                              setIsAiOpen(true);
+                          },
+                      },
+                  ]
+                : []),
             {
                 key: "status",
-                label: "Published", // Label for Switch
+                label: "Published",
                 type: "switch",
                 checked: !isDraft,
                 onClick: () => {
@@ -119,7 +167,6 @@ export function ChangelogEditor({
                 label: "Save",
                 type: "button",
                 variant: "card",
-                // Show InfoIcon if dirty (unsaved), TickIcon if clean (saved), Loader if saving
                 icon: isSaving ? <LoaderIcon className="size-4 animate-spin" /> : isDirty ? <InfoIcon className="size-4" /> : <TickIcon className="size-4" />,
                 onClick: handleSave,
                 disabled: isSaving,
@@ -139,8 +186,7 @@ export function ChangelogEditor({
 
     return (
         <div className="min-h-screen bg-background">
-            <main className="mx-auto max-w-3xl px-4 pt-0 pb-[120px] lg:pb-[96px]">
-                {/* Cover Image (when present) */}
+            <main className="mx-auto max-w-3xl px-4 pt-0 pb-10">
                 {coverImage && (
                     <CoverImageUploader
                         workspaceSlug={workspaceSlug}
@@ -152,8 +198,7 @@ export function ChangelogEditor({
                     />
                 )}
 
-                {/* Tags and Add Cover Image Row */}
-                <div className="mb-4 flex items-center gap-1 flex-wrap">
+                <div className="mb-4 flex flex-wrap items-center gap-1">
                     <TagSelector
                         availableTags={availableTags}
                         selectedTags={selectedTags}
@@ -163,7 +208,6 @@ export function ChangelogEditor({
                         }}
                     />
 
-                    {/* Add Cover Image Button (Always visible) */}
                     <CoverImageUploader
                         workspaceSlug={workspaceSlug}
                         coverImage={null}
@@ -174,38 +218,45 @@ export function ChangelogEditor({
                     />
                 </div>
 
-                {/* Title */}
                 <TextareaAutosize
                     value={title}
-                    onChange={(e) => { setTitle(e.target.value); setIsDirty(true); }}
+                    onChange={(e) => {
+                        setTitle(e.target.value);
+                        setIsDirty(true);
+                    }}
                     placeholder="Enter a title"
-                    className="w-full resize-none border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 mb-8 overflow-hidden"
+                    className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
                     minRows={1}
                     autoFocus={mode === "create"}
                 />
 
-                {/* Content Editor */}
-                <div className="[&_.ProseMirror]:outline-none [&_.ProseMirror]:border-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
+                <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
                     <FeedEditor
                         ref={editorRef}
                         initialContent={initialData?.content}
-                        placeholder="Start typing or press '/' for commands"
+                        placeholder="Start typing or type /ai for AI commands"
                         className="min-h-[400px]"
                         mentionSuggestions={mentionSuggestions}
                         onImageUpload={handleImageUpload}
+                        additionalSlashSuggestions={additionalSlashSuggestions}
                         onUpdate={() => setIsDirty(true)}
                     />
                 </div>
             </main>
+
             {ENABLE_CHANGELOG_AI ? (
-                <ChangelogAiBar
+                <ChangelogAiPanel
+                    open={isAiOpen}
+                    onOpenChange={setIsAiOpen}
                     workspaceSlug={workspaceSlug}
                     editorRef={editorRef}
                     title={title}
-                    summary={summary}
-                    setTitle={(value) => { setTitle(value); setIsDirty(true); }}
-                    setSummary={(value) => { setSummary(value); setIsDirty(true); }}
+                    setTitle={setTitle}
                     setIsDirty={setIsDirty}
+                    onGeneratingChange={setIsAiGenerating}
+                    initialTab={aiPanelTab}
+                    autoRunAction={autoRunAction}
+                    onAutoRunActionHandled={() => setAutoRunAction(null)}
                 />
             ) : null}
         </div>

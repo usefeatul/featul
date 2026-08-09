@@ -6,8 +6,10 @@ import StepWizardForm from "./StepWizardForm";
 
 export default function WorkspaceWizard({
   className = "",
+  isFirstWorkspace = false,
 }: {
   className?: string;
+  isFirstWorkspace?: boolean;
 }) {
   const {
     name,
@@ -25,7 +27,7 @@ export default function WorkspaceWizard({
     isCreating,
     domainValid,
     create,
-  } = useWizardLogic();
+  } = useWizardLogic({ isFirstWorkspace });
 
   return (
     <div className={`w-full max-w-[640px] mx-auto ${className}`}>

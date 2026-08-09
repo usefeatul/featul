@@ -15,7 +15,7 @@ import { client } from "@featul/api/client";
 import {
   ALLOWED_IMAGE_TYPES,
   getImageUploadValidationError,
-} from "@/hooks/shared-image-upload";
+} from "@/hooks/useSignedImageUpload";
 import { Button } from "@featul/ui/components/button";
 import { AvatarIcon } from "@featul/ui/icons/avatar";
 

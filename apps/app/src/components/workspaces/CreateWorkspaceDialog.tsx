@@ -8,9 +8,13 @@ import { PlusIcon } from "@featul/ui/icons/plus"
 
 interface CreateWorkspaceDialogProps {
   open?: boolean
+  isFirstWorkspace?: boolean
 }
 
-export function CreateWorkspaceDialog({ open = false }: CreateWorkspaceDialogProps) {
+export function CreateWorkspaceDialog({
+  open = false,
+  isFirstWorkspace = false,
+}: CreateWorkspaceDialogProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = React.useState(open)
 
@@ -34,7 +38,7 @@ export function CreateWorkspaceDialog({ open = false }: CreateWorkspaceDialogPro
       offsetY="50%"
       icon={<PlusIcon className="size-3.5" />}
     >
-      <WorkspaceWizard />
+      <WorkspaceWizard isFirstWorkspace={isFirstWorkspace} />
     </SettingsDialogShell>
   )
 }

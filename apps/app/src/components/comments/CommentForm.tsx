@@ -14,7 +14,7 @@ import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { useImageUpload } from "../../hooks/useImageUpload"
 import { useMentions } from "../../hooks/useMentions"
 import { useCommentSubmit } from "../../hooks/useCommentSubmit"
-import type { CommentSurface } from "@/lib/comment-shared"
+import type { CommentSurface } from "@/lib/comment/shared"
 
 interface CommentFormProps {
   postId: string

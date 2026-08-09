@@ -10,10 +10,11 @@ import {
 } from "@featul/ui/components/opt";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { sendVerificationOtp, verifyEmail } from "../../utils/otp";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import { resolvePostAuthPath } from "@/lib/post/redirect";
 
 export default function Verify() {
   const router = useRouter();
@@ -75,7 +76,7 @@ export default function Verify() {
         return;
       }
       toast.success("Email verified");
-      router.push(redirect);
+      router.push(await resolvePostAuthPath(safeRedirectParam));
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Invalid or expired code";
       setError(msg);
@@ -93,16 +94,16 @@ export default function Verify() {
         verify();
       }}
       footer={
-        <p className="text-accent-foreground text-center text-sm font-normal">
+        <p className={styles.footerTextCls}>
           Already verified?
-          <Button asChild variant="link" className="px-2 text-primary">
+          <Button asChild variant="link" className={styles.linkButtonCls}>
             <Link
               href={
                 safeRedirectParam
-                  ? `/auth/sign-in?redirect=${encodeURIComponent(
+                  ? `/auth/signin?redirect=${encodeURIComponent(
                     safeRedirectParam
                   )}`
-                  : "/auth/sign-in"
+                  : "/auth/signin"
               }
             >
               Sign in
@@ -135,19 +136,19 @@ export default function Verify() {
             ))}
           </InputOTPGroup>
         </InputOTP>
-        <p className="text-xs text-accent text-center">
+        <p className={styles.helperTextCls}>
           Enter your one-time password.
         </p>
         {submitted && error && (
-          <p id="code-error" className="text-destructive text-xs">
+          <p id="code-error" className={styles.errorTextCls}>
             {error}
           </p>
         )}
-        {info && <p className="text-xs text-muted-foreground">{info}</p>}
+        {info && <p className={styles.helperTextCls}>{info}</p>}
       </div>
 
       <LoadingButton
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
         type="submit"
         loading={isVerifying}
       >

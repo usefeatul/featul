@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { StatusIndicator } from "@/components/home/status-indicator"
+import { StatusIndicator } from "@/components/home/indicator"
 import { cn } from "@featul/ui/lib/utils"
 
 type StatusButtonProps = {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import MemberDetail from "@/components/team/MemberDetail"
-import { loadMemberActivity, loadMemberStats } from "@/lib/member-server"
-import { requireSignedInUser } from "@/lib/server-auth"
+import { loadMemberActivity, loadMemberStats } from "@/lib/member/server"
+import { requireSignedInUser } from "@/lib/auth/server"
 import { createPageMetadata } from "@/lib/seo"
 import { getSettingsInitialData } from "@/lib/workspace"
 

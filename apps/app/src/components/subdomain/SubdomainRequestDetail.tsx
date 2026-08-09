@@ -5,8 +5,8 @@ import type { CommentData } from "../../types/comment";
 import PostSidebar from "./PostSidebar";
 import { useDomainBranding } from "./DomainBrandingProvider";
 import type { SubdomainRequestDetailData } from "../../types/subdomain";
-import { RequestHeader } from "./request-detail/RequestHeader";
-import { RequestContent } from "./request-detail/RequestContent";
+import { RequestHeader } from "./request/RequestHeader";
+import { RequestContent } from "./request/RequestContent";
 
 export default function SubdomainRequestDetail({
   post,

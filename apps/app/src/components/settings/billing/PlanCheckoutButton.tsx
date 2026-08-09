@@ -4,8 +4,8 @@ import React from "react"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
-import { LoadingButton } from "@/components/global/loading-button"
-import { type BillingCycle, type PlanOption } from "./billing-data"
+import { LoadingButton } from "@/components/global/LoadingButton"
+import { type BillingCycle, type PlanOption } from "./data"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type PlanCheckoutButtonProps = {

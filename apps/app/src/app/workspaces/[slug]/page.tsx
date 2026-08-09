@@ -1,12 +1,12 @@
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount } from "@/lib/workspace";
-import { toRequestItemData } from "@/lib/request-item";
+import { toRequestItemData } from "@/lib/request/item";
 import type { RequestItemData } from "@/types/request";
 import { createPageMetadata } from "@/lib/seo";
-import { readInitialSelectionState } from "@/lib/selection-server";
+import { readInitialSelectionState } from "@/lib/selection/server";
 import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
-} from "@/utils/search-params";
+} from "@/utils/search/params";
 
 export const metadata = createPageMetadata({
   title: "Request",

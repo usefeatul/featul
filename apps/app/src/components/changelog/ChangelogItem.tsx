@@ -4,7 +4,6 @@ import React from "react"
 import Link from "next/link"
 
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
-import { Checkbox } from "@featul/ui/components/checkbox"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import { randomAvatarUrl } from "@/utils/avatar"
@@ -12,13 +11,18 @@ import { ChangelogDraftIcon } from "@featul/ui/icons/changelog-draft"
 import { ChangelogPublishedIcon } from "@featul/ui/icons/changelog-published"
 import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 import { ChangelogItemContextMenu } from "./ChangelogItemContextMenu"
+import { SelectionControl } from "@/components/selection/SelectionControl"
+import {
+    getSelectableRowClassName,
+    type SelectionToggleMeta,
+} from "@/components/selection/Row"
 
 interface ChangelogItemProps {
     item: ChangelogEntryWithTags
     workspaceSlug: string
     isSelecting?: boolean
     isSelected?: boolean
-    onToggle?: (checked: boolean) => void
+    onToggle?: (checked: boolean, meta?: SelectionToggleMeta) => void
 }
 
 function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle }: ChangelogItemProps) {
@@ -32,24 +36,25 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
         if (!isSelectingMode) return
         e.preventDefault()
         e.stopPropagation()
-        onToggle?.(!isSelectedMode)
+        onToggle?.(!isSelectedMode, { shiftKey: e.shiftKey })
     }, [isSelectingMode, isSelectedMode, onToggle])
-    const rowClassName = cn(
-        "flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40",
-        isSelectingMode ? "cursor-pointer" : "hover:bg-background dark:hover:bg-background transition-colors"
+    const rowClassName = getSelectableRowClassName(
+        isSelectingMode,
+        isSelectedMode,
+        "flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 relative overflow-hidden",
     )
 
     return (
         <ChangelogItemContextMenu item={item} workspaceSlug={workspaceSlug} onClick={handleRowClick}>
             <div className={rowClassName}>
-                {isSelectingMode && (
-                    <Checkbox
+                {isSelectingMode ? (
+                    <SelectionControl
                         checked={isSelectedMode}
-                        onCheckedChange={(v) => onToggle?.(Boolean(v))}
+                        label={isSelectedMode ? "Deselect entry" : "Select entry"}
+                        onCheckedChange={(v) => onToggle?.(v)}
                         onClick={(e) => e.stopPropagation()}
-                        className="mr-1 cursor-pointer border-border dark:border-border data-[state=checked]:border-primary"
                     />
-                )}
+                ) : null}
                 <Link
                     href={`/workspaces/${workspaceSlug}/changelog/${item.id}/edit`}
                     className={cn(
