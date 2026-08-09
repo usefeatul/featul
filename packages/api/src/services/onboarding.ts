@@ -25,7 +25,7 @@ function onboardingMeta(kind: "welcome" | "ideas" | "bugs") {
 
 const ONBOARDING_POSTS = {
   welcome: {
-    title: "Welcome to featul — your feedback hub is ready",
+    title: "Welcome to featul, your feedback hub is ready",
     kind: "welcome" as const,
     boardSlug: "features",
     tagSlugs: ["guide", "support"],
