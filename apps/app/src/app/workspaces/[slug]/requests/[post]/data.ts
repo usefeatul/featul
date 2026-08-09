@@ -13,6 +13,7 @@ import {
 import type { RequestDetailData } from "@/types/request"
 import type { CommentData } from "@/types/comment"
 import { parseRequestFiltersFromRecord } from "@/utils/request-filters"
+import { isOnboardingPost } from "@/lib/onboarding-post"
 
 export type RequestDetailSearchParams = Record<string, string | string[] | undefined>
 
@@ -94,6 +95,7 @@ export async function loadRequestDetailPageData({
     role,
     isOwner,
     isFeatul: rawPost.authorId === "featul-founder",
+    isOnboarding: isOnboardingPost(rawPost.metadata),
     tags,
     hasVoted,
     reportCount,

@@ -15,6 +15,7 @@ import {
   subscription,
 } from "@featul/db";
 import { resolvePostAuthorImage } from "@/lib/author-avatar";
+import { isOnboardingPost, getOnboardingPostKind } from "@/lib/onboarding-post";
 import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
 import type { RequestItemRow } from "@/lib/request-item";
 import type {
@@ -379,6 +380,8 @@ export async function getWorkspacePosts(
     ...r,
     isOwner: r.authorId === ws.ownerId,
     isFeatul: r.authorId === "featul-founder",
+    isOnboarding: isOnboardingPost(r.metadata as Record<string, unknown> | null),
+    onboardingKind: getOnboardingPostKind(r.metadata as Record<string, unknown> | null),
     authorImage: resolvePostAuthorImage({
       isAnonymous: Boolean(r.isAnonymous),
       authorImage: r.authorImage,

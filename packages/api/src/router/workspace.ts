@@ -294,6 +294,7 @@ export function createWorkspaceRouter() {
           ])
 
           await ctx.db.insert(tag).values([
+            { workspaceId: ws.id, name: "Guide", slug: "guide" },
             { workspaceId: ws.id, name: "UI", slug: "ui" },
             { workspaceId: ws.id, name: "Design", slug: "design" },
             { workspaceId: ws.id, name: "Security", slug: "security" },

@@ -83,7 +83,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       <Link
         href={href}
         className={cn(
-          "flex-1 min-w-0 truncate text-sm font-medium",
+          "min-w-0 flex-1 truncate text-sm font-medium",
           isLinkDisabled ? "text-foreground/60 cursor-default pointer-events-none" : "text-foreground"
         )}
         onClick={(e) => {

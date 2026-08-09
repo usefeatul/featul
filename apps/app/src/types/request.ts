@@ -1,4 +1,5 @@
 import type { TagSummary } from "@/types/post"
+import type { OnboardingPostKind } from "@/lib/onboarding-post"
 
 export const REQUEST_FLAG_OPTIONS = [
   { key: "isPinned", label: "Pinned" },
@@ -72,6 +73,8 @@ export interface RequestItemData extends RequestFlags {
   role?: RequestRole
   isOwner?: boolean
   isFeatul?: boolean
+  isOnboarding?: boolean
+  onboardingKind?: OnboardingPostKind | null
   tags?: TagSummary[]
   reportCount?: number
 }
@@ -96,6 +99,7 @@ export type RequestDetailData = {
   role?: RequestRole
   isOwner?: boolean
   isFeatul?: boolean
+  isOnboarding?: boolean
   duplicateOfId?: string | null
   mergedInto?: {
     id: string

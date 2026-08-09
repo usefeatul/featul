@@ -10,6 +10,8 @@ import { getDisplayUser } from "@/utils/user";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
 import ContentImage from "@/components/global/ContentImage";
 import { RequestActions } from "./RequestActions";
+import { isOnboardingPost } from "@/lib/onboarding-post";
+import { OnboardingPostContent } from "@/components/requests/OnboardingPostContent";
 
 
 
@@ -27,7 +29,10 @@ export function RequestContent({
   initialCollapsedIds,
 }: RequestContentProps) {
   const visibleCommentCount = initialComments?.length ?? post.commentCount
-  const normalizedContent = post.content?.replace(/\n{2,}/g, "\n")
+  const showOnboardingContent = isOnboardingPost(post.metadata)
+  const normalizedContent = showOnboardingContent
+    ? post.content
+    : post.content?.replace(/\n{2,}/g, "\n")
 
   const rawDisplayAuthor = getDisplayUser(
     post.author
@@ -67,9 +72,13 @@ export function RequestContent({
       {/* Image */}
 
       {normalizedContent ? (
-        <div className="prose dark:prose-invert text-sm text-accent mb-6 wrap-break-word whitespace-pre-wrap leading-6">
-          {normalizedContent}
-        </div>
+        showOnboardingContent ? (
+          <OnboardingPostContent content={normalizedContent} className="mb-6" />
+        ) : (
+          <div className="prose dark:prose-invert text-sm text-accent mb-6 wrap-break-word whitespace-pre-wrap leading-6">
+            {normalizedContent}
+          </div>
+        )
       ) : null}
 
       {/* Content */}
