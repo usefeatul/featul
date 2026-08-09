@@ -11,6 +11,7 @@ import {
   isReservedWorkspaceSlug,
 } from "../lib/validators";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
+import { markPendingWelcomeTour } from "@/lib/welcome-tour";
 
 function extractNameFromDomain(domain: string): string {
   const part = domain.split(".")[0]?.trim() || "";
@@ -177,16 +178,10 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
         queryClient.setQueryData(["workspace", createdSlug], data.workspace);
       }
 
-      const prevWorkspaces = queryClient.getQueryData<
-        | { workspaces: { id: string; slug: string; name: string }[] }
-        | { id: string; slug: string; name: string }[]
-        | undefined
-      >(["workspaces"]);
-      const prevList = Array.isArray(prevWorkspaces)
-        ? prevWorkspaces
-        : prevWorkspaces?.workspaces ?? [];
-      const isFirstWorkspace =
-        options.isFirstWorkspace ?? prevList.length === 0;
+      const isFirstWorkspace = Boolean(data?.isFirstWorkspace);
+      if (isFirstWorkspace) {
+        markPendingWelcomeTour();
+      }
       const welcomeQuery = isFirstWorkspace ? "?welcome=1" : "";
 
       router.push(`/workspaces/${createdSlug}${welcomeQuery}`);
@@ -196,7 +191,7 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
     } finally {
       setIsCreating(false);
     }
-  }, [name, domain, slug, timezone, queryClient, router, slugLocked, options.isFirstWorkspace]);
+  }, [name, domain, slug, timezone, queryClient, router, slugLocked]);
 
   const handleNameChange = useCallback((v: string) => {
     setNameDirty(true);

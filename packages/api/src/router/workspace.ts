@@ -212,6 +212,12 @@ export function createWorkspaceRouter() {
         })()
         const favicon = `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(host)}&sz=128`
 
+        const ownedBefore = await ctx.db
+          .select({ id: workspace.id })
+          .from(workspace)
+          .where(eq(workspace.ownerId, ctx.session.user.id))
+        const isFirstWorkspace = ownedBefore.length === 0
+
         let created: typeof workspace.$inferSelect | undefined
         try {
           const [ws] = await ctx.db
@@ -321,7 +327,7 @@ export function createWorkspaceRouter() {
           throw new HTTPException(500, { message: "Failed to provision workspace" })
         }
 
-        return c.superjson({ workspace: created })
+        return c.superjson({ workspace: created, isFirstWorkspace })
       }),
 
     updateCustomDomain: privateProcedure

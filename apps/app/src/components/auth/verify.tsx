@@ -14,6 +14,7 @@ import { LoadingButton } from "@/components/global/loading-button";
 import { sendVerificationOtp, verifyEmail } from "../../utils/otp";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import { resolvePostAuthPath } from "@/lib/post-auth-redirect";
 
 export default function Verify() {
   const router = useRouter();
@@ -75,7 +76,7 @@ export default function Verify() {
         return;
       }
       toast.success("Email verified");
-      router.push(redirect);
+      router.push(await resolvePostAuthPath(safeRedirectParam));
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Invalid or expired code";
       setError(msg);

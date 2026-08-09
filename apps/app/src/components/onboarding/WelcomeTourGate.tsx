@@ -5,7 +5,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { WelcomeTourDialog } from "./WelcomeTourDialog";
 import {
   hasCompletedWelcomeTour,
+  hasPendingWelcomeTour,
   markWelcomeTourCompleted,
+  clearPendingWelcomeTour,
 } from "@/lib/welcome-tour";
 
 type WelcomeTourGateProps = {
@@ -25,7 +27,8 @@ export function WelcomeTourGate({
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const shouldWelcome = searchParams.get("welcome") === "1";
+    const shouldWelcome =
+      searchParams.get("welcome") === "1" || hasPendingWelcomeTour();
     if (!shouldWelcome || hasCompletedWelcomeTour(userId)) {
       return;
     }
@@ -42,6 +45,7 @@ export function WelcomeTourGate({
 
   const handleComplete = React.useCallback(() => {
     markWelcomeTourCompleted(userId);
+    clearPendingWelcomeTour();
     clearWelcomeParam();
   }, [clearWelcomeParam, userId]);
 

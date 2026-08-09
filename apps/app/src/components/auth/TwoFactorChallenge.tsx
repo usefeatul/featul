@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/loading-button";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import { resolvePostAuthPath } from "@/lib/post-auth-redirect";
 
 type VerificationMethod = "totp" | "backup";
 
@@ -43,9 +44,9 @@ export default function TwoFactorChallenge() {
     setError("");
   };
 
-  const handleSuccess = () => {
+  const handleSuccess = async () => {
     toast.success("Two-factor verification complete");
-    router.push(redirect);
+    router.push(await resolvePostAuthPath(safeRedirectParam));
   };
 
   const handleSubmit = async () => {

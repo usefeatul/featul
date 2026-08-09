@@ -15,6 +15,7 @@ import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useSocialAuth } from "@/hooks/useSocialAuth";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
+import { resolvePostAuthPath } from "@/lib/post-auth-redirect";
 
 export default function SignIn({
   redirectTo,
@@ -69,7 +70,7 @@ export default function SignIn({
           method: "passkey",
         });
         toast.success("Signed in with passkey");
-        router.push(redirect);
+        router.push(await resolvePostAuthPath(safeRedirectParam));
       }
     } catch {
       setError("Failed to sign in with passkey");
@@ -98,7 +99,7 @@ export default function SignIn({
             setError(ctx.error.message);
             toast.error(ctx.error.message);
           },
-          onSuccess: (ctx) => {
+          onSuccess: async (ctx) => {
             if ((ctx as { data?: { twoFactorRedirect?: boolean } })?.data?.twoFactorRedirect) {
               toast.info("Enter your authentication code to finish signing in");
               router.push(twoFactorHref);
@@ -113,7 +114,7 @@ export default function SignIn({
               method: "email",
             });
             toast.success("Signed in");
-            router.push(redirect);
+            router.push(await resolvePostAuthPath(safeRedirectParam));
           },
         }
       );
