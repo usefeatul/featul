@@ -56,7 +56,7 @@ if (!dryRun && !confirm) {
   process.exit(1);
 }
 
-async function main() {
+async function main(userIdentifier: string) {
   const { count, eq } = await import("drizzle-orm");
   const {
     db,
@@ -73,19 +73,19 @@ async function main() {
     workspaceSlugReservation,
     postReport,
     commentReport,
-  } = await import("../index");
+  } = await import("../index.js");
 
   let userId: string;
 
-  if (identifier.includes("@")) {
+  if (userIdentifier.includes("@")) {
     const [found] = await db
       .select({ id: user.id, email: user.email, name: user.name })
       .from(user)
-      .where(eq(user.email, identifier))
+      .where(eq(user.email, userIdentifier))
       .limit(1);
 
     if (!found) {
-      throw new Error(`User not found with email: ${identifier}`);
+      throw new Error(`User not found with email: ${userIdentifier}`);
     }
 
     userId = found.id;
@@ -93,11 +93,11 @@ async function main() {
     const [found] = await db
       .select({ id: user.id, email: user.email, name: user.name })
       .from(user)
-      .where(eq(user.id, identifier))
+      .where(eq(user.id, userIdentifier))
       .limit(1);
 
     if (!found) {
-      throw new Error(`User not found with id: ${identifier}`);
+      throw new Error(`User not found with id: ${userIdentifier}`);
     }
 
     userId = found.id;
@@ -193,7 +193,7 @@ async function main() {
   console.log(`Deleted user ${summary.user.email} (${userId}) and all related content.`);
 }
 
-main().catch((err) => {
+main(identifier).catch((err) => {
   console.error(err);
   process.exit(1);
 });

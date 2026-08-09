@@ -2,7 +2,7 @@ import type {
   CurrentSessionState,
   DeviceAccount,
   UserDropdownAccount,
-} from "./types";
+} from "../types";
 
 export function normalizeDeviceAccountsPayload(
   payload: unknown,
