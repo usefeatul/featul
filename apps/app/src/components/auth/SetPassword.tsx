@@ -13,7 +13,7 @@ import {
 } from "@featul/ui/components/opt";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import {
     strongPasswordPattern,
     getPasswordError,
@@ -64,11 +64,11 @@ export default function SetPassword() {
                 } else {
                     // Not logged in, redirect to sign in
                     toast.error("Please sign in first");
-                    router.push("/auth/sign-in?redirect=/auth/set-password");
+                    router.push("/auth/signin?redirect=/auth/setpassword");
                 }
             } catch {
                 toast.error("Please sign in first");
-                router.push("/auth/sign-in?redirect=/auth/set-password");
+                router.push("/auth/signin?redirect=/auth/setpassword");
             }
         };
         loadSession();

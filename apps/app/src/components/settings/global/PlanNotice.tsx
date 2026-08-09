@@ -10,7 +10,7 @@ import {
   type PlanKey,
   type PlanLimits,
 } from "@/lib/plan";
-import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace-client";
+import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace/client";
 
 type Feature =
   | "branding"

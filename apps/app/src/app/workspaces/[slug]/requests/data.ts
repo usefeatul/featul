@@ -1,12 +1,12 @@
 import { getServerSession } from "@featul/auth/session"
 import { getWorkspaceBySlug, getWorkspacePosts, getWorkspacePostsCount, normalizeStatus } from "@/lib/workspace"
-import { toRequestItemData } from "@/lib/request-item"
+import { toRequestItemData } from "@/lib/request/item"
 import {
   normalizeSlugList,
   parsePositiveIntSearchParam,
-} from "@/utils/search-params"
+} from "@/utils/search/params"
 import type { RequestItemData } from "@/types/request"
-import { parseRequestFiltersFromRecord } from "@/utils/request-filters"
+import { parseRequestFiltersFromRecord } from "@/utils/request/filters"
 import { boardSlugsForSearch } from "@featul/api/shared/post-search"
 
 const PAGE_SIZE = 20

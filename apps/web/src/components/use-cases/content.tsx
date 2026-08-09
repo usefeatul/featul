@@ -5,7 +5,7 @@ import { HeroHighlights } from "@/components/shared/highlights";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 
-const FEATUL_SIGN_IN_URL = "https://app.featul.com/auth/sign-in";
+const FEATUL_SIGN_IN_URL = "https://app.featul.com/auth/signin";
 
 const heroButtonClassName =
   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto";

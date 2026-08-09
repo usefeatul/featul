@@ -3,7 +3,7 @@ import AccountTabsHeader from "./AccountTabsHeader"
 import ProfileSection from "./Profile"
 import SecuritySection from "./Security"
 import AppearanceSection from "./Appearance"
-import { ACCOUNT_SECTIONS } from "@/config/account-sections"
+import { ACCOUNT_SECTIONS } from "@/config/account/sections"
 import type { PasskeyItem } from "./Passkeys"
 import type { SessionItem } from "@/types/session"
 

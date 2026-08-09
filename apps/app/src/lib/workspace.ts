@@ -14,10 +14,10 @@ import {
   postReport,
   subscription,
 } from "@featul/db";
-import { resolvePostAuthorImage } from "@/lib/author-avatar";
-import { isOnboardingPost, getOnboardingPostKind } from "@/lib/onboarding-post";
+import { resolvePostAuthorImage } from "@/lib/author/avatar";
+import { isOnboardingPost, getOnboardingPostKind } from "@/lib/onboarding/post";
 import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
-import type { RequestItemRow } from "@/lib/request-item";
+import type { RequestItemRow } from "@/lib/request/item";
 import type {
   ChangelogTag,
   FeedbackBoardSettings,
@@ -33,11 +33,11 @@ import {
   getBrandingBySlug,
   getBrandingColorsBySlug,
   getSidebarPositionBySlug,
-} from "@/lib/workspace-branding";
+} from "@/lib/workspace/branding";
 import {
   getWorkspaceBySlugRecord,
   getWorkspaceIdBySlug,
-} from "@/lib/workspace-slug";
+} from "@/lib/workspace/slug";
 
 export {
   getBrandingBySlug,

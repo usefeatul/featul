@@ -14,10 +14,10 @@ import {
   InputOTPSlot,
 } from "@featul/ui/components/opt";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
-import { resolvePostAuthPath } from "@/lib/post-auth-redirect";
+import { resolvePostAuthPath } from "@/lib/post/redirect";
 
 type VerificationMethod = "totp" | "backup";
 
@@ -34,8 +34,8 @@ export default function TwoFactorChallenge() {
   const [error, setError] = useState("");
 
   const signInHref = safeRedirectParam
-    ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}`
-    : "/auth/sign-in";
+    ? `/auth/signin?redirect=${encodeURIComponent(safeRedirectParam)}`
+    : "/auth/signin";
 
   const activeCode = method === "totp" ? totpCode.trim() : backupCode.trim();
 

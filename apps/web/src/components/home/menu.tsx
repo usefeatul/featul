@@ -77,7 +77,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               className="w-full font-semibold border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
             >
               <Link
-                href="https://app.featul.com/auth/sign-up"
+                href="https://app.featul.com/auth/signup"
                 data-sln-event="cta: start for free clicked"
                 onClick={onClose}
               >

@@ -1,7 +1,7 @@
 import React from "react"
 import { ACTIVITY_ACTIONS, type ActivityAction } from "@featul/api/shared/activity-actions"
 import StatusIcon from "@/components/requests/StatusIcon"
-import { formatActivityStatusLabel, getActivityStatus } from "@/lib/activity-status"
+import { formatActivityStatusLabel, getActivityStatus } from "@/lib/activity/status"
 import type { ActivityItem, TagSummary } from "@/types/activity"
 
 const TITLE_CLASS = "text-foreground font-medium min-w-0 flex-1 truncate"

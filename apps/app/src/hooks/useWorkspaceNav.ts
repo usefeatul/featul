@@ -8,7 +8,7 @@ import {
   workspaceQueryKeys,
   type WorkspaceDomainInfo,
   type WorkspaceSummary,
-} from "@/lib/workspace-client"
+} from "@/lib/workspace/client"
 
 export function useWorkspaceNav(
   slug: string,

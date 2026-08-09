@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createPageMetadata } from "@/lib/seo";
-import { readInitialSelectionState } from "@/lib/selection-server";
+import { readInitialSelectionState } from "@/lib/selection/server";
 import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
-} from "@/utils/search-params";
+} from "@/utils/search/params";
 import { getChangelogListData } from "./data";
 import { ChangelogList } from "@/components/changelog/ChangelogList";
 import RequestPagination from "@/components/requests/RequestPagination";

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { buildUrlWithSearchParam } from "@/utils/subdomain-search-url";
+import { buildUrlWithSearchParam } from "@/utils/subdomain/url";
 import { SubdomainSearchResultsHeader } from "./SubdomainSearchResultsHeader";
 
 type SubdomainActiveSearchHeaderProps = {

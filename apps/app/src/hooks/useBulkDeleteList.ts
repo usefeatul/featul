@@ -8,7 +8,7 @@ import {
   deletePostById,
   dispatchPostDeletedEvent,
   invalidateMemberActivityQueries,
-} from "@/lib/post-deletion";
+} from "@/lib/post/deletion";
 import type {
   ChangelogDeletedEventDetail,
   ChangelogPageRefreshingDetail,

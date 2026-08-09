@@ -9,7 +9,7 @@ import { EditIcon } from "@featul/ui/icons/edit"
 import { LockIcon } from "@featul/ui/icons/lock"
 import { ReportIndicator } from "../requests/ReportIndicator"
 import type { CommentData } from "../../types/comment"
-import type { CommentSurface } from "@/lib/comment-shared"
+import type { CommentSurface } from "@/lib/comment/shared"
 
 interface CommentHeaderProps {
   comment: CommentData

@@ -11,7 +11,7 @@ import { getPostTitleMinError } from "@/hooks/postSubmitGuard"
 import { readApiErrorMessage } from "@/hooks/postApiError"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 import { normalizeRoadmapStatus } from "@/lib/roadmap"
-import { workspaceQueryKeys } from "@/lib/workspace-client"
+import { workspaceQueryKeys } from "@/lib/workspace/client"
 
 interface UsePostSubmissionProps {
   workspaceSlug: string

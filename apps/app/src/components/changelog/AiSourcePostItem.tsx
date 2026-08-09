@@ -3,7 +3,7 @@
 import React from "react";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { SelectionControl } from "@/components/selection/SelectionControl";
-import { getSelectableRowClassName } from "@/components/selection/selection-row";
+import { getSelectableRowClassName } from "@/components/selection/Row";
 import { VoteCount } from "@/components/upvote/VoteCount";
 import { VoteIcon } from "@/components/upvote/VoteIcon";
 

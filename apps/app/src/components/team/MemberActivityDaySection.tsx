@@ -7,7 +7,7 @@ import { MemberActivityItemRow } from "@/components/team/MemberActivityItemRow"
 import {
   getActivityHref,
   type ActivityDayGroup,
-} from "@/components/team/member-activity-utils"
+} from "@/components/team/activity/utils"
 
 interface MemberActivityDaySectionProps {
   dayGroup: ActivityDayGroup

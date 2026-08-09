@@ -3,7 +3,7 @@
 import React from "react";
 import { useSearchParams } from "next/navigation";
 import { groupItemsByStatus, sortRoadmapItems } from "@/lib/roadmap";
-import { parseRoadmapFiltersFromSearchParams } from "@/utils/roadmap-url";
+import { parseRoadmapFiltersFromSearchParams } from "@/utils/roadmap/url";
 import type { RequestItemData } from "@/types/request";
 
 export function useRoadmapFilters(items: RequestItemData[]) {

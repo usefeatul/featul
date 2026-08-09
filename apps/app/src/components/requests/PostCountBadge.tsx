@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { getSlugFromPath } from "@/config/nav"
-import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters"
 
 export default function PostCountBadge({ className = "" }: { className?: string }) {
   const pathname = usePathname() || "/"

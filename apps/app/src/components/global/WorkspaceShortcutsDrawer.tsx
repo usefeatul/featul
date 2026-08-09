@@ -11,7 +11,7 @@ import {
   WORKSPACE_SHORTCUT_GROUP_ORDER,
   WORKSPACE_SHORTCUTS,
   WORKSPACE_SHORTCUTS_OPEN_EVENT,
-} from "@/lib/keyboard-shortcuts";
+} from "@/lib/keyboard/shortcuts";
 
 const GROUP_LABELS: Record<string, string> = {
   "Global workspace": "General",

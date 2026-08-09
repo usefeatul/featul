@@ -4,11 +4,11 @@ import React from "react"
 import SectionCard from "../global/SectionCard"
 import { authClient, useSession } from "@featul/auth/client"
 import { toast } from "sonner"
-import { LoadingButton } from "@/components/global/loading-button"
+import { LoadingButton } from "@/components/global/LoadingButton"
 import { normalizePlan } from "@/lib/plan"
 import BillingCycleSegment from "./BillingCycleSegment"
 import PlanOptionCard from "./PlanOptionCard"
-import { type BillingCycle, PLAN_ORDER, getPlan } from "./billing-data"
+import { type BillingCycle, PLAN_ORDER, getPlan } from "./data"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type BillingSubscription = {

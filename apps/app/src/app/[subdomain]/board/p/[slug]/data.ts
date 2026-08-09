@@ -8,7 +8,7 @@ import {
   loadMergedPostData,
   loadPostComments,
   loadWorkspaceBySlug,
-} from "@/lib/request-detail";
+} from "@/lib/request/detail";
 import type { CommentData } from "@/types/comment";
 import type { SubdomainRequestDetailData } from "@/types/subdomain";
 

@@ -6,7 +6,7 @@ import {
   WorkspaceSearchAction,
   type WorkspaceSearchResult,
 } from "@/components/global/WorkspaceSearchAction";
-import { buildRoadmapUrl } from "@/utils/roadmap-url";
+import { buildRoadmapUrl } from "@/utils/roadmap/url";
 import { getSlugFromPath } from "@/config/nav";
 
 export default function RoadmapSearchAction({

@@ -5,7 +5,7 @@ import type { Member } from "@/types/team"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { getInitials } from "@/utils/user"
 import { format } from "date-fns"
-import { roleBadgeClass } from "@/components/settings/team/role-badge"
+import { roleBadgeClass } from "@/components/settings/team/RoleBadge"
 import { cn } from "@featul/ui/lib/utils"
 import RoleBadge from "@/components/global/RoleBadge"
 

@@ -3,7 +3,7 @@
 import React from "react";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 
 type CopyValueButtonProps = {
   value: string;

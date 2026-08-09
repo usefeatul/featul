@@ -20,7 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@featul/ui/lib/utils";
-import { filterToolbarButtonClass } from "@/utils/filter-toolbar";
+import { filterToolbarButtonClass } from "@/utils/filter/toolbar";
 import StatusIcon from "@/components/requests/StatusIcon";
 
 export type WorkspaceSearchResult = {

@@ -5,7 +5,7 @@ import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import { MoreVertical } from "lucide-react";
 import type { Member } from "../../../types/team";
-import { roleBadgeClass } from "./role-badge";
+import { roleBadgeClass } from "./RoleBadge";
 
 interface RoleCellProps {
   m: Member;

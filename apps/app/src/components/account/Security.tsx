@@ -18,7 +18,7 @@ export default function Security({ initialSessions, twoFactorEnabled, initialAcc
 
   const onChangePassword = React.useCallback(() => {
     const redirect = encodeURIComponent(pathname)
-    router.push(`/auth/forgot-password?redirect=${redirect}`)
+    router.push(`/auth/forgot?redirect=${redirect}`)
   }, [router, pathname])
 
   return (

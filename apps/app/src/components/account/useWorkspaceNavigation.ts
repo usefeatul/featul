@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { fetchUserWorkspaces } from "@/lib/workspace-client";
+import { fetchUserWorkspaces } from "@/lib/workspace/client";
 
 function mapWorkspaceSlugs(slugs: Array<string | undefined>): string[] {
   return slugs

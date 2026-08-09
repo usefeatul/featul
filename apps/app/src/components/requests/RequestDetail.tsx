@@ -19,9 +19,9 @@ import { EditIcon } from "@featul/ui/icons/edit"
 import { MergePopover } from "./MergePopover"
 import { DeletePostButton } from "./DeletePostButton"
 import { useIsMobile } from "@featul/ui/hooks/use-mobile"
-import EditPostModal from "../subdomain/request-detail/EditPostModal"
+import EditPostModal from "../subdomain/request/EditPostModal"
 import type { RequestDetailData } from "@/types/request"
-import { isOnboardingPost } from "@/lib/onboarding-post"
+import { isOnboardingPost } from "@/lib/onboarding/post"
 import { OnboardingPostContent } from "./OnboardingPostContent"
 
 type RequestDetailProps = {

@@ -6,12 +6,12 @@ import { getSlugFromPath, requestsBase } from "@/config/nav";
 import { buildRequestsUrl } from "@/utils/request";
 import { useFilterBarVisibility } from "@/hooks/useFilterBarVisibility";
 import { useRequestFilterLabels } from "@/hooks/useRequestFilterLabels";
-import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters";
+import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters";
 import {
   buildRoadmapUrl,
   parseRoadmapFiltersFromSearchParams,
-} from "@/utils/roadmap-url";
-import { getRequestStatusLabel } from "@/constants/request-filters";
+} from "@/utils/roadmap/url";
+import { getRequestStatusLabel } from "@/constants/request/filters";
 import { SORT_OPTIONS } from "@/types/sort";
 
 export type ActiveFilterItem = {

@@ -9,7 +9,7 @@ import { AlternativeIcon } from "@featul/ui/icons/alternative";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
-const FEATUL_SIGN_IN_URL = "https://app.featul.com/auth/sign-in";
+const FEATUL_SIGN_IN_URL = "https://app.featul.com/auth/signin";
 
 export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");

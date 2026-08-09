@@ -3,7 +3,7 @@ import type { CommentData } from "../../types/comment"
 import AnimatedReplies from "./AnimatedReplies"
 import CommentItem from "./CommentItem"
 import { updateCommentCollapseState } from "@/lib/comments.actions"
-import type { CommentSurface } from "@/lib/comment-shared"
+import type { CommentSurface } from "@/lib/comment/shared"
 
 interface CommentThreadProps {
   postId: string

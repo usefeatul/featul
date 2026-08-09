@@ -9,7 +9,7 @@ import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import {
   buildWelcomeTourSteps,
   type WelcomeTourStep,
-} from "./welcome-tour-steps";
+} from "./TourSteps";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import { cn } from "@featul/ui/lib/utils";
 

@@ -14,7 +14,7 @@ import CommentEditAction from "./CommentEditAction"
 import CommentPinAction from "./CommentPinAction"
 import CommentVisibilityAction from "./CommentVisibilityAction"
 import CommentReportDialog from "./CommentReportDialog"
-import type { CommentSurface } from "@/lib/comment-shared"
+import type { CommentSurface } from "@/lib/comment/shared"
 
 interface CommentActionsProps {
   commentId: string

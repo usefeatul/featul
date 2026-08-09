@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { setSelecting } from "@/lib/selection-store";
+import { setSelecting } from "@/lib/selection/store";
 
 interface UseBulkSelectionHotkeysParams {
   listKey: string;

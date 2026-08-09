@@ -5,7 +5,7 @@ import { type PlanKey } from "@/lib/plan"
 import { cn } from "@featul/ui/lib/utils"
 import PlanFlagRibbon from "./PlanFlagRibbon"
 import PlanCheckoutButton from "./PlanCheckoutButton"
-import { type BillingCycle, getPlan } from "./billing-data"
+import { type BillingCycle, getPlan } from "./data"
 
 type PlanOptionCardProps = {
   planKey: PlanKey

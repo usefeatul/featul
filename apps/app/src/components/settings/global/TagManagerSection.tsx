@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@featul/ui/components/table";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { TagNameDialog } from "@/components/settings/global/TagNameDialog";
 import { getPlanLimits, normalizePlan } from "@/lib/plan";
 

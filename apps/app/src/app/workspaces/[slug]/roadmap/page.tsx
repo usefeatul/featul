@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { getWorkspacePosts } from "@/lib/workspace";
-import { toRequestItemData } from "@/lib/request-item";
+import { toRequestItemData } from "@/lib/request/item";
 import RoadmapBoard from "@/components/roadmap/RoadmapBoard";
 import { readInitialCollapsedByStatus } from "@/lib/roadmap.server";
 import { getServerSession } from "@featul/auth/session";
-import { resolveSearchParams } from "@/utils/search-params";
-import { parseRoadmapFiltersFromRecord } from "@/utils/roadmap-url";
+import { resolveSearchParams } from "@/utils/search/params";
+import { parseRoadmapFiltersFromRecord } from "@/utils/roadmap/url";
 import { boardSlugsForSearch } from "@featul/api/shared/post-search";
 
 export const revalidate = 30;

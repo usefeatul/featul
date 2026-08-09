@@ -11,7 +11,7 @@ import {
   isReservedWorkspaceSlug,
 } from "../lib/validators";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
-import { markPendingWelcomeTour } from "@/lib/welcome-tour";
+import { markPendingWelcomeTour } from "@/lib/welcome/tour";
 
 function extractNameFromDomain(domain: string): string {
   const part = domain.split(".")[0]?.trim() || "";

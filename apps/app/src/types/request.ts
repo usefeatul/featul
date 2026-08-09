@@ -1,5 +1,5 @@
 import type { TagSummary } from "@/types/post"
-import type { OnboardingPostKind } from "@/lib/onboarding-post"
+import type { OnboardingPostKind } from "@/lib/onboarding/post"
 
 export const REQUEST_FLAG_OPTIONS = [
   { key: "isPinned", label: "Pinned" },

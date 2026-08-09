@@ -7,7 +7,7 @@ import {
   WorkspaceSearchAction,
   type WorkspaceSearchResult,
 } from "@/components/global/WorkspaceSearchAction";
-import { buildUrlWithSearchParam } from "@/utils/subdomain-search-url";
+import { buildUrlWithSearchParam } from "@/utils/subdomain/url";
 
 export interface SearchActionProps {
   slug: string;

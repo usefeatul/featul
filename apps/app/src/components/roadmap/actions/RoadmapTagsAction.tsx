@@ -6,7 +6,7 @@ import { client } from "@featul/api/client";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getSlugFromPath } from "@/config/nav";
-import { RequestMultiSelectFilter } from "@/components/requests/actions/request-multi-select-filter";
+import { RequestMultiSelectFilter } from "@/components/requests/actions/MultiSelectFilter";
 import { useRoadmapMultiSelectFilter } from "./useRoadmapMultiSelectFilter";
 
 type TagItem = {

@@ -27,7 +27,7 @@ export const navigationConfig: NavigationConfig = {
   auth: [
     {
       name: 'Sign in',
-      href: 'https://app.featul.com/auth/sign-in',
+      href: 'https://app.featul.com/auth/signin',
     },
   ],
 }

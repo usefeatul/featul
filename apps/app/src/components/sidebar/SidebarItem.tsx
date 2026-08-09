@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
-import { sidebarBadgeClassName } from "./sidebar-badge";
+import { sidebarBadgeClassName } from "./badge";
 
 function SidebarItem({
   item,

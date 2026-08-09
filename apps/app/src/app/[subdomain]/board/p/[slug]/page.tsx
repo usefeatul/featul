@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import SubdomainRequestDetail from "@/components/subdomain/SubdomainRequestDetail";
 import { createPostMetadata } from "@/lib/seo";
-import { getSingleSearchParam } from "@/utils/search-params";
+import { getSingleSearchParam } from "@/utils/search/params";
 import { loadPublicBoardRequestDetailPageData } from "./data";
 
 export const revalidate = 0;

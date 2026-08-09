@@ -7,8 +7,8 @@ import { Button } from "@featul/ui/components/button"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { buildRequestsUrl } from "@/utils/request"
 import { type SortOrder, SORT_OPTIONS } from "@/types/sort"
-import { parseRequestFiltersFromSearchParams } from "@/utils/request-filters"
-import { filterToolbarButtonClass } from "@/utils/filter-toolbar"
+import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters"
+import { filterToolbarButtonClass } from "@/utils/filter/toolbar"
 
 interface SortActionProps {
   className?: string

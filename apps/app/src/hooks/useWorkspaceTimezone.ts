@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
-import { safeJson } from "@/lib/api-response";
-import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace-client";
+import { safeJson } from "@/lib/api/response";
+import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace/client";
 
 export function useWorkspaceTimezone(slug: string, initialTimezone?: string) {
     const queryClient = useQueryClient();

@@ -5,13 +5,13 @@ import { eq } from "drizzle-orm"
 import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import { getWorkspacePosts, getWorkspacePostsCount, getSidebarPositionBySlug, getWorkspaceBoards } from "@/lib/workspace"
 import { readHasVotedForPost } from "@/lib/vote.server"
-import { toRequestItemData } from "@/lib/request-item"
+import { toRequestItemData } from "@/lib/request/item"
 import { MainContent } from "@/components/subdomain/MainContent"
 import {
   parsePositiveIntSearchParam,
   parseSortOrderParam,
   resolveSearchParams,
-} from "@/utils/search-params"
+} from "@/utils/search/params"
 import type { RequestItemData } from "@/types/request"
 
 export const revalidate = 0

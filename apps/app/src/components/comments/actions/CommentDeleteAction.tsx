@@ -10,7 +10,7 @@ import {
   COMMENT_DELETED_EVENT,
   type CommentDeletedEventDetail,
   type CommentSurface,
-} from "@/lib/comment-shared"
+} from "@/lib/comment/shared"
 
 interface CommentDeleteActionProps {
   commentId: string

@@ -8,7 +8,7 @@ import {
   hasPendingWelcomeTour,
   markWelcomeTourCompleted,
   clearPendingWelcomeTour,
-} from "@/lib/welcome-tour";
+} from "@/lib/welcome/tour";
 
 type WelcomeTourGateProps = {
   userId: string;

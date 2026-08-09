@@ -21,10 +21,10 @@ export function DocsMobileHeader() {
 
       <div className="flex items-center gap-2">
         <Button variant="ghost" className="text-md" asChild>
-          <Link href="https://app.featul.com/auth/sign-in">Log in</Link>
+          <Link href="https://app.featul.com/auth/signin">Log in</Link>
         </Button>
         <Button asChild>
-          <Link href="https://app.featul.com/auth/sign-up">Register</Link>
+          <Link href="https://app.featul.com/auth/signup">Register</Link>
         </Button>
       </div>
     </div>

@@ -1,12 +1,12 @@
-import { getPostImageUploadUrl } from "@/lib/post-service";
-import { useSignedImageUpload } from "./shared-image-upload";
+import { getPostImageUploadUrl } from "@/lib/post/service";
+import { useSignedImageUpload } from "./useSignedImageUpload";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 export {
   ALLOWED_IMAGE_TYPES,
   MAX_IMAGE_SIZE,
   type UploadedImage,
-} from "./shared-image-upload";
+} from "./useSignedImageUpload";
 
 export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
   return useSignedImageUpload({

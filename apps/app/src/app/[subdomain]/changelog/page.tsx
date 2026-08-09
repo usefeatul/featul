@@ -15,7 +15,7 @@ import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
 import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
-} from "@/utils/search-params"
+} from "@/utils/search/params"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params

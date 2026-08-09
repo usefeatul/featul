@@ -34,7 +34,7 @@ import UserDropdownMenu from "./UserDropdownMenu";
 import UserDropdownQuickSwitch from "./UserDropdownQuickSwitch";
 import { useUserDropdownData } from "./useUserDropdownData";
 import { useWorkspaceNavigation } from "./useWorkspaceNavigation";
-import { accountQueryKeys } from "./query-keys";
+import { accountQueryKeys } from "./keys";
 import type { DeviceAccount, UserDropdownAccount, UserIdentity } from "./types";
 import { MAX_DEVICE_ACCOUNTS } from "./constants";
 
@@ -221,7 +221,7 @@ export default function UserDropdown({
     try {
       await authClient.signOut();
       toast.success("Signed out");
-      router.replace("/auth/sign-in");
+      router.replace("/auth/signin");
     } catch {
       toast.error("Failed to sign out");
     } finally {

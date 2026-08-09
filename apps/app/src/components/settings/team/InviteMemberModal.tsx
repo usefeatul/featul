@@ -13,7 +13,7 @@ import {
 } from "@featul/ui/components/popover";
 import { DropdownIcon } from "@featul/ui/icons/dropdown";
 import MemberIcon from "@featul/ui/icons/member";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";

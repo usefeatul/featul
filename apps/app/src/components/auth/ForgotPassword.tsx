@@ -13,7 +13,7 @@ import {
 } from "@featul/ui/components/opt";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import {
   strongPasswordPattern,
   getPasswordError,
@@ -37,8 +37,8 @@ export default function ForgotPassword() {
   const [step, setStep] = useState<"request" | "otp" | "password">("request");
   const styles = getAuthLayoutStyles(false);
   const twoFactorHref = safeRedirectParam
-    ? `/auth/two-factor?redirect=${encodeURIComponent(safeRedirectParam)}`
-    : "/auth/two-factor";
+    ? `/auth/twofactor?redirect=${encodeURIComponent(safeRedirectParam)}`
+    : "/auth/twofactor";
   const { sendCode: sendResetCode, verifyCode: verifyOtp } = useOtpVerification({
     email,
     code,
@@ -140,8 +140,8 @@ export default function ForgotPassword() {
             <Link
               href={
                 safeRedirectParam
-                  ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}`
-                  : "/auth/sign-in"
+                  ? `/auth/signin?redirect=${encodeURIComponent(safeRedirectParam)}`
+                  : "/auth/signin"
               }
             >
               Sign in

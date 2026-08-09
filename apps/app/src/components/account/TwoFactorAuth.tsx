@@ -166,7 +166,7 @@ export default function TwoFactorAuth({ twoFactorEnabled = false, hasPassword = 
                 icon={<ShieldIcon className="size-5 text-primary" opacity={1} />}
                 isConnected={false}
                 buttonLabel="Set Password"
-                onAction={() => window.location.href = `/auth/set-password?redirect=${encodeURIComponent(pathname)}`}
+                onAction={() => window.location.href = `/auth/setpassword?redirect=${encodeURIComponent(pathname)}`}
             />
         )
     }

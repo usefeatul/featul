@@ -15,7 +15,7 @@ import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
-import { sidebarBadgeClassName } from "./sidebar-badge";
+import { sidebarBadgeClassName } from "./badge";
 
 export default function WorkspaceSwitcher({
   className = "",

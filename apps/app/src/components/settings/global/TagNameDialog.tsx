@@ -4,7 +4,7 @@ import React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
 import { Input } from "@featul/ui/components/input"
 import TagIcon from "@featul/ui/icons/tag"
-import { LoadingButton } from "@/components/global/loading-button"
+import { LoadingButton } from "@/components/global/LoadingButton"
 
 type TagNameDialogProps = {
   open: boolean

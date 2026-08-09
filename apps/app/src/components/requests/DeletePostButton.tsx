@@ -11,7 +11,7 @@ import {
   deletePostById,
   dispatchPostDeletedEvent,
   invalidateMemberActivityQueries,
-} from "@/lib/post-deletion";
+} from "@/lib/post/deletion";
 
 export interface DeletePostButtonProps {
   postId: string;

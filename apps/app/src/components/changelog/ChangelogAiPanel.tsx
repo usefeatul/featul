@@ -16,15 +16,15 @@ import { LoaderIcon } from "@featul/ui/icons/loader";
 import { cn } from "@featul/ui/lib/utils";
 import { SelectionToolbar } from "@/components/selection/SelectionToolbar";
 import type { FeedEditorRef } from "@/components/editor/editor";
-import { AiSegmentedControl } from "@/features/changelog-ai/components/AiSegmentedControl";
-import { useAiSourcePosts } from "@/features/changelog-ai/hooks/useAiSourcePosts";
-import { runChangelogAiStream } from "@/features/changelog-ai/hooks/useChangelogAiStream";
+import { AiSegmentedControl } from "@/features/changelog/components/AiSegmentedControl";
+import { useAiSourcePosts } from "@/features/changelog/hooks/useAiSourcePosts";
+import { runChangelogAiStream } from "@/features/changelog/hooks/useChangelogAiStream";
 import type {
   AiAction,
   AiDetailLevel,
   AiPanelTab,
   AiTone,
-} from "@/features/changelog-ai/types";
+} from "@/features/changelog/types";
 import AiSourcePostItem from "./AiSourcePostItem";
 
 interface ChangelogAiPanelProps {

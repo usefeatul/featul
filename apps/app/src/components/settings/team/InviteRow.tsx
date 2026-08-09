@@ -9,7 +9,7 @@ import type { Invite } from "../../../types/team";
 import { getInitials } from "@/utils/user";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
-import { roleBadgeClass } from "./role-badge";
+import { roleBadgeClass } from "./RoleBadge";
 import { formatExpiryLabel } from "@/lib/time";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 

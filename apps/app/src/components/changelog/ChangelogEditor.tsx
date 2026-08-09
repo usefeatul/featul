@@ -14,10 +14,10 @@ import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { AiIcon } from "@featul/ui/icons/ai";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
-import { fetchWorkspaceMembers } from "@/lib/team-client";
+import { fetchWorkspaceMembers } from "@/lib/team/client";
 import ChangelogAiPanel from "./ChangelogAiPanel";
-import type { AiPanelTab, AiQuickAction } from "@/features/changelog-ai/types";
-import { getChangelogAiSlashSuggestions } from "./changelog-ai-slash";
+import type { AiPanelTab, AiQuickAction } from "@/features/changelog/types";
+import { getChangelogAiSlashSuggestions } from "./ai/slash";
 
 const ENABLE_CHANGELOG_AI = true;
 

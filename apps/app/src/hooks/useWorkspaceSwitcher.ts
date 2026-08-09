@@ -3,14 +3,14 @@
 import React from "react"
 import { useRouter, usePathname, useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query"
-import { useWorkspaceLogo } from "@/lib/branding-store"
+import { useWorkspaceLogo } from "@/lib/branding/store"
 import {
   fetchUserWorkspaces,
   fetchWorkspaceBySlug,
   prefetchWorkspaceStatusCounts,
   workspaceQueryKeys,
   type WorkspaceSummary,
-} from "@/lib/workspace-client"
+} from "@/lib/workspace/client"
 
 export type Ws = WorkspaceSummary
 

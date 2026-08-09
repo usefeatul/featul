@@ -8,14 +8,14 @@ import { Input } from "@featul/ui/components/input";
 import { Label } from "@featul/ui/components/label";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { LastUsedTag } from "@/components/auth/LastUsedTag";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useSocialAuth } from "@/hooks/useSocialAuth";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
-import { resolvePostAuthPath } from "@/lib/post-auth-redirect";
+import { resolvePostAuthPath } from "@/lib/post/redirect";
 
 export default function SignIn({
   redirectTo,
@@ -49,8 +49,8 @@ export default function SignIn({
   }, []);
 
   const twoFactorHref = safeRedirectParam
-    ? `/auth/two-factor?redirect=${encodeURIComponent(safeRedirectParam)}`
-    : "/auth/two-factor";
+    ? `/auth/twofactor?redirect=${encodeURIComponent(safeRedirectParam)}`
+    : "/auth/twofactor";
 
   const handlePasskeySignIn = async () => {
     setIsLoading(true);
@@ -149,8 +149,8 @@ export default function SignIn({
                 <Link
                   href={
                     safeRedirectParam
-                      ? `/auth/sign-up?redirect=${encodeURIComponent(safeRedirectParam)}`
-                      : "/auth/sign-up"
+                      ? `/auth/signup?redirect=${encodeURIComponent(safeRedirectParam)}`
+                      : "/auth/signup"
                   }
                 >
                   Create account
@@ -209,7 +209,7 @@ export default function SignIn({
             Password
           </Label>
           <Button asChild variant="link" size="sm">
-            <Link href="/auth/forgot-password" className={styles.linkButtonCls}>
+            <Link href="/auth/forgot" className={styles.linkButtonCls}>
               Forgot your Password ?
             </Link>
           </Button>

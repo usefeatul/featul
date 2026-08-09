@@ -16,7 +16,7 @@ import { type SortOrder, SORT_OPTIONS } from "@/types/sort";
 import {
   buildRoadmapUrl,
   parseRoadmapFiltersFromSearchParams,
-} from "@/utils/roadmap-url";
+} from "@/utils/roadmap/url";
 
 export default function RoadmapSortAction({
   className = "",

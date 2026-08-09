@@ -15,7 +15,7 @@ import { SelectionControl } from "@/components/selection/SelectionControl"
 import {
     getSelectableRowClassName,
     type SelectionToggleMeta,
-} from "@/components/selection/selection-row"
+} from "@/components/selection/Row"
 
 interface ChangelogItemProps {
     item: ChangelogEntryWithTags

@@ -1,7 +1,7 @@
 import React from "react"
 import CommentVote from "./CommentVote"
 import CommentReplyButton from "./actions/CommentReplyAction"
-import type { CommentSurface } from "@/lib/comment-shared"
+import type { CommentSurface } from "@/lib/comment/shared"
 
 interface CommentFooterProps {
   commentId: string

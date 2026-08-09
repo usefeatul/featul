@@ -12,7 +12,7 @@ import {
   strongPasswordPattern,
   getPasswordError,
 } from "@featul/auth/password";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
@@ -111,8 +111,8 @@ export default function SignUp({
               <Link
                 href={
                   safeRedirectParam
-                    ? `/auth/sign-in?redirect=${encodeURIComponent(safeRedirectParam)}`
-                    : "/auth/sign-in"
+                    ? `/auth/signin?redirect=${encodeURIComponent(safeRedirectParam)}`
+                    : "/auth/signin"
                 }
               >
                 Sign in

@@ -7,7 +7,7 @@ import { getSlugFromPath } from "../../config/nav";
 import { formatTime12h } from "@/lib/time";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@featul/ui/components/tooltip";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";
-import { sidebarBadgeClassName } from "./sidebar-badge";
+import { sidebarBadgeClassName } from "./badge";
 
 interface TimezoneProps {
   className?: string;

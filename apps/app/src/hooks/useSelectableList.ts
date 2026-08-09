@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useBulkSelectionHotkeys } from "@/hooks/useBulkSelectionHotkeys";
-import type { SelectionItemProps } from "@/components/selection/selection-row";
+import type { SelectionItemProps } from "@/components/selection/Row";
 import {
   clearSelection,
   removeSelectedIds,
@@ -10,7 +10,7 @@ import {
   setSelecting,
   toggleSelectionId,
   useSelection,
-} from "@/lib/selection-store";
+} from "@/lib/selection/store";
 import type { SelectionHydrationState } from "@/types/selection";
 
 type UseSelectableListParams = SelectionHydrationState & {

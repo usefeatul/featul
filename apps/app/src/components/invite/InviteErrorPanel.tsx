@@ -4,7 +4,7 @@ import { AlertCircle } from "lucide-react";
 import {
   getInviteMotionProps,
   getInviteTransition,
-} from "@/components/invite/invite-shared";
+} from "@/components/invite/shared";
 
 type Props = {
   title: string;

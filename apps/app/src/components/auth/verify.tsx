@@ -10,11 +10,11 @@ import {
 } from "@featul/ui/components/opt";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LoadingButton } from "@/components/global/loading-button";
+import { LoadingButton } from "@/components/global/LoadingButton";
 import { sendVerificationOtp, verifyEmail } from "../../utils/otp";
 import { AuthLayout, getAuthLayoutStyles } from "@/components/auth/AuthLayout";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
-import { resolvePostAuthPath } from "@/lib/post-auth-redirect";
+import { resolvePostAuthPath } from "@/lib/post/redirect";
 
 export default function Verify() {
   const router = useRouter();
@@ -100,10 +100,10 @@ export default function Verify() {
             <Link
               href={
                 safeRedirectParam
-                  ? `/auth/sign-in?redirect=${encodeURIComponent(
+                  ? `/auth/signin?redirect=${encodeURIComponent(
                     safeRedirectParam
                   )}`
-                  : "/auth/sign-in"
+                  : "/auth/signin"
               }
             >
               Sign in

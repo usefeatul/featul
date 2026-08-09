@@ -22,8 +22,8 @@ import {
 } from "@/components/global/ContextMenuItem";
 import { BULK_DELETE_CONFIRM_CLASS } from "@/components/selection/constants";
 import { FlagsSubmenu, StatusSubmenu, TagsSubmenu } from "./RequestItemSubmenus";
-import { setSelecting, toggleSelectionId } from "@/lib/selection-store";
-import type { SelectionToggleMeta } from "@/components/selection/selection-row";
+import { setSelecting, toggleSelectionId } from "@/lib/selection/store";
+import type { SelectionToggleMeta } from "@/components/selection/Row";
 import type { RequestItemData } from "@/types/request";
 
 type RequestSubmenu = "main" | "status" | "tags" | "flags";

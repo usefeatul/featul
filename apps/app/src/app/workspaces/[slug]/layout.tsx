@@ -36,7 +36,7 @@ export default async function WorkspaceLayout({
   const session = await getServerSession();
   const userId = session?.user?.id || null;
   if (!userId) {
-    redirect(`/auth/sign-in?redirect=/workspaces/${slug}`);
+    redirect(`/auth/signin?redirect=/workspaces/${slug}`);
   }
   const [
     branding,

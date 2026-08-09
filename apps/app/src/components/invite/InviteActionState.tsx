@@ -4,7 +4,7 @@ import { Check, LoaderCircle, X } from "lucide-react";
 import {
   getInviteMotionProps,
   getInviteTransition,
-} from "@/components/invite/invite-shared";
+} from "@/components/invite/shared";
 
 type Props = {
   screen: "accepting" | "declining" | "accepted" | "declined";

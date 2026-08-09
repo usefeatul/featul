@@ -9,7 +9,7 @@ import { getSlugFromPath } from "@/config/nav";
 import {
   RequestMultiSelectFilter,
   useRequestMultiSelectFilter,
-} from "./request-multi-select-filter";
+} from "./MultiSelectFilter";
 
 type TagItem = {
   id: string;

@@ -6,12 +6,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import Link from "next/link"
 import { format } from "date-fns"
-import { roleBadgeClass } from "@/components/settings/team/role-badge"
+import { roleBadgeClass } from "@/components/settings/team/RoleBadge"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import RoleBadge from "@/components/global/RoleBadge"
-import { fetchWorkspaceMembers } from "@/lib/team-client"
-import { teamQueryKeys } from "@/lib/team-query-keys"
+import { fetchWorkspaceMembers } from "@/lib/team/client"
+import { teamQueryKeys } from "@/lib/team/keys"
 
 interface Props {
   slug: string

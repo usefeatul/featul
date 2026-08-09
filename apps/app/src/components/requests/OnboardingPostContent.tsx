@@ -2,7 +2,7 @@
 
 import React from "react";
 import { cn } from "@featul/ui/lib/utils";
-import { parseOnboardingContent } from "@/lib/onboarding-post";
+import { parseOnboardingContent } from "@/lib/onboarding/post";
 
 type OnboardingPostContentProps = {
   content: string;

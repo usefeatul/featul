@@ -14,7 +14,7 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
-import { buildSoftwareApplicationSchema } from "@/lib/structured-data";
+import { buildSoftwareApplicationSchema } from "@/lib/structured/data";
 
 const manrope = Manrope({
   subsets: ["latin"],

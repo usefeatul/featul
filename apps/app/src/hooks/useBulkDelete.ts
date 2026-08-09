@@ -4,7 +4,7 @@ import { useCallback, useEffect, useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { pluralizeItemLabel } from "@/components/selection/pluralize";
-import { getSelectedIds, removeSelectedIds } from "@/lib/selection-store";
+import { getSelectedIds, removeSelectedIds } from "@/lib/selection/store";
 
 type DeleteResult = { ok: boolean };
 
