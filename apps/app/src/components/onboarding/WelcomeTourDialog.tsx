@@ -22,14 +22,14 @@ type WelcomeTourDialogProps = {
 };
 
 const stepMotion = {
-  initial: { opacity: 0, x: 24 },
+  initial: { opacity: 0, x: 20 },
   animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -24 },
+  exit: { opacity: 0, x: -20 },
 };
 
 function StepContent({ step }: { step: WelcomeTourStep }) {
   return (
-    <div className="flex flex-col items-center px-2 py-4 text-center sm:px-4 sm:py-6">
+    <div className="flex flex-col items-center px-2 py-5 text-center sm:px-4 sm:py-6">
       <div
         className={cn(
           "mb-5 flex size-16 items-center justify-center rounded-2xl border border-border/60",
@@ -101,6 +101,25 @@ export function WelcomeTourDialog({
     if (open) finishingRef.current = false;
   }, [open]);
 
+  React.useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight" || event.key === "Enter") {
+        event.preventDefault();
+        if (isLastStep) finish("completed");
+        else setStepIndex((value) => Math.min(value + 1, steps.length - 1));
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        setStepIndex((value) => Math.max(0, value - 1));
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [finish, isLastStep, open, steps.length]);
+
   const handleOpenChange = React.useCallback(
     (nextOpen: boolean) => {
       if (!nextOpen) {
@@ -154,7 +173,11 @@ export function WelcomeTourDialog({
           ))}
         </div>
 
-        <div className="relative flex-1 overflow-hidden">
+        <p className="mt-2 text-center text-[11px] tabular-nums text-muted-foreground">
+          {stepIndex + 1} of {steps.length}
+        </p>
+
+        <div className="relative mt-1 min-h-[240px] flex-1 overflow-hidden">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={currentStep.id}
@@ -167,33 +190,36 @@ export function WelcomeTourDialog({
           </AnimatePresence>
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-2 border-t border-border/60 px-1 pt-3">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => finish("skipped")}
-          >
-            Skip tour
-          </Button>
-
-          <div className="flex items-center gap-2">
+        <div className="-mx-2 mt-auto border-t border-border/60 bg-muted/20 px-2 py-3 dark:bg-black/25">
+          <div className="flex items-center justify-between gap-3">
             <Button
               type="button"
-              variant="ghost"
+              variant="card"
               size="sm"
-              onClick={goBack}
-              disabled={stepIndex === 0}
+              onClick={() => finish("skipped")}
             >
-              <ChevronLeftIcon className="size-4 opacity-60" />
-              Back
+              Skip tour
             </Button>
-            <Button type="button" size="sm" onClick={goNext}>
-              {isLastStep ? "Get started" : "Continue"}
-              {!isLastStep ? (
-                <ArrowRight className="size-4 opacity-60" />
+
+            <div className="flex items-center gap-2">
+              {stepIndex > 0 ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={goBack}
+                >
+                  <ChevronLeftIcon className="size-4 opacity-60" />
+                  Back
+                </Button>
               ) : null}
-            </Button>
+              <Button type="button" size="sm" onClick={goNext}>
+                {isLastStep ? "Get started" : "Continue"}
+                {!isLastStep ? (
+                  <ArrowRight className="size-4 opacity-60" />
+                ) : null}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
