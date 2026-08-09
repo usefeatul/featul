@@ -1,3 +1,5 @@
+import { AUTH_SIGN_UP_URL } from "@/config/auth";
+
 export type PricingPlanKey = "free" | "starter" | "professional";
 export type BillingCycle = "monthly" | "yearly";
 
@@ -22,7 +24,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "Ideal for getting started",
     monthlyPrice: 0,
     yearlyPrice: 0,
-    href: "https://app.featul.com/auth/signup",
+    href: AUTH_SIGN_UP_URL,
     features: [
       { title: "Up to 3 team members" },
       { title: "File attachments" },
@@ -36,7 +38,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "For early teams",
     monthlyPrice: 24,
     yearlyPrice: 240,
-    href: "https://app.featul.com/auth/signup",
+    href: AUTH_SIGN_UP_URL,
     features: [
       { title: "Up to 5 team members" },
       { title: "Up to 10 boards" },
@@ -51,7 +53,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "For growing product teams",
     monthlyPrice: 47,
     yearlyPrice: 470,
-    href: "https://app.featul.com/auth/signup",
+    href: AUTH_SIGN_UP_URL,
     features: [
       { title: "Everything in Starter" },
       { title: "Up to 10 team members" },

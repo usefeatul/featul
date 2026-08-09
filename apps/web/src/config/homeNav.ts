@@ -1,3 +1,5 @@
+import { AUTH_SIGN_IN_URL } from "@/config/auth";
+
 export interface NavigationItem {
   name: string
   href: string
@@ -27,7 +29,7 @@ export const navigationConfig: NavigationConfig = {
   auth: [
     {
       name: 'Sign in',
-      href: 'https://app.featul.com/auth/signin',
+      href: AUTH_SIGN_IN_URL,
     },
   ],
 }

@@ -5,7 +5,7 @@ import { HeroHighlights } from "@/components/shared/highlights";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 
-const FEATUL_SIGN_IN_URL = "https://app.featul.com/auth/signin";
+import { AUTH_SIGN_IN_URL } from "@/config/auth";
 
 const heroButtonClassName =
   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto";
@@ -46,7 +46,7 @@ export function UseCaseHeroContent({
           )}
         >
           <Link
-            href={FEATUL_SIGN_IN_URL}
+            href={AUTH_SIGN_IN_URL}
             data-sln-event="cta: use case try featul clicked"
             className="font-heading"
           >

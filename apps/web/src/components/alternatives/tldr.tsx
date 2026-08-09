@@ -9,7 +9,7 @@ import { AlternativeIcon } from "@featul/ui/icons/alternative";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
-const FEATUL_SIGN_IN_URL = "https://app.featul.com/auth/signin";
+import { AUTH_SIGN_IN_URL } from "@/config/auth";
 
 export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");
@@ -67,7 +67,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   <p className="text-sm font-semibold text-foreground">Featul</p>
                 </div>
                 <Link
-                  href={FEATUL_SIGN_IN_URL}
+                  href={AUTH_SIGN_IN_URL}
                   className="text-sm font-medium text-primary hover:underline underline-offset-4"
                   data-sln-event="cta: tldr try featul clicked"
                 >

@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@featul/ui/components/button"
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
-import { useIsDocsMobile } from "@/hooks/docs"
+import Link from "next/link";
+import { AUTH_SIGN_IN_URL, AUTH_SIGN_UP_URL } from "@/config/auth";
+import { Button } from "@featul/ui/components/button";
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { useIsDocsMobile } from "@/hooks/docs";
 
 export function DocsMobileHeader() {
-  const isMobile = useIsDocsMobile()
+  const isMobile = useIsDocsMobile();
 
-  if (!isMobile) return null
+  if (!isMobile) return null;
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border h-14 flex items-center px-4 justify-between">
@@ -21,13 +22,12 @@ export function DocsMobileHeader() {
 
       <div className="flex items-center gap-2">
         <Button variant="ghost" className="text-md" asChild>
-          <Link href="https://app.featul.com/auth/signin">Log in</Link>
+          <Link href={AUTH_SIGN_IN_URL}>Log in</Link>
         </Button>
         <Button asChild>
-          <Link href="https://app.featul.com/auth/signup">Register</Link>
+          <Link href={AUTH_SIGN_UP_URL}>Register</Link>
         </Button>
       </div>
     </div>
-  )
+  );
 }
-
