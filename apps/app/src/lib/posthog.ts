@@ -11,6 +11,8 @@ export const analyticsEvents = {
   workspaceSetupStepCompleted: "workspace_setup_step_completed",
   workspaceSetupAbandoned: "workspace_setup_abandoned",
   workspaceCreated: "workspace_created",
+  welcomeTourStepViewed: "welcome_tour_step_viewed",
+  welcomeTourFinished: "welcome_tour_finished",
   boardCreated: "board_created",
   postCreated: "post_created",
   postUpdated: "post_updated",

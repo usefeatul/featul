@@ -20,6 +20,8 @@ import {
 import { redirect } from "next/navigation";
 import UnauthorizedWorkspace from "@/components/global/Unauthorized";
 import { EditorHeaderProvider } from "@/components/changelog/EditorHeaderContext";
+import { WelcomeTourGate } from "@/components/onboarding/WelcomeTourGate";
+import { Suspense } from "react";
 
 export const revalidate = 30;
 
@@ -96,6 +98,15 @@ export default async function WorkspaceLayout({
         initialDeviceAccounts={deviceAccounts}
       />
       <WorkspaceShortcutsDrawer />
+      {ws ? (
+        <Suspense fallback={null}>
+          <WelcomeTourGate
+            userId={userId}
+            workspaceName={ws.name}
+            workspaceSlug={ws.slug}
+          />
+        </Suspense>
+      ) : null}
     </Container>
   );
 }

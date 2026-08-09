@@ -18,7 +18,12 @@ function extractNameFromDomain(domain: string): string {
   return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
 }
 
-export function useWizardLogic() {
+type UseWizardLogicOptions = {
+  /** True when creating the user's first workspace (from /start). */
+  isFirstWorkspace?: boolean;
+};
+
+export function useWizardLogic(options: UseWizardLogicOptions = {}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -172,14 +177,26 @@ export function useWizardLogic() {
         queryClient.setQueryData(["workspace", createdSlug], data.workspace);
       }
 
-      router.push(`/workspaces/${createdSlug}`);
+      const prevWorkspaces = queryClient.getQueryData<
+        | { workspaces: { id: string; slug: string; name: string }[] }
+        | { id: string; slug: string; name: string }[]
+        | undefined
+      >(["workspaces"]);
+      const prevList = Array.isArray(prevWorkspaces)
+        ? prevWorkspaces
+        : prevWorkspaces?.workspaces ?? [];
+      const isFirstWorkspace =
+        options.isFirstWorkspace ?? prevList.length === 0;
+      const welcomeQuery = isFirstWorkspace ? "?welcome=1" : "";
+
+      router.push(`/workspaces/${createdSlug}${welcomeQuery}`);
     } catch (e: unknown) {
       const message = (e as { message?: string })?.message || "Failed to create workspace";
       toast.error(message);
     } finally {
       setIsCreating(false);
     }
-  }, [name, domain, slug, timezone, queryClient, router, slugLocked]);
+  }, [name, domain, slug, timezone, queryClient, router, slugLocked, options.isFirstWorkspace]);
 
   const handleNameChange = useCallback((v: string) => {
     setNameDirty(true);

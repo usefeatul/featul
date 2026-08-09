@@ -11,7 +11,8 @@
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
     "db:drop-all": "tsx scripts/drop-all-tables.ts",
-    "db:seed-posts": "tsx scripts/seed-workspace-posts.ts"
+    "db:seed-posts": "tsx scripts/seed-workspace-posts.ts",
+    "db:delete-user": "tsx scripts/delete-user.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

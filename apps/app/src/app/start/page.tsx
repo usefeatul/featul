@@ -24,7 +24,7 @@ export default async function StartPage() {
   if (targetPath !== "/start") redirect(targetPath)
   return (
     <div className="min-h-screen bg-background">
-      <CreateWorkspaceDialog open />
+      <CreateWorkspaceDialog open isFirstWorkspace />
     </div>
   )
 }
