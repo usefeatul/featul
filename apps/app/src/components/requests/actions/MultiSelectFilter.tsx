@@ -109,6 +109,63 @@ export function useRequestMultiSelectFilter({
   };
 }
 
+type RequestMultiSelectFilterListProps = {
+  items: RequestFilterItem[];
+  selected: string[];
+  isAllSelected: boolean;
+  onToggle: (value: string) => void;
+  onSelectAll: () => void;
+  isLoading?: boolean;
+  emptyLabel?: string;
+};
+
+export function RequestMultiSelectFilterList({
+  items,
+  selected,
+  isAllSelected,
+  onToggle,
+  onSelectAll,
+  isLoading = false,
+  emptyLabel,
+}: RequestMultiSelectFilterListProps) {
+  if (isLoading) {
+    return <div className="p-3 text-sm text-accent">Loading...</div>;
+  }
+
+  if (items.length === 0 && emptyLabel) {
+    return <div className="p-3 text-sm text-accent">{emptyLabel}</div>;
+  }
+
+  return (
+    <PopoverList>
+      {items.map((item) => (
+        <PopoverListItem
+          key={item.id}
+          role="menuitemcheckbox"
+          aria-checked={selected.includes(item.value)}
+          onClick={() => onToggle(item.value)}
+        >
+          <span className="truncate text-sm">{item.label}</span>
+          {item.meta}
+          {selected.includes(item.value) ? (
+            <span className={item.meta ? "ml-1 text-xs" : "ml-auto text-xs"}>
+              ✓
+            </span>
+          ) : null}
+        </PopoverListItem>
+      ))}
+      <PopoverListItem
+        onClick={onSelectAll}
+        role="menuitemcheckbox"
+        aria-checked={isAllSelected}
+      >
+        <span className="text-sm">Select all</span>
+        {isAllSelected ? <span className="ml-auto text-xs">✓</span> : null}
+      </PopoverListItem>
+    </PopoverList>
+  );
+}
+
 export function RequestMultiSelectFilter({
   open,
   onOpenChange,
@@ -138,42 +195,15 @@ export function RequestMultiSelectFilter({
         </Button>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
-        {isLoading ? (
-          <div className="p-3 text-sm text-accent">Loading...</div>
-        ) : items.length === 0 && emptyLabel ? (
-          <div className="p-3 text-sm text-accent">{emptyLabel}</div>
-        ) : (
-          <PopoverList>
-            {items.map((item) => (
-              <PopoverListItem
-                key={item.id}
-                role="menuitemcheckbox"
-                aria-checked={selected.includes(item.value)}
-                onClick={() => onToggle(item.value)}
-              >
-                <span className="truncate text-sm">{item.label}</span>
-                {item.meta}
-                {selected.includes(item.value) ? (
-                  <span
-                    className={item.meta ? "ml-1 text-xs" : "ml-auto text-xs"}
-                  >
-                    ✓
-                  </span>
-                ) : null}
-              </PopoverListItem>
-            ))}
-            <PopoverListItem
-              onClick={onSelectAll}
-              role="menuitemcheckbox"
-              aria-checked={isAllSelected}
-            >
-              <span className="text-sm">Select all</span>
-              {isAllSelected ? (
-                <span className="ml-auto text-xs">✓</span>
-              ) : null}
-            </PopoverListItem>
-          </PopoverList>
-        )}
+        <RequestMultiSelectFilterList
+          items={items}
+          selected={selected}
+          isAllSelected={isAllSelected}
+          onToggle={onToggle}
+          onSelectAll={onSelectAll}
+          isLoading={isLoading}
+          emptyLabel={emptyLabel}
+        />
       </PopoverContent>
     </Popover>
   );
