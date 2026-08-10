@@ -8,7 +8,6 @@ import { LayersIcon } from "@featul/ui/icons/layers";
 import { TagIcon } from "@featul/ui/icons/tag";
 import { FlagIcon } from "@featul/ui/icons/flag";
 import { EditIcon } from "@featul/ui/icons/edit";
-import { SelectBoxIcon } from "@featul/ui/icons/select-box";
 import { useRequestItemActions } from "@/hooks/useRequestItemActions";
 import { useRequestTags } from "@/hooks/useRequestTags";
 import { useRequestFlags } from "@/hooks/useRequestFlags";
@@ -22,7 +21,6 @@ import {
 } from "@/components/global/ContextMenuItem";
 import { BULK_DELETE_CONFIRM_CLASS } from "@/components/selection/constants";
 import { FlagsSubmenu, StatusSubmenu, TagsSubmenu, SnoozeSubmenu } from "./RequestItemSubmenus";
-import { setSelecting, toggleSelectionId } from "@/lib/selection/store";
 import type { SelectionToggleMeta } from "@/components/selection/Row";
 import type { RequestItemData } from "@/types/request";
 import { useRequestSnooze } from "@/hooks/useRequestSnooze";
@@ -58,7 +56,6 @@ export function RequestItemContextMenu({
   requestHref,
   className,
   onClick,
-  listKey,
   isSelecting,
   isSelected,
   onToggle,
@@ -130,13 +127,6 @@ export function RequestItemContextMenu({
     closeMenu();
   };
 
-  const handleStartSelection = () => {
-    if (!listKey) return;
-    setSelecting(listKey, true);
-    toggleSelectionId(listKey, item.id, true);
-    closeMenu();
-  };
-
   const handleUpdateStatus = async (status: string) => {
     setUpdatingStatus(status);
     await updateStatus(status);
@@ -190,13 +180,6 @@ export function RequestItemContextMenu({
               label="Open"
               onClick={handleOpenRequest}
             />
-            {listKey ? (
-              <ContextMenuItem
-                icon={<SelectBoxIcon className="size-4" />}
-                label="Select"
-                onClick={handleStartSelection}
-              />
-            ) : null}
 
             <PopoverSeparator />
 
