@@ -195,6 +195,7 @@ export function useCommentSubmit({
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
+            queryClient.invalidateQueries({ queryKey: ["mentions"] })
           } catch (e) {
             console.error("Failed to invalidate queries:", e)
           }

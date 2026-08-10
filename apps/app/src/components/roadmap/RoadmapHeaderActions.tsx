@@ -6,6 +6,7 @@ import RoadmapBoardsAction from "./actions/RoadmapBoardsAction";
 import RoadmapTagsAction from "./actions/RoadmapTagsAction";
 import RoadmapSortAction from "./actions/RoadmapSortAction";
 import RoadmapShortcutsHint from "./RoadmapShortcutsHint";
+import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
 
 export default function RoadmapHeaderActions({
   className = "",
@@ -23,6 +24,8 @@ export default function RoadmapHeaderActions({
       <RoadmapSortAction className="h-full rounded-none border-none hover:bg-muted px-3" />
       <ToolbarSeparator />
       <RoadmapShortcutsHint className="h-full rounded-none border-none hover:bg-muted px-3" />
+      <ToolbarSeparator />
+      <WorkspaceNotificationsAction />
     </Toolbar>
   );
 }

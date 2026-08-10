@@ -29,6 +29,7 @@ export function createCommentMentionProcedures() {
           createdAt: Date;
           postSlug: string;
           postTitle: string;
+          workspaceSlug: string;
           authorName: string;
           authorImage: string | null;
         }> = await ctx.db
@@ -38,6 +39,7 @@ export function createCommentMentionProcedures() {
             createdAt: commentMention.createdAt,
             postSlug: post.slug,
             postTitle: post.title,
+            workspaceSlug: workspace.slug,
             authorName: comment.authorName,
             authorImage: user.image,
           })
@@ -55,8 +57,10 @@ export function createCommentMentionProcedures() {
           id: string;
           isRead: boolean;
           createdAt: Date;
+          entryId: string;
           entrySlug: string;
           entryTitle: string;
+          workspaceSlug: string;
           authorName: string;
           authorImage: string | null;
         }> = await ctx.db
@@ -64,13 +68,17 @@ export function createCommentMentionProcedures() {
             id: changelogMention.id,
             isRead: changelogMention.isRead,
             createdAt: changelogMention.createdAt,
+            entryId: changelogEntry.id,
             entrySlug: changelogEntry.slug,
             entryTitle: changelogEntry.title,
+            workspaceSlug: workspace.slug,
             authorName: user.name,
             authorImage: user.image,
           })
           .from(changelogMention)
           .innerJoin(changelogEntry, eq(changelogMention.entryId, changelogEntry.id))
+          .innerJoin(board, eq(changelogEntry.boardId, board.id))
+          .innerJoin(workspace, eq(board.workspaceId, workspace.id))
           .innerJoin(user, eq(changelogMention.mentionedBy, user.id))
           .where(eq(changelogMention.mentionedUserId, userId))
           .orderBy(desc(changelogMention.createdAt))
@@ -83,6 +91,7 @@ export function createCommentMentionProcedures() {
             isRead: row.isRead,
             createdAt: row.createdAt,
             path: `/board/p/${row.postSlug}`,
+            workspaceSlug: row.workspaceSlug,
             postSlug: row.postSlug,
             postTitle: row.postTitle,
             authorName: row.authorName,
@@ -94,6 +103,8 @@ export function createCommentMentionProcedures() {
             isRead: row.isRead,
             createdAt: row.createdAt,
             path: `/changelog/p/${row.entrySlug}`,
+            workspaceSlug: row.workspaceSlug,
+            entryId: row.entryId,
             entrySlug: row.entrySlug,
             entryTitle: row.entryTitle,
             authorName: row.authorName,

@@ -3,92 +3,144 @@
 import React from "react";
 import { Button } from "@featul/ui/components/button";
 import { Bell } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
-import NotificationsPanel, { type NotificationItem } from "./NotificationsPanel";
+import NotificationsPanel, {
+  type NotificationItem,
+  type NotificationLinkMode,
+} from "./NotificationsPanel";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@featul/ui/components/popover";
+import { cn } from "@featul/ui/lib/utils";
+import { COMMENT_CREATED_EVENT } from "@/lib/comment/shared";
+import {
+  fetchMentionsList,
+  fetchMentionsUnreadCount,
+  mentionsQueryKeys,
+} from "@/lib/mentions/query";
 
-export default function NotificationsBell() {
+type NotificationsBellProps = {
+  linkMode?: NotificationLinkMode;
+  side?: "top" | "bottom" | "left" | "right";
+  align?: "start" | "center" | "end";
+  className?: string;
+  variant?: "nav" | "card" | "ghost" | "plain";
+  size?: "xs" | "icon-sm" | "sm";
+};
+
+export default function NotificationsBell({
+  linkMode = "public",
+  side = "top",
+  align = "end",
+  className,
+  variant = "nav",
+  size = "xs",
+}: NotificationsBellProps = {}) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
-  const [notifications, setNotifications] = React.useState<NotificationItem[]>(
-    []
-  );
-  const [unread, setUnread] = React.useState<number>(0);
-  const mounted = React.useRef(false);
+
+  const { data: unread = 0 } = useQuery({
+    queryKey: mentionsQueryKeys.count,
+    queryFn: fetchMentionsUnreadCount,
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
+    refetchIntervalInBackground: false,
+    staleTime: 5_000,
+  });
+
+  const { data: notifications = [], refetch: refetchList } = useQuery({
+    queryKey: mentionsQueryKeys.list,
+    queryFn: fetchMentionsList,
+    enabled: open,
+    staleTime: 0,
+  });
 
   React.useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
+    const refresh = () => {
+      void queryClient.invalidateQueries({ queryKey: mentionsQueryKeys.all });
     };
-  }, []);
 
-  React.useEffect(() => {
-    let active = true;
-    client.comment.mentionsCount
-      .$get()
-      .then(async (res) => {
-        const raw = (await res.json().catch(() => null)) as
-          | { unread?: number; json?: { unread?: number } }
-          | null;
-        const payload =
-          raw && typeof raw === "object" && "json" in raw ? raw.json : raw;
-        if (active) setUnread(Number(payload?.unread ?? 0));
-      })
-      .catch(() => { });
-    return () => {
-      active = false;
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") refresh();
     };
-  }, []);
 
-  const loadNotifications = React.useCallback(async () => {
-    try {
-      const res = await client.comment.mentionsList.$get();
-      const raw = (await res.json().catch(() => null)) as
-        | { notifications?: NotificationItem[]; json?: { notifications?: NotificationItem[] } }
-        | null;
-      const payload =
-        raw && typeof raw === "object" && "json" in raw ? raw.json : raw;
-      setNotifications(
-        Array.isArray(payload?.notifications) ? payload.notifications : []
-      );
-    } catch {
-      if (mounted.current) setNotifications([]);
-    }
-  }, []);
+    window.addEventListener(COMMENT_CREATED_EVENT, refresh);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener(COMMENT_CREATED_EVENT, refresh);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [queryClient]);
 
   const onOpenChange = React.useCallback(
     (v: boolean) => {
       setOpen(v);
-      if (v) loadNotifications();
+      if (v) {
+        void refetchList();
+        void queryClient.invalidateQueries({
+          queryKey: mentionsQueryKeys.count,
+        });
+      }
     },
-    [loadNotifications]
+    [queryClient, refetchList],
   );
 
-  const markRead = React.useCallback(async (id: string) => {
-    try {
-      await client.comment.mentionsMarkRead.$post({ id });
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+  const markRead = React.useCallback(
+    async (id: string) => {
+      const previous = queryClient.getQueryData<NotificationItem[]>(
+        mentionsQueryKeys.list,
       );
-      setUnread((u) => Math.max(0, u - 1));
-    } catch {
-      if (mounted.current) setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    }
-  }, []);
+      const previousUnread =
+        queryClient.getQueryData<number>(mentionsQueryKeys.count) ?? 0;
+
+      queryClient.setQueryData<NotificationItem[]>(
+        mentionsQueryKeys.list,
+        (prev) =>
+          (prev || []).map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+      );
+      queryClient.setQueryData<number>(mentionsQueryKeys.count, (prev) =>
+        Math.max(0, (prev ?? previousUnread) - 1),
+      );
+
+      try {
+        await client.comment.mentionsMarkRead.$post({ id });
+        void queryClient.invalidateQueries({
+          queryKey: mentionsQueryKeys.count,
+        });
+      } catch {
+        if (previous) {
+          queryClient.setQueryData(mentionsQueryKeys.list, previous);
+        }
+        queryClient.setQueryData(mentionsQueryKeys.count, previousUnread);
+      }
+    },
+    [queryClient],
+  );
 
   const markAllRead = React.useCallback(async () => {
+    const previous = queryClient.getQueryData<NotificationItem[]>(
+      mentionsQueryKeys.list,
+    );
+    const previousUnread =
+      queryClient.getQueryData<number>(mentionsQueryKeys.count) ?? 0;
+
+    queryClient.setQueryData<NotificationItem[]>(mentionsQueryKeys.list, (prev) =>
+      (prev || []).map((n) => ({ ...n, isRead: true })),
+    );
+    queryClient.setQueryData<number>(mentionsQueryKeys.count, 0);
+
     try {
       await client.comment.mentionsMarkAllRead.$post();
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setUnread(0);
     } catch {
-      if (mounted.current) setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      if (previous) {
+        queryClient.setQueryData(mentionsQueryKeys.list, previous);
+      }
+      queryClient.setQueryData(mentionsQueryKeys.count, previousUnread);
     }
-  }, []);
+  }, [queryClient]);
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -96,23 +148,23 @@ export default function NotificationsBell() {
         <Button
           suppressHydrationWarning
           type="button"
-          size="xs"
-          variant="nav"
-          className="relative"
+          size={size}
+          variant={variant}
+          className={cn("relative", className)}
           aria-label="Notifications"
         >
           <Bell className="size-4 text-foreground opacity-100 group-hover:text-primary transition-colors" />
           {unread > 0 ? (
-            <span className="absolute -top-1 -right-1 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-background  tabular-nums">
-              {unread}
+            <span className="absolute top-0.5 right-0.5 inline-flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-semibold leading-none text-white tabular-nums">
+              {unread > 99 ? "99+" : unread}
             </span>
           ) : null}
         </Button>
       </PopoverTrigger>
       <PopoverContent
         asChild
-        side="top"
-        align="end"
+        side={side}
+        align={align}
         sideOffset={8}
         className="bg-transparent p-0 border-none shadow-none w-auto"
       >
@@ -120,6 +172,7 @@ export default function NotificationsBell() {
           notifications={notifications}
           markRead={markRead}
           onMarkAllRead={markAllRead}
+          linkMode={linkMode}
         />
       </PopoverContent>
     </Popover>
