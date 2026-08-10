@@ -33,7 +33,9 @@ export default function WorkspaceHeader() {
   const showRoadmapActions = rest[0] === "roadmap" && rest.length === 1;
   const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
-  const isMemberDetail = rest[0] === "members" && rest.length > 1;
+  const isMembersSection = rest[0] === "members";
+  const isMemberDetail = isMembersSection && rest.length > 1;
+  const isChangelogSection = rest[0] === "changelog";
   const editorContext = useEditorHeaderActionsOptional();
 
   let title = rest.length === 0 ? "Requests" : "";
@@ -57,8 +59,6 @@ export default function WorkspaceHeader() {
           <span className="hidden sm:inline">Back</span>
         </Link>
       </Button>
-      <ToolbarSeparator />
-      <WorkspaceNotificationsAction />
     </Toolbar>
   ) : showRequestsActions ? (
     <HeaderActions />
@@ -78,52 +78,45 @@ export default function WorkspaceHeader() {
           New Entry
         </Link>
       </Button>
-      <ToolbarSeparator />
-      <WorkspaceNotificationsAction />
     </Toolbar>
   ) : showChangelogEditActions &&
     editorContext &&
     editorContext.actions.length > 0 ? (
-    <div className="flex items-center gap-2">
-      <div className="flex items-center gap-0 bg-card rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black divide-x divide-border overflow-hidden">
-        {editorContext.actions
-          .filter((action) => action.type === "switch")
-          .map((action) => (
-            <div
-              key={action.key}
-              className="flex items-center gap-2 px-3 h-8 bg-transparent dark:bg-black/40 hover:bg-muted/50 transition-colors"
-            >
-              <span className="text-sm font-medium text-muted-foreground">
-                {action.label}
-              </span>
-              <Switch
-                checked={action.checked}
-                onCheckedChange={action.onClick}
-              />
-            </div>
-          ))}
-
-        {editorContext.actions
-          .filter((action) => action.type === "button")
-          .map((action) => (
-            <Button
-              key={action.key}
-              variant="ghost"
-              size="xs"
-              onClick={action.onClick}
-              disabled={action.disabled}
-              className="gap-2 h-8 rounded-none hover:bg-muted/50 px-3"
-            >
+    <div className="flex items-center gap-0 bg-card rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black divide-x divide-border overflow-hidden">
+      {editorContext.actions
+        .filter((action) => action.type === "switch")
+        .map((action) => (
+          <div
+            key={action.key}
+            className="flex items-center gap-2 px-3 h-8 bg-transparent dark:bg-black/40 hover:bg-muted/50 transition-colors"
+          >
+            <span className="text-sm font-medium text-muted-foreground">
               {action.label}
-              {action.icon}
-            </Button>
-          ))}
-      </div>
-      <Toolbar size="sm">
-        <WorkspaceNotificationsAction />
-      </Toolbar>
+            </span>
+            <Switch
+              checked={action.checked}
+              onCheckedChange={action.onClick}
+            />
+          </div>
+        ))}
+
+      {editorContext.actions
+        .filter((action) => action.type === "button")
+        .map((action) => (
+          <Button
+            key={action.key}
+            variant="ghost"
+            size="xs"
+            onClick={action.onClick}
+            disabled={action.disabled}
+            className="gap-2 h-8 rounded-none hover:bg-muted/50 px-3"
+          >
+            {action.label}
+            {action.icon}
+          </Button>
+        ))}
     </div>
-  ) : title ? (
+  ) : title && !isMembersSection && !isChangelogSection ? (
     <Toolbar size="sm">
       <WorkspaceNotificationsAction />
     </Toolbar>
