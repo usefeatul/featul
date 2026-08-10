@@ -42,6 +42,7 @@ type SettingsDialogShellProps = {
   icon?: React.ReactNode
   /** Shows an expand/collapse toggle that grows the dialog with a framer-motion animation. */
   expandable?: boolean
+  onOpenAutoFocus?: (event: Event) => void
   children: React.ReactNode
 }
 
@@ -54,6 +55,7 @@ export function SettingsDialogShell({
   offsetY = "50%",
   icon,
   expandable = false,
+  onOpenAutoFocus,
   children,
 }: SettingsDialogShellProps) {
   const [expanded, setExpanded] = React.useState(false)
@@ -114,6 +116,7 @@ export function SettingsDialogShell({
         fluid
         style={{ ...(expandable ? {} : styleWidth), ...positionStyle }}
         className={`max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1`}
+        onOpenAutoFocus={onOpenAutoFocus}
       >
         {expandable ? (
           <motion.div

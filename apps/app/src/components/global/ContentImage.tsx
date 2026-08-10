@@ -55,6 +55,7 @@ export default function ContentImage({
         title="Image"
         width="xxl"
         icon={<ImageIcon className="size-3.5" />}
+        onOpenAutoFocus={(event) => event.preventDefault()}
       >
         <div className="flex items-center justify-center overflow-hidden rounded-lg bg-muted/40">
           <img
