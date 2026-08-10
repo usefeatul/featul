@@ -14,6 +14,7 @@ import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
 import { StaleMark } from "./StaleIndicator"
+import { SnoozeIndicator } from "./SnoozeIndicator"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import type { RequestItemData } from "@/types/request"
 import { SelectionControl } from "@/components/selection/SelectionControl"
@@ -22,6 +23,7 @@ import {
   type SelectionToggleMeta,
 } from "@/components/selection/Row"
 import { getRequestStaleDays } from "@/utils/request/stale"
+import { isActivelySnoozed } from "@featul/api/shared/snooze"
 
 interface RequestItemProps {
   item: RequestItemData
@@ -51,6 +53,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     roadmapStatus: item.roadmapStatus,
   })
   const isStale = staleDays != null
+  const isSnoozed = isActivelySnoozed(item.snoozedUntil)
   const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
     if (!isSelectingMode) return
     e.preventDefault()
@@ -62,9 +65,11 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     isSelectedMode,
     cn(
       "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-l border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
-      isStale
-        ? "border-l-amber-600 dark:border-l-amber-500"
-        : "border-l-border",
+      isSnoozed
+        ? "border-l-sky-500 dark:border-l-sky-400"
+        : isStale
+          ? "border-l-amber-600 dark:border-l-amber-500"
+          : "border-l-border",
     ),
   )
   const actionsClassName = cn(
@@ -115,6 +120,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       </Link>
       <div className={actionsClassName}>
         <ReportIndicator count={item.reportCount || 0} />
+        <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
 
         <div className="inline-flex items-center gap-2 relative z-10">
           <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />

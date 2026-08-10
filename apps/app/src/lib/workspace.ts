@@ -16,7 +16,7 @@ import {
 } from "@featul/db";
 import { resolvePostAuthorImage } from "@/lib/author/avatar";
 import { isOnboardingPost, getOnboardingPostKind } from "@/lib/onboarding/post";
-import { eq, and, inArray, notInArray, or, isNull, desc, asc, sql, type SQL } from "drizzle-orm";
+import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
 import type { RequestItemRow } from "@/lib/request/item";
 import type {
   ChangelogTag,
@@ -31,9 +31,12 @@ import { buildPostFtsFilter } from "@featul/api/shared/post-search";
 import {
   STALE_STATUS_KEY,
   STALE_THRESHOLD_DAYS,
-  STALE_RESOLVED_STATUSES,
   isStaleStatusFilter,
 } from "@featul/api/shared/stale";
+import {
+  SNOOZED_STATUS_KEY,
+  isSnoozedStatusFilter,
+} from "@featul/api/shared/snooze";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import {
   getBrandingBySlug,
@@ -88,18 +91,24 @@ export function normalizeStatus(s: string): string {
     completed: "completed",
     closed: "closed",
     stale: STALE_STATUS_KEY,
+    snoozed: SNOOZED_STATUS_KEY,
   };
   return map[t] || raw;
 }
 
 function buildStalePostCondition(): SQL {
   return and(
-    or(
-      isNull(post.roadmapStatus),
-      notInArray(post.roadmapStatus, [...STALE_RESOLVED_STATUSES]),
-    ),
+    sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
     sql`COALESCE(${post.updatedAt}, ${post.publishedAt}, ${post.createdAt}) < NOW() - (${STALE_THRESHOLD_DAYS} * INTERVAL '1 day')`,
   ) as SQL;
+}
+
+function buildActiveSnoozeCondition(): SQL {
+  return sql`(${post.snoozedUntil} IS NOT NULL AND ${post.snoozedUntil} > NOW())`;
+}
+
+function buildNotActivelySnoozedCondition(): SQL {
+  return sql`(${post.snoozedUntil} IS NULL OR ${post.snoozedUntil} <= NOW())`;
 }
 
 type PostFilterOptions = {
@@ -186,7 +195,17 @@ function buildPostFilters({
   ];
   if (publicOnly) filters.push(eq(board.isPublic, true));
   const wantsStale = matchStatuses.some(isStaleStatusFilter);
-  const roadmapStatuses = matchStatuses.filter((s) => !isStaleStatusFilter(s));
+  const wantsSnoozed = matchStatuses.some(isSnoozedStatusFilter);
+  const roadmapStatuses = matchStatuses.filter(
+    (s) => !isStaleStatusFilter(s) && !isSnoozedStatusFilter(s),
+  );
+
+  if (wantsSnoozed) {
+    filters.push(buildActiveSnoozeCondition());
+  } else {
+    filters.push(buildNotActivelySnoozedCondition());
+  }
+
   if (wantsStale) {
     filters.push(buildStalePostCondition());
     if (roadmapStatuses.length > 0) {
@@ -354,6 +373,7 @@ export async function getWorkspacePosts(
       publishedAt: post.publishedAt,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
+      snoozedUntil: post.snoozedUntil,
       boardSlug: board.slug,
       boardName: board.name,
       authorImage: user.image,
@@ -478,7 +498,13 @@ export async function getWorkspaceStatusCounts(
     .select({ status: post.roadmapStatus, count: sql<number>`count(*)` })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildNotActivelySnoozedCondition(),
+      ),
+    )
     .groupBy(post.roadmapStatus);
 
   const counts: Record<string, number> = {};
@@ -494,6 +520,7 @@ export async function getWorkspaceStatusCounts(
     "pending",
     "closed",
     STALE_STATUS_KEY,
+    SNOOZED_STATUS_KEY,
   ]) {
     if (typeof counts[key] !== "number") counts[key] = 0;
   }
@@ -506,10 +533,24 @@ export async function getWorkspaceStatusCounts(
       and(
         eq(board.workspaceId, ws.id),
         eq(board.isSystem, false),
+        buildNotActivelySnoozedCondition(),
         buildStalePostCondition(),
       ),
     );
   counts[STALE_STATUS_KEY] = Number(staleRow?.count || 0);
+
+  const [snoozedRow] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildActiveSnoozeCondition(),
+      ),
+    );
+  counts[SNOOZED_STATUS_KEY] = Number(snoozedRow?.count || 0);
 
   return counts;
 }

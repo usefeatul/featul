@@ -25,6 +25,15 @@ export const updatePostMetaSchema = z.object({
   isPinned: z.boolean().optional(),
   isLocked: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+  snoozedUntil: z
+    .union([z.string().datetime(), z.coerce.date()])
+    .nullable()
+    .optional()
+    .transform((value) => {
+      if (value === undefined) return undefined
+      if (value === null) return null
+      return value instanceof Date ? value : new Date(value)
+    }),
 })
 
 export const updatePostBoardSchema = z.object({

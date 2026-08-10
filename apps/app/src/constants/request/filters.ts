@@ -6,6 +6,7 @@ export const REQUEST_STATUS_OPTIONS = [
   { label: "Complete", value: "completed" },
   { label: "Closed", value: "closed" },
   { label: "Stale", value: "stale" },
+  { label: "Snoozed", value: "snoozed" },
 ] as const;
 
 export function getRequestStatusLabel(status: string) {

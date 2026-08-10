@@ -21,17 +21,21 @@ import {
   ContextMenuSubmenuItem,
 } from "@/components/global/ContextMenuItem";
 import { BULK_DELETE_CONFIRM_CLASS } from "@/components/selection/constants";
-import { FlagsSubmenu, StatusSubmenu, TagsSubmenu } from "./RequestItemSubmenus";
+import { FlagsSubmenu, StatusSubmenu, TagsSubmenu, SnoozeSubmenu } from "./RequestItemSubmenus";
 import { setSelecting, toggleSelectionId } from "@/lib/selection/store";
 import type { SelectionToggleMeta } from "@/components/selection/Row";
 import type { RequestItemData } from "@/types/request";
+import { useRequestSnooze } from "@/hooks/useRequestSnooze";
+import { isActivelySnoozed } from "@featul/api/shared/snooze";
+import { Clock } from "lucide-react";
 
-type RequestSubmenu = "main" | "status" | "tags" | "flags";
+type RequestSubmenu = "main" | "status" | "tags" | "flags" | "snooze";
 
 const SUBMENU_ITEMS = [
   { id: "status" as const, label: "Status", icon: LayersIcon },
   { id: "tags" as const, label: "Tags", icon: TagIcon },
   { id: "flags" as const, label: "Flags", icon: FlagIcon },
+  { id: "snooze" as const, label: "Snooze", icon: Clock },
 ];
 
 interface RequestItemContextMenuProps {
@@ -90,6 +94,14 @@ export function RequestItemContextMenu({
     });
 
   const { optimisticFlags, toggleFlag } = useRequestFlags({ item });
+
+  const { isUpdating: isSnoozing, snoozeForPreset, clearSnooze } =
+    useRequestSnooze({
+      postId: item.id,
+      workspaceSlug,
+      snoozedUntil: item.snoozedUntil,
+      onSuccess: closeMenu,
+    });
 
   const { updateStatus, deleteRequest, isPending } = useRequestItemActions({
     requestId: item.id,
@@ -158,6 +170,16 @@ export function RequestItemContextMenu({
             flags={optimisticFlags}
             onBack={() => setCurrentSubmenu("main")}
             onToggleFlag={toggleFlag}
+          />
+        );
+      case "snooze":
+        return (
+          <SnoozeSubmenu
+            isSnoozed={isActivelySnoozed(item.snoozedUntil)}
+            isPending={isSnoozing}
+            onBack={() => setCurrentSubmenu("main")}
+            onSnooze={snoozeForPreset}
+            onClear={clearSnooze}
           />
         );
       default:

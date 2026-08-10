@@ -5,6 +5,7 @@ export type RequestItemRow = Omit<
   | "createdAt"
   | "publishedAt"
   | "updatedAt"
+  | "snoozedUntil"
   | "upvotes"
   | "isAnonymous"
   | "isPinned"
@@ -16,6 +17,7 @@ export type RequestItemRow = Omit<
   createdAt: Date | string
   publishedAt: Date | string | null
   updatedAt?: Date | string | null
+  snoozedUntil?: Date | string | null
   upvotes: number | null
   isAnonymous: boolean | null
   isPinned: boolean | null
@@ -37,6 +39,7 @@ export function toRequestItemData(row: RequestItemRow): RequestItemData {
     createdAt: toIso(row.createdAt),
     publishedAt: row.publishedAt ? toIso(row.publishedAt) : null,
     updatedAt: row.updatedAt ? toIso(row.updatedAt) : null,
+    snoozedUntil: row.snoozedUntil ? toIso(row.snoozedUntil) : null,
     isAnonymous: row.isAnonymous ?? undefined,
     isPinned: row.isPinned ?? undefined,
     isLocked: row.isLocked ?? undefined,

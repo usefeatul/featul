@@ -64,6 +64,7 @@ export interface RequestItemData extends RequestFlags {
   publishedAt: string | null
   createdAt: string
   updatedAt?: string | null
+  snoozedUntil?: string | null
   boardSlug: string
   boardName: string
   authorImage?: string | null

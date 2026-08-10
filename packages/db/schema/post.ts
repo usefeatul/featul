@@ -30,6 +30,7 @@ export const post = pgTable(
     isLocked: boolean('is_locked').default(false),
     isFeatured: boolean('is_featured').default(false),
     publishedAt: timestamp('published_at'),
+    snoozedUntil: timestamp('snoozed_until'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
     metadata: json('metadata').$type<{
@@ -56,6 +57,7 @@ export const post = pgTable(
     postBoardIdIdx: index('post_board_id_idx').on(table.boardId),
     postRoadmapStatusIdx: index('post_roadmap_status_idx').on(table.roadmapStatus),
     postCreatedAtIdx: index('post_created_at_idx').on(table.createdAt),
+    postSnoozedUntilIdx: index('post_snoozed_until_idx').on(table.snoozedUntil),
   } as const)
 )
 

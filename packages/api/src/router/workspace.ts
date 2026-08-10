@@ -1,5 +1,5 @@
 import { HTTPException } from "hono/http-exception"
-import { eq, and, sql, or, isNull, notInArray } from "drizzle-orm"
+import { eq, and, sql } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation, user } from "@featul/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema, workspaceSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema, importCsvInputSchema, updateTimezoneInputSchema } from "../validators/workspace"
@@ -9,8 +9,8 @@ import { normalizeStatus } from "../shared/status"
 import {
   STALE_STATUS_KEY,
   STALE_THRESHOLD_DAYS,
-  STALE_RESOLVED_STATUSES,
 } from "../shared/stale"
+import { SNOOZED_STATUS_KEY } from "../shared/snooze"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
 import { isDataImportsAllowed } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
@@ -158,11 +158,21 @@ export function createWorkspaceRouter() {
           .limit(1)
         if (!ws) return c.json({ counts: {} })
 
+        const notSnoozed = sql`(${post.snoozedUntil} IS NULL OR ${post.snoozedUntil} <= NOW())`
+        const activelySnoozed = sql`(${post.snoozedUntil} IS NOT NULL AND ${post.snoozedUntil} > NOW())`
+
         const rows = await ctx.db
           .select({ status: post.roadmapStatus, count: sql<number>`count(*)` })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false), eq(board.isPublic, true)))
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.isSystem, false),
+              eq(board.isPublic, true),
+              notSnoozed,
+            ),
+          )
           .groupBy(post.roadmapStatus)
 
         const counts: Record<string, number> = {}
@@ -170,7 +180,16 @@ export function createWorkspaceRouter() {
           const key = normalizeStatus(String(r.status || "pending"))
           counts[key] = (counts[key] || 0) + Number(r.count || 0)
         }
-        for (const key of ["planned", "progress", "review", "completed", "pending", "closed", STALE_STATUS_KEY]) {
+        for (const key of [
+          "planned",
+          "progress",
+          "review",
+          "completed",
+          "pending",
+          "closed",
+          STALE_STATUS_KEY,
+          SNOOZED_STATUS_KEY,
+        ]) {
           if (typeof counts[key] !== "number") counts[key] = 0
         }
 
@@ -183,14 +202,26 @@ export function createWorkspaceRouter() {
               eq(board.workspaceId, ws.id),
               eq(board.isSystem, false),
               eq(board.isPublic, true),
-              or(
-                isNull(post.roadmapStatus),
-                notInArray(post.roadmapStatus, [...STALE_RESOLVED_STATUSES]),
-              ),
+              notSnoozed,
+              sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
               sql`COALESCE(${post.updatedAt}, ${post.publishedAt}, ${post.createdAt}) < NOW() - (${STALE_THRESHOLD_DAYS} * INTERVAL '1 day')`,
             ),
           )
         counts[STALE_STATUS_KEY] = Number(staleRow?.count || 0)
+
+        const [snoozedRow] = await ctx.db
+          .select({ count: sql<number>`count(*)` })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.isSystem, false),
+              eq(board.isPublic, true),
+              activelySnoozed,
+            ),
+          )
+        counts[SNOOZED_STATUS_KEY] = Number(snoozedRow?.count || 0)
 
         c.header("Cache-Control", "private, no-store")
         return c.json({ counts })

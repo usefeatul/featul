@@ -152,3 +152,48 @@ export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps)
     </PopoverList>
   );
 }
+
+interface SnoozeSubmenuProps {
+  isSnoozed: boolean;
+  isPending: boolean;
+  onBack: () => void;
+  onSnooze: (presetId: "1d" | "7d" | "30d") => void;
+  onClear: () => void;
+}
+
+export function SnoozeSubmenu({
+  isSnoozed,
+  isPending,
+  onBack,
+  onSnooze,
+  onClear,
+}: SnoozeSubmenuProps) {
+  return (
+    <PopoverList className="max-h-none! overflow-visible">
+      <SubmenuBack onBack={onBack} />
+      {(
+        [
+          { id: "1d" as const, label: "1 day" },
+          { id: "7d" as const, label: "7 days" },
+          { id: "30d" as const, label: "30 days" },
+        ] as const
+      ).map((option) => (
+        <PopoverListItem
+          key={option.id}
+          onClick={() => onSnooze(option.id)}
+          disabled={isPending}
+        >
+          <span className="text-sm">{option.label}</span>
+        </PopoverListItem>
+      ))}
+      {isSnoozed ? (
+        <>
+          <PopoverSeparator />
+          <PopoverListItem onClick={onClear} disabled={isPending}>
+            <span className="text-sm">Clear snooze</span>
+          </PopoverListItem>
+        </>
+      ) : null}
+    </PopoverList>
+  );
+}

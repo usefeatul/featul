@@ -864,6 +864,7 @@ export function createBoardRouter() {
         if (input.isPinned !== undefined) patch.isPinned = input.isPinned
         if (input.isLocked !== undefined) patch.isLocked = input.isLocked
         if (input.isFeatured !== undefined) patch.isFeatured = input.isFeatured
+        if (input.snoozedUntil !== undefined) patch.snoozedUntil = input.snoozedUntil
         if (Object.keys(patch).length === 0) return c.superjson({ ok: true })
         patch.updatedAt = new Date()
 
@@ -887,6 +888,12 @@ export function createBoardRouter() {
             isPinned: input.isPinned,
             isLocked: input.isLocked,
             isFeatured: input.isFeatured,
+            snoozedUntil:
+              input.snoozedUntil === undefined
+                ? undefined
+                : input.snoozedUntil
+                  ? input.snoozedUntil.toISOString()
+                  : null,
             boardId: p.boardId,
             slug: p.slug,
           },
