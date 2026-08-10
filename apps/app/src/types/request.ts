@@ -63,6 +63,7 @@ export interface RequestItemData extends RequestFlags {
   roadmapStatus: string | null
   publishedAt: string | null
   createdAt: string
+  updatedAt?: string | null
   boardSlug: string
   boardName: string
   authorImage?: string | null

@@ -328,6 +328,7 @@ export async function getWorkspacePosts(
       roadmapStatus: post.roadmapStatus,
       publishedAt: post.publishedAt,
       createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
       boardSlug: board.slug,
       boardName: board.name,
       authorImage: user.image,

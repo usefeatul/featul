@@ -9,6 +9,7 @@ import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirm
 import { SelectionToolbar } from "@/components/selection/SelectionToolbar";
 import { pluralizeItemLabel } from "@/components/selection/pluralize";
 import type { useSelectableList } from "@/hooks/useSelectableList";
+import { cn } from "@featul/ui/lib/utils";
 
 type SelectionState = ReturnType<typeof useSelectableList>;
 
@@ -24,6 +25,8 @@ type SelectableListShellProps = {
   totalCount: number;
   extraActions?: ReactNode;
   children: ReactNode;
+  className?: string;
+  toolbarClassName?: string;
 };
 
 export function SelectableListShell({
@@ -38,6 +41,8 @@ export function SelectableListShell({
   totalCount,
   extraActions,
   children,
+  className,
+  toolbarClassName,
 }: SelectableListShellProps) {
   const pluralLabel = pluralizeItemLabel(
     itemLabel,
@@ -46,7 +51,7 @@ export function SelectableListShell({
   );
 
   return (
-    <div className={SELECTABLE_LIST_SHELL_CLASS}>
+    <div className={cn(SELECTABLE_LIST_SHELL_CLASS, className)}>
       {selection.isSelectingForRender ? (
         <SelectionToolbar
           allSelected={selection.allSelected}
@@ -58,6 +63,7 @@ export function SelectableListShell({
           onToggleAll={selection.toggleAll}
           onConfirmDelete={() => setConfirmOpen(true)}
           extraActions={extraActions}
+          className={toolbarClassName}
         />
       ) : null}
       <ul className="m-0 list-none p-0">{children}</ul>

@@ -1,6 +1,10 @@
-import 'dotenv/config'
+import { config as loadEnv } from 'dotenv'
+import path from 'node:path'
 import { db, post, board, workspace, user } from '../index'
 import { eq, inArray } from 'drizzle-orm'
+
+loadEnv({ path: path.resolve(process.cwd(), '../../apps/app/.env') })
+loadEnv()
 
 const WORKSPACE_ID = process.env.WORKSPACE_ID!
 const FEATURE_BOARD_ID = process.env.FEATURE_BOARD_ID!
@@ -31,12 +35,6 @@ const nouns = ['Dashboard', 'API', 'Upload', 'Login', 'Notifications', 'Analytic
 const verbs = ['Improvement', 'Fix', 'Update', 'Enhancement', 'Optimization', 'Refactor', 'Redesign', 'Integration', 'Support', 'Validation']
 const contexts = ['for Better User Experience', 'on Mobile Devices', 'in Dark Mode', 'during Onboarding', 'with Large Datasets', 'for Team Accounts', 'in Settings Panel', 'when Offline', 'via Public API', 'after System Update']
 
-const firstNames = ['Avery', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Cameron', 'Skyler', 'Quinn', 'Alex', 'Jamie', 'Drew', 'Charlie', 'Parker', 'Hayden', 'Rowan', 'Blake', 'Emerson', 'Reese', 'Sage']
-const lastNames = ['Lee', 'Garcia', 'Patel', 'Kim', 'Nguyen', 'Diaz', 'Brown', 'Smith', 'Jones', 'Martins', 'Lopez', 'Hernandez', 'Singh', 'Wilson', 'Clark', 'Young', 'Hall', 'Allen', 'Scott', 'Adams']
-function randomName() {
-  return `${randItem(firstNames)} ${randItem(lastNames)}`
-}
-
 function randomTitle() {
   return `${randItem(adjectives)} ${randItem(nouns)} ${randItem(verbs)} ${randItem(contexts)}`
 }
@@ -48,10 +46,14 @@ function randomContent(kind: 'feature' | 'bug') {
   return [p1, p2, p3].join('\n\n')
 }
 
-function randomRecentDate(days: number) {
-  const now = Date.now()
-  const past = now - randInt(0, days) * 24 * 60 * 60 * 1000
-  return new Date(past)
+function daysAgo(days: number) {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+}
+
+/** Mix of fresh (<30d) and stale (30–180d) activity dates for UI testing. */
+function randomActivityDate() {
+  const stale = Math.random() < 0.55
+  return daysAgo(stale ? randInt(30, 180) : randInt(0, 29))
 }
 
 async function main() {
@@ -73,26 +75,33 @@ async function main() {
   const authorId = u ? USER_ID : undefined
 
   const makeRows = (b: typeof featureBoard, count: number, kind: 'feature' | 'bug') => {
-    const statuses = Array.isArray(b.roadmapStatuses) ? b.roadmapStatuses.map((s: any) => String(s.id)) : ['pending', 'review', 'planned', 'progress', 'completed', 'closed']
+    const statuses = Array.isArray(b.roadmapStatuses)
+      ? b.roadmapStatuses.map((s: any) => String(s.id))
+      : ['pending', 'review', 'planned', 'progress', 'completed', 'closed']
+    const openStatuses = statuses.filter((s) => s !== 'completed' && s !== 'closed')
     const rows: any[] = []
     for (let i = 0; i < count; i++) {
       const title = randomTitle()
       const slug = `${slugify(title)}-${Math.random().toString(36).slice(2, 8)}`
       const isAnon = Math.random() < 0.3
-      const name = randomName()
-      const seed = isAnon ? slug : name
+      const activityAt = randomActivityDate()
+      // Prefer open statuses so stale badges show on the default requests list
+      const roadmapStatus =
+        Math.random() < 0.85 && openStatuses.length > 0
+          ? randItem(openStatuses)
+          : randItem(statuses)
       rows.push({
         boardId: b.id,
         title,
         content: randomContent(kind),
         slug,
         authorId: isAnon ? undefined : authorId,
-        authorName: isAnon ? null : name,
-        authorImage: randomAvatarUrl(seed, 'avataaars'),
         isAnonymous: isAnon,
         status: 'published',
-        roadmapStatus: randItem(statuses),
-        publishedAt: randomRecentDate(180),
+        roadmapStatus,
+        publishedAt: activityAt,
+        createdAt: activityAt,
+        updatedAt: activityAt,
         commentCount: randInt(0, 12),
         upvotes: randInt(0, 200),
       })
@@ -108,9 +117,10 @@ async function main() {
 }
 
 main()
-  .then(() => { console.log('Inserted 100 posts (50 per board)') })
-  .catch((err) => { console.error(err); process.exit(1) })
-function randomAvatarUrl(seed?: string | null, style: 'identicon' | 'avataaars' = 'avataaars') {
-  const s = encodeURIComponent((seed || 'anonymous').trim() || 'anonymous')
-  return `https://api.dicebear.com/9.x/${style}/svg?seed=${s}`
-}
+  .then(() => {
+    console.log('Inserted 100 posts (50 per board), ~55% stale (30–180 days)')
+  })
+  .catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })

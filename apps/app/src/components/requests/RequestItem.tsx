@@ -13,6 +13,7 @@ import RoleBadge from "@/components/global/RoleBadge"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
+import { StaleMark } from "./StaleIndicator"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import type { RequestItemData } from "@/types/request"
 import { SelectionControl } from "@/components/selection/SelectionControl"
@@ -20,6 +21,7 @@ import {
   getSelectableRowClassName,
   type SelectionToggleMeta,
 } from "@/components/selection/Row"
+import { getRequestStaleDays } from "@/utils/request/stale"
 
 interface RequestItemProps {
   item: RequestItemData
@@ -42,6 +44,13 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const isSelectedMode = Boolean(isSelected)
   const isLinkDisabled = Boolean(disableLink || isSelectingMode)
   const authorLabel = item.isAnonymous ? "Guest" : (item.authorName || "Guest")
+  const staleDays = getRequestStaleDays({
+    createdAt: item.createdAt,
+    publishedAt: item.publishedAt,
+    updatedAt: item.updatedAt,
+    roadmapStatus: item.roadmapStatus,
+  })
+  const isStale = staleDays != null
   const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
     if (!isSelectingMode) return
     e.preventDefault()
@@ -51,12 +60,21 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const rowClassName = getSelectableRowClassName(
     isSelectingMode,
     isSelectedMode,
-    "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
+    cn(
+      "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-l border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
+      isStale
+        ? "border-l-amber-500 dark:border-l-amber-400"
+        : "border-l-border",
+    ),
   )
   const actionsClassName = cn(
     "ml-auto flex items-center gap-3 text-xs text-accent",
     isSelectingMode && "pointer-events-none"
   )
+  const publishedLabel = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+  }).format(new Date(item.publishedAt ?? item.createdAt))
 
   return (
     <RequestItemContextMenu
@@ -71,6 +89,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
       onClick={handleRowClick}
     >
       <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
+      {staleDays != null ? <StaleMark days={staleDays} /> : null}
       {isSelectingMode ? (
         <SelectionControl
           checked={isSelectedMode}
@@ -104,7 +123,9 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           <CommentsIcon aria-hidden className="size-3.5" />
           <span className="tabular-nums">{item.commentCount}</span>
         </div>
-        <span>{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(item.publishedAt ?? item.createdAt))}</span>
+        <span className={cn(isStale && "text-amber-600/90 dark:text-amber-400/90")}>
+          {publishedLabel}
+        </span>
         <div className="relative">
           <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
             <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
