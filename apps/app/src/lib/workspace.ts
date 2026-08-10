@@ -16,7 +16,7 @@ import {
 } from "@featul/db";
 import { resolvePostAuthorImage } from "@/lib/author/avatar";
 import { isOnboardingPost, getOnboardingPostKind } from "@/lib/onboarding/post";
-import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
+import { eq, and, inArray, notInArray, or, isNull, desc, asc, sql, type SQL } from "drizzle-orm";
 import type { RequestItemRow } from "@/lib/request/item";
 import type {
   ChangelogTag,
@@ -28,6 +28,12 @@ import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
 import type { DomainInfo } from "../types/domain";
 import { buildPostFtsFilter } from "@featul/api/shared/post-search";
+import {
+  STALE_STATUS_KEY,
+  STALE_THRESHOLD_DAYS,
+  STALE_RESOLVED_STATUSES,
+  isStaleStatusFilter,
+} from "@featul/api/shared/stale";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import {
   getBrandingBySlug,
@@ -81,8 +87,19 @@ export function normalizeStatus(s: string): string {
     progress: "progress",
     completed: "completed",
     closed: "closed",
+    stale: STALE_STATUS_KEY,
   };
   return map[t] || raw;
+}
+
+function buildStalePostCondition(): SQL {
+  return and(
+    or(
+      isNull(post.roadmapStatus),
+      notInArray(post.roadmapStatus, [...STALE_RESOLVED_STATUSES]),
+    ),
+    sql`COALESCE(${post.updatedAt}, ${post.publishedAt}, ${post.createdAt}) < NOW() - (${STALE_THRESHOLD_DAYS} * INTERVAL '1 day')`,
+  ) as SQL;
 }
 
 type PostFilterOptions = {
@@ -168,8 +185,16 @@ function buildPostFilters({
     eq(board.isSystem, false),
   ];
   if (publicOnly) filters.push(eq(board.isPublic, true));
-  if (matchStatuses.length > 0)
-    filters.push(inArray(post.roadmapStatus, matchStatuses));
+  const wantsStale = matchStatuses.some(isStaleStatusFilter);
+  const roadmapStatuses = matchStatuses.filter((s) => !isStaleStatusFilter(s));
+  if (wantsStale) {
+    filters.push(buildStalePostCondition());
+    if (roadmapStatuses.length > 0) {
+      filters.push(inArray(post.roadmapStatus, roadmapStatuses));
+    }
+  } else if (roadmapStatuses.length > 0) {
+    filters.push(inArray(post.roadmapStatus, roadmapStatuses));
+  }
   if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
   if (tagPostIds && tagPostIds.length > 0)
     filters.push(inArray(post.id, tagPostIds));
@@ -468,9 +493,24 @@ export async function getWorkspaceStatusCounts(
     "completed",
     "pending",
     "closed",
+    STALE_STATUS_KEY,
   ]) {
     if (typeof counts[key] !== "number") counts[key] = 0;
   }
+
+  const [staleRow] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildStalePostCondition(),
+      ),
+    );
+  counts[STALE_STATUS_KEY] = Number(staleRow?.count || 0);
+
   return counts;
 }
 

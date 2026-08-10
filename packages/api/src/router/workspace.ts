@@ -1,11 +1,16 @@
 import { HTTPException } from "hono/http-exception"
-import { eq, and, sql } from "drizzle-orm"
+import { eq, and, sql, or, isNull, notInArray } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { workspace, workspaceMember, board, brandingConfig, tag, post, workspaceDomain, workspaceSlugReservation, user } from "@featul/db"
 import { createWorkspaceInputSchema, checkSlugInputSchema, workspaceSlugInputSchema, updateCustomDomainInputSchema, createDomainInputSchema, verifyDomainInputSchema, updateWorkspaceNameInputSchema, deleteWorkspaceInputSchema, importCsvInputSchema, updateTimezoneInputSchema } from "../validators/workspace"
 import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain"
 import { Resolver } from "node:dns/promises"
 import { normalizeStatus } from "../shared/status"
+import {
+  STALE_STATUS_KEY,
+  STALE_THRESHOLD_DAYS,
+  STALE_RESOLVED_STATUSES,
+} from "../shared/stale"
 import { addDomainToProject, removeDomainFromProject } from "../services/vercel"
 import { isDataImportsAllowed } from "../shared/plan"
 import { seedWorkspaceOnboarding } from "../services/onboarding"
@@ -165,9 +170,28 @@ export function createWorkspaceRouter() {
           const key = normalizeStatus(String(r.status || "pending"))
           counts[key] = (counts[key] || 0) + Number(r.count || 0)
         }
-        for (const key of ["planned", "progress", "review", "completed", "pending", "closed"]) {
+        for (const key of ["planned", "progress", "review", "completed", "pending", "closed", STALE_STATUS_KEY]) {
           if (typeof counts[key] !== "number") counts[key] = 0
         }
+
+        const [staleRow] = await ctx.db
+          .select({ count: sql<number>`count(*)` })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.isSystem, false),
+              eq(board.isPublic, true),
+              or(
+                isNull(post.roadmapStatus),
+                notInArray(post.roadmapStatus, [...STALE_RESOLVED_STATUSES]),
+              ),
+              sql`COALESCE(${post.updatedAt}, ${post.publishedAt}, ${post.createdAt}) < NOW() - (${STALE_THRESHOLD_DAYS} * INTERVAL '1 day')`,
+            ),
+          )
+        counts[STALE_STATUS_KEY] = Number(staleRow?.count || 0)
+
         c.header("Cache-Control", "private, no-store")
         return c.json({ counts })
       }),

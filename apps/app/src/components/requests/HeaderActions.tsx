@@ -6,6 +6,7 @@ import StatusAction from "./actions/StatusAction"
 import TagsAction from "./actions/TagsAction"
 import SortAction from "./actions/SortAction"
 import SearchAction from "./actions/SearchAction"
+import StaleFilterAction from "./actions/StaleFilterAction"
 import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction"
 
 export default function HeaderActions({ className = "" }: { className?: string }) {
@@ -20,9 +21,9 @@ export default function HeaderActions({ className = "" }: { className?: string }
       <TagsAction className="h-full rounded-none border-none hover:bg-muted px-3" />
       <ToolbarSeparator />
       <SortAction className="h-full rounded-none border-none hover:bg-muted px-3" />
+      <StaleFilterAction className="h-full rounded-none border-none hover:bg-muted px-3" />
       <ToolbarSeparator />
       <WorkspaceNotificationsAction />
     </Toolbar>
   )
 }
-

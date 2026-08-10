@@ -1,6 +1,16 @@
-export const STALE_THRESHOLD_DAYS = 30
+import {
+  STALE_THRESHOLD_DAYS,
+  STALE_RESOLVED_STATUSES,
+} from "@featul/api/shared/stale"
 
-const RESOLVED_STATUSES = new Set(["completed", "closed"])
+export {
+  STALE_THRESHOLD_DAYS,
+  STALE_STATUS_KEY,
+  STALE_RESOLVED_STATUSES,
+  isStaleStatusFilter,
+} from "@featul/api/shared/stale"
+
+const RESOLVED_STATUSES = new Set<string>(STALE_RESOLVED_STATUSES)
 
 export function getStaleReferenceDate({
   updatedAt,
