@@ -82,7 +82,7 @@ function RequestListBase(props: RequestListProps) {
       itemLabel="post"
       deleteDescription="This action cannot be undone. Comments, votes, and activity for these posts will be removed."
       totalCount={listItems.length}
-      // Left edge is drawn per-row so stale can recolor the real border
+      // Left edge is drawn per-row so stale can recolor the real border.
       className="border-l-0"
       toolbarClassName="border-l border-border px-3 sm:px-4"
       extraActions={

@@ -63,7 +63,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     cn(
       "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-l border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
       isStale
-        ? "border-l-amber-500 dark:border-l-amber-400"
+        ? "border-l-amber-600 dark:border-l-amber-500"
         : "border-l-border",
     ),
   )
@@ -123,9 +123,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           <CommentsIcon aria-hidden className="size-3.5" />
           <span className="tabular-nums">{item.commentCount}</span>
         </div>
-        <span className={cn(isStale && "text-amber-600/90 dark:text-amber-400/90")}>
-          {publishedLabel}
-        </span>
+        <span>{publishedLabel}</span>
         <div className="relative">
           <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
             <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
