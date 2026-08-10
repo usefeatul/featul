@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   BULK_DELETE_CONFIRM_CLASS,
   SELECTABLE_LIST_SHELL_CLASS,
@@ -21,7 +22,8 @@ type SelectableListShellProps = {
   itemLabelPlural?: string;
   deleteDescription: string;
   totalCount: number;
-  children: React.ReactNode;
+  extraActions?: ReactNode;
+  children: ReactNode;
 };
 
 export function SelectableListShell({
@@ -34,6 +36,7 @@ export function SelectableListShell({
   itemLabelPlural,
   deleteDescription,
   totalCount,
+  extraActions,
   children,
 }: SelectableListShellProps) {
   const pluralLabel = pluralizeItemLabel(
@@ -54,6 +57,7 @@ export function SelectableListShell({
           isPending={isPending}
           onToggleAll={selection.toggleAll}
           onConfirmDelete={() => setConfirmOpen(true)}
+          extraActions={extraActions}
         />
       ) : null}
       <ul className="m-0 list-none p-0">{children}</ul>

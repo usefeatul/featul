@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { Button } from "@featul/ui/components/button"
 import { TrashIcon } from "@featul/ui/icons/trash"
 import { cn } from "@featul/ui/lib/utils"
@@ -16,6 +17,7 @@ export interface SelectionToolbarProps {
   onToggleAll: () => void
   onConfirmDelete?: () => void
   hideDelete?: boolean
+  extraActions?: ReactNode
   className?: string
 }
 
@@ -29,6 +31,7 @@ export function SelectionToolbar({
   onToggleAll,
   onConfirmDelete,
   hideDelete = false,
+  extraActions,
   className,
 }: SelectionToolbarProps) {
   const hasSelection = selectedCount > 0
@@ -37,6 +40,7 @@ export function SelectionToolbar({
     selectedCount,
     itemLabelPlural,
   )
+  const showActions = Boolean(extraActions) || !hideDelete
 
   return (
     <div
@@ -65,23 +69,28 @@ export function SelectionToolbar({
         <span className="text-xs text-muted-foreground">Tap rows to select</span>
       )}
 
-      <div className={cn("ml-auto", hideDelete && "hidden")}>
-        <Button
-          type="button"
-          variant="card"
-          size="sm"
-          className={cn(
-            "h-8 gap-1.5 rounded-sm px-3 bg-destructive text-white border-destructive/70 hover:bg-destructive/90 hover:text-white dark:bg-destructive/80 dark:hover:bg-destructive/70",
-            !hasSelection && "pointer-events-none opacity-40",
-          )}
-          disabled={!hasSelection || isPending}
-          onClick={onConfirmDelete}
-          aria-label={`Delete selected ${pluralLabel}`}
-        >
-          <TrashIcon className="size-3.5" />
-          <span>{isPending ? "Deleting…" : "Delete"}</span>
-        </Button>
-      </div>
+      {showActions ? (
+        <div className="ml-auto flex items-center gap-2">
+          {extraActions}
+          {!hideDelete ? (
+            <Button
+              type="button"
+              variant="card"
+              size="sm"
+              className={cn(
+                "h-8 gap-1.5 rounded-sm px-3 bg-destructive text-white border-destructive/70 hover:bg-destructive/90 hover:text-white dark:bg-destructive/80 dark:hover:bg-destructive/70",
+                !hasSelection && "pointer-events-none opacity-40",
+              )}
+              disabled={!hasSelection || isPending}
+              onClick={onConfirmDelete}
+              aria-label={`Delete selected ${pluralLabel}`}
+            >
+              <TrashIcon className="size-3.5" />
+              <span>{isPending ? "Deleting…" : "Delete"}</span>
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

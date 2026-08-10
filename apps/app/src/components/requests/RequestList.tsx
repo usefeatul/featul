@@ -4,8 +4,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import RequestItem from "./RequestItem";
 import type { RequestItemData } from "@/types/request";
 import EmptyRequests from "./EmptyRequests";
+import { BulkStatusPicker } from "@/components/selection/BulkStatusPicker";
 import { SelectableListShell } from "@/components/selection/SelectableListShell";
 import { useBulkDeleteRequests } from "@/hooks/useBulkDeleteList";
+import { useBulkStatusUpdate } from "@/hooks/useBulkStatusUpdate";
 import { useSelectableList } from "@/hooks/useSelectableList";
 
 interface RequestListProps {
@@ -40,6 +42,15 @@ function RequestListBase(props: RequestListProps) {
     onComplete: () => setConfirmOpen(false),
   });
 
+  const { isPending: isStatusPending, handleBulkStatus } = useBulkStatusUpdate({
+    listKey,
+    listItems,
+    workspaceSlug,
+    onItemsChange: setListItems,
+  });
+
+  const isBusy = isPending || isStatusPending;
+
   useEffect(() => {
     setListItems(items);
   }, [items]);
@@ -49,7 +60,7 @@ function RequestListBase(props: RequestListProps) {
     itemIds,
     initialIsSelecting,
     initialSelectedIds,
-    isPending,
+    isPending: isBusy,
     confirmOpen,
     setConfirmOpen,
   });
@@ -63,7 +74,7 @@ function RequestListBase(props: RequestListProps) {
 
   return (
     <SelectableListShell
-      isPending={isPending}
+      isPending={isBusy}
       selection={selection}
       confirmOpen={confirmOpen}
       setConfirmOpen={setConfirmOpen}
@@ -71,6 +82,13 @@ function RequestListBase(props: RequestListProps) {
       itemLabel="post"
       deleteDescription="This action cannot be undone. Comments, votes, and activity for these posts will be removed."
       totalCount={listItems.length}
+      extraActions={
+        <BulkStatusPicker
+          disabled={selection.selectedCount === 0}
+          isPending={isStatusPending}
+          onSelect={handleBulkStatus}
+        />
+      }
     >
       {listItems.map((item, index) => (
         <RequestItem
