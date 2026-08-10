@@ -7,6 +7,8 @@ import { auth } from "@featul/auth"
 import { headers } from "next/headers"
 import { mapPermissions } from "../shared/permissions"
 import { triggerPostWebhooks } from "../services/webhook"
+import { notifyPostStatusChange } from "../services/status-change-notify"
+import { normalizeStatus } from "../shared/status"
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
 import { getRequestFingerprint } from "../shared/request-fingerprint"
 import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
@@ -435,6 +437,20 @@ export function createPostRouter() {
               removedTags,
             },
           })
+
+          if (
+            roadmapStatus !== undefined &&
+            normalizeStatus(existingPost.roadmapStatus || "pending") !==
+              normalizeStatus(roadmapStatus)
+          ) {
+            notifyPostStatusChange({
+              db: ctx.db,
+              postId,
+              fromStatus: existingPost.roadmapStatus,
+              toStatus: roadmapStatus,
+              actorUserId: userId,
+            })
+          }
         }
 
         return c.superjson({ post: updatedPost })

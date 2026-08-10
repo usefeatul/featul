@@ -15,6 +15,8 @@ import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
 import { buildPostFtsFilter, boardSlugsForSearch } from "../shared/post-search"
 import { resolveIncludePrivateBoardPosts } from "../shared/workspace-search-access"
 import { hasWorkspaceContentAccess } from "../shared/storage-access"
+import { notifyPostStatusChange } from "../services/status-change-notify"
+import { normalizeStatus } from "../shared/status"
 
 export function createBoardRouter() {
   return j.router({
@@ -889,6 +891,20 @@ export function createBoardRouter() {
             slug: p.slug,
           },
         })
+
+        if (
+          input.roadmapStatus !== undefined &&
+          normalizeStatus(p.roadmapStatus || "pending") !==
+            normalizeStatus(input.roadmapStatus)
+        ) {
+          notifyPostStatusChange({
+            db: ctx.db,
+            postId: input.postId,
+            fromStatus: p.roadmapStatus,
+            toStatus: input.roadmapStatus,
+            actorUserId: ctx.session.user.id,
+          })
+        }
 
         return c.superjson({ ok: true })
       }),
