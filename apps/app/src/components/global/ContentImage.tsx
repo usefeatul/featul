@@ -2,15 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@featul/ui/components/dialog";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
+import { ImageIcon } from "@featul/ui/icons/image";
 import { cn } from "@featul/ui/lib/utils";
+import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 
 interface ContentImageProps {
   url: string;
@@ -55,30 +49,21 @@ export default function ContentImage({
         </div>
       </div>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent
-          fluid
-          showCloseButton={false}
-          overlayClassName="bg-white/70 backdrop-blur-md dark:bg-black/85"
-          onOpenAutoFocus={(event) => event.preventDefault()}
-          className="fixed inset-0 top-0 left-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 items-center justify-center border-none bg-transparent p-4 shadow-none ring-0 ring-offset-0 sm:max-w-none"
-        >
-          <DialogHeader className="sr-only">
-            <DialogTitle>{alt}</DialogTitle>
-          </DialogHeader>
-          <DialogClose
-            className="absolute top-4 right-4 z-10 inline-flex size-9 items-center justify-center rounded-full text-foreground opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Close image preview"
-          >
-            <XMarkIcon size={16} />
-          </DialogClose>
+      <SettingsDialogShell
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Image"
+        width="xxl"
+        icon={<ImageIcon className="size-3.5" />}
+      >
+        <div className="flex items-center justify-center overflow-hidden rounded-lg bg-muted/40">
           <img
             src={url}
             alt={alt}
-            className="max-h-[55dvh] max-w-[min(90vw,800px)] object-contain"
+            className="max-h-[80dvh] w-full object-contain"
           />
-        </DialogContent>
-      </Dialog>
+        </div>
+      </SettingsDialogShell>
     </>
   );
 }
