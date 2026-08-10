@@ -2,6 +2,7 @@
 
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, ToasterProps } from "sonner"
+import LoaderIcon from "@featul/ui/icons/loader"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
@@ -10,6 +11,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      icons={{
+        loading: <LoaderIcon className="size-4 animate-spin" />,
+      }}
       toastOptions={{
         unstyled: true,
         classNames: {
@@ -24,7 +28,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           info: "group toast group-[.toaster]:bg-blue-500/10 group-[.toaster]:text-blue-600 dark:group-[.toaster]:text-blue-400 group-[.toaster]:border-zinc-300 dark:group-[.toaster]:border-zinc-700 group-[.toaster]:before:from-blue-500/10",
           loading: "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-zinc-300 dark:group-[.toaster]:border-zinc-700",
           title: "group-[.toast]:text-sm group-[.toast]:font-semibold group-[.toast]:leading-tight",
-          icon: "group-[.toast]:flex-shrink-0",
+          icon: "group-[.toast]:relative group-[.toast]:flex group-[.toast]:size-4 group-[.toast]:shrink-0 group-[.toast]:items-center group-[.toast]:justify-center",
+          content: "group-[.toast]:flex group-[.toast]:min-w-0 group-[.toast]:flex-1 group-[.toast]:flex-col group-[.toast]:gap-0.5",
         },
       }}
       {...props}
