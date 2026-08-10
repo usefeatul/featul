@@ -198,6 +198,11 @@ function SectionRenderer({
           initialIsVisible={initialChangelogVisible}
           initialPlan={initialPlan}
           initialTags={initialChangelogTags}
+          customDomain={
+            initialDomainInfo?.status === "verified"
+              ? initialDomainInfo.host
+              : null
+          }
         />
       );
     case "billing":

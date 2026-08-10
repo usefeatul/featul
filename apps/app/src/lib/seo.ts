@@ -145,8 +145,22 @@ export async function createWorkspaceSectionMetadata(slug: string, section: 'fee
     includeBrand: false,
     indexable: true,
   })
+  const types =
+    section === "changelog"
+      ? {
+          "application/rss+xml": `${baseUrl}/changelog/feed.xml`,
+        }
+      : undefined
   return {
     ...meta,
+    ...(types
+      ? {
+          alternates: {
+            ...(meta.alternates || {}),
+            types,
+          },
+        }
+      : {}),
     ...(ws?.logo ? { icons: { icon: [ws.logo], shortcut: [ws.logo], apple: [ws.logo] } } : {}),
   }
 }

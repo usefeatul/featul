@@ -63,7 +63,26 @@ export default async function ChangelogPage({
       sortKeepParams={["page"]}
     >
       <div>
-        <SubdomainListHeader title="Changelog" sidebarPosition={sidebarPosition} />
+        <SubdomainListHeader
+          title="Changelog"
+          sidebarPosition={sidebarPosition}
+          desktopSecondary={
+            <a
+              href="/changelog/feed.xml"
+              className="text-xs text-accent underline-offset-2 hover:text-foreground hover:underline"
+            >
+              RSS feed
+            </a>
+          }
+          mobileSecondary={
+            <a
+              href="/changelog/feed.xml"
+              className="text-xs text-accent underline-offset-2 hover:text-foreground hover:underline"
+            >
+              RSS
+            </a>
+          }
+        />
         <SubdomainListCard>
           {entries.length === 0 ? (
             <SubdomainListEmptyState
