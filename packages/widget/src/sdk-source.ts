@@ -19,7 +19,8 @@ export function getWidgetSdkSource() {
     closeTimer: null,
     morphTimer: null,
     animating: false,
-    queue: []
+    queue: [],
+    accent: "#3b82f6"
   };
 
   function post(type, payload) {
@@ -92,18 +93,18 @@ export function getWidgetSdkSource() {
 
   function applyPanelRect() {
     applyFrameRect(getPanelRect(state.position));
-    if (state.iframe) state.iframe.style.borderRadius = "18px";
+    if (state.iframe) state.iframe.style.borderRadius = "6px";
   }
 
   function applyLauncherRect() {
     applyFrameRect(getLauncherRect(state.position));
-    if (state.iframe) state.iframe.style.borderRadius = "999px";
+    if (state.iframe) state.iframe.style.borderRadius = "6px";
   }
 
   function applyShellPanelRect() {
     applyRect(state.shell, getPanelRect(state.position));
     if (!state.shell) return;
-    state.shell.style.borderRadius = "18px";
+    state.shell.style.borderRadius = "6px";
     state.shell.style.background = "#171717";
     state.shell.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
   }
@@ -111,9 +112,16 @@ export function getWidgetSdkSource() {
   function applyShellLauncherRect() {
     applyRect(state.shell, getLauncherRect(state.position));
     if (!state.shell) return;
-    state.shell.style.borderRadius = "999px";
-    state.shell.style.background = "#ff7144";
+    state.shell.style.borderRadius = "6px";
+    state.shell.style.background = state.accent || "#3b82f6";
     state.shell.style.boxShadow = "none";
+  }
+
+  function applyAccent(color) {
+    if (!color) return;
+    state.accent = color;
+    if (state.button) state.button.style.background = color;
+    if (state.shell && !state.open) state.shell.style.background = color;
   }
 
   function clearTimers() {
@@ -140,7 +148,7 @@ export function getWidgetSdkSource() {
     iframe.setAttribute("aria-hidden", "true");
     iframe.style.position = "fixed";
     iframe.style.border = "0";
-    iframe.style.borderRadius = "18px";
+    iframe.style.borderRadius = "6px";
     iframe.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
     iframe.style.zIndex = "2147483646";
     iframe.style.display = "none";
@@ -148,7 +156,7 @@ export function getWidgetSdkSource() {
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
     iframe.style.transition = "opacity 120ms ease";
     iframe.style.background = "#171717";
-    iframe.style.colorScheme = state.options.theme === "dark" ? "dark" : "normal";
+    iframe.style.colorScheme = "dark";
     document.body.appendChild(iframe);
     state.iframe = iframe;
 
@@ -156,7 +164,7 @@ export function getWidgetSdkSource() {
     shell.setAttribute("aria-hidden", "true");
     shell.style.position = "fixed";
     shell.style.border = "0";
-    shell.style.borderRadius = "999px";
+    shell.style.borderRadius = "6px";
     shell.style.zIndex = "2147483647";
     shell.style.display = "none";
     shell.style.opacity = "0";
@@ -181,8 +189,8 @@ export function getWidgetSdkSource() {
       button.style.height = "52px";
       button.style.padding = "0";
       button.style.border = "0";
-      button.style.borderRadius = "999px";
-      button.style.background = "#ff7144";
+      button.style.borderRadius = "6px";
+      button.style.background = state.accent || "#3b82f6";
       button.style.color = "#ffffff";
       button.style.font = "600 14px/1 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       button.style.letterSpacing = "0";
@@ -290,6 +298,9 @@ export function getWidgetSdkSource() {
       if (state.user) post("identify", state.user);
       flush();
       if (state.open) post("show", {});
+    }
+    if (data.type === "brand" && data.payload && data.payload.primaryColor) {
+      applyAccent(data.payload.primaryColor);
     }
     if (data.type === "close") {
       setOpen(false);

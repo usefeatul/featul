@@ -7,60 +7,74 @@ import { Button } from "@featul/ui/components/button";
 import { toast } from "sonner";
 
 type Props = {
-    workspaceId?: string;
+  workspaceId?: string;
 };
 
 export default function WorkspaceIdCard({ workspaceId }: Props) {
-    const snippet = React.useMemo(() => {
-        const appUrl = typeof window === "undefined" ? "https://app.featul.com" : window.location.origin;
-        return `<script async src="${appUrl}/widget/sdk.js"></script>
+  const snippet = React.useMemo(() => {
+    const appUrl =
+      typeof window === "undefined" ? "https://app.featul.com" : window.location.origin;
+    return `<script async src="${appUrl}/widget/sdk.js"></script>
 <script>
   window.$featulq = window.$featulq || [];
   window.featul = window.featul || new Proxy({}, {
     get: (_, method) => (...args) => window.$featulq.push([method, ...args])
   });
-  window.featul.init("${workspaceId || "WORKSPACE_ID"}", {
+  window.featul.init("${workspaceId || "YOUR_WORKSPACE_ID"}", {
     widget: true,
     theme: "auto",
     position: "right"
   });
 </script>`;
-    }, [workspaceId]);
+  }, [workspaceId]);
 
-    const handleCopyId = () => {
-        if (!workspaceId) return;
-        navigator.clipboard.writeText(workspaceId);
-        toast.success("Workspace ID copied");
-    };
+  const handleCopyId = () => {
+    if (!workspaceId) return;
+    navigator.clipboard.writeText(workspaceId);
+    toast.success("Workspace ID copied");
+  };
 
-    const handleCopySnippet = () => {
-        if (!workspaceId) return;
-        navigator.clipboard.writeText(snippet);
-        toast.success("Widget snippet copied");
-    };
+  const handleCopySnippet = () => {
+    if (!workspaceId) return;
+    navigator.clipboard.writeText(snippet);
+    toast.success("Widget snippet copied");
+  };
 
-    return (
-        <SettingsCard
-            icon={<Clipboard className="size-5 text-primary" />}
-            title="Embed widget"
-            description={
-                <div className="space-y-3">
-                    <p className="break-words">
-                        Project ID: <span className="font-semibold text-foreground break-all">{workspaceId || "N/A"}</span>. Paste the widget snippet into your app to collect feedback in-product.
-                    </p>
-                    <pre className="max-h-40 overflow-auto rounded-md border border-border bg-muted/40 p-3 text-xs leading-relaxed text-foreground">
-                        <code>{snippet}</code>
-                    </pre>
-                </div>
-            }
-            disabled={!workspaceId}
-        >
-            <Button variant="card" onClick={handleCopyId} disabled={!workspaceId}>
-                Copy ID
-            </Button>
-            <Button onClick={handleCopySnippet} disabled={!workspaceId}>
-                Copy snippet
-            </Button>
-        </SettingsCard>
-    );
+  return (
+    <SettingsCard
+      icon={<Clipboard className="size-5 text-primary" />}
+      title="Embed widget"
+      description={
+        <div className="space-y-3">
+          <p className="break-words">
+            Use your <span className="font-semibold text-foreground">Workspace ID</span> to embed
+            Featul in your product. Issuers can submit and browse requests without leaving your app.
+          </p>
+          <p className="break-all text-sm text-muted-foreground">
+            Workspace ID:{" "}
+            <span className="font-semibold text-foreground">{workspaceId || "N/A"}</span>
+          </p>
+          <pre className="max-h-40 overflow-auto rounded-md border border-border bg-muted/40 p-3 text-xs leading-relaxed text-foreground">
+            <code>{snippet}</code>
+          </pre>
+          <p className="text-xs text-muted-foreground">
+            Paste the snippet before{" "}
+            <code className="rounded bg-muted px-1 py-0.5">{"</body>"}</code>. Optionally call{" "}
+            <code className="rounded bg-muted px-1 py-0.5">
+              {'featul.identify({ id, email })'}
+            </code>{" "}
+            after login so submissions are attributed to known users.
+          </p>
+        </div>
+      }
+      disabled={!workspaceId}
+    >
+      <Button variant="card" onClick={handleCopyId} disabled={!workspaceId}>
+        Copy ID
+      </Button>
+      <Button onClick={handleCopySnippet} disabled={!workspaceId}>
+        Copy snippet
+      </Button>
+    </SettingsCard>
+  );
 }

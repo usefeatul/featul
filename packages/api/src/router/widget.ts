@@ -59,6 +59,27 @@ const similarSchema = projectInput.extend({
   boardId: z.string().min(1).optional(),
 });
 
+const viewerSchema = z.object({
+  userId: z.string().min(1).optional(),
+  identity: widgetIdentitySchema.optional(),
+  fingerprint: z.string().min(1).optional(),
+});
+
+const postsSchema = projectInput.merge(viewerSchema).extend({
+  boardId: z.string().min(1).optional(),
+  search: z.string().trim().max(120).optional(),
+  sort: z.enum(["newest", "top"]).default("newest"),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+const postDetailSchema = projectInput.merge(viewerSchema).extend({
+  postId: z.string().min(1).optional(),
+  slug: z.string().min(1).optional(),
+}).refine((value) => Boolean(value.postId || value.slug), {
+  message: "postId or slug is required",
+});
+
 type ResolvedWidget = {
   workspaceId: string;
   workspaceName: string;
@@ -151,6 +172,123 @@ async function upsertIdentifiedUser(
   return row;
 }
 
+async function resolveViewerId(
+  ctx: any,
+  input: {
+    userId?: string;
+    identity?: z.infer<typeof widgetIdentitySchema>;
+  },
+): Promise<string | null> {
+  if (input.identity?.email) {
+    const [existing] = await ctx.db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.email, input.identity.email.toLowerCase()))
+      .limit(1);
+    if (existing) return existing.id;
+  }
+  if (input.userId) {
+    const [existing] = await ctx.db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.id, input.userId))
+      .limit(1);
+    if (existing) return existing.id;
+  }
+  return null;
+}
+
+async function loadVotedPostIds(
+  ctx: any,
+  postIds: string[],
+  viewer: { userId: string | null; fingerprint: string | null },
+): Promise<Set<string>> {
+  if (!postIds.length || (!viewer.userId && !viewer.fingerprint)) return new Set();
+
+  const voteFilter = viewer.userId
+    ? and(inArray(vote.postId, postIds), eq(vote.userId, viewer.userId))
+    : and(
+        inArray(vote.postId, postIds),
+        isNull(vote.userId),
+        eq(vote.fingerprint, viewer.fingerprint || ""),
+      );
+
+  const rows = await ctx.db
+    .select({ postId: vote.postId })
+    .from(vote)
+    .where(voteFilter);
+
+  return new Set(rows.map((row: { postId: string }) => row.postId));
+}
+
+function publicPostWhere(workspaceId: string, boardId?: string, search?: string) {
+  const filters = [
+    eq(board.workspaceId, workspaceId),
+    eq(board.isSystem, false),
+    eq(board.isPublic, true),
+  ];
+  if (boardId) filters.push(eq(board.id, boardId));
+  if (search?.trim()) {
+    const q = `%${search.trim()}%`;
+    filters.push(or(ilike(post.title, q), ilike(post.content, q))!);
+  }
+  return and(...filters);
+}
+
+const postSelectFields = {
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  content: post.content,
+  upvotes: post.upvotes,
+  commentCount: post.commentCount,
+  roadmapStatus: post.roadmapStatus,
+  createdAt: post.createdAt,
+  boardId: post.boardId,
+  boardName: board.name,
+  boardSlug: board.slug,
+  isAnonymous: post.isAnonymous,
+  authorName: user.name,
+  authorImage: user.image,
+  metadata: post.metadata,
+};
+
+function dicebearAvatar(seed: string) {
+  return `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(seed || "guest")}`;
+}
+
+function resolveWidgetAuthorImage(row: {
+  id: string;
+  slug: string;
+  isAnonymous: boolean | null;
+  authorImage: string | null;
+  metadata?: unknown;
+}) {
+  if (!row.isAnonymous && row.authorImage) return row.authorImage;
+  const fingerprint =
+    row.metadata && typeof row.metadata === "object" && row.metadata !== null
+      ? String((row.metadata as Record<string, unknown>).fingerprint || "")
+      : "";
+  return dicebearAvatar(fingerprint || row.id || row.slug || "guest");
+}
+
+function mapWidgetPostRow<T extends {
+  id: string;
+  slug: string;
+  isAnonymous: boolean | null;
+  authorName: string | null;
+  authorImage: string | null;
+  metadata?: unknown;
+}>(row: T, hasVoted: boolean) {
+  const { metadata: _metadata, ...rest } = row;
+  return {
+    ...rest,
+    authorName: row.isAnonymous ? null : row.authorName,
+    authorImage: resolveWidgetAuthorImage(row),
+    hasVoted,
+  };
+}
+
 export function createWidgetRouter() {
   return j.router({
     config: publicProcedure.input(projectInput).get(async ({ ctx, input, c }) => {
@@ -191,11 +329,80 @@ export function createWidgetRouter() {
     }),
 
     identify: publicProcedure.input(identifySchema).post(async ({ ctx, input, c }) => {
-      const resolved = await resolveWidget(ctx, input.projectId);
+      await resolveWidget(ctx, input.projectId);
 
       const row = await upsertIdentifiedUser(ctx, input.user);
 
       return c.superjson({ user: row });
+    }),
+
+    posts: publicProcedure.input(postsSchema).get(async ({ ctx, input, c }) => {
+      const resolved = await resolveWidget(ctx, input.projectId);
+      const request = (c as any)?.req?.raw || (c as any)?.request;
+      const viewerId = await resolveViewerId(ctx, input);
+      const fingerprint = viewerId
+        ? null
+        : getRequestFingerprint(request, input.fingerprint);
+
+      const orderBy =
+        input.sort === "top"
+          ? [desc(post.upvotes), desc(post.createdAt)]
+          : [desc(post.isPinned), desc(post.createdAt)];
+
+      const rows = await ctx.db
+        .select(postSelectFields)
+        .from(post)
+        .innerJoin(board, eq(post.boardId, board.id))
+        .leftJoin(user, eq(post.authorId, user.id))
+        .where(publicPostWhere(resolved.workspaceId, input.boardId, input.search))
+        .orderBy(...orderBy)
+        .limit(input.limit)
+        .offset(input.offset);
+
+      const votedIds = await loadVotedPostIds(
+        ctx,
+        rows.map((row: { id: string }) => row.id),
+        { userId: viewerId, fingerprint },
+      );
+
+      return c.superjson({
+        posts: rows.map((row: (typeof rows)[number]) =>
+          mapWidgetPostRow(row, votedIds.has(row.id)),
+        ),
+        nextOffset: rows.length === input.limit ? input.offset + rows.length : null,
+      });
+    }),
+
+    post: publicProcedure.input(postDetailSchema).get(async ({ ctx, input, c }) => {
+      const resolved = await resolveWidget(ctx, input.projectId);
+      const request = (c as any)?.req?.raw || (c as any)?.request;
+      const viewerId = await resolveViewerId(ctx, input);
+      const fingerprint = viewerId
+        ? null
+        : getRequestFingerprint(request, input.fingerprint);
+
+      const identityFilter = input.postId
+        ? eq(post.id, input.postId)
+        : eq(post.slug, input.slug!);
+
+      const [row] = await ctx.db
+        .select(postSelectFields)
+        .from(post)
+        .innerJoin(board, eq(post.boardId, board.id))
+        .leftJoin(user, eq(post.authorId, user.id))
+        .where(and(publicPostWhere(resolved.workspaceId), identityFilter))
+        .limit(1);
+
+      if (!row) throw new HTTPException(404, { message: "Post not found" });
+
+      const votedIds = await loadVotedPostIds(ctx, [row.id], {
+        userId: viewerId,
+        fingerprint,
+      });
+
+      return c.superjson({
+        post: mapWidgetPostRow(row, votedIds.has(row.id)),
+      });
     }),
 
     similar: publicProcedure.input(similarSchema).get(async ({ ctx, input, c }) => {
@@ -341,8 +548,13 @@ export function createWidgetRouter() {
       return c.superjson({ hasVoted: true, upvotes: updated?.upvotes || 0 });
     }),
 
-    roadmap: publicProcedure.input(projectInput).get(async ({ ctx, input, c }) => {
+    roadmap: publicProcedure.input(projectInput.merge(viewerSchema)).get(async ({ ctx, input, c }) => {
       const resolved = await resolveWidget(ctx, input.projectId);
+      const request = (c as any)?.req?.raw || (c as any)?.request;
+      const viewerId = await resolveViewerId(ctx, input);
+      const fingerprint = viewerId
+        ? null
+        : getRequestFingerprint(request, input.fingerprint);
 
       const rows = await ctx.db
         .select({
@@ -353,9 +565,14 @@ export function createWidgetRouter() {
           upvotes: post.upvotes,
           roadmapStatus: post.roadmapStatus,
           createdAt: post.createdAt,
+          isAnonymous: post.isAnonymous,
+          authorName: user.name,
+          authorImage: user.image,
+          metadata: post.metadata,
         })
         .from(post)
         .innerJoin(board, eq(post.boardId, board.id))
+        .leftJoin(user, eq(post.authorId, user.id))
         .where(
           and(
             eq(board.workspaceId, resolved.workspaceId),
@@ -367,7 +584,30 @@ export function createWidgetRouter() {
         .orderBy(desc(post.updatedAt))
         .limit(30);
 
-      return c.superjson({ posts: rows });
+      const votedIds = await loadVotedPostIds(
+        ctx,
+        rows.map((row: { id: string }) => row.id),
+        { userId: viewerId, fingerprint },
+      );
+
+      return c.superjson({
+        posts: rows.map((row: (typeof rows)[number]) => {
+          const mapped = mapWidgetPostRow(row, votedIds.has(row.id));
+          return {
+            id: mapped.id,
+            title: mapped.title,
+            content: mapped.content,
+            slug: mapped.slug,
+            upvotes: mapped.upvotes,
+            roadmapStatus: mapped.roadmapStatus,
+            createdAt: mapped.createdAt,
+            authorName: mapped.authorName,
+            authorImage: mapped.authorImage,
+            isAnonymous: mapped.isAnonymous,
+            hasVoted: mapped.hasVoted,
+          };
+        }),
+      });
     }),
 
     changelog: publicProcedure.input(projectInput).get(async ({ ctx, input, c }) => {
