@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -344,7 +344,7 @@ export default function WidgetFrame({
   const contentKey = isFeedback ? `feedback-${feedbackView}` : section;
   const contentTransition = reduceMotion
     ? { duration: 0 }
-    : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
+    : { duration: 0.16, ease: "easeOut" as const };
   const feedbackTitle =
     feedbackView === "compose"
       ? "Give feedback"
@@ -466,7 +466,6 @@ export default function WidgetFrame({
             key="loading"
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             transition={contentTransition}
             className="flex min-h-0 flex-1 items-center justify-center"
             aria-label="Loading"
@@ -480,13 +479,11 @@ export default function WidgetFrame({
           </p>
         ) : null}
 
-        <AnimatePresence mode="wait" initial={false}>
-          {!loading && section === "home" ? (
+        {!loading && section === "home" ? (
           <motion.div
             key="home"
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             transition={contentTransition}
             className="space-y-6"
           >
@@ -618,14 +615,13 @@ export default function WidgetFrame({
               <FillPenIcon className="size-4 shrink-0 text-[rgb(var(--widget-cta-fg)/0.7)]" size={16} />
             </button>
           </motion.div>
-          ) : null}
+        ) : null}
 
-          {!loading && section === "feedback" ? (
+        {!loading && section === "feedback" ? (
           <motion.div
             key={contentKey}
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             transition={contentTransition}
             className="flex min-h-0 flex-1 flex-col"
           >
@@ -672,14 +668,13 @@ export default function WidgetFrame({
             />
           )}
           </motion.div>
-          ) : null}
+        ) : null}
 
-          {!loading && section === "roadmap" ? (
+        {!loading && section === "roadmap" ? (
           <motion.div
             key="roadmap"
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             transition={contentTransition}
             className="flex min-h-0 flex-1 flex-col"
           >
@@ -695,14 +690,13 @@ export default function WidgetFrame({
             }}
           />
           </motion.div>
-          ) : null}
+        ) : null}
 
-          {!loading && section === "changelog" ? (
+        {!loading && section === "changelog" ? (
           <motion.section
             key="changelog"
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             transition={contentTransition}
             className="space-y-2"
           >
@@ -747,8 +741,7 @@ export default function WidgetFrame({
               <p className="text-sm text-[rgb(var(--widget-fg)/0.45)]">No updates published yet.</p>
             )}
           </motion.section>
-          ) : null}
-        </AnimatePresence>
+        ) : null}
       </div>
 
       {showTabs ? (
