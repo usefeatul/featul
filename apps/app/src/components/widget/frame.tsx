@@ -207,7 +207,6 @@ export default function WidgetFrame({
   const isFeedback = section === "feedback";
   const showTabs = !isFeedback || feedbackView === "list";
   const reduceMotion = useReducedMotion();
-  const transformOrigin = initialPosition === "left" ? "bottom left" : "bottom right";
   const feedbackTitle =
     feedbackView === "compose"
       ? "Give feedback"
@@ -217,13 +216,12 @@ export default function WidgetFrame({
 
   return (
     <motion.main
-      initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.94 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.8 }}
+      initial={reduceMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
       className="flex h-screen flex-col overflow-hidden rounded-md border border-white/10 bg-[#171717] text-white shadow-sm"
       style={
         {
-          transformOrigin,
           ["--widget-accent" as string]: accent,
         } as React.CSSProperties
       }
@@ -305,7 +303,14 @@ export default function WidgetFrame({
             ? "relative flex min-h-0 flex-1 flex-col"
             : isFeedback
               ? "relative flex min-h-0 flex-1 flex-col px-5 pb-4"
-              : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-1"
+              : section === "roadmap"
+                ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto pb-5 pt-0"
+                : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-1"
+        }
+        data-widget-scroll={
+          !(isFeedback && (feedbackView === "list" || feedbackView === "detail"))
+            ? ""
+            : undefined
         }
       >
         {loading ? (
@@ -478,19 +483,17 @@ export default function WidgetFrame({
         ) : null}
 
         {!loading && section === "roadmap" ? (
-          <section className="-mx-1">
-            <WidgetRoadmap
-              items={roadmap}
-              apiBase={apiBase}
-              userId={userId}
-              identity={identity}
-              onVoteChange={(id, upvotes, hasVoted) => {
-                setRoadmap((prev) =>
-                  prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
-                );
-              }}
-            />
-          </section>
+          <WidgetRoadmap
+            items={roadmap}
+            apiBase={apiBase}
+            userId={userId}
+            identity={identity}
+            onVoteChange={(id, upvotes, hasVoted) => {
+              setRoadmap((prev) =>
+                prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
+              );
+            }}
+          />
         ) : null}
 
         {!loading && section === "changelog" ? (
