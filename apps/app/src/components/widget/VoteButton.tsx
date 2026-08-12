@@ -16,6 +16,7 @@ type Props = {
   userId?: string | null;
   identity?: IdentifiedUser | null;
   className?: string;
+  variant?: "boxed" | "plain";
   onChange?: (next: { upvotes: number; hasVoted: boolean }) => void;
 };
 
@@ -27,6 +28,7 @@ export function WidgetVoteButton({
   userId,
   identity,
   className,
+  variant = "boxed",
   onChange,
 }: Props) {
   const [upvotes, setUpvotes] = React.useState(initialUpvotes);
@@ -83,8 +85,11 @@ export function WidgetVoteButton({
       onClick={handleVote}
       disabled={pending}
       className={cn(
-        "relative z-10 inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-xs transition-colors disabled:cursor-not-allowed",
-        hasVoted ? "text-[#ff7144] border-[#ff7144]/35" : "text-white/70 hover:text-white",
+        "group/vote relative z-10 inline-flex cursor-pointer items-center gap-1.5 text-xs transition-colors disabled:cursor-not-allowed",
+        variant === "boxed" &&
+          "rounded-md border border-white/10 bg-white/[0.03] px-2 py-1",
+        hasVoted ? "text-red-500" : "text-white/55 hover:text-red-400",
+        hasVoted && variant === "boxed" && "border-red-500/30",
         className,
       )}
       aria-pressed={hasVoted}

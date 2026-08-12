@@ -90,27 +90,27 @@ export function WidgetFeedbackList({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="space-y-2 px-5 pb-3">
+      <div className="space-y-3 border-b border-white/10 px-5 pb-3">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-white/35" />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search requests"
-            className="h-9 w-full rounded-md border border-white/10 bg-[#202020] pl-9 pr-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20"
+            className="h-9 w-full rounded-md border border-white/10 bg-transparent pl-9 pr-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/25 focus:bg-white/[0.03]"
           />
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex rounded-md border border-white/10 bg-[#202020] p-0.5">
+          <div className="inline-flex items-center gap-1">
             {(["newest", "top"] as const).map((value) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setSort(value)}
-                className={`cursor-pointer rounded-md px-2.5 py-1 text-xs capitalize transition-colors ${
+                className={`cursor-pointer rounded-md px-2.5 py-1.5 text-xs capitalize transition-colors ${
                   sort === value
-                    ? "bg-[var(--widget-accent,#3b82f6)] text-white"
-                    : "text-white/50 hover:text-white"
+                    ? "bg-white/10 text-white"
+                    : "text-white/45 hover:bg-white/[0.04] hover:text-white/80"
                 }`}
               >
                 {value}
@@ -121,7 +121,7 @@ export function WidgetFeedbackList({
             <select
               value={boardId}
               onChange={(event) => onBoardChange(event.target.value)}
-              className="h-8 min-w-0 flex-1 cursor-pointer rounded-md border border-white/10 bg-[#202020] px-3 text-xs text-white outline-none"
+              className="ml-auto h-8 max-w-[45%] cursor-pointer rounded-md border border-white/10 bg-transparent px-2.5 text-xs text-white/70 outline-none hover:border-white/20"
               aria-label="Filter by board"
             >
               <option value="">All boards</option>
@@ -135,21 +135,23 @@ export function WidgetFeedbackList({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto border-t border-white/10">
-        {loading ? <p className="px-5 py-8 text-center text-sm text-white/45">Loading...</p> : null}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {loading ? <p className="px-5 py-10 text-center text-sm text-white/45">Loading...</p> : null}
         {error ? (
-          <p className="mx-5 my-3 rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
+          <p className="mx-5 my-4 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/85">
             {error}
           </p>
         ) : null}
         {!loading && !error && !posts.length ? (
-          <div className="mx-5 my-4 rounded-md border border-dashed border-white/10 px-4 py-8 text-center">
+          <div className="flex flex-col items-center px-5 py-12 text-center">
             <p className="text-sm font-medium text-white">No requests yet</p>
-            <p className="mt-1 text-xs text-white/45">Be the first to share an idea.</p>
+            <p className="mt-1 max-w-[16rem] text-xs leading-relaxed text-white/45">
+              Share an idea or report an issue to get the conversation started.
+            </p>
             <Button
               type="button"
               size="sm"
-              className="mt-4 h-8 cursor-pointer rounded-md px-3 text-xs text-white hover:opacity-90"
+              className="mt-5 h-8 cursor-pointer rounded-md px-3 text-xs text-white hover:opacity-90"
               style={{ backgroundColor: "var(--widget-accent, #3b82f6)" }}
               onClick={onCompose}
             >
@@ -169,12 +171,12 @@ export function WidgetFeedbackList({
           />
         ))}
         {nextOffset !== null ? (
-          <div className="border-t border-white/10 px-5 py-3">
+          <div className="px-5 py-4">
             <button
               type="button"
               disabled={loadingMore}
               onClick={() => load(nextOffset, true)}
-              className="w-full cursor-pointer rounded-md border border-white/10 bg-[#202020] py-2.5 text-xs text-white/70 transition-colors hover:bg-[#242424] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full cursor-pointer rounded-md border border-white/10 py-2.5 text-xs text-white/60 transition-colors hover:bg-white/[0.04] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loadingMore ? "Loading..." : "Load more"}
             </button>
