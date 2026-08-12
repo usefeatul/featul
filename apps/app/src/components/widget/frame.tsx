@@ -640,6 +640,7 @@ function RoadmapRow({
         apiBase={apiBase}
         userId={userId}
         identity={identity}
+        variant="plain"
         onChange={({ upvotes, hasVoted }) => onVoteChange?.(item.id, upvotes, hasVoted)}
       />
     </div>
