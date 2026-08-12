@@ -3,6 +3,7 @@
 import * as React from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
+import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ArrowDownWideNarrow, Search } from "lucide-react";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
@@ -130,7 +131,11 @@ export function WidgetFeedbackList({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {loading ? <p className="px-5 py-10 text-center text-sm text-white/45">Loading...</p> : null}
+        {loading ? (
+          <div className="flex items-center justify-center px-5 py-10" aria-label="Loading">
+            <LoaderIcon className="size-5 animate-spin text-white/45" />
+          </div>
+        ) : null}
         {error ? (
           <p className="mx-4 my-4 rounded-md bg-white/[0.04] px-3 py-2 text-sm text-white/85">
             {error}
@@ -171,7 +176,11 @@ export function WidgetFeedbackList({
               onClick={() => load(nextOffset, true)}
               className="w-full cursor-pointer rounded-md bg-white/[0.04] py-2.5 text-xs text-white/55 transition-colors hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loadingMore ? "Loading..." : "Load more"}
+              {loadingMore ? (
+                <LoaderIcon className="mx-auto size-4 animate-spin text-white/45" />
+              ) : (
+                "Load more"
+              )}
             </button>
           </div>
         ) : null}

@@ -28,6 +28,7 @@ import type {
 } from "./types";
 import { WidgetVoteButton } from "./VoteButton";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { LoaderIcon } from "@featul/ui/icons/loader";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { resolveWidgetAccent } from "./theme";
@@ -317,7 +318,11 @@ export default function WidgetFrame({
               : "min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-1"
         }
       >
-        {loading ? <p className="text-sm text-white/45">Loading...</p> : null}
+        {loading ? (
+          <div className="flex items-center justify-center py-8" aria-label="Loading">
+            <LoaderIcon className="size-5 animate-spin text-white/45" />
+          </div>
+        ) : null}
         {message ? (
           <p className="mb-3 rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
             {message}
@@ -564,7 +569,7 @@ export default function WidgetFrame({
         </nav>
       ) : null}
 
-      {!workspace?.hideBranding ? (
+      {!workspace?.hideBranding && !(isFeedback && feedbackView === "compose") ? (
         <div className="border-t border-white/10 px-4 py-2.5 text-center">
           <a
             href="https://featul.com?utm_source=powered_by&utm_medium=referral&utm_campaign=widget"

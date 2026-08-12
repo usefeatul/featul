@@ -3,6 +3,7 @@
 import * as React from "react";
 import { client } from "@featul/api/client";
 import { ExternalLink } from "lucide-react";
+import { LoaderIcon } from "@featul/ui/icons/loader";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { CommentsIcon } from "@featul/ui/icons/comments";
 import { statusLabel } from "@/lib/roadmap";
@@ -70,7 +71,11 @@ export function WidgetFeedbackDetail({
   }, [apiBase, identity, postId, userId]);
 
   if (loading && !post) {
-    return <p className="px-5 py-8 text-center text-sm text-white/45">Loading...</p>;
+    return (
+      <div className="flex items-center justify-center px-5 py-8" aria-label="Loading">
+        <LoaderIcon className="size-5 animate-spin text-white/45" />
+      </div>
+    );
   }
 
   if (error && !post) {

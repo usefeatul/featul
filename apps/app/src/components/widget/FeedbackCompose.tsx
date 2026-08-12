@@ -281,7 +281,7 @@ export function WidgetFeedbackCompose({
           disabled={!canSubmit}
           className="h-10 cursor-pointer rounded-md bg-white px-5 text-sm font-semibold text-neutral-900 hover:opacity-90 disabled:bg-white/20 disabled:text-white/35"
         >
-          {submitting ? "Posting..." : "Post"}
+          {submitting ? <LoaderIcon className="size-4 animate-spin" /> : "Post"}
         </Button>
       </div>
     </form>
