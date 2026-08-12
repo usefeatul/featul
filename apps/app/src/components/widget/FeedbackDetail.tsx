@@ -20,6 +20,7 @@ import { WidgetAuthorAvatar } from "./AuthorAvatar";
 type Props = {
   apiBase: WidgetApiBase;
   workspaceSlug: string;
+  accent?: string;
   postId: string;
   initialPost?: WidgetPost | null;
   userId?: string | null;
@@ -30,6 +31,7 @@ type Props = {
 export function WidgetFeedbackDetail({
   apiBase,
   workspaceSlug,
+  accent = "#3b82f6",
   postId,
   initialPost = null,
   userId,
@@ -68,12 +70,12 @@ export function WidgetFeedbackDetail({
   }, [apiBase, identity, postId, userId]);
 
   if (loading && !post) {
-    return <p className="py-8 text-center text-sm text-white/45">Loading...</p>;
+    return <p className="px-5 py-8 text-center text-sm text-white/45">Loading...</p>;
   }
 
   if (error && !post) {
     return (
-      <p className="rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
+      <p className="mx-5 rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
         {error}
       </p>
     );
@@ -86,8 +88,52 @@ export function WidgetFeedbackDetail({
   const body = toPlain(post.content);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start gap-3">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-1">
+        <div className="flex items-center gap-1.5 text-[11px] text-white/50">
+          <StatusIcon status={post.roadmapStatus || undefined} className="size-3.5 shrink-0" />
+          <span>{statusLabel(String(post.roadmapStatus || "pending"))}</span>
+          {post.boardName ? (
+            <>
+              <span aria-hidden className="text-white/20">
+                ·
+              </span>
+              <span className="truncate">{post.boardName}</span>
+            </>
+          ) : null}
+        </div>
+
+        <h2 className="mt-3 text-xl font-semibold leading-snug tracking-tight text-white">
+          {post.title}
+        </h2>
+
+        <div className="mt-4 flex items-center gap-2.5">
+          <WidgetAuthorAvatar name={author} image={post.authorImage} className="size-7" />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-white/85">{author}</p>
+            <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-white/40">
+              {post.createdAt ? <span>{formatRelativeDate(post.createdAt)}</span> : null}
+              <span aria-hidden className="text-white/20">
+                ·
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <CommentsIcon className="size-3" />
+                {post.commentCount || 0} comments
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div className="my-5 h-px w-full bg-white/10" />
+
+        {body ? (
+          <p className="whitespace-pre-wrap text-[15px] leading-7 text-white/70">{body}</p>
+        ) : (
+          <p className="text-sm text-white/40">No description provided.</p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 border-t border-white/10 px-5 py-3">
         <WidgetVoteButton
           postId={post.id}
           upvotes={post.upvotes || 0}
@@ -95,48 +141,23 @@ export function WidgetFeedbackDetail({
           apiBase={apiBase}
           userId={userId}
           identity={identity}
+          className="h-10 px-3"
           onChange={({ upvotes, hasVoted }) => {
             setPost((prev) => (prev ? { ...prev, upvotes, hasVoted } : prev));
             onVoteChange?.(post.id, upvotes, hasVoted);
           }}
         />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 text-xs text-white/45">
-            <StatusIcon status={post.roadmapStatus || undefined} className="size-3.5" />
-            <span>{statusLabel(String(post.roadmapStatus || "pending"))}</span>
-            {post.boardName ? (
-              <>
-                <span aria-hidden>·</span>
-                <span className="truncate">{post.boardName}</span>
-              </>
-            ) : null}
-          </div>
-          <h2 className="mt-2 text-lg font-semibold leading-snug text-white">{post.title}</h2>
-          <div className="mt-2 flex items-center gap-2 text-[11px] text-white/40">
-            <WidgetAuthorAvatar name={author} image={post.authorImage} className="size-5" />
-            <span>{author}</span>
-            {post.createdAt ? <span>{formatRelativeDate(post.createdAt)}</span> : null}
-            <span className="inline-flex items-center gap-1">
-              <CommentsIcon className="size-3" />
-              {post.commentCount || 0}
-            </span>
-          </div>
-        </div>
+        <a
+          href={boardHref}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
+          style={{ backgroundColor: accent }}
+        >
+          Open on board
+          <ExternalLink className="size-3.5 shrink-0" />
+        </a>
       </div>
-
-      {body ? (
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/80">{body}</p>
-      ) : null}
-
-      <a
-        href={boardHref}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-white/10 bg-[#202020] px-4 py-2.5 text-sm text-white/80 transition-colors hover:bg-[#242424] hover:text-white"
-      >
-        View on board
-        <ExternalLink className="size-3.5" />
-      </a>
     </div>
   );
 }

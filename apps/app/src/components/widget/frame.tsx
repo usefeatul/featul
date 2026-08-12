@@ -239,24 +239,43 @@ export default function WidgetFrame({
       }
     >
       {isFeedback ? (
-        <header className="flex items-center gap-3 px-5 py-4">
+        <header className="flex items-center gap-3 border-b border-white/10 px-5 py-3">
           <button
             type="button"
             onClick={() => {
               if (feedbackView === "list") setSection("home");
               else goFeedback("list");
             }}
-            className="flex size-7 items-center justify-center rounded-md text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex size-7 cursor-pointer items-center justify-center rounded-md text-white/55 transition-colors hover:bg-white/10 hover:text-white"
             aria-label="Back"
           >
             <ChevronLeft className="size-5" />
           </button>
-          <p className="flex-1 text-base font-semibold">{feedbackTitle}</p>
+          {feedbackView === "detail" ? (
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              <div className="flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/8">
+                {workspaceLogo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={workspaceLogo} alt="" className="size-full object-cover" />
+                ) : (
+                  <span className="text-[10px] font-semibold" style={{ color: accent }}>
+                    {workspaceName.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{feedbackTitle}</p>
+                <p className="truncate text-[10px] text-white/40">{workspaceName}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="flex-1 text-base font-semibold">{feedbackTitle}</p>
+          )}
           {feedbackView === "list" ? (
             <button
               type="button"
               onClick={() => goFeedback("compose")}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
+              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
               style={{ backgroundColor: accent }}
             >
               <Pencil className="size-3.5" />
@@ -266,7 +285,7 @@ export default function WidgetFrame({
           <button
             type="button"
             onClick={close}
-            className="flex size-7 items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex size-7 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/10 hover:text-white"
             aria-label="Close widget"
           >
             <X className="size-4" />
@@ -307,7 +326,7 @@ export default function WidgetFrame({
 
       <div
         className={
-          isFeedback && feedbackView === "list"
+          isFeedback && (feedbackView === "list" || feedbackView === "detail")
             ? "flex min-h-0 flex-1 flex-col pt-1"
             : isFeedback
               ? "flex min-h-0 flex-1 flex-col px-5 pb-5 pt-1"
@@ -454,6 +473,7 @@ export default function WidgetFrame({
             <WidgetFeedbackDetail
               apiBase={apiBase}
               workspaceSlug={workspaceSlug}
+              accent={accent}
               postId={selectedPost.id}
               initialPost={selectedPost}
               userId={userId}
