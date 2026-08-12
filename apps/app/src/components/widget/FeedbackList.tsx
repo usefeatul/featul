@@ -130,9 +130,12 @@ export function WidgetFeedbackList({
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {loading ? (
-          <div className="flex items-center justify-center px-5 py-10" aria-label="Loading">
+          <div
+            className="flex min-h-0 flex-1 items-center justify-center"
+            aria-label="Loading"
+          >
             <LoaderIcon className="size-5 animate-spin text-white/45" />
           </div>
         ) : null}

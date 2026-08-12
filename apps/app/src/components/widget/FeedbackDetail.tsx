@@ -72,7 +72,10 @@ export function WidgetFeedbackDetail({
 
   if (loading && !post) {
     return (
-      <div className="flex items-center justify-center px-5 py-8" aria-label="Loading">
+      <div
+        className="flex min-h-0 flex-1 items-center justify-center"
+        aria-label="Loading"
+      >
         <LoaderIcon className="size-5 animate-spin text-white/45" />
       </div>
     );

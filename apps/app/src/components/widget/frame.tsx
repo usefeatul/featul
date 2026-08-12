@@ -312,24 +312,27 @@ export default function WidgetFrame({
       <div
         className={
           isFeedback && (feedbackView === "list" || feedbackView === "detail")
-            ? "flex min-h-0 flex-1 flex-col"
+            ? "relative flex min-h-0 flex-1 flex-col"
             : isFeedback
-              ? "flex min-h-0 flex-1 flex-col px-5 pb-4"
-              : "min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-1"
+              ? "relative flex min-h-0 flex-1 flex-col px-5 pb-4"
+              : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-1"
         }
       >
         {loading ? (
-          <div className="flex items-center justify-center py-8" aria-label="Loading">
+          <div
+            className="flex min-h-0 flex-1 items-center justify-center"
+            aria-label="Loading"
+          >
             <LoaderIcon className="size-5 animate-spin text-white/45" />
           </div>
         ) : null}
-        {message ? (
+        {!loading && message ? (
           <p className="mb-3 rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
             {message}
           </p>
         ) : null}
 
-        {section === "home" ? (
+        {!loading && section === "home" ? (
           <div className="space-y-6">
             <button
               type="button"
@@ -439,7 +442,7 @@ export default function WidgetFrame({
           </div>
         ) : null}
 
-        {section === "feedback" ? (
+        {!loading && section === "feedback" ? (
           feedbackView === "compose" ? (
             <WidgetFeedbackCompose
               apiBase={apiBase}
@@ -484,7 +487,7 @@ export default function WidgetFrame({
           )
         ) : null}
 
-        {section === "roadmap" ? (
+        {!loading && section === "roadmap" ? (
           <section className="-mx-5">
             <div className="mb-3 px-5">
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>
@@ -515,7 +518,7 @@ export default function WidgetFrame({
           </section>
         ) : null}
 
-        {section === "changelog" ? (
+        {!loading && section === "changelog" ? (
           <section className="space-y-2">
             <div className="mb-4">
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>
