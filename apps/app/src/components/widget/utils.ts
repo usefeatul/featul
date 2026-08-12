@@ -68,3 +68,14 @@ export function formatRelativeDate(value: string | Date | null | undefined): str
   if (days < 30) return `${days}d ago`;
   return date.toLocaleDateString();
 }
+
+export function resolveBugsBoard<T extends { id: string; name?: string | null; slug?: string | null }>(
+  boards: T[],
+): T | null {
+  if (!boards.length) return null;
+  const bySlug = boards.find((board) => String(board.slug || "").toLowerCase() === "bugs");
+  if (bySlug) return bySlug;
+  const byName = boards.find((board) => String(board.name || "").toLowerCase() === "bugs");
+  if (byName) return byName;
+  return boards[0] || null;
+}

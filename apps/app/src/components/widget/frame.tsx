@@ -52,7 +52,6 @@ export default function WidgetFrame({
   const [workspace, setWorkspace] = React.useState<WidgetWorkspace | null>(null);
   const [tabs, setTabs] = React.useState<Section[]>(["home", "feedback", "roadmap", "changelog"]);
   const [boards, setBoards] = React.useState<Board[]>([]);
-  const [boardId, setBoardId] = React.useState("");
   const [listBoardId, setListBoardId] = React.useState("");
   const [userId, setUserId] = React.useState<string | null>(null);
   const [identity, setIdentity] = React.useState<IdentifiedUser | null>(null);
@@ -120,7 +119,6 @@ export default function WidgetFrame({
         setTabs(["home", ...enabledTabs]);
         const nextBoards: Board[] = Array.isArray(data.boards) ? data.boards : [];
         setBoards(nextBoards);
-        setBoardId(data.config?.defaultBoardId || nextBoards[0]?.id || "");
         setListBoardId("");
       } catch {
         if (!canceled) setMessage("The widget could not load.");
@@ -441,8 +439,6 @@ export default function WidgetFrame({
             <WidgetFeedbackCompose
               apiBase={apiBase}
               boards={boards}
-              boardId={boardId || boards[0]?.id || ""}
-              onBoardChange={setBoardId}
               userId={userId}
               identity={identity}
               primaryColor={accent}

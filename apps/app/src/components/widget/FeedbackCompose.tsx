@@ -19,13 +19,11 @@ import type {
   WidgetApiBase,
   WidgetPost,
 } from "./types";
-import { viewerPayload } from "./utils";
+import { viewerPayload, resolveBugsBoard } from "./utils";
 
 type Props = {
   apiBase: WidgetApiBase;
   boards: Board[];
-  boardId: string;
-  onBoardChange: (boardId: string) => void;
   userId?: string | null;
   identity?: IdentifiedUser | null;
   primaryColor?: string;
@@ -41,8 +39,6 @@ type UploadedImage = {
 export function WidgetFeedbackCompose({
   apiBase,
   boards,
-  boardId,
-  onBoardChange,
   userId,
   identity,
   primaryColor = "#3b82f6",
@@ -58,7 +54,8 @@ export function WidgetFeedbackCompose({
   const [uploadedImage, setUploadedImage] = React.useState<UploadedImage | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const selectedBoard = boards.find((board) => board.id === boardId) || boards[0];
+  const selectedBoard = React.useMemo(() => resolveBugsBoard(boards), [boards]);
+  const boardId = selectedBoard?.id || "";
   const canSubmit =
     Boolean(boardId) && title.trim().length >= 3 && !submitting && !uploading;
 
@@ -198,21 +195,6 @@ export function WidgetFeedbackCompose({
 
   return (
     <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
-      {boards.length > 1 ? (
-        <select
-          value={boardId}
-          onChange={(event) => onBoardChange(event.target.value)}
-          className="mb-3 h-9 w-full rounded-md bg-white/[0.05] px-3 text-sm text-white outline-none"
-          aria-label="Board"
-        >
-          {boards.map((board) => (
-            <option key={board.id} value={board.id}>
-              {board.name}
-            </option>
-          ))}
-        </select>
-      ) : null}
-
       <input
         value={title}
         onChange={(event) => setTitle(event.target.value)}
