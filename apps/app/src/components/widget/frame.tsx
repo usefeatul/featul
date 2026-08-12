@@ -6,10 +6,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Flame,
-  Home,
-  Map,
-  Megaphone,
-  MessageSquare,
   Pencil,
   X,
 } from "lucide-react";
@@ -28,6 +24,10 @@ import type {
   WidgetWorkspace,
 } from "./types";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
+import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
+import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
+import { HomeIcon } from "@featul/ui/icons/home";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { resolveWidgetAccent, resolveWidgetTheme, widgetThemeVars } from "./theme";
 import { WidgetThemeProvider } from "./WidgetThemeProvider";
@@ -407,7 +407,7 @@ export default function WidgetFrame({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={workspaceLogo} alt="" className="size-full object-cover" />
             ) : (
-              <MessageSquare className="size-4 text-[rgb(var(--widget-fg))]" />
+              <FillFeedbackIcon className="size-4 text-[rgb(var(--widget-fg))]" size={16} />
             )}
           </div>
           <div className="min-w-0 flex-1">
@@ -722,10 +722,10 @@ export default function WidgetFrame({
               }`}
               style={section === tab ? { color: accent } : undefined}
             >
-              {tab === "home" ? <Home className="size-4" /> : null}
-              {tab === "feedback" ? <MessageSquare className="size-4" /> : null}
-              {tab === "roadmap" ? <Map className="size-4" /> : null}
-              {tab === "changelog" ? <Megaphone className="size-4" /> : null}
+              {tab === "home" ? <HomeIcon className="size-4" size={16} /> : null}
+              {tab === "feedback" ? <FillFeedbackIcon className="size-4" size={16} /> : null}
+              {tab === "roadmap" ? <FillRoadmapIcon className="size-4" size={16} /> : null}
+              {tab === "changelog" ? <FillChangelogIcon className="size-4" size={16} /> : null}
               <span>
                 {tab === "changelog" ? "Updates" : `${tab.charAt(0).toUpperCase()}${tab.slice(1)}`}
               </span>
