@@ -45,9 +45,10 @@ export default function WidgetTestEmbed() {
       document.head.appendChild(script);
     }
 
+    window.featul?.destroy?.();
     window.featul?.init(TEST_WIDGET_PROJECT_ID, {
       widget: true,
-      theme: "dark",
+      theme: "auto",
       position: "right",
     });
   }, [pathname]);

@@ -201,7 +201,7 @@ export function WidgetFeedbackCompose({
         placeholder="What's on your mind?"
         maxLength={120}
         autoFocus
-        className="mb-1 w-full border-0 bg-transparent px-0 py-2 text-lg font-semibold text-white outline-none placeholder:text-white/30"
+        className="mb-1 w-full border-0 bg-transparent px-0 py-2 text-lg font-semibold text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.3)]"
       />
 
       <Textarea
@@ -209,11 +209,11 @@ export function WidgetFeedbackCompose({
         value={content}
         onChange={(event) => setContent(event.target.value)}
         placeholder="Add more detail..."
-        className="min-h-0 flex-1 resize-none px-0 py-2 text-[15px] leading-relaxed text-white/85 shadow-none placeholder:text-white/25 focus-visible:ring-0"
+        className="min-h-0 flex-1 resize-none px-0 py-2 text-[15px] leading-relaxed text-[rgb(var(--widget-fg)/0.85)] shadow-none placeholder:text-[rgb(var(--widget-fg)/0.25)] focus-visible:ring-0"
       />
 
       {uploadedImage ? (
-        <div className="relative mt-2 overflow-hidden rounded-md bg-white/[0.04]">
+        <div className="relative mt-2 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={uploadedImage.url}
@@ -232,15 +232,15 @@ export function WidgetFeedbackCompose({
       ) : null}
 
       {similar.length ? (
-        <div className="mt-2 rounded-md bg-white/[0.04] p-3">
+        <div className="mt-2 rounded-md bg-[rgb(var(--widget-fg)/0.04)] p-3">
           <p className="text-xs font-semibold" style={{ color: primaryColor || "#3b82f6" }}>
             Similar requests
           </p>
           <ul className="mt-2 space-y-1.5">
             {similar.map((item) => (
               <li key={item.id} className="flex items-center justify-between gap-2 text-xs">
-                <span className="truncate text-white/70">{item.title}</span>
-                <span className="shrink-0 text-white/40">{item.upvotes || 0} votes</span>
+                <span className="truncate text-[rgb(var(--widget-fg)/0.7)]">{item.title}</span>
+                <span className="shrink-0 text-[rgb(var(--widget-fg)/0.4)]">{item.upvotes || 0} votes</span>
               </li>
             ))}
           </ul>
@@ -248,7 +248,7 @@ export function WidgetFeedbackCompose({
       ) : null}
 
       {message ? (
-        <p className="mt-3 rounded-md bg-white/[0.05] px-3 py-2 text-sm text-white/85">{message}</p>
+        <p className="mt-3 rounded-md bg-[rgb(var(--widget-fg)/0.05)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">{message}</p>
       ) : null}
 
       <div className="flex items-center justify-between gap-3 pt-4">
@@ -265,7 +265,7 @@ export function WidgetFeedbackCompose({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading || Boolean(uploadedImage)}
-            className="flex size-9 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex size-9 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="Add image"
           >
             {uploading ? (
@@ -279,7 +279,7 @@ export function WidgetFeedbackCompose({
           type="submit"
           variant="plain"
           disabled={!canSubmit}
-          className="h-10 cursor-pointer rounded-md bg-white px-5 text-sm font-semibold text-neutral-900 hover:opacity-90 disabled:bg-white/20 disabled:text-white/35"
+          className="h-10 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-5 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90 disabled:bg-[rgb(var(--widget-fg)/0.2)] disabled:text-[rgb(var(--widget-fg)/0.35)]"
         >
           {submitting ? <LoaderIcon className="size-4 animate-spin" /> : "Post"}
         </Button>

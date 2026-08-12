@@ -25,14 +25,14 @@ export function WidgetAuthorAvatar({ name, image, className = "size-6" }: Props)
         src={image || undefined}
         alt=""
         onError={() => setFailed(true)}
-        className={`${className} shrink-0 rounded-full border border-white/10 object-cover bg-white/5`}
+        className={`${className} shrink-0 rounded-full border border-[rgb(var(--widget-fg)/0.1)] object-cover bg-[rgb(var(--widget-fg)/0.05)]`}
       />
     );
   }
 
   return (
     <span
-      className={`${className} inline-flex shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/8 text-[10px] font-medium text-white/70`}
+      className={`${className} inline-flex shrink-0 items-center justify-center rounded-full border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] text-[10px] font-medium text-[rgb(var(--widget-fg)/0.7)]`}
       aria-hidden
     >
       {initials}

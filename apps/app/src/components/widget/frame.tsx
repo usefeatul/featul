@@ -29,7 +29,8 @@ import type {
 } from "./types";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { resolveWidgetAccent } from "./theme";
+import { resolveWidgetAccent, resolveWidgetTheme, widgetThemeVars } from "./theme";
+import { WidgetThemeProvider } from "./WidgetThemeProvider";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
 import { WidgetVoteButton } from "./VoteButton";
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -48,6 +49,7 @@ type WidgetFrameProps = {
 export default function WidgetFrame({
   projectId,
   parentOrigin,
+  initialTheme,
   initialSection,
   initialPosition,
 }: WidgetFrameProps) {
@@ -77,6 +79,8 @@ export default function WidgetFrame({
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(null);
   const [listRefreshKey, setListRefreshKey] = React.useState(0);
   const [navBorderVisible, setNavBorderVisible] = React.useState(false);
+  const [themeMode, setThemeMode] = React.useState<"light" | "dark" | "auto">(initialTheme);
+  const [theme, setTheme] = React.useState<"light" | "dark">(() => resolveWidgetTheme(initialTheme));
   const navBorderTimeoutRef = React.useRef<number | null>(null);
 
   const apiBase = React.useMemo(() => ({ projectId, parentOrigin }), [projectId, parentOrigin]);
@@ -86,8 +90,24 @@ export default function WidgetFrame({
   const workspaceLogo = workspace?.logo || null;
 
   React.useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
+    const applyTheme = (next: "light" | "dark") => {
+      setTheme(next);
+      document.documentElement.style.colorScheme = next;
+      document.body.style.background = next === "light" ? "#ffffff" : "#000000";
+    };
+
+    applyTheme(resolveWidgetTheme(themeMode));
+    if (themeMode !== "auto") return;
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => applyTheme(resolveWidgetTheme("auto"));
+    if (typeof media.addEventListener === "function") media.addEventListener("change", onChange);
+    else media.addListener(onChange);
+    return () => {
+      if (typeof media.removeEventListener === "function") media.removeEventListener("change", onChange);
+      else media.removeListener(onChange);
+    };
+  }, [themeMode]);
 
   React.useEffect(() => {
     if (!workspace) return;
@@ -242,6 +262,16 @@ export default function WidgetFrame({
   React.useEffect(() => {
     async function handleMessage(event: MessageEvent) {
       if (event.data?.source !== "featul-widget") return;
+      if (event.data.type === "theme") {
+        const mode = (event.data.payload?.mode || event.data.payload?.theme || "auto") as
+          | "light"
+          | "dark"
+          | "auto";
+        if (mode === "light" || mode === "dark" || mode === "auto") {
+          setThemeMode(mode);
+        }
+        return;
+      }
       if (event.data.type === "show" && event.data.payload?.section) {
         setSection(event.data.payload.section);
         if (event.data.payload.section === "feedback") {
@@ -316,14 +346,18 @@ export default function WidgetFrame({
         : "Feedback";
 
   return (
+    <WidgetThemeProvider mode={themeMode}>
     <motion.main
       initial={reduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
-      className="flex h-screen flex-col overflow-hidden rounded-md border border-white/10 bg-[#171717] text-white shadow-sm"
+      className="flex h-screen flex-col overflow-hidden rounded-xl border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] shadow-sm"
       style={
         {
           ["--widget-accent" as string]: accent,
+          backgroundColor: theme === "light" ? "#ffffff" : "#000000",
+          color: theme === "light" ? "#171717" : "#ffffff",
+          ...widgetThemeVars(theme),
         } as React.CSSProperties
       }
     >
@@ -332,14 +366,14 @@ export default function WidgetFrame({
           <button
             type="button"
             onClick={() => goFeedback("list")}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
             aria-label="Back"
           >
             <ChevronLeft className="size-5" />
           </button>
           {feedbackView === "detail" ? (
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <div className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white/[0.06]">
+              <div className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.06)]">
                 {workspaceLogo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={workspaceLogo} alt="" className="size-full object-cover" />
@@ -351,7 +385,7 @@ export default function WidgetFrame({
               </div>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{feedbackTitle}</p>
-                <p className="truncate text-[10px] text-white/40">{workspaceName}</p>
+                <p className="truncate text-[10px] text-[rgb(var(--widget-fg)/0.4)]">{workspaceName}</p>
               </div>
             </div>
           ) : (
@@ -360,7 +394,7 @@ export default function WidgetFrame({
           <button
             type="button"
             onClick={close}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
             aria-label="Close widget"
           >
             <X className="size-4" />
@@ -368,12 +402,12 @@ export default function WidgetFrame({
         </header>
       ) : (
         <header className="flex items-center gap-2.5 px-4 py-3">
-          <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white/[0.06]">
+          <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.06)]">
             {workspaceLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={workspaceLogo} alt="" className="size-full object-cover" />
             ) : (
-              <MessageSquare className="size-4 text-white" />
+              <MessageSquare className="size-4 text-[rgb(var(--widget-fg))]" />
             )}
           </div>
           <div className="min-w-0 flex-1">
@@ -382,7 +416,7 @@ export default function WidgetFrame({
           <button
             type="button"
             onClick={() => goFeedback("compose")}
-            className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md bg-white px-3 text-xs font-semibold text-neutral-900 transition-opacity hover:opacity-90"
+            className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90"
           >
             <Pencil className="size-3.5" />
             Give feedback
@@ -390,7 +424,7 @@ export default function WidgetFrame({
           <button
             type="button"
             onClick={close}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
             aria-label="Close widget"
           >
             <X className="size-4" />
@@ -406,7 +440,9 @@ export default function WidgetFrame({
               ? "relative flex min-h-0 flex-1 flex-col px-5 pb-4"
               : section === "roadmap"
                 ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto pb-5 pt-0"
-                : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-1"
+                : section === "home"
+                  ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-4"
+                  : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-3"
         }
         data-widget-scroll={
           !(isFeedback && (feedbackView === "list" || feedbackView === "detail"))
@@ -419,11 +455,11 @@ export default function WidgetFrame({
             className="flex min-h-0 flex-1 items-center justify-center"
             aria-label="Loading"
           >
-            <LoaderIcon className="size-5 animate-spin text-white/45" />
+            <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
           </div>
         ) : null}
         {!loading && message ? (
-          <p className="mb-3 rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
+          <p className="mb-3 rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
             {message}
           </p>
         ) : null}
@@ -448,11 +484,11 @@ export default function WidgetFrame({
                         )}`
                       : "Latest update"}
                   </p>
-                  <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-white">
+                  <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
                     {featuredEntry.title}
                   </h2>
                   {featuredEntry.preview ? (
-                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-white/55">
+                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.55)]">
                       {featuredEntry.preview}
                     </p>
                   ) : null}
@@ -465,7 +501,7 @@ export default function WidgetFrame({
                           className="size-7"
                         />
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-white">
+                          <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
                             {featuredEntry.authorName || "Author"}
                           </p>
                           <p
@@ -476,13 +512,13 @@ export default function WidgetFrame({
                           </p>
                         </div>
                       </div>
-                      <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-white/40 transition-colors group-hover:text-white/70">
+                      <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
                         View updates
                         <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                       </span>
                     </div>
                   ) : (
-                    <span className="mt-5 inline-flex items-center gap-1 text-xs font-medium text-white/40 transition-colors group-hover:text-white/70">
+                    <span className="mt-5 inline-flex items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
                       View updates
                       <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                     </span>
@@ -496,10 +532,10 @@ export default function WidgetFrame({
                   >
                     Updates
                   </p>
-                  <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-white">
+                  <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
                     No updates yet
                   </h2>
-                  <p className="mt-3 text-sm leading-relaxed text-white/50">
+                  <p className="mt-3 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
                     New releases and product changes will show up here.
                   </p>
                 </>
@@ -510,14 +546,14 @@ export default function WidgetFrame({
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Flame className="size-3.5" style={{ color: accent }} />
-                  <p className="text-xs font-semibold tracking-wide text-white/80">
+                  <p className="text-xs font-semibold tracking-wide text-[rgb(var(--widget-fg)/0.8)]">
                     What&apos;s coming
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSection("roadmap")}
-                  className="cursor-pointer text-xs text-white/50 hover:text-white"
+                  className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.5)] hover:text-[rgb(var(--widget-fg))]"
                 >
                   Roadmap →
                 </button>
@@ -541,7 +577,7 @@ export default function WidgetFrame({
                     />
                   ))
                 ) : (
-                  <p className="px-5 py-5 text-sm text-white/45">No public roadmap items yet.</p>
+                  <p className="px-5 py-5 text-sm text-[rgb(var(--widget-fg)/0.45)]">No public roadmap items yet.</p>
                 )}
               </div>
             </section>
@@ -549,10 +585,10 @@ export default function WidgetFrame({
             <button
               type="button"
               onClick={() => goFeedback("compose")}
-              className="flex w-full cursor-pointer items-center justify-between rounded-md bg-white px-4 py-3 text-left transition-opacity hover:opacity-90"
+              className="flex w-full cursor-pointer items-center justify-between rounded-md bg-[rgb(var(--widget-cta))] px-4 py-3 text-left transition-opacity hover:opacity-90"
             >
               <div>
-                <p className="text-sm font-semibold text-neutral-900">Give feedback</p>
+                <p className="text-sm font-semibold text-[rgb(var(--widget-cta-fg))]">Give feedback</p>
                 <p className="mt-0.5 text-xs text-neutral-500">Share an idea or report an issue</p>
               </div>
               <Pencil className="size-4 shrink-0 text-neutral-700" />
@@ -631,11 +667,11 @@ export default function WidgetFrame({
               changelog.map((entry) => (
                 <div
                   key={entry.id}
-                  className="rounded-md border border-white/8 bg-white/[0.04] px-4 py-3"
+                  className="rounded-md border border-[rgb(var(--widget-fg)/0.08)] bg-[rgb(var(--widget-fg)/0.04)] px-4 py-3"
                 >
                   <p className="text-sm font-medium">{entry.title}</p>
                   {entry.preview ? (
-                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/45">
+                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
                       {entry.preview}
                     </p>
                   ) : null}
@@ -647,7 +683,7 @@ export default function WidgetFrame({
                         className="size-5"
                       />
                       <div className="min-w-0">
-                        <p className="truncate text-[11px] font-medium text-white/80">
+                        <p className="truncate text-[11px] font-medium text-[rgb(var(--widget-fg)/0.8)]">
                           {entry.authorName}
                         </p>
                         <p className="truncate text-[10px] font-medium" style={{ color: accent }}>
@@ -659,7 +695,7 @@ export default function WidgetFrame({
                 </div>
               ))
             ) : (
-              <p className="text-sm text-white/45">No updates published yet.</p>
+              <p className="text-sm text-[rgb(var(--widget-fg)/0.45)]">No updates published yet.</p>
             )}
           </section>
         ) : null}
@@ -669,7 +705,7 @@ export default function WidgetFrame({
         <nav
           className={`grid grid-cols-4 px-3 py-2 transition-[box-shadow] duration-200 ${
             navBorderVisible
-              ? "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]"
+              ? "shadow-[inset_0_1px_0_0_rgb(var(--widget-fg)/0.08)]"
               : "shadow-[inset_0_1px_0_0_transparent]"
           }`}
         >
@@ -682,7 +718,7 @@ export default function WidgetFrame({
                 if (tab === "feedback") goFeedback("list");
               }}
               className={`flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
-                section === tab ? "" : "text-white/45 hover:text-white/75"
+                section === tab ? "" : "text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg)/0.75)]"
               }`}
               style={section === tab ? { color: accent } : undefined}
             >
@@ -699,12 +735,12 @@ export default function WidgetFrame({
       ) : null}
 
       {!workspace?.hideBranding && !(isFeedback && feedbackView === "compose") ? (
-        <div className="border-t border-white/10 px-4 py-2.5 text-center">
+        <div className="border-t border-[rgb(var(--widget-fg)/0.1)] px-4 py-2.5 text-center">
           <a
             href="https://featul.com?utm_source=powered_by&utm_medium=referral&utm_campaign=widget"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-[10px] text-white/35 transition-colors hover:text-white/60"
+            className="inline-flex items-center gap-1.5 text-[10px] text-[rgb(var(--widget-fg)/0.35)] transition-colors hover:text-[rgb(var(--widget-fg)/0.6)]"
           >
             <span>Powered by featul</span>
             <FeatulLogoIcon className="size-3.5 shrink-0" size={14} />
@@ -712,6 +748,7 @@ export default function WidgetFrame({
         </div>
       ) : null}
     </motion.main>
+    </WidgetThemeProvider>
   );
 }
 
@@ -740,11 +777,11 @@ function RoadmapRow({
   const author = item.isAnonymous ? "Guest" : item.authorName || "Guest";
 
   return (
-    <div className="flex items-center gap-3 border-b border-white/10 px-5 py-3.5 transition-colors last:border-b-0 hover:bg-white/[0.03]">
+    <div className="flex items-center gap-3 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]">
       <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-9" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{item.title}</p>
-        <p className="mt-1 flex items-center gap-1.5 text-xs capitalize text-white/45">
+        <p className="mt-1 flex items-center gap-1.5 text-xs capitalize text-[rgb(var(--widget-fg)/0.45)]">
           <StatusIcon status={item.roadmapStatus || undefined} className="size-3.5" />
           {statusLabel(String(item.roadmapStatus || "planned"))}
         </p>

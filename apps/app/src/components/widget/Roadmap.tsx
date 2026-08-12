@@ -138,7 +138,7 @@ export function WidgetRoadmap({
   };
 
   if (!hasAny) {
-    return <p className="px-5 py-6 text-sm text-white/45">No public roadmap items yet.</p>;
+    return <p className="px-5 py-6 text-sm text-[rgb(var(--widget-fg)/0.45)]">No public roadmap items yet.</p>;
   }
 
   return (
@@ -146,7 +146,7 @@ export function WidgetRoadmap({
       {/* Overlay stack: no layout height, so pinning never jumps/glitches */}
       <div className="pointer-events-none sticky top-0 z-50 h-0">
         <div
-          className="pointer-events-auto relative overflow-hidden bg-[#171717]"
+          className="pointer-events-auto relative overflow-hidden bg-[rgb(var(--widget-surface))]"
           style={{ height: pinnedIndexes.length * HEADER_HEIGHT }}
         >
           {pinnedIndexes.map((sectionIndex, stackIndex) => {
@@ -157,7 +157,7 @@ export function WidgetRoadmap({
                 key={`pin-${section.key}`}
                 type="button"
                 onClick={() => jumpToSection(sectionIndex)}
-                className="absolute left-0 right-0 flex w-full cursor-pointer items-center gap-2 border-b border-white/10 bg-[#171717] px-5 text-left"
+                className="absolute left-0 right-0 flex w-full cursor-pointer items-center gap-2 border-b border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-surface))] px-5 text-left"
                 style={{
                   top: stackIndex * HEADER_HEIGHT,
                   height: HEADER_HEIGHT,
@@ -165,8 +165,8 @@ export function WidgetRoadmap({
                 aria-label={`Jump to ${section.label}`}
               >
                 <StatusIcon status={section.status} className="size-4 shrink-0" />
-                <h3 className="flex-1 text-sm font-semibold text-white">{section.label}</h3>
-                <span className="tabular-nums text-xs text-white/40">
+                <h3 className="flex-1 text-sm font-semibold text-[rgb(var(--widget-fg))]">{section.label}</h3>
+                <span className="tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
                   {String(grouped[section.key].length).padStart(2, "0")}
                 </span>
               </button>
@@ -192,7 +192,7 @@ export function WidgetRoadmap({
             <button
               type="button"
               onClick={() => jumpToSection(index)}
-              className={`flex w-full items-center gap-2 border-b border-white/10 bg-[#171717] px-5 text-left ${
+              className={`flex w-full items-center gap-2 border-b border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-surface))] px-5 text-left ${
                 isPinned
                   ? "pointer-events-none text-transparent"
                   : "cursor-pointer"
@@ -206,17 +206,17 @@ export function WidgetRoadmap({
               tabIndex={isPinned ? -1 : 0}
             >
               <StatusIcon status={section.status} className="size-4 shrink-0" />
-              <h3 className="flex-1 text-sm font-semibold text-white">{section.label}</h3>
-              <span className="tabular-nums text-xs text-white/40">
+              <h3 className="flex-1 text-sm font-semibold text-[rgb(var(--widget-fg))]">{section.label}</h3>
+              <span className="tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
                 {String(sectionItems.length).padStart(2, "0")}
               </span>
             </button>
 
             {sectionItems.length ? (
-              <div className="relative bg-[#171717]">
+              <div className="relative bg-[rgb(var(--widget-surface))]">
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute bottom-4 left-[27px] top-2 w-px bg-white/10"
+                  className="pointer-events-none absolute bottom-4 left-[27px] top-2 w-px bg-[rgb(var(--widget-fg)/0.1)]"
                 />
                 {visible.map((item) => (
                   <RoadmapItem
@@ -236,7 +236,7 @@ export function WidgetRoadmap({
                     onClick={() =>
                       setExpandedByKey((prev) => ({ ...prev, [section.key]: true }))
                     }
-                    className="flex w-full cursor-pointer items-center gap-1 bg-[#171717] px-5 py-3 pl-[46px] text-xs text-white/45 transition-colors hover:text-white/70"
+                    className="flex w-full cursor-pointer items-center gap-1 bg-[rgb(var(--widget-surface))] px-5 py-3 pl-[46px] text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.7)]"
                   >
                     Show more
                     <ChevronDown className="size-3.5" />
@@ -244,7 +244,7 @@ export function WidgetRoadmap({
                 ) : null}
               </div>
             ) : (
-              <p className="bg-[#171717] px-5 py-3 pl-11 text-xs text-white/30">
+              <p className="bg-[rgb(var(--widget-surface))] px-5 py-3 pl-11 text-xs text-[rgb(var(--widget-fg)/0.3)]">
                 Nothing here yet
               </p>
             )}
@@ -285,29 +285,29 @@ function RoadmapItem({
 
   if (compact) {
     return (
-      <div className="flex items-center gap-3 bg-[#171717] px-5 py-3">
-        <div className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[#171717]">
+      <div className="flex items-center gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
+        <div className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
           <StatusIcon status={status} className="size-3.5" />
         </div>
-        <p className="min-w-0 flex-1 truncate text-sm text-white/90">{item.title}</p>
+        <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">{item.title}</p>
         {doneDate ? (
-          <span className="shrink-0 text-xs text-white/35">{doneDate}</span>
+          <span className="shrink-0 text-xs text-[rgb(var(--widget-fg)/0.35)]">{doneDate}</span>
         ) : null}
       </div>
     );
   }
 
   return (
-    <div className="flex items-start gap-3 bg-[#171717] px-5 py-3">
-      <div className="mt-1 flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[#171717]">
+    <div className="flex items-start gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
+      <div className="mt-1 flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
         <StatusIcon status={status} className="size-3.5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium leading-snug text-white">{item.title}</p>
+        <p className="text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">{item.title}</p>
         {excerpt ? (
-          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/40">{excerpt}</p>
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.4)]">{excerpt}</p>
         ) : null}
-        <p className="mt-1.5 truncate text-[11px] text-white/35">{author}</p>
+        <p className="mt-1.5 truncate text-[11px] text-[rgb(var(--widget-fg)/0.35)]">{author}</p>
       </div>
       <WidgetVoteButton
         postId={item.id}

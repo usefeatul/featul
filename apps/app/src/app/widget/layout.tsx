@@ -1,7 +1,11 @@
 export default function WidgetLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="widget-shell min-h-screen bg-[#171717] text-white antialiased">
+    <div className="widget-shell min-h-screen bg-transparent antialiased">
       <style>{`
+        html,
+        body {
+          background: transparent !important;
+        }
         .widget-shell button,
         .widget-shell a,
         .widget-shell select,

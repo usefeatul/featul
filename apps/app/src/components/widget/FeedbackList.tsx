@@ -95,18 +95,18 @@ export function WidgetFeedbackList({
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-2 px-4 pb-3 pt-1">
         <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-white/35" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[rgb(var(--widget-fg)/0.35)]" />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search feedback"
-            className="h-9 w-full rounded-md bg-white/[0.05] pl-9 pr-3 text-sm text-white outline-none placeholder:text-white/30 focus:bg-white/[0.07]"
+            className="h-9 w-full rounded-md bg-[rgb(var(--widget-fg)/0.05)] pl-9 pr-3 text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.3)] focus:bg-[rgb(var(--widget-fg)/0.07)]"
           />
         </div>
         <button
           type="button"
           onClick={cycleSort}
-          className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md bg-white/[0.05] px-2.5 text-xs text-white/55 transition-colors hover:bg-white/[0.08] hover:text-white/80"
+          className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-fg)/0.05)] px-2.5 text-xs text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.08)] hover:text-[rgb(var(--widget-fg)/0.8)]"
           aria-label={`Sort by ${sort === "newest" ? "top" : "newest"}`}
           title={sort === "newest" ? "Newest" : "Top"}
         >
@@ -117,7 +117,7 @@ export function WidgetFeedbackList({
           <select
             value={boardId}
             onChange={(event) => onBoardChange(event.target.value)}
-            className="h-9 max-w-[7.5rem] cursor-pointer rounded-md bg-white/[0.05] px-2 text-xs text-white/70 outline-none hover:bg-white/[0.08]"
+            className="h-9 max-w-[7.5rem] cursor-pointer rounded-md bg-[rgb(var(--widget-fg)/0.05)] px-2 text-xs text-[rgb(var(--widget-fg)/0.7)] outline-none hover:bg-[rgb(var(--widget-fg)/0.08)]"
             aria-label="Filter by board"
           >
             <option value="">All boards</option>
@@ -136,24 +136,24 @@ export function WidgetFeedbackList({
             className="flex min-h-0 flex-1 items-center justify-center"
             aria-label="Loading"
           >
-            <LoaderIcon className="size-5 animate-spin text-white/45" />
+            <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
           </div>
         ) : null}
         {error ? (
-          <p className="mx-4 my-4 rounded-md bg-white/[0.04] px-3 py-2 text-sm text-white/85">
+          <p className="mx-4 my-4 rounded-md bg-[rgb(var(--widget-fg)/0.04)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
             {error}
           </p>
         ) : null}
         {!loading && !error && !posts.length ? (
           <div className="flex flex-col items-center px-5 py-12 text-center">
-            <p className="text-sm font-medium text-white">No requests yet</p>
-            <p className="mt-1 max-w-[16rem] text-xs leading-relaxed text-white/45">
+            <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">No requests yet</p>
+            <p className="mt-1 max-w-[16rem] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
               Share an idea or report an issue to get the conversation started.
             </p>
             <Button
               type="button"
               size="sm"
-              className="mt-5 h-8 cursor-pointer rounded-md bg-white px-3 text-xs font-semibold text-neutral-900 hover:opacity-90"
+              className="mt-5 h-8 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90"
               onClick={onCompose}
             >
               Give feedback
@@ -177,10 +177,10 @@ export function WidgetFeedbackList({
               type="button"
               disabled={loadingMore}
               onClick={() => load(nextOffset, true)}
-              className="w-full cursor-pointer rounded-md bg-white/[0.04] py-2.5 text-xs text-white/55 transition-colors hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full cursor-pointer rounded-md bg-[rgb(var(--widget-fg)/0.04)] py-2.5 text-xs text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.07)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loadingMore ? (
-                <LoaderIcon className="mx-auto size-4 animate-spin text-white/45" />
+                <LoaderIcon className="mx-auto size-4 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
               ) : (
                 "Load more"
               )}

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Manrope, Sora } from "next/font/google";
 import { Providers } from "../components/providers/providers";
-import MainThemeProvider from "@/components/global/MainThemeProvider";
+import ConditionalThemeProvider from "@/components/global/ConditionalThemeProvider";
 import WidgetTestEmbed from "@/components/widget/embed";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
@@ -101,7 +101,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <Providers>
-          <MainThemeProvider>{children}</MainThemeProvider>
+          <ConditionalThemeProvider>{children}</ConditionalThemeProvider>
         </Providers>
         <WidgetTestEmbed />
       </body>

@@ -6,6 +6,12 @@ export function getWidgetSdkSource() {
 
   var script = document.currentScript;
   var baseUrl = script && script.src ? new URL(script.src).origin : window.location.origin;
+  var PANEL_RADIUS = "12px";
+  var BUTTON_RADIUS = "6px";
+  var LAUNCHER_BG = "#000000";
+  var FEATUL_LOGO =
+    '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M11.986.764c-5.911 0-10.75 4.597-10.75 10.34 0 2.402.866 4.62 2.315 6.37 1.918 2.383 4.932 3.91 8.301 3.95l.036.013a68 68 0 0 0 1.915.657c1.177.386 2.674.842 3.886 1.095a2.32 2.32 0 0 0 1.72-.328c.478-.31.893-.848.893-1.544 0-.412-.167-.818-.329-1.131a7 7 0 0 0-.602-.941 11 11 0 0 0-.299-.384c2.247-1.88 3.664-4.655 3.664-7.758 0-3.552-1.85-6.671-4.663-8.517-1.74-1.163-3.83-1.822-6.087-1.822m6.378 5.273a.75.75 0 1 0-1.295.758 8.5 8.5 0 0 1 1.167 4.308 8.46 8.46 0 0 1-1.167 4.299.75.75 0 0 0 1.294.758 9.96 9.96 0 0 0 1.373-5.057 10 10 0 0 0-1.372-5.066"/></svg>';
+
   var state = {
     projectId: null,
     options: {},
@@ -20,8 +26,30 @@ export function getWidgetSdkSource() {
     morphTimer: null,
     animating: false,
     queue: [],
-    accent: "#3b82f6"
+    accent: "#3b82f6",
+    theme: "dark"
   };
+
+  function resolveTheme(mode) {
+    if (mode === "light" || mode === "dark") return mode;
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+    return "light";
+  }
+
+  function panelBackground() {
+    return state.theme === "light" ? "#ffffff" : "#000000";
+  }
+
+  function syncTheme() {
+    state.theme = resolveTheme((state.options && state.options.theme) || "auto");
+    if (state.iframe) {
+      state.iframe.style.background = "transparent";
+      state.iframe.style.colorScheme = state.theme;
+    }
+    if (state.shell && state.open) {
+      state.shell.style.background = panelBackground();
+    }
+  }
 
   function post(type, payload) {
     if (!state.iframe || !state.iframe.contentWindow) return;
@@ -93,35 +121,33 @@ export function getWidgetSdkSource() {
 
   function applyPanelRect() {
     applyFrameRect(getPanelRect(state.position));
-    if (state.iframe) state.iframe.style.borderRadius = "6px";
+    if (state.iframe) state.iframe.style.borderRadius = PANEL_RADIUS;
   }
 
   function applyLauncherRect() {
     applyFrameRect(getLauncherRect(state.position));
-    if (state.iframe) state.iframe.style.borderRadius = "6px";
+    if (state.iframe) state.iframe.style.borderRadius = BUTTON_RADIUS;
   }
 
   function applyShellPanelRect() {
     applyRect(state.shell, getPanelRect(state.position));
     if (!state.shell) return;
-    state.shell.style.borderRadius = "6px";
-    state.shell.style.background = "#171717";
+    state.shell.style.borderRadius = PANEL_RADIUS;
+    state.shell.style.background = panelBackground();
     state.shell.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
   }
 
   function applyShellLauncherRect() {
     applyRect(state.shell, getLauncherRect(state.position));
     if (!state.shell) return;
-    state.shell.style.borderRadius = "6px";
-    state.shell.style.background = state.accent || "#3b82f6";
+    state.shell.style.borderRadius = BUTTON_RADIUS;
+    state.shell.style.background = LAUNCHER_BG;
     state.shell.style.boxShadow = "none";
   }
 
   function applyAccent(color) {
     if (!color) return;
     state.accent = color;
-    if (state.button) state.button.style.background = color;
-    if (state.shell && !state.open) state.shell.style.background = color;
   }
 
   function clearTimers() {
@@ -136,6 +162,7 @@ export function getWidgetSdkSource() {
 
     var position = state.options.position === "left" ? "left" : "right";
     state.position = position;
+    syncTheme();
     var iframe = document.createElement("iframe");
     var params = new URLSearchParams({
       parentOrigin: window.location.origin,
@@ -148,15 +175,15 @@ export function getWidgetSdkSource() {
     iframe.setAttribute("aria-hidden", "true");
     iframe.style.position = "fixed";
     iframe.style.border = "0";
-    iframe.style.borderRadius = "6px";
+    iframe.style.borderRadius = PANEL_RADIUS;
     iframe.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
     iframe.style.zIndex = "2147483646";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
     iframe.style.transition = "opacity 120ms ease";
-    iframe.style.background = "#171717";
-    iframe.style.colorScheme = "dark";
+    iframe.style.background = "transparent";
+    iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
     state.iframe = iframe;
 
@@ -164,7 +191,7 @@ export function getWidgetSdkSource() {
     shell.setAttribute("aria-hidden", "true");
     shell.style.position = "fixed";
     shell.style.border = "0";
-    shell.style.borderRadius = "6px";
+    shell.style.borderRadius = BUTTON_RADIUS;
     shell.style.zIndex = "2147483647";
     shell.style.display = "none";
     shell.style.opacity = "0";
@@ -178,7 +205,7 @@ export function getWidgetSdkSource() {
       var button = document.createElement("button");
       button.type = "button";
       button.setAttribute("aria-label", "Open feedback");
-      button.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 17.5h-.75A2.75 2.75 0 0 1 2 14.75v-7.5A2.75 2.75 0 0 1 4.75 4.5h14.5A2.75 2.75 0 0 1 22 7.25v7.5a2.75 2.75 0 0 1-2.75 2.75h-8.5L6.6 21.05A.65.65 0 0 1 5.5 20.58V17.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7.25 10.25h9.5M7.25 13.25h6.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+      button.innerHTML = FEATUL_LOGO;
       button.style.position = "fixed";
       button.style.bottom = "20px";
       button.style[position] = "20px";
@@ -189,8 +216,8 @@ export function getWidgetSdkSource() {
       button.style.height = "52px";
       button.style.padding = "0";
       button.style.border = "0";
-      button.style.borderRadius = "6px";
-      button.style.background = state.accent || "#3b82f6";
+      button.style.borderRadius = BUTTON_RADIUS;
+      button.style.background = LAUNCHER_BG;
       button.style.color = "#ffffff";
       button.style.font = "600 14px/1 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       button.style.letterSpacing = "0";
@@ -289,6 +316,23 @@ export function getWidgetSdkSource() {
     else applyShellLauncherRect();
   });
 
+  function bindThemeMedia() {
+    if (!window.matchMedia) return;
+    var media = window.matchMedia("(prefers-color-scheme: dark)");
+    var onChange = function () {
+      var mode = (state.options && state.options.theme) || "auto";
+      if (mode !== "auto") return;
+      syncTheme();
+      if (state.open) applyShellPanelRect();
+      if (state.iframe && state.iframe.contentWindow) {
+        post("theme", { mode: "auto", theme: state.theme });
+      }
+    };
+    if (typeof media.addEventListener === "function") media.addEventListener("change", onChange);
+    else if (typeof media.addListener === "function") media.addListener(onChange);
+  }
+  bindThemeMedia();
+
   window.addEventListener("message", function (event) {
     if (event.origin !== baseUrl) return;
     var data = event.data || {};
@@ -296,8 +340,17 @@ export function getWidgetSdkSource() {
     if (data.type === "ready") {
       state.ready = true;
       if (state.user) post("identify", state.user);
+      post("theme", {
+        mode: (state.options && state.options.theme) || "auto",
+        theme: state.theme
+      });
       flush();
       if (state.open) post("show", {});
+    }
+    if (data.type === "theme" && data.payload && data.payload.theme) {
+      state.theme = data.payload.theme === "light" ? "light" : "dark";
+      if (state.iframe) state.iframe.style.colorScheme = state.theme;
+      if (state.shell && state.open) state.shell.style.background = panelBackground();
     }
     if (data.type === "brand" && data.payload && data.payload.primaryColor) {
       applyAccent(data.payload.primaryColor);
@@ -309,9 +362,22 @@ export function getWidgetSdkSource() {
 
   var api = {
     init: function (projectId, options) {
+      var nextOptions = options || {};
+      var prevTheme = (state.options && state.options.theme) || "auto";
+      var nextTheme = nextOptions.theme || "auto";
+      if (state.iframe && prevTheme !== nextTheme) {
+        api.destroy();
+      }
       state.projectId = projectId;
-      state.options = options || {};
+      state.options = nextOptions;
+      syncTheme();
       buildFrame();
+      if (state.ready) {
+        post("theme", {
+          mode: (state.options && state.options.theme) || "auto",
+          theme: state.theme
+        });
+      }
     },
     identify: function (user) {
       state.user = user || null;

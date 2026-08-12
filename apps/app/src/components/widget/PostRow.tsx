@@ -33,7 +33,7 @@ export function WidgetPostRow({
   ].filter(Boolean);
 
   return (
-    <article className="relative border-b border-white/10 px-4 py-3.5 transition-colors last:border-b-0 hover:bg-white/[0.03]">
+    <article className="relative border-b border-[rgb(var(--widget-fg)/0.1)] px-4 py-3.5 transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]">
       <button
         type="button"
         onClick={() => onOpen(post)}
@@ -45,29 +45,29 @@ export function WidgetPostRow({
         <WidgetAuthorAvatar name={author} image={post.authorImage} className="mt-0.5 size-9 shrink-0" />
 
         <div className="min-w-0 flex-1">
-          <h3 className="text-[15px] font-semibold leading-snug tracking-tight text-white">
+          <h3 className="text-[15px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
             {post.title}
           </h3>
 
           {excerpt ? (
-            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-white/45">{excerpt}</p>
+            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">{excerpt}</p>
           ) : null}
 
           {post.image ? (
-            <div className="mt-2 overflow-hidden rounded-md bg-white/[0.04]">
+            <div className="mt-2 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={post.image} alt="" className="h-24 w-full object-cover" />
             </div>
           ) : null}
 
-          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-white/40">
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
             {meta.map((part, index) => (
               <React.Fragment key={`${part}-${index}`}>
-                {index > 0 ? <span aria-hidden className="text-white/20">·</span> : null}
+                {index > 0 ? <span aria-hidden className="text-[rgb(var(--widget-fg)/0.2)]">·</span> : null}
                 <span className="truncate">{part}</span>
               </React.Fragment>
             ))}
-            <span aria-hidden className="text-white/20">
+            <span aria-hidden className="text-[rgb(var(--widget-fg)/0.2)]">
               ·
             </span>
             <span className="inline-flex items-center gap-1 truncate">

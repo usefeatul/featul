@@ -76,14 +76,14 @@ export function WidgetFeedbackDetail({
         className="flex min-h-0 flex-1 items-center justify-center"
         aria-label="Loading"
       >
-        <LoaderIcon className="size-5 animate-spin text-white/45" />
+        <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
       </div>
     );
   }
 
   if (error && !post) {
     return (
-      <p className="mx-5 rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
+      <p className="mx-5 rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
         {error}
       </p>
     );
@@ -98,12 +98,12 @@ export function WidgetFeedbackDetail({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-1">
-        <div className="flex items-center gap-1.5 text-[11px] text-white/50">
+        <div className="flex items-center gap-1.5 text-[11px] text-[rgb(var(--widget-fg)/0.5)]">
           <StatusIcon status={post.roadmapStatus || undefined} className="size-3.5 shrink-0" />
           <span>{statusLabel(String(post.roadmapStatus || "pending"))}</span>
           {post.boardName ? (
             <>
-              <span aria-hidden className="text-white/20">
+              <span aria-hidden className="text-[rgb(var(--widget-fg)/0.2)]">
                 ·
               </span>
               <span className="truncate">{post.boardName}</span>
@@ -111,17 +111,17 @@ export function WidgetFeedbackDetail({
           ) : null}
         </div>
 
-        <h2 className="mt-3 text-xl font-semibold leading-snug tracking-tight text-white">
+        <h2 className="mt-3 text-xl font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
           {post.title}
         </h2>
 
         <div className="mt-4 flex items-center gap-2.5">
           <WidgetAuthorAvatar name={author} image={post.authorImage} className="size-7" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-white/85">{author}</p>
-            <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-white/40">
+            <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg)/0.85)]">{author}</p>
+            <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
               {post.createdAt ? <span>{formatRelativeDate(post.createdAt)}</span> : null}
-              <span aria-hidden className="text-white/20">
+              <span aria-hidden className="text-[rgb(var(--widget-fg)/0.2)]">
                 ·
               </span>
               <span className="inline-flex items-center gap-1">
@@ -132,16 +132,16 @@ export function WidgetFeedbackDetail({
           </div>
         </div>
 
-        <div className="my-5 h-px w-full bg-white/[0.06]" />
+        <div className="my-5 h-px w-full bg-[rgb(var(--widget-fg)/0.06)]" />
 
         {body ? (
-          <p className="whitespace-pre-wrap text-[15px] leading-7 text-white/70">{body}</p>
+          <p className="whitespace-pre-wrap text-[15px] leading-7 text-[rgb(var(--widget-fg)/0.7)]">{body}</p>
         ) : (
-          <p className="text-sm text-white/40">No description provided.</p>
+          <p className="text-sm text-[rgb(var(--widget-fg)/0.4)]">No description provided.</p>
         )}
 
         {post.image ? (
-          <div className="mt-5 overflow-hidden rounded-md bg-white/[0.04]">
+          <div className="mt-5 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={post.image} alt="" className="max-h-64 w-full object-cover" />
           </div>
