@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
-  Flame,
   X,
 } from "lucide-react";
 import { client } from "@featul/api/client";
@@ -34,7 +33,7 @@ import { WidgetThemeProvider } from "./WidgetThemeProvider";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
 import { WidgetVoteButton } from "./VoteButton";
 import StatusIcon from "@/components/requests/StatusIcon";
-import { statusLabel } from "@/lib/roadmap";
+import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { extractTextFromTiptap } from "@/types/changelog";
 import { toShortPreview } from "./utils";
 
@@ -337,7 +336,21 @@ export default function WidgetFrame({
   }, []);
 
   const featuredEntry = changelog[0];
-  const previewRoadmap = roadmap.slice(0, 4);
+  const homeRoadmap = React.useMemo(() => {
+    const progress = roadmap.filter(
+      (item) => normalizeRoadmapStatus(item.roadmapStatus, "planned") === "progress",
+    );
+    const rest = roadmap.filter(
+      (item) => normalizeRoadmapStatus(item.roadmapStatus, "planned") !== "progress",
+    );
+    return [...progress, ...rest].slice(0, 5);
+  }, [roadmap]);
+  const homeChangelog = changelog.slice(0, 5);
+  const homeRoadmapLabel = homeRoadmap.some(
+    (item) => normalizeRoadmapStatus(item.roadmapStatus, "planned") === "progress",
+  )
+    ? "In progress"
+    : "Roadmap";
   const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
   const isFeedback = section === "feedback";
   const showTabs = !isFeedback || feedbackView === "list";
@@ -452,7 +465,7 @@ export default function WidgetFrame({
               : section === "roadmap"
                 ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto pb-5 pt-0"
                 : section === "home"
-                  ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-4"
+                  ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto pb-5 pt-4"
                   : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-3"
         }
         data-widget-scroll={
@@ -485,12 +498,12 @@ export default function WidgetFrame({
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={contentTransition}
-            className="space-y-6"
+            className="space-y-0"
           >
             <button
               type="button"
               onClick={() => setSection("changelog")}
-              className="group w-full text-left"
+              className="group w-full border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6 text-left"
             >
               {featuredEntry ? (
                 <>
@@ -563,25 +576,41 @@ export default function WidgetFrame({
               )}
             </button>
 
-            <section>
-              <div className="mb-3 flex items-center justify-between">
+            <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-5">
+              <button
+                type="button"
+                onClick={() => goFeedback("compose")}
+                className="flex w-full cursor-pointer items-center justify-between rounded-md bg-[rgb(var(--widget-cta))] px-4 py-3 text-left transition-opacity hover:opacity-90"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-[rgb(var(--widget-cta-fg))]">Give feedback</p>
+                  <p className="mt-0.5 text-xs text-[rgb(var(--widget-cta-fg)/0.55)]">
+                    Share an idea or report an issue
+                  </p>
+                </div>
+                <FillPenIcon className="size-4 shrink-0 text-[rgb(var(--widget-cta-fg)/0.7)]" size={16} />
+              </button>
+            </div>
+
+            <section className="border-b border-[rgb(var(--widget-fg)/0.1)] py-5">
+              <div className="mb-3 flex items-center justify-between gap-3 px-5">
                 <div className="flex items-center gap-2">
-                  <Flame className="size-3.5" style={{ color: accent }} />
-                  <p className="text-xs font-semibold tracking-wide text-[rgb(var(--widget-fg)/0.8)]">
-                    What&apos;s coming
+                  <StatusIcon status="progress" className="size-3.5" />
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+                    {homeRoadmapLabel}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSection("roadmap")}
-                  className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.5)] hover:text-[rgb(var(--widget-fg))]"
+                  className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
                 >
-                  Roadmap →
+                  See roadmap →
                 </button>
               </div>
-              <div className="-mx-5">
-                {previewRoadmap.length ? (
-                  previewRoadmap.map((item) => (
+              <div>
+                {homeRoadmap.length ? (
+                  homeRoadmap.map((item) => (
                     <RoadmapRow
                       key={item.id}
                       item={item}
@@ -598,22 +627,55 @@ export default function WidgetFrame({
                     />
                   ))
                 ) : (
-                  <p className="px-5 py-5 text-sm text-[rgb(var(--widget-fg)/0.45)]">No public roadmap items yet.</p>
+                  <p className="px-5 py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
+                    No public roadmap items yet.
+                  </p>
                 )}
               </div>
             </section>
 
-            <button
-              type="button"
-              onClick={() => goFeedback("compose")}
-              className="flex w-full cursor-pointer items-center justify-between rounded-md bg-[rgb(var(--widget-cta))] px-4 py-3 text-left transition-opacity hover:opacity-90"
-            >
-              <div>
-                <p className="text-sm font-semibold text-[rgb(var(--widget-cta-fg))]">Give feedback</p>
-                <p className="mt-0.5 text-xs text-neutral-500">Share an idea or report an issue</p>
+            <section className="py-5">
+              <div className="mb-3 flex items-center justify-between gap-3 px-5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+                  Updates
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSection("changelog")}
+                  className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+                >
+                  See updates →
+                </button>
               </div>
-              <FillPenIcon className="size-4 shrink-0 text-[rgb(var(--widget-cta-fg)/0.7)]" size={16} />
-            </button>
+              {homeChangelog.length ? (
+                <div>
+                  {homeChangelog.map((entry) => (
+                    <button
+                      key={entry.id}
+                      type="button"
+                      onClick={() => setSection("changelog")}
+                      className="flex w-full items-start gap-4 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
+                    >
+                      <span className="w-[3.25rem] shrink-0 pt-0.5 text-[11px] font-medium uppercase tracking-wide text-[rgb(var(--widget-fg)/0.4)]">
+                        {entry.publishedAt
+                          ? new Date(entry.publishedAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : "—"}
+                      </span>
+                      <span className="min-w-0 flex-1 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
+                        {entry.title}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="px-5 py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
+                  No updates published yet.
+                </p>
+              )}
+            </section>
           </motion.div>
         ) : null}
 
@@ -821,13 +883,10 @@ function RoadmapRow({
 
   return (
     <div className="flex items-center gap-3 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]">
-      <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-9" />
+      <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-8" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{item.title}</p>
-        <p className="mt-1 flex items-center gap-1.5 text-xs capitalize text-[rgb(var(--widget-fg)/0.45)]">
-          <StatusIcon status={item.roadmapStatus || undefined} className="size-3.5" />
-          {statusLabel(String(item.roadmapStatus || "planned"))}
-        </p>
+        <p className="mt-1 truncate text-xs text-[rgb(var(--widget-fg)/0.45)]">{author}</p>
       </div>
       <WidgetVoteButton
         postId={item.id}
