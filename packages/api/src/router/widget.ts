@@ -730,10 +730,14 @@ export function createWidgetRouter() {
           title: changelogEntry.title,
           slug: changelogEntry.slug,
           summary: changelogEntry.summary,
+          content: changelogEntry.content,
           publishedAt: changelogEntry.publishedAt,
+          authorName: user.name,
+          authorImage: user.image,
         })
         .from(changelogEntry)
         .innerJoin(board, eq(changelogEntry.boardId, board.id))
+        .leftJoin(user, eq(changelogEntry.authorId, user.id))
         .where(
           and(
             eq(board.workspaceId, resolved.workspaceId),
@@ -746,7 +750,65 @@ export function createWidgetRouter() {
         .orderBy(desc(changelogEntry.publishedAt))
         .limit(20);
 
-      return c.superjson({ entries: rows });
+      return c.superjson({
+        entries: rows.map((row: (typeof rows)[number]) => {
+          const fromContent = extractTiptapPlainText(row.content);
+          const summary = typeof row.summary === "string" ? row.summary.trim() : "";
+          const preview = (summary || fromContent).trim();
+          return {
+            id: row.id,
+            title: row.title,
+            slug: row.slug,
+            summary: summary || null,
+            content: row.content,
+            preview: preview || null,
+            publishedAt: row.publishedAt,
+            authorName: row.authorName || null,
+            authorImage: row.authorImage || null,
+            author: {
+              name: row.authorName || null,
+              image: row.authorImage || null,
+            },
+          };
+        }),
+      });
     }),
   });
+}
+
+function extractTiptapPlainText(content: unknown): string {
+  if (!content) return "";
+
+  if (typeof content === "string") {
+    const trimmed = content.trim();
+    if (!trimmed) return "";
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        return extractTiptapPlainText(JSON.parse(trimmed));
+      } catch {
+        // fall through to html/plaintext cleanup
+      }
+    }
+    return trimmed.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  const parts: string[] = [];
+  const visit = (node: unknown) => {
+    if (!node || typeof node !== "object") return;
+    const record = node as Record<string, unknown>;
+    if (typeof record.text === "string" && record.text.trim()) {
+      parts.push(record.text);
+    }
+    if (Array.isArray(record.content)) {
+      for (const child of record.content) visit(child);
+    }
+  };
+
+  if (Array.isArray(content)) {
+    for (const node of content) visit(node);
+  } else {
+    visit(content);
+  }
+
+  return parts.join(" ").replace(/\s+/g, " ").trim();
 }

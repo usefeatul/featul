@@ -34,6 +34,7 @@ import { WidgetAuthorAvatar } from "./AuthorAvatar";
 import { WidgetVoteButton } from "./VoteButton";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
+import { extractTextFromTiptap } from "@/types/changelog";
 
 type WidgetFrameProps = {
   projectId: string;
@@ -59,7 +60,15 @@ export default function WidgetFrame({
   const [identity, setIdentity] = React.useState<IdentifiedUser | null>(null);
   const [roadmap, setRoadmap] = React.useState<WidgetRoadmapItem[]>([]);
   const [changelog, setChangelog] = React.useState<
-    Array<{ id: string; title: string; summary: string | null; publishedAt: string | null }>
+    Array<{
+      id: string;
+      title: string;
+      summary: string | null;
+      preview?: string | null;
+      publishedAt: string | null;
+      authorName?: string | null;
+      authorImage?: string | null;
+    }>
   >([]);
   const [loading, setLoading] = React.useState(true);
   const [message, setMessage] = React.useState("");
@@ -153,7 +162,51 @@ export default function WidgetFrame({
         if (section === "home" || section === "changelog") {
           const res = await client.widget.changelog.$get(apiBase);
           const data = await res.json();
-          setChangelog(Array.isArray(data.entries) ? data.entries : []);
+          const entries = Array.isArray(data.entries) ? data.entries : [];
+          setChangelog(
+            entries.map((entry: any) => {
+              const summary =
+                typeof entry?.summary === "string" && entry.summary.trim()
+                  ? entry.summary.trim()
+                  : null;
+              const fromContent = extractTextFromTiptap(entry?.content);
+              const preview =
+                (typeof entry?.preview === "string" && entry.preview.trim()
+                  ? entry.preview.trim()
+                  : null) ||
+                summary ||
+                (fromContent ? fromContent.trim() : null);
+              const authorName =
+                (typeof entry?.authorName === "string" && entry.authorName.trim()
+                  ? entry.authorName.trim()
+                  : null) ||
+                (typeof entry?.author?.name === "string" && entry.author.name.trim()
+                  ? entry.author.name.trim()
+                  : null);
+              const authorImage =
+                (typeof entry?.authorImage === "string" && entry.authorImage.trim()
+                  ? entry.authorImage.trim()
+                  : null) ||
+                (typeof entry?.author?.image === "string" && entry.author.image.trim()
+                  ? entry.author.image.trim()
+                  : null);
+
+              return {
+                id: String(entry?.id || ""),
+                title: String(entry?.title || ""),
+                summary,
+                preview,
+                publishedAt:
+                  entry?.publishedAt instanceof Date
+                    ? entry.publishedAt.toISOString()
+                    : typeof entry?.publishedAt === "string"
+                      ? entry.publishedAt
+                      : null,
+                authorName,
+                authorImage,
+              };
+            }),
+          );
         }
       } catch {
         setMessage("Could not load this section.");
@@ -355,64 +408,77 @@ export default function WidgetFrame({
           <div className="space-y-6">
             <button
               type="button"
-              onClick={() => (featuredEntry ? setSection("changelog") : goFeedback("list"))}
-              className="group relative w-full overflow-hidden rounded-md border border-white/8 bg-[#242424] p-5 text-left shadow-inner"
+              onClick={() => setSection("changelog")}
+              className="group w-full text-left"
             >
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-40"
-                style={{
-                  backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,.18) 1px, transparent 0), radial-gradient(ellipse at top right, ${accent}33, transparent 55%)`,
-                  backgroundSize: "14px 14px, auto",
-                }}
-              />
-              <div className="relative flex min-h-36 flex-col justify-end">
-                <div className="mb-8 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {workspaceLogo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={workspaceLogo}
-                        alt=""
-                        className="size-10 rounded-full border border-white/10 object-cover"
-                      />
-                    ) : (
-                      <div
-                        className="flex size-10 items-center justify-center rounded-full text-sm font-semibold text-white"
-                        style={{ backgroundColor: accent }}
-                      >
-                        {workspaceName.slice(0, 1).toUpperCase()}
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-semibold">{workspaceName}</p>
-                      <p className="text-xs text-white/45">Product feedback</p>
-                    </div>
-                  </div>
-                  <div className="rounded-md bg-[#303030] px-2.5 py-2 text-center shadow-sm">
-                    <p className="text-[10px] font-bold uppercase" style={{ color: accent }}>
-                      New
-                    </p>
-                    <p className="text-lg font-semibold leading-none">{new Date().getDate()}</p>
-                  </div>
-                </div>
-                <p className="text-xs font-semibold" style={{ color: accent }}>
-                  Built from feedback
-                </p>
-                <div className="mt-2 flex items-end justify-between gap-3">
-                  <h2 className="max-w-[250px] text-xl font-semibold leading-tight">
-                    {featuredEntry?.title || "Share feedback without leaving the app"}
+              {featuredEntry ? (
+                <>
+                  <p
+                    className="text-[11px] font-semibold uppercase tracking-[0.14em]"
+                    style={{ color: accent }}
+                  >
+                    {featuredEntry.publishedAt
+                      ? `Released · ${new Date(featuredEntry.publishedAt).toLocaleDateString(
+                          "en-US",
+                          { month: "short", day: "numeric" },
+                        )}`
+                      : "Latest update"}
+                  </p>
+                  <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-white">
+                    {featuredEntry.title}
                   </h2>
-                  <ChevronRight className="size-5 shrink-0 text-white/35 transition-transform group-hover:translate-x-0.5" />
-                </div>
-              </div>
+                  {featuredEntry.preview ? (
+                    <p className="mt-3 line-clamp-6 text-sm leading-relaxed text-white/55">
+                      {featuredEntry.preview}
+                    </p>
+                  ) : null}
+                  {(featuredEntry.authorName || featuredEntry.authorImage) ? (
+                    <div className="mt-5 flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <WidgetAuthorAvatar
+                          name={featuredEntry.authorName || "Author"}
+                          image={featuredEntry.authorImage}
+                          className="size-7"
+                        />
+                        <p className="truncate text-sm font-medium text-white/85">
+                          {featuredEntry.authorName || "Author"}
+                        </p>
+                      </div>
+                      <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-white/40 transition-colors group-hover:text-white/70">
+                        View updates
+                        <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="mt-5 inline-flex items-center gap-1 text-xs font-medium text-white/40 transition-colors group-hover:text-white/70">
+                      View updates
+                      <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p
+                    className="text-[11px] font-semibold uppercase tracking-[0.14em]"
+                    style={{ color: accent }}
+                  >
+                    Updates
+                  </p>
+                  <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-white">
+                    No updates yet
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-white/50">
+                    New releases and product changes will show up here.
+                  </p>
+                </>
+              )}
             </button>
 
             <section>
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Flame className="size-3.5" style={{ color: accent }} />
-                  <p className="text-xs font-bold uppercase tracking-wide text-white/80">
+                  <p className="text-xs font-semibold tracking-wide text-white/80">
                     What&apos;s coming
                   </p>
                 </div>
@@ -451,12 +517,13 @@ export default function WidgetFrame({
             <button
               type="button"
               onClick={() => goFeedback("compose")}
-              className="w-full rounded-md border border-white/8 bg-[#202020] px-5 py-4 text-left transition-colors hover:bg-[#242424]"
+              className="flex w-full cursor-pointer items-center justify-between rounded-md bg-white px-4 py-3 text-left transition-opacity hover:opacity-90"
             >
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>
-                Share
-              </p>
-              <p className="mt-2 text-base font-semibold">Got a different idea?</p>
+              <div>
+                <p className="text-sm font-semibold text-neutral-900">Give feedback</p>
+                <p className="mt-0.5 text-xs text-neutral-500">Share an idea or report an issue</p>
+              </div>
+              <Pencil className="size-4 shrink-0 text-neutral-700" />
             </button>
           </div>
         ) : null}
@@ -535,8 +602,20 @@ export default function WidgetFrame({
                   className="rounded-md border border-white/8 bg-white/[0.04] px-4 py-3"
                 >
                   <p className="text-sm font-medium">{entry.title}</p>
-                  {entry.summary ? (
-                    <p className="mt-1 line-clamp-3 text-xs text-white/45">{entry.summary}</p>
+                  {entry.preview ? (
+                    <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-white/45">
+                      {entry.preview}
+                    </p>
+                  ) : null}
+                  {entry.authorName ? (
+                    <div className="mt-3 flex items-center gap-2">
+                      <WidgetAuthorAvatar
+                        name={entry.authorName}
+                        image={entry.authorImage}
+                        className="size-5"
+                      />
+                      <p className="truncate text-[11px] text-white/45">{entry.authorName}</p>
+                    </div>
                   ) : null}
                 </div>
               ))
