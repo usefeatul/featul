@@ -5,6 +5,22 @@ export function toPlain(value?: string | null): string {
   return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+export function toShortPreview(value?: string | null, maxSentences = 2): string {
+  const plain = toPlain(value);
+  if (!plain) return "";
+
+  const sentences = plain.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
+  if (!sentences?.length) return plain;
+
+  const clipped = sentences
+    .slice(0, Math.max(1, maxSentences))
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(" ");
+
+  return clipped.length > 180 ? `${clipped.slice(0, 177).trimEnd()}…` : clipped;
+}
+
 export function publicBoardPostUrl(workspaceSlug: string, postSlug: string): string {
   const slug = workspaceSlug.trim();
   if (typeof window === "undefined") {

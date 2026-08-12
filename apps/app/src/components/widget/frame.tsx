@@ -35,6 +35,7 @@ import { WidgetVoteButton } from "./VoteButton";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { extractTextFromTiptap } from "@/types/changelog";
+import { toShortPreview } from "./utils";
 
 type WidgetFrameProps = {
   projectId: string;
@@ -171,12 +172,13 @@ export default function WidgetFrame({
                   ? entry.summary.trim()
                   : null;
               const fromContent = extractTextFromTiptap(entry?.content);
-              const preview =
+              const rawPreview =
                 (typeof entry?.preview === "string" && entry.preview.trim()
                   ? entry.preview.trim()
                   : null) ||
                 summary ||
                 (fromContent ? fromContent.trim() : null);
+              const preview = rawPreview ? toShortPreview(rawPreview, 2) : null;
               const authorName =
                 (typeof entry?.authorName === "string" && entry.authorName.trim()
                   ? entry.authorName.trim()
@@ -450,7 +452,7 @@ export default function WidgetFrame({
                     {featuredEntry.title}
                   </h2>
                   {featuredEntry.preview ? (
-                    <p className="mt-3 line-clamp-6 text-sm leading-relaxed text-white/55">
+                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-white/55">
                       {featuredEntry.preview}
                     </p>
                   ) : null}
@@ -633,7 +635,7 @@ export default function WidgetFrame({
                 >
                   <p className="text-sm font-medium">{entry.title}</p>
                   {entry.preview ? (
-                    <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-white/45">
+                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/45">
                       {entry.preview}
                     </p>
                   ) : null}
