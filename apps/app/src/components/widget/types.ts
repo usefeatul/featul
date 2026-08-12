@@ -22,6 +22,7 @@ export type WidgetPost = {
   title: string;
   slug: string;
   content: string | null;
+  image?: string | null;
   upvotes: number | null;
   commentCount: number | null;
   roadmapStatus: string | null;

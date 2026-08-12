@@ -13,6 +13,13 @@ import {
 } from "@featul/db";
 import { getRequestFingerprint } from "../shared/request-fingerprint";
 import { toSlug } from "../shared/slug";
+import { createStorageContext, buildSignedUpload } from "../services/storage-signer";
+import { POST_IMAGE_UPLOAD_POLICY, validateUploadInput } from "../shared/storage-upload";
+import {
+  applyRateLimitHeaders,
+  limitStoragePublicPostAnon,
+  limitStoragePublicPostUser,
+} from "../services/ratelimiter";
 
 const parentOriginSchema = z.string().url().optional();
 const projectInput = z.object({
@@ -42,6 +49,25 @@ const createSchema = projectInput.extend({
   title: z.string().trim().min(3).max(120),
   content: z.string().trim().min(1).max(5000),
   boardId: z.string().min(1),
+  image: z.string().url().optional(),
+  userId: z.string().min(1).optional(),
+  identity: widgetIdentitySchema.optional(),
+  fingerprint: z.string().min(1).optional(),
+});
+
+const uploadImageSchema = projectInput.extend({
+  boardId: z.string().min(1),
+  fileName: z
+    .string()
+    .min(1)
+    .max(180)
+    .regex(/^[^/\\]+$/, "Invalid file name"),
+  contentType: z
+    .string()
+    .min(1)
+    .max(128)
+    .regex(/^[a-z0-9][a-z0-9!#$&^_.+-]*\/[a-z0-9][a-z0-9!#$&^_.+-]*$/i, "Invalid content type"),
+  fileSize: z.number().int().positive().max(POST_IMAGE_UPLOAD_POLICY.maxBytes),
   userId: z.string().min(1).optional(),
   identity: widgetIdentitySchema.optional(),
   fingerprint: z.string().min(1).optional(),
@@ -96,6 +122,17 @@ type ResolvedWidget = {
     allowGuestPosting: boolean;
   };
 };
+
+function assertWidgetPostImageUrl(imageUrl: string, workspaceSlug: string) {
+  const publicBase = String(process.env.R2_PUBLIC_BASE_URL || "").replace(/\/$/, "");
+  if (!publicBase) {
+    throw new HTTPException(500, { message: "Image storage is not configured" });
+  }
+  const expectedPrefix = `${publicBase}/workspaces/${workspaceSlug}/posts/`;
+  if (!imageUrl.startsWith(expectedPrefix)) {
+    throw new HTTPException(400, { message: "Invalid image URL" });
+  }
+}
 
 function defaultConfig(workspaceId: string): ResolvedWidget["config"] {
   return {
@@ -240,6 +277,7 @@ const postSelectFields = {
   title: post.title,
   slug: post.slug,
   content: post.content,
+  image: post.image,
   upvotes: post.upvotes,
   commentCount: post.commentCount,
   roadmapStatus: post.roadmapStatus,
@@ -434,6 +472,74 @@ export function createWidgetRouter() {
       return c.superjson({ posts: rows });
     }),
 
+    uploadImage: publicProcedure.input(uploadImageSchema).post(async ({ ctx, input, c }) => {
+      const resolved = await resolveWidget(ctx, input.projectId);
+
+      const [targetBoard] = await ctx.db
+        .select({
+          id: board.id,
+          allowAnonymous: board.allowAnonymous,
+        })
+        .from(board)
+        .where(
+          and(
+            eq(board.id, input.boardId),
+            eq(board.workspaceId, resolved.workspaceId),
+            eq(board.isSystem, false),
+            eq(board.isPublic, true),
+          ),
+        )
+        .limit(1);
+
+      if (!targetBoard) throw new HTTPException(404, { message: "Board not found" });
+
+      let uploaderId: string | null = null;
+      if (input.identity) {
+        const identifiedUser = await upsertIdentifiedUser(ctx, input.identity);
+        uploaderId = identifiedUser.id;
+      } else if (input.userId) {
+        const [identifiedUser] = await ctx.db
+          .select({ id: user.id })
+          .from(user)
+          .where(eq(user.id, input.userId))
+          .limit(1);
+        if (!identifiedUser) throw new HTTPException(401, { message: "User not found" });
+        uploaderId = identifiedUser.id;
+      }
+
+      if (!uploaderId && (!resolved.config.allowGuestPosting || !targetBoard.allowAnonymous)) {
+        throw new HTTPException(401, { message: "Please identify before uploading an image" });
+      }
+
+      const request = (c as any)?.req?.raw || (c as any)?.request;
+      const rateLimit = uploaderId
+        ? await limitStoragePublicPostUser(uploaderId)
+        : await limitStoragePublicPostAnon(request);
+      applyRateLimitHeaders(c, rateLimit, "Too many upload URL requests. Please try again shortly.");
+
+      const { safeFileName, normalizedContentType } = validateUploadInput({
+        fileName: input.fileName,
+        contentType: input.contentType,
+        fileSize: input.fileSize,
+        policy: POST_IMAGE_UPLOAD_POLICY,
+      });
+
+      const { s3, bucket, publicBase } = createStorageContext();
+      const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}`;
+      const key = `workspaces/${resolved.workspaceSlug}/posts/${id}-${safeFileName}`;
+
+      const payload = await buildSignedUpload({
+        s3,
+        bucket,
+        publicBase,
+        key,
+        contentType: normalizedContentType,
+        contentLength: input.fileSize,
+      });
+
+      return c.json(payload);
+    }),
+
     create: publicProcedure.input(createSchema).post(async ({ ctx, input, c }) => {
       const resolved = await resolveWidget(ctx, input.projectId);
 
@@ -470,6 +576,10 @@ export function createWidgetRouter() {
         throw new HTTPException(401, { message: "Please identify before submitting feedback" });
       }
 
+      if (input.image) {
+        assertWidgetPostImageUrl(input.image, resolved.workspaceSlug);
+      }
+
       const request = (c as any)?.req?.raw || (c as any)?.request;
       const fingerprint = authorId ? null : getRequestFingerprint(request, input.fingerprint);
       const [created] = await ctx.db
@@ -478,6 +588,7 @@ export function createWidgetRouter() {
           boardId: targetBoard.id,
           title: input.title,
           content: input.content,
+          image: input.image || null,
           slug: createPostSlug(input.title),
           authorId,
           isAnonymous: !authorId,

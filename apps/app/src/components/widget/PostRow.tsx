@@ -53,6 +53,13 @@ export function WidgetPostRow({
             <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-white/45">{excerpt}</p>
           ) : null}
 
+          {post.image ? (
+            <div className="mt-2 overflow-hidden rounded-md bg-white/[0.04]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.image} alt="" className="h-24 w-full object-cover" />
+            </div>
+          ) : null}
+
           <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-white/40">
             {meta.map((part, index) => (
               <React.Fragment key={`${part}-${index}`}>

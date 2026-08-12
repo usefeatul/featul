@@ -131,6 +131,13 @@ export function WidgetFeedbackDetail({
         ) : (
           <p className="text-sm text-white/40">No description provided.</p>
         )}
+
+        {post.image ? (
+          <div className="mt-5 overflow-hidden rounded-md bg-white/[0.04]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={post.image} alt="" className="max-h-64 w-full object-cover" />
+          </div>
+        ) : null}
       </div>
 
       <div className="flex items-center gap-2 px-5 py-3">

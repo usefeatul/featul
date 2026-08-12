@@ -4,6 +4,13 @@ import * as React from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
+import { ImageIcon } from "@featul/ui/icons/image";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { X } from "lucide-react";
+import {
+  IMAGE_UPLOAD_CONTENT_TYPES,
+  POST_IMAGE_UPLOAD_MAX_BYTES,
+} from "@featul/api/upload-policy";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type {
   Board,
@@ -26,6 +33,11 @@ type Props = {
   onCreated: (post: WidgetPost) => void;
 };
 
+type UploadedImage = {
+  url: string;
+  name: string;
+};
+
 export function WidgetFeedbackCompose({
   apiBase,
   boards,
@@ -40,11 +52,15 @@ export function WidgetFeedbackCompose({
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [similar, setSimilar] = React.useState<SimilarPost[]>([]);
+  const [uploadedImage, setUploadedImage] = React.useState<UploadedImage | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const selectedBoard = boards.find((board) => board.id === boardId) || boards[0];
-  const canSubmit = Boolean(boardId) && title.trim().length >= 3 && !submitting;
+  const canSubmit =
+    Boolean(boardId) && title.trim().length >= 3 && !submitting && !uploading;
 
   React.useEffect(() => {
     const q = title.trim();
@@ -73,6 +89,62 @@ export function WidgetFeedbackCompose({
     };
   }, [apiBase, boardId, title]);
 
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (!file) return;
+
+    if (!boardId) {
+      setMessage("Select a board before uploading an image.");
+      return;
+    }
+    if (!(IMAGE_UPLOAD_CONTENT_TYPES as readonly string[]).includes(file.type)) {
+      setMessage("Unsupported file type. Use PNG, JPEG, WebP, or GIF.");
+      return;
+    }
+    if (file.size > POST_IMAGE_UPLOAD_MAX_BYTES) {
+      setMessage("Image too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("");
+    try {
+      const fingerprint =
+        userId || identity?.email ? undefined : await getBrowserFingerprint();
+      const signed = await client.widget.uploadImage.$post({
+        ...viewerPayload(apiBase, { userId, identity, fingerprint }),
+        boardId,
+        fileName: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+      });
+      if (!signed.ok) {
+        const error = (await signed.json().catch(() => null)) as { message?: string } | null;
+        throw new Error(error?.message || "Failed to get upload URL");
+      }
+      const data = (await signed.json()) as {
+        uploadUrl?: string;
+        publicUrl?: string;
+      };
+      if (!data.uploadUrl || !data.publicUrl) throw new Error("Upload URL response was incomplete");
+
+      const put = await fetch(data.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!put.ok) throw new Error("Upload failed");
+
+      setUploadedImage({ url: data.publicUrl, name: file.name });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not upload image.");
+      setUploadedImage(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!canSubmit) return;
@@ -86,6 +158,7 @@ export function WidgetFeedbackCompose({
         boardId,
         title: title.trim().slice(0, 120),
         content: (content.trim() || title.trim()).slice(0, 5000),
+        image: uploadedImage?.url,
       });
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
@@ -95,6 +168,7 @@ export function WidgetFeedbackCompose({
         title: created.title,
         slug: created.slug,
         content: created.content,
+        image: created.image ?? uploadedImage?.url ?? null,
         upvotes: created.upvotes ?? 1,
         commentCount: created.commentCount ?? 0,
         roadmapStatus: created.roadmapStatus ?? "pending",
@@ -110,6 +184,7 @@ export function WidgetFeedbackCompose({
       setTitle("");
       setContent("");
       setSimilar([]);
+      setUploadedImage(null);
     } catch {
       setMessage(
         identity && !userId
@@ -155,6 +230,25 @@ export function WidgetFeedbackCompose({
         className="min-h-0 flex-1 resize-none px-0 py-2 text-[15px] leading-relaxed text-white/85 shadow-none placeholder:text-white/25 focus-visible:ring-0"
       />
 
+      {uploadedImage ? (
+        <div className="relative mt-2 overflow-hidden rounded-md bg-white/[0.04]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={uploadedImage.url}
+            alt={uploadedImage.name}
+            className="max-h-40 w-full object-cover"
+          />
+          <button
+            type="button"
+            onClick={() => setUploadedImage(null)}
+            className="absolute right-2 top-2 flex size-7 cursor-pointer items-center justify-center rounded-md bg-black/60 text-white/80 transition-colors hover:bg-black/75 hover:text-white"
+            aria-label="Remove image"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      ) : null}
+
       {similar.length ? (
         <div className="mt-2 rounded-md bg-white/[0.04] p-3">
           <p className="text-xs font-semibold" style={{ color: primaryColor || "#3b82f6" }}>
@@ -175,7 +269,30 @@ export function WidgetFeedbackCompose({
         <p className="mt-3 rounded-md bg-white/[0.05] px-3 py-2 text-sm text-white/85">{message}</p>
       ) : null}
 
-      <div className="flex items-center justify-end pt-4">
+      <div className="flex items-center justify-between gap-3 pt-4">
+        <div className="flex items-center gap-1">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={uploading || Boolean(uploadedImage)}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading || Boolean(uploadedImage)}
+            className="flex size-9 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Add image"
+          >
+            {uploading ? (
+              <LoaderIcon className="size-4 animate-spin" />
+            ) : (
+              <ImageIcon className="size-4" />
+            )}
+          </button>
+        </div>
         <Button
           type="submit"
           variant="plain"
