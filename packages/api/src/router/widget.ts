@@ -10,6 +10,7 @@ import {
   user,
   vote,
   workspace,
+  workspaceMember,
 } from "@featul/db";
 import { getRequestFingerprint } from "../shared/request-fingerprint";
 import { toSlug } from "../shared/slug";
@@ -724,6 +725,12 @@ export function createWidgetRouter() {
     changelog: publicProcedure.input(projectInput).get(async ({ ctx, input, c }) => {
       const resolved = await resolveWidget(ctx, input.projectId);
 
+      const [wsOwner] = await ctx.db
+        .select({ ownerId: workspace.ownerId })
+        .from(workspace)
+        .where(eq(workspace.id, resolved.workspaceId))
+        .limit(1);
+
       const rows = await ctx.db
         .select({
           id: changelogEntry.id,
@@ -732,6 +739,7 @@ export function createWidgetRouter() {
           summary: changelogEntry.summary,
           content: changelogEntry.content,
           publishedAt: changelogEntry.publishedAt,
+          authorId: changelogEntry.authorId,
           authorName: user.name,
           authorImage: user.image,
         })
@@ -750,11 +758,49 @@ export function createWidgetRouter() {
         .orderBy(desc(changelogEntry.publishedAt))
         .limit(20);
 
+      const authorIds: string[] = Array.from(
+        new Set(
+          rows
+            .map((row: (typeof rows)[number]) => row.authorId)
+            .filter((id: string | null | undefined): id is string => Boolean(id)),
+        ),
+      );
+
+      const members =
+        authorIds.length > 0
+          ? await ctx.db
+              .select({
+                userId: workspaceMember.userId,
+                role: workspaceMember.role,
+              })
+              .from(workspaceMember)
+              .where(
+                and(
+                  eq(workspaceMember.workspaceId, resolved.workspaceId),
+                  inArray(workspaceMember.userId, authorIds),
+                ),
+              )
+          : [];
+
+      const memberRoleMap = new Map(
+        members.map((member: { userId: string; role: string | null }) => [
+          member.userId,
+          member.role,
+        ]),
+      );
+
       return c.superjson({
         entries: rows.map((row: (typeof rows)[number]) => {
           const fromContent = extractTiptapPlainText(row.content);
           const summary = typeof row.summary === "string" ? row.summary.trim() : "";
           const preview = (summary || fromContent).trim();
+          const isOwner = Boolean(
+            row.authorId && wsOwner?.ownerId && String(wsOwner.ownerId) === String(row.authorId),
+          );
+          const rawRole = row.authorId ? memberRoleMap.get(row.authorId) : null;
+          const role = typeof rawRole === "string" ? rawRole : null;
+          const authorRoleLabel = resolveAuthorRoleLabel(isOwner, role);
+
           return {
             id: row.id,
             title: row.title,
@@ -765,15 +811,32 @@ export function createWidgetRouter() {
             publishedAt: row.publishedAt,
             authorName: row.authorName || null,
             authorImage: row.authorImage || null,
+            authorRole: role,
+            authorIsOwner: isOwner,
+            authorRoleLabel,
             author: {
               name: row.authorName || null,
               image: row.authorImage || null,
+              role,
+              isOwner,
+              roleLabel: authorRoleLabel,
             },
           };
         }),
       });
     }),
   });
+}
+
+function resolveAuthorRoleLabel(
+  isOwner: boolean,
+  role?: string | null,
+): "Founder" | "Admin" | "Member" | "Viewer" | null {
+  if (isOwner) return "Founder";
+  if (role === "admin") return "Admin";
+  if (role === "member") return "Member";
+  if (role === "viewer") return "Viewer";
+  return null;
 }
 
 function extractTiptapPlainText(content: unknown): string {

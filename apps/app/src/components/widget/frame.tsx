@@ -68,6 +68,7 @@ export default function WidgetFrame({
       publishedAt: string | null;
       authorName?: string | null;
       authorImage?: string | null;
+      authorRoleLabel?: string | null;
     }>
   >([]);
   const [loading, setLoading] = React.useState(true);
@@ -190,6 +191,26 @@ export default function WidgetFrame({
                 (typeof entry?.author?.image === "string" && entry.author.image.trim()
                   ? entry.author.image.trim()
                   : null);
+              const authorIsOwner = Boolean(entry?.authorIsOwner ?? entry?.author?.isOwner);
+              const authorRole =
+                (typeof entry?.authorRole === "string" ? entry.authorRole : null) ||
+                (typeof entry?.author?.role === "string" ? entry.author.role : null);
+              const authorRoleLabel =
+                (typeof entry?.authorRoleLabel === "string" && entry.authorRoleLabel.trim()
+                  ? entry.authorRoleLabel.trim()
+                  : null) ||
+                (typeof entry?.author?.roleLabel === "string" && entry.author.roleLabel.trim()
+                  ? entry.author.roleLabel.trim()
+                  : null) ||
+                (authorIsOwner
+                  ? "Founder"
+                  : authorRole === "admin"
+                    ? "Admin"
+                    : authorRole === "member"
+                      ? "Member"
+                      : authorRole === "viewer"
+                        ? "Viewer"
+                        : null);
 
               return {
                 id: String(entry?.id || ""),
@@ -204,6 +225,7 @@ export default function WidgetFrame({
                       : null,
                 authorName,
                 authorImage,
+                authorRoleLabel,
               };
             }),
           );
@@ -440,9 +462,17 @@ export default function WidgetFrame({
                           image={featuredEntry.authorImage}
                           className="size-7"
                         />
-                        <p className="truncate text-sm font-medium text-white/85">
-                          {featuredEntry.authorName || "Author"}
-                        </p>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-white">
+                            {featuredEntry.authorName || "Author"}
+                          </p>
+                          <p
+                            className="truncate text-xs font-medium"
+                            style={{ color: accent }}
+                          >
+                            {featuredEntry.authorRoleLabel || "Team"}
+                          </p>
+                        </div>
                       </div>
                       <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-white/40 transition-colors group-hover:text-white/70">
                         View updates
@@ -614,7 +644,14 @@ export default function WidgetFrame({
                         image={entry.authorImage}
                         className="size-5"
                       />
-                      <p className="truncate text-[11px] text-white/45">{entry.authorName}</p>
+                      <div className="min-w-0">
+                        <p className="truncate text-[11px] font-medium text-white/80">
+                          {entry.authorName}
+                        </p>
+                        <p className="truncate text-[10px] font-medium" style={{ color: accent }}>
+                          {entry.authorRoleLabel || "Team"}
+                        </p>
+                      </div>
                     </div>
                   ) : null}
                 </div>
