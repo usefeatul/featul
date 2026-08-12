@@ -18,6 +18,7 @@ import { getBrowserFingerprint } from "@/utils/fingerprint";
 import { WidgetFeedbackCompose } from "./FeedbackCompose";
 import { WidgetFeedbackDetail } from "./FeedbackDetail";
 import { WidgetFeedbackList } from "./FeedbackList";
+import { WidgetRoadmap, type WidgetRoadmapItem } from "./Roadmap";
 import type {
   Board,
   FeedbackView,
@@ -26,13 +27,13 @@ import type {
   WidgetPost,
   WidgetWorkspace,
 } from "./types";
-import { WidgetVoteButton } from "./VoteButton";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import StatusIcon from "@/components/requests/StatusIcon";
-import { statusLabel } from "@/lib/roadmap";
 import { resolveWidgetAccent } from "./theme";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
+import { WidgetVoteButton } from "./VoteButton";
+import StatusIcon from "@/components/requests/StatusIcon";
+import { statusLabel } from "@/lib/roadmap";
 
 type WidgetFrameProps = {
   projectId: string;
@@ -56,18 +57,7 @@ export default function WidgetFrame({
   const [listBoardId, setListBoardId] = React.useState("");
   const [userId, setUserId] = React.useState<string | null>(null);
   const [identity, setIdentity] = React.useState<IdentifiedUser | null>(null);
-  const [roadmap, setRoadmap] = React.useState<
-    Array<{
-      id: string;
-      title: string;
-      roadmapStatus: string | null;
-      upvotes: number | null;
-      hasVoted?: boolean;
-      authorName?: string | null;
-      authorImage?: string | null;
-      isAnonymous?: boolean | null;
-    }>
-  >([]);
+  const [roadmap, setRoadmap] = React.useState<WidgetRoadmapItem[]>([]);
   const [changelog, setChangelog] = React.useState<
     Array<{ id: string; title: string; summary: string | null; publishedAt: string | null }>
   >([]);
@@ -156,7 +146,7 @@ export default function WidgetFrame({
             fingerprint,
           });
           const data = await res.json();
-          setRoadmap(Array.isArray(data.posts) ? data.posts : []);
+          setRoadmap(Array.isArray(data.posts) ? (data.posts as WidgetRoadmapItem[]) : []);
         }
         if (section === "home" || section === "changelog") {
           const res = await client.widget.changelog.$get(apiBase);
@@ -488,33 +478,18 @@ export default function WidgetFrame({
         ) : null}
 
         {!loading && section === "roadmap" ? (
-          <section className="-mx-5">
-            <div className="mb-3 px-5">
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>
-                Roadmap
-              </p>
-              <h2 className="mt-2 text-xl font-semibold">What&apos;s coming next</h2>
-            </div>
-            <div>
-              {roadmap.length ? (
-                roadmap.map((item) => (
-                  <RoadmapRow
-                    key={item.id}
-                    item={item}
-                    apiBase={apiBase}
-                    userId={userId}
-                    identity={identity}
-                    onVoteChange={(id, upvotes, hasVoted) => {
-                      setRoadmap((prev) =>
-                        prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
-                      );
-                    }}
-                  />
-                ))
-              ) : (
-                <p className="px-5 py-6 text-sm text-white/45">No public roadmap items yet.</p>
-              )}
-            </div>
+          <section className="-mx-1">
+            <WidgetRoadmap
+              items={roadmap}
+              apiBase={apiBase}
+              userId={userId}
+              identity={identity}
+              onVoteChange={(id, upvotes, hasVoted) => {
+                setRoadmap((prev) =>
+                  prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
+                );
+              }}
+            />
           </section>
         ) : null}
 
