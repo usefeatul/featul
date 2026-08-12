@@ -49,6 +49,7 @@ export function WidgetRoadmap({
 }: Props) {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const sectionRefs = React.useRef<Array<HTMLElement | null>>([]);
+  const pinnedRef = React.useRef<number[]>([]);
   const [pinnedIndexes, setPinnedIndexes] = React.useState<number[]>([]);
   const [expandedByKey, setExpandedByKey] = React.useState<Record<string, boolean>>({});
 
@@ -73,6 +74,7 @@ export function WidgetRoadmap({
     const root = rootRef.current;
     const scroller = root?.closest("[data-widget-scroll]") as HTMLElement | null;
     if (!root || !scroller) {
+      pinnedRef.current = [];
       setPinnedIndexes([]);
       return;
     }
@@ -80,23 +82,25 @@ export function WidgetRoadmap({
     const scrollerTop = scroller.getBoundingClientRect().top;
     const next: number[] = [];
 
-    SECTIONS.forEach((_, index) => {
+    // Once a section header reaches the stack, keep it pinned until the
+    // user scrolls back above it. Never drop earlier headers when entering
+    // a later section (that was the glitch).
+    for (let index = 0; index < SECTIONS.length; index += 1) {
       const sectionEl = sectionRefs.current[index];
-      if (!sectionEl) return;
+      if (!sectionEl) continue;
       const rect = sectionEl.getBoundingClientRect();
-      // Pin while this section has reached the stack and has not fully left the viewport top.
-      const stackTop = scrollerTop + next.length * HEADER_HEIGHT;
-      if (rect.top <= stackTop + 0.5 && rect.bottom > scrollerTop + HEADER_HEIGHT) {
+      const pinLine = scrollerTop + next.length * HEADER_HEIGHT;
+      if (rect.top <= pinLine + 1) {
         next.push(index);
       }
-    });
+    }
 
-    setPinnedIndexes((prev) => {
-      if (prev.length === next.length && prev.every((value, i) => value === next[i])) {
-        return prev;
-      }
-      return next;
-    });
+    const prev = pinnedRef.current;
+    const changed =
+      prev.length !== next.length || prev.some((value, i) => value !== next[i]);
+    if (!changed) return;
+    pinnedRef.current = next;
+    setPinnedIndexes(next);
   }, []);
 
   React.useEffect(() => {
@@ -104,12 +108,19 @@ export function WidgetRoadmap({
     const scroller = root?.closest("[data-widget-scroll]") as HTMLElement | null;
     if (!scroller) return;
 
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(updatePinned);
+    };
+
     updatePinned();
-    scroller.addEventListener("scroll", updatePinned, { passive: true });
-    window.addEventListener("resize", updatePinned);
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      scroller.removeEventListener("scroll", updatePinned);
-      window.removeEventListener("resize", updatePinned);
+      cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, [updatePinned, items]);
 
@@ -118,7 +129,6 @@ export function WidgetRoadmap({
     const scroller = rootRef.current?.closest("[data-widget-scroll]") as HTMLElement | null;
     if (!sectionEl || !scroller) return;
 
-    // Place section under the headers that stay pinned above it.
     const aboveCount = pinnedIndexes.filter((value) => value < index).length;
     const nodeRect = sectionEl.getBoundingClientRect();
     const scrollerRect = scroller.getBoundingClientRect();
@@ -133,34 +143,36 @@ export function WidgetRoadmap({
 
   return (
     <div ref={rootRef} className="relative pb-[30vh]">
-      {/* Packed sticky stack — overlays without double-spacing */}
-      <div
-        className="sticky top-0 z-50 bg-[#171717]"
-        style={{ height: pinnedIndexes.length * HEADER_HEIGHT }}
-      >
-        {pinnedIndexes.map((sectionIndex, stackIndex) => {
-          const section = SECTIONS[sectionIndex];
-          if (!section) return null;
-          return (
-            <button
-              key={`pin-${section.key}`}
-              type="button"
-              onClick={() => jumpToSection(sectionIndex)}
-              className="absolute left-0 right-0 flex w-full cursor-pointer items-center gap-2 border-b border-white/10 bg-[#171717] px-5 text-left"
-              style={{
-                top: stackIndex * HEADER_HEIGHT,
-                height: HEADER_HEIGHT,
-              }}
-              aria-label={`Jump to ${section.label}`}
-            >
-              <StatusIcon status={section.status} className="size-4 shrink-0" />
-              <h3 className="flex-1 text-sm font-semibold text-white">{section.label}</h3>
-              <span className="tabular-nums text-xs text-white/40">
-                {String(grouped[section.key].length).padStart(2, "0")}
-              </span>
-            </button>
-          );
-        })}
+      {/* Overlay stack: no layout height, so pinning never jumps/glitches */}
+      <div className="pointer-events-none sticky top-0 z-50 h-0">
+        <div
+          className="pointer-events-auto relative overflow-hidden bg-[#171717]"
+          style={{ height: pinnedIndexes.length * HEADER_HEIGHT }}
+        >
+          {pinnedIndexes.map((sectionIndex, stackIndex) => {
+            const section = SECTIONS[sectionIndex];
+            if (!section) return null;
+            return (
+              <button
+                key={`pin-${section.key}`}
+                type="button"
+                onClick={() => jumpToSection(sectionIndex)}
+                className="absolute left-0 right-0 flex w-full cursor-pointer items-center gap-2 border-b border-white/10 bg-[#171717] px-5 text-left"
+                style={{
+                  top: stackIndex * HEADER_HEIGHT,
+                  height: HEADER_HEIGHT,
+                }}
+                aria-label={`Jump to ${section.label}`}
+              >
+                <StatusIcon status={section.status} className="size-4 shrink-0" />
+                <h3 className="flex-1 text-sm font-semibold text-white">{section.label}</h3>
+                <span className="tabular-nums text-xs text-white/40">
+                  {String(grouped[section.key].length).padStart(2, "0")}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {SECTIONS.map((section, index) => {
@@ -180,12 +192,16 @@ export function WidgetRoadmap({
             <button
               type="button"
               onClick={() => jumpToSection(index)}
-              className={`flex w-full items-center gap-2 bg-[#171717] px-5 text-left ${
+              className={`flex w-full items-center gap-2 border-b border-white/10 bg-[#171717] px-5 text-left ${
                 isPinned
-                  ? "pointer-events-none overflow-hidden border-0 opacity-0"
-                  : "cursor-pointer border-b border-white/10"
+                  ? "pointer-events-none text-transparent"
+                  : "cursor-pointer"
               }`}
-              style={{ height: isPinned ? 0 : HEADER_HEIGHT }}
+              style={{
+                height: HEADER_HEIGHT,
+                // Keep spacer height stable; hide label when the overlay clone is shown
+                visibility: isPinned ? "hidden" : "visible",
+              }}
               aria-hidden={isPinned}
               tabIndex={isPinned ? -1 : 0}
             >
