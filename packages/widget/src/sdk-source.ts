@@ -8,9 +8,10 @@ export function getWidgetSdkSource() {
   var baseUrl = script && script.src ? new URL(script.src).origin : window.location.origin;
   var PANEL_RADIUS = "12px";
   var BUTTON_RADIUS = "6px";
+  var LAUNCHER_SIZE = 32;
   var LAUNCHER_BG = "#000000";
   var FEATUL_LOGO =
-    '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M11.986.764c-5.911 0-10.75 4.597-10.75 10.34 0 2.402.866 4.62 2.315 6.37 1.918 2.383 4.932 3.91 8.301 3.95l.036.013a68 68 0 0 0 1.915.657c1.177.386 2.674.842 3.886 1.095a2.32 2.32 0 0 0 1.72-.328c.478-.31.893-.848.893-1.544 0-.412-.167-.818-.329-1.131a7 7 0 0 0-.602-.941 11 11 0 0 0-.299-.384c2.247-1.88 3.664-4.655 3.664-7.758 0-3.552-1.85-6.671-4.663-8.517-1.74-1.163-3.83-1.822-6.087-1.822m6.378 5.273a.75.75 0 1 0-1.295.758 8.5 8.5 0 0 1 1.167 4.308 8.46 8.46 0 0 1-1.167 4.299.75.75 0 0 0 1.294.758 9.96 9.96 0 0 0 1.373-5.057 10 10 0 0 0-1.372-5.066"/></svg>';
+    '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M11.986.764c-5.911 0-10.75 4.597-10.75 10.34 0 2.402.866 4.62 2.315 6.37 1.918 2.383 4.932 3.91 8.301 3.95l.036.013a68 68 0 0 0 1.915.657c1.177.386 2.674.842 3.886 1.095a2.32 2.32 0 0 0 1.72-.328c.478-.31.893-.848.893-1.544 0-.412-.167-.818-.329-1.131a7 7 0 0 0-.602-.941 11 11 0 0 0-.299-.384c2.247-1.88 3.664-4.655 3.664-7.758 0-3.552-1.85-6.671-4.663-8.517-1.74-1.163-3.83-1.822-6.087-1.822m6.378 5.273a.75.75 0 1 0-1.295.758 8.5 8.5 0 0 1 1.167 4.308 8.46 8.46 0 0 1-1.167 4.299.75.75 0 0 0 1.294.758 9.96 9.96 0 0 0 1.373-5.057 10 10 0 0 0-1.372-5.066"/></svg>';
 
   var state = {
     projectId: null,
@@ -95,8 +96,8 @@ export function getWidgetSdkSource() {
         };
       }
     }
-    var width = 52;
-    var height = 52;
+    var width = LAUNCHER_SIZE;
+    var height = LAUNCHER_SIZE;
     return {
       left: position === "left" ? 20 : window.innerWidth - width - 20,
       top: window.innerHeight - height - 20,
@@ -212,8 +213,8 @@ export function getWidgetSdkSource() {
       button.style.alignItems = "center";
       button.style.justifyContent = "center";
       button.style.boxSizing = "border-box";
-      button.style.width = "52px";
-      button.style.height = "52px";
+      button.style.width = LAUNCHER_SIZE + "px";
+      button.style.height = LAUNCHER_SIZE + "px";
       button.style.padding = "0";
       button.style.border = "0";
       button.style.borderRadius = BUTTON_RADIUS;
