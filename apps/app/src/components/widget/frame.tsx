@@ -65,6 +65,8 @@ export default function WidgetFrame({
   const [message, setMessage] = React.useState("");
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(null);
   const [listRefreshKey, setListRefreshKey] = React.useState(0);
+  const [navBorderVisible, setNavBorderVisible] = React.useState(false);
+  const navBorderTimeoutRef = React.useRef<number | null>(null);
 
   const apiBase = React.useMemo(() => ({ projectId, parentOrigin }), [projectId, parentOrigin]);
   const accent = resolveWidgetAccent(workspace?.primaryColor);
@@ -200,6 +202,28 @@ export default function WidgetFrame({
     setFeedbackView(view);
     if (view !== "detail") setSelectedPost(null);
   };
+
+  React.useEffect(() => {
+    const showNavBorder = () => {
+      setNavBorderVisible(true);
+      if (navBorderTimeoutRef.current !== null) {
+        window.clearTimeout(navBorderTimeoutRef.current);
+      }
+      navBorderTimeoutRef.current = window.setTimeout(() => {
+        setNavBorderVisible(false);
+        navBorderTimeoutRef.current = null;
+      }, 220);
+    };
+
+    // Capture scrolls from any nested scroller (home, roadmap, feedback list, etc.)
+    document.addEventListener("scroll", showNavBorder, true);
+    return () => {
+      document.removeEventListener("scroll", showNavBorder, true);
+      if (navBorderTimeoutRef.current !== null) {
+        window.clearTimeout(navBorderTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const featuredEntry = changelog[0];
   const previewRoadmap = roadmap.slice(0, 4);
@@ -524,7 +548,13 @@ export default function WidgetFrame({
       </div>
 
       {showTabs ? (
-        <nav className="grid grid-cols-4 border-t border-white/10 px-3 py-2">
+        <nav
+          className={`grid grid-cols-4 px-3 py-2 transition-[box-shadow] duration-200 ${
+            navBorderVisible
+              ? "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14)]"
+              : "shadow-[inset_0_1px_0_0_transparent]"
+          }`}
+        >
           {displayedTabs.map((tab) => (
             <button
               key={tab}
