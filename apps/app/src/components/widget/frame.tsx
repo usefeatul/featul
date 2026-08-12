@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -272,11 +272,13 @@ export default function WidgetFrame({
         }
         return;
       }
-      if (event.data.type === "show" && event.data.payload?.section) {
-        setSection(event.data.payload.section);
-        if (event.data.payload.section === "feedback") {
-          setFeedbackView("list");
-          setSelectedPost(null);
+      if (event.data.type === "show") {
+        if (event.data.payload?.section) {
+          setSection(event.data.payload.section);
+          if (event.data.payload.section === "feedback") {
+            setFeedbackView("list");
+            setSelectedPost(null);
+          }
         }
       }
       if (event.data.type === "identify") {
@@ -299,6 +301,8 @@ export default function WidgetFrame({
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [apiBase]);
+
+  const reduceMotion = useReducedMotion();
 
   const close = () => {
     window.parent.postMessage({ source: "featul-widget-frame", type: "close" }, "*");
@@ -337,7 +341,10 @@ export default function WidgetFrame({
   const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
   const isFeedback = section === "feedback";
   const showTabs = !isFeedback || feedbackView === "list";
-  const reduceMotion = useReducedMotion();
+  const contentKey = isFeedback ? `feedback-${feedbackView}` : section;
+  const contentTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
   const feedbackTitle =
     feedbackView === "compose"
       ? "Give feedback"
@@ -350,7 +357,11 @@ export default function WidgetFrame({
     <motion.main
       initial={reduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
+      transition={
+        reduceMotion
+          ? { duration: 0 }
+          : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }
+      }
       className="flex h-screen flex-col overflow-hidden rounded-xl border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] shadow-sm"
       style={
         {
@@ -451,12 +462,17 @@ export default function WidgetFrame({
         }
       >
         {loading ? (
-          <div
+          <motion.div
+            key="loading"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={contentTransition}
             className="flex min-h-0 flex-1 items-center justify-center"
             aria-label="Loading"
           >
             <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
-          </div>
+          </motion.div>
         ) : null}
         {!loading && message ? (
           <p className="mb-3 rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
@@ -464,8 +480,16 @@ export default function WidgetFrame({
           </p>
         ) : null}
 
-        {!loading && section === "home" ? (
-          <div className="space-y-6">
+        <AnimatePresence mode="wait" initial={false}>
+          {!loading && section === "home" ? (
+          <motion.div
+            key="home"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={contentTransition}
+            className="space-y-6"
+          >
             <button
               type="button"
               onClick={() => setSection("changelog")}
@@ -593,11 +617,19 @@ export default function WidgetFrame({
               </div>
               <FillPenIcon className="size-4 shrink-0 text-[rgb(var(--widget-cta-fg)/0.7)]" size={16} />
             </button>
-          </div>
-        ) : null}
+          </motion.div>
+          ) : null}
 
-        {!loading && section === "feedback" ? (
-          feedbackView === "compose" ? (
+          {!loading && section === "feedback" ? (
+          <motion.div
+            key={contentKey}
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={contentTransition}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+          {feedbackView === "compose" ? (
             <WidgetFeedbackCompose
               apiBase={apiBase}
               boards={boards}
@@ -638,10 +670,19 @@ export default function WidgetFrame({
                 setFeedbackView("detail");
               }}
             />
-          )
-        ) : null}
+          )}
+          </motion.div>
+          ) : null}
 
-        {!loading && section === "roadmap" ? (
+          {!loading && section === "roadmap" ? (
+          <motion.div
+            key="roadmap"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={contentTransition}
+            className="flex min-h-0 flex-1 flex-col"
+          >
           <WidgetRoadmap
             items={roadmap}
             apiBase={apiBase}
@@ -653,10 +694,18 @@ export default function WidgetFrame({
               );
             }}
           />
-        ) : null}
+          </motion.div>
+          ) : null}
 
-        {!loading && section === "changelog" ? (
-          <section className="space-y-2">
+          {!loading && section === "changelog" ? (
+          <motion.section
+            key="changelog"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={contentTransition}
+            className="space-y-2"
+          >
             <div className="mb-4">
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>
                 Updates
@@ -697,8 +746,9 @@ export default function WidgetFrame({
             ) : (
               <p className="text-sm text-[rgb(var(--widget-fg)/0.45)]">No updates published yet.</p>
             )}
-          </section>
-        ) : null}
+          </motion.section>
+          ) : null}
+        </AnimatePresence>
       </div>
 
       {showTabs ? (
@@ -717,7 +767,7 @@ export default function WidgetFrame({
                 setSection(tab);
                 if (tab === "feedback") goFeedback("list");
               }}
-              className={`flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
+              className={`relative flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
                 section === tab ? "" : "text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg)/0.75)]"
               }`}
               style={section === tab ? { color: accent } : undefined}

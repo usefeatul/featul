@@ -181,7 +181,7 @@ export function getWidgetSdkSource() {
     iframe.style.display = "none";
     iframe.style.opacity = "0";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    iframe.style.transition = "opacity 120ms ease";
+    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1)";
     iframe.style.background = "transparent";
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
@@ -197,7 +197,7 @@ export function getWidgetSdkSource() {
     shell.style.opacity = "0";
     shell.style.pointerEvents = "none";
     shell.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    shell.style.transition = "left 300ms cubic-bezier(0.16, 1, 0.3, 1), top 300ms cubic-bezier(0.16, 1, 0.3, 1), width 300ms cubic-bezier(0.16, 1, 0.3, 1), height 300ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 300ms cubic-bezier(0.16, 1, 0.3, 1), background 180ms ease, box-shadow 300ms ease, opacity 140ms ease";
+    shell.style.transition = "left 380ms cubic-bezier(0.32, 0.72, 0, 1), top 380ms cubic-bezier(0.32, 0.72, 0, 1), width 380ms cubic-bezier(0.32, 0.72, 0, 1), height 380ms cubic-bezier(0.32, 0.72, 0, 1), border-radius 380ms cubic-bezier(0.32, 0.72, 0, 1), background 220ms ease, box-shadow 380ms cubic-bezier(0.32, 0.72, 0, 1), opacity 160ms ease";
     document.body.appendChild(shell);
     state.shell = shell;
 
@@ -278,11 +278,11 @@ export function getWidgetSdkSource() {
             state.animating = false;
             state.closeTimer = null;
             syncButtonVisibility();
-          }, 140);
+          }, 160);
           state.morphTimer = null;
-        }, 300);
+        }, 380);
       } else {
-        if (state.iframe) state.iframe.style.opacity = "0";
+        // Cover the iframe with an opaque shell first so the page never flashes through.
         applyShellPanelRect();
         if (state.shell) {
           state.shell.style.display = "block";
@@ -290,12 +290,15 @@ export function getWidgetSdkSource() {
         }
         syncButtonVisibility();
         window.requestAnimationFrame(function () {
-          applyShellLauncherRect();
-        });
-        state.closeTimer = window.setTimeout(function () {
-          if (state.iframe && !state.open) {
+          if (state.iframe) {
+            state.iframe.style.opacity = "0";
             state.iframe.style.display = "none";
           }
+          window.requestAnimationFrame(function () {
+            applyShellLauncherRect();
+          });
+        });
+        state.closeTimer = window.setTimeout(function () {
           if (state.shell) {
             state.shell.style.opacity = "0";
             state.shell.style.display = "none";
@@ -303,7 +306,7 @@ export function getWidgetSdkSource() {
           state.animating = false;
           state.closeTimer = null;
           setButtonHidden(false);
-        }, 320);
+        }, 400);
       }
     }
     if (open) enqueue("show", options || {});
