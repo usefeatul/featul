@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Flame,
-  Pencil,
   X,
 } from "lucide-react";
 import { client } from "@featul/api/client";
@@ -26,6 +25,7 @@ import type {
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
+import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import { HomeIcon } from "@featul/ui/icons/home";
 import { LoaderIcon } from "@featul/ui/icons/loader";
@@ -418,7 +418,7 @@ export default function WidgetFrame({
             onClick={() => goFeedback("compose")}
             className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90"
           >
-            <Pencil className="size-3.5" />
+            <FillPenIcon className="size-3.5" size={14} />
             Give feedback
           </button>
           <button
@@ -591,7 +591,7 @@ export default function WidgetFrame({
                 <p className="text-sm font-semibold text-[rgb(var(--widget-cta-fg))]">Give feedback</p>
                 <p className="mt-0.5 text-xs text-neutral-500">Share an idea or report an issue</p>
               </div>
-              <Pencil className="size-4 shrink-0 text-neutral-700" />
+              <FillPenIcon className="size-4 shrink-0 text-[rgb(var(--widget-cta-fg)/0.7)]" size={16} />
             </button>
           </div>
         ) : null}
