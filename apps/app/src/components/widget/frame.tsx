@@ -551,7 +551,7 @@ export default function WidgetFrame({
         <nav
           className={`grid grid-cols-4 px-3 py-2 transition-[box-shadow] duration-200 ${
             navBorderVisible
-              ? "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14)]"
+              ? "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]"
               : "shadow-[inset_0_1px_0_0_transparent]"
           }`}
         >
