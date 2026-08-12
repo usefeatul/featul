@@ -3,7 +3,7 @@
 import * as React from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
-import { Search } from "lucide-react";
+import { ArrowDownWideNarrow, Search } from "lucide-react";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { viewerPayload } from "./utils";
@@ -88,57 +88,51 @@ export function WidgetFeedbackList({
     );
   };
 
+  const cycleSort = () => setSort((prev) => (prev === "newest" ? "top" : "newest"));
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="space-y-3 border-b border-white/10 px-5 pb-3">
-        <div className="relative">
+      <div className="flex items-center gap-2 px-4 pb-3 pt-1">
+        <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-white/35" />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search requests"
-            className="h-9 w-full rounded-md border border-white/10 bg-transparent pl-9 pr-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/25 focus:bg-white/[0.03]"
+            placeholder="Search feedback"
+            className="h-9 w-full rounded-md bg-white/[0.05] pl-9 pr-3 text-sm text-white outline-none placeholder:text-white/30 focus:bg-white/[0.07]"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-1">
-            {(["newest", "top"] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setSort(value)}
-                className={`cursor-pointer rounded-md px-2.5 py-1.5 text-xs capitalize transition-colors ${
-                  sort === value
-                    ? "bg-white/10 text-white"
-                    : "text-white/45 hover:bg-white/[0.04] hover:text-white/80"
-                }`}
-              >
-                {value}
-              </button>
+        <button
+          type="button"
+          onClick={cycleSort}
+          className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md bg-white/[0.05] px-2.5 text-xs text-white/55 transition-colors hover:bg-white/[0.08] hover:text-white/80"
+          aria-label={`Sort by ${sort === "newest" ? "top" : "newest"}`}
+          title={sort === "newest" ? "Newest" : "Top"}
+        >
+          <ArrowDownWideNarrow className="size-3.5" />
+          <span className="capitalize">{sort}</span>
+        </button>
+        {boards.length > 1 ? (
+          <select
+            value={boardId}
+            onChange={(event) => onBoardChange(event.target.value)}
+            className="h-9 max-w-[7.5rem] cursor-pointer rounded-md bg-white/[0.05] px-2 text-xs text-white/70 outline-none hover:bg-white/[0.08]"
+            aria-label="Filter by board"
+          >
+            <option value="">All boards</option>
+            {boards.map((board) => (
+              <option key={board.id} value={board.id}>
+                {board.name}
+              </option>
             ))}
-          </div>
-          {boards.length > 1 ? (
-            <select
-              value={boardId}
-              onChange={(event) => onBoardChange(event.target.value)}
-              className="ml-auto h-8 max-w-[45%] cursor-pointer rounded-md border border-white/10 bg-transparent px-2.5 text-xs text-white/70 outline-none hover:border-white/20"
-              aria-label="Filter by board"
-            >
-              <option value="">All boards</option>
-              {boards.map((board) => (
-                <option key={board.id} value={board.id}>
-                  {board.name}
-                </option>
-              ))}
-            </select>
-          ) : null}
-        </div>
+          </select>
+        ) : null}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {loading ? <p className="px-5 py-10 text-center text-sm text-white/45">Loading...</p> : null}
         {error ? (
-          <p className="mx-5 my-4 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/85">
+          <p className="mx-4 my-4 rounded-md bg-white/[0.04] px-3 py-2 text-sm text-white/85">
             {error}
           </p>
         ) : null}
@@ -151,11 +145,10 @@ export function WidgetFeedbackList({
             <Button
               type="button"
               size="sm"
-              className="mt-5 h-8 cursor-pointer rounded-md px-3 text-xs text-white hover:opacity-90"
-              style={{ backgroundColor: "var(--widget-accent, #3b82f6)" }}
+              className="mt-5 h-8 cursor-pointer rounded-md bg-white px-3 text-xs font-semibold text-neutral-900 hover:opacity-90"
               onClick={onCompose}
             >
-              Submit request
+              Give feedback
             </Button>
           </div>
         ) : null}
@@ -171,12 +164,12 @@ export function WidgetFeedbackList({
           />
         ))}
         {nextOffset !== null ? (
-          <div className="px-5 py-4">
+          <div className="px-4 py-4">
             <button
               type="button"
               disabled={loadingMore}
               onClick={() => load(nextOffset, true)}
-              className="w-full cursor-pointer rounded-md border border-white/10 py-2.5 text-xs text-white/60 transition-colors hover:bg-white/[0.04] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full cursor-pointer rounded-md bg-white/[0.04] py-2.5 text-xs text-white/55 transition-colors hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loadingMore ? "Loading..." : "Load more"}
             </button>

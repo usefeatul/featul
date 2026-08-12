@@ -216,6 +216,7 @@ export default function WidgetFrame({
   const previewRoadmap = roadmap.slice(0, 4);
   const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
   const isFeedback = section === "feedback";
+  const showTabs = !isFeedback || feedbackView === "list";
   const reduceMotion = useReducedMotion();
   const transformOrigin = initialPosition === "left" ? "bottom left" : "bottom right";
   const feedbackTitle =
@@ -238,22 +239,19 @@ export default function WidgetFrame({
         } as React.CSSProperties
       }
     >
-      {isFeedback ? (
-        <header className="flex items-center gap-3 border-b border-white/10 px-5 py-3">
+      {isFeedback && feedbackView !== "list" ? (
+        <header className="flex items-center gap-3 px-4 py-3">
           <button
             type="button"
-            onClick={() => {
-              if (feedbackView === "list") setSection("home");
-              else goFeedback("list");
-            }}
-            className="flex size-7 cursor-pointer items-center justify-center rounded-md text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+            onClick={() => goFeedback("list")}
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white"
             aria-label="Back"
           >
             <ChevronLeft className="size-5" />
           </button>
           {feedbackView === "detail" ? (
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <div className="flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/8">
+              <div className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white/[0.06]">
                 {workspaceLogo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={workspaceLogo} alt="" className="size-full object-cover" />
@@ -269,31 +267,20 @@ export default function WidgetFrame({
               </div>
             </div>
           ) : (
-            <p className="flex-1 text-base font-semibold">{feedbackTitle}</p>
+            <p className="flex-1 text-[15px] font-semibold tracking-tight">{feedbackTitle}</p>
           )}
-          {feedbackView === "list" ? (
-            <button
-              type="button"
-              onClick={() => goFeedback("compose")}
-              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
-              style={{ backgroundColor: accent }}
-            >
-              <Pencil className="size-3.5" />
-              New
-            </button>
-          ) : null}
           <button
             type="button"
             onClick={close}
-            className="flex size-7 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white"
             aria-label="Close widget"
           >
             <X className="size-4" />
           </button>
         </header>
       ) : (
-        <header className="flex items-center gap-3 px-4 py-3">
-          <div className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/8">
+        <header className="flex items-center gap-2.5 px-4 py-3">
+          <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white/[0.06]">
             {workspaceLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={workspaceLogo} alt="" className="size-full object-cover" />
@@ -302,13 +289,12 @@ export default function WidgetFrame({
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{workspaceName}</p>
+            <p className="truncate text-sm font-semibold tracking-tight">{workspaceName}</p>
           </div>
           <button
             type="button"
             onClick={() => goFeedback("compose")}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: accent }}
+            className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md bg-white px-3 text-xs font-semibold text-neutral-900 transition-opacity hover:opacity-90"
           >
             <Pencil className="size-3.5" />
             Give feedback
@@ -316,7 +302,7 @@ export default function WidgetFrame({
           <button
             type="button"
             onClick={close}
-            className="text-white/45 transition-colors hover:text-white"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white"
             aria-label="Close widget"
           >
             <X className="size-4" />
@@ -327,10 +313,10 @@ export default function WidgetFrame({
       <div
         className={
           isFeedback && (feedbackView === "list" || feedbackView === "detail")
-            ? "flex min-h-0 flex-1 flex-col pt-1"
+            ? "flex min-h-0 flex-1 flex-col"
             : isFeedback
-              ? "flex min-h-0 flex-1 flex-col px-5 pb-5 pt-1"
-              : "min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-2"
+              ? "flex min-h-0 flex-1 flex-col px-5 pb-4"
+              : "min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-1"
         }
       >
         {loading ? <p className="text-sm text-white/45">Loading...</p> : null}
@@ -413,7 +399,7 @@ export default function WidgetFrame({
                   Roadmap →
                 </button>
               </div>
-              <div className="-mx-5 border-t border-white/10">
+              <div className="-mx-5">
                 {previewRoadmap.length ? (
                   previewRoadmap.map((item) => (
                     <RoadmapRow
@@ -505,7 +491,7 @@ export default function WidgetFrame({
               </p>
               <h2 className="mt-2 text-xl font-semibold">What&apos;s coming next</h2>
             </div>
-            <div className="border-t border-white/10">
+            <div>
               {roadmap.length ? (
                 roadmap.map((item) => (
                   <RoadmapRow
@@ -555,8 +541,8 @@ export default function WidgetFrame({
         ) : null}
       </div>
 
-      {!isFeedback ? (
-        <nav className="grid grid-cols-4 border-t border-white/8 bg-[#1b1b1b]/95 px-3 py-2">
+      {showTabs ? (
+        <nav className="grid grid-cols-4 border-t border-white/10 px-3 py-2">
           {displayedTabs.map((tab) => (
             <button
               key={tab}
@@ -565,7 +551,7 @@ export default function WidgetFrame({
                 setSection(tab);
                 if (tab === "feedback") goFeedback("list");
               }}
-              className={`flex flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
+              className={`flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
                 section === tab ? "" : "text-white/45 hover:text-white/75"
               }`}
               style={section === tab ? { color: accent } : undefined}
@@ -583,12 +569,12 @@ export default function WidgetFrame({
       ) : null}
 
       {!workspace?.hideBranding ? (
-        <div className="border-t border-white/8 px-4 py-2.5 text-center">
+        <div className="border-t border-white/10 px-4 py-2.5 text-center">
           <a
             href="https://featul.com?utm_source=powered_by&utm_medium=referral&utm_campaign=widget"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-[10px] text-white/40 transition-colors hover:text-white/70"
+            className="inline-flex items-center gap-1.5 text-[10px] text-white/35 transition-colors hover:text-white/60"
           >
             <span>Powered by featul</span>
             <FeatulLogoIcon className="size-3.5 shrink-0" size={14} />
@@ -624,7 +610,7 @@ function RoadmapRow({
   const author = item.isAnonymous ? "Guest" : item.authorName || "Guest";
 
   return (
-    <div className="flex items-center gap-3 border-b border-white/10 px-5 py-3.5 last:border-b-0">
+    <div className="flex items-center gap-3 border-b border-white/10 px-5 py-3.5 transition-colors last:border-b-0 hover:bg-white/[0.03]">
       <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-9" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{item.title}</p>

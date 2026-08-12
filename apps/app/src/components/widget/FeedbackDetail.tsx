@@ -124,7 +124,7 @@ export function WidgetFeedbackDetail({
           </div>
         </div>
 
-        <div className="my-5 h-px w-full bg-white/10" />
+        <div className="my-5 h-px w-full bg-white/[0.06]" />
 
         {body ? (
           <p className="whitespace-pre-wrap text-[15px] leading-7 text-white/70">{body}</p>
@@ -133,7 +133,7 @@ export function WidgetFeedbackDetail({
         )}
       </div>
 
-      <div className="flex items-center gap-2 border-t border-white/10 px-5 py-3">
+      <div className="flex items-center gap-2 px-5 py-3">
         <WidgetVoteButton
           postId={post.id}
           upvotes={post.upvotes || 0}

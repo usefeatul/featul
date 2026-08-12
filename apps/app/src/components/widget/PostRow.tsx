@@ -1,7 +1,7 @@
 "use client";
 
+import * as React from "react";
 import StatusIcon from "@/components/requests/StatusIcon";
-import { CommentsIcon } from "@featul/ui/icons/comments";
 import { statusLabel } from "@/lib/roadmap";
 import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { formatRelativeDate, toPlain } from "./utils";
@@ -27,9 +27,13 @@ export function WidgetPostRow({
 }: Props) {
   const excerpt = toPlain(post.content);
   const author = post.isAnonymous ? "Guest" : post.authorName || "Guest";
+  const meta = [
+    author,
+    post.createdAt ? formatRelativeDate(post.createdAt) : null,
+  ].filter(Boolean);
 
   return (
-    <article className="relative border-b border-white/10 px-5 py-4 transition-colors last:border-b-0 hover:bg-white/[0.03]">
+    <article className="relative border-b border-white/10 px-4 py-3.5 transition-colors last:border-b-0 hover:bg-white/[0.03]">
       <button
         type="button"
         onClick={() => onOpen(post)}
@@ -37,55 +41,46 @@ export function WidgetPostRow({
         aria-label={post.title}
       />
 
-      <div className="relative z-[1] pointer-events-none">
-        <div className="inline-flex items-center gap-1.5 text-xs text-white/50">
-          <StatusIcon status={post.roadmapStatus || undefined} className="size-4 shrink-0" />
-          <span>{statusLabel(String(post.roadmapStatus || "pending"))}</span>
-          {post.boardName ? (
-            <>
-              <span aria-hidden className="text-white/20">
-                ·
-              </span>
-              <span className="truncate">{post.boardName}</span>
-            </>
+      <div className="relative z-[1] flex items-start gap-3 pointer-events-none">
+        <WidgetAuthorAvatar name={author} image={post.authorImage} className="mt-0.5 size-9 shrink-0" />
+
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[15px] font-semibold leading-snug tracking-tight text-white">
+            {post.title}
+          </h3>
+
+          {excerpt ? (
+            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-white/45">{excerpt}</p>
           ) : null}
-        </div>
 
-        <h3 className="mt-2 text-[15px] font-semibold leading-snug tracking-tight text-white">
-          {post.title}
-        </h3>
-
-        {excerpt ? (
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/45">{excerpt}</p>
-        ) : null}
-
-        <div className="mt-3.5 flex items-end justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <WidgetAuthorAvatar name={author} image={post.authorImage} className="size-7" />
-            <div className="min-w-0">
-              <p className="truncate text-xs font-medium text-white/80">{author}</p>
-              {post.createdAt ? (
-                <p className="text-[11px] text-white/35">{formatRelativeDate(post.createdAt)}</p>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="pointer-events-auto flex shrink-0 items-center gap-3 text-xs text-white/45">
-            <WidgetVoteButton
-              postId={post.id}
-              upvotes={post.upvotes || 0}
-              hasVoted={post.hasVoted}
-              apiBase={apiBase}
-              userId={userId}
-              identity={identity}
-              variant="plain"
-              onChange={({ upvotes, hasVoted }) => onVoteChange?.(post.id, upvotes, hasVoted)}
-            />
-            <span className="inline-flex items-center gap-1">
-              <CommentsIcon aria-hidden className="size-3.5" />
-              <span className="tabular-nums">{post.commentCount || 0}</span>
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-white/40">
+            {meta.map((part, index) => (
+              <React.Fragment key={`${part}-${index}`}>
+                {index > 0 ? <span aria-hidden className="text-white/20">·</span> : null}
+                <span className="truncate">{part}</span>
+              </React.Fragment>
+            ))}
+            <span aria-hidden className="text-white/20">
+              ·
+            </span>
+            <span className="inline-flex items-center gap-1 truncate">
+              <StatusIcon status={post.roadmapStatus || undefined} className="size-3.5 shrink-0" />
+              {statusLabel(String(post.roadmapStatus || "pending"))}
             </span>
           </div>
+        </div>
+
+        <div className="pointer-events-auto shrink-0 pt-0.5">
+          <WidgetVoteButton
+            postId={post.id}
+            upvotes={post.upvotes || 0}
+            hasVoted={post.hasVoted}
+            apiBase={apiBase}
+            userId={userId}
+            identity={identity}
+            variant="plain"
+            onChange={({ upvotes, hasVoted }) => onVoteChange?.(post.id, upvotes, hasVoted)}
+          />
         </div>
       </div>
     </article>

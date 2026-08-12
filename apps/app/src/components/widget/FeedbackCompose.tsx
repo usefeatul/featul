@@ -34,7 +34,7 @@ export function WidgetFeedbackCompose({
   userId,
   identity,
   primaryColor = "#3b82f6",
-  onCancel,
+  onCancel: _onCancel,
   onCreated,
 }: Props) {
   const [title, setTitle] = React.useState("");
@@ -44,8 +44,7 @@ export function WidgetFeedbackCompose({
   const [similar, setSimilar] = React.useState<SimilarPost[]>([]);
 
   const selectedBoard = boards.find((board) => board.id === boardId) || boards[0];
-  const canSubmit =
-    Boolean(boardId) && title.trim().length >= 3 && content.trim().length >= 1 && !submitting;
+  const canSubmit = Boolean(boardId) && title.trim().length >= 3 && !submitting;
 
   React.useEffect(() => {
     const q = title.trim();
@@ -86,7 +85,7 @@ export function WidgetFeedbackCompose({
         ...viewerPayload(apiBase, { userId, identity, fingerprint }),
         boardId,
         title: title.trim().slice(0, 120),
-        content: content.trim(),
+        content: (content.trim() || title.trim()).slice(0, 5000),
       });
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
@@ -128,7 +127,7 @@ export function WidgetFeedbackCompose({
         <select
           value={boardId}
           onChange={(event) => onBoardChange(event.target.value)}
-          className="mb-2 h-9 w-full rounded-md border border-white/10 bg-[#202020] px-3 text-sm text-white outline-none"
+          className="mb-3 h-9 w-full rounded-md bg-white/[0.05] px-3 text-sm text-white outline-none"
           aria-label="Board"
         >
           {boards.map((board) => (
@@ -142,22 +141,22 @@ export function WidgetFeedbackCompose({
       <input
         value={title}
         onChange={(event) => setTitle(event.target.value)}
-        placeholder="Request title"
+        placeholder="What's on your mind?"
         maxLength={120}
         autoFocus
-        className="mb-1 w-full border-0 bg-transparent px-0 py-2 text-lg font-semibold text-white outline-none placeholder:text-white/25"
+        className="mb-1 w-full border-0 bg-transparent px-0 py-2 text-lg font-semibold text-white outline-none placeholder:text-white/30"
       />
 
       <Textarea
         variant="plain"
         value={content}
         onChange={(event) => setContent(event.target.value)}
-        placeholder="What's on your mind?"
-        className="min-h-0 flex-1 resize-none px-0 py-3 text-base leading-relaxed text-white shadow-none placeholder:text-white/25 focus-visible:ring-0"
+        placeholder="Add more detail..."
+        className="min-h-0 flex-1 resize-none px-0 py-2 text-[15px] leading-relaxed text-white/85 shadow-none placeholder:text-white/25 focus-visible:ring-0"
       />
 
       {similar.length ? (
-        <div className="mt-2 rounded-md border border-white/8 bg-[#202020] p-3">
+        <div className="mt-2 rounded-md bg-white/[0.04] p-3">
           <p className="text-xs font-semibold" style={{ color: primaryColor || "#3b82f6" }}>
             Similar requests
           </p>
@@ -173,25 +172,15 @@ export function WidgetFeedbackCompose({
       ) : null}
 
       {message ? (
-        <p className="mt-3 rounded-md border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">
-          {message}
-        </p>
+        <p className="mt-3 rounded-md bg-white/[0.05] px-3 py-2 text-sm text-white/85">{message}</p>
       ) : null}
 
-      <div className="flex items-center justify-between pt-3">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="text-sm text-white/45 transition-colors hover:text-white"
-        >
-          Cancel
-        </button>
+      <div className="flex items-center justify-end pt-4">
         <Button
           type="submit"
           variant="plain"
           disabled={!canSubmit}
-          className="h-10 rounded-md bg-white/60 px-5 text-sm font-medium text-black hover:bg-white/75 disabled:bg-white/20 disabled:text-white/35"
-          style={canSubmit ? { backgroundColor: primaryColor || "#3b82f6", color: "#fff" } : undefined}
+          className="h-10 cursor-pointer rounded-md bg-white px-5 text-sm font-semibold text-neutral-900 hover:opacity-90 disabled:bg-white/20 disabled:text-white/35"
         >
           {submitting ? "Posting..." : "Post"}
         </Button>
