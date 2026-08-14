@@ -28,7 +28,7 @@ import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import { HomeIcon } from "@featul/ui/icons/home";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { resolveWidgetAccent, resolveWidgetTheme, widgetThemeVars } from "./theme";
+import { resolveWidgetAccent, resolveWidgetTheme, widgetSurfaceHex, widgetThemeVars } from "./theme";
 import { WidgetThemeProvider } from "./WidgetThemeProvider";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
 import { WidgetVoteButton } from "./VoteButton";
@@ -97,7 +97,7 @@ export default function WidgetFrame({
     const applyTheme = (next: "light" | "dark") => {
       setTheme(next);
       document.documentElement.style.colorScheme = next;
-      document.body.style.background = next === "light" ? "#ffffff" : "#000000";
+      document.body.style.background = widgetSurfaceHex(next);
     };
 
     applyTheme(resolveWidgetTheme(themeMode));
@@ -383,8 +383,8 @@ export default function WidgetFrame({
       style={
         {
           ["--widget-accent" as string]: accent,
-          backgroundColor: theme === "light" ? "#ffffff" : "#000000",
-          color: theme === "light" ? "#171717" : "#ffffff",
+          backgroundColor: widgetSurfaceHex(theme),
+          color: theme === "light" ? "#171717" : "#fafafa",
           ...widgetThemeVars(theme),
         } as React.CSSProperties
       }

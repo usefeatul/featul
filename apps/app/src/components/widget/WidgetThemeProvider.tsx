@@ -3,6 +3,8 @@
 import * as React from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 
+import { WIDGET_SURFACE_DARK, WIDGET_SURFACE_LIGHT } from "./theme";
+
 function WidgetThemeSync({
   mode,
   children,
@@ -20,7 +22,8 @@ function WidgetThemeSync({
     const resolved = resolvedTheme === "light" || resolvedTheme === "dark" ? resolvedTheme : null;
     if (!resolved) return;
     document.documentElement.style.colorScheme = resolved;
-    document.body.style.background = resolved === "light" ? "#ffffff" : "#000000";
+    document.body.style.background =
+      resolved === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
     window.parent.postMessage(
       {
         source: "featul-widget-frame",

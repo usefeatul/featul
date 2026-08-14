@@ -1,4 +1,4 @@
-export const WIDGET_SURFACE_DARK = "#000000";
+export const WIDGET_SURFACE_DARK = "#1a1a1c";
 export const WIDGET_SURFACE_LIGHT = "#ffffff";
 export const WIDGET_ACCENT_FALLBACK = "#3b82f6";
 
@@ -26,10 +26,11 @@ export function widgetThemeVars(theme: WidgetResolvedTheme): Record<string, stri
     };
   }
   return {
-    "--widget-surface": "0 0 0",
-    "--widget-fg": "255 255 255",
-    "--widget-cta": "255 255 255",
-    "--widget-cta-fg": "23 23 23",
+    // Slightly darker than workspace dark (~oklch 22%), but not pure black.
+    "--widget-surface": "26 26 28",
+    "--widget-fg": "250 250 250",
+    "--widget-cta": "250 250 250",
+    "--widget-cta-fg": "26 26 28",
   };
 }
 

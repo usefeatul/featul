@@ -39,7 +39,7 @@ export function getWidgetSdkSource() {
   }
 
   function panelBackground() {
-    return state.theme === "light" ? "#ffffff" : "#000000";
+    return state.theme === "light" ? "#ffffff" : "#1a1a1c";
   }
 
   function syncTheme() {
