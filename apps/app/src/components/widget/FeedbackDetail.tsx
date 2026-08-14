@@ -721,10 +721,10 @@ function CommentVoteButton({
       type="button"
       onClick={() => void handleVote()}
       disabled={pending}
-      className={`inline-flex h-7 items-center gap-1 rounded-full px-2.5 text-xs tabular-nums transition-colors disabled:cursor-not-allowed ${
+      className={`inline-flex items-center gap-1 text-xs tabular-nums transition-colors disabled:cursor-not-allowed ${
         hasVoted
-          ? "bg-red-500/20 text-red-400"
-          : "bg-[rgb(var(--widget-fg)/0.08)] text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.12)] hover:text-red-400"
+          ? "text-red-500"
+          : "text-[rgb(var(--widget-fg)/0.45)] hover:text-red-400"
       }`}
       aria-pressed={hasVoted}
       aria-label={hasVoted ? "Remove upvote" : "Upvote"}
