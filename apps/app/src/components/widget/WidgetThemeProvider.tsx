@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 
-import { WIDGET_SURFACE_DARK, WIDGET_SURFACE_LIGHT } from "./theme";
+import { WIDGET_SURFACE_DARK, WIDGET_SURFACE_LIGHT, widgetThemeVars } from "./theme";
 
 function WidgetThemeSync({
   mode,
@@ -21,7 +21,14 @@ function WidgetThemeSync({
   React.useEffect(() => {
     const resolved = resolvedTheme === "light" || resolvedTheme === "dark" ? resolvedTheme : null;
     if (!resolved) return;
-    document.documentElement.style.colorScheme = resolved;
+    const root = document.documentElement;
+    root.style.colorScheme = resolved;
+    root.classList.toggle("dark", resolved === "dark");
+    root.classList.toggle("light", resolved === "light");
+    const vars = widgetThemeVars(resolved);
+    for (const [key, value] of Object.entries(vars)) {
+      root.style.setProperty(key, value);
+    }
     document.body.style.background =
       resolved === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
     window.parent.postMessage(

@@ -20,7 +20,6 @@ export function WidgetAuthorAvatar({ name, image, className = "size-6" }: Props)
 
   if (showImage) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={image || undefined}
         alt=""

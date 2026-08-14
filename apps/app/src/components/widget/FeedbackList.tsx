@@ -3,12 +3,35 @@
 import * as React from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverList,
+  PopoverListItem,
+  PopoverTrigger,
+} from "@featul/ui/components/popover";
+import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
+import { BoardIcon } from "@featul/ui/icons/board";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { ArrowDownWideNarrow, Search } from "lucide-react";
+import { SearchIcon } from "@featul/ui/icons/search";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { viewerPayload } from "./utils";
 import { WidgetPostRow } from "./PostRow";
+
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest" },
+  { value: "top", label: "Top" },
+] as const;
+
+const toolbarBtnClass =
+  "inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md bg-[rgb(var(--widget-fg)/0.05)] text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.08)] hover:text-[rgb(var(--widget-fg)/0.8)]";
+
+const popoverClass =
+  "z-[80] min-w-0 w-fit border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-surface))] p-0 text-[rgb(var(--widget-fg))] shadow-lg";
+
+const popoverItemClass =
+  "gap-2 px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)] hover:bg-[rgb(var(--widget-fg)/0.06)] dark:hover:bg-[rgb(var(--widget-fg)/0.06)]";
 
 type Props = {
   apiBase: WidgetApiBase;
@@ -166,13 +189,17 @@ export function WidgetFeedbackList({
     );
   };
 
-  const cycleSort = () => setSort((prev) => (prev === "newest" ? "top" : "newest"));
+  const [sortOpen, setSortOpen] = React.useState(false);
+  const [boardOpen, setBoardOpen] = React.useState(false);
+  const selectedBoard = boards.find((board) => board.id === boardId);
+  const boardLabel = selectedBoard?.name || "All boards";
+  const sortLabel = sort === "newest" ? "Newest" : "Top";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-2 px-4 pb-3 pt-1">
         <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[rgb(var(--widget-fg)/0.35)]" />
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[rgb(var(--widget-fg)/0.35)]" size={14} />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -180,30 +207,105 @@ export function WidgetFeedbackList({
             className="h-9 w-full rounded-md bg-[rgb(var(--widget-fg)/0.05)] pl-9 pr-3 text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.3)] focus:bg-[rgb(var(--widget-fg)/0.07)]"
           />
         </div>
-        <button
-          type="button"
-          onClick={cycleSort}
-          className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-fg)/0.05)] px-2.5 text-xs text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.08)] hover:text-[rgb(var(--widget-fg)/0.8)]"
-          aria-label={`Sort by ${sort === "newest" ? "top" : "newest"}`}
-          title={sort === "newest" ? "Newest" : "Top"}
-        >
-          <ArrowDownWideNarrow className="size-3.5" />
-          <span className="capitalize">{sort}</span>
-        </button>
-        {boards.length > 1 ? (
-          <select
-            value={boardId}
-            onChange={(event) => onBoardChange(event.target.value)}
-            className="h-9 max-w-[7.5rem] cursor-pointer rounded-md bg-[rgb(var(--widget-fg)/0.05)] px-2 text-xs text-[rgb(var(--widget-fg)/0.7)] outline-none hover:bg-[rgb(var(--widget-fg)/0.08)]"
-            aria-label="Filter by board"
+
+        <Popover open={sortOpen} onOpenChange={setSortOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={toolbarBtnClass}
+              aria-label={`Sort by ${sortLabel}`}
+              title={sortLabel}
+            >
+              <ArrowUpDownIcon className="size-3.5" size={14} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            list
+            align="end"
+            className={popoverClass}
+            style={{
+              backgroundColor: "rgb(var(--widget-surface))",
+              color: "rgb(var(--widget-fg))",
+            }}
           >
-            <option value="">All boards</option>
-            {boards.map((board) => (
-              <option key={board.id} value={board.id}>
-                {board.name}
-              </option>
-            ))}
-          </select>
+            <PopoverList>
+              {SORT_OPTIONS.map((option) => (
+                <PopoverListItem
+                  key={option.value}
+                  role="menuitemradio"
+                  aria-checked={sort === option.value}
+                  className={popoverItemClass}
+                  onClick={() => {
+                    setSort(option.value);
+                    setSortOpen(false);
+                  }}
+                >
+                  <span>{option.label}</span>
+                  {sort === option.value ? (
+                    <span className="ml-auto text-xs text-[rgb(var(--widget-fg)/0.45)]">✓</span>
+                  ) : null}
+                </PopoverListItem>
+              ))}
+            </PopoverList>
+          </PopoverContent>
+        </Popover>
+
+        {boards.length > 1 ? (
+          <Popover open={boardOpen} onOpenChange={setBoardOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className={toolbarBtnClass}
+                aria-label={`Filter by board: ${boardLabel}`}
+                title={boardLabel}
+              >
+                <BoardIcon className="size-3.5" size={14} opacity={1} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              list
+              align="end"
+              className={popoverClass}
+              style={{
+                backgroundColor: "rgb(var(--widget-surface))",
+                color: "rgb(var(--widget-fg))",
+              }}
+            >
+              <PopoverList>
+                <PopoverListItem
+                  role="menuitemradio"
+                  aria-checked={!boardId}
+                  className={popoverItemClass}
+                  onClick={() => {
+                    onBoardChange("");
+                    setBoardOpen(false);
+                  }}
+                >
+                  <span>All boards</span>
+                  {!boardId ? (
+                    <span className="ml-auto text-xs text-[rgb(var(--widget-fg)/0.45)]">✓</span>
+                  ) : null}
+                </PopoverListItem>
+                {boards.map((board) => (
+                  <PopoverListItem
+                    key={board.id}
+                    role="menuitemradio"
+                    aria-checked={boardId === board.id}
+                    className={popoverItemClass}
+                    onClick={() => {
+                      onBoardChange(board.id);
+                      setBoardOpen(false);
+                    }}
+                  >
+                    <span className="whitespace-nowrap">{board.name}</span>
+                    {boardId === board.id ? (
+                      <span className="ml-auto text-xs text-[rgb(var(--widget-fg)/0.45)]">✓</span>
+                    ) : null}
+                  </PopoverListItem>
+                ))}
+              </PopoverList>
+            </PopoverContent>
+          </Popover>
         ) : null}
       </div>
 
