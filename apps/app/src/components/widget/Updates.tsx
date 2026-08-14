@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { JSONContent } from "@tiptap/core";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
@@ -99,22 +100,16 @@ export function WidgetUpdates({
   onOpen,
   onBack: _onBack,
 }: Props) {
+  const reduceMotion = useReducedMotion();
   const selected = selectedId
     ? entries.find((entry) => entry.id === selectedId) || null
     : null;
 
-  if (selected) {
-    return (
-      <UpdateDetail
-        entry={selected}
-        accent={accent}
-        recentEntries={entries.slice(0, 5)}
-        onOpen={onOpen}
-      />
-    );
-  }
+  const viewTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const };
 
-  if (!entries.length) {
+  if (!entries.length && !selected) {
     return (
       <div className="px-5 py-10 text-center">
         <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">No updates yet</p>
@@ -126,58 +121,87 @@ export function WidgetUpdates({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide">
-      {entries.map((entry, index) => {
-        const preview = (entry.summary || entry.preview || "").trim();
-        const isRecent = index < 5;
-
-        return (
-          <button
-            key={entry.id}
-            type="button"
-            onClick={() => onOpen(entry)}
-            className={`w-full cursor-pointer px-5 py-5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.03)] ${
-              index > 0 ? "border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" : ""
-            }`}
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+      <AnimatePresence mode="wait" initial={false}>
+        {selected ? (
+          <motion.div
+            key={`detail-${selected.id}`}
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 6 }}
+            transition={viewTransition}
+            className="absolute inset-0 flex min-h-0 flex-col"
           >
-            <UpdateMetaRow
-              entry={entry}
+            <UpdateDetail
+              entry={selected}
               accent={accent}
-              fallbackBadge={isRecent ? "Just Shipped" : null}
+              recentEntries={entries.slice(0, 5)}
+              onOpen={onOpen}
             />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="list"
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 4 }}
+            transition={viewTransition}
+            className="absolute inset-0 flex min-h-0 flex-col overflow-y-auto scrollbar-hide"
+          >
+            {entries.map((entry, index) => {
+              const preview = (entry.summary || entry.preview || "").trim();
+              const isRecent = index < 5;
 
-            <h3 className="mt-2 text-[17px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
-              {entry.title}
-            </h3>
+              return (
+                <button
+                  key={entry.id}
+                  type="button"
+                  onClick={() => onOpen(entry)}
+                  className={`w-full cursor-pointer px-5 py-5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.03)] ${
+                    index > 0 ? "border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" : ""
+                  }`}
+                >
+                  <UpdateMetaRow
+                    entry={entry}
+                    accent={accent}
+                    fallbackBadge={isRecent ? "Just Shipped" : null}
+                  />
 
-            {preview ? (
-              <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
-                {preview}
-              </p>
-            ) : null}
+                  <h3 className="mt-2 text-[17px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+                    {entry.title}
+                  </h3>
 
-            {entry.authorName ? (
-              <div className="mt-4 flex items-center gap-2.5">
-                <WidgetAuthorAvatar
-                  name={entry.authorName}
-                  image={entry.authorImage}
-                  className="size-7"
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
-                    {entry.authorName}
-                  </p>
-                  {entry.authorRoleLabel ? (
-                    <p className="truncate font-heading text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
-                      {entry.authorRoleLabel}
+                  {preview ? (
+                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
+                      {preview}
                     </p>
                   ) : null}
-                </div>
-              </div>
-            ) : null}
-          </button>
-        );
-      })}
+
+                  {entry.authorName ? (
+                    <div className="mt-4 flex items-center gap-2.5">
+                      <WidgetAuthorAvatar
+                        name={entry.authorName}
+                        image={entry.authorImage}
+                        className="size-7"
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
+                          {entry.authorName}
+                        </p>
+                        {entry.authorRoleLabel ? (
+                          <p className="truncate font-heading text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
+                            {entry.authorRoleLabel}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

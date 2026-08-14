@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -375,7 +375,10 @@ export default function WidgetFrame({
   const showTabs = (!isFeedback || feedbackView === "list") && !isChangelogDetail;
   const contentTransition = reduceMotion
     ? { duration: 0 }
-    : { duration: 0.16, ease: "easeOut" as const };
+    : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
+  const tabTransition = reduceMotion
+    ? { duration: 0 }
+    : { type: "spring" as const, stiffness: 420, damping: 36, mass: 0.7 };
   const feedbackTitle =
     feedbackView === "compose"
       ? "Give feedback"
@@ -490,7 +493,7 @@ export default function WidgetFrame({
           isFeedback && (feedbackView === "list" || feedbackView === "detail")
             ? "relative flex min-h-0 flex-1 flex-col"
             : isChangelogDetail || section === "changelog"
-              ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide"
+              ? "relative flex min-h-0 flex-1 flex-col overflow-hidden"
             : isFeedback
               ? "relative flex min-h-0 flex-1 flex-col px-5 pb-4"
               : section === "roadmap"
@@ -867,7 +870,13 @@ export default function WidgetFrame({
         ) : null}
 
         {!loading && section === "changelog" ? (
-          <div className="flex min-h-0 flex-1 flex-col">
+          <motion.div
+            key="changelog"
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={contentTransition}
+            className="flex min-h-0 flex-1 flex-col"
+          >
             <WidgetUpdates
               entries={changelog}
               accent={accent}
@@ -875,42 +884,67 @@ export default function WidgetFrame({
               onOpen={(entry) => setSelectedChangelogId(entry.id)}
               onBack={() => setSelectedChangelogId(null)}
             />
-          </div>
+          </motion.div>
         ) : null}
       </div>
 
-      {showTabs ? (
-        <nav
-          className={`grid grid-cols-4 px-3 py-2 transition-[box-shadow] duration-200 ${
-            navBorderVisible
-              ? "shadow-[inset_0_1px_0_0_rgb(var(--widget-fg)/0.08)]"
-              : "shadow-[inset_0_1px_0_0_transparent]"
-          }`}
-        >
-          {displayedTabs.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => {
-                setSection(tab);
-                if (tab === "feedback") goFeedback("list");
-              }}
-              className={`relative flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
-                section === tab ? "" : "text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg)/0.75)]"
-              }`}
-              style={section === tab ? { color: accent } : undefined}
-            >
-              {tab === "home" ? <HomeIcon className="size-4" size={16} /> : null}
-              {tab === "feedback" ? <FillFeedbackIcon className="size-4" size={16} /> : null}
-              {tab === "roadmap" ? <FillRoadmapIcon className="size-4" size={16} /> : null}
-              {tab === "changelog" ? <FillChangelogIcon className="size-4" size={16} /> : null}
-              <span>
-                {tab === "changelog" ? "Updates" : `${tab.charAt(0).toUpperCase()}${tab.slice(1)}`}
-              </span>
-            </button>
-          ))}
-        </nav>
-      ) : null}
+      <AnimatePresence initial={false}>
+        {showTabs ? (
+          <motion.nav
+            key="widget-tabs"
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 6 }}
+            transition={contentTransition}
+            className={`grid grid-cols-4 px-3 py-2 transition-[box-shadow] duration-200 ${
+              navBorderVisible
+                ? "shadow-[inset_0_1px_0_0_rgb(var(--widget-fg)/0.08)]"
+                : "shadow-[inset_0_1px_0_0_transparent]"
+            }`}
+          >
+            {displayedTabs.map((tab) => {
+              const active = section === tab;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => {
+                    setSection(tab);
+                    if (tab === "feedback") goFeedback("list");
+                  }}
+                  className={`relative flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
+                    active ? "" : "text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg)/0.75)]"
+                  }`}
+                  style={active ? { color: accent } : undefined}
+                >
+                  {active && !reduceMotion ? (
+                    <motion.span
+                      layoutId="widget-tab-indicator"
+                      className="absolute inset-0 rounded-md"
+                      style={{ backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)` }}
+                      transition={tabTransition}
+                    />
+                  ) : active ? (
+                    <span
+                      className="absolute inset-0 rounded-md"
+                      style={{ backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)` }}
+                    />
+                  ) : null}
+                  <span className="relative z-[1]">
+                    {tab === "home" ? <HomeIcon className="size-4" size={16} /> : null}
+                    {tab === "feedback" ? <FillFeedbackIcon className="size-4" size={16} /> : null}
+                    {tab === "roadmap" ? <FillRoadmapIcon className="size-4" size={16} /> : null}
+                    {tab === "changelog" ? <FillChangelogIcon className="size-4" size={16} /> : null}
+                  </span>
+                  <span className="relative z-[1]">
+                    {tab === "changelog" ? "Updates" : `${tab.charAt(0).toUpperCase()}${tab.slice(1)}`}
+                  </span>
+                </button>
+              );
+            })}
+          </motion.nav>
+        ) : null}
+      </AnimatePresence>
 
       {!workspace?.hideBranding &&
       !(isFeedback && (feedbackView === "compose" || feedbackView === "detail")) &&
