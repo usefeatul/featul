@@ -839,7 +839,8 @@ export default function WidgetFrame({
         </nav>
       ) : null}
 
-      {!workspace?.hideBranding && !(isFeedback && feedbackView === "compose") ? (
+      {!workspace?.hideBranding &&
+      !(isFeedback && (feedbackView === "compose" || feedbackView === "detail")) ? (
         <div className="border-t border-[rgb(var(--widget-fg)/0.1)] px-4 py-2.5 text-center">
           <a
             href="https://featul.com?utm_source=powered_by&utm_medium=referral&utm_campaign=widget"
