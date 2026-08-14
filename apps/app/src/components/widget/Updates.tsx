@@ -166,7 +166,7 @@ function UpdateDetail({
   const shipped = recentEntries.slice(0, 5);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto" data-widget-scroll="">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide" data-widget-scroll="">
       <div className="px-5 pb-4 pt-1">
         {(dateLabel || tag) && (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-semibold tracking-[0.08em]">

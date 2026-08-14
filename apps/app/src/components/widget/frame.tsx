@@ -485,21 +485,16 @@ export default function WidgetFrame({
           isFeedback && (feedbackView === "list" || feedbackView === "detail")
             ? "relative flex min-h-0 flex-1 flex-col"
             : isChangelogDetail || section === "changelog"
-              ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto"
+              ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide"
             : isFeedback
               ? "relative flex min-h-0 flex-1 flex-col px-5 pb-4"
               : section === "roadmap"
-                ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto pb-5 pt-0"
+                ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide pb-5 pt-0"
                 : section === "home"
-                  ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto pb-5 pt-4"
-                  : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-3"
+                  ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide pb-5 pt-4"
+                  : "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide px-5 pb-5 pt-3"
         }
-        data-widget-scroll={
-          !(isFeedback && (feedbackView === "list" || feedbackView === "detail")) &&
-          section !== "changelog"
-            ? ""
-            : undefined
-        }
+        data-widget-scroll=""
       >
         {loading ? (
           <motion.div

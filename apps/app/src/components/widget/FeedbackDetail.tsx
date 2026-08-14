@@ -308,7 +308,7 @@ export function WidgetFeedbackDetail({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto" data-widget-scroll="">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide" data-widget-scroll="">
       <input
         ref={fileInputRef}
         type="file"

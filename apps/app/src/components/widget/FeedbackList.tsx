@@ -207,7 +207,7 @@ export function WidgetFeedbackList({
         ) : null}
       </div>
 
-      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide">
         {loading && !hasLoadedOnce.current ? (
           <div
             className="flex min-h-0 flex-1 items-center justify-center"
