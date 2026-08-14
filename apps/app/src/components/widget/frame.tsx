@@ -541,7 +541,7 @@ export default function WidgetFrame({
             >
               {featuredEntry ? (
                 <>
-                  <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="New" />
+                  <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="Just Shipped" />
                   <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
                     {featuredEntry.title}
                   </h2>
@@ -704,7 +704,7 @@ export default function WidgetFrame({
                       }}
                       className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
                     >
-                      <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="New" />
+                      <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
                       <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
                         {entry.title}
                       </span>
@@ -835,7 +835,7 @@ export default function WidgetFrame({
                       }}
                       className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
                     >
-                      <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="New" />
+                      <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
                       <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
                         {entry.title}
                       </span>

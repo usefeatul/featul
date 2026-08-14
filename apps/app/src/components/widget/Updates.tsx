@@ -61,7 +61,7 @@ export function changelogBadge(
 export function UpdateMetaRow({
   entry,
   accent = "#3b82f6",
-  fallbackBadge = "New",
+  fallbackBadge = "Just Shipped",
   className = "",
 }: {
   entry: WidgetChangelogEntry;
@@ -143,7 +143,7 @@ export function WidgetUpdates({
             <UpdateMetaRow
               entry={entry}
               accent={accent}
-              fallbackBadge={isRecent ? "New" : null}
+              fallbackBadge={isRecent ? "Just Shipped" : null}
             />
 
             <h3 className="mt-2 text-[17px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
@@ -200,7 +200,7 @@ function UpdateDetail({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide" data-widget-scroll="">
       <div className="px-5 pb-4 pt-1">
-        <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="New" />
+        <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
 
         <h1 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
           {entry.title}
