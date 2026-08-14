@@ -396,22 +396,7 @@ export default function WidgetFrame({
             <ChevronLeft className="size-5" />
           </button>
           {feedbackView === "detail" ? (
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <div className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.06)]">
-                {workspaceLogo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={workspaceLogo} alt="" className="size-full object-cover" />
-                ) : (
-                  <span className="text-[10px] font-semibold" style={{ color: accent }}>
-                    {workspaceName.slice(0, 1).toUpperCase()}
-                  </span>
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{feedbackTitle}</p>
-                <p className="truncate text-[10px] text-[rgb(var(--widget-fg)/0.4)]">{workspaceName}</p>
-              </div>
-            </div>
+            <div className="min-w-0 flex-1" />
           ) : (
             <p className="flex-1 text-[15px] font-semibold tracking-tight">{feedbackTitle}</p>
           )}
