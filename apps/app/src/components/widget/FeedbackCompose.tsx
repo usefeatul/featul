@@ -213,20 +213,20 @@ export function WidgetFeedbackCompose({
       />
 
       {uploadedImage ? (
-        <div className="relative mt-2 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
+        <div className="relative mt-2 inline-block max-w-[5.5rem]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={uploadedImage.url}
             alt={uploadedImage.name}
-            className="max-h-40 w-full object-cover"
+            className="h-14 w-14 rounded-md object-cover bg-[rgb(var(--widget-fg)/0.04)]"
           />
           <button
             type="button"
             onClick={() => setUploadedImage(null)}
-            className="absolute right-2 top-2 flex size-7 cursor-pointer items-center justify-center rounded-md bg-black/60 text-white/80 transition-colors hover:bg-black/75 hover:text-white"
+            className="absolute -right-1.5 -top-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
             aria-label="Remove image"
           >
-            <X className="size-3.5" />
+            <X className="size-3" />
           </button>
         </div>
       ) : null}

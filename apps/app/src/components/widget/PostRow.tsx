@@ -54,9 +54,9 @@ export function WidgetPostRow({
           ) : null}
 
           {post.image ? (
-            <div className="mt-2 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
+            <div className="mt-2 inline-block overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.image} alt="" className="h-24 w-full object-cover" />
+              <img src={post.image} alt="" className="h-14 w-14 object-cover" />
             </div>
           ) : null}
 
