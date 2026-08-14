@@ -20,6 +20,7 @@ export function getWidgetSdkSource() {
     iframe: null,
     button: null,
     shell: null,
+    lightbox: null,
     position: "right",
     open: false,
     ready: false,
@@ -156,6 +157,61 @@ export function getWidgetSdkSource() {
     if (state.morphTimer) window.clearTimeout(state.morphTimer);
     state.closeTimer = null;
     state.morphTimer = null;
+  }
+
+  function closeImageLightbox() {
+    if (!state.lightbox) return;
+    if (state.lightbox.parentNode) state.lightbox.parentNode.removeChild(state.lightbox);
+    state.lightbox = null;
+    document.removeEventListener("keydown", onLightboxKeydown, true);
+  }
+
+  function onLightboxKeydown(event) {
+    if (event.key === "Escape") closeImageLightbox();
+  }
+
+  function openImageLightbox(url, alt) {
+    if (!url || typeof url !== "string") return;
+    if (url.indexOf("http://") !== 0 && url.indexOf("https://") !== 0) return;
+    closeImageLightbox();
+
+    var overlay = document.createElement("div");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Image preview");
+    overlay.style.cssText =
+      "position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.78);box-sizing:border-box;";
+
+    var closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.setAttribute("aria-label", "Close image");
+    closeBtn.innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+    closeBtn.style.cssText =
+      "position:absolute;top:16px;right:16px;width:36px;height:36px;border:0;border-radius:999px;background:rgba(255,255,255,0.12);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;";
+
+    var img = document.createElement("img");
+    img.src = url;
+    img.alt = alt || "";
+    img.style.cssText =
+      "max-width:min(920px,100%);max-height:85vh;object-fit:contain;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,0.45);";
+
+    closeBtn.onclick = function (event) {
+      event.stopPropagation();
+      closeImageLightbox();
+    };
+    overlay.onclick = function () {
+      closeImageLightbox();
+    };
+    img.onclick = function (event) {
+      event.stopPropagation();
+    };
+
+    overlay.appendChild(closeBtn);
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
+    state.lightbox = overlay;
+    document.addEventListener("keydown", onLightboxKeydown, true);
   }
 
   function buildFrame() {
@@ -362,6 +418,12 @@ export function getWidgetSdkSource() {
     if (data.type === "close") {
       setOpen(false);
     }
+    if (data.type === "open-image" && data.payload && data.payload.url) {
+      openImageLightbox(data.payload.url, data.payload.alt || "");
+    }
+    if (data.type === "close-image") {
+      closeImageLightbox();
+    }
   });
 
   var api = {
@@ -395,12 +457,14 @@ export function getWidgetSdkSource() {
     },
     destroy: function () {
       clearTimers();
+      closeImageLightbox();
       if (state.iframe && state.iframe.parentNode) state.iframe.parentNode.removeChild(state.iframe);
       if (state.button && state.button.parentNode) state.button.parentNode.removeChild(state.button);
       if (state.shell && state.shell.parentNode) state.shell.parentNode.removeChild(state.shell);
       state.iframe = null;
       state.button = null;
       state.shell = null;
+      state.lightbox = null;
       state.ready = false;
       state.open = false;
       state.closeTimer = null;

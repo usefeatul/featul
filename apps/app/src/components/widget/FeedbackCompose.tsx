@@ -20,6 +20,7 @@ import type {
   WidgetPost,
 } from "./types";
 import { viewerPayload, resolveBugsBoard } from "./utils";
+import { WidgetImage } from "./WidgetImage";
 
 type Props = {
   apiBase: WidgetApiBase;
@@ -213,17 +214,16 @@ export function WidgetFeedbackCompose({
       />
 
       {uploadedImage ? (
-        <div className="relative mt-2 inline-block max-w-[5.5rem]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={uploadedImage.url}
+        <div className="relative mt-2 inline-block">
+          <WidgetImage
+            url={uploadedImage.url}
             alt={uploadedImage.name}
-            className="h-14 w-14 rounded-md object-cover bg-[rgb(var(--widget-fg)/0.04)]"
+            imgClassName="h-14 w-14 object-cover"
           />
           <button
             type="button"
             onClick={() => setUploadedImage(null)}
-            className="absolute -right-1.5 -top-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
+            className="absolute -right-1.5 -top-1.5 z-[1] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
             aria-label="Remove image"
           >
             <X className="size-3" />

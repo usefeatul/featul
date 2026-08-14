@@ -17,6 +17,7 @@ import type { IdentifiedUser, WidgetApiBase, WidgetComment, WidgetPost } from ".
 import { formatRelativeDate, toPlain, viewerPayload } from "./utils";
 import { WidgetVoteButton } from "./VoteButton";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
+import { WidgetImage } from "./WidgetImage";
 
 type Props = {
   apiBase: WidgetApiBase;
@@ -343,9 +344,8 @@ export function WidgetFeedbackDetail({
         )}
 
         {post.image ? (
-          <div className="mt-4 inline-block overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={post.image} alt="" className="h-20 w-20 object-cover" />
+          <div className="mt-4">
+            <WidgetImage url={post.image} alt={post.title} imgClassName="h-20 w-20 object-cover" />
           </div>
         ) : null}
 
@@ -487,17 +487,16 @@ function CommentComposer({
         className="min-h-[4.5rem] w-full resize-none bg-transparent text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.35)]"
       />
       {uploadedImage ? (
-        <div className="relative mt-2 inline-block max-w-[5.5rem]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={uploadedImage.url}
+        <div className="relative mt-2 inline-block">
+          <WidgetImage
+            url={uploadedImage.url}
             alt={uploadedImage.name}
-            className="h-14 w-14 rounded-md object-cover bg-[rgb(var(--widget-fg)/0.04)]"
+            imgClassName="h-14 w-14 object-cover"
           />
           <button
             type="button"
             onClick={onRemoveImage}
-            className="absolute -right-1.5 -top-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
+            className="absolute -right-1.5 -top-1.5 z-[1] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
             aria-label="Remove image"
           >
             <X className="size-3" />
@@ -591,13 +590,8 @@ function CommentThreadItem({
           ) : null}
 
           {node.image ? (
-            <div className="mt-2 inline-block overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={node.image}
-                alt=""
-                className="h-16 w-16 object-cover"
-              />
+            <div className="mt-2">
+              <WidgetImage url={node.image} imgClassName="h-16 w-16 object-cover" />
             </div>
           ) : null}
 

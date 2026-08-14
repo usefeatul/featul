@@ -7,6 +7,7 @@ import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { formatRelativeDate, toPlain } from "./utils";
 import { WidgetVoteButton } from "./VoteButton";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
+import { WidgetImage } from "./WidgetImage";
 
 type Props = {
   post: WidgetPost;
@@ -54,9 +55,8 @@ export function WidgetPostRow({
           ) : null}
 
           {post.image ? (
-            <div className="mt-2 inline-block overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.image} alt="" className="h-14 w-14 object-cover" />
+            <div className="pointer-events-auto mt-2 inline-block">
+              <WidgetImage url={post.image} alt={post.title} imgClassName="h-14 w-14 object-cover" />
             </div>
           ) : null}
 
