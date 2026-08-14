@@ -206,8 +206,11 @@ function UpdateDetail({
           </div>
         ) : null}
 
-        <div className="my-5 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]" />
+      </div>
 
+      <div className="border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]" />
+
+      <div className="px-5 pb-4 pt-5">
         {entry.coverImage ? (
           <div className="mb-5 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
