@@ -396,8 +396,13 @@ export default function WidgetFrame({
     );
   }, [isChangelogDetail]);
 
+  const prevSectionRef = React.useRef(section);
   React.useEffect(() => {
-    if (section !== "changelog") setSelectedChangelogId(null);
+    const prev = prevSectionRef.current;
+    prevSectionRef.current = section;
+    if (prev === "changelog" && section !== "changelog") {
+      setSelectedChangelogId(null);
+    }
   }, [section]);
 
   return (
@@ -524,7 +529,14 @@ export default function WidgetFrame({
           >
             <button
               type="button"
-              onClick={() => setSection("changelog")}
+              onClick={() => {
+                if (!featuredEntry) {
+                  setSection("changelog");
+                  return;
+                }
+                setSelectedChangelogId(featuredEntry.id);
+                setSection("changelog");
+              }}
               className="group w-full border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6 text-left"
             >
               {featuredEntry ? (
@@ -697,8 +709,8 @@ export default function WidgetFrame({
                       key={entry.id}
                       type="button"
                       onClick={() => {
-                        setSection("changelog");
                         setSelectedChangelogId(entry.id);
+                        setSection("changelog");
                       }}
                       className="flex w-full items-start gap-4 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
                     >
