@@ -2,7 +2,13 @@
 
 import * as React from "react";
 import { client } from "@featul/api/client";
+import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
+import { X } from "lucide-react";
+import {
+  IMAGE_UPLOAD_CONTENT_TYPES,
+  POST_IMAGE_UPLOAD_MAX_BYTES,
+} from "@featul/api/upload-policy";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { VoteIcon } from "@/components/upvote/VoteIcon";
@@ -24,6 +30,8 @@ type Props = {
 };
 
 type CommentNode = WidgetComment & { replies: CommentNode[] };
+
+type UploadedImage = { url: string; name: string };
 
 function formatShortDate(value: string | Date | null | undefined): string {
   if (!value) return "";
@@ -67,7 +75,10 @@ export function WidgetFeedbackDetail({
   const [draft, setDraft] = React.useState("");
   const [replyTo, setReplyTo] = React.useState<WidgetComment | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
   const [composeError, setComposeError] = React.useState("");
+  const [uploadedImage, setUploadedImage] = React.useState<UploadedImage | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     let canceled = false;
@@ -107,13 +118,22 @@ export function WidgetFeedbackDetail({
           ...viewerPayload(apiBase, { userId, identity, fingerprint }),
           postId,
         });
-        if (!res.ok) throw new Error("Failed");
+        if (!res.ok) {
+          const body = await res.json().catch(() => null);
+          throw new Error(
+            (body as { message?: string } | null)?.message || "Failed to load comments",
+          );
+        }
         const data = await res.json();
         if (canceled) return;
         setAllowComments(Boolean(data.allowComments ?? true));
         setComments(Array.isArray(data.comments) ? (data.comments as WidgetComment[]) : []);
-      } catch {
-        if (!canceled) setComments([]);
+        setComposeError("");
+      } catch (err) {
+        if (!canceled) {
+          setComments([]);
+          setComposeError(err instanceof Error ? err.message : "Failed to load comments");
+        }
       } finally {
         if (!canceled) setCommentsLoading(false);
       }
@@ -126,9 +146,81 @@ export function WidgetFeedbackDetail({
 
   const tree = React.useMemo(() => buildCommentTree(comments), [comments]);
 
+  const clearCompose = () => {
+    setDraft("");
+    setUploadedImage(null);
+    setComposeError("");
+  };
+
+  const cancelReply = () => {
+    setReplyTo(null);
+    clearCompose();
+  };
+
+  const startReply = (item: WidgetComment) => {
+    if (replyTo?.id === item.id) {
+      cancelReply();
+      return;
+    }
+    setReplyTo(item);
+    clearCompose();
+  };
+
+  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (!file || !post?.boardId) return;
+
+    if (!(IMAGE_UPLOAD_CONTENT_TYPES as readonly string[]).includes(file.type)) {
+      setComposeError("Unsupported file type. Use PNG, JPEG, WebP, or GIF.");
+      return;
+    }
+    if (file.size > POST_IMAGE_UPLOAD_MAX_BYTES) {
+      setComposeError("Image too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setUploading(true);
+    setComposeError("");
+    try {
+      const fingerprint =
+        userId || identity?.email ? undefined : await getBrowserFingerprint();
+      const signed = await client.widget.uploadImage.$post({
+        ...viewerPayload(apiBase, { userId, identity, fingerprint }),
+        boardId: post.boardId,
+        fileName: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+      });
+      if (!signed.ok) {
+        const error = (await signed.json().catch(() => null)) as { message?: string } | null;
+        throw new Error(error?.message || "Failed to get upload URL");
+      }
+      const data = (await signed.json()) as {
+        uploadUrl?: string;
+        publicUrl?: string;
+      };
+      if (!data.uploadUrl || !data.publicUrl) throw new Error("Upload URL response was incomplete");
+
+      const put = await fetch(data.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!put.ok) throw new Error("Upload failed");
+
+      setUploadedImage({ url: data.publicUrl, name: file.name });
+    } catch (error) {
+      setComposeError(error instanceof Error ? error.message : "Could not upload image.");
+      setUploadedImage(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const submitComment = async () => {
     const content = draft.trim();
-    if (!content || submitting) return;
+    if ((!content && !uploadedImage) || submitting || uploading) return;
     setSubmitting(true);
     setComposeError("");
     try {
@@ -139,10 +231,13 @@ export function WidgetFeedbackDetail({
         postId,
         content,
         parentId: replyTo?.id,
+        image: uploadedImage?.url,
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        throw new Error(body?.message || "Could not post comment");
+        throw new Error(
+          (body as { message?: string } | null)?.message || "Could not post comment",
+        );
       }
       const data = await res.json();
       const created = data.comment as WidgetComment;
@@ -158,7 +253,7 @@ export function WidgetFeedbackDetail({
             }
           : prev,
       );
-      setDraft("");
+      clearCompose();
       setReplyTo(null);
     } catch (err) {
       setComposeError(err instanceof Error ? err.message : "Could not post comment");
@@ -190,10 +285,38 @@ export function WidgetFeedbackDetail({
 
   const author = post.isAnonymous ? "Guest" : post.authorName || "Guest";
   const body = toPlain(post.content);
-  const canSubmit = draft.trim().length > 0 && !submitting && allowComments;
+  const canSubmit =
+    (draft.trim().length > 0 || Boolean(uploadedImage)) &&
+    !submitting &&
+    !uploading &&
+    allowComments;
+
+  const composerProps = {
+    draft,
+    onDraftChange: setDraft,
+    uploadedImage,
+    onRemoveImage: () => setUploadedImage(null),
+    fileInputRef,
+    onPickImage: () => fileInputRef.current?.click(),
+    uploading,
+    canUpload: Boolean(post.boardId),
+    canSubmit,
+    submitting,
+    accent,
+    onSubmit: () => void submitComment(),
+  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto" data-widget-scroll="">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
+        onChange={(event) => void uploadImage(event)}
+        className="hidden"
+        disabled={uploading || Boolean(uploadedImage) || !post.boardId}
+      />
+
       <div className="px-5 pb-5 pt-1">
         <div className="flex items-center gap-2.5">
           <WidgetAuthorAvatar name={author} image={post.authorImage} className="size-8" />
@@ -238,7 +361,7 @@ export function WidgetFeedbackDetail({
             apiBase={apiBase}
             userId={userId}
             identity={identity}
-            className="h-8 rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.03)] px-2.5"
+            variant="plain"
             onChange={({ upvotes, hasVoted }) => {
               setPost((prev) => (prev ? { ...prev, upvotes, hasVoted } : prev));
               onVoteChange?.(post.id, upvotes, hasVoted);
@@ -254,82 +377,63 @@ export function WidgetFeedbackDetail({
           Comments · {post.commentCount || comments.length || 0}
         </p>
 
-        {allowComments ? (
-          <div className="mt-3 rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.03)] p-3">
-            {replyTo ? (
-              <div className="mb-2 flex items-center justify-between gap-2 text-[11px] text-[rgb(var(--widget-fg)/0.5)]">
-                <span className="truncate">
-                  Replying to {replyTo.authorName || "comment"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setReplyTo(null)}
-                  className="shrink-0 text-[rgb(var(--widget-fg)/0.55)] hover:text-[rgb(var(--widget-fg))]"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : null}
-            <textarea
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
+        {allowComments && !replyTo ? (
+          <div className="mt-3">
+            <CommentComposer
+              {...composerProps}
               placeholder="Add a comment..."
-              rows={3}
-              className="min-h-[4.5rem] w-full resize-none bg-transparent text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.35)]"
+              submitLabel="Comment"
             />
-            <div className="mt-2 flex items-center justify-end">
-              <button
-                type="button"
-                disabled={!canSubmit}
-                onClick={() => void submitComment()}
-                className="inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ backgroundColor: canSubmit ? accent : undefined }}
-              >
-                {submitting ? (
-                  <LoaderIcon className="size-3.5 animate-spin" />
-                ) : replyTo ? (
-                  "Reply"
-                ) : (
-                  "Comment"
-                )}
-              </button>
-            </div>
           </div>
-        ) : (
+        ) : null}
+
+        {!allowComments ? (
           <p className="mt-3 text-sm text-[rgb(var(--widget-fg)/0.45)]">
             Comments are disabled on this board.
           </p>
-        )}
+        ) : null}
 
         {composeError ? (
           <p className="mt-3 text-sm text-red-400">{composeError}</p>
         ) : null}
 
-        <div className="mt-5 space-y-0">
+        <div className="mt-2">
           {commentsLoading ? (
             <div className="flex justify-center py-6" aria-label="Loading comments">
               <LoaderIcon className="size-4 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
             </div>
           ) : tree.length ? (
-            tree.map((node) => (
-            <CommentThreadItem
-              key={node.id}
-              node={node}
-              apiBase={apiBase}
-              userId={userId}
-              identity={identity}
-              allowComments={allowComments}
-              onReply={(item) => {
-                setReplyTo(item);
-                setDraft("");
-              }}
-              onVoteChange={(id, upvotes, hasVoted) => {
-                setComments((prev) =>
-                  prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
-                );
-              }}
-            />
-          ))
+            tree.map((node, index) => (
+              <div key={node.id}>
+                {index > 0 ? (
+                  <div className="border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" />
+                ) : null}
+                <CommentThreadItem
+                  node={node}
+                  apiBase={apiBase}
+                  userId={userId}
+                  identity={identity}
+                  allowComments={allowComments}
+                  replyToId={replyTo?.id ?? null}
+                  onToggleReply={startReply}
+                  onVoteChange={(id, upvotes, hasVoted) => {
+                    setComments((prev) =>
+                      prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
+                    );
+                  }}
+                  replyComposer={
+                    replyTo ? (
+                      <CommentComposer
+                        {...composerProps}
+                        placeholder={`Reply to ${replyTo.authorName || "comment"}...`}
+                        submitLabel="Reply"
+                        autoFocus
+                      />
+                    ) : null
+                  }
+                />
+              </div>
+            ))
           ) : (
             <p className="py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
               No comments yet. Start the conversation.
@@ -341,90 +445,213 @@ export function WidgetFeedbackDetail({
   );
 }
 
+function CommentComposer({
+  draft,
+  onDraftChange,
+  uploadedImage,
+  onRemoveImage,
+  onPickImage,
+  uploading,
+  canUpload,
+  canSubmit,
+  submitting,
+  accent,
+  onSubmit,
+  placeholder,
+  submitLabel,
+  autoFocus = false,
+}: {
+  draft: string;
+  onDraftChange: (value: string) => void;
+  uploadedImage: UploadedImage | null;
+  onRemoveImage: () => void;
+  onPickImage: () => void;
+  uploading: boolean;
+  canUpload: boolean;
+  canSubmit: boolean;
+  submitting: boolean;
+  accent: string;
+  onSubmit: () => void;
+  placeholder: string;
+  submitLabel: string;
+  autoFocus?: boolean;
+}) {
+  return (
+    <div className="rounded-xl border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-fg)/0.03)] p-3">
+      <textarea
+        value={draft}
+        onChange={(event) => onDraftChange(event.target.value)}
+        placeholder={placeholder}
+        rows={3}
+        autoFocus={autoFocus}
+        className="min-h-[4.5rem] w-full resize-none bg-transparent text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.35)]"
+      />
+      {uploadedImage ? (
+        <div className="relative mt-2 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={uploadedImage.url}
+            alt={uploadedImage.name}
+            className="max-h-36 w-full object-cover"
+          />
+          <button
+            type="button"
+            onClick={onRemoveImage}
+            className="absolute right-2 top-2 flex size-7 cursor-pointer items-center justify-center rounded-md bg-black/60 text-white/80 transition-colors hover:bg-black/75 hover:text-white"
+            aria-label="Remove image"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      ) : null}
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={onPickImage}
+          disabled={uploading || Boolean(uploadedImage) || !canUpload}
+          className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label="Add image"
+        >
+          {uploading ? (
+            <LoaderIcon className="size-3.5 animate-spin" />
+          ) : (
+            <ImageIcon className="size-3.5" />
+          )}
+        </button>
+        <button
+          type="button"
+          disabled={!canSubmit}
+          onClick={onSubmit}
+          className="inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[rgb(var(--widget-fg)/0.12)] disabled:text-[rgb(var(--widget-fg)/0.35)] disabled:opacity-100"
+          style={{ backgroundColor: canSubmit ? accent : undefined }}
+        >
+          {submitting ? <LoaderIcon className="size-3.5 animate-spin" /> : submitLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function CommentThreadItem({
   node,
   apiBase,
   userId,
   identity,
   allowComments,
-  onReply,
+  replyToId,
+  onToggleReply,
   onVoteChange,
-  isReply = false,
+  replyComposer,
 }: {
   node: CommentNode;
   apiBase: WidgetApiBase;
   userId?: string | null;
   identity?: IdentifiedUser | null;
   allowComments: boolean;
-  onReply: (comment: WidgetComment) => void;
+  replyToId: string | null;
+  onToggleReply: (comment: WidgetComment) => void;
   onVoteChange: (id: string, upvotes: number, hasVoted: boolean) => void;
-  isReply?: boolean;
+  replyComposer?: React.ReactNode;
 }) {
   const canReply = allowComments && node.depth < 2;
+  const isReplying = replyToId === node.id;
+  const hasReplies = node.replies.length > 0;
+  const dateLabel = formatShortDate(node.createdAt) || formatRelativeDate(node.createdAt);
 
   return (
-    <div className={isReply ? "relative ml-4 border-l border-[rgb(var(--widget-fg)/0.12)] pl-4" : ""}>
-      <div className="py-4">
-        <div className="flex items-start gap-2.5">
+    <div className="group/thread relative">
+      <div className="relative flex gap-3 py-4">
+        <div className="relative flex shrink-0 flex-col items-center">
           <WidgetAuthorAvatar
             name={node.authorName}
             image={node.authorImage}
-            className="size-7 shrink-0"
+            className="relative z-[1] size-7"
           />
-          <div className="min-w-0 flex-1">
-            <div className="flex min-w-0 items-baseline gap-2">
-              <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
-                {node.authorName}
-              </p>
-              <p className="shrink-0 text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
-                {formatShortDate(node.createdAt) || formatRelativeDate(node.createdAt)}
-              </p>
-            </div>
-            <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.75)]">
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 items-baseline gap-1.5">
+            <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
+              {node.authorName}
+            </p>
+            {dateLabel ? (
+              <>
+                <span className="text-[11px] text-[rgb(var(--widget-fg)/0.3)]" aria-hidden>
+                  ·
+                </span>
+                <p className="shrink-0 text-[11px] text-[rgb(var(--widget-fg)/0.4)]">{dateLabel}</p>
+              </>
+            ) : null}
+          </div>
+
+          {node.content ? (
+            <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.78)]">
               {node.content}
             </p>
-            <div className="mt-2.5 flex items-center justify-between gap-3">
-              {canReply ? (
-                <button
-                  type="button"
-                  onClick={() => onReply(node)}
-                  className="text-xs font-medium text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
-                >
-                  Reply
-                </button>
-              ) : (
-                <span />
-              )}
-              <CommentVoteButton
-                commentId={node.id}
-                upvotes={node.upvotes}
-                hasVoted={node.hasVoted}
-                apiBase={apiBase}
-                userId={userId}
-                identity={identity}
-                onChange={({ upvotes, hasVoted }) => onVoteChange(node.id, upvotes, hasVoted)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+          ) : null}
 
-      {node.replies.length ? (
-        <div>
-          {node.replies.map((reply) => (
-            <CommentThreadItem
-              key={reply.id}
-              node={reply}
+          {node.image ? (
+            <div className="mt-2 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={node.image} alt="" className="max-h-48 w-full object-cover" />
+            </div>
+          ) : null}
+
+          <div className="mt-2.5 flex items-center justify-between gap-3">
+            {canReply ? (
+              <button
+                type="button"
+                onClick={() => onToggleReply(node)}
+                className={`text-xs font-medium transition-colors ${
+                  isReplying
+                    ? "text-[rgb(var(--widget-fg)/0.7)]"
+                    : "text-[rgb(var(--widget-fg)/0.4)] hover:text-[rgb(var(--widget-fg)/0.7)]"
+                }`}
+                aria-expanded={isReplying}
+              >
+                {isReplying ? "Cancel" : "Reply"}
+              </button>
+            ) : (
+              <span />
+            )}
+            <CommentVoteButton
+              commentId={node.id}
+              upvotes={node.upvotes}
+              hasVoted={node.hasVoted}
               apiBase={apiBase}
               userId={userId}
               identity={identity}
-              allowComments={allowComments}
-              onReply={onReply}
-              onVoteChange={onVoteChange}
-              isReply
+              onChange={({ upvotes, hasVoted }) => onVoteChange(node.id, upvotes, hasVoted)}
             />
-          ))}
+          </div>
+
+          {isReplying && replyComposer ? <div className="mt-3">{replyComposer}</div> : null}
         </div>
+      </div>
+
+      {hasReplies ? (
+        <>
+          <div
+            className="absolute bottom-4 left-[13px] top-11 w-px bg-[rgb(var(--widget-fg)/0.12)]"
+            aria-hidden
+          />
+          <div className="relative pl-10">
+            {node.replies.map((reply) => (
+              <CommentThreadItem
+                key={reply.id}
+                node={reply}
+                apiBase={apiBase}
+                userId={userId}
+                identity={identity}
+                allowComments={allowComments}
+                replyToId={replyToId}
+                onToggleReply={onToggleReply}
+                onVoteChange={onVoteChange}
+                replyComposer={replyComposer}
+              />
+            ))}
+          </div>
+        </>
       ) : null}
     </div>
   );
@@ -496,10 +723,10 @@ function CommentVoteButton({
       type="button"
       onClick={() => void handleVote()}
       disabled={pending}
-      className={`inline-flex items-center gap-1 text-xs tabular-nums transition-colors disabled:cursor-not-allowed ${
+      className={`inline-flex h-7 items-center gap-1 rounded-full px-2.5 text-xs tabular-nums transition-colors disabled:cursor-not-allowed ${
         hasVoted
-          ? "text-red-500"
-          : "text-[rgb(var(--widget-fg)/0.45)] hover:text-red-400"
+          ? "bg-red-500/20 text-red-400"
+          : "bg-[rgb(var(--widget-fg)/0.08)] text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.12)] hover:text-red-400"
       }`}
       aria-pressed={hasVoted}
       aria-label={hasVoted ? "Remove upvote" : "Upvote"}

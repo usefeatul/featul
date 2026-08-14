@@ -115,8 +115,11 @@ const commentsSchema = projectInput.merge(viewerSchema).extend({
 
 const createCommentSchema = projectInput.merge(viewerSchema).extend({
   postId: z.string().min(1),
-  content: z.string().trim().min(1).max(5000),
+  content: z.string().trim().max(5000).default(""),
   parentId: z.string().min(1).optional(),
+  image: z.string().url().optional(),
+}).refine((value) => Boolean(value.content.trim() || value.image), {
+  message: "Comment text or image is required",
 });
 
 const voteCommentSchema = projectInput.merge(viewerSchema).extend({
@@ -715,6 +718,7 @@ export function createWidgetRouter() {
           replyCount: comment.replyCount,
           depth: comment.depth,
           createdAt: comment.createdAt,
+          metadata: comment.metadata,
         })
         .from(comment)
         .leftJoin(user, eq(comment.authorId, user.id))
@@ -747,22 +751,34 @@ export function createWidgetRouter() {
 
       return c.superjson({
         allowComments: Boolean(targetPost.allowComments),
-        comments: rows.map((row: (typeof rows)[number]) => ({
-          id: row.id,
-          postId: row.postId,
-          parentId: row.parentId,
-          content: row.content,
-          authorName: row.isAnonymous ? "Guest" : row.authorName || "Guest",
-          authorImage: row.isAnonymous
-            ? dicebearAvatar(row.id)
-            : row.authorImage || dicebearAvatar(row.authorName || row.id),
-          isAnonymous: Boolean(row.isAnonymous),
-          upvotes: row.upvotes || 0,
-          replyCount: row.replyCount || 0,
-          depth: row.depth || 0,
-          createdAt: row.createdAt,
-          hasVoted: votedIds.has(row.id),
-        })),
+        comments: rows.map((row: (typeof rows)[number]) => {
+          const attachments =
+            row.metadata &&
+            typeof row.metadata === "object" &&
+            Array.isArray((row.metadata as { attachments?: unknown }).attachments)
+              ? ((row.metadata as { attachments: { url?: string; type?: string }[] }).attachments || [])
+              : [];
+          const image =
+            attachments.find((item) => item?.type?.startsWith("image") || Boolean(item?.url))?.url ||
+            null;
+          return {
+            id: row.id,
+            postId: row.postId,
+            parentId: row.parentId,
+            content: (row.content || "").trim(),
+            image,
+            authorName: row.isAnonymous ? "Guest" : row.authorName || "Guest",
+            authorImage: row.isAnonymous
+              ? dicebearAvatar(row.id)
+              : row.authorImage || dicebearAvatar(row.authorName || row.id),
+            isAnonymous: Boolean(row.isAnonymous),
+            upvotes: row.upvotes || 0,
+            replyCount: row.replyCount || 0,
+            depth: row.depth || 0,
+            createdAt: row.createdAt,
+            hasVoted: votedIds.has(row.id),
+          };
+        }),
       });
     }),
 
@@ -855,19 +871,36 @@ export function createWidgetRouter() {
           .where(eq(comment.id, input.parentId));
       }
 
+      const content = input.content.trim();
+      const metadata: {
+        fingerprint?: string;
+        attachments?: { name: string; url: string; type: string }[];
+      } = {};
+      if (fingerprint) metadata.fingerprint = fingerprint;
+      if (input.image) {
+        assertWidgetPostImageUrl(input.image, resolved.workspaceSlug);
+        metadata.attachments = [
+          {
+            name: "image",
+            url: input.image,
+            type: "image",
+          },
+        ];
+      }
+
       const [created] = await ctx.db
         .insert(comment)
         .values({
           postId: input.postId,
           parentId: input.parentId || null,
-          content: input.content,
+          content: content || (input.image ? " " : ""),
           authorId,
           authorName: authorId ? authorName : "Guest",
           depth,
           status: "published",
           isInternal: false,
           isAnonymous: !authorId,
-          metadata: fingerprint ? { fingerprint } : null,
+          metadata: Object.keys(metadata).length ? metadata : null,
           upvotes: 1,
         })
         .returning();
@@ -885,12 +918,20 @@ export function createWidgetRouter() {
         .where(eq(post.id, input.postId))
         .returning({ commentCount: post.commentCount });
 
+      const image =
+        created.metadata &&
+        typeof created.metadata === "object" &&
+        Array.isArray((created.metadata as { attachments?: { url?: string }[] }).attachments)
+          ? (created.metadata as { attachments: { url: string }[] }).attachments[0]?.url || null
+          : input.image || null;
+
       return c.superjson({
         comment: {
           id: created.id,
           postId: created.postId,
           parentId: created.parentId,
-          content: created.content,
+          content: created.content?.trim() || "",
+          image,
           authorName: created.isAnonymous ? "Guest" : created.authorName || "Guest",
           authorImage: created.isAnonymous
             ? dicebearAvatar(created.id)

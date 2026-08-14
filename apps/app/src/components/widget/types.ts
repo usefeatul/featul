@@ -41,6 +41,7 @@ export type WidgetComment = {
   postId: string;
   parentId: string | null;
   content: string;
+  image?: string | null;
   authorName: string;
   authorImage: string | null;
   isAnonymous: boolean;
