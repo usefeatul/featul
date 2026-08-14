@@ -867,13 +867,7 @@ export default function WidgetFrame({
         ) : null}
 
         {!loading && section === "changelog" ? (
-          <motion.div
-            key={selectedChangelogId ? `changelog-${selectedChangelogId}` : "changelog-list"}
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={contentTransition}
-            className="flex min-h-0 flex-1 flex-col"
-          >
+          <div className="flex min-h-0 flex-1 flex-col">
             <WidgetUpdates
               entries={changelog}
               accent={accent}
@@ -881,7 +875,7 @@ export default function WidgetFrame({
               onOpen={(entry) => setSelectedChangelogId(entry.id)}
               onBack={() => setSelectedChangelogId(null)}
             />
-          </motion.div>
+          </div>
         ) : null}
       </div>
 

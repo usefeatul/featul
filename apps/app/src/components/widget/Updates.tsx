@@ -126,7 +126,7 @@ export function WidgetUpdates({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide">
       {entries.map((entry, index) => {
         const preview = (entry.summary || entry.preview || "").trim();
         const isRecent = index < 5;
@@ -194,7 +194,6 @@ function UpdateDetail({
   onOpen: (entry: WidgetChangelogEntry) => void;
 }) {
   const content = entry.content as JSONContent | null | undefined;
-  // Top recent updates with green ticks; keep up to 5 including current if needed.
   const shipped = recentEntries.slice(0, 5);
 
   return (
@@ -225,7 +224,6 @@ function UpdateDetail({
             </div>
           </div>
         ) : null}
-
       </div>
 
       <div className="border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]" />

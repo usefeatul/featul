@@ -14,6 +14,10 @@ export function getWidgetSdkSource() {
 
   var PANEL_WIDTH = 384;
   var PANEL_WIDTH_EXPANDED = 480;
+  var PANEL_HEIGHT = 640;
+  var PANEL_HEIGHT_EXPANDED = 760;
+  var PANEL_EXPAND_MS = 520;
+  var PANEL_EXPAND_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
   var state = {
     projectId: null,
@@ -29,6 +33,7 @@ export function getWidgetSdkSource() {
     expanded: false,
     closeTimer: null,
     morphTimer: null,
+    panelAnim: null,
     animating: false,
     queue: [],
     accent: "#3b82f6",
@@ -93,9 +98,11 @@ export function getWidgetSdkSource() {
   }
 
   function getPanelRect(position) {
-    var preferred = state.expanded ? PANEL_WIDTH_EXPANDED : PANEL_WIDTH;
-    var width = Math.min(preferred, Math.max(280, window.innerWidth - 32));
-    var height = Math.min(700, Math.max(360, window.innerHeight - 40));
+    var preferredWidth = state.expanded ? PANEL_WIDTH_EXPANDED : PANEL_WIDTH;
+    var preferredHeight = state.expanded ? PANEL_HEIGHT_EXPANDED : PANEL_HEIGHT;
+    var width = Math.min(preferredWidth, Math.max(280, window.innerWidth - 32));
+    var heightPad = state.expanded ? 24 : 40;
+    var height = Math.min(preferredHeight, Math.max(360, window.innerHeight - heightPad));
     return {
       left: position === "left" ? 20 : window.innerWidth - width - 20,
       top: window.innerHeight - height - 20,
@@ -134,6 +141,110 @@ export function getWidgetSdkSource() {
     element.style.height = rect.height + "px";
     element.style.right = "auto";
     element.style.bottom = "auto";
+  }
+
+  function readRect(element, fallback) {
+    if (!element) return fallback;
+    var left = parseFloat(element.style.left);
+    var top = parseFloat(element.style.top);
+    var width = parseFloat(element.style.width);
+    var height = parseFloat(element.style.height);
+    if (
+      Number.isFinite(left) &&
+      Number.isFinite(top) &&
+      Number.isFinite(width) &&
+      Number.isFinite(height) &&
+      width > 0 &&
+      height > 0
+    ) {
+      return { left: left, top: top, width: width, height: height };
+    }
+    var box = element.getBoundingClientRect();
+    if (box.width > 0 && box.height > 0) {
+      return { left: box.left, top: box.top, width: box.width, height: box.height };
+    }
+    return fallback;
+  }
+
+  function cancelPanelAnim() {
+    if (!state.panelAnim) return;
+    try {
+      state.panelAnim.cancel();
+    } catch (error) {}
+    state.panelAnim = null;
+  }
+
+  function animatePanelRect(toRect) {
+    if (!state.iframe) {
+      applyRect(state.shell, toRect);
+      return;
+    }
+    cancelPanelAnim();
+    var fromRect = readRect(state.iframe, toRect);
+    var reduceMotion =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion || typeof state.iframe.animate !== "function") {
+      applyRect(state.iframe, toRect);
+      applyRect(state.shell, toRect);
+      return;
+    }
+
+    var prevTransition = state.iframe.style.transition;
+    state.iframe.style.transition = "none";
+    applyRect(state.iframe, fromRect);
+
+    var animation = state.iframe.animate(
+      [
+        {
+          left: fromRect.left + "px",
+          top: fromRect.top + "px",
+          width: fromRect.width + "px",
+          height: fromRect.height + "px"
+        },
+        {
+          left: toRect.left + "px",
+          top: toRect.top + "px",
+          width: toRect.width + "px",
+          height: toRect.height + "px"
+        }
+      ],
+      {
+        duration: PANEL_EXPAND_MS,
+        easing: PANEL_EXPAND_EASE,
+        fill: "forwards"
+      }
+    );
+    state.panelAnim = animation;
+    applyRect(state.shell, toRect);
+
+    var finish = function () {
+      if (state.panelAnim !== animation) return;
+      applyRect(state.iframe, toRect);
+      state.iframe.style.transition = prevTransition;
+      try {
+        animation.cancel();
+      } catch (error) {}
+      state.panelAnim = null;
+    };
+    animation.onfinish = finish;
+    animation.oncancel = function () {
+      if (state.iframe) state.iframe.style.transition = prevTransition;
+      if (state.panelAnim === animation) state.panelAnim = null;
+    };
+  }
+
+  function setPanelExpanded(expanded) {
+    var next = Boolean(expanded);
+    if (state.expanded === next) return;
+    state.expanded = next;
+    if (!state.open) return;
+    var rect = getPanelRect(state.position);
+    if (state.iframe) state.iframe.style.borderRadius = PANEL_RADIUS;
+    if (state.shell) {
+      state.shell.style.borderRadius = PANEL_RADIUS;
+      state.shell.style.background = panelBackground();
+    }
+    animatePanelRect(rect);
   }
 
   function applyFrameRect(rect) {
@@ -308,7 +419,7 @@ export function getWidgetSdkSource() {
     iframe.style.display = "none";
     iframe.style.opacity = "0";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1), left 280ms cubic-bezier(0.32, 0.72, 0, 1), top 280ms cubic-bezier(0.32, 0.72, 0, 1), width 280ms cubic-bezier(0.32, 0.72, 0, 1), height 280ms cubic-bezier(0.32, 0.72, 0, 1)";
+    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1), left 460ms cubic-bezier(0.22, 1, 0.36, 1), top 460ms cubic-bezier(0.22, 1, 0.36, 1), width 460ms cubic-bezier(0.22, 1, 0.36, 1), height 460ms cubic-bezier(0.22, 1, 0.36, 1)";
     iframe.style.background = "transparent";
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
@@ -324,7 +435,7 @@ export function getWidgetSdkSource() {
     shell.style.opacity = "0";
     shell.style.pointerEvents = "none";
     shell.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    shell.style.transition = "left 380ms cubic-bezier(0.32, 0.72, 0, 1), top 380ms cubic-bezier(0.32, 0.72, 0, 1), width 380ms cubic-bezier(0.32, 0.72, 0, 1), height 380ms cubic-bezier(0.32, 0.72, 0, 1), border-radius 380ms cubic-bezier(0.32, 0.72, 0, 1), background 220ms ease, box-shadow 380ms cubic-bezier(0.32, 0.72, 0, 1), opacity 160ms ease";
+    shell.style.transition = "left 460ms cubic-bezier(0.22, 1, 0.36, 1), top 460ms cubic-bezier(0.22, 1, 0.36, 1), width 460ms cubic-bezier(0.22, 1, 0.36, 1), height 460ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 460ms cubic-bezier(0.22, 1, 0.36, 1), background 220ms ease, box-shadow 460ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease";
     document.body.appendChild(shell);
     state.shell = shell;
 
@@ -379,7 +490,10 @@ export function getWidgetSdkSource() {
   function setOpen(open, options) {
     buildFrame();
     state.open = open;
-    if (!open) state.expanded = false;
+    if (!open) {
+      cancelPanelAnim();
+      state.expanded = false;
+    }
     if (state.iframe) {
       state.iframe.setAttribute("aria-hidden", open ? "false" : "true");
       clearTimers();
@@ -442,6 +556,7 @@ export function getWidgetSdkSource() {
   }
 
   window.addEventListener("resize", function () {
+    cancelPanelAnim();
     applyPanelRect();
     if (state.open) applyShellPanelRect();
     else applyShellLauncherRect();
@@ -492,11 +607,7 @@ export function getWidgetSdkSource() {
       setOpen(false);
     }
     if (data.type === "panel") {
-      state.expanded = Boolean(data.payload && data.payload.expanded);
-      if (state.open) {
-        applyPanelRect();
-        applyShellPanelRect();
-      }
+      setPanelExpanded(Boolean(data.payload && data.payload.expanded));
     }
     if (data.type === "open-image" && data.payload && data.payload.url) {
       openImageLightbox(data.payload.url, data.payload.alt || "");
