@@ -47,6 +47,51 @@ function primaryTag(entry: WidgetChangelogEntry): {
   return { name: tag.name.trim().toUpperCase(), color: tag.color };
 }
 
+export function changelogBadge(
+  entry: WidgetChangelogEntry,
+  options?: { fallback?: string | null },
+): { name: string; color?: string | null } | null {
+  const tag = primaryTag(entry);
+  if (tag) return tag;
+  const fallback = options?.fallback;
+  if (!fallback) return null;
+  return { name: fallback.toUpperCase(), color: null };
+}
+
+export function UpdateMetaRow({
+  entry,
+  accent = "#3b82f6",
+  fallbackBadge = "New",
+  className = "",
+}: {
+  entry: WidgetChangelogEntry;
+  accent?: string;
+  fallbackBadge?: string | null;
+  className?: string;
+}) {
+  const dateLabel = formatUpdateDate(entry.publishedAt);
+  const badge = changelogBadge(entry, { fallback: fallbackBadge });
+  if (!dateLabel && !badge) return null;
+
+  return (
+    <div
+      className={`flex flex-wrap items-center gap-x-1.5 font-heading text-[11px] font-semibold uppercase tracking-[0.08em] ${className}`}
+    >
+      {dateLabel ? (
+        <span className="text-[rgb(var(--widget-fg))]">{dateLabel}</span>
+      ) : null}
+      {dateLabel && badge ? (
+        <span className="text-[rgb(var(--widget-fg)/0.35)]" aria-hidden>
+          ·
+        </span>
+      ) : null}
+      {badge ? (
+        <span style={{ color: badge.color || accent }}>{badge.name}</span>
+      ) : null}
+    </div>
+  );
+}
+
 export function WidgetUpdates({
   entries,
   accent = "#3b82f6",
@@ -83,9 +128,8 @@ export function WidgetUpdates({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {entries.map((entry, index) => {
-        const tag = primaryTag(entry);
-        const dateLabel = formatUpdateDate(entry.publishedAt);
         const preview = (entry.summary || entry.preview || "").trim();
+        const isRecent = index < 5;
 
         return (
           <button
@@ -96,21 +140,11 @@ export function WidgetUpdates({
               index > 0 ? "border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" : ""
             }`}
           >
-            {(dateLabel || tag) && (
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-semibold tracking-[0.08em]">
-                {dateLabel ? (
-                  <span className="text-[rgb(var(--widget-fg)/0.4)]">{dateLabel}</span>
-                ) : null}
-                {dateLabel && tag ? (
-                  <span className="text-[rgb(var(--widget-fg)/0.25)]" aria-hidden>
-                    ·
-                  </span>
-                ) : null}
-                {tag ? (
-                  <span style={{ color: tag.color || accent }}>{tag.name}</span>
-                ) : null}
-              </div>
-            )}
+            <UpdateMetaRow
+              entry={entry}
+              accent={accent}
+              fallbackBadge={isRecent ? "New" : null}
+            />
 
             <h3 className="mt-2 text-[17px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
               {entry.title}
@@ -159,8 +193,6 @@ function UpdateDetail({
   recentEntries: WidgetChangelogEntry[];
   onOpen: (entry: WidgetChangelogEntry) => void;
 }) {
-  const tag = primaryTag(entry);
-  const dateLabel = formatUpdateDate(entry.publishedAt);
   const content = entry.content as JSONContent | null | undefined;
   // Top recent updates with green ticks; keep up to 5 including current if needed.
   const shipped = recentEntries.slice(0, 5);
@@ -168,19 +200,7 @@ function UpdateDetail({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide" data-widget-scroll="">
       <div className="px-5 pb-4 pt-1">
-        {(dateLabel || tag) && (
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-semibold tracking-[0.08em]">
-            {dateLabel ? (
-              <span className="text-[rgb(var(--widget-fg)/0.4)]">{dateLabel}</span>
-            ) : null}
-            {dateLabel && tag ? (
-              <span className="text-[rgb(var(--widget-fg)/0.25)]" aria-hidden>
-                ·
-              </span>
-            ) : null}
-            {tag ? <span style={{ color: tag.color || accent }}>{tag.name}</span> : null}
-          </div>
-        )}
+        <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="New" />
 
         <h1 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
           {entry.title}

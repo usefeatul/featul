@@ -35,7 +35,7 @@ import { WidgetVoteButton } from "./VoteButton";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { extractTextFromTiptap } from "@/types/changelog";
-import { WidgetUpdates, type WidgetChangelogEntry } from "./Updates";
+import { WidgetUpdates, UpdateMetaRow, type WidgetChangelogEntry } from "./Updates";
 import { toShortPreview } from "./utils";
 
 type WidgetFrameProps = {
@@ -176,7 +176,7 @@ export default function WidgetFrame({
           const data = await res.json();
           setRoadmap(Array.isArray(data.posts) ? (data.posts as WidgetRoadmapItem[]) : []);
         }
-        if (section === "home" || section === "changelog") {
+        if (section === "home" || section === "changelog" || section === "roadmap") {
           const res = await client.widget.changelog.$get(apiBase);
           const data = await res.json();
           const entries = Array.isArray(data.entries) ? data.entries : [];
@@ -541,17 +541,7 @@ export default function WidgetFrame({
             >
               {featuredEntry ? (
                 <>
-                  <p
-                    className="text-[11px] font-semibold uppercase tracking-[0.14em]"
-                    style={{ color: accent }}
-                  >
-                    {featuredEntry.publishedAt
-                      ? `Released · ${new Date(featuredEntry.publishedAt).toLocaleDateString(
-                          "en-US",
-                          { month: "short", day: "numeric" },
-                        )}`
-                      : "Latest update"}
-                  </p>
+                  <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="New" />
                   <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
                     {featuredEntry.title}
                   </h2>
@@ -712,17 +702,10 @@ export default function WidgetFrame({
                         setSelectedChangelogId(entry.id);
                         setSection("changelog");
                       }}
-                      className="flex w-full items-start gap-4 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
+                      className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
                     >
-                      <span className="w-[3.25rem] shrink-0 pt-0.5 text-[11px] font-medium uppercase tracking-wide text-[rgb(var(--widget-fg)/0.4)]">
-                        {entry.publishedAt
-                          ? new Date(entry.publishedAt).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                            })
-                          : "—"}
-                      </span>
-                      <span className="min-w-0 flex-1 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
+                      <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="New" />
+                      <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
                         {entry.title}
                       </span>
                     </button>
@@ -827,17 +810,51 @@ export default function WidgetFrame({
             transition={contentTransition}
             className="flex min-h-0 flex-1 flex-col"
           >
-          <WidgetRoadmap
-            items={roadmap}
-            apiBase={apiBase}
-            userId={userId}
-            identity={identity}
-            onVoteChange={(id, upvotes, hasVoted) => {
-              setRoadmap((prev) =>
-                prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
-              );
-            }}
-          />
+            {homeChangelog.length ? (
+              <section className="border-b border-[rgb(var(--widget-fg)/0.1)] pb-4 pt-1">
+                <div className="mb-2 flex items-center justify-between gap-3 px-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+                    Recent updates
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSection("changelog")}
+                    className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+                  >
+                    See updates →
+                  </button>
+                </div>
+                <div>
+                  {homeChangelog.map((entry) => (
+                    <button
+                      key={entry.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedChangelogId(entry.id);
+                        setSection("changelog");
+                      }}
+                      className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
+                    >
+                      <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="New" />
+                      <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
+                        {entry.title}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+            <WidgetRoadmap
+              items={roadmap}
+              apiBase={apiBase}
+              userId={userId}
+              identity={identity}
+              onVoteChange={(id, upvotes, hasVoted) => {
+                setRoadmap((prev) =>
+                  prev.map((row) => (row.id === id ? { ...row, upvotes, hasVoted } : row)),
+                );
+              }}
+            />
           </motion.div>
         ) : null}
 
