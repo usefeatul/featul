@@ -389,32 +389,17 @@ export default function WidgetFrame({
         } as React.CSSProperties
       }
     >
-      {isFeedback && feedbackView !== "list" ? (
-        <header className="flex items-center gap-3 px-4 py-3">
+      <header className="flex items-center gap-2.5 px-4 py-3">
+        {isFeedback && feedbackView !== "list" ? (
           <button
             type="button"
             onClick={() => goFeedback("list")}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
             aria-label="Back"
           >
             <ChevronLeft className="size-5" />
           </button>
-          {feedbackView === "detail" ? (
-            <div className="min-w-0 flex-1" />
-          ) : (
-            <p className="flex-1 text-[15px] font-semibold tracking-tight">{feedbackTitle}</p>
-          )}
-          <button
-            type="button"
-            onClick={close}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
-            aria-label="Close widget"
-          >
-            <X className="size-4" />
-          </button>
-        </header>
-      ) : (
-        <header className="flex items-center gap-2.5 px-4 py-3">
+        ) : (
           <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.06)]">
             {workspaceLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -423,9 +408,19 @@ export default function WidgetFrame({
               <FillFeedbackIcon className="size-4 text-[rgb(var(--widget-fg))]" size={16} />
             )}
           </div>
+        )}
+
+        {isFeedback && feedbackView === "detail" ? (
+          <div className="min-w-0 flex-1" />
+        ) : isFeedback && feedbackView === "compose" ? (
+          <p className="min-w-0 flex-1 text-[15px] font-semibold tracking-tight">{feedbackTitle}</p>
+        ) : (
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold tracking-tight">{workspaceName}</p>
           </div>
+        )}
+
+        {!(isFeedback && feedbackView !== "list") ? (
           <button
             type="button"
             onClick={() => goFeedback("compose")}
@@ -434,16 +429,17 @@ export default function WidgetFrame({
             <FillPenIcon className="size-3.5" size={14} />
             Give feedback
           </button>
-          <button
-            type="button"
-            onClick={close}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
-            aria-label="Close widget"
-          >
-            <X className="size-4" />
-          </button>
-        </header>
-      )}
+        ) : null}
+
+        <button
+          type="button"
+          onClick={close}
+          className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
+          aria-label="Close widget"
+        >
+          <X className="size-4" />
+        </button>
+      </header>
 
       <div
         className={
