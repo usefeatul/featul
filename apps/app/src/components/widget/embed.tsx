@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import type { FeatulWidgetApi } from "@featul/widget";
+import { WidgetHostImageDialog } from "./WidgetHostImageDialog";
 
 /**
  * Local QA helper for testing the embed in this app.
@@ -53,5 +54,7 @@ export default function WidgetTestEmbed() {
     });
   }, [pathname]);
 
-  return null;
+  if (pathname?.startsWith("/widget")) return null;
+
+  return <WidgetHostImageDialog />;
 }
