@@ -12,6 +12,7 @@ export type WidgetRoadmapItem = {
   id: string;
   title: string;
   content?: string | null;
+  slug?: string | null;
   roadmapStatus: string | null;
   upvotes: number | null;
   hasVoted?: boolean;

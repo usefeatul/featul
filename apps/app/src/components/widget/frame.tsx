@@ -644,6 +644,27 @@ export default function WidgetFrame({
                       apiBase={apiBase}
                       userId={userId}
                       identity={identity}
+                      onOpen={() => {
+                        setSelectedPost({
+                          id: item.id,
+                          title: item.title,
+                          slug: item.slug || item.id,
+                          content: item.content ?? null,
+                          upvotes: item.upvotes,
+                          commentCount: null,
+                          roadmapStatus: item.roadmapStatus,
+                          createdAt: item.createdAt ?? null,
+                          boardId: "",
+                          boardName: null,
+                          boardSlug: null,
+                          isAnonymous: item.isAnonymous ?? null,
+                          authorName: item.authorName ?? null,
+                          authorImage: item.authorImage ?? null,
+                          hasVoted: Boolean(item.hasVoted),
+                        });
+                        setSection("feedback");
+                        setFeedbackView("detail");
+                      }}
                       onVoteChange={(id, upvotes, hasVoted) => {
                         setRoadmap((prev) =>
                           prev.map((row) =>
@@ -890,42 +911,56 @@ function RoadmapRow({
   apiBase,
   userId,
   identity,
+  onOpen,
   onVoteChange,
 }: {
   item: {
     id: string;
     title: string;
+    slug?: string | null;
+    content?: string | null;
     roadmapStatus: string | null;
     upvotes: number | null;
     hasVoted?: boolean;
     authorName?: string | null;
     authorImage?: string | null;
     isAnonymous?: boolean | null;
+    createdAt?: string | Date | null;
   };
   apiBase: { projectId: string; parentOrigin: string };
   userId?: string | null;
   identity?: IdentifiedUser | null;
+  onOpen?: () => void;
   onVoteChange?: (id: string, upvotes: number, hasVoted: boolean) => void;
 }) {
   const author = item.isAnonymous ? "Guest" : item.authorName || "Guest";
 
   return (
-    <div className="flex items-center gap-3 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]">
-      <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-8" />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{item.title}</p>
-        <p className="mt-1 truncate text-xs text-[rgb(var(--widget-fg)/0.45)]">{author}</p>
+    <div className="relative border-b border-[rgb(var(--widget-fg)/0.1)] transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex w-full cursor-pointer items-center gap-3 px-5 py-3.5 pr-16 text-left"
+        aria-label={item.title}
+      >
+        <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-8" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{item.title}</p>
+          <p className="mt-1 truncate text-xs text-[rgb(var(--widget-fg)/0.45)]">{author}</p>
+        </div>
+      </button>
+      <div className="absolute right-5 top-1/2 -translate-y-1/2">
+        <WidgetVoteButton
+          postId={item.id}
+          upvotes={item.upvotes || 0}
+          hasVoted={Boolean(item.hasVoted)}
+          apiBase={apiBase}
+          userId={userId}
+          identity={identity}
+          variant="plain"
+          onChange={({ upvotes, hasVoted }) => onVoteChange?.(item.id, upvotes, hasVoted)}
+        />
       </div>
-      <WidgetVoteButton
-        postId={item.id}
-        upvotes={item.upvotes || 0}
-        hasVoted={Boolean(item.hasVoted)}
-        apiBase={apiBase}
-        userId={userId}
-        identity={identity}
-        variant="plain"
-        onChange={({ upvotes, hasVoted }) => onVoteChange?.(item.id, upvotes, hasVoted)}
-      />
     </div>
   );
 }
