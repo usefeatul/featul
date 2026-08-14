@@ -95,10 +95,20 @@ const viewerSchema = z.object({
   fingerprint: z.string().min(1).optional(),
 });
 
+const ROADMAP_STATUS_VALUES = [
+  "pending",
+  "review",
+  "planned",
+  "progress",
+  "completed",
+  "closed",
+] as const;
+
 const postsSchema = projectInput.merge(viewerSchema).extend({
   boardId: z.string().min(1).optional(),
   search: z.string().trim().max(120).optional(),
   sort: z.enum(["newest", "top"]).default("newest"),
+  status: z.enum(ROADMAP_STATUS_VALUES).optional(),
   limit: z.coerce.number().int().min(1).max(50).default(20),
   offset: z.coerce.number().int().min(0).default(0),
 });
@@ -279,13 +289,19 @@ async function loadVotedPostIds(
   return new Set(rows.map((row: { postId: string }) => row.postId));
 }
 
-function publicPostWhere(workspaceId: string, boardId?: string, search?: string) {
+function publicPostWhere(
+  workspaceId: string,
+  boardId?: string,
+  search?: string,
+  status?: string,
+) {
   const filters = [
     eq(board.workspaceId, workspaceId),
     eq(board.isSystem, false),
     eq(board.isPublic, true),
   ];
   if (boardId) filters.push(eq(board.id, boardId));
+  if (status) filters.push(eq(post.roadmapStatus, status));
   if (search?.trim()) {
     const q = `%${search.trim()}%`;
     filters.push(or(ilike(post.title, q), ilike(post.content, q))!);
@@ -413,7 +429,14 @@ export function createWidgetRouter() {
         .from(post)
         .innerJoin(board, eq(post.boardId, board.id))
         .leftJoin(user, eq(post.authorId, user.id))
-        .where(publicPostWhere(resolved.workspaceId, input.boardId, input.search))
+        .where(
+          publicPostWhere(
+            resolved.workspaceId,
+            input.boardId,
+            input.search,
+            input.status,
+          ),
+        )
         .orderBy(...orderBy)
         .limit(input.limit)
         .offset(input.offset);

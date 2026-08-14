@@ -12,8 +12,11 @@ import {
 } from "@featul/ui/components/popover";
 import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
 import { BoardIcon } from "@featul/ui/icons/board";
+import { ListFilterIcon } from "@featul/ui/icons/list-filter";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { SearchIcon } from "@featul/ui/icons/search";
+import StatusIcon from "@/components/requests/StatusIcon";
+import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { viewerPayload } from "./utils";
@@ -24,14 +27,33 @@ const SORT_OPTIONS = [
   { value: "top", label: "Top" },
 ] as const;
 
+const STATUS_OPTIONS = [
+  { value: "pending", label: "Pending" },
+  { value: "review", label: "Review" },
+  { value: "planned", label: "Planned" },
+  { value: "progress", label: "Progress" },
+  { value: "completed", label: "Complete" },
+  { value: "closed", label: "Closed" },
+] as const;
+
+type StatusFilter = (typeof STATUS_OPTIONS)[number]["value"] | "";
+
 const toolbarBtnClass =
   "inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md bg-[rgb(var(--widget-fg)/0.05)] text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.08)] hover:text-[rgb(var(--widget-fg)/0.8)]";
+
+const toolbarBtnActiveClass =
+  "bg-[rgb(var(--widget-fg)/0.1)] text-[rgb(var(--widget-fg)/0.9)]";
 
 const popoverClass =
   "z-[80] min-w-0 w-fit border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-surface))] p-0 text-[rgb(var(--widget-fg))] shadow-lg";
 
 const popoverItemClass =
   "gap-2 px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)] hover:bg-[rgb(var(--widget-fg)/0.06)] dark:hover:bg-[rgb(var(--widget-fg)/0.06)]";
+
+const popoverStyle = {
+  backgroundColor: "rgb(var(--widget-surface))",
+  color: "rgb(var(--widget-fg))",
+} as const;
 
 type Props = {
   apiBase: WidgetApiBase;
@@ -64,12 +86,16 @@ export function WidgetFeedbackList({
 }: Props) {
   const [posts, setPosts] = React.useState<WidgetPost[]>([]);
   const [sort, setSort] = React.useState<"newest" | "top">("newest");
+  const [status, setStatus] = React.useState<StatusFilter>("");
   const [search, setSearch] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [loadingMore, setLoadingMore] = React.useState(false);
   const [nextOffset, setNextOffset] = React.useState<number | null>(null);
   const [error, setError] = React.useState("");
+  const [sortOpen, setSortOpen] = React.useState(false);
+  const [statusOpen, setStatusOpen] = React.useState(false);
+  const [boardOpen, setBoardOpen] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const sentinelRef = React.useRef<HTMLDivElement>(null);
   const savedScrollTop = React.useRef(0);
@@ -133,6 +159,7 @@ export function WidgetFeedbackList({
           boardId: boardId || undefined,
           search: query || undefined,
           sort,
+          status: status || undefined,
           limit: 20,
           offset,
         });
@@ -154,7 +181,7 @@ export function WidgetFeedbackList({
         setLoadingMore(false);
       }
     },
-    [apiBase, boardId, identity, query, sort, userId],
+    [apiBase, boardId, identity, query, sort, status, userId],
   );
 
   React.useEffect(() => {
@@ -189,11 +216,10 @@ export function WidgetFeedbackList({
     );
   };
 
-  const [sortOpen, setSortOpen] = React.useState(false);
-  const [boardOpen, setBoardOpen] = React.useState(false);
   const selectedBoard = boards.find((board) => board.id === boardId);
   const boardLabel = selectedBoard?.name || "All boards";
   const sortLabel = sort === "newest" ? "Newest" : "Top";
+  const statusFilterLabel = status ? statusLabel(status) : "All statuses";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -219,15 +245,7 @@ export function WidgetFeedbackList({
               <ArrowUpDownIcon className="size-3.5" size={14} />
             </button>
           </PopoverTrigger>
-          <PopoverContent
-            list
-            align="end"
-            className={popoverClass}
-            style={{
-              backgroundColor: "rgb(var(--widget-surface))",
-              color: "rgb(var(--widget-fg))",
-            }}
-          >
+          <PopoverContent list align="end" className={popoverClass} style={popoverStyle}>
             <PopoverList>
               {SORT_OPTIONS.map((option) => (
                 <PopoverListItem
@@ -250,27 +268,68 @@ export function WidgetFeedbackList({
           </PopoverContent>
         </Popover>
 
+        <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={`${toolbarBtnClass}${status ? ` ${toolbarBtnActiveClass}` : ""}`}
+              aria-label={`Filter by status: ${statusFilterLabel}`}
+              title={statusFilterLabel}
+            >
+              <ListFilterIcon className="size-3.5" size={14} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent list align="end" className={popoverClass} style={popoverStyle}>
+            <PopoverList>
+              <PopoverListItem
+                role="menuitemradio"
+                aria-checked={!status}
+                className={popoverItemClass}
+                onClick={() => {
+                  setStatus("");
+                  setStatusOpen(false);
+                }}
+              >
+                <span>All statuses</span>
+                {!status ? (
+                  <span className="ml-auto text-xs text-[rgb(var(--widget-fg)/0.45)]">✓</span>
+                ) : null}
+              </PopoverListItem>
+              {STATUS_OPTIONS.map((option) => (
+                <PopoverListItem
+                  key={option.value}
+                  role="menuitemradio"
+                  aria-checked={status === option.value}
+                  className={popoverItemClass}
+                  onClick={() => {
+                    setStatus(option.value);
+                    setStatusOpen(false);
+                  }}
+                >
+                  <StatusIcon status={option.value} className="size-3.5 shrink-0" />
+                  <span className="whitespace-nowrap">{option.label}</span>
+                  {status === option.value ? (
+                    <span className="ml-auto text-xs text-[rgb(var(--widget-fg)/0.45)]">✓</span>
+                  ) : null}
+                </PopoverListItem>
+              ))}
+            </PopoverList>
+          </PopoverContent>
+        </Popover>
+
         {boards.length > 1 ? (
           <Popover open={boardOpen} onOpenChange={setBoardOpen}>
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className={toolbarBtnClass}
+                className={`${toolbarBtnClass}${boardId ? ` ${toolbarBtnActiveClass}` : ""}`}
                 aria-label={`Filter by board: ${boardLabel}`}
                 title={boardLabel}
               >
                 <BoardIcon className="size-3.5" size={14} opacity={1} />
               </button>
             </PopoverTrigger>
-            <PopoverContent
-              list
-              align="end"
-              className={popoverClass}
-              style={{
-                backgroundColor: "rgb(var(--widget-surface))",
-                color: "rgb(var(--widget-fg))",
-              }}
-            >
+            <PopoverContent list align="end" className={popoverClass} style={popoverStyle}>
               <PopoverList>
                 <PopoverListItem
                   role="menuitemradio"
