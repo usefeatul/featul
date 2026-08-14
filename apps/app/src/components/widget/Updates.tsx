@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { JSONContent } from "@tiptap/core";
+import { TickIcon } from "@featul/ui/icons/tick";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { WidgetAuthorAvatar } from "./AuthorAvatar";
 
@@ -58,7 +59,14 @@ export function WidgetUpdates({
     : null;
 
   if (selected) {
-    return <UpdateDetail entry={selected} accent={accent} />;
+    return (
+      <UpdateDetail
+        entry={selected}
+        accent={accent}
+        recentEntries={entries.slice(0, 5)}
+        onOpen={onOpen}
+      />
+    );
   }
 
   if (!entries.length) {
@@ -143,17 +151,23 @@ export function WidgetUpdates({
 function UpdateDetail({
   entry,
   accent,
+  recentEntries,
+  onOpen,
 }: {
   entry: WidgetChangelogEntry;
   accent: string;
+  recentEntries: WidgetChangelogEntry[];
+  onOpen: (entry: WidgetChangelogEntry) => void;
 }) {
   const tag = primaryTag(entry);
   const dateLabel = formatUpdateDate(entry.publishedAt);
   const content = entry.content as JSONContent | null | undefined;
+  // Top recent updates with green ticks; keep up to 5 including current if needed.
+  const shipped = recentEntries.slice(0, 5);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto" data-widget-scroll="">
-      <div className="px-5 pb-8 pt-1">
+      <div className="px-5 pb-4 pt-1">
         {(dateLabel || tag) && (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-semibold tracking-[0.08em]">
             {dateLabel ? (
@@ -216,6 +230,39 @@ function UpdateDetail({
           </p>
         ) : null}
       </div>
+
+      {shipped.length ? (
+        <section className="mt-2 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)] pb-6">
+          <div className="flex items-center gap-2 px-5 py-4">
+            <TickIcon className="size-4 shrink-0" width={16} height={16} />
+            <h2 className="text-sm font-semibold text-[rgb(var(--widget-fg))]">Recently shipped</h2>
+          </div>
+          <div>
+            {shipped.map((item) => {
+              const isCurrent = item.id === entry.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    if (!isCurrent) onOpen(item);
+                  }}
+                  className={`flex w-full items-center gap-3 px-5 py-3 text-left transition-colors ${
+                    isCurrent
+                      ? "cursor-default bg-[rgb(var(--widget-fg)/0.03)]"
+                      : "cursor-pointer hover:bg-[rgb(var(--widget-fg)/0.03)]"
+                  }`}
+                >
+                  <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">
+                    {item.title}
+                  </p>
+                  <TickIcon className="size-4 shrink-0" width={16} height={16} aria-label="Done" />
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
