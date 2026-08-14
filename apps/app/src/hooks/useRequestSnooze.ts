@@ -45,7 +45,7 @@ export function useRequestSnooze({
     try {
       const res = await client.board.updatePostMeta.$post({
         postId,
-        snoozedUntil: next ? next.toISOString() : null,
+        snoozedUntil: next,
       })
 
       if (!res.ok) {
