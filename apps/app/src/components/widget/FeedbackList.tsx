@@ -48,8 +48,19 @@ export function WidgetFeedbackList({
   const [nextOffset, setNextOffset] = React.useState<number | null>(null);
   const [error, setError] = React.useState("");
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
   const savedScrollTop = React.useRef(0);
   const hasLoadedOnce = React.useRef(false);
+  const loadingMoreRef = React.useRef(false);
+  const nextOffsetRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    loadingMoreRef.current = loadingMore;
+  }, [loadingMore]);
+
+  React.useEffect(() => {
+    nextOffsetRef.current = nextOffset;
+  }, [nextOffset]);
 
   React.useEffect(() => {
     // Keep scroll position when navigating away to detail/compose and back.
@@ -83,8 +94,13 @@ export function WidgetFeedbackList({
 
   const load = React.useCallback(
     async (offset = 0, append = false) => {
-      if (append) setLoadingMore(true);
-      else setLoading(true);
+      if (append) {
+        if (loadingMoreRef.current) return;
+        loadingMoreRef.current = true;
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
       setError("");
       try {
         const fingerprint =
@@ -101,13 +117,17 @@ export function WidgetFeedbackList({
         const data = await res.json();
         const nextPosts = (Array.isArray(data.posts) ? data.posts : []) as WidgetPost[];
         setPosts((prev) => (append ? [...prev, ...nextPosts] : nextPosts));
-        setNextOffset(typeof data.nextOffset === "number" ? data.nextOffset : null);
+        const upcoming =
+          typeof data.nextOffset === "number" ? (data.nextOffset as number) : null;
+        nextOffsetRef.current = upcoming;
+        setNextOffset(upcoming);
         hasLoadedOnce.current = true;
       } catch {
         if (!append) setPosts([]);
         setError("Could not load requests.");
       } finally {
         setLoading(false);
+        loadingMoreRef.current = false;
         setLoadingMore(false);
       }
     },
@@ -118,6 +138,27 @@ export function WidgetFeedbackList({
     // Initial load, filter/sort changes, or explicit refresh — not on detail↔list nav.
     load(0, false);
   }, [load, refreshKey]);
+
+  React.useEffect(() => {
+    if (!active) return;
+    const root = scrollRef.current;
+    const sentinel = sentinelRef.current;
+    if (!root || !sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry?.isIntersecting) return;
+        const offset = nextOffsetRef.current;
+        if (offset === null || loadingMoreRef.current) return;
+        void load(offset, true);
+      },
+      { root, rootMargin: "120px 0px", threshold: 0 },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [active, load, posts.length, nextOffset]);
 
   const onVoteChange = (postId: string, upvotes: number, hasVoted: boolean) => {
     setPosts((prev) =>
@@ -208,19 +249,17 @@ export function WidgetFeedbackList({
           />
         ))}
         {nextOffset !== null ? (
-          <div className="px-4 py-4">
-            <button
-              type="button"
-              disabled={loadingMore}
-              onClick={() => load(nextOffset, true)}
-              className="w-full cursor-pointer rounded-md bg-[rgb(var(--widget-fg)/0.04)] py-2.5 text-xs text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.07)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loadingMore ? (
-                <LoaderIcon className="mx-auto size-4 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
-              ) : (
-                "Load more"
-              )}
-            </button>
+          <div
+            ref={sentinelRef}
+            className="flex items-center justify-center py-4"
+            aria-hidden={!loadingMore}
+            aria-label={loadingMore ? "Loading more" : undefined}
+          >
+            {loadingMore ? (
+              <LoaderIcon className="size-4 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
+            ) : (
+              <span className="h-4" />
+            )}
           </div>
         ) : null}
       </div>
