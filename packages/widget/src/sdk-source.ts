@@ -9,7 +9,6 @@ export function getWidgetSdkSource() {
   var PANEL_RADIUS = "12px";
   var BUTTON_RADIUS = "8px";
   var LAUNCHER_SIZE = 36;
-  var LAUNCHER_BG = "#000000";
   var FEATUL_LOGO =
     '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M11.986.764c-5.911 0-10.75 4.597-10.75 10.34 0 2.402.866 4.62 2.315 6.37 1.918 2.383 4.932 3.91 8.301 3.95l.036.013a68 68 0 0 0 1.915.657c1.177.386 2.674.842 3.886 1.095a2.32 2.32 0 0 0 1.72-.328c.478-.31.893-.848.893-1.544 0-.412-.167-.818-.329-1.131a7 7 0 0 0-.602-.941 11 11 0 0 0-.299-.384c2.247-1.88 3.664-4.655 3.664-7.758 0-3.552-1.85-6.671-4.663-8.517-1.74-1.163-3.83-1.822-6.087-1.822m6.378 5.273a.75.75 0 1 0-1.295.758 8.5 8.5 0 0 1 1.167 4.308 8.46 8.46 0 0 1-1.167 4.299.75.75 0 0 0 1.294.758 9.96 9.96 0 0 0 1.373-5.057 10 10 0 0 0-1.372-5.066"/></svg>';
 
@@ -46,6 +45,20 @@ export function getWidgetSdkSource() {
     return state.theme === "light" ? "#ffffff" : "#1a1a1c";
   }
 
+  function launcherForeground() {
+    return state.theme === "light" ? "#171717" : "#fafafa";
+  }
+
+  function syncLauncherTheme() {
+    if (state.button) {
+      state.button.style.background = panelBackground();
+      state.button.style.color = launcherForeground();
+    }
+    if (state.shell && !state.open) {
+      state.shell.style.background = panelBackground();
+    }
+  }
+
   function syncTheme() {
     state.theme = resolveTheme((state.options && state.options.theme) || "auto");
     if (state.iframe) {
@@ -55,6 +68,7 @@ export function getWidgetSdkSource() {
     if (state.shell && state.open) {
       state.shell.style.background = panelBackground();
     }
+    syncLauncherTheme();
   }
 
   function post(type, payload) {
@@ -148,7 +162,7 @@ export function getWidgetSdkSource() {
     applyRect(state.shell, getLauncherRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = BUTTON_RADIUS;
-    state.shell.style.background = LAUNCHER_BG;
+    state.shell.style.background = panelBackground();
     state.shell.style.boxShadow = "none";
   }
 
@@ -330,8 +344,8 @@ export function getWidgetSdkSource() {
       button.style.padding = "0";
       button.style.border = "0";
       button.style.borderRadius = BUTTON_RADIUS;
-      button.style.background = LAUNCHER_BG;
-      button.style.color = "#ffffff";
+      button.style.background = panelBackground();
+      button.style.color = launcherForeground();
       button.style.font = "600 14px/1 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       button.style.letterSpacing = "0";
       button.style.whiteSpace = "nowrap";
@@ -468,6 +482,7 @@ export function getWidgetSdkSource() {
       state.theme = data.payload.theme === "light" ? "light" : "dark";
       if (state.iframe) state.iframe.style.colorScheme = state.theme;
       if (state.shell && state.open) state.shell.style.background = panelBackground();
+      syncLauncherTheme();
     }
     if (data.type === "brand" && data.payload && data.payload.primaryColor) {
       applyAccent(data.payload.primaryColor);
