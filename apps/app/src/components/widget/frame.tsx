@@ -604,15 +604,23 @@ export default function WidgetFrame({
               <button
                 type="button"
                 onClick={() => goFeedback("compose")}
-                className="flex w-full cursor-pointer items-center justify-between rounded-md bg-[rgb(var(--widget-cta))] px-4 py-3 text-left transition-opacity hover:opacity-90"
+                className="group flex w-full cursor-pointer items-center gap-3 rounded-md bg-[rgb(var(--widget-fg)/0.03)] px-3.5 py-3.5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.055)]"
               >
-                <div>
-                  <p className="text-sm font-semibold text-[rgb(var(--widget-cta-fg))]">Give feedback</p>
-                  <p className="mt-0.5 text-xs text-[rgb(var(--widget-cta-fg)/0.55)]">
+                <span
+                  className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[rgb(var(--widget-fg)/0.06)]"
+                  style={{ color: accent }}
+                >
+                  <FillPenIcon className="size-4" size={16} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-heading text-sm font-semibold tracking-tight text-[rgb(var(--widget-fg))]">
+                    Give feedback
+                  </span>
+                  <span className="mt-0.5 block text-xs leading-snug text-[rgb(var(--widget-fg)/0.45)]">
                     Share an idea or report an issue
-                  </p>
-                </div>
-                <FillPenIcon className="size-4 shrink-0 text-[rgb(var(--widget-cta-fg)/0.7)]" size={16} />
+                  </span>
+                </span>
+                <ChevronRight className="size-4 shrink-0 text-[rgb(var(--widget-fg)/0.3)] transition-transform group-hover:translate-x-0.5 group-hover:text-[rgb(var(--widget-fg)/0.55)]" />
               </button>
             </div>
 
