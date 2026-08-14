@@ -13,6 +13,9 @@ export function getWidgetSdkSource() {
   var FEATUL_LOGO =
     '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M11.986.764c-5.911 0-10.75 4.597-10.75 10.34 0 2.402.866 4.62 2.315 6.37 1.918 2.383 4.932 3.91 8.301 3.95l.036.013a68 68 0 0 0 1.915.657c1.177.386 2.674.842 3.886 1.095a2.32 2.32 0 0 0 1.72-.328c.478-.31.893-.848.893-1.544 0-.412-.167-.818-.329-1.131a7 7 0 0 0-.602-.941 11 11 0 0 0-.299-.384c2.247-1.88 3.664-4.655 3.664-7.758 0-3.552-1.85-6.671-4.663-8.517-1.74-1.163-3.83-1.822-6.087-1.822m6.378 5.273a.75.75 0 1 0-1.295.758 8.5 8.5 0 0 1 1.167 4.308 8.46 8.46 0 0 1-1.167 4.299.75.75 0 0 0 1.294.758 9.96 9.96 0 0 0 1.373-5.057 10 10 0 0 0-1.372-5.066"/></svg>';
 
+  var PANEL_WIDTH = 384;
+  var PANEL_WIDTH_EXPANDED = 480;
+
   var state = {
     projectId: null,
     options: {},
@@ -24,6 +27,7 @@ export function getWidgetSdkSource() {
     position: "right",
     open: false,
     ready: false,
+    expanded: false,
     closeTimer: null,
     morphTimer: null,
     animating: false,
@@ -75,7 +79,8 @@ export function getWidgetSdkSource() {
   }
 
   function getPanelRect(position) {
-    var width = Math.min(384, Math.max(280, window.innerWidth - 32));
+    var preferred = state.expanded ? PANEL_WIDTH_EXPANDED : PANEL_WIDTH;
+    var width = Math.min(preferred, Math.max(280, window.innerWidth - 32));
     var height = Math.min(700, Math.max(360, window.innerHeight - 40));
     return {
       left: position === "left" ? 20 : window.innerWidth - width - 20,
@@ -289,7 +294,7 @@ export function getWidgetSdkSource() {
     iframe.style.display = "none";
     iframe.style.opacity = "0";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1)";
+    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1), left 280ms cubic-bezier(0.32, 0.72, 0, 1), top 280ms cubic-bezier(0.32, 0.72, 0, 1), width 280ms cubic-bezier(0.32, 0.72, 0, 1), height 280ms cubic-bezier(0.32, 0.72, 0, 1)";
     iframe.style.background = "transparent";
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
@@ -360,6 +365,7 @@ export function getWidgetSdkSource() {
   function setOpen(open, options) {
     buildFrame();
     state.open = open;
+    if (!open) state.expanded = false;
     if (state.iframe) {
       state.iframe.setAttribute("aria-hidden", open ? "false" : "true");
       clearTimers();
@@ -467,7 +473,15 @@ export function getWidgetSdkSource() {
       applyAccent(data.payload.primaryColor);
     }
     if (data.type === "close") {
+      state.expanded = false;
       setOpen(false);
+    }
+    if (data.type === "panel") {
+      state.expanded = Boolean(data.payload && data.payload.expanded);
+      if (state.open) {
+        applyPanelRect();
+        applyShellPanelRect();
+      }
     }
     if (data.type === "open-image" && data.payload && data.payload.url) {
       openImageLightbox(data.payload.url, data.payload.alt || "");
@@ -518,6 +532,7 @@ export function getWidgetSdkSource() {
       state.lightbox = null;
       state.ready = false;
       state.open = false;
+      state.expanded = false;
       state.closeTimer = null;
       state.morphTimer = null;
       state.animating = false;

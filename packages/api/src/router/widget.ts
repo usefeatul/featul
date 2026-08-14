@@ -16,6 +16,7 @@ import {
 } from "@featul/db";
 import { getRequestFingerprint } from "../shared/request-fingerprint";
 import { toSlug } from "../shared/slug";
+import { findTagsByIds, getChangelogTags } from "../shared/changelog-types";
 import { createStorageContext, buildSignedUpload } from "../services/storage-signer";
 import { POST_IMAGE_UPLOAD_POLICY, validateUploadInput } from "../shared/storage-upload";
 import {
@@ -1104,9 +1105,12 @@ export function createWidgetRouter() {
           summary: changelogEntry.summary,
           content: changelogEntry.content,
           publishedAt: changelogEntry.publishedAt,
+          tags: changelogEntry.tags,
+          coverImage: changelogEntry.coverImage,
           authorId: changelogEntry.authorId,
           authorName: user.name,
           authorImage: user.image,
+          boardChangelogTags: board.changelogTags,
         })
         .from(changelogEntry)
         .innerJoin(board, eq(changelogEntry.boardId, board.id))
@@ -1165,6 +1169,15 @@ export function createWidgetRouter() {
           const rawRole = row.authorId ? memberRoleMap.get(row.authorId) : null;
           const role = typeof rawRole === "string" ? rawRole : null;
           const authorRoleLabel = resolveAuthorRoleLabel(isOwner, role);
+          const allTags = getChangelogTags(row.boardChangelogTags);
+          const entryTagIds = Array.isArray(row.tags)
+            ? row.tags.filter((id: unknown): id is string => typeof id === "string")
+            : [];
+          const tags = findTagsByIds(allTags, entryTagIds).map((tag) => ({
+            id: tag.id,
+            name: tag.name,
+            color: tag.color,
+          }));
 
           return {
             id: row.id,
@@ -1173,7 +1186,9 @@ export function createWidgetRouter() {
             summary: summary || null,
             content: row.content,
             preview: preview || null,
+            coverImage: row.coverImage || null,
             publishedAt: row.publishedAt,
+            tags,
             authorName: row.authorName || null,
             authorImage: row.authorImage || null,
             authorRole: role,

@@ -35,6 +35,7 @@ import { WidgetVoteButton } from "./VoteButton";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { extractTextFromTiptap } from "@/types/changelog";
+import { WidgetUpdates, type WidgetChangelogEntry } from "./Updates";
 import { toShortPreview } from "./utils";
 
 type WidgetFrameProps = {
@@ -61,18 +62,8 @@ export default function WidgetFrame({
   const [userId, setUserId] = React.useState<string | null>(null);
   const [identity, setIdentity] = React.useState<IdentifiedUser | null>(null);
   const [roadmap, setRoadmap] = React.useState<WidgetRoadmapItem[]>([]);
-  const [changelog, setChangelog] = React.useState<
-    Array<{
-      id: string;
-      title: string;
-      summary: string | null;
-      preview?: string | null;
-      publishedAt: string | null;
-      authorName?: string | null;
-      authorImage?: string | null;
-      authorRoleLabel?: string | null;
-    }>
-  >([]);
+  const [changelog, setChangelog] = React.useState<WidgetChangelogEntry[]>([]);
+  const [selectedChangelogId, setSelectedChangelogId] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [message, setMessage] = React.useState("");
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(null);
@@ -202,7 +193,7 @@ export default function WidgetFrame({
                   : null) ||
                 summary ||
                 (fromContent ? fromContent.trim() : null);
-              const preview = rawPreview ? toShortPreview(rawPreview, 2) : null;
+              const preview = rawPreview ? toShortPreview(rawPreview, 3) : null;
               const authorName =
                 (typeof entry?.authorName === "string" && entry.authorName.trim()
                   ? entry.authorName.trim()
@@ -237,22 +228,44 @@ export default function WidgetFrame({
                       : authorRole === "viewer"
                         ? "Viewer"
                         : null);
+              const tags = Array.isArray(entry?.tags)
+                ? entry.tags
+                    .filter(
+                      (tag: any) =>
+                        tag &&
+                        typeof tag.id === "string" &&
+                        typeof tag.name === "string" &&
+                        tag.name.trim(),
+                    )
+                    .map((tag: any) => ({
+                      id: String(tag.id),
+                      name: String(tag.name),
+                      color: typeof tag.color === "string" ? tag.color : null,
+                    }))
+                : [];
 
               return {
                 id: String(entry?.id || ""),
                 title: String(entry?.title || ""),
+                slug: typeof entry?.slug === "string" ? entry.slug : undefined,
                 summary,
                 preview,
+                content: entry?.content ?? null,
+                coverImage:
+                  typeof entry?.coverImage === "string" && entry.coverImage.trim()
+                    ? entry.coverImage.trim()
+                    : null,
                 publishedAt:
                   entry?.publishedAt instanceof Date
                     ? entry.publishedAt.toISOString()
                     : typeof entry?.publishedAt === "string"
                       ? entry.publishedAt
                       : null,
+                tags,
                 authorName,
                 authorImage,
                 authorRoleLabel,
-              };
+              } satisfies WidgetChangelogEntry;
             }),
           );
         }
@@ -358,7 +371,8 @@ export default function WidgetFrame({
     : "Roadmap";
   const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
   const isFeedback = section === "feedback";
-  const showTabs = !isFeedback || feedbackView === "list";
+  const isChangelogDetail = section === "changelog" && Boolean(selectedChangelogId);
+  const showTabs = (!isFeedback || feedbackView === "list") && !isChangelogDetail;
   const contentTransition = reduceMotion
     ? { duration: 0 }
     : { duration: 0.16, ease: "easeOut" as const };
@@ -368,6 +382,23 @@ export default function WidgetFrame({
       : feedbackView === "detail"
         ? "Request"
         : "Feedback";
+  const showSubpageHeader =
+    (isFeedback && feedbackView !== "list") || isChangelogDetail;
+
+  React.useEffect(() => {
+    window.parent.postMessage(
+      {
+        source: "featul-widget-frame",
+        type: "panel",
+        payload: { expanded: isChangelogDetail },
+      },
+      "*",
+    );
+  }, [isChangelogDetail]);
+
+  React.useEffect(() => {
+    if (section !== "changelog") setSelectedChangelogId(null);
+  }, [section]);
 
   return (
     <WidgetThemeProvider mode={themeMode}>
@@ -390,10 +421,16 @@ export default function WidgetFrame({
       }
     >
       <header className="flex items-center gap-2.5 px-4 py-3">
-        {isFeedback && feedbackView !== "list" ? (
+        {showSubpageHeader ? (
           <button
             type="button"
-            onClick={() => goFeedback("list")}
+            onClick={() => {
+              if (isChangelogDetail) {
+                setSelectedChangelogId(null);
+                return;
+              }
+              goFeedback("list");
+            }}
             className="flex size-8 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
             aria-label="Back"
           >
@@ -412,6 +449,8 @@ export default function WidgetFrame({
 
         {isFeedback && feedbackView === "detail" ? (
           <div className="min-w-0 flex-1" />
+        ) : isChangelogDetail ? (
+          <div className="min-w-0 flex-1" />
         ) : isFeedback && feedbackView === "compose" ? (
           <p className="min-w-0 flex-1 text-[15px] font-semibold tracking-tight">{feedbackTitle}</p>
         ) : (
@@ -420,7 +459,7 @@ export default function WidgetFrame({
           </div>
         )}
 
-        {!(isFeedback && feedbackView !== "list") ? (
+        {!showSubpageHeader ? (
           <button
             type="button"
             onClick={() => goFeedback("compose")}
@@ -445,6 +484,8 @@ export default function WidgetFrame({
         className={
           isFeedback && (feedbackView === "list" || feedbackView === "detail")
             ? "relative flex min-h-0 flex-1 flex-col"
+            : isChangelogDetail || section === "changelog"
+              ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto"
             : isFeedback
               ? "relative flex min-h-0 flex-1 flex-col px-5 pb-4"
               : section === "roadmap"
@@ -454,7 +495,8 @@ export default function WidgetFrame({
                   : "relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pb-5 pt-3"
         }
         data-widget-scroll={
-          !(isFeedback && (feedbackView === "list" || feedbackView === "detail"))
+          !(isFeedback && (feedbackView === "list" || feedbackView === "detail")) &&
+          section !== "changelog"
             ? ""
             : undefined
         }
@@ -638,7 +680,10 @@ export default function WidgetFrame({
                     <button
                       key={entry.id}
                       type="button"
-                      onClick={() => setSection("changelog")}
+                      onClick={() => {
+                        setSection("changelog");
+                        setSelectedChangelogId(entry.id);
+                      }}
                       className="flex w-full items-start gap-4 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
                     >
                       <span className="w-[3.25rem] shrink-0 pt-0.5 text-[11px] font-medium uppercase tracking-wide text-[rgb(var(--widget-fg)/0.4)]">
@@ -769,54 +814,21 @@ export default function WidgetFrame({
         ) : null}
 
         {!loading && section === "changelog" ? (
-          <motion.section
-            key="changelog"
+          <motion.div
+            key={selectedChangelogId ? `changelog-${selectedChangelogId}` : "changelog-list"}
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={contentTransition}
-            className="space-y-2"
+            className="flex min-h-0 flex-1 flex-col"
           >
-            <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>
-                Updates
-              </p>
-              <h2 className="mt-2 text-xl font-semibold">Latest changes</h2>
-            </div>
-            {changelog.length ? (
-              changelog.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="rounded-md border border-[rgb(var(--widget-fg)/0.08)] bg-[rgb(var(--widget-fg)/0.04)] px-4 py-3"
-                >
-                  <p className="text-sm font-medium">{entry.title}</p>
-                  {entry.preview ? (
-                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
-                      {entry.preview}
-                    </p>
-                  ) : null}
-                  {entry.authorName ? (
-                    <div className="mt-3 flex items-center gap-2">
-                      <WidgetAuthorAvatar
-                        name={entry.authorName}
-                        image={entry.authorImage}
-                        className="size-5"
-                      />
-                      <div className="min-w-0">
-                        <p className="truncate text-[11px] font-medium text-[rgb(var(--widget-fg)/0.8)]">
-                          {entry.authorName}
-                        </p>
-                        <p className="truncate text-[10px] font-medium" style={{ color: accent }}>
-                          {entry.authorRoleLabel || "Team"}
-                        </p>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-[rgb(var(--widget-fg)/0.45)]">No updates published yet.</p>
-            )}
-          </motion.section>
+            <WidgetUpdates
+              entries={changelog}
+              accent={accent}
+              selectedId={selectedChangelogId}
+              onOpen={(entry) => setSelectedChangelogId(entry.id)}
+              onBack={() => setSelectedChangelogId(null)}
+            />
+          </motion.div>
         ) : null}
       </div>
 
@@ -854,7 +866,8 @@ export default function WidgetFrame({
       ) : null}
 
       {!workspace?.hideBranding &&
-      !(isFeedback && (feedbackView === "compose" || feedbackView === "detail")) ? (
+      !(isFeedback && (feedbackView === "compose" || feedbackView === "detail")) &&
+      !isChangelogDetail ? (
         <div className="border-t border-[rgb(var(--widget-fg)/0.1)] px-4 py-2.5 text-center">
           <a
             href="https://featul.com?utm_source=powered_by&utm_medium=referral&utm_campaign=widget"
