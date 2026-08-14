@@ -77,6 +77,11 @@ export default function WidgetFrame({
   const [message, setMessage] = React.useState("");
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(null);
   const [listRefreshKey, setListRefreshKey] = React.useState(0);
+  const [listVotePatch, setListVotePatch] = React.useState<{
+    postId: string;
+    upvotes: number;
+    hasVoted: boolean;
+  } | null>(null);
   const [navBorderVisible, setNavBorderVisible] = React.useState(false);
   const [themeMode, setThemeMode] = React.useState<"light" | "dark" | "auto">(initialTheme);
   const [theme, setTheme] = React.useState<"light" | "dark">(() => resolveWidgetTheme(initialTheme));
@@ -354,7 +359,6 @@ export default function WidgetFrame({
   const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
   const isFeedback = section === "feedback";
   const showTabs = !isFeedback || feedbackView === "list";
-  const contentKey = isFeedback ? `feedback-${feedbackView}` : section;
   const contentTransition = reduceMotion
     ? { duration: 0 }
     : { duration: 0.16, ease: "easeOut" as const };
@@ -665,56 +669,85 @@ export default function WidgetFrame({
         ) : null}
 
         {!loading && section === "feedback" ? (
-          <motion.div
-            key={contentKey}
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={contentTransition}
-            className="flex min-h-0 flex-1 flex-col"
-          >
-          {feedbackView === "compose" ? (
-            <WidgetFeedbackCompose
-              apiBase={apiBase}
-              boards={boards}
-              userId={userId}
-              identity={identity}
-              primaryColor={accent}
-              onCancel={() => goFeedback("list")}
-              onCreated={(post) => {
-                setSelectedPost(post);
-                setListRefreshKey((value) => value + 1);
-                setFeedbackView("detail");
-                setMessage("Feedback submitted. Thank you.");
-                window.setTimeout(() => setMessage(""), 2500);
-              }}
-            />
-          ) : feedbackView === "detail" && selectedPost ? (
-            <WidgetFeedbackDetail
-              apiBase={apiBase}
-              workspaceSlug={workspaceSlug}
-              accent={accent}
-              postId={selectedPost.id}
-              initialPost={selectedPost}
-              userId={userId}
-              identity={identity}
-            />
-          ) : (
-            <WidgetFeedbackList
-              apiBase={apiBase}
-              boards={boards}
-              boardId={listBoardId}
-              onBoardChange={setListBoardId}
-              userId={userId}
-              identity={identity}
-              refreshKey={listRefreshKey}
-              onCompose={() => goFeedback("compose")}
-              onOpenPost={(post) => {
-                setSelectedPost(post);
-                setFeedbackView("detail");
-              }}
-            />
-          )}
-          </motion.div>
+          <div className="relative flex min-h-0 flex-1 flex-col">
+            <div
+              className={
+                feedbackView === "list"
+                  ? "flex min-h-0 flex-1 flex-col"
+                  : "pointer-events-none invisible absolute inset-0 flex flex-col"
+              }
+              aria-hidden={feedbackView !== "list"}
+            >
+              <WidgetFeedbackList
+                apiBase={apiBase}
+                boards={boards}
+                boardId={listBoardId}
+                onBoardChange={setListBoardId}
+                userId={userId}
+                identity={identity}
+                refreshKey={listRefreshKey}
+                active={feedbackView === "list"}
+                votePatch={listVotePatch}
+                onCompose={() => goFeedback("compose")}
+                onOpenPost={(post) => {
+                  setSelectedPost(post);
+                  setFeedbackView("detail");
+                }}
+              />
+            </div>
+
+            {feedbackView === "compose" ? (
+              <motion.div
+                key="feedback-compose"
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={contentTransition}
+                className="flex min-h-0 flex-1 flex-col"
+              >
+                <WidgetFeedbackCompose
+                  apiBase={apiBase}
+                  boards={boards}
+                  userId={userId}
+                  identity={identity}
+                  primaryColor={accent}
+                  onCancel={() => goFeedback("list")}
+                  onCreated={(post) => {
+                    setSelectedPost(post);
+                    setListRefreshKey((value) => value + 1);
+                    setFeedbackView("detail");
+                    setMessage("Feedback submitted. Thank you.");
+                    window.setTimeout(() => setMessage(""), 2500);
+                  }}
+                />
+              </motion.div>
+            ) : null}
+
+            {feedbackView === "detail" && selectedPost ? (
+              <motion.div
+                key={`feedback-detail-${selectedPost.id}`}
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={contentTransition}
+                className="flex min-h-0 flex-1 flex-col"
+              >
+                <WidgetFeedbackDetail
+                  apiBase={apiBase}
+                  workspaceSlug={workspaceSlug}
+                  accent={accent}
+                  postId={selectedPost.id}
+                  initialPost={selectedPost}
+                  userId={userId}
+                  identity={identity}
+                  onVoteChange={(postId, upvotes, hasVoted) => {
+                    setSelectedPost((prev) =>
+                      prev && prev.id === postId ? { ...prev, upvotes, hasVoted } : prev,
+                    );
+                    setListVotePatch({ postId, upvotes, hasVoted });
+                  }}
+                />
+              </motion.div>
+            ) : null}
+          </div>
         ) : null}
 
         {!loading && section === "roadmap" ? (

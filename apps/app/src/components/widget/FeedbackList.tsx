@@ -18,6 +18,10 @@ type Props = {
   userId?: string | null;
   identity?: IdentifiedUser | null;
   refreshKey?: number;
+  /** When false, list stays mounted but inactive (preserves scroll/data). */
+  active?: boolean;
+  /** Sync a vote from detail view without refetching the list. */
+  votePatch?: { postId: string; upvotes: number; hasVoted: boolean } | null;
   onOpenPost: (post: WidgetPost) => void;
   onCompose: () => void;
 };
@@ -30,6 +34,8 @@ export function WidgetFeedbackList({
   userId,
   identity,
   refreshKey = 0,
+  active = true,
+  votePatch = null,
   onOpenPost,
   onCompose,
 }: Props) {
@@ -41,6 +47,34 @@ export function WidgetFeedbackList({
   const [loadingMore, setLoadingMore] = React.useState(false);
   const [nextOffset, setNextOffset] = React.useState<number | null>(null);
   const [error, setError] = React.useState("");
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const savedScrollTop = React.useRef(0);
+  const hasLoadedOnce = React.useRef(false);
+
+  React.useEffect(() => {
+    // Keep scroll position when navigating away to detail/compose and back.
+    if (!active) {
+      savedScrollTop.current = scrollRef.current?.scrollTop ?? savedScrollTop.current;
+      return;
+    }
+    const node = scrollRef.current;
+    if (!node) return;
+    const top = savedScrollTop.current;
+    requestAnimationFrame(() => {
+      node.scrollTop = top;
+    });
+  }, [active]);
+
+  React.useEffect(() => {
+    if (!votePatch) return;
+    setPosts((prev) =>
+      prev.map((post) =>
+        post.id === votePatch.postId
+          ? { ...post, upvotes: votePatch.upvotes, hasVoted: votePatch.hasVoted }
+          : post,
+      ),
+    );
+  }, [votePatch]);
 
   React.useEffect(() => {
     const timer = window.setTimeout(() => setQuery(search.trim()), 250);
@@ -68,6 +102,7 @@ export function WidgetFeedbackList({
         const nextPosts = (Array.isArray(data.posts) ? data.posts : []) as WidgetPost[];
         setPosts((prev) => (append ? [...prev, ...nextPosts] : nextPosts));
         setNextOffset(typeof data.nextOffset === "number" ? data.nextOffset : null);
+        hasLoadedOnce.current = true;
       } catch {
         if (!append) setPosts([]);
         setError("Could not load requests.");
@@ -80,6 +115,7 @@ export function WidgetFeedbackList({
   );
 
   React.useEffect(() => {
+    // Initial load, filter/sort changes, or explicit refresh — not on detail↔list nav.
     load(0, false);
   }, [load, refreshKey]);
 
@@ -130,8 +166,8 @@ export function WidgetFeedbackList({
         ) : null}
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {loading ? (
+      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {loading && !hasLoadedOnce.current ? (
           <div
             className="flex min-h-0 flex-1 items-center justify-center"
             aria-label="Loading"
