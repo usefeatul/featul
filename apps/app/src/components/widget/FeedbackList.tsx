@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@featul/ui/components/popover";
 import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
-import { BoardIcon } from "@featul/ui/icons/board";
+import { LayersIcon } from "@featul/ui/icons/layers";
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { SearchIcon } from "@featul/ui/icons/search";
@@ -38,11 +38,14 @@ const STATUS_OPTIONS = [
 
 type StatusFilter = (typeof STATUS_OPTIONS)[number]["value"] | "";
 
+const toolbarControlClass =
+  "border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.05)]";
+
 const toolbarBtnClass =
-  "inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md bg-[rgb(var(--widget-fg)/0.05)] text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.08)] hover:text-[rgb(var(--widget-fg)/0.8)]";
+  `inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md ${toolbarControlClass} text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.08)] hover:text-[rgb(var(--widget-fg)/0.8)]`;
 
 const toolbarBtnActiveClass =
-  "bg-[rgb(var(--widget-fg)/0.1)] text-[rgb(var(--widget-fg)/0.9)]";
+  "border-[rgb(var(--widget-fg)/0.18)] bg-[rgb(var(--widget-fg)/0.1)] text-[rgb(var(--widget-fg)/0.9)]";
 
 const popoverClass =
   "z-[80] min-w-0 w-fit border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-surface))] p-0 text-[rgb(var(--widget-fg))] shadow-lg";
@@ -230,7 +233,7 @@ export function WidgetFeedbackList({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search feedback"
-            className="h-9 w-full rounded-md bg-[rgb(var(--widget-fg)/0.05)] pl-9 pr-3 text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.3)] focus:bg-[rgb(var(--widget-fg)/0.07)]"
+            className={`h-9 w-full rounded-md ${toolbarControlClass} pl-9 pr-3 text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.3)] focus:bg-[rgb(var(--widget-fg)/0.07)]`}
           />
         </div>
 
@@ -326,7 +329,7 @@ export function WidgetFeedbackList({
                 aria-label={`Filter by board: ${boardLabel}`}
                 title={boardLabel}
               >
-                <BoardIcon className="size-3.5" size={14} opacity={1} />
+                <LayersIcon className="size-3.5" size={14} />
               </button>
             </PopoverTrigger>
             <PopoverContent list align="end" className={popoverClass} style={popoverStyle}>
