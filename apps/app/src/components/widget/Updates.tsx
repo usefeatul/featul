@@ -168,7 +168,7 @@ export function WidgetUpdates({
                     {entry.authorName}
                   </p>
                   {entry.authorRoleLabel ? (
-                    <p className="truncate text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
+                    <p className="truncate font-heading text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
                       {entry.authorRoleLabel}
                     </p>
                   ) : null}
@@ -218,7 +218,7 @@ function UpdateDetail({
                 {entry.authorName}
               </p>
               {entry.authorRoleLabel ? (
-                <p className="truncate text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
+                <p className="truncate font-heading text-[11px] text-[rgb(var(--widget-fg)/0.4)]">
                   {entry.authorRoleLabel}
                 </p>
               ) : null}

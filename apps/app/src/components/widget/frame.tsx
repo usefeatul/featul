@@ -563,7 +563,7 @@ export default function WidgetFrame({
                             {featuredEntry.authorName || "Author"}
                           </p>
                           <p
-                            className="truncate text-xs font-medium"
+                            className="truncate font-heading text-xs font-medium"
                             style={{ color: accent }}
                           >
                             {featuredEntry.authorRoleLabel || "Team"}
