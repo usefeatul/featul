@@ -36,6 +36,21 @@ export type WidgetPost = {
   hasVoted: boolean;
 };
 
+export type WidgetComment = {
+  id: string;
+  postId: string;
+  parentId: string | null;
+  content: string;
+  authorName: string;
+  authorImage: string | null;
+  isAnonymous: boolean;
+  upvotes: number;
+  replyCount: number;
+  depth: number;
+  createdAt: string | Date;
+  hasVoted: boolean;
+};
+
 export type SimilarPost = {
   id: string;
   title: string;

@@ -6,6 +6,8 @@ import { j, publicProcedure } from "../jstack";
 import {
   board,
   changelogEntry,
+  comment,
+  commentReaction,
   post,
   user,
   vote,
@@ -105,6 +107,20 @@ const postDetailSchema = projectInput.merge(viewerSchema).extend({
   slug: z.string().min(1).optional(),
 }).refine((value) => Boolean(value.postId || value.slug), {
   message: "postId or slug is required",
+});
+
+const commentsSchema = projectInput.merge(viewerSchema).extend({
+  postId: z.string().min(1),
+});
+
+const createCommentSchema = projectInput.merge(viewerSchema).extend({
+  postId: z.string().min(1),
+  content: z.string().trim().min(1).max(5000),
+  parentId: z.string().min(1).optional(),
+});
+
+const voteCommentSchema = projectInput.merge(viewerSchema).extend({
+  commentId: z.string().min(1),
 });
 
 type ResolvedWidget = {
@@ -657,6 +673,314 @@ export function createWidgetRouter() {
         .set({ upvotes: sql`${post.upvotes} + 1` })
         .where(eq(post.id, input.postId))
         .returning({ upvotes: post.upvotes });
+      return c.superjson({ hasVoted: true, upvotes: updated?.upvotes || 0 });
+    }),
+
+    comments: publicProcedure.input(commentsSchema).get(async ({ ctx, input, c }) => {
+      const resolved = await resolveWidget(ctx, input.projectId);
+      const request = (c as any)?.req?.raw || (c as any)?.request;
+      const viewerId = await resolveViewerId(ctx, input);
+      const fingerprint = viewerId
+        ? null
+        : getRequestFingerprint(request, input.fingerprint);
+
+      const [targetPost] = await ctx.db
+        .select({
+          id: post.id,
+          allowComments: board.allowComments,
+        })
+        .from(post)
+        .innerJoin(board, eq(post.boardId, board.id))
+        .where(
+          and(
+            eq(post.id, input.postId),
+            eq(board.workspaceId, resolved.workspaceId),
+            eq(board.isPublic, true),
+          ),
+        )
+        .limit(1);
+
+      if (!targetPost) throw new HTTPException(404, { message: "Post not found" });
+
+      const rows = await ctx.db
+        .select({
+          id: comment.id,
+          postId: comment.postId,
+          parentId: comment.parentId,
+          content: comment.content,
+          authorName: comment.authorName,
+          authorImage: user.image,
+          isAnonymous: comment.isAnonymous,
+          upvotes: comment.upvotes,
+          replyCount: comment.replyCount,
+          depth: comment.depth,
+          createdAt: comment.createdAt,
+        })
+        .from(comment)
+        .leftJoin(user, eq(comment.authorId, user.id))
+        .where(
+          and(
+            eq(comment.postId, input.postId),
+            eq(comment.status, "published"),
+            eq(comment.isInternal, false),
+          ),
+        )
+        .orderBy(asc(comment.createdAt));
+
+      const commentIds = rows.map((row: { id: string }) => row.id);
+      const votedIds = new Set<string>();
+      if (commentIds.length && (viewerId || fingerprint)) {
+        const reactionFilter = viewerId
+          ? and(inArray(commentReaction.commentId, commentIds), eq(commentReaction.userId, viewerId), eq(commentReaction.type, "upvote"))
+          : and(
+              inArray(commentReaction.commentId, commentIds),
+              isNull(commentReaction.userId),
+              eq(commentReaction.fingerprint, fingerprint || ""),
+              eq(commentReaction.type, "upvote"),
+            );
+        const reactions = await ctx.db
+          .select({ commentId: commentReaction.commentId })
+          .from(commentReaction)
+          .where(reactionFilter);
+        for (const row of reactions) votedIds.add(row.commentId);
+      }
+
+      return c.superjson({
+        allowComments: Boolean(targetPost.allowComments),
+        comments: rows.map((row: (typeof rows)[number]) => ({
+          id: row.id,
+          postId: row.postId,
+          parentId: row.parentId,
+          content: row.content,
+          authorName: row.isAnonymous ? "Guest" : row.authorName || "Guest",
+          authorImage: row.isAnonymous
+            ? dicebearAvatar(row.id)
+            : row.authorImage || dicebearAvatar(row.authorName || row.id),
+          isAnonymous: Boolean(row.isAnonymous),
+          upvotes: row.upvotes || 0,
+          replyCount: row.replyCount || 0,
+          depth: row.depth || 0,
+          createdAt: row.createdAt,
+          hasVoted: votedIds.has(row.id),
+        })),
+      });
+    }),
+
+    createComment: publicProcedure.input(createCommentSchema).post(async ({ ctx, input, c }) => {
+      const resolved = await resolveWidget(ctx, input.projectId);
+      const request = (c as any)?.req?.raw || (c as any)?.request;
+
+      const [targetPost] = await ctx.db
+        .select({
+          id: post.id,
+          isLocked: post.isLocked,
+          allowComments: board.allowComments,
+          allowAnonymous: board.allowAnonymous,
+        })
+        .from(post)
+        .innerJoin(board, eq(post.boardId, board.id))
+        .where(
+          and(
+            eq(post.id, input.postId),
+            eq(board.workspaceId, resolved.workspaceId),
+            eq(board.isPublic, true),
+          ),
+        )
+        .limit(1);
+
+      if (!targetPost) throw new HTTPException(404, { message: "Post not found" });
+      if (!targetPost.allowComments) {
+        throw new HTTPException(403, { message: "Comments are disabled on this board" });
+      }
+      if (targetPost.isLocked) {
+        throw new HTTPException(403, { message: "This post is locked" });
+      }
+
+      let authorId: string | null = null;
+      let authorName = "Guest";
+      let authorImage: string | null = null;
+      if (input.identity) {
+        const identifiedUser = await upsertIdentifiedUser(ctx, input.identity);
+        authorId = identifiedUser.id;
+        authorName = identifiedUser.name || input.identity.name || input.identity.email;
+        authorImage = identifiedUser.image || input.identity.avatar || null;
+      } else if (input.userId) {
+        const [existing] = await ctx.db
+          .select({ id: user.id, name: user.name, image: user.image })
+          .from(user)
+          .where(eq(user.id, input.userId))
+          .limit(1);
+        if (existing) {
+          authorId = existing.id;
+          authorName = existing.name || "User";
+          authorImage = existing.image;
+        }
+      }
+
+      if (!authorId && (!resolved.config.allowGuestPosting || !targetPost.allowAnonymous)) {
+        throw new HTTPException(401, { message: "Sign in to comment" });
+      }
+
+      const fingerprint = authorId ? null : getRequestFingerprint(request, input.fingerprint);
+      if (!authorId && !fingerprint) {
+        throw new HTTPException(400, { message: "Missing visitor fingerprint" });
+      }
+
+      let depth = 0;
+      if (input.parentId) {
+        const [parentComment] = await ctx.db
+          .select({
+            id: comment.id,
+            depth: comment.depth,
+            postId: comment.postId,
+            isInternal: comment.isInternal,
+          })
+          .from(comment)
+          .where(eq(comment.id, input.parentId))
+          .limit(1);
+
+        if (!parentComment || parentComment.postId !== input.postId) {
+          throw new HTTPException(404, { message: "Parent comment not found" });
+        }
+        if (parentComment.isInternal) {
+          throw new HTTPException(403, { message: "Cannot reply to this comment" });
+        }
+        depth = (parentComment.depth || 0) + 1;
+        if (depth > 2) {
+          throw new HTTPException(400, { message: "Reply nesting limit reached" });
+        }
+        await ctx.db
+          .update(comment)
+          .set({ replyCount: sql`${comment.replyCount} + 1` })
+          .where(eq(comment.id, input.parentId));
+      }
+
+      const [created] = await ctx.db
+        .insert(comment)
+        .values({
+          postId: input.postId,
+          parentId: input.parentId || null,
+          content: input.content,
+          authorId,
+          authorName: authorId ? authorName : "Guest",
+          depth,
+          status: "published",
+          isInternal: false,
+          isAnonymous: !authorId,
+          metadata: fingerprint ? { fingerprint } : null,
+          upvotes: 1,
+        })
+        .returning();
+
+      await ctx.db.insert(commentReaction).values({
+        commentId: created.id,
+        userId: authorId,
+        fingerprint: authorId ? null : fingerprint,
+        type: "upvote",
+      });
+
+      const [updatedPost] = await ctx.db
+        .update(post)
+        .set({ commentCount: sql`${post.commentCount} + 1` })
+        .where(eq(post.id, input.postId))
+        .returning({ commentCount: post.commentCount });
+
+      return c.superjson({
+        comment: {
+          id: created.id,
+          postId: created.postId,
+          parentId: created.parentId,
+          content: created.content,
+          authorName: created.isAnonymous ? "Guest" : created.authorName || "Guest",
+          authorImage: created.isAnonymous
+            ? dicebearAvatar(created.id)
+            : authorImage || dicebearAvatar(created.authorName || created.id),
+          isAnonymous: Boolean(created.isAnonymous),
+          upvotes: 1,
+          replyCount: 0,
+          depth: created.depth || 0,
+          createdAt: created.createdAt,
+          hasVoted: true,
+        },
+        commentCount: updatedPost?.commentCount || 0,
+      });
+    }),
+
+    voteComment: publicProcedure.input(voteCommentSchema).post(async ({ ctx, input, c }) => {
+      const resolved = await resolveWidget(ctx, input.projectId);
+      const request = (c as any)?.req?.raw || (c as any)?.request;
+
+      const [target] = await ctx.db
+        .select({
+          id: comment.id,
+          upvotes: comment.upvotes,
+        })
+        .from(comment)
+        .innerJoin(post, eq(comment.postId, post.id))
+        .innerJoin(board, eq(post.boardId, board.id))
+        .where(
+          and(
+            eq(comment.id, input.commentId),
+            eq(comment.status, "published"),
+            eq(comment.isInternal, false),
+            eq(board.workspaceId, resolved.workspaceId),
+            eq(board.isPublic, true),
+          ),
+        )
+        .limit(1);
+
+      if (!target) throw new HTTPException(404, { message: "Comment not found" });
+
+      let voterId: string | null = null;
+      if (input.identity) {
+        const identifiedUser = await upsertIdentifiedUser(ctx, input.identity);
+        voterId = identifiedUser.id;
+      } else if (input.userId) {
+        voterId = input.userId;
+      }
+
+      const fingerprint = voterId ? null : getRequestFingerprint(request, input.fingerprint);
+      const anonymousFingerprint = fingerprint || "";
+      const existingWhere = voterId
+        ? and(
+            eq(commentReaction.commentId, input.commentId),
+            eq(commentReaction.userId, voterId),
+            eq(commentReaction.type, "upvote"),
+          )
+        : and(
+            eq(commentReaction.commentId, input.commentId),
+            isNull(commentReaction.userId),
+            eq(commentReaction.fingerprint, anonymousFingerprint),
+            eq(commentReaction.type, "upvote"),
+          );
+
+      const [existing] = await ctx.db
+        .select({ id: commentReaction.id })
+        .from(commentReaction)
+        .where(existingWhere)
+        .limit(1);
+
+      if (existing) {
+        await ctx.db.delete(commentReaction).where(eq(commentReaction.id, existing.id));
+        const [updated] = await ctx.db
+          .update(comment)
+          .set({ upvotes: sql`greatest(0, ${comment.upvotes} - 1)` })
+          .where(eq(comment.id, input.commentId))
+          .returning({ upvotes: comment.upvotes });
+        return c.superjson({ hasVoted: false, upvotes: updated?.upvotes || 0 });
+      }
+
+      await ctx.db.insert(commentReaction).values({
+        commentId: input.commentId,
+        userId: voterId,
+        fingerprint,
+        type: "upvote",
+      });
+      const [updated] = await ctx.db
+        .update(comment)
+        .set({ upvotes: sql`${comment.upvotes} + 1` })
+        .where(eq(comment.id, input.commentId))
+        .returning({ upvotes: comment.upvotes });
       return c.superjson({ hasVoted: true, upvotes: updated?.upvotes || 0 });
     }),
 
