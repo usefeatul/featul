@@ -21,6 +21,7 @@ export const {
   workspaceDomain,
   workspaceMember,
   workspaceInvite,
+  widgetUser,
   board,
   post,
   tag,

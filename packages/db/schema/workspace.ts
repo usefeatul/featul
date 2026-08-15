@@ -1,144 +1,185 @@
-import { pgTable, text, timestamp, boolean, integer, json, uuid, uniqueIndex, index } from 'drizzle-orm/pg-core'
-import { createId } from '@paralleldrive/cuid2'
-import { user } from './auth'
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  integer,
+  json,
+  uuid,
+  uniqueIndex,
+  index,
+} from "drizzle-orm/pg-core";
+import { createId } from "@paralleldrive/cuid2";
+import { user } from "./auth";
 
-export const workspace = pgTable('workspace', {
-  id: text('id').primaryKey().$defaultFn(() => `fl${createId()}`),
-  name: text('name').notNull(),
-  slug: text('slug').notNull().unique(), // for subdomain like mantlz.featul.com
-  domain: text('domain').notNull(),
-  ownerId: text('owner_id')
+export const workspace = pgTable("workspace", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => `fl${createId()}`),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(), // for subdomain like mantlz.featul.com
+  domain: text("domain").notNull(),
+  ownerId: text("owner_id")
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => user.id, { onDelete: "cascade" }),
 
   // Quick reference for plan limits (denormalized from subscription table)
-  plan: text('plan', { enum: ['free', 'starter', 'professional'] })
+  plan: text("plan", { enum: ["free", "starter", "professional"] })
     .notNull()
-    .default('free'),
+    .default("free"),
 
-  isActive: boolean('is_active').default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
-  logo: text('logo'), // URL to logo image
-  primaryColor: text('primary_color').default('#3b82f6'), // hex color
-  theme: text('theme', { enum: ['light', 'dark', 'system'] }).default('system'),
-  hideBranding: boolean('hide_branding').default(false), // "Powered by featul"
-  widgetSecret: text('widget_secret'),
-  customDomain: text('custom_domain'), // for custom domains
-  timezone: text('timezone').notNull().default('UTC'),
-})
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+  logo: text("logo"), // URL to logo image
+  primaryColor: text("primary_color").default("#3b82f6"), // hex color
+  theme: text("theme", { enum: ["light", "dark", "system"] }).default("system"),
+  hideBranding: boolean("hide_branding").default(false), // "Powered by featul"
+  widgetSecret: text("widget_secret").notNull(),
+  widgetAllowedOrigins: json("widget_allowed_origins")
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  customDomain: text("custom_domain"), // for custom domains
+  timezone: text("timezone").notNull().default("UTC"),
+});
 
 export const workspaceDomain = pgTable(
-  'workspace_domain',
+  "workspace_domain",
   {
-    id: text('id')
+    id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
-    workspaceId: text('workspace_id')
+    workspaceId: text("workspace_id")
       .notNull()
-      .references(() => workspace.id, { onDelete: 'cascade' }),
+      .references(() => workspace.id, { onDelete: "cascade" }),
     // Full host, e.g., "feedback.mantlz.com"
-    host: text('host').notNull().unique(),
+    host: text("host").notNull().unique(),
     // Subdomain label, e.g., "feedback"
-    cnameName: text('cname_name').notNull().default('feedback'),
+    cnameName: text("cname_name").notNull().default("feedback"),
     // Target to point CNAME to, e.g., "origin.featul.com"
-    cnameTarget: text('cname_target').notNull().default('origin.featul.com'),
+    cnameTarget: text("cname_target").notNull().default("origin.featul.com"),
     // TXT verification record name, e.g., "_acme-challenge.feedback.mantlz.com"
-    txtName: text('txt_name').notNull(),
+    txtName: text("txt_name").notNull(),
     // TXT verification token/value
-    txtValue: text('txt_value').notNull(),
-    status: text('status', { enum: ['pending', 'verified', 'error'] }).notNull().default('pending'),
-    lastVerifiedAt: timestamp('last_verified_at'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
+    txtValue: text("txt_value").notNull(),
+    status: text("status", { enum: ["pending", "verified", "error"] })
+      .notNull()
+      .default("pending"),
+    lastVerifiedAt: timestamp("last_verified_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
-  (table) => ({
-    workspaceDomainWorkspaceUnique: uniqueIndex('workspace_domain_workspace_unique').on(table.workspaceId),
-    workspaceDomainWorkspaceIdx: index('workspace_domain_workspace_idx').on(table.workspaceId),
-  } as const)
-)
+  (table) =>
+    ({
+      workspaceDomainWorkspaceUnique: uniqueIndex(
+        "workspace_domain_workspace_unique",
+      ).on(table.workspaceId),
+      workspaceDomainWorkspaceIdx: index("workspace_domain_workspace_idx").on(
+        table.workspaceId,
+      ),
+    }) as const,
+);
 
-export const workspaceMember = pgTable('workspace_member', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createId()),
-  workspaceId: text('workspace_id')
-    .notNull()
-    .references(() => workspace.id, { onDelete: 'cascade' }),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
-  role: text('role', { enum: ['admin', 'member', 'viewer'] })
-    .notNull()
-    .default('member'),
-  permissions: json('permissions')
-    .$type<{
-      canManageWorkspace: boolean
-      canManageBilling: boolean
-      canManageMembers: boolean
-      canManageBoards: boolean
-      canModerateAllBoards: boolean
-      canConfigureBranding: boolean
-    }>()
-    .notNull()
-    .default({
-      canManageWorkspace: false,
-      canManageBilling: false,
-      canManageMembers: false,
-      canManageBoards: false,
-      canModerateAllBoards: false,
-      canConfigureBranding: false,
-    }),
-  invitedBy: text('invited_by')
-    .references(() => user.id),
-  invitedAt: timestamp('invited_at'),
-  joinedAt: timestamp('joined_at'),
-  isActive: boolean('is_active').default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
-},
-  (table) => ({
-    workspaceMemberUnique: uniqueIndex('workspace_member_workspace_user_unique').on(
-      table.workspaceId,
-      table.userId,
-    ),
-    workspaceMemberWorkspaceIdx: index('workspace_member_workspace_idx').on(table.workspaceId),
-    workspaceMemberActiveIdx: index('workspace_member_workspace_active_idx').on(table.workspaceId, table.isActive),
-  } as const)
-)
+export const workspaceMember = pgTable(
+  "workspace_member",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspace.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    role: text("role", { enum: ["admin", "member", "viewer"] })
+      .notNull()
+      .default("member"),
+    permissions: json("permissions")
+      .$type<{
+        canManageWorkspace: boolean;
+        canManageBilling: boolean;
+        canManageMembers: boolean;
+        canManageBoards: boolean;
+        canModerateAllBoards: boolean;
+        canConfigureBranding: boolean;
+      }>()
+      .notNull()
+      .default({
+        canManageWorkspace: false,
+        canManageBilling: false,
+        canManageMembers: false,
+        canManageBoards: false,
+        canModerateAllBoards: false,
+        canConfigureBranding: false,
+      }),
+    invitedBy: text("invited_by").references(() => user.id),
+    invitedAt: timestamp("invited_at"),
+    joinedAt: timestamp("joined_at"),
+    isActive: boolean("is_active").default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) =>
+    ({
+      workspaceMemberUnique: uniqueIndex(
+        "workspace_member_workspace_user_unique",
+      ).on(table.workspaceId, table.userId),
+      workspaceMemberWorkspaceIdx: index("workspace_member_workspace_idx").on(
+        table.workspaceId,
+      ),
+      workspaceMemberActiveIdx: index(
+        "workspace_member_workspace_active_idx",
+      ).on(table.workspaceId, table.isActive),
+    }) as const,
+);
 
 export const workspaceInvite = pgTable(
-  'workspace_invite',
+  "workspace_invite",
   {
-    id: text('id')
+    id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
-    workspaceId: text('workspace_id')
+    workspaceId: text("workspace_id")
       .notNull()
-      .references(() => workspace.id, { onDelete: 'cascade' }),
-    email: text('email').notNull(),
-    role: text('role', { enum: ['admin', 'member', 'viewer'] })
+      .references(() => workspace.id, { onDelete: "cascade" }),
+    email: text("email").notNull(),
+    role: text("role", { enum: ["admin", "member", "viewer"] })
       .notNull()
-      .default('member'),
-    invitedBy: text('invited_by')
+      .default("member"),
+    invitedBy: text("invited_by")
       .notNull()
       .references(() => user.id),
-    token: text('token').notNull().unique(),
-    expiresAt: timestamp('expires_at').notNull(),
-    acceptedAt: timestamp('accepted_at'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
+    token: text("token").notNull().unique(),
+    expiresAt: timestamp("expires_at").notNull(),
+    acceptedAt: timestamp("accepted_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => ({
-    workspaceInviteEmailUnique: uniqueIndex('workspace_invite_workspace_email_unique').on(
-      table.workspaceId,
-      table.email,
-    ),
-    workspaceInviteWorkspaceIdx: index('workspace_invite_workspace_idx').on(table.workspaceId),
-    workspaceInviteActiveIdx: index('workspace_invite_workspace_active_idx').on(table.workspaceId, table.expiresAt, table.acceptedAt),
-  } as const)
-)
+  (table) =>
+    ({
+      workspaceInviteEmailUnique: uniqueIndex(
+        "workspace_invite_workspace_email_unique",
+      ).on(table.workspaceId, table.email),
+      workspaceInviteWorkspaceIdx: index("workspace_invite_workspace_idx").on(
+        table.workspaceId,
+      ),
+      workspaceInviteActiveIdx: index(
+        "workspace_invite_workspace_active_idx",
+      ).on(table.workspaceId, table.expiresAt, table.acceptedAt),
+    }) as const,
+);
 
-export type Workspace = typeof workspace.$inferSelect
-export type WorkspaceMember = typeof workspaceMember.$inferSelect
-export type WorkspaceInvite = typeof workspaceInvite.$inferSelect
-export type WorkspaceDomain = typeof workspaceDomain.$inferSelect
+export type Workspace = typeof workspace.$inferSelect;
+export type WorkspaceMember = typeof workspaceMember.$inferSelect;
+export type WorkspaceInvite = typeof workspaceInvite.$inferSelect;
+export type WorkspaceDomain = typeof workspaceDomain.$inferSelect;

@@ -8,6 +8,7 @@ import {
   FRAME_SOURCE,
   HOST_SOURCE,
   createWidgetEnvelope,
+  isExpectedWidgetMessageSource,
   readWidgetMessage,
   type WidgetHostEvent,
 } from "../protocol";
@@ -61,7 +62,9 @@ function boot() {
   window.__featulWidgetLoaded = true;
 
   const script = document.currentScript as HTMLScriptElement | null;
-  const baseUrl = script?.src ? new URL(script.src).origin : window.location.origin;
+  const baseUrl = script?.src
+    ? new URL(script.src).origin
+    : window.location.origin;
 
   const state: WidgetState = {
     projectId: null,
@@ -95,7 +98,8 @@ function boot() {
 
   function resolveTheme(mode?: FeatulWidgetOptions["theme"]) {
     if (mode === "light" || mode === "dark") return mode;
-    if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) return "dark";
+    if (window.matchMedia?.("(prefers-color-scheme: dark)").matches)
+      return "dark";
     return "light";
   }
 
@@ -112,7 +116,8 @@ function boot() {
       state.button.style.background = panelBackground();
       state.button.style.color = launcherForeground();
     }
-    if (state.shell && !state.open) state.shell.style.background = panelBackground();
+    if (state.shell && !state.open)
+      state.shell.style.background = panelBackground();
   }
 
   function syncTheme() {
@@ -121,7 +126,8 @@ function boot() {
       state.iframe.style.background = panelBackground();
       state.iframe.style.colorScheme = state.theme;
     }
-    if (state.shell && state.open) state.shell.style.background = panelBackground();
+    if (state.shell && state.open)
+      state.shell.style.background = panelBackground();
     syncLauncherTheme();
   }
 
@@ -154,12 +160,19 @@ function boot() {
         top: Math.round(vv.offsetTop || 0),
       };
     }
-    return { width: window.innerWidth, height: window.innerHeight, left: 0, top: 0 };
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      left: 0,
+      top: 0,
+    };
   }
 
   function isFullscreenPanel() {
     const view = getViewport();
-    return view.width < FULLSCREEN_MAX_WIDTH || view.height < FULLSCREEN_MAX_HEIGHT;
+    return (
+      view.width < FULLSCREEN_MAX_WIDTH || view.height < FULLSCREEN_MAX_HEIGHT
+    );
   }
 
   function panelCornerRadius() {
@@ -196,16 +209,32 @@ function boot() {
   function getPanelRect(position: "left" | "right"): Rect {
     const view = getViewport();
     if (isFullscreenPanel()) {
-      return { left: view.left, top: view.top, width: view.width, height: view.height };
+      return {
+        left: view.left,
+        top: view.top,
+        width: view.width,
+        height: view.height,
+      };
     }
     const preferredWidth = state.expanded ? PANEL_WIDTH_EXPANDED : PANEL_WIDTH;
-    const preferredHeight = state.expanded ? PANEL_HEIGHT_EXPANDED : PANEL_HEIGHT;
-    const width = Math.min(preferredWidth, Math.max(280, view.width - PANEL_GUTTER * 2));
+    const preferredHeight = state.expanded
+      ? PANEL_HEIGHT_EXPANDED
+      : PANEL_HEIGHT;
+    const width = Math.min(
+      preferredWidth,
+      Math.max(280, view.width - PANEL_GUTTER * 2),
+    );
     const heightPad = state.expanded ? 24 : 40;
-    const height = Math.min(preferredHeight, Math.max(360, view.height - heightPad));
+    const height = Math.min(
+      preferredHeight,
+      Math.max(360, view.height - heightPad),
+    );
     const gutter = PANEL_GUTTER;
     return {
-      left: position === "left" ? view.left + gutter : view.left + view.width - width - gutter,
+      left:
+        position === "left"
+          ? view.left + gutter
+          : view.left + view.width - width - gutter,
       top: view.top + view.height - height - gutter,
       width,
       height,
@@ -214,9 +243,12 @@ function boot() {
 
   function isWidgetHostNode(node: Node | null) {
     if (!node || !("nodeType" in node)) return false;
-    if (node === state.button || node === state.shell || node === state.iframe) return true;
-    if (state.button && node instanceof Node && state.button.contains(node)) return true;
-    if (state.shell && node instanceof Node && state.shell.contains(node)) return true;
+    if (node === state.button || node === state.shell || node === state.iframe)
+      return true;
+    if (state.button && node instanceof Node && state.button.contains(node))
+      return true;
+    if (state.shell && node instanceof Node && state.shell.contains(node))
+      return true;
     return false;
   }
 
@@ -245,10 +277,18 @@ function boot() {
     return Number.isFinite(value) ? value : 0;
   }
 
-  function dockClearanceFromNode(node: Element | null, view: ReturnType<typeof getViewport>) {
+  function dockClearanceFromNode(
+    node: Element | null,
+    view: ReturnType<typeof getViewport>,
+  ) {
     let current: Element | null = node;
     let depth = 0;
-    while (current && current !== document.body && current !== document.documentElement && depth < 10) {
+    while (
+      current &&
+      current !== document.body &&
+      current !== document.documentElement &&
+      depth < 10
+    ) {
       if (isWidgetHostNode(current)) return 0;
       const style = window.getComputedStyle(current);
       if (style.display === "none" || style.visibility === "hidden") return 0;
@@ -259,7 +299,10 @@ function boot() {
         const notFullBleed = rect.height >= 36 && rect.height <= maxHeight;
         const wide = rect.width >= Math.min(view.width * 0.42, 160);
         if (atBottom && notFullBleed && wide) {
-          return Math.min(maxHeight, Math.max(0, view.top + view.height - rect.top));
+          return Math.min(
+            maxHeight,
+            Math.max(0, view.top + view.height - rect.top),
+          );
         }
       }
       current = current.parentElement;
@@ -286,7 +329,10 @@ function boot() {
     if (state.button) state.button.style.pointerEvents = "none";
     try {
       for (const sample of samples) {
-        const stack = document.elementsFromPoint(sample[0] || 0, sample[1] || 0);
+        const stack = document.elementsFromPoint(
+          sample[0] || 0,
+          sample[1] || 0,
+        );
         for (const el of stack) {
           const lift = dockClearanceFromNode(el, view);
           if (lift > clearance) clearance = lift;
@@ -303,7 +349,10 @@ function boot() {
     const sideKey = state.position === "left" ? "left" : "right";
     const side = PANEL_GUTTER + readSafeInset(sideKey) + optionOffset(sideKey);
     const obstacle = measureBottomDockClearance();
-    const bottom = PANEL_GUTTER + Math.max(readSafeInset("bottom"), obstacle) + optionOffset("bottom");
+    const bottom =
+      PANEL_GUTTER +
+      Math.max(readSafeInset("bottom"), obstacle) +
+      optionOffset("bottom");
     return { bottom, side };
   }
 
@@ -335,7 +384,12 @@ function boot() {
     if (state.button) {
       const rect = state.button.getBoundingClientRect();
       if (rect.width && rect.height) {
-        return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+        return {
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+        };
       }
     }
     const view = getViewport();
@@ -394,7 +448,9 @@ function boot() {
   }
 
   function prefersReducedMotion() {
-    return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+    return Boolean(
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+    );
   }
 
   function iframeRestTransition() {
@@ -435,7 +491,8 @@ function boot() {
   }
 
   function closeImageLightbox() {
-    const closer = (window as Window & { __featulCloseHostImage?: () => void }).__featulCloseHostImage;
+    const closer = (window as Window & { __featulCloseHostImage?: () => void })
+      .__featulCloseHostImage;
     if (typeof closer === "function") closer();
     if (!state.lightbox) return;
     const nodes =
@@ -453,8 +510,11 @@ function boot() {
 
   function openImageLightbox(url: string, alt: string) {
     if (!url.startsWith("http://") && !url.startsWith("https://")) return;
-    const opener = (window as Window & { __featulOpenHostImage?: (url: string, alt: string) => void })
-      .__featulOpenHostImage;
+    const opener = (
+      window as Window & {
+        __featulOpenHostImage?: (url: string, alt: string) => void;
+      }
+    ).__featulOpenHostImage;
     if (typeof opener === "function") {
       closeImageLightbox();
       opener(url, alt || "");
@@ -478,7 +538,8 @@ function boot() {
     const img = document.createElement("img");
     img.src = url;
     img.alt = alt || "";
-    img.style.cssText = "max-height:80dvh;width:100%;object-fit:contain;display:block;";
+    img.style.cssText =
+      "max-height:80dvh;width:100%;object-fit:contain;display:block;";
     overlay.onclick = () => closeImageLightbox();
     dialog.onclick = (event) => event.stopPropagation();
     dialog.appendChild(img);
@@ -490,9 +551,17 @@ function boot() {
 
   function setButtonHidden(hidden: boolean) {
     if (!state.button) return;
-    state.button.style.setProperty("display", hidden ? "none" : "inline-flex", "important");
+    state.button.style.setProperty(
+      "display",
+      hidden ? "none" : "inline-flex",
+      "important",
+    );
     state.button.style.setProperty("opacity", hidden ? "0" : "1", "important");
-    state.button.style.setProperty("pointer-events", hidden ? "none" : "auto", "important");
+    state.button.style.setProperty(
+      "pointer-events",
+      hidden ? "none" : "auto",
+      "important",
+    );
   }
 
   function syncButtonVisibility() {
@@ -520,7 +589,6 @@ function boot() {
       "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox",
     );
     iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
-    iframe.setAttribute("allow", "clipboard-write");
     iframe.style.position = "fixed";
     iframe.style.border = "0";
     iframe.style.borderRadius = panelCornerRadius();
@@ -705,7 +773,10 @@ function boot() {
       if (state.open || state.animating) return;
       scheduleLauncherPlacement();
     });
-    state.dockObserver.observe(document.body, { childList: true, subtree: true });
+    state.dockObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
   }
 
   function onViewportChange() {
@@ -729,22 +800,37 @@ function boot() {
 
   window.addEventListener("message", (event) => {
     if (event.origin !== baseUrl) return;
+    if (
+      !state.iframe ||
+      !isExpectedWidgetMessageSource(event.source, state.iframe.contentWindow)
+    ) {
+      return;
+    }
     const data = readWidgetMessage(event.data, FRAME_SOURCE);
     if (!data) return;
     if (data.type === "ready") {
       state.ready = true;
       if (state.user) post("identify", state.user);
-      post("theme", { mode: state.options.theme || "auto", theme: state.theme });
+      post("theme", {
+        mode: state.options.theme || "auto",
+        theme: state.theme,
+      });
       post("layout", { fullscreen: isFullscreenPanel() });
       flush();
       if (state.open) post("show", {});
       emit("ready");
     }
-    if (data.type === "theme" && data.payload && typeof data.payload === "object" && "theme" in data.payload) {
+    if (
+      data.type === "theme" &&
+      data.payload &&
+      typeof data.payload === "object" &&
+      "theme" in data.payload
+    ) {
       const theme = (data.payload as { theme?: string }).theme;
       state.theme = theme === "light" ? "light" : "dark";
       if (state.iframe) state.iframe.style.colorScheme = state.theme;
-      if (state.shell && state.open) state.shell.style.background = panelBackground();
+      if (state.shell && state.open)
+        state.shell.style.background = panelBackground();
       syncLauncherTheme();
     }
     if (data.type === "close") {
@@ -752,9 +838,21 @@ function boot() {
       setOpen(false);
     }
     if (data.type === "panel") {
-      setPanelExpanded(Boolean(data.payload && typeof data.payload === "object" && "expanded" in data.payload && (data.payload as { expanded?: unknown }).expanded));
+      setPanelExpanded(
+        Boolean(
+          data.payload &&
+            typeof data.payload === "object" &&
+            "expanded" in data.payload &&
+            (data.payload as { expanded?: unknown }).expanded,
+        ),
+      );
     }
-    if (data.type === "open-image" && data.payload && typeof data.payload === "object" && "url" in data.payload) {
+    if (
+      data.type === "open-image" &&
+      data.payload &&
+      typeof data.payload === "object" &&
+      "url" in data.payload
+    ) {
       const payload = data.payload as { url?: string; alt?: string };
       if (payload.url) openImageLightbox(payload.url, payload.alt || "");
     }
@@ -772,7 +870,11 @@ function boot() {
       buildFrame();
       bindDockObserver();
       applyLauncherPlacement();
-      if (state.ready) post("theme", { mode: state.options.theme || "auto", theme: state.theme });
+      if (state.ready)
+        post("theme", {
+          mode: state.options.theme || "auto",
+          theme: state.theme,
+        });
     },
     identify(user) {
       state.user = user || null;
@@ -823,9 +925,9 @@ function boot() {
     if (!Array.isArray(call)) continue;
     const method = call[0];
     if (typeof method === "string" && method in api) {
-      (api as unknown as Record<string, (...args: unknown[]) => void>)[method]?.(
-        ...(call.slice(1) as unknown[]),
-      );
+      (api as unknown as Record<string, (...args: unknown[]) => void>)[
+        method
+      ]?.(...(call.slice(1) as unknown[]));
     }
   }
 }

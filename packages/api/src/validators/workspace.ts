@@ -1,37 +1,43 @@
-import { z } from "zod"
-import { domainUrlSchema, isDomainHostValid } from "./domain"
-import { isReservedWorkspaceName, isReservedWorkspaceSlug } from "../shared/workspace-slug"
+import { z } from "zod";
+import { domainUrlSchema, isDomainHostValid } from "./domain";
+import {
+  isReservedWorkspaceName,
+  isReservedWorkspaceSlug,
+} from "../shared/workspace-slug";
 
 export const slugSchema = z
   .string()
   .min(5)
   .max(32)
-  .regex(/^[a-z]+$/, "Slug must contain only lowercase letters")
+  .regex(/^[a-z]+$/, "Slug must contain only lowercase letters");
 
-const creatableSlugSchema = slugSchema.refine((slug) => !isReservedWorkspaceSlug(slug), {
-  message: "Slug is reserved",
-})
+const creatableSlugSchema = slugSchema.refine(
+  (slug) => !isReservedWorkspaceSlug(slug),
+  {
+    message: "Slug is reserved",
+  },
+);
 
-const workspaceNameSchema = z.string().trim().min(1).max(15)
+const workspaceNameSchema = z.string().trim().min(1).max(15);
 const creatableWorkspaceNameSchema = workspaceNameSchema.refine(
   (name) => !isReservedWorkspaceName(name),
-  { message: "Workspace name is reserved" }
-)
+  { message: "Workspace name is reserved" },
+);
 
 export const workspaceSlugInputSchema = z.object({
   slug: slugSchema,
-})
+});
 
 export const checkSlugInputSchema = z.object({
   slug: slugSchema,
-})
+});
 
 export const createWorkspaceInputSchema = z.object({
   name: creatableWorkspaceNameSchema,
   domain: domainUrlSchema,
   slug: creatableSlugSchema,
   timezone: z.string().min(1),
-})
+});
 
 export const updateCustomDomainInputSchema = z.object({
   slug: slugSchema,
@@ -44,35 +50,45 @@ export const updateCustomDomainInputSchema = z.object({
     .refine((value) => value === undefined || isDomainHostValid(value), {
       message: "Invalid domain host",
     }),
-})
+});
 
 export const createDomainInputSchema = z.object({
   slug: slugSchema,
   domain: domainUrlSchema,
-})
+});
 
 export const verifyDomainInputSchema = z.object({
   slug: slugSchema,
   checkDns: z.boolean().default(true),
-})
+});
 
 export const updateWorkspaceNameInputSchema = z.object({
   slug: slugSchema,
   name: creatableWorkspaceNameSchema,
-})
+});
 
 export const deleteWorkspaceInputSchema = z.object({
   slug: slugSchema,
   // Name must be provided and will be validated server-side against the actual workspace name
   confirmName: z.string().trim().min(1),
-})
+});
 
 export const importCsvInputSchema = z.object({
   slug: slugSchema,
   csvContent: z.string().max(10_000_000, "CSV payload too large"),
-})
+});
 
 export const updateTimezoneInputSchema = z.object({
   slug: slugSchema,
   timezone: z.string().min(1),
-})
+});
+
+export const updateWidgetInputSchema = z.object({
+  slug: slugSchema,
+  origins: z.array(z.string().trim().url().max(2048)).max(20),
+});
+
+export const rotateWidgetInputSchema = z.object({
+  slug: slugSchema,
+  confirmation: z.literal("rotate"),
+});

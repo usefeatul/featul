@@ -11,10 +11,11 @@ export type Board = {
 
 export type IdentifiedUser = {
   id: string;
-  email?: string;
+  email: string;
   name?: string;
   avatar?: string;
-  signature?: string;
+  expiresAt: number;
+  signature: string;
 };
 
 export type WidgetPost = {

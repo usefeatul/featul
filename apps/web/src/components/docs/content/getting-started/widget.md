@@ -16,10 +16,17 @@ Add the loader and initialize Featul with your Workspace ID:
 ```html
 <script>
   window.$featulq = window.$featulq || [];
-  window.featul = window.featul || new Proxy({}, {
-    get: (_, method) => (...args) =>
-      window.$featulq.push([method, ...args])
-  });
+  window.featul =
+    window.featul ||
+    new Proxy(
+      {},
+      {
+        get:
+          (_, method) =>
+          (...args) =>
+            window.$featulq.push([method, ...args]),
+      },
+    );
 </script>
 
 <script async src="https://app.featul.com/widget/sdk/v1.js"></script>
@@ -28,7 +35,7 @@ Add the loader and initialize Featul with your Workspace ID:
   featul.init("YOUR_WORKSPACE_ID", {
     widget: true,
     theme: "auto",
-    position: "right"
+    position: "right",
   });
 </script>
 ```
@@ -39,21 +46,21 @@ The loader is asynchronous. Calls made before it finishes are queued automatical
 
 `featul.init(workspaceId, options)` supports:
 
-| Option | Values | Default |
-|--------|--------|---------|
-| `widget` | `true`, `false` | `true` |
-| `theme` | `"light"`, `"dark"`, `"auto"` | `"auto"` |
-| `position` | `"left"`, `"right"` | `"right"` |
-| `trigger` | `"default"`, `"custom"` | `"default"` |
-| `defaultSection` | `"home"`, `"feedback"`, `"roadmap"`, `"changelog"` | `"home"` |
-| `offset` | `{ bottom, left, right }` | none |
+| Option           | Values                                             | Default     |
+| ---------------- | -------------------------------------------------- | ----------- |
+| `widget`         | `true`, `false`                                    | `true`      |
+| `theme`          | `"light"`, `"dark"`, `"auto"`                      | `"auto"`    |
+| `position`       | `"left"`, `"right"`                                | `"right"`   |
+| `trigger`        | `"default"`, `"custom"`                            | `"default"` |
+| `defaultSection` | `"home"`, `"feedback"`, `"roadmap"`, `"changelog"` | `"home"`    |
+| `offset`         | `{ bottom, left, right }`                          | none        |
 
 Use `trigger: "custom"` when your own button should open the widget:
 
 ```js
 featul.init("YOUR_WORKSPACE_ID", {
   trigger: "custom",
-  defaultSection: "feedback"
+  defaultSection: "feedback",
 });
 
 document.querySelector("#feedback-button").addEventListener("click", () => {
@@ -75,11 +82,18 @@ export function createFeatulIdentity(user: {
   image?: string;
 }) {
   const email = user.email.trim().toLowerCase();
-  const signature = createHmac(
-    "sha256",
-    process.env.FEATUL_WIDGET_SECRET!,
-  )
-    .update(`${user.id}:${email}`)
+  const expiresAt = Math.floor(Date.now() / 1000) + 5 * 60;
+  const payload = JSON.stringify([
+    1,
+    process.env.FEATUL_WORKSPACE_ID!.trim(),
+    user.id.trim(),
+    email,
+    user.name?.trim() || "",
+    user.image?.trim() || "",
+    expiresAt,
+  ]);
+  const signature = createHmac("sha256", process.env.FEATUL_WIDGET_SECRET!)
+    .update(payload)
     .digest("hex");
 
   return {
@@ -87,6 +101,7 @@ export function createFeatulIdentity(user: {
     email,
     name: user.name,
     avatar: user.image,
+    expiresAt,
     signature,
   };
 }
@@ -108,7 +123,8 @@ Clear the identity when the user logs out:
 window.featul?.identify(null);
 ```
 
-Unsigned or invalid identities are treated as guests.
+Unsigned, expired, modified, or invalid identities are treated as guests. Generate a fresh identity
+after login and whenever the five-minute signature expires.
 
 > Never include the Widget secret in browser code, public environment variables, or the embed snippet. Only the signed identity object is sent to the browser.
 
@@ -159,6 +175,7 @@ type FeatulWidgetApi = {
 ## Production checklist
 
 - Keep the Widget secret on your server.
+- Add every customer-app origin under **Settings → Workspace → Embed widget**.
 - Call `identify` after login and `identify(null)` after logout.
 - Use the versioned `/widget/sdk/v1.js` URL.
 - Test the launcher on desktop and mobile layouts.

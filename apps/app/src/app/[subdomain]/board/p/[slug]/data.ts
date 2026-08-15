@@ -1,4 +1,4 @@
-import { db, board, post, user, workspaceMember } from "@featul/db";
+import { db, board, post, user, widgetUser, workspaceMember } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { getServerSession } from "@featul/auth/session";
 import { readHasVotedForPost } from "@/lib/vote.server";
@@ -36,13 +36,11 @@ type RawPostRow = Omit<
   createdAt: string | Date;
   publishedAt: string | Date | null;
   metadata: Record<string, unknown> | null;
-  author:
-    | {
-        name: string | null;
-        image: string | null;
-        email: string | null;
-      }
-    | null;
+  author: {
+    name: string | null;
+    image: string | null;
+    email: string | null;
+  } | null;
 };
 
 function toIsoString(value: string | Date): string {
@@ -92,8 +90,8 @@ export async function loadPublicBoardRequestDetailPageData({
             and(
               eq(workspaceMember.workspaceId, ws.id),
               eq(workspaceMember.userId, userId),
-              eq(workspaceMember.isActive, true)
-            )
+              eq(workspaceMember.isActive, true),
+            ),
           )
           .limit(1);
         const perms = (member?.permissions || {}) as Record<string, boolean>;
@@ -118,7 +116,10 @@ export async function loadPublicBoardRequestDetailPageData({
   const isOwner = !!rawPost.authorId && rawPost.authorId === ws.ownerId;
 
   const hasVoted = await readHasVotedForPost(rawPost.id);
-  const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id, "public");
+  const { initialComments, initialCollapsedIds } = await loadPostComments(
+    rawPost.id,
+    "public",
+  );
 
   const post: SubdomainRequestDetailData = {
     id: postWithAuthor.id,
@@ -134,7 +135,8 @@ export async function loadPublicBoardRequestDetailPageData({
     boardName: postWithAuthor.boardName,
     boardSlug: postWithAuthor.boardSlug,
     allowComments: postWithAuthor.allowComments ?? undefined,
-    hidePublicMemberIdentity: postWithAuthor.hidePublicMemberIdentity ?? undefined,
+    hidePublicMemberIdentity:
+      postWithAuthor.hidePublicMemberIdentity ?? undefined,
     role: postWithAuthor.role ?? null,
     duplicateOfId: postWithAuthor.duplicateOfId ?? null,
     mergedCount: postWithAuthor.mergedCount ?? 0,
@@ -160,28 +162,32 @@ export async function loadPublicBoardRequestDetailPageData({
 
 async function loadPostWithAuthorAndBoard(
   workspaceId: string,
-  postSlug: string
+  postSlug: string,
 ): Promise<RawPostRow | null> {
   const [p] = await db
     .select(
       buildPostSelect({
         hidePublicMemberIdentity: board.hidePublicMemberIdentity,
         role: workspaceMember.role,
-      })
+      }),
     )
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
     .leftJoin(user, eq(post.authorId, user.id))
+    .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
     .leftJoin(
       workspaceMember,
-      and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, workspaceId))
+      and(
+        eq(workspaceMember.userId, post.authorId),
+        eq(workspaceMember.workspaceId, workspaceId),
+      ),
     )
     .where(
       and(
         eq(board.workspaceId, workspaceId),
         sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
-        eq(post.slug, postSlug)
-      )
+        eq(post.slug, postSlug),
+      ),
     )
     .limit(1);
 

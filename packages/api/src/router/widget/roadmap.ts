@@ -1,16 +1,31 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
-import { board, post, user } from "@featul/db";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
+import { board, post, user, widgetUser } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import { getRequestFingerprint } from "../../shared/request-fingerprint";
-import { getWidgetRequest, loadVotedPostIds, mapWidgetPostRow, resolveViewerId, resolveWidget } from "./resolve";
+import {
+  getWidgetRequest,
+  loadVotedPostIds,
+  mapWidgetPostRow,
+  resolveViewerId,
+  resolveWidget,
+} from "./resolve";
 import { projectInput, viewerSchema } from "./schema";
 
 export const widgetRoadmap = publicProcedure
   .input(projectInput.merge(viewerSchema))
   .get(async ({ ctx, input, c }) => {
-    const resolved = await resolveWidget(ctx, input.projectId);
+    const resolved = await resolveWidget(
+      ctx,
+      input.projectId,
+      input.parentOrigin,
+    );
     const request = getWidgetRequest(c);
-    const viewerId = await resolveViewerId(ctx, input, resolved.widgetSecret);
+    const viewerId = await resolveViewerId(
+      ctx,
+      input,
+      resolved.workspaceId,
+      resolved.widgetSecret,
+    );
     const fingerprint = viewerId
       ? null
       : getRequestFingerprint(request, input.fingerprint);
@@ -25,13 +40,18 @@ export const widgetRoadmap = publicProcedure
         roadmapStatus: post.roadmapStatus,
         createdAt: post.createdAt,
         isAnonymous: post.isAnonymous,
-        authorName: user.name,
-        authorImage: user.image,
+        authorName: sql<
+          string | null
+        >`coalesce(${widgetUser.name}, ${user.name})`,
+        authorImage: sql<
+          string | null
+        >`coalesce(${widgetUser.image}, ${user.image})`,
         metadata: post.metadata,
       })
       .from(post)
       .innerJoin(board, eq(post.boardId, board.id))
       .leftJoin(user, eq(post.authorId, user.id))
+      .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
       .where(
         and(
           eq(board.workspaceId, resolved.workspaceId),
@@ -46,7 +66,7 @@ export const widgetRoadmap = publicProcedure
     const votedIds = await loadVotedPostIds(
       ctx,
       rows.map((row: { id: string }) => row.id),
-      { userId: viewerId, fingerprint },
+      { widgetUserId: viewerId, fingerprint },
     );
 
     return c.superjson({

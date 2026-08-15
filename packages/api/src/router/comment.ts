@@ -8,6 +8,7 @@ import {
   post,
   board,
   user,
+  widgetUser,
   workspace,
   workspaceMember,
   activityLog,
@@ -101,8 +102,8 @@ export function createCommentRouter() {
                 and(
                   eq(workspaceMember.workspaceId, targetPost.workspaceId),
                   eq(workspaceMember.userId, memberUserId),
-                  eq(workspaceMember.isActive, true)
-                )
+                  eq(workspaceMember.isActive, true),
+                ),
               )
               .limit(1);
             return Boolean(membership?.userId);
@@ -112,7 +113,9 @@ export function createCommentRouter() {
         const includeInternal = surface === "workspace" && canViewInternal;
 
         if (!targetPost.boardIsPublic && !canViewInternal) {
-          throw new HTTPException(403, { message: "Only workspace members can view comments on this board" });
+          throw new HTTPException(403, {
+            message: "Only workspace members can view comments on this board",
+          });
         }
 
         // Fetch all comments with author info and role
@@ -137,14 +140,19 @@ export function createCommentRouter() {
             updatedAt: comment.updatedAt,
             editedAt: comment.editedAt,
             metadata: comment.metadata,
-            userName: user.name,
-            userImage: user.image,
+            userName: sql<
+              string | null
+            >`coalesce(${widgetUser.name}, ${user.name})`,
+            userImage: sql<
+              string | null
+            >`coalesce(${widgetUser.image}, ${user.image})`,
             memberRole: workspaceMember.role,
             workspaceOwnerId: workspace.ownerId,
             reportCount: sql<number>`(SELECT count(*) FROM ${commentReport} WHERE ${commentReport.commentId} = ${comment.id})`,
           })
           .from(comment)
           .leftJoin(user, eq(comment.authorId, user.id))
+          .leftJoin(widgetUser, eq(comment.widgetUserId, widgetUser.id))
           .leftJoin(post, eq(comment.postId, post.id))
           .leftJoin(board, eq(post.boardId, board.id))
           .leftJoin(workspace, eq(board.workspaceId, workspace.id))
@@ -153,17 +161,17 @@ export function createCommentRouter() {
             and(
               eq(workspaceMember.workspaceId, workspace.id),
               eq(workspaceMember.userId, comment.authorId),
-              eq(workspaceMember.isActive, true)
-            )
+              eq(workspaceMember.isActive, true),
+            ),
           )
           .where(
             includeInternal
               ? and(eq(comment.postId, postId), eq(comment.status, "published"))
               : and(
-                eq(comment.postId, postId),
-                eq(comment.status, "published"),
-                eq(comment.isInternal, false)
-              )
+                  eq(comment.postId, postId),
+                  eq(comment.status, "published"),
+                  eq(comment.isInternal, false),
+                ),
           )
           .orderBy(desc(comment.isPinned), desc(comment.createdAt));
 
@@ -171,50 +179,62 @@ export function createCommentRouter() {
         let userVotes = new Map<string, "upvote" | "downvote">();
         if (userId) {
           const votes = await ctx.db
-            .select({ commentId: commentReaction.commentId, type: commentReaction.type })
+            .select({
+              commentId: commentReaction.commentId,
+              type: commentReaction.type,
+            })
             .from(commentReaction)
             .where(eq(commentReaction.userId, userId));
-          votes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
+          votes.forEach((v: { commentId: string; type: string }) =>
+            userVotes.set(v.commentId, v.type as "upvote" | "downvote"),
+          );
         }
         if (!userId && fingerprint) {
           const anonymousVotes = await ctx.db
-            .select({ commentId: commentReaction.commentId, type: commentReaction.type })
+            .select({
+              commentId: commentReaction.commentId,
+              type: commentReaction.type,
+            })
             .from(commentReaction)
             .where(
               and(
                 isNull(commentReaction.userId),
-                eq(commentReaction.fingerprint, fingerprint)
-              )
+                eq(commentReaction.fingerprint, fingerprint),
+              ),
             );
 
-          anonymousVotes.forEach((v: { commentId: string; type: string }) => userVotes.set(v.commentId, v.type as "upvote" | "downvote"));
+          anonymousVotes.forEach((v: { commentId: string; type: string }) =>
+            userVotes.set(v.commentId, v.type as "upvote" | "downvote"),
+          );
         }
         const toAvatar = (seed?: string | null) =>
           `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
-            (seed || "anonymous").trim() || "anonymous"
+            (seed || "anonymous").trim() || "anonymous",
           )}`;
-        const formattedComments = comments.map((row: (typeof comments)[number]) => {
-          const isOwner = row.workspaceOwnerId === row.authorId;
-          let avatarSeed = row.authorName || row.authorId;
-          const fingerprintFromMetadata = getFingerprintFromMetadata(row.metadata);
-          if (row.isAnonymous && fingerprintFromMetadata) {
-            avatarSeed = createHash("sha256")
-              .update(fingerprintFromMetadata)
-              .digest("hex");
-          }
+        const formattedComments = comments.map(
+          (row: (typeof comments)[number]) => {
+            const isOwner = row.workspaceOwnerId === row.authorId;
+            let avatarSeed = row.authorName || row.authorId;
+            const fingerprintFromMetadata = getFingerprintFromMetadata(
+              row.metadata,
+            );
+            if (row.isAnonymous && fingerprintFromMetadata) {
+              avatarSeed = createHash("sha256")
+                .update(fingerprintFromMetadata)
+                .digest("hex");
+            }
 
-          return {
-            ...row,
-            authorImage:
-              row.userImage ||
-              toAvatar(avatarSeed),
-            authorName: row.userName || row.authorName || "Anonymous",
-            userVote: userVotes.get(row.id) || null,
-            role: isOwner ? null : row.memberRole || null, // null means owner (handled separately)
-            isOwner: Boolean(isOwner),
-            reportCount: row.reportCount ? Number(row.reportCount) : 0,
-          };
-        });
+            return {
+              ...row,
+              authorImage: row.userImage || toAvatar(avatarSeed),
+              authorName: row.userName || row.authorName || "Anonymous",
+              userVote: userVotes.get(row.id) || null,
+              role: isOwner ? null : row.memberRole || null, // null means owner (handled separately)
+              isOwner: Boolean(isOwner),
+              reportCount: row.reportCount ? Number(row.reportCount) : 0,
+            };
+          },
+        );
 
         return c.superjson({ comments: formattedComments });
       }),
@@ -224,7 +244,8 @@ export function createCommentRouter() {
       .input(createCommentInputSchema)
       .post(async ({ ctx, input, c }) => {
         enforceTrustedBrowserOrigin(c.req.raw);
-        const { postId, content, parentId, metadata, fingerprint, isInternal } = input;
+        const { postId, content, parentId, metadata, fingerprint, isInternal } =
+          input;
 
         const userId = await getSessionUserId(c.req.raw.headers);
 
@@ -271,8 +292,8 @@ export function createCommentRouter() {
                 and(
                   eq(workspaceMember.workspaceId, targetPost.workspaceId),
                   eq(workspaceMember.userId, memberUserId),
-                  eq(workspaceMember.isActive, true)
-                )
+                  eq(workspaceMember.isActive, true),
+                ),
               )
               .limit(1);
             return Boolean(membership?.userId);
@@ -281,10 +302,14 @@ export function createCommentRouter() {
 
         if (!targetPost.boardIsPublic) {
           if (!userId) {
-            throw new HTTPException(401, { message: "Please sign in to comment in this workspace" });
+            throw new HTTPException(401, {
+              message: "Please sign in to comment in this workspace",
+            });
           }
           if (!canUseInternal) {
-            throw new HTTPException(403, { message: "Only workspace members can comment in this board" });
+            throw new HTTPException(403, {
+              message: "Only workspace members can comment in this board",
+            });
           }
         }
 
@@ -334,7 +359,8 @@ export function createCommentRouter() {
           }
 
           depth = (parentComment.depth || 0) + 1;
-          resolvedIsInternal = resolvedIsInternal || Boolean(parentComment.isInternal);
+          resolvedIsInternal =
+            resolvedIsInternal || Boolean(parentComment.isInternal);
 
           // Update parent comment reply count
           await ctx.db
@@ -368,7 +394,8 @@ export function createCommentRouter() {
             depth,
             status: "published",
             isInternal: resolvedIsInternal,
-            metadata: Object.keys(commentMetadata).length > 0 ? commentMetadata : null,
+            metadata:
+              Object.keys(commentMetadata).length > 0 ? commentMetadata : null,
             isAnonymous: !userId,
           })
           .returning();
@@ -403,8 +430,8 @@ export function createCommentRouter() {
               .where(
                 and(
                   eq(workspaceMember.workspaceId, targetPost.workspaceId),
-                  eq(workspaceMember.isActive, true)
-                )
+                  eq(workspaceMember.isActive, true),
+                ),
               );
 
             const nameToUserId = new Map<string, string>();
@@ -430,7 +457,7 @@ export function createCommentRouter() {
                 s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
               const pattern = new RegExp(
                 `@(${allNames.map(esc).join("|")})\\b`,
-                "gi"
+                "gi",
               );
 
               let m: RegExpExecArray | null;
@@ -453,7 +480,7 @@ export function createCommentRouter() {
                   commentId: newComment.id,
                   mentionedUserId: uid,
                   mentionedBy: userId!,
-                }))
+                })),
               );
 
               const nextMeta = {
@@ -466,7 +493,7 @@ export function createCommentRouter() {
                 .where(eq(comment.id, newComment.id));
             }
           }
-        } catch { }
+        } catch {}
 
         // Auto-upvote the comment by the author
         await ctx.db.insert(commentReaction).values({
@@ -496,7 +523,7 @@ export function createCommentRouter() {
           comment: {
             ...finalComment,
             hasVoted: true,
-          }
+          },
         });
       }),
 
@@ -613,14 +640,15 @@ export function createCommentRouter() {
             and(
               eq(workspaceMember.workspaceId, target.workspaceId),
               eq(workspaceMember.userId, userId),
-              eq(workspaceMember.isActive, true)
-            )
+              eq(workspaceMember.isActive, true),
+            ),
           )
           .limit(1);
 
         if (!isWorkspaceOwner && !membership?.userId) {
           throw new HTTPException(403, {
-            message: "Only active workspace members can update comment visibility",
+            message:
+              "Only active workspace members can update comment visibility",
           });
         }
 
@@ -646,13 +674,14 @@ export function createCommentRouter() {
               and(
                 eq(comment.parentId, commentId),
                 eq(comment.status, "published"),
-                eq(comment.isInternal, true)
-              )
+                eq(comment.isInternal, true),
+              ),
             );
 
           if (Number(childInternalCount?.count || 0) > 0) {
             throw new HTTPException(400, {
-              message: "Convert internal replies before making this comment external",
+              message:
+                "Convert internal replies before making this comment external",
             });
           }
         }
@@ -677,7 +706,9 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: target.workspaceId,
           userId,
-          action: isInternal ? ACTIVITY_ACTIONS.COMMENT_MARKED_INTERNAL : ACTIVITY_ACTIONS.COMMENT_MARKED_EXTERNAL,
+          action: isInternal
+            ? ACTIVITY_ACTIONS.COMMENT_MARKED_INTERNAL
+            : ACTIVITY_ACTIONS.COMMENT_MARKED_EXTERNAL,
           actionType: "update",
           entity: "comment",
           entityId: String(commentId),
@@ -760,8 +791,8 @@ export function createCommentRouter() {
           .where(
             and(
               eq(comment.postId, existingComment.postId),
-              eq(comment.status, "published")
-            )
+              eq(comment.status, "published"),
+            ),
           );
 
         await ctx.db
@@ -847,8 +878,8 @@ export function createCommentRouter() {
             .where(
               and(
                 eq(commentReaction.commentId, commentId),
-                eq(commentReaction.userId, userId)
-              )
+                eq(commentReaction.userId, userId),
+              ),
             )
             .limit(1);
         } else if (fingerprint) {
@@ -860,8 +891,8 @@ export function createCommentRouter() {
               and(
                 eq(commentReaction.commentId, commentId),
                 isNull(commentReaction.userId),
-                eq(commentReaction.fingerprint, fingerprint)
-              )
+                eq(commentReaction.fingerprint, fingerprint),
+              ),
             )
             .limit(1);
         }
@@ -876,11 +907,16 @@ export function createCommentRouter() {
             const [updatedComment] = await ctx.db
               .update(comment)
               .set({
-                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${voteType === "upvote" ? comment.upvotes : comment.downvotes
+                [voteType === "upvote" ? "upvotes" : "downvotes"]:
+                  sql`greatest(0, ${
+                    voteType === "upvote" ? comment.upvotes : comment.downvotes
                   } - 1)`,
               })
               .where(eq(comment.id, commentId))
-              .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
+              .returning({
+                upvotes: comment.upvotes,
+                downvotes: comment.downvotes,
+              });
 
             if (postInfo.workspaceId) {
               await ctx.db.insert(activityLog).values({
@@ -916,13 +952,21 @@ export function createCommentRouter() {
             const [updatedComment] = await ctx.db
               .update(comment)
               .set({
-                [existingReaction.type === "upvote" ? "upvotes" : "downvotes"]: sql`greatest(0, ${existingReaction.type === "upvote" ? comment.upvotes : comment.downvotes
+                [existingReaction.type === "upvote" ? "upvotes" : "downvotes"]:
+                  sql`greatest(0, ${
+                    existingReaction.type === "upvote"
+                      ? comment.upvotes
+                      : comment.downvotes
                   } - 1)`,
-                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${voteType === "upvote" ? comment.upvotes : comment.downvotes
-                  } + 1`,
+                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
+                  voteType === "upvote" ? comment.upvotes : comment.downvotes
+                } + 1`,
               })
               .where(eq(comment.id, commentId))
-              .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
+              .returning({
+                upvotes: comment.upvotes,
+                downvotes: comment.downvotes,
+              });
 
             if (postInfo.workspaceId) {
               await ctx.db.insert(activityLog).values({
@@ -962,11 +1006,15 @@ export function createCommentRouter() {
           const [updatedComment] = await ctx.db
             .update(comment)
             .set({
-              [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${voteType === "upvote" ? comment.upvotes : comment.downvotes
-                } + 1`,
+              [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
+                voteType === "upvote" ? comment.upvotes : comment.downvotes
+              } + 1`,
             })
             .where(eq(comment.id, commentId))
-            .returning({ upvotes: comment.upvotes, downvotes: comment.downvotes });
+            .returning({
+              upvotes: comment.upvotes,
+              downvotes: comment.downvotes,
+            });
 
           if (postInfo.workspaceId) {
             await ctx.db.insert(activityLog).values({
@@ -1095,7 +1143,7 @@ export function createCommentRouter() {
               itemType: "comment",
               reason,
               description,
-              reportCount
+              reportCount,
             });
           }
         }
@@ -1151,7 +1199,9 @@ export function createCommentRouter() {
         await ctx.db.insert(activityLog).values({
           workspaceId: target.workspaceId,
           userId,
-          action: isPinned ? ACTIVITY_ACTIONS.COMMENT_PINNED : ACTIVITY_ACTIONS.COMMENT_UNPINNED,
+          action: isPinned
+            ? ACTIVITY_ACTIONS.COMMENT_PINNED
+            : ACTIVITY_ACTIONS.COMMENT_UNPINNED,
           actionType: "update",
           entity: "comment",
           entityId: String(commentId),

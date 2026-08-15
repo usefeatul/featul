@@ -1,5 +1,12 @@
 import { extractTextFromTiptap, type TiptapContent } from "@/types/changelog";
-import type { Board, IdentifiedUser, Section, SimilarPost, WidgetComment, WidgetPost } from "./types";
+import type {
+  Board,
+  IdentifiedUser,
+  Section,
+  SimilarPost,
+  WidgetComment,
+  WidgetPost,
+} from "./types";
 import type { WidgetRoadmapItem } from "./roadmap";
 import type { WidgetChangelogEntry } from "./updates";
 import { toShortPreview } from "./utils";
@@ -48,7 +55,11 @@ function asTiptapContent(value: unknown): TiptapContent | string | null {
 
 function mapChangelogTag(value: unknown): ChangelogTag | null {
   if (!isRecord(value)) return null;
-  if (typeof value.id !== "string" || typeof value.name !== "string" || !value.name.trim()) {
+  if (
+    typeof value.id !== "string" ||
+    typeof value.name !== "string" ||
+    !value.name.trim()
+  ) {
     return null;
   }
   return {
@@ -58,17 +69,23 @@ function mapChangelogTag(value: unknown): ChangelogTag | null {
   };
 }
 
-export function mapChangelogEntries(entries: unknown[]): WidgetChangelogEntry[] {
+export function mapChangelogEntries(
+  entries: unknown[],
+): WidgetChangelogEntry[] {
   return entries.map((raw) => {
     const entry = asRecord(raw);
     const author = asAuthor(entry.author);
     const summary = asOptionalString(entry.summary);
     const fromContent = extractTextFromTiptap(asTiptapContent(entry.content));
     const rawPreview =
-      asOptionalString(entry.preview) || summary || (fromContent ? fromContent.trim() : null);
+      asOptionalString(entry.preview) ||
+      summary ||
+      (fromContent ? fromContent.trim() : null);
     const preview = rawPreview ? toShortPreview(rawPreview, 3) : null;
-    const authorName = asOptionalString(entry.authorName) || asOptionalString(author.name);
-    const authorImage = asOptionalString(entry.authorImage) || asOptionalString(author.image);
+    const authorName =
+      asOptionalString(entry.authorName) || asOptionalString(author.name);
+    const authorImage =
+      asOptionalString(entry.authorImage) || asOptionalString(author.image);
     const authorIsOwner = Boolean(entry.authorIsOwner ?? author.isOwner);
     const authorRole =
       (typeof entry.authorRole === "string" ? entry.authorRole : null) ||
@@ -86,7 +103,9 @@ export function mapChangelogEntries(entries: unknown[]): WidgetChangelogEntry[] 
               ? "Viewer"
               : null);
     const tags = Array.isArray(entry.tags)
-      ? entry.tags.map(mapChangelogTag).filter((tag): tag is ChangelogTag => tag !== null)
+      ? entry.tags
+          .map(mapChangelogTag)
+          .filter((tag): tag is ChangelogTag => tag !== null)
       : [];
 
     return {
@@ -128,8 +147,10 @@ export function parseWidgetPost(value: unknown): WidgetPost | null {
     content: typeof value.content === "string" ? value.content : null,
     image: typeof value.image === "string" ? value.image : null,
     upvotes: typeof value.upvotes === "number" ? value.upvotes : null,
-    commentCount: typeof value.commentCount === "number" ? value.commentCount : null,
-    roadmapStatus: typeof value.roadmapStatus === "string" ? value.roadmapStatus : null,
+    commentCount:
+      typeof value.commentCount === "number" ? value.commentCount : null,
+    roadmapStatus:
+      typeof value.roadmapStatus === "string" ? value.roadmapStatus : null,
     createdAt:
       value.createdAt instanceof Date || typeof value.createdAt === "string"
         ? value.createdAt
@@ -137,9 +158,11 @@ export function parseWidgetPost(value: unknown): WidgetPost | null {
     boardId: value.boardId,
     boardName: typeof value.boardName === "string" ? value.boardName : null,
     boardSlug: typeof value.boardSlug === "string" ? value.boardSlug : null,
-    isAnonymous: typeof value.isAnonymous === "boolean" ? value.isAnonymous : null,
+    isAnonymous:
+      typeof value.isAnonymous === "boolean" ? value.isAnonymous : null,
     authorName: typeof value.authorName === "string" ? value.authorName : null,
-    authorImage: typeof value.authorImage === "string" ? value.authorImage : null,
+    authorImage:
+      typeof value.authorImage === "string" ? value.authorImage : null,
     hasVoted: Boolean(value.hasVoted),
   };
 }
@@ -176,7 +199,8 @@ export function parseWidgetComment(value: unknown): WidgetComment | null {
     content: value.content,
     image: typeof value.image === "string" ? value.image : null,
     authorName: value.authorName,
-    authorImage: typeof value.authorImage === "string" ? value.authorImage : null,
+    authorImage:
+      typeof value.authorImage === "string" ? value.authorImage : null,
     isAnonymous: Boolean(value.isAnonymous),
     upvotes: typeof value.upvotes === "number" ? value.upvotes : 0,
     replyCount: typeof value.replyCount === "number" ? value.replyCount : 0,
@@ -195,8 +219,14 @@ export function parseWidgetComments(value: unknown): WidgetComment[] {
     : [];
 }
 
-export function parseWidgetRoadmapItem(value: unknown): WidgetRoadmapItem | null {
-  if (!isRecord(value) || typeof value.id !== "string" || typeof value.title !== "string") {
+export function parseWidgetRoadmapItem(
+  value: unknown,
+): WidgetRoadmapItem | null {
+  if (
+    !isRecord(value) ||
+    typeof value.id !== "string" ||
+    typeof value.title !== "string"
+  ) {
     return null;
   }
   return {
@@ -204,12 +234,15 @@ export function parseWidgetRoadmapItem(value: unknown): WidgetRoadmapItem | null
     title: value.title,
     content: typeof value.content === "string" ? value.content : null,
     slug: typeof value.slug === "string" ? value.slug : null,
-    roadmapStatus: typeof value.roadmapStatus === "string" ? value.roadmapStatus : null,
+    roadmapStatus:
+      typeof value.roadmapStatus === "string" ? value.roadmapStatus : null,
     upvotes: typeof value.upvotes === "number" ? value.upvotes : null,
     hasVoted: Boolean(value.hasVoted),
     authorName: typeof value.authorName === "string" ? value.authorName : null,
-    authorImage: typeof value.authorImage === "string" ? value.authorImage : null,
-    isAnonymous: typeof value.isAnonymous === "boolean" ? value.isAnonymous : null,
+    authorImage:
+      typeof value.authorImage === "string" ? value.authorImage : null,
+    isAnonymous:
+      typeof value.isAnonymous === "boolean" ? value.isAnonymous : null,
     createdAt:
       value.createdAt instanceof Date || typeof value.createdAt === "string"
         ? value.createdAt
@@ -253,7 +286,11 @@ export function parseSimilarPosts(value: unknown): SimilarPost[] {
 export function parseBoards(value: unknown): Board[] {
   if (!Array.isArray(value)) return [];
   return value.flatMap((item) => {
-    if (!isRecord(item) || typeof item.id !== "string" || typeof item.name !== "string") {
+    if (
+      !isRecord(item) ||
+      typeof item.id !== "string" ||
+      typeof item.name !== "string"
+    ) {
       return [];
     }
     return [
@@ -261,7 +298,10 @@ export function parseBoards(value: unknown): Board[] {
         id: item.id,
         name: item.name,
         slug: typeof item.slug === "string" ? item.slug : undefined,
-        allowAnonymous: typeof item.allowAnonymous === "boolean" ? item.allowAnonymous : undefined,
+        allowAnonymous:
+          typeof item.allowAnonymous === "boolean"
+            ? item.allowAnonymous
+            : undefined,
       },
     ];
   });
@@ -276,14 +316,21 @@ export function parseConfigTabs(value: unknown): ConfigTab[] {
 }
 
 export function parseSection(value: unknown): Section | null {
-  if (value === "home" || value === "feedback" || value === "roadmap" || value === "changelog") {
+  if (
+    value === "home" ||
+    value === "feedback" ||
+    value === "roadmap" ||
+    value === "changelog"
+  ) {
     return value;
   }
   if (isRecord(value)) return parseSection(value.section);
   return null;
 }
 
-export function parseThemeMode(value: unknown): "light" | "dark" | "auto" | null {
+export function parseThemeMode(
+  value: unknown,
+): "light" | "dark" | "auto" | null {
   if (!isRecord(value)) return null;
   const mode = value.mode ?? value.theme;
   if (mode === "light" || mode === "dark" || mode === "auto") return mode;
@@ -291,12 +338,21 @@ export function parseThemeMode(value: unknown): "light" | "dark" | "auto" | null
 }
 
 export function parseIdentifiedUser(value: unknown): IdentifiedUser | null {
-  if (!isRecord(value) || typeof value.id !== "string") return null;
+  if (
+    !isRecord(value) ||
+    typeof value.id !== "string" ||
+    typeof value.email !== "string" ||
+    typeof value.expiresAt !== "number" ||
+    typeof value.signature !== "string"
+  ) {
+    return null;
+  }
   return {
     id: value.id,
-    email: typeof value.email === "string" ? value.email : undefined,
+    email: value.email,
     name: typeof value.name === "string" ? value.name : undefined,
     avatar: typeof value.avatar === "string" ? value.avatar : undefined,
-    signature: typeof value.signature === "string" ? value.signature : undefined,
+    expiresAt: value.expiresAt,
+    signature: value.signature,
   };
 }

@@ -2,10 +2,16 @@ import type { IdentifiedUser, WidgetApiBase } from "./types";
 
 export function toPlain(value?: string | null): string {
   if (!value) return "";
-  return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return value
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-export function toShortPreview(value?: string | null, maxSentences = 2): string {
+export function toShortPreview(
+  value?: string | null,
+  maxSentences = 2,
+): string {
   const plain = toPlain(value);
   if (!plain) return "";
 
@@ -21,13 +27,20 @@ export function toShortPreview(value?: string | null, maxSentences = 2): string 
   return clipped.length > 180 ? `${clipped.slice(0, 177).trimEnd()}…` : clipped;
 }
 
-export function publicBoardPostUrl(workspaceSlug: string, postSlug: string): string {
+export function publicBoardPostUrl(
+  workspaceSlug: string,
+  postSlug: string,
+): string {
   const slug = workspaceSlug.trim();
   if (typeof window === "undefined") {
     return `https://${slug}.featul.com/board/p/${postSlug}`;
   }
   const { hostname, protocol, port } = window.location;
-  if (hostname === "localhost" || hostname.endsWith(".localhost") || hostname === "127.0.0.1") {
+  if (
+    hostname === "localhost" ||
+    hostname.endsWith(".localhost") ||
+    hostname === "127.0.0.1"
+  ) {
     const hostPort = port ? `:${port}` : "";
     return `${protocol}//${slug}.localhost${hostPort}/board/p/${postSlug}`;
   }
@@ -38,7 +51,11 @@ export function publicBoardUrl(workspaceSlug: string): string {
   const slug = workspaceSlug.trim();
   if (typeof window === "undefined") return `https://${slug}.featul.com`;
   const { hostname, protocol, port } = window.location;
-  if (hostname === "localhost" || hostname.endsWith(".localhost") || hostname === "127.0.0.1") {
+  if (
+    hostname === "localhost" ||
+    hostname.endsWith(".localhost") ||
+    hostname === "127.0.0.1"
+  ) {
     const hostPort = port ? `:${port}` : "";
     return `${protocol}//${slug}.localhost${hostPort}`;
   }
@@ -55,14 +72,14 @@ export function viewerPayload(
 ) {
   return {
     ...apiBase,
-    userId: opts.userId || undefined,
     identity:
-      opts.identity?.email
+      opts.identity?.email && opts.identity.expiresAt
         ? {
             id: opts.identity.id,
             email: opts.identity.email,
             name: opts.identity.name,
             avatar: opts.identity.avatar,
+            expiresAt: opts.identity.expiresAt,
             signature: opts.identity.signature,
           }
         : undefined,
@@ -70,7 +87,9 @@ export function viewerPayload(
   };
 }
 
-export function formatRelativeDate(value: string | Date | null | undefined): string {
+export function formatRelativeDate(
+  value: string | Date | null | undefined,
+): string {
   if (!value) return "";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "";
@@ -85,7 +104,10 @@ export function formatRelativeDate(value: string | Date | null | undefined): str
   return date.toLocaleDateString();
 }
 
-export function isAllowedImageType(type: string, allowed: readonly string[]): boolean {
+export function isAllowedImageType(
+  type: string,
+  allowed: readonly string[],
+): boolean {
   return allowed.some((item) => item === type);
 }
 
@@ -102,12 +124,18 @@ export function readErrorMessage(value: unknown, fallback: string): string {
   return fallback;
 }
 
-export function readSignedUpload(value: unknown): { uploadUrl: string; publicUrl: string } | null {
+export function readSignedUpload(
+  value: unknown,
+): { uploadUrl: string; publicUrl: string } | null {
   if (!value || typeof value !== "object") return null;
   const uploadUrl =
-    "uploadUrl" in value && typeof value.uploadUrl === "string" ? value.uploadUrl : "";
+    "uploadUrl" in value && typeof value.uploadUrl === "string"
+      ? value.uploadUrl
+      : "";
   const publicUrl =
-    "publicUrl" in value && typeof value.publicUrl === "string" ? value.publicUrl : "";
+    "publicUrl" in value && typeof value.publicUrl === "string"
+      ? value.publicUrl
+      : "";
   if (!uploadUrl || !publicUrl) return null;
   return { uploadUrl, publicUrl };
 }
@@ -115,19 +143,28 @@ export function readSignedUpload(value: unknown): { uploadUrl: string; publicUrl
 export function readIdentifiedUserId(value: unknown): string | null {
   if (!value || typeof value !== "object" || !("user" in value)) return null;
   const user = value.user;
-  if (!user || typeof user !== "object" || !("id" in user) || typeof user.id !== "string") {
+  if (
+    !user ||
+    typeof user !== "object" ||
+    !("id" in user) ||
+    typeof user.id !== "string"
+  ) {
     return null;
   }
   return user.id;
 }
 
-export function resolveBugsBoard<T extends { id: string; name?: string | null; slug?: string | null }>(
-  boards: T[],
-): T | null {
+export function resolveBugsBoard<
+  T extends { id: string; name?: string | null; slug?: string | null },
+>(boards: T[]): T | null {
   if (!boards.length) return null;
-  const bySlug = boards.find((board) => String(board.slug || "").toLowerCase() === "bugs");
+  const bySlug = boards.find(
+    (board) => String(board.slug || "").toLowerCase() === "bugs",
+  );
   if (bySlug) return bySlug;
-  const byName = boards.find((board) => String(board.name || "").toLowerCase() === "bugs");
+  const byName = boards.find(
+    (board) => String(board.name || "").toLowerCase() === "bugs",
+  );
   if (byName) return byName;
   return boards[0] || null;
 }

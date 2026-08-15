@@ -17,11 +17,14 @@ featul.identify({
   email: "customer@example.com",
   name: "Jane Doe",
   avatar: "https://example.com/jane.jpg",
-  signature: "SERVER_GENERATED_HMAC"
+  expiresAt: 1770000300,
+  signature: "SERVER_GENERATED_HMAC",
 });
 ```
 
-The signature is `HMAC-SHA256(widgetSecret, id + ":" + lowercaseEmail)` encoded as hexadecimal. Never generate it in browser code or expose the Widget secret.
+The signature covers the workspace, ID, normalized email, name, avatar, and expiration. It is
+encoded as hexadecimal and expires after five minutes. Never generate it in browser code or expose
+the Widget secret.
 
 Call `featul.identify(null)` when the user logs out. Missing or invalid signatures are treated as anonymous guests.
 
@@ -30,16 +33,19 @@ See [Embed the widget](/docs/getting-started/widget) for the complete server and
 ## Benefits of Identification
 
 ### Enhanced Follow-up
+
 - Notify users when requested features ship
 - Contact for clarification or user research
 - Close loops on resolved requests
 
 ### Advanced Segmentation
+
 - Filter feedback by customer tier
 - Analyze patterns by user segment
 - Identify power user requests
 
 ### Relationship Management
+
 - Track customer feedback history
 - Identify most engaged users
 - Personalize responses based on account context
@@ -47,6 +53,7 @@ See [Embed the widget](/docs/getting-started/widget) for the complete server and
 ## Privacy Considerations
 
 When identifying users:
+
 - Follow applicable privacy regulations (GDPR, CCPA)
 - Comply with your privacy policy terms
 - Collect only necessary user data

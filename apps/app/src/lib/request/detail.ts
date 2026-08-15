@@ -1,4 +1,4 @@
-import { db, board, post, user, postMerge } from "@featul/db";
+import { db, board, post, user, postMerge, widgetUser } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { client } from "@featul/api/client";
 import { headers } from "next/headers";
@@ -26,7 +26,7 @@ type MetadataWithFingerprint =
   | undefined;
 
 export async function loadWorkspaceBySlug(
-  slug: string
+  slug: string,
 ): Promise<WorkspaceSummary | null> {
   return getWorkspaceSummaryBySlug(slug);
 }
@@ -35,6 +35,7 @@ export function buildPostSelect<T extends Record<string, unknown>>(extra?: T) {
   return {
     id: post.id,
     authorId: post.authorId,
+    widgetUserId: post.widgetUserId,
     title: post.title,
     content: post.content,
     image: post.image,
@@ -52,9 +53,9 @@ export function buildPostSelect<T extends Record<string, unknown>>(extra?: T) {
     duplicateOfId: post.duplicateOfId,
     metadata: post.metadata,
     author: {
-      name: user.name,
-      image: user.image,
-      email: user.email,
+      name: sql<string | null>`coalesce(${widgetUser.name}, ${user.name})`,
+      image: sql<string | null>`coalesce(${widgetUser.image}, ${user.image})`,
+      email: sql<string | null>`coalesce(${widgetUser.email}, ${user.email})`,
     },
     ...(extra || {}),
   };
@@ -66,10 +67,9 @@ function getFingerprint(metadata: MetadataWithFingerprint): string | null {
   return typeof value === "string" && value ? value : null;
 }
 
-export function ensureAuthorAvatar<T extends { author: AuthorRecord; metadata?: MetadataWithFingerprint }>(
-  postRecord: T,
-  options?: { defaultEmail?: string | null }
-): T {
+export function ensureAuthorAvatar<
+  T extends { author: AuthorRecord; metadata?: MetadataWithFingerprint },
+>(postRecord: T, options?: { defaultEmail?: string | null }): T {
   const fingerprint = getFingerprint(postRecord.metadata);
   if ((!postRecord.author || !postRecord.author.name) && fingerprint) {
     if (!postRecord.author) {
@@ -89,7 +89,7 @@ export function ensureAuthorAvatar<T extends { author: AuthorRecord; metadata?: 
 
 export async function loadPostComments(
   postId: string,
-  surface: CommentSurface = "workspace"
+  surface: CommentSurface = "workspace",
 ): Promise<{ initialComments: CommentData[]; initialCollapsedIds: string[] }> {
   const incomingHeaders = await headers();
   const cookieHeader = incomingHeaders.get("cookie");
@@ -97,11 +97,11 @@ export async function loadPostComments(
     { postId, surface },
     cookieHeader
       ? {
-        headers: {
-          cookie: cookieHeader,
-        },
-      }
-      : undefined
+          headers: {
+            cookie: cookieHeader,
+          },
+        }
+      : undefined,
   );
   const commentsJson = (await commentsRes
     .json()
@@ -162,7 +162,9 @@ export async function loadMergedPostData({
       })
       .from(post)
       .innerJoin(board, eq(post.boardId, board.id))
-      .where(and(eq(board.workspaceId, workspaceId), eq(post.id, duplicateOfId)))
+      .where(
+        and(eq(board.workspaceId, workspaceId), eq(post.id, duplicateOfId)),
+      )
       .limit(1);
     const [mergeRow] = await db
       .select({ createdAt: postMerge.createdAt })
@@ -170,8 +172,8 @@ export async function loadMergedPostData({
       .where(
         and(
           eq(postMerge.sourcePostId, postId),
-          eq(postMerge.targetPostId, duplicateOfId)
-        )
+          eq(postMerge.targetPostId, duplicateOfId),
+        ),
       )
       .limit(1);
     if (target) {

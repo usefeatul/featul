@@ -1,93 +1,107 @@
-import { db, board, post, user, workspaceMember, postTag, tag, postReport } from "@featul/db"
-import { and, eq, sql } from "drizzle-orm"
-import { readHasVotedForPost } from "@/lib/vote.server"
-import { getPostNavigation, normalizeStatus } from "@/lib/workspace"
-import { normalizeSlugList } from "@/utils/search/params"
+import {
+  db,
+  board,
+  post,
+  user,
+  widgetUser,
+  workspaceMember,
+  postTag,
+  tag,
+  postReport,
+} from "@featul/db";
+import { and, eq, sql } from "drizzle-orm";
+import { readHasVotedForPost } from "@/lib/vote.server";
+import { getPostNavigation, normalizeStatus } from "@/lib/workspace";
+import { normalizeSlugList } from "@/utils/search/params";
 import {
   buildPostSelect,
   ensureAuthorAvatar,
   loadMergedPostData,
   loadPostComments,
   loadWorkspaceBySlug,
-} from "@/lib/request/detail"
-import type { RequestDetailData } from "@/types/request"
-import type { CommentData } from "@/types/comment"
-import { parseRequestFiltersFromRecord } from "@/utils/request/filters"
-import { isOnboardingPost } from "@/lib/onboarding/post"
+} from "@/lib/request/detail";
+import type { RequestDetailData } from "@/types/request";
+import type { CommentData } from "@/types/comment";
+import { parseRequestFiltersFromRecord } from "@/utils/request/filters";
+import { isOnboardingPost } from "@/lib/onboarding/post";
 
-export type RequestDetailSearchParams = Record<string, string | string[] | undefined>
+export type RequestDetailSearchParams = Record<
+  string,
+  string | string[] | undefined
+>;
 
 export type RequestDetailNavigation = {
-  prev: { slug: string; title: string } | null
-  next: { slug: string; title: string } | null
-}
+  prev: { slug: string; title: string } | null;
+  next: { slug: string; title: string } | null;
+};
 
 export type RequestDetailPageData = {
-  workspaceSlug: string
-  post: RequestDetailData
-  initialComments: CommentData[]
-  initialCollapsedIds: string[]
-  navigation: RequestDetailNavigation
-}
+  workspaceSlug: string;
+  post: RequestDetailData;
+  initialComments: CommentData[];
+  initialCollapsedIds: string[];
+  navigation: RequestDetailNavigation;
+};
 
 type PMetadata = {
-  attachments?: { name: string; url: string; type: string }[]
-  integrations?: { github?: string; jira?: string }
-  customFields?: Record<string, unknown>
-  fingerprint?: string
-}
+  attachments?: { name: string; url: string; type: string }[];
+  integrations?: { github?: string; jira?: string };
+  customFields?: Record<string, unknown>;
+  fingerprint?: string;
+};
 
 type RawPostRecord = RequestDetailData & {
-  authorId: string | null
-  metadata: PMetadata | null
-  author:
-  | {
-    name: string | null
-    image: string | null
-    email: string | null
-  }
-  | null
-}
+  authorId: string | null;
+  metadata: PMetadata | null;
+  author: {
+    name: string | null;
+    image: string | null;
+    email: string | null;
+  } | null;
+};
 
 export async function loadRequestDetailPageData({
   workspaceSlug,
   postSlug,
   searchParams,
 }: {
-  workspaceSlug: string
-  postSlug: string
-  searchParams?: RequestDetailSearchParams
+  workspaceSlug: string;
+  postSlug: string;
+  searchParams?: RequestDetailSearchParams;
 }): Promise<RequestDetailPageData | null> {
-  const ws = await loadWorkspaceBySlug(workspaceSlug)
-  if (!ws) return null
+  const ws = await loadWorkspaceBySlug(workspaceSlug);
+  if (!ws) return null;
 
-  const rawPost = await loadPostWithAuthorAndBoard(ws.id, postSlug)
-  if (!rawPost) return null
+  const rawPost = await loadPostWithAuthorAndBoard(ws.id, postSlug);
+  if (!rawPost) return null;
 
-  const postWithAuthor = ensureAuthorAvatar(rawPost)
+  const postWithAuthor = ensureAuthorAvatar(rawPost);
   const { role, isOwner } = await loadAuthorRoleAndOwnership({
     workspaceId: ws.id,
     workspaceOwnerId: ws.ownerId,
     authorId: rawPost.authorId,
-  })
+  });
 
-  const tags = await loadPostTags(rawPost.id)
-  const hasVoted = await readHasVotedForPost(rawPost.id)
-  const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id, "workspace")
+  const tags = await loadPostTags(rawPost.id);
+  const hasVoted = await readHasVotedForPost(rawPost.id);
+  const { initialComments, initialCollapsedIds } = await loadPostComments(
+    rawPost.id,
+    "workspace",
+  );
   const navigation = await loadNavigation({
     workspaceSlug,
     postId: rawPost.id,
     searchParams,
-  })
+  });
 
-  let reportCount = 0
+  let reportCount = 0;
   if (isOwner) {
     const [row] = await db
       .select({ count: sql<number>`count(*)` })
       .from(postReport)
       .where(eq(postReport.postId, rawPost.id))
-      .limit(1)
-    reportCount = Number(row?.count || 0)
+      .limit(1);
+    reportCount = Number(row?.count || 0);
   }
 
   const post: RequestDetailData = {
@@ -99,7 +113,7 @@ export async function loadRequestDetailPageData({
     tags,
     hasVoted,
     reportCount,
-  } as RequestDetailData & { reportCount: number }
+  } as RequestDetailData & { reportCount: number };
 
   return {
     workspaceSlug,
@@ -107,31 +121,35 @@ export async function loadRequestDetailPageData({
     initialComments,
     initialCollapsedIds,
     navigation,
-  }
+  };
 }
 
-async function loadPostWithAuthorAndBoard(workspaceId: string, postSlug: string): Promise<RawPostRecord | null> {
+async function loadPostWithAuthorAndBoard(
+  workspaceId: string,
+  postSlug: string,
+): Promise<RawPostRecord | null> {
   const [p] = await db
     .select(buildPostSelect())
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
     .leftJoin(user, eq(post.authorId, user.id))
+    .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
     .where(
       and(
         eq(board.workspaceId, workspaceId),
         sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
-        eq(post.slug, postSlug)
-      )
+        eq(post.slug, postSlug),
+      ),
     )
-    .limit(1)
+    .limit(1);
 
-  if (!p) return null
+  if (!p) return null;
   const { mergedCount, mergedInto, mergedSources } = await loadMergedPostData({
     workspaceId,
     postId: p.id,
     duplicateOfId: p.duplicateOfId,
     includeSources: true,
-  })
+  });
 
   return {
     ...p,
@@ -140,7 +158,7 @@ async function loadPostWithAuthorAndBoard(workspaceId: string, postSlug: string)
     mergedCount,
     mergedInto,
     mergedSources,
-  } as RawPostRecord
+  } as RawPostRecord;
 }
 
 async function loadAuthorRoleAndOwnership({
@@ -148,32 +166,37 @@ async function loadAuthorRoleAndOwnership({
   workspaceOwnerId,
   authorId,
 }: {
-  workspaceId: string
-  workspaceOwnerId: string
-  authorId: string | null
+  workspaceId: string;
+  workspaceOwnerId: string;
+  authorId: string | null;
 }): Promise<{ role: "admin" | "member" | "viewer" | null; isOwner: boolean }> {
-  let role: "admin" | "member" | "viewer" | null = null
-  let isOwner = false
+  let role: "admin" | "member" | "viewer" | null = null;
+  let isOwner = false;
 
   if (!authorId) {
-    return { role, isOwner }
+    return { role, isOwner };
   }
 
-  isOwner = authorId === workspaceOwnerId
+  isOwner = authorId === workspaceOwnerId;
 
   if (isOwner) {
-    role = "admin"
+    role = "admin";
   } else {
     const [member] = await db
       .select({ role: workspaceMember.role })
       .from(workspaceMember)
-      .where(and(eq(workspaceMember.workspaceId, workspaceId), eq(workspaceMember.userId, authorId)))
-      .limit(1)
+      .where(
+        and(
+          eq(workspaceMember.workspaceId, workspaceId),
+          eq(workspaceMember.userId, authorId),
+        ),
+      )
+      .limit(1);
 
-    role = (member?.role as "admin" | "member" | "viewer") || null
+    role = (member?.role as "admin" | "member" | "viewer") || null;
   }
 
-  return { role, isOwner }
+  return { role, isOwner };
 }
 
 async function loadPostTags(postId: string) {
@@ -181,7 +204,7 @@ async function loadPostTags(postId: string) {
     .select({ id: tag.id, name: tag.name, slug: tag.slug, color: tag.color })
     .from(postTag)
     .innerJoin(tag, eq(postTag.tagId, tag.id))
-    .where(eq(postTag.postId, postId))
+    .where(eq(postTag.postId, postId));
 }
 
 async function loadNavigation({
@@ -189,14 +212,19 @@ async function loadNavigation({
   postId,
   searchParams,
 }: {
-  workspaceSlug: string
-  postId: string
-  searchParams?: RequestDetailSearchParams
+  workspaceSlug: string;
+  postId: string;
+  searchParams?: RequestDetailSearchParams;
 }): Promise<RequestDetailNavigation> {
-  const sp = searchParams ?? {}
+  const sp = searchParams ?? {};
 
-  const { status: statusRaw, board: boardRaw, tag: tagRaw, order, search } =
-    parseRequestFiltersFromRecord(sp)
+  const {
+    status: statusRaw,
+    board: boardRaw,
+    tag: tagRaw,
+    order,
+    search,
+  } = parseRequestFiltersFromRecord(sp);
 
   const navigation = await getPostNavigation(workspaceSlug, postId, {
     statuses: statusRaw.map(normalizeStatus),
@@ -204,10 +232,14 @@ async function loadNavigation({
     tagSlugs: normalizeSlugList(tagRaw),
     order,
     search,
-  })
+  });
 
   return {
-    prev: navigation.prev ? { slug: navigation.prev.slug, title: navigation.prev.title } : null,
-    next: navigation.next ? { slug: navigation.next.slug, title: navigation.next.title } : null,
-  }
+    prev: navigation.prev
+      ? { slug: navigation.prev.slug, title: navigation.prev.title }
+      : null,
+    next: navigation.next
+      ? { slug: navigation.next.slug, title: navigation.next.title }
+      : null,
+  };
 }

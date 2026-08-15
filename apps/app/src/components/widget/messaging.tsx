@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { isAllowedWidgetMessageOrigin } from "@featul/widget/protocol";
+import {
+  isAllowedWidgetMessageOrigin,
+  isExpectedWidgetMessageSource,
+} from "@featul/widget/protocol";
 import { isSafeImageUrl, isSafeParentOrigin } from "./origin";
 
 export type WidgetMessageType =
@@ -45,6 +48,12 @@ export function readHostMessage(
 ): { type: string; payload: unknown } | null {
   if (!isSafeParentOrigin(parentOrigin)) return null;
   if (!isAllowedWidgetMessageOrigin(event.origin, parentOrigin)) return null;
+  if (
+    typeof window !== "undefined" &&
+    !isExpectedWidgetMessageSource(event.source, window.parent)
+  ) {
+    return null;
+  }
   const data = event.data;
   if (!data || typeof data !== "object") return null;
   if (!("source" in data) || data.source !== HOST_SOURCE) return null;
@@ -64,7 +73,9 @@ export function MessagingProvider({
   children: React.ReactNode;
 }) {
   return (
-    <MessagingContext.Provider value={isSafeParentOrigin(parentOrigin) ? parentOrigin : ""}>
+    <MessagingContext.Provider
+      value={isSafeParentOrigin(parentOrigin) ? parentOrigin : ""}
+    >
       {children}
     </MessagingContext.Provider>
   );

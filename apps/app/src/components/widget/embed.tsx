@@ -63,22 +63,42 @@ export default function WidgetTestEmbed() {
     }
 
     let canceled = false;
-    void client.widget.sessionIdentity
-      .$get({ projectId: TEST_WIDGET_PROJECT_ID })
-      .then((response) => response.json())
-      .then((data) => {
-        if (canceled || !data || typeof data !== "object" || !("user" in data)) return;
+    let refreshTimer: number | null = null;
+    const refreshIdentity = async () => {
+      try {
+        const response = await client.widget.sessionIdentity.$get({
+          projectId: TEST_WIDGET_PROJECT_ID,
+        });
+        const data = await response.json();
+        if (canceled || !data || typeof data !== "object" || !("user" in data))
+          return;
         const user = data.user;
-        if (user && typeof user === "object" && "id" in user && "email" in user) {
-          window.featul?.identify(user as Parameters<FeatulWidgetApi["identify"]>[0]);
+        if (
+          user &&
+          typeof user === "object" &&
+          "id" in user &&
+          "email" in user &&
+          "expiresAt" in user &&
+          typeof user.expiresAt === "number"
+        ) {
+          window.featul?.identify(
+            user as Parameters<FeatulWidgetApi["identify"]>[0],
+          );
+          const refreshInMs = Math.max(
+            30_000,
+            (user.expiresAt - 60) * 1000 - Date.now(),
+          );
+          refreshTimer = window.setTimeout(refreshIdentity, refreshInMs);
         }
-      })
-      .catch(() => {
+      } catch {
         if (!canceled) window.featul?.identify(null);
-      });
+      }
+    };
+    void refreshIdentity();
 
     return () => {
       canceled = true;
+      if (refreshTimer) window.clearTimeout(refreshTimer);
     };
   }, [isPending, pathname, session?.user]);
 

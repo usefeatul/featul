@@ -1,11 +1,19 @@
 import { createHash } from "crypto";
-import { and, eq, ilike, inArray, isNull, or } from "drizzle-orm";
+import { and, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createId } from "@paralleldrive/cuid2";
-import { board, post, user, vote, workspace } from "@featul/db";
+import {
+  board,
+  post,
+  user,
+  vote,
+  widgetUser,
+  workspace,
+  workspaceDomain,
+} from "@featul/db";
 import { toSlug } from "../../shared/slug";
 import {
-  createWidgetSecret,
+  buildWidgetOriginAllowlist,
   isVerifiedIdentity as verifySignedIdentity,
 } from "../../shared/identity";
 import type { AuthenticatedRouterContext } from "../../types/router";
@@ -36,6 +44,7 @@ export type ResolvedWidget = {
   hideBranding: boolean | null;
   widgetSecret: string;
   customDomain: string | null;
+  allowedOrigins: string[];
   config: {
     projectId: string;
     defaultBoardId: string | null;
@@ -46,7 +55,10 @@ export type ResolvedWidget = {
   };
 };
 
-export function assertWidgetPostImageUrl(imageUrl: string, workspaceSlug: string) {
+export function assertWidgetPostImageUrl(
+  imageUrl: string,
+  workspaceSlug: string,
+) {
   let parsed: URL;
   try {
     parsed = new URL(imageUrl);
@@ -57,9 +69,14 @@ export function assertWidgetPostImageUrl(imageUrl: string, workspaceSlug: string
     throw new HTTPException(400, { message: "Invalid image URL" });
   }
 
-  const publicBase = String(process.env.R2_PUBLIC_BASE_URL || "").replace(/\/$/, "");
+  const publicBase = String(process.env.R2_PUBLIC_BASE_URL || "").replace(
+    /\/$/,
+    "",
+  );
   if (!publicBase) {
-    throw new HTTPException(500, { message: "Image storage is not configured" });
+    throw new HTTPException(500, {
+      message: "Image storage is not configured",
+    });
   }
   const expectedPrefix = `${publicBase}/workspaces/${workspaceSlug}/posts/`;
   if (!imageUrl.startsWith(expectedPrefix)) {
@@ -78,7 +95,11 @@ function defaultConfig(workspaceId: string): ResolvedWidget["config"] {
   };
 }
 
-export async function resolveWidget(ctx: WidgetRouterContext, projectId: string): Promise<ResolvedWidget> {
+export async function resolveWidget(
+  ctx: WidgetRouterContext,
+  projectId: string,
+  parentOrigin?: string,
+): Promise<ResolvedWidget> {
   const [ws] = await ctx.db
     .select({
       id: workspace.id,
@@ -88,18 +109,39 @@ export async function resolveWidget(ctx: WidgetRouterContext, projectId: string)
       primaryColor: workspace.primaryColor,
       hideBranding: workspace.hideBranding,
       widgetSecret: workspace.widgetSecret,
+      widgetAllowedOrigins: workspace.widgetAllowedOrigins,
+      domain: workspace.domain,
       customDomain: workspace.customDomain,
     })
     .from(workspace)
     .where(eq(workspace.id, projectId))
     .limit(1);
 
-  if (!ws) throw new HTTPException(404, { message: "Widget project not found" });
+  if (!ws)
+    throw new HTTPException(404, { message: "Widget project not found" });
 
-  let widgetSecret = ws.widgetSecret;
-  if (!widgetSecret) {
-    widgetSecret = createWidgetSecret();
-    await ctx.db.update(workspace).set({ widgetSecret }).where(eq(workspace.id, ws.id));
+  const domains = await ctx.db
+    .select({ host: workspaceDomain.host, status: workspaceDomain.status })
+    .from(workspaceDomain)
+    .where(eq(workspaceDomain.workspaceId, ws.id));
+  const allowedOrigins = buildWidgetOriginAllowlist({
+    slug: ws.slug,
+    workspaceDomain: ws.domain,
+    customDomain: ws.customDomain,
+    verifiedHosts: domains
+      .filter(
+        (row: { host: string; status: string }) => row.status === "verified",
+      )
+      .map((row: { host: string; status: string }) => row.host),
+    appOrigin:
+      process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || null,
+    configuredOrigins: ws.widgetAllowedOrigins,
+    includeDevOrigins:
+      process.env.NODE_ENV !== "production" ||
+      process.env.WIDGET_ALLOW_LOCALHOST === "true",
+  });
+  if (parentOrigin && !allowedOrigins.includes(parentOrigin)) {
+    throw new HTTPException(403, { message: "Widget origin is not allowed" });
   }
 
   return {
@@ -109,14 +151,17 @@ export async function resolveWidget(ctx: WidgetRouterContext, projectId: string)
     workspaceLogo: ws.logo,
     primaryColor: ws.primaryColor,
     hideBranding: ws.hideBranding,
-    widgetSecret,
+    widgetSecret: ws.widgetSecret,
     customDomain: ws.customDomain,
+    allowedOrigins,
     config: defaultConfig(ws.id),
   };
 }
 
 export function createPostSlug(title: string): string {
-  const base = toSlug(title).replace(/[^a-z0-9-]+/g, "").replace(/^-|-$/g, "");
+  const base = toSlug(title)
+    .replace(/[^a-z0-9-]+/g, "")
+    .replace(/^-|-$/g, "");
   const suffix = Math.random().toString(36).slice(2, 8);
   return base ? `${base}-${suffix}` : `post-${suffix}`;
 }
@@ -124,28 +169,38 @@ export function createPostSlug(title: string): string {
 /**
  * Only HMAC-signed identify payloads are trusted.
  */
-export function isVerifiedIdentity(identity: WidgetIdentity | undefined, secret?: string | null) {
-  return verifySignedIdentity(identity, secret);
+export function isVerifiedIdentity(
+  identity: WidgetIdentity | undefined,
+  secret: string | null | undefined,
+  workspaceId: string,
+) {
+  return verifySignedIdentity(identity, secret, workspaceId);
 }
 
-export async function upsertIdentifiedUser(ctx: WidgetRouterContext, identity: WidgetIdentity) {
+export async function upsertIdentifiedUser(
+  ctx: WidgetRouterContext,
+  workspaceId: string,
+  identity: WidgetIdentity,
+) {
   const now = new Date();
   const values = {
-    id: `fu${createId()}`,
+    id: `fw${createId()}`,
+    workspaceId,
+    externalId: identity.id.trim(),
     email: identity.email.toLowerCase(),
     name: identity.name || identity.email,
     image: identity.avatar || null,
-    emailVerified: false,
     createdAt: now,
     updatedAt: now,
   };
 
   const [row] = await ctx.db
-    .insert(user)
+    .insert(widgetUser)
     .values(values)
     .onConflictDoUpdate({
-      target: user.email,
+      target: [widgetUser.workspaceId, widgetUser.externalId],
       set: {
+        email: values.email,
         name: values.name,
         image: values.image,
         updatedAt: now,
@@ -159,36 +214,44 @@ export async function upsertIdentifiedUser(ctx: WidgetRouterContext, identity: W
 export async function resolveViewerId(
   ctx: WidgetRouterContext,
   input: {
-    userId?: string;
     identity?: WidgetIdentity;
   },
+  workspaceId: string,
   widgetSecret?: string | null,
 ): Promise<string | null> {
-  if (!isVerifiedIdentity(input.identity, widgetSecret) || !input.identity) return null;
-  const row = await upsertIdentifiedUser(ctx, input.identity);
+  if (
+    !isVerifiedIdentity(input.identity, widgetSecret, workspaceId) ||
+    !input.identity
+  )
+    return null;
+  const row = await upsertIdentifiedUser(ctx, workspaceId, input.identity);
   return row?.id ?? null;
 }
 
 export async function resolveAuthorId(
   ctx: WidgetRouterContext,
   input: {
-    userId?: string;
     identity?: WidgetIdentity;
   },
+  workspaceId: string,
   widgetSecret?: string | null,
 ): Promise<string | null> {
-  return resolveViewerId(ctx, input, widgetSecret);
+  return resolveViewerId(ctx, input, workspaceId, widgetSecret);
 }
 
 export async function loadVotedPostIds(
   ctx: WidgetRouterContext,
   postIds: string[],
-  viewer: { userId: string | null; fingerprint: string | null },
+  viewer: { widgetUserId: string | null; fingerprint: string | null },
 ): Promise<Set<string>> {
-  if (!postIds.length || (!viewer.userId && !viewer.fingerprint)) return new Set();
+  if (!postIds.length || (!viewer.widgetUserId && !viewer.fingerprint))
+    return new Set();
 
-  const voteFilter = viewer.userId
-    ? and(inArray(vote.postId, postIds), eq(vote.userId, viewer.userId))
+  const voteFilter = viewer.widgetUserId
+    ? and(
+        inArray(vote.postId, postIds),
+        eq(vote.widgetUserId, viewer.widgetUserId),
+      )
     : and(
         inArray(vote.postId, postIds),
         isNull(vote.userId),
@@ -241,8 +304,8 @@ export const postSelectFields = {
   boardName: board.name,
   boardSlug: board.slug,
   isAnonymous: post.isAnonymous,
-  authorName: user.name,
-  authorImage: user.image,
+  authorName: sql<string | null>`coalesce(${widgetUser.name}, ${user.name})`,
+  authorImage: sql<string | null>`coalesce(${widgetUser.image}, ${user.image})`,
   metadata: post.metadata,
 };
 
@@ -253,12 +316,16 @@ export function dicebearAvatar(seed: string) {
 }
 
 export function fingerprintFromMetadata(metadata: unknown): string | null {
-  if (!isRecord(metadata) || typeof metadata.fingerprint !== "string") return null;
+  if (!isRecord(metadata) || typeof metadata.fingerprint !== "string")
+    return null;
   const fingerprint = metadata.fingerprint.trim();
   return fingerprint || null;
 }
 
-export function avatarFromFingerprint(fingerprint?: string | null, fallback = "anonymous") {
+export function avatarFromFingerprint(
+  fingerprint?: string | null,
+  fallback = "anonymous",
+) {
   if (fingerprint) {
     const seed = createHash("sha256").update(fingerprint).digest("hex");
     return dicebearAvatar(seed);
@@ -277,9 +344,14 @@ export function resolveWidgetAuthorImage(row: {
   if (!row.isAnonymous && row.authorImage) return row.authorImage;
   const fingerprint = fingerprintFromMetadata(row.metadata);
   if (row.isAnonymous) {
-    return avatarFromFingerprint(fingerprint, row.id || row.slug || "anonymous");
+    return avatarFromFingerprint(
+      fingerprint,
+      row.id || row.slug || "anonymous",
+    );
   }
-  return row.authorImage || dicebearAvatar(row.authorName || row.id || "anonymous");
+  return (
+    row.authorImage || dicebearAvatar(row.authorName || row.id || "anonymous")
+  );
 }
 
 export function resolveWidgetCommentAuthorImage(row: {
@@ -294,17 +366,21 @@ export function resolveWidgetCommentAuthorImage(row: {
   if (row.isAnonymous) {
     return avatarFromFingerprint(fingerprint, row.id || "anonymous");
   }
-  return row.authorImage || dicebearAvatar(row.authorName || row.id || "anonymous");
+  return (
+    row.authorImage || dicebearAvatar(row.authorName || row.id || "anonymous")
+  );
 }
 
-export function mapWidgetPostRow<T extends {
-  id: string;
-  slug: string;
-  isAnonymous: boolean | null;
-  authorName: string | null;
-  authorImage: string | null;
-  metadata?: unknown;
-}>(row: T, hasVoted: boolean) {
+export function mapWidgetPostRow<
+  T extends {
+    id: string;
+    slug: string;
+    isAnonymous: boolean | null;
+    authorName: string | null;
+    authorImage: string | null;
+    metadata?: unknown;
+  },
+>(row: T, hasVoted: boolean) {
   const { metadata: _metadata, ...rest } = row;
   return {
     ...rest,
@@ -338,7 +414,10 @@ export function extractTiptapPlainText(content: unknown): string {
         // fall through to html/plaintext cleanup
       }
     }
-    return trimmed.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    return trimmed
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   const parts: string[] = [];

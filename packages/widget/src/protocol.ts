@@ -9,7 +9,9 @@ export type WidgetMessage = {
   payload?: unknown;
 };
 
-export function isSafeWidgetParentOrigin(value?: string | null): value is string {
+export function isSafeWidgetParentOrigin(
+  value?: string | null,
+): value is string {
   const origin = String(value || "").trim();
   if (!origin) return false;
   try {
@@ -23,11 +25,25 @@ export function isSafeWidgetParentOrigin(value?: string | null): value is string
   }
 }
 
-export function isAllowedWidgetMessageOrigin(eventOrigin: string, parentOrigin: string) {
+export function isAllowedWidgetMessageOrigin(
+  eventOrigin: string,
+  parentOrigin: string,
+) {
   return (
     isSafeWidgetParentOrigin(parentOrigin) &&
     isSafeWidgetParentOrigin(eventOrigin) &&
     eventOrigin === parentOrigin
+  );
+}
+
+export function isExpectedWidgetMessageSource(
+  eventSource: unknown,
+  expectedSource: unknown,
+) {
+  return (
+    expectedSource !== null &&
+    expectedSource !== undefined &&
+    eventSource === expectedSource
   );
 }
 
@@ -43,6 +59,10 @@ export function readWidgetMessage(
   };
 }
 
-export function createWidgetEnvelope(source: string, type: string, payload?: unknown): WidgetMessage {
+export function createWidgetEnvelope(
+  source: string,
+  type: string,
+  payload?: unknown,
+): WidgetMessage {
   return { source, type, payload };
 }
