@@ -313,13 +313,7 @@ export default function WidgetFrame({
     <MessagingProvider parentOrigin={parentOrigin}>
     <Theme mode={themeMode}>
     <motion.main
-      initial={reduceMotion ? false : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={
-        reduceMotion
-          ? { duration: 0 }
-          : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }
-      }
+      initial={false}
       className={`flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] shadow-sm ${
         fullscreen
           ? "rounded-none border-0"
@@ -377,9 +371,7 @@ export default function WidgetFrame({
         {loading ? (
           <motion.div
             key="loading"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={contentTransition}
+            initial={false}
             className="flex min-h-0 flex-1 items-center justify-center"
             aria-label="Loading"
           >
@@ -395,9 +387,7 @@ export default function WidgetFrame({
         {!loading && section === "home" ? (
           <motion.div
             key="home"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={contentTransition}
+            initial={false}
           >
             <Home
               featuredEntry={featuredEntry}

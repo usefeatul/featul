@@ -23,12 +23,12 @@ export const launcherSource = String.raw`
     iframe.style.overflow = "hidden";
     iframe.style.maxWidth = "100vw";
     iframe.style.maxHeight = "100dvh";
-    iframe.style.zIndex = "2147483646";
+    iframe.style.zIndex = "2147483647";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1), left 460ms cubic-bezier(0.22, 1, 0.36, 1), top 460ms cubic-bezier(0.22, 1, 0.36, 1), width 460ms cubic-bezier(0.22, 1, 0.36, 1), height 460ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 460ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 460ms cubic-bezier(0.22, 1, 0.36, 1)";
-    iframe.style.background = "transparent";
+    iframe.style.transition = "none";
+    iframe.style.background = panelBackground();
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
     state.iframe = iframe;
@@ -38,7 +38,7 @@ export const launcherSource = String.raw`
     shell.style.position = "fixed";
     shell.style.border = "0";
     shell.style.borderRadius = BUTTON_RADIUS;
-    shell.style.zIndex = "2147483647";
+    shell.style.zIndex = "2147483646";
     shell.style.display = "none";
     shell.style.opacity = "0";
     shell.style.pointerEvents = "none";
@@ -112,6 +112,8 @@ export const launcherSource = String.raw`
       state.animating = true;
       setButtonHidden(true);
       if (open) {
+        var openRect = getPanelRect(state.position);
+        var openScale = launcherScaleForRect(openRect);
         applyPanelRect();
         applyShellLauncherRect();
         if (state.shell) {
@@ -119,47 +121,85 @@ export const launcherSource = String.raw`
           state.shell.style.opacity = "1";
         }
         state.iframe.style.display = "block";
+        state.iframe.style.transition = "none";
+        state.iframe.style.borderRadius = BUTTON_RADIUS;
+        setIframeScale(openScale);
         state.iframe.style.opacity = "0";
         syncButtonVisibility();
-        window.requestAnimationFrame(function () {
-          applyShellPanelRect();
-        });
-        state.morphTimer = window.setTimeout(function () {
-          if (state.iframe && state.open) state.iframe.style.opacity = "1";
-          if (state.shell) state.shell.style.opacity = "0";
-          state.closeTimer = window.setTimeout(function () {
-            if (state.shell) state.shell.style.display = "none";
-            state.animating = false;
-            state.closeTimer = null;
-            syncButtonVisibility();
-          }, 160);
-          state.morphTimer = null;
-        }, 380);
+        if (prefersReducedMotion()) {
+          setIframeScale(1);
+          state.iframe.style.opacity = "1";
+          state.iframe.style.borderRadius = panelCornerRadius();
+          if (state.shell) state.shell.style.display = "none";
+          state.animating = false;
+          syncButtonVisibility();
+        } else {
+          window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+              if (!state.iframe || !state.open) return;
+              state.iframe.style.transition = iframeRestTransition();
+              state.iframe.style.borderRadius = panelCornerRadius();
+              setIframeScale(1);
+              state.iframe.style.opacity = "1";
+              applyShellPanelRect();
+              state.morphTimer = window.setTimeout(function () {
+                if (state.shell) state.shell.style.opacity = "0";
+                state.closeTimer = window.setTimeout(function () {
+                  if (state.shell) state.shell.style.display = "none";
+                  state.animating = false;
+                  state.closeTimer = null;
+                  syncButtonVisibility();
+                }, 160);
+                state.morphTimer = null;
+              }, 320);
+            });
+          });
+        }
       } else {
+        var closeRect = getPanelRect(state.position);
+        var closeScale = launcherScaleForRect(closeRect);
         applyShellPanelRect();
         if (state.shell) {
           state.shell.style.display = "block";
           state.shell.style.opacity = "1";
         }
         syncButtonVisibility();
-        window.requestAnimationFrame(function () {
+        if (prefersReducedMotion()) {
           if (state.iframe) {
             state.iframe.style.opacity = "0";
             state.iframe.style.display = "none";
+            setIframeScale(1);
           }
-          window.requestAnimationFrame(function () {
-            applyShellLauncherRect();
-          });
-        });
-        state.closeTimer = window.setTimeout(function () {
-          if (state.shell) {
-            state.shell.style.opacity = "0";
-            state.shell.style.display = "none";
-          }
+          if (state.shell) state.shell.style.display = "none";
           state.animating = false;
-          state.closeTimer = null;
           setButtonHidden(false);
-        }, 400);
+        } else {
+          window.requestAnimationFrame(function () {
+            if (state.iframe) {
+              state.iframe.style.transition = iframeRestTransition();
+              state.iframe.style.borderRadius = BUTTON_RADIUS;
+              state.iframe.style.opacity = "0";
+              setIframeScale(closeScale);
+            }
+            window.requestAnimationFrame(function () {
+              applyShellLauncherRect();
+            });
+          });
+          state.closeTimer = window.setTimeout(function () {
+            if (state.iframe) {
+              state.iframe.style.display = "none";
+              state.iframe.style.transition = "none";
+              setIframeScale(1);
+            }
+            if (state.shell) {
+              state.shell.style.opacity = "0";
+              state.shell.style.display = "none";
+            }
+            state.animating = false;
+            state.closeTimer = null;
+            setButtonHidden(false);
+          }, 400);
+        }
       }
     }
     if (open) enqueue("show", options || {});

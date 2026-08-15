@@ -71,7 +71,7 @@ const bootSource = String.raw`
   function syncTheme() {
     state.theme = resolveTheme((state.options && state.options.theme) || "auto");
     if (state.iframe) {
-      state.iframe.style.background = "transparent";
+      state.iframe.style.background = panelBackground();
       state.iframe.style.colorScheme = state.theme;
     }
     if (state.shell && state.open) {

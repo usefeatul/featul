@@ -230,6 +230,7 @@ export const panelSource = String.raw`
     if (!state.iframe) return;
     state.iframe.style.borderRadius = panelCornerRadius();
     state.iframe.style.boxShadow = panelShadow();
+    if (state.open && !state.animating) setIframeScale(1);
   }
 
   function applyLauncherRect() {
@@ -251,6 +252,25 @@ export const panelSource = String.raw`
     state.shell.style.borderRadius = BUTTON_RADIUS;
     state.shell.style.background = panelBackground();
     state.shell.style.boxShadow = "none";
+  }
+
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function iframeRestTransition() {
+    return "opacity 180ms " + PANEL_EXPAND_EASE + ", transform " + PANEL_EXPAND_MS + "ms " + PANEL_EXPAND_EASE + ", border-radius " + PANEL_EXPAND_MS + "ms " + PANEL_EXPAND_EASE + ", box-shadow " + PANEL_EXPAND_MS + "ms " + PANEL_EXPAND_EASE;
+  }
+
+  function launcherScaleForRect(rect) {
+    var sx = LAUNCHER_SIZE / Math.max(rect.width, 1);
+    var sy = LAUNCHER_SIZE / Math.max(rect.height, 1);
+    return Math.max(0.04, Math.min(sx, sy));
+  }
+
+  function setIframeScale(scale) {
+    if (!state.iframe) return;
+    state.iframe.style.transform = scale === 1 ? "none" : "scale(" + scale + ")";
   }
 
   function applyAccent(color) {
