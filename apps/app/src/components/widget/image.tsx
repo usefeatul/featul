@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ImageIcon } from "@featul/ui/icons/image";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
+import { isSafeImageUrl, postToParent, useParentOrigin } from "./messaging";
 
 type Props = {
   url: string;
@@ -20,16 +21,9 @@ function isInIframe() {
   }
 }
 
-function requestHostImagePreview(url: string, alt: string) {
+function requestHostImagePreview(parentOrigin: string, url: string, alt: string) {
   if (!isInIframe()) return false;
-  window.parent.postMessage(
-    {
-      source: "featul-widget-frame",
-      type: "open-image",
-      payload: { url, alt },
-    },
-    "*",
-  );
+  postToParent(parentOrigin, "open-image", { url, alt });
   return true;
 }
 
@@ -39,11 +33,14 @@ export function WidgetImage({
   className = "",
   imgClassName = "h-14 w-14 object-cover",
 }: Props) {
+  const parentOrigin = useParentOrigin();
   const [open, setOpen] = React.useState(false);
+
+  if (!isSafeImageUrl(url)) return null;
 
   const openPreview = () => {
     // Prefer host-page lightbox so the image isn't clipped by the widget iframe.
-    if (requestHostImagePreview(url, alt)) return;
+    if (requestHostImagePreview(parentOrigin, url, alt)) return;
     setOpen(true);
   };
 

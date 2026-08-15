@@ -14,8 +14,8 @@
       "types": "./src/index.ts"
     },
     "./sdk-source": {
-      "import": "./src/sdk-source.ts",
-      "types": "./src/sdk-source.ts"
+      "import": "./src/sdk/index.ts",
+      "types": "./src/sdk/index.ts"
     }
   },
   "devDependencies": {

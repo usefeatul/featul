@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import type { FeatulWidgetApi } from "@featul/widget";
-import { WidgetHostImageDialog } from "./WidgetHostImageDialog";
+import { WidgetHostImageDialog } from "./lightbox";
 
 /**
  * Local QA helper for testing the embed in this app.

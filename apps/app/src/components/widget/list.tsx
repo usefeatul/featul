@@ -20,7 +20,7 @@ import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { viewerPayload } from "./utils";
-import { WidgetPostRow } from "./PostRow";
+import { WidgetPostRow } from "./row";
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },

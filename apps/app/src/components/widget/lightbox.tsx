@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import { ImageIcon } from "@featul/ui/icons/image";
+import { isSafeImageUrl } from "./messaging";
 
 declare global {
   interface Window {
@@ -28,9 +29,7 @@ export function WidgetHostImageDialog() {
 
   React.useEffect(() => {
     const openImage = (nextUrl: string, nextAlt = "") => {
-      if (!nextUrl || (!nextUrl.startsWith("http://") && !nextUrl.startsWith("https://"))) {
-        return;
-      }
+      if (!isSafeImageUrl(nextUrl)) return;
       setUrl(nextUrl);
       setAlt(nextAlt);
       setOpen(true);

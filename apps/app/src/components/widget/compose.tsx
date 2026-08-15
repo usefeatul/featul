@@ -20,7 +20,7 @@ import type {
   WidgetPost,
 } from "./types";
 import { viewerPayload, resolveBugsBoard } from "./utils";
-import { WidgetImage } from "./WidgetImage";
+import { WidgetImage } from "./image";
 
 type Props = {
   apiBase: WidgetApiBase;

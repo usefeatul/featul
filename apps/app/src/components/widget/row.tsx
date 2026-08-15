@@ -5,9 +5,9 @@ import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { formatRelativeDate, toPlain } from "./utils";
-import { WidgetVoteButton } from "./VoteButton";
-import { WidgetAuthorAvatar } from "./AuthorAvatar";
-import { WidgetImage } from "./WidgetImage";
+import { WidgetVoteButton } from "./vote";
+import { WidgetAuthorAvatar } from "./avatar";
+import { WidgetImage } from "./image";
 
 type Props = {
   post: WidgetPost;

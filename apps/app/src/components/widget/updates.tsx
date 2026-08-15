@@ -5,7 +5,7 @@ import type { JSONContent } from "@tiptap/core";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
-import { WidgetAuthorAvatar } from "./AuthorAvatar";
+import { WidgetAuthorAvatar } from "./avatar";
 
 export type WidgetChangelogEntry = {
   id: string;
