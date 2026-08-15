@@ -53,8 +53,9 @@ export const launcherSource = String.raw`
       button.setAttribute("aria-label", "Open feedback");
       button.innerHTML = FEATUL_LOGO;
       button.style.position = "fixed";
-      button.style.bottom = "max(" + PANEL_GUTTER + "px, env(safe-area-inset-bottom, 0px))";
-      button.style[position] = "max(" + PANEL_GUTTER + "px, env(safe-area-inset-" + position + ", 0px))";
+      button.style.bottom = PANEL_GUTTER + "px";
+      button.style[position] = PANEL_GUTTER + "px";
+      button.style.transition = "bottom 220ms cubic-bezier(0.22, 1, 0.36, 1), left 220ms cubic-bezier(0.22, 1, 0.36, 1), right 220ms cubic-bezier(0.22, 1, 0.36, 1)";
       button.style.alignItems = "center";
       button.style.justifyContent = "center";
       button.style.boxSizing = "border-box";
@@ -78,9 +79,11 @@ export const launcherSource = String.raw`
       document.body.appendChild(button);
       state.button = button;
     }
+    applyLauncherPlacement();
     applyPanelRect();
     applyShellLauncherRect();
     syncButtonVisibility();
+    window.requestAnimationFrame(applyLauncherPlacement);
   }
 
   function syncButtonVisibility() {
@@ -116,6 +119,7 @@ export const launcherSource = String.raw`
         var openScale = launcherScaleForRect(openRect);
         applyPanelRect();
         applyShellLauncherRect();
+        syncMorphOrigin();
         if (state.shell) {
           state.shell.style.display = "block";
           state.shell.style.opacity = "1";
@@ -172,6 +176,7 @@ export const launcherSource = String.raw`
           }
           if (state.shell) state.shell.style.display = "none";
           state.animating = false;
+          applyLauncherPlacement();
           setButtonHidden(false);
         } else {
           window.requestAnimationFrame(function () {
@@ -197,6 +202,7 @@ export const launcherSource = String.raw`
             }
             state.animating = false;
             state.closeTimer = null;
+            applyLauncherPlacement();
             setButtonHidden(false);
           }, 400);
         }
@@ -206,8 +212,31 @@ export const launcherSource = String.raw`
     else enqueue("hide", {});
   }
 
+  function scheduleLauncherPlacement() {
+    if (state.placeTimer) window.clearTimeout(state.placeTimer);
+    state.placeTimer = window.setTimeout(function () {
+      state.placeTimer = null;
+      if (state.open) return;
+      applyLauncherPlacement();
+      applyShellLauncherRect();
+    }, 120);
+  }
+
+  function bindDockObserver() {
+    if (state.dockObserver || typeof MutationObserver !== "function") return;
+    state.dockObserver = new MutationObserver(function () {
+      if (state.open || state.animating) return;
+      scheduleLauncherPlacement();
+    });
+    state.dockObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
   function onViewportChange() {
     cancelPanelAnim();
+    applyLauncherPlacement();
     applyPanelRect();
     if (state.open) {
       applyShellPanelRect();
@@ -293,6 +322,8 @@ export const launcherSource = String.raw`
       state.options = nextOptions;
       syncTheme();
       buildFrame();
+      bindDockObserver();
+      applyLauncherPlacement();
       if (state.ready) {
         post("theme", {
           mode: (state.options && state.options.theme) || "auto",
@@ -314,6 +345,14 @@ export const launcherSource = String.raw`
       clearTimers();
       closeImageLightbox();
       setHostScrollLocked(false);
+      if (state.placeTimer) window.clearTimeout(state.placeTimer);
+      if (state.dockObserver) {
+        state.dockObserver.disconnect();
+        state.dockObserver = null;
+      }
+      if (state.safeProbe && state.safeProbe.parentNode) {
+        state.safeProbe.parentNode.removeChild(state.safeProbe);
+      }
       if (state.iframe && state.iframe.parentNode) state.iframe.parentNode.removeChild(state.iframe);
       if (state.button && state.button.parentNode) state.button.parentNode.removeChild(state.button);
       if (state.shell && state.shell.parentNode) state.shell.parentNode.removeChild(state.shell);
@@ -321,11 +360,13 @@ export const launcherSource = String.raw`
       state.button = null;
       state.shell = null;
       state.lightbox = null;
+      state.safeProbe = null;
       state.ready = false;
       state.open = false;
       state.expanded = false;
       state.closeTimer = null;
       state.morphTimer = null;
+      state.placeTimer = null;
       state.animating = false;
       state.queue = [];
     }

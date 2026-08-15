@@ -6,6 +6,11 @@ export type FeatulWidgetOptions = {
   position?: "left" | "right";
   trigger?: "default" | "custom";
   defaultSection?: FeatulWidgetSection;
+  offset?: {
+    bottom?: number;
+    left?: number;
+    right?: number;
+  };
 };
 
 export type FeatulWidgetUser = {

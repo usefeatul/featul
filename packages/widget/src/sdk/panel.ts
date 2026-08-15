@@ -77,6 +77,129 @@ export const panelSource = String.raw`
     };
   }
 
+  function isWidgetHostNode(node) {
+    if (!node || !node.nodeType) return false;
+    if (node === state.button || node === state.shell || node === state.iframe) return true;
+    if (state.button && state.button.contains(node)) return true;
+    if (state.shell && state.shell.contains(node)) return true;
+    return false;
+  }
+
+  function readSafeInset(side) {
+    if (!state.safeProbe || !state.safeProbe.parentNode) {
+      var probe = document.createElement("div");
+      probe.setAttribute("aria-hidden", "true");
+      probe.style.cssText =
+        "position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;visibility:hidden;" +
+        "padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px);" +
+        "padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);";
+      document.documentElement.appendChild(probe);
+      state.safeProbe = probe;
+    }
+    var styles = window.getComputedStyle(state.safeProbe);
+    if (side === "right") return parseFloat(styles.paddingRight) || 0;
+    if (side === "left") return parseFloat(styles.paddingLeft) || 0;
+    if (side === "top") return parseFloat(styles.paddingTop) || 0;
+    return parseFloat(styles.paddingBottom) || 0;
+  }
+
+  function optionOffset(key) {
+    var extra = state.options && state.options.offset;
+    if (!extra || typeof extra !== "object") return 0;
+    var value = Number(extra[key]);
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  function dockClearanceFromNode(node, view) {
+    var current = node;
+    var depth = 0;
+    while (current && current !== document.body && current !== document.documentElement && depth < 10) {
+      if (isWidgetHostNode(current)) return 0;
+      var style = window.getComputedStyle(current);
+      if (style.display === "none" || style.visibility === "hidden") return 0;
+      var position = style.position;
+      if (position === "fixed" || position === "sticky") {
+        var rect = current.getBoundingClientRect();
+        var height = rect.height;
+        var maxHeight = Math.min(180, view.height * 0.42);
+        var atBottom = rect.bottom >= view.top + view.height - 20;
+        var notFullBleed = height >= 36 && height <= maxHeight;
+        var wide = rect.width >= Math.min(view.width * 0.42, 160);
+        if (atBottom && notFullBleed && wide) {
+          return Math.min(maxHeight, Math.max(0, view.top + view.height - rect.top));
+        }
+      }
+      current = current.parentElement;
+      depth += 1;
+    }
+    return 0;
+  }
+
+  function measureBottomDockClearance() {
+    var view = getViewport();
+    if (typeof document.elementsFromPoint !== "function") return 0;
+    var x = state.position === "left"
+      ? view.left + Math.min(48, view.width * 0.2)
+      : view.left + view.width - Math.min(48, view.width * 0.2);
+    var y = view.top + view.height - 6;
+    var samples = [
+      [x, y],
+      [view.left + view.width / 2, y],
+      [x, view.top + view.height - 28]
+    ];
+    var clearance = 0;
+    var prevEvents = state.button ? state.button.style.pointerEvents : "";
+    if (state.button) state.button.style.pointerEvents = "none";
+    try {
+      for (var i = 0; i < samples.length; i++) {
+        var stack = document.elementsFromPoint(samples[i][0], samples[i][1]) || [];
+        for (var j = 0; j < stack.length; j++) {
+          var lift = dockClearanceFromNode(stack[j], view);
+          if (lift > clearance) clearance = lift;
+        }
+      }
+    } catch (error) {}
+    if (state.button) state.button.style.pointerEvents = prevEvents || "auto";
+    return clearance;
+  }
+
+  function getLauncherOffsets() {
+    var sideKey = state.position === "left" ? "left" : "right";
+    var side = PANEL_GUTTER + readSafeInset(sideKey) + optionOffset(sideKey);
+    var obstacle = measureBottomDockClearance();
+    var bottom =
+      PANEL_GUTTER + Math.max(readSafeInset("bottom"), obstacle) + optionOffset("bottom");
+    return { bottom: bottom, side: side };
+  }
+
+  function applyLauncherPlacement() {
+    if (!state.button) return;
+    var offsets = getLauncherOffsets();
+    state.button.style.bottom = offsets.bottom + "px";
+    state.button.style.top = "auto";
+    if (state.position === "left") {
+      state.button.style.left = offsets.side + "px";
+      state.button.style.right = "auto";
+    } else {
+      state.button.style.right = offsets.side + "px";
+      state.button.style.left = "auto";
+    }
+  }
+
+  function syncMorphOrigin() {
+    var origin = state.position === "left" ? "bottom left" : "bottom right";
+    if (state.button) {
+      var panel = getPanelRect(state.position);
+      var btn = state.button.getBoundingClientRect();
+      if (btn.width && btn.height && panel.width && panel.height) {
+        origin =
+          btn.left + btn.width / 2 - panel.left + "px " + (btn.top + btn.height / 2 - panel.top) + "px";
+      }
+    }
+    if (state.iframe) state.iframe.style.transformOrigin = origin;
+    if (state.shell) state.shell.style.transformOrigin = origin;
+  }
+
   function getLauncherRect(position) {
     if (state.button) {
       var rect = state.button.getBoundingClientRect();
@@ -92,10 +215,10 @@ export const panelSource = String.raw`
     var view = getViewport();
     var width = LAUNCHER_SIZE;
     var height = LAUNCHER_SIZE;
-    var gutter = PANEL_GUTTER;
+    var offsets = getLauncherOffsets();
     return {
-      left: position === "left" ? view.left + gutter : view.left + view.width - width - gutter,
-      top: view.top + view.height - height - gutter,
+      left: position === "left" ? view.left + offsets.side : view.left + view.width - width - offsets.side,
+      top: view.top + view.height - height - offsets.bottom,
       width: width,
       height: height
     };

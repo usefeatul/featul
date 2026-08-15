@@ -40,6 +40,9 @@ const bootSource = String.raw`
     animating: false,
     queue: [],
     scrollLock: null,
+    safeProbe: null,
+    dockObserver: null,
+    placeTimer: null,
     accent: "#3b82f6",
     theme: "dark"
   };
