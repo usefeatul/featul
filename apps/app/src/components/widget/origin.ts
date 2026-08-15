@@ -1,12 +1,7 @@
+import { isSafeWidgetParentOrigin } from "@featul/widget/protocol";
+
 export function isSafeParentOrigin(value?: string | null): value is string {
-  const origin = String(value || "").trim();
-  if (!origin) return false;
-  try {
-    const url = new URL(origin);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
+  return isSafeWidgetParentOrigin(value);
 }
 
 export function isSafeImageUrl(value?: string | null): value is string {

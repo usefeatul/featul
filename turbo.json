@@ -63,12 +63,15 @@
     "build": {
       "dependsOn": ["^build", "^check-types", "check-types"],
       "inputs": ["$TURBO_DEFAULT$"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["transit"]
     },
     "check-types": {
+      "dependsOn": ["transit"]
+    },
+    "test": {
       "dependsOn": ["transit"]
     },
     "dev": {

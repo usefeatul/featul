@@ -17,6 +17,7 @@ import { seedWorkspaceOnboarding } from "../services/onboarding"
 import { runWorkspaceCsvImport } from "../services/workspace-csv-import"
 import { isReservedWorkspaceSlug } from "../shared/workspace-slug"
 import { getWorkspaceAccessPlan } from "../shared/access"
+import { createWidgetSecret } from "../shared/identity"
 
 const dnsResolver = new Resolver()
 
@@ -79,7 +80,24 @@ export function createWorkspaceRouter() {
             ...ws,
             plan: await getWorkspaceAccessPlan(ws.id),
           },
-        })
+        });
+      }),
+    widgetSecret: privateProcedure
+      .input(workspaceSlugInputSchema)
+      .get(async ({ ctx, input, c }) => {
+        const access = await requireWorkspaceManagerWithPlan(ctx, input.slug);
+        const [ws] = await ctx.db
+          .select({ id: workspace.id, widgetSecret: workspace.widgetSecret })
+          .from(workspace)
+          .where(eq(workspace.id, access.id))
+          .limit(1);
+        if (!ws) throw new HTTPException(404, { message: "Workspace not found" });
+        let secret = ws.widgetSecret;
+        if (!secret) {
+          secret = createWidgetSecret();
+          await ctx.db.update(workspace).set({ widgetSecret: secret }).where(eq(workspace.id, ws.id));
+        }
+        return c.superjson({ secret });
       }),
     checkSlug: privateProcedure
       .input(checkSlugInputSchema)
@@ -284,6 +302,7 @@ export function createWorkspaceRouter() {
               ownerId: ctx.session.user.id,
               timezone: input.timezone,
               logo: favicon,
+              widgetSecret: createWidgetSecret(),
             })
             .returning()
           created = ws

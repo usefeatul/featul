@@ -213,7 +213,11 @@ export default function WidgetFrame({
       if (message.type === "identify") {
         const nextIdentity = parseIdentifiedUser(message.payload);
         setIdentity(nextIdentity);
-        if (!nextIdentity?.email) return;
+        if (!nextIdentity) {
+          setUserId(null);
+          return;
+        }
+        if (!nextIdentity.email) return;
         try {
           const res = await client.widget.identify.$post({
             ...apiBase,

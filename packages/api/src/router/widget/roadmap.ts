@@ -10,7 +10,7 @@ export const widgetRoadmap = publicProcedure
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(ctx, input.projectId);
     const request = getWidgetRequest(c);
-    const viewerId = await resolveViewerId(ctx, input);
+    const viewerId = await resolveViewerId(ctx, input, resolved.widgetSecret);
     const fingerprint = viewerId
       ? null
       : getRequestFingerprint(request, input.fingerprint);

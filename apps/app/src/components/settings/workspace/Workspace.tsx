@@ -3,7 +3,7 @@
 import React from "react";
 import SectionCard from "../global/SectionCard";
 import TimezoneCard from "./cards/TimezoneCard";
-import WorkspaceIdCard from "./cards/WorkspaceIdCard";
+import WidgetCard from "./cards/Widget";
 import DangerZoneCard from "./cards/DangerZoneCard";
 
 type Props = {
@@ -18,7 +18,7 @@ export default function WorkspaceSection({ slug, workspaceId, workspaceName, tim
         <SectionCard title="Workspace" description="Manage your workspace settings.">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TimezoneCard slug={slug} initialTimezone={timezone} />
-                <WorkspaceIdCard workspaceId={workspaceId} />
+                <WidgetCard workspaceId={workspaceId} slug={slug} />
                 <DangerZoneCard slug={slug} workspaceName={workspaceName} />
             </div>
         </SectionCard>

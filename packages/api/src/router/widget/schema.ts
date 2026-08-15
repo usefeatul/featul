@@ -7,22 +7,16 @@ export const projectInput = z.object({
   parentOrigin: parentOriginSchema,
 });
 
-export const identifySchema = projectInput.extend({
-  user: z.object({
-    id: z.string().min(1).max(256),
-    email: z.string().email(),
-    name: z.string().max(160).optional(),
-    avatar: z.string().url().optional(),
-    signature: z.string().optional(),
-  }),
-});
-
 export const widgetIdentitySchema = z.object({
   id: z.string().min(1).max(256),
   email: z.string().email(),
   name: z.string().max(160).optional(),
   avatar: z.string().url().optional(),
   signature: z.string().optional(),
+});
+
+export const identifySchema = projectInput.extend({
+  user: widgetIdentitySchema.nullable().optional(),
 });
 
 export const createSchema = projectInput.extend({

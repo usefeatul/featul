@@ -103,7 +103,7 @@ export default function RootLayout({
         <Providers>
           <ConditionalThemeProvider>{children}</ConditionalThemeProvider>
         </Providers>
-        <WidgetTestEmbed />
+        {process.env.NODE_ENV !== "production" ? <WidgetTestEmbed /> : null}
       </body>
     </html>
   );

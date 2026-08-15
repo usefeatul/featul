@@ -18,7 +18,7 @@ export const widgetVote = publicProcedure.input(voteSchema).post(async ({ ctx, i
     .limit(1);
   if (!targetPost) throw new HTTPException(404, { message: "Post not found" });
 
-  const voterId = await resolveAuthorId(ctx, input);
+  const voterId = await resolveAuthorId(ctx, input, resolved.widgetSecret);
 
   const request = getWidgetRequest(c);
   const fingerprint = voterId ? null : getRequestFingerprint(request, input.fingerprint);
@@ -77,7 +77,7 @@ export const widgetVoteComment = publicProcedure.input(voteCommentSchema).post(a
 
   if (!target) throw new HTTPException(404, { message: "Comment not found" });
 
-  const voterId = await resolveAuthorId(ctx, input);
+  const voterId = await resolveAuthorId(ctx, input, resolved.widgetSecret);
 
   const fingerprint = voterId ? null : getRequestFingerprint(request, input.fingerprint);
   const anonymousFingerprint = fingerprint || "";

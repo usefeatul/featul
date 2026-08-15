@@ -45,7 +45,7 @@ function firstCommentImage(metadata: unknown, fallback?: string | null): string 
 export const widgetComments = publicProcedure.input(commentsSchema).get(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
   const request = getWidgetRequest(c);
-  const viewerId = await resolveViewerId(ctx, input);
+  const viewerId = await resolveViewerId(ctx, input, resolved.widgetSecret);
   const fingerprint = viewerId
     ? null
     : getRequestFingerprint(request, input.fingerprint);
@@ -165,9 +165,16 @@ export const widgetCreateComment = publicProcedure.input(createCommentSchema).po
     throw new HTTPException(403, { message: "This post is locked" });
   }
 
-  const authorId = await resolveAuthorId(ctx, input);
-  const authorName = "Guest";
-  const authorImage: string | null = null;
+  const authorId = await resolveAuthorId(ctx, input, resolved.widgetSecret);
+  const [identifiedAuthor] = authorId
+    ? await ctx.db
+        .select({ name: user.name, email: user.email, image: user.image })
+        .from(user)
+        .where(eq(user.id, authorId))
+        .limit(1)
+    : [];
+  const authorName = identifiedAuthor?.name || identifiedAuthor?.email || "Guest";
+  const authorImage = identifiedAuthor?.image || null;
 
   if (!authorId && (!resolved.config.allowGuestPosting || !targetPost.allowAnonymous)) {
     throw new HTTPException(401, { message: "Sign in to comment" });

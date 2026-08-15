@@ -23,6 +23,7 @@ export const workspace = pgTable('workspace', {
   primaryColor: text('primary_color').default('#3b82f6'), // hex color
   theme: text('theme', { enum: ['light', 'dark', 'system'] }).default('system'),
   hideBranding: boolean('hide_branding').default(false), // "Powered by featul"
+  widgetSecret: text('widget_secret'),
   customDomain: text('custom_domain'), // for custom domains
   timezone: text('timezone').notNull().default('UTC'),
 })

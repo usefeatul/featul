@@ -7,8 +7,21 @@ import {
 } from "@tanstack/react-query"
 import { HTTPException } from "hono/http-exception"
 import { type PropsWithChildren, useState } from "react"
+import { usePathname } from "next/navigation"
 import { Toaster } from "@featul/ui/components/sonner"
 import { PostHogIdentifier } from "./PostHogIdentifier"
+
+function WidgetAwareChrome({ children }: PropsWithChildren) {
+  const pathname = usePathname()
+  const isWidget = pathname?.startsWith("/widget")
+  return (
+    <>
+      {isWidget ? null : <PostHogIdentifier />}
+      {children}
+      {isWidget ? null : <Toaster position="bottom-right" />}
+    </>
+  )
+}
 
 export const Providers = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(
@@ -26,9 +39,7 @@ export const Providers = ({ children }: PropsWithChildren) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PostHogIdentifier />
-      {children}
-      <Toaster position="bottom-right" />
+      <WidgetAwareChrome>{children}</WidgetAwareChrome>
     </QueryClientProvider>
   )
 }

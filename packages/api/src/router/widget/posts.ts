@@ -21,7 +21,7 @@ import { createSchema, postDetailSchema, postsSchema, similarSchema } from "./sc
 export const widgetPosts = publicProcedure.input(postsSchema).get(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
   const request = getWidgetRequest(c);
-  const viewerId = await resolveViewerId(ctx, input);
+  const viewerId = await resolveViewerId(ctx, input, resolved.widgetSecret);
   const fingerprint = viewerId
     ? null
     : getRequestFingerprint(request, input.fingerprint);
@@ -65,7 +65,7 @@ export const widgetPosts = publicProcedure.input(postsSchema).get(async ({ ctx, 
 export const widgetPost = publicProcedure.input(postDetailSchema).get(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
   const request = getWidgetRequest(c);
-  const viewerId = await resolveViewerId(ctx, input);
+  const viewerId = await resolveViewerId(ctx, input, resolved.widgetSecret);
   const fingerprint = viewerId
     ? null
     : getRequestFingerprint(request, input.fingerprint);
@@ -141,7 +141,14 @@ export const widgetCreate = publicProcedure.input(createSchema).post(async ({ ct
 
   if (!targetBoard) throw new HTTPException(404, { message: "Board not found" });
 
-  const authorId = await resolveAuthorId(ctx, input);
+  const authorId = await resolveAuthorId(ctx, input, resolved.widgetSecret);
+  const [identifiedAuthor] = authorId
+    ? await ctx.db
+        .select({ name: user.name, email: user.email, image: user.image })
+        .from(user)
+        .where(eq(user.id, authorId))
+        .limit(1)
+    : [];
 
   if (!authorId && (!resolved.config.allowGuestPosting || !targetBoard.allowAnonymous)) {
     throw new HTTPException(401, { message: "Please identify before submitting feedback" });
@@ -180,11 +187,13 @@ export const widgetCreate = publicProcedure.input(createSchema).post(async ({ ct
     post: {
       ...created,
       upvotes: 1,
+      authorName: identifiedAuthor?.name || identifiedAuthor?.email || null,
       authorImage: resolveWidgetAuthorImage({
         id: created.id,
         slug: created.slug,
         isAnonymous: created.isAnonymous,
-        authorImage: null,
+        authorImage: identifiedAuthor?.image || null,
+        authorName: identifiedAuthor?.name || identifiedAuthor?.email || null,
         metadata: created.metadata,
       }),
     },

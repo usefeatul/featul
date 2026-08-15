@@ -33,7 +33,7 @@ export const widgetUploadImage = publicProcedure.input(uploadImageSchema).post(a
 
   if (!targetBoard) throw new HTTPException(404, { message: "Board not found" });
 
-  const uploaderId = await resolveAuthorId(ctx, input);
+  const uploaderId = await resolveAuthorId(ctx, input, resolved.widgetSecret);
 
   if (!uploaderId && (!resolved.config.allowGuestPosting || !targetBoard.allowAnonymous)) {
     throw new HTTPException(401, { message: "Please identify before uploading an image" });

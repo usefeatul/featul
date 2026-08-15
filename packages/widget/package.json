@@ -6,20 +6,27 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "check-types": "tsc --noEmit"
+    "build": "bun ./scripts/build.ts",
+    "check-types": "tsc --noEmit",
+    "test": "bun test ./src"
   },
   "exports": {
     ".": {
       "import": "./src/index.ts",
       "types": "./src/index.ts"
     },
-    "./sdk-source": {
-      "import": "./src/sdk/index.ts",
-      "types": "./src/sdk/index.ts"
+    "./protocol": {
+      "import": "./src/protocol.ts",
+      "types": "./src/protocol.ts"
+    },
+    "./source": {
+      "import": "./src/source.ts",
+      "types": "./src/source.ts"
     }
   },
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",
+    "bun-types": "^1.3.0",
     "typescript": "^5.9.2"
   }
 }

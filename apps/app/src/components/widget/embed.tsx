@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import type { FeatulWidgetApi } from "@featul/widget";
+import { client } from "@featul/api/client";
+import { useSession } from "@featul/auth/client";
 import { WidgetHostImageDialog } from "./lightbox";
 
 /**
@@ -15,6 +17,7 @@ const TEST_WIDGET_PROJECT_ID =
 
 export default function WidgetTestEmbed() {
   const pathname = usePathname();
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
     if (!TEST_WIDGET_PROJECT_ID) return;
@@ -41,7 +44,7 @@ export default function WidgetTestEmbed() {
     if (!existingScript) {
       const script = document.createElement("script");
       script.async = true;
-      script.src = `${window.location.origin}/widget/sdk.js`;
+      script.src = `${window.location.origin}/widget/sdk/v1.js`;
       script.dataset.featulWidget = "true";
       document.head.appendChild(script);
     }
@@ -52,7 +55,32 @@ export default function WidgetTestEmbed() {
       theme: "auto",
       position: "right",
     });
-  }, [pathname]);
+
+    if (isPending) return;
+    if (!session?.user) {
+      window.featul?.identify(null);
+      return;
+    }
+
+    let canceled = false;
+    void client.widget.sessionIdentity
+      .$get({ projectId: TEST_WIDGET_PROJECT_ID })
+      .then((response) => response.json())
+      .then((data) => {
+        if (canceled || !data || typeof data !== "object" || !("user" in data)) return;
+        const user = data.user;
+        if (user && typeof user === "object" && "id" in user && "email" in user) {
+          window.featul?.identify(user as Parameters<FeatulWidgetApi["identify"]>[0]);
+        }
+      })
+      .catch(() => {
+        if (!canceled) window.featul?.identify(null);
+      });
+
+    return () => {
+      canceled = true;
+    };
+  }, [isPending, pathname, session?.user]);
 
   if (pathname?.startsWith("/widget")) return null;
 

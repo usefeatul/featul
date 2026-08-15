@@ -4,6 +4,10 @@ import { HTTPException } from "hono/http-exception";
 import { createId } from "@paralleldrive/cuid2";
 import { board, post, user, vote, workspace } from "@featul/db";
 import { toSlug } from "../../shared/slug";
+import {
+  createWidgetSecret,
+  isVerifiedIdentity as verifySignedIdentity,
+} from "../../shared/identity";
 import type { AuthenticatedRouterContext } from "../../types/router";
 import type { WidgetIdentity } from "./schema";
 
@@ -30,6 +34,8 @@ export type ResolvedWidget = {
   workspaceLogo: string | null;
   primaryColor: string | null;
   hideBranding: boolean | null;
+  widgetSecret: string;
+  customDomain: string | null;
   config: {
     projectId: string;
     defaultBoardId: string | null;
@@ -81,12 +87,20 @@ export async function resolveWidget(ctx: WidgetRouterContext, projectId: string)
       logo: workspace.logo,
       primaryColor: workspace.primaryColor,
       hideBranding: workspace.hideBranding,
+      widgetSecret: workspace.widgetSecret,
+      customDomain: workspace.customDomain,
     })
     .from(workspace)
     .where(eq(workspace.id, projectId))
     .limit(1);
 
   if (!ws) throw new HTTPException(404, { message: "Widget project not found" });
+
+  let widgetSecret = ws.widgetSecret;
+  if (!widgetSecret) {
+    widgetSecret = createWidgetSecret();
+    await ctx.db.update(workspace).set({ widgetSecret }).where(eq(workspace.id, ws.id));
+  }
 
   return {
     workspaceId: ws.id,
@@ -95,6 +109,8 @@ export async function resolveWidget(ctx: WidgetRouterContext, projectId: string)
     workspaceLogo: ws.logo,
     primaryColor: ws.primaryColor,
     hideBranding: ws.hideBranding,
+    widgetSecret,
+    customDomain: ws.customDomain,
     config: defaultConfig(ws.id),
   };
 }
@@ -106,11 +122,10 @@ export function createPostSlug(title: string): string {
 }
 
 /**
- * Unsigned identify/userId is not trusted. HMAC verification is a follow-up
- * once a workspace signing secret is wired.
+ * Only HMAC-signed identify payloads are trusted.
  */
-export function isVerifiedIdentity(_identity?: WidgetIdentity) {
-  return false;
+export function isVerifiedIdentity(identity: WidgetIdentity | undefined, secret?: string | null) {
+  return verifySignedIdentity(identity, secret);
 }
 
 export async function upsertIdentifiedUser(ctx: WidgetRouterContext, identity: WidgetIdentity) {
@@ -142,25 +157,27 @@ export async function upsertIdentifiedUser(ctx: WidgetRouterContext, identity: W
 }
 
 export async function resolveViewerId(
-  _ctx: WidgetRouterContext,
+  ctx: WidgetRouterContext,
   input: {
     userId?: string;
     identity?: WidgetIdentity;
   },
+  widgetSecret?: string | null,
 ): Promise<string | null> {
-  if (!isVerifiedIdentity(input.identity)) return null;
-  return null;
+  if (!isVerifiedIdentity(input.identity, widgetSecret) || !input.identity) return null;
+  const row = await upsertIdentifiedUser(ctx, input.identity);
+  return row?.id ?? null;
 }
 
 export async function resolveAuthorId(
-  _ctx: WidgetRouterContext,
+  ctx: WidgetRouterContext,
   input: {
     userId?: string;
     identity?: WidgetIdentity;
   },
+  widgetSecret?: string | null,
 ): Promise<string | null> {
-  if (!isVerifiedIdentity(input.identity)) return null;
-  return null;
+  return resolveViewerId(ctx, input, widgetSecret);
 }
 
 export async function loadVotedPostIds(
