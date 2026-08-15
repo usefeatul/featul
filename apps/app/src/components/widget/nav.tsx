@@ -11,17 +11,19 @@ type Props = {
   section: Section;
   accent: string;
   navBorderVisible: boolean;
+  fullscreen?: boolean;
   onSelect: (tab: Section) => void;
 };
 
-export function Nav({ tabs, section, accent, navBorderVisible, onSelect }: Props) {
+export function Nav({ tabs, section, accent, navBorderVisible, fullscreen = false, onSelect }: Props) {
   return (
     <nav
-      className={`grid grid-cols-4 px-3 py-2 transition-[box-shadow] duration-200 ${
+      className={`grid shrink-0 px-3 py-2 transition-[box-shadow] duration-200 ${
         navBorderVisible
           ? "shadow-[inset_0_1px_0_0_rgb(var(--widget-fg)/0.08)]"
           : "shadow-[inset_0_1px_0_0_transparent]"
-      }`}
+      } ${fullscreen ? "pb-2.5" : ""}`}
+      style={{ gridTemplateColumns: `repeat(${Math.max(tabs.length, 1)}, minmax(0, 1fr))` }}
     >
       {tabs.map((tab) => (
         <button

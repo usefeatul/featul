@@ -18,6 +18,7 @@ type Props = {
     theme?: string;
     section?: string;
     position?: string;
+    layout?: string;
   }>;
 };
 
@@ -44,6 +45,7 @@ export default async function WidgetFramePage({ params, searchParams }: Props) {
       initialTheme={pick<Theme>(sp.theme, THEMES, "auto")}
       initialSection={pick<Section>(sp.section, SECTIONS, "home")}
       initialPosition={pick<Position>(sp.position, POSITIONS, "right")}
+      initialFullscreen={sp.layout === "full"}
     />
   );
 }

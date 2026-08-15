@@ -18,6 +18,9 @@ const bootSource = String.raw`
   var PANEL_HEIGHT_EXPANDED = 760;
   var PANEL_EXPAND_MS = 520;
   var PANEL_EXPAND_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+  var FULLSCREEN_MAX_WIDTH = 768;
+  var FULLSCREEN_MAX_HEIGHT = 540;
+  var PANEL_GUTTER = 16;
 
   var state = {
     projectId: null,
@@ -36,6 +39,7 @@ const bootSource = String.raw`
     panelAnim: null,
     animating: false,
     queue: [],
+    scrollLock: null,
     accent: "#3b82f6",
     theme: "dark"
   };

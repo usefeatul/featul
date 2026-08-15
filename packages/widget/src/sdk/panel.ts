@@ -1,13 +1,77 @@
 export const panelSource = String.raw`
+  function getViewport() {
+    var vv = window.visualViewport;
+    if (vv && vv.width > 0 && vv.height > 0) {
+      return {
+        width: Math.round(vv.width),
+        height: Math.round(vv.height),
+        left: Math.round(vv.offsetLeft || 0),
+        top: Math.round(vv.offsetTop || 0)
+      };
+    }
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      left: 0,
+      top: 0
+    };
+  }
+
+  function isFullscreenPanel() {
+    var view = getViewport();
+    return view.width < FULLSCREEN_MAX_WIDTH || view.height < FULLSCREEN_MAX_HEIGHT;
+  }
+
+  function panelCornerRadius() {
+    return isFullscreenPanel() ? "0px" : PANEL_RADIUS;
+  }
+
+  function panelShadow() {
+    return isFullscreenPanel() ? "none" : "0 24px 70px rgba(0, 0, 0, 0.36)";
+  }
+
+  function syncFrameLayout() {
+    if (!state.ready) return;
+    post("layout", { fullscreen: isFullscreenPanel() });
+  }
+
+  function setHostScrollLocked(locked) {
+    var shouldLock = Boolean(locked) && isFullscreenPanel();
+    if (!shouldLock) {
+      if (!state.scrollLock) return;
+      document.documentElement.style.overflow = state.scrollLock.html;
+      document.body.style.overflow = state.scrollLock.body;
+      state.scrollLock = null;
+      return;
+    }
+    if (state.scrollLock) return;
+    state.scrollLock = {
+      html: document.documentElement.style.overflow,
+      body: document.body.style.overflow
+    };
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
+
   function getPanelRect(position) {
+    var view = getViewport();
+    if (isFullscreenPanel()) {
+      return {
+        left: view.left,
+        top: view.top,
+        width: view.width,
+        height: view.height
+      };
+    }
     var preferredWidth = state.expanded ? PANEL_WIDTH_EXPANDED : PANEL_WIDTH;
     var preferredHeight = state.expanded ? PANEL_HEIGHT_EXPANDED : PANEL_HEIGHT;
-    var width = Math.min(preferredWidth, Math.max(280, window.innerWidth - 32));
+    var width = Math.min(preferredWidth, Math.max(280, view.width - PANEL_GUTTER * 2));
     var heightPad = state.expanded ? 24 : 40;
-    var height = Math.min(preferredHeight, Math.max(360, window.innerHeight - heightPad));
+    var height = Math.min(preferredHeight, Math.max(360, view.height - heightPad));
+    var gutter = PANEL_GUTTER;
     return {
-      left: position === "left" ? 20 : window.innerWidth - width - 20,
-      top: window.innerHeight - height - 20,
+      left: position === "left" ? view.left + gutter : view.left + view.width - width - gutter,
+      top: view.top + view.height - height - gutter,
       width: width,
       height: height
     };
@@ -25,11 +89,13 @@ export const panelSource = String.raw`
         };
       }
     }
+    var view = getViewport();
     var width = LAUNCHER_SIZE;
     var height = LAUNCHER_SIZE;
+    var gutter = PANEL_GUTTER;
     return {
-      left: position === "left" ? 20 : window.innerWidth - width - 20,
-      top: window.innerHeight - height - 20,
+      left: position === "left" ? view.left + gutter : view.left + view.width - width - gutter,
+      top: view.top + view.height - height - gutter,
       width: width,
       height: height
     };
@@ -141,12 +207,18 @@ export const panelSource = String.raw`
     state.expanded = next;
     if (!state.open) return;
     var rect = getPanelRect(state.position);
-    if (state.iframe) state.iframe.style.borderRadius = PANEL_RADIUS;
+    var radius = panelCornerRadius();
+    if (state.iframe) {
+      state.iframe.style.borderRadius = radius;
+      state.iframe.style.boxShadow = panelShadow();
+    }
     if (state.shell) {
-      state.shell.style.borderRadius = PANEL_RADIUS;
+      state.shell.style.borderRadius = radius;
       state.shell.style.background = panelBackground();
+      state.shell.style.boxShadow = panelShadow();
     }
     animatePanelRect(rect);
+    syncFrameLayout();
   }
 
   function applyFrameRect(rect) {
@@ -155,7 +227,9 @@ export const panelSource = String.raw`
 
   function applyPanelRect() {
     applyFrameRect(getPanelRect(state.position));
-    if (state.iframe) state.iframe.style.borderRadius = PANEL_RADIUS;
+    if (!state.iframe) return;
+    state.iframe.style.borderRadius = panelCornerRadius();
+    state.iframe.style.boxShadow = panelShadow();
   }
 
   function applyLauncherRect() {
@@ -166,9 +240,9 @@ export const panelSource = String.raw`
   function applyShellPanelRect() {
     applyRect(state.shell, getPanelRect(state.position));
     if (!state.shell) return;
-    state.shell.style.borderRadius = PANEL_RADIUS;
+    state.shell.style.borderRadius = panelCornerRadius();
     state.shell.style.background = panelBackground();
-    state.shell.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
+    state.shell.style.boxShadow = panelShadow();
   }
 
   function applyShellLauncherRect() {

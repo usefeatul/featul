@@ -207,7 +207,7 @@ export function WidgetFeedbackCompose({
         value={content}
         onChange={(event) => setContent(event.target.value)}
         placeholder="Add more detail..."
-        className="min-h-0 flex-1 resize-none px-0 py-2 text-[15px] leading-relaxed text-[rgb(var(--widget-fg)/0.85)] shadow-none placeholder:text-[rgb(var(--widget-fg)/0.25)] focus-visible:ring-0"
+        className="min-h-0 flex-1 resize-none px-0 py-2 text-base leading-relaxed text-[rgb(var(--widget-fg)/0.85)] shadow-none placeholder:text-[rgb(var(--widget-fg)/0.25)] focus-visible:ring-0"
       />
 
       {uploadedImage ? (

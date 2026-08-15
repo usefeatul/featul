@@ -12,18 +12,22 @@ export const launcherSource = String.raw`
       position: position,
       section: state.options.defaultSection || "home"
     });
+    if (isFullscreenPanel()) params.set("layout", "full");
     iframe.src = baseUrl + "/widget/" + encodeURIComponent(state.projectId) + "/frame?" + params.toString();
     iframe.title = "Featul feedback widget";
     iframe.setAttribute("aria-hidden", "true");
     iframe.style.position = "fixed";
     iframe.style.border = "0";
-    iframe.style.borderRadius = PANEL_RADIUS;
-    iframe.style.boxShadow = "0 24px 70px rgba(0, 0, 0, 0.36)";
+    iframe.style.borderRadius = panelCornerRadius();
+    iframe.style.boxShadow = panelShadow();
+    iframe.style.overflow = "hidden";
+    iframe.style.maxWidth = "100vw";
+    iframe.style.maxHeight = "100dvh";
     iframe.style.zIndex = "2147483646";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
     iframe.style.transformOrigin = position === "left" ? "bottom left" : "bottom right";
-    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1), left 460ms cubic-bezier(0.22, 1, 0.36, 1), top 460ms cubic-bezier(0.22, 1, 0.36, 1), width 460ms cubic-bezier(0.22, 1, 0.36, 1), height 460ms cubic-bezier(0.22, 1, 0.36, 1)";
+    iframe.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1), left 460ms cubic-bezier(0.22, 1, 0.36, 1), top 460ms cubic-bezier(0.22, 1, 0.36, 1), width 460ms cubic-bezier(0.22, 1, 0.36, 1), height 460ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 460ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 460ms cubic-bezier(0.22, 1, 0.36, 1)";
     iframe.style.background = "transparent";
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
@@ -49,8 +53,8 @@ export const launcherSource = String.raw`
       button.setAttribute("aria-label", "Open feedback");
       button.innerHTML = FEATUL_LOGO;
       button.style.position = "fixed";
-      button.style.bottom = "20px";
-      button.style[position] = "20px";
+      button.style.bottom = "max(" + PANEL_GUTTER + "px, env(safe-area-inset-bottom, 0px))";
+      button.style[position] = "max(" + PANEL_GUTTER + "px, env(safe-area-inset-" + position + ", 0px))";
       button.style.alignItems = "center";
       button.style.justifyContent = "center";
       button.style.boxSizing = "border-box";
@@ -97,6 +101,10 @@ export const launcherSource = String.raw`
     if (!open) {
       cancelPanelAnim();
       state.expanded = false;
+      setHostScrollLocked(false);
+    } else {
+      setHostScrollLocked(true);
+      syncFrameLayout();
     }
     if (state.iframe) {
       state.iframe.setAttribute("aria-hidden", open ? "false" : "true");
@@ -158,12 +166,24 @@ export const launcherSource = String.raw`
     else enqueue("hide", {});
   }
 
-  window.addEventListener("resize", function () {
+  function onViewportChange() {
     cancelPanelAnim();
     applyPanelRect();
-    if (state.open) applyShellPanelRect();
-    else applyShellLauncherRect();
-  });
+    if (state.open) {
+      applyShellPanelRect();
+      setHostScrollLocked(true);
+    } else {
+      applyShellLauncherRect();
+      setHostScrollLocked(false);
+    }
+    syncFrameLayout();
+  }
+  window.addEventListener("resize", onViewportChange);
+  window.addEventListener("orientationchange", onViewportChange);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", onViewportChange);
+    window.visualViewport.addEventListener("scroll", onViewportChange);
+  }
 
   function bindThemeMedia() {
     if (!window.matchMedia) return;
@@ -193,6 +213,7 @@ export const launcherSource = String.raw`
         mode: (state.options && state.options.theme) || "auto",
         theme: state.theme
       });
+      post("layout", { fullscreen: isFullscreenPanel() });
       flush();
       if (state.open) post("show", {});
     }
@@ -252,6 +273,7 @@ export const launcherSource = String.raw`
     destroy: function () {
       clearTimers();
       closeImageLightbox();
+      setHostScrollLocked(false);
       if (state.iframe && state.iframe.parentNode) state.iframe.parentNode.removeChild(state.iframe);
       if (state.button && state.button.parentNode) state.button.parentNode.removeChild(state.button);
       if (state.shell && state.shell.parentNode) state.shell.parentNode.removeChild(state.shell);

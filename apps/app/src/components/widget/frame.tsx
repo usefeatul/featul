@@ -42,6 +42,7 @@ type WidgetFrameProps = {
   initialTheme: "light" | "dark" | "auto";
   initialSection: Section;
   initialPosition: "left" | "right";
+  initialFullscreen?: boolean;
 };
 
 export default function WidgetFrame({
@@ -49,6 +50,7 @@ export default function WidgetFrame({
   parentOrigin,
   initialTheme,
   initialSection,
+  initialFullscreen = false,
 }: WidgetFrameProps) {
   const [section, setSection] = React.useState<Section>(initialSection || "home");
   const [feedbackView, setFeedbackView] = React.useState<FeedbackView>("list");
@@ -71,6 +73,7 @@ export default function WidgetFrame({
     hasVoted: boolean;
   } | null>(null);
   const [navBorderVisible, setNavBorderVisible] = React.useState(false);
+  const [fullscreen, setFullscreen] = React.useState(initialFullscreen);
   const [themeMode, setThemeMode] = React.useState<"light" | "dark" | "auto">(initialTheme);
   const [theme, setTheme] = React.useState<"light" | "dark">(() => resolveWidgetTheme(initialTheme));
   const navBorderTimeoutRef = React.useRef<number | null>(null);
@@ -185,6 +188,13 @@ export default function WidgetFrame({
     async function handleMessage(event: MessageEvent) {
       const message = readHostMessage(event, parentOrigin);
       if (!message) return;
+      if (message.type === "layout") {
+        const payload = message.payload;
+        if (payload && typeof payload === "object" && "fullscreen" in payload) {
+          setFullscreen(Boolean((payload as { fullscreen?: unknown }).fullscreen));
+        }
+        return;
+      }
       if (message.type === "theme") {
         const mode = parseThemeMode(message.payload);
         if (mode) setThemeMode(mode);
@@ -310,12 +320,20 @@ export default function WidgetFrame({
           ? { duration: 0 }
           : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }
       }
-      className="flex h-screen flex-col overflow-hidden rounded-xl border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] shadow-sm"
+      className={`flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] shadow-sm ${
+        fullscreen
+          ? "rounded-none border-0"
+          : "rounded-xl border border-[rgb(var(--widget-fg)/0.1)]"
+      }`}
       style={
         {
           ["--widget-accent" as string]: accent,
           backgroundColor: widgetSurfaceHex(theme),
           color: theme === "light" ? "#171717" : "#fafafa",
+          paddingTop: fullscreen ? "env(safe-area-inset-top, 0px)" : undefined,
+          paddingBottom: fullscreen ? "env(safe-area-inset-bottom, 0px)" : undefined,
+          paddingLeft: fullscreen ? "env(safe-area-inset-left, 0px)" : undefined,
+          paddingRight: fullscreen ? "env(safe-area-inset-right, 0px)" : undefined,
           ...widgetThemeVars(theme),
         } as React.CSSProperties
       }
@@ -337,6 +355,7 @@ export default function WidgetFrame({
         }}
         onCompose={() => goFeedback("compose")}
         onClose={close}
+        fullscreen={fullscreen}
       />
 
       <div
@@ -539,6 +558,7 @@ export default function WidgetFrame({
           section={section}
           accent={accent}
           navBorderVisible={navBorderVisible}
+          fullscreen={fullscreen}
           onSelect={(tab) => {
             setSection(tab);
             if (tab === "feedback") goFeedback("list");
