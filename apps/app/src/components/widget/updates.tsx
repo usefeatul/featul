@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { WidgetAuthorAvatar } from "./avatar";
+import { WidgetImage } from "./image";
 
 export type WidgetChangelogEntry = {
   id: string;
@@ -255,11 +256,11 @@ function UpdateDetail({
       <div className="px-5 pb-4 pt-5">
         {entry.coverImage ? (
           <div className="mb-5 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={entry.coverImage}
+            <WidgetImage
+              url={entry.coverImage}
               alt=""
-              className="max-h-56 w-full object-cover"
+              className="w-full"
+              imgClassName="max-h-56 w-full object-cover"
             />
           </div>
         ) : null}

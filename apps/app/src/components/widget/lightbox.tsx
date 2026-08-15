@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import { ImageIcon } from "@featul/ui/icons/image";
+import { WidgetImage } from "./image";
 import { isSafeImageUrl } from "./messaging";
 
 declare global {
@@ -68,8 +69,7 @@ export function WidgetHostImageDialog() {
         </DialogHeader>
         <div className="rounded-xl border border-border bg-card p-2 dark:bg-black/60">
           <div className="flex items-center justify-center overflow-hidden rounded-lg bg-muted/40">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={url} alt={alt} className="max-h-[80dvh] w-full object-contain" />
+            <WidgetImage url={url} alt={alt} imgClassName="h-full w-full object-contain" preview={false} />
           </div>
         </div>
       </DialogContent>

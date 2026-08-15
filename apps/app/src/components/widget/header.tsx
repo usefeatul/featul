@@ -3,6 +3,7 @@
 import { ChevronLeft, X } from "lucide-react";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
+import { WidgetImage } from "./image";
 import type { FeedbackView } from "./types";
 
 type Props = {
@@ -44,8 +45,13 @@ export function Header({
       ) : (
         <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.06)]">
           {workspaceLogo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={workspaceLogo} alt="" className="size-full object-cover" />
+            <WidgetImage
+              url={workspaceLogo}
+              alt=""
+              className="size-full"
+              imgClassName="size-full object-cover"
+              preview={false}
+            />
           ) : (
             <FillFeedbackIcon className="size-4 text-[rgb(var(--widget-fg))]" size={16} />
           )}
