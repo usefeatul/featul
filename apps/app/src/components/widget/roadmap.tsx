@@ -74,7 +74,8 @@ export function WidgetRoadmap({
 
   const updatePinned = React.useCallback(() => {
     const root = rootRef.current;
-    const scroller = root?.closest("[data-widget-scroll]") as HTMLElement | null;
+    const found = root?.closest("[data-widget-scroll]");
+    const scroller = found instanceof HTMLElement ? found : null;
     if (!root || !scroller) {
       pinnedRef.current = [];
       setPinnedIndexes([]);
@@ -107,7 +108,8 @@ export function WidgetRoadmap({
 
   React.useEffect(() => {
     const root = rootRef.current;
-    const scroller = root?.closest("[data-widget-scroll]") as HTMLElement | null;
+    const found = root?.closest("[data-widget-scroll]");
+    const scroller = found instanceof HTMLElement ? found : null;
     if (!scroller) return;
 
     let frame = 0;
@@ -128,7 +130,8 @@ export function WidgetRoadmap({
 
   const jumpToSection = (index: number) => {
     const sectionEl = sectionRefs.current[index];
-    const scroller = rootRef.current?.closest("[data-widget-scroll]") as HTMLElement | null;
+    const found = rootRef.current?.closest("[data-widget-scroll]");
+    const scroller = found instanceof HTMLElement ? found : null;
     if (!sectionEl || !scroller) return;
 
     const aboveCount = pinnedIndexes.filter((value) => value < index).length;

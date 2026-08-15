@@ -18,6 +18,7 @@ import { SearchIcon } from "@featul/ui/icons/search";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
+import { parseWidgetPosts } from "./load";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { viewerPayload } from "./utils";
 import { WidgetPostRow } from "./row";
@@ -168,10 +169,9 @@ export function WidgetFeedbackList({
         });
         if (!res.ok) throw new Error("Failed to load posts");
         const data = await res.json();
-        const nextPosts = (Array.isArray(data.posts) ? data.posts : []) as WidgetPost[];
+        const nextPosts = parseWidgetPosts(data.posts);
         setPosts((prev) => (append ? [...prev, ...nextPosts] : nextPosts));
-        const upcoming =
-          typeof data.nextOffset === "number" ? (data.nextOffset as number) : null;
+        const upcoming = typeof data.nextOffset === "number" ? data.nextOffset : null;
         nextOffsetRef.current = upcoming;
         setNextOffset(upcoming);
         hasLoadedOnce.current = true;
@@ -388,7 +388,7 @@ export function WidgetFeedbackList({
         {!loading && !error && !posts.length ? (
           <div className="flex flex-col items-center px-5 py-12 text-center">
             <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">No requests yet</p>
-            <p className="mt-1 max-w-[16rem] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
+            <p className="mt-1 max-w-3xs text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
               Share an idea or report an issue to get the conversation started.
             </p>
             <Button

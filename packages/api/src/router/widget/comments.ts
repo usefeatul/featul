@@ -9,12 +9,42 @@ import {
   resolveAuthorId,
   resolveViewerId,
   resolveWidget,
+  getWidgetRequest,
 } from "./resolve";
 import { commentsSchema, createCommentSchema } from "./schema";
 
+type CommentAttachment = {
+  url?: string;
+  type?: string;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function commentAttachments(metadata: unknown): CommentAttachment[] {
+  if (!isRecord(metadata) || !Array.isArray(metadata.attachments)) return [];
+  return metadata.attachments.flatMap((item) => {
+    if (!isRecord(item)) return [];
+    return [
+      {
+        url: typeof item.url === "string" ? item.url : undefined,
+        type: typeof item.type === "string" ? item.type : undefined,
+      },
+    ];
+  });
+}
+
+function firstCommentImage(metadata: unknown, fallback?: string | null): string | null {
+  const attachments = commentAttachments(metadata);
+  const image =
+    attachments.find((item) => item.type?.startsWith("image") || Boolean(item.url))?.url || null;
+  return image || fallback || null;
+}
+
 export const widgetComments = publicProcedure.input(commentsSchema).get(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
   const viewerId = await resolveViewerId(ctx, input);
   const fingerprint = viewerId
     ? null
@@ -85,15 +115,7 @@ export const widgetComments = publicProcedure.input(commentsSchema).get(async ({
   return c.superjson({
     allowComments: Boolean(targetPost.allowComments),
     comments: rows.map((row: (typeof rows)[number]) => {
-      const attachments =
-        row.metadata &&
-        typeof row.metadata === "object" &&
-        Array.isArray((row.metadata as { attachments?: unknown }).attachments)
-          ? ((row.metadata as { attachments: { url?: string; type?: string }[] }).attachments || [])
-          : [];
-      const image =
-        attachments.find((item) => item?.type?.startsWith("image") || Boolean(item?.url))?.url ||
-        null;
+      const image = firstCommentImage(row.metadata);
       return {
         id: row.id,
         postId: row.postId,
@@ -117,7 +139,7 @@ export const widgetComments = publicProcedure.input(commentsSchema).get(async ({
 
 export const widgetCreateComment = publicProcedure.input(createCommentSchema).post(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
 
   const [targetPost] = await ctx.db
     .select({
@@ -234,12 +256,7 @@ export const widgetCreateComment = publicProcedure.input(createCommentSchema).po
     .where(eq(post.id, input.postId))
     .returning({ commentCount: post.commentCount });
 
-  const image =
-    created.metadata &&
-    typeof created.metadata === "object" &&
-    Array.isArray((created.metadata as { attachments?: { url?: string }[] }).attachments)
-      ? (created.metadata as { attachments: { url: string }[] }).attachments[0]?.url || null
-      : input.image || null;
+  const image = firstCommentImage(created.metadata, input.image);
 
   return c.superjson({
     comment: {

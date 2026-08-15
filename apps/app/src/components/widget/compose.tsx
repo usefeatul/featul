@@ -19,7 +19,8 @@ import type {
   WidgetApiBase,
   WidgetPost,
 } from "./types";
-import { viewerPayload, resolveBugsBoard } from "./utils";
+import { parseSimilarPosts } from "./load";
+import { isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload } from "./utils";
 import { WidgetImage } from "./image";
 
 type Props = {
@@ -76,7 +77,7 @@ export function WidgetFeedbackCompose({
         });
         if (!res.ok || canceled) return;
         const data = await res.json();
-        if (!canceled) setSimilar(Array.isArray(data.posts) ? data.posts : []);
+        if (!canceled) setSimilar(parseSimilarPosts(data.posts));
       } catch {
         if (!canceled) setSimilar([]);
       }
@@ -96,7 +97,7 @@ export function WidgetFeedbackCompose({
       setMessage("Select a board before uploading an image.");
       return;
     }
-    if (!(IMAGE_UPLOAD_CONTENT_TYPES as readonly string[]).includes(file.type)) {
+    if (!isAllowedImageType(file.type, IMAGE_UPLOAD_CONTENT_TYPES)) {
       setMessage("Unsupported file type. Use PNG, JPEG, WebP, or GIF.");
       return;
     }
@@ -118,14 +119,10 @@ export function WidgetFeedbackCompose({
         fileSize: file.size,
       });
       if (!signed.ok) {
-        const error = (await signed.json().catch(() => null)) as { message?: string } | null;
-        throw new Error(error?.message || "Failed to get upload URL");
+        throw new Error(readErrorMessage(await signed.json().catch(() => null), "Failed to get upload URL"));
       }
-      const data = (await signed.json()) as {
-        uploadUrl?: string;
-        publicUrl?: string;
-      };
-      if (!data.uploadUrl || !data.publicUrl) throw new Error("Upload URL response was incomplete");
+      const data = readSignedUpload(await signed.json());
+      if (!data) throw new Error("Upload URL response was incomplete");
 
       const put = await fetch(data.uploadUrl, {
         method: "PUT",

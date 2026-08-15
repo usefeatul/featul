@@ -14,7 +14,7 @@ export type WidgetChangelogEntry = {
   slug?: string;
   summary?: string | null;
   preview?: string | null;
-  content?: unknown;
+  content?: JSONContent | string | null;
   coverImage?: string | null;
   publishedAt?: string | Date | null;
   tags?: Array<{ id: string; name: string; color?: string | null }>;
@@ -218,7 +218,7 @@ function UpdateDetail({
   recentEntries: WidgetChangelogEntry[];
   onOpen: (entry: WidgetChangelogEntry) => void;
 }) {
-  const content = entry.content as JSONContent | null | undefined;
+  const content = entry.content && typeof entry.content === "object" ? entry.content : null;
   const shipped = recentEntries.slice(0, 5);
 
   return (

@@ -85,6 +85,42 @@ export function formatRelativeDate(value: string | Date | null | undefined): str
   return date.toLocaleDateString();
 }
 
+export function isAllowedImageType(type: string, allowed: readonly string[]): boolean {
+  return allowed.some((item) => item === type);
+}
+
+export function readErrorMessage(value: unknown, fallback: string): string {
+  if (
+    value &&
+    typeof value === "object" &&
+    "message" in value &&
+    typeof value.message === "string" &&
+    value.message.trim()
+  ) {
+    return value.message;
+  }
+  return fallback;
+}
+
+export function readSignedUpload(value: unknown): { uploadUrl: string; publicUrl: string } | null {
+  if (!value || typeof value !== "object") return null;
+  const uploadUrl =
+    "uploadUrl" in value && typeof value.uploadUrl === "string" ? value.uploadUrl : "";
+  const publicUrl =
+    "publicUrl" in value && typeof value.publicUrl === "string" ? value.publicUrl : "";
+  if (!uploadUrl || !publicUrl) return null;
+  return { uploadUrl, publicUrl };
+}
+
+export function readIdentifiedUserId(value: unknown): string | null {
+  if (!value || typeof value !== "object" || !("user" in value)) return null;
+  const user = value.user;
+  if (!user || typeof user !== "object" || !("id" in user) || typeof user.id !== "string") {
+    return null;
+  }
+  return user.id;
+}
+
 export function resolveBugsBoard<T extends { id: string; name?: string | null; slug?: string | null }>(
   boards: T[],
 ): T | null {

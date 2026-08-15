@@ -4,7 +4,7 @@ import { board, comment, commentReaction, post } from "@featul/db";
 import { vote } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import { getRequestFingerprint } from "../../shared/request-fingerprint";
-import { resolveAuthorId, resolveWidget } from "./resolve";
+import { getWidgetRequest, resolveAuthorId, resolveWidget } from "./resolve";
 import { voteCommentSchema, voteSchema } from "./schema";
 
 export const widgetVote = publicProcedure.input(voteSchema).post(async ({ ctx, input, c }) => {
@@ -20,7 +20,7 @@ export const widgetVote = publicProcedure.input(voteSchema).post(async ({ ctx, i
 
   const voterId = await resolveAuthorId(ctx, input);
 
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
   const fingerprint = voterId ? null : getRequestFingerprint(request, input.fingerprint);
   const anonymousFingerprint = fingerprint || "";
   const existingWhere = voterId
@@ -54,7 +54,7 @@ export const widgetVote = publicProcedure.input(voteSchema).post(async ({ ctx, i
 
 export const widgetVoteComment = publicProcedure.input(voteCommentSchema).post(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
 
   const [target] = await ctx.db
     .select({

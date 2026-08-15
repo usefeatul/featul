@@ -3,7 +3,24 @@ import { HTTPException } from "hono/http-exception";
 import { createId } from "@paralleldrive/cuid2";
 import { board, post, user, vote, workspace } from "@featul/db";
 import { toSlug } from "../../shared/slug";
+import type { AuthenticatedRouterContext } from "../../types/router";
 import type { WidgetIdentity } from "./schema";
+
+export type WidgetRouterContext = Pick<AuthenticatedRouterContext, "db">;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function getWidgetRequest(c: unknown): Request {
+  if (!isRecord(c)) {
+    throw new Error("Expected request on widget router context");
+  }
+  const req = c.req;
+  if (isRecord(req) && req.raw instanceof Request) return req.raw;
+  if (c.request instanceof Request) return c.request;
+  throw new Error("Expected request on widget router context");
+}
 
 export type ResolvedWidget = {
   workspaceId: string;
@@ -54,7 +71,7 @@ function defaultConfig(workspaceId: string): ResolvedWidget["config"] {
   };
 }
 
-export async function resolveWidget(ctx: any, projectId: string): Promise<ResolvedWidget> {
+export async function resolveWidget(ctx: WidgetRouterContext, projectId: string): Promise<ResolvedWidget> {
   const [ws] = await ctx.db
     .select({
       id: workspace.id,
@@ -95,7 +112,7 @@ export function isVerifiedIdentity(_identity?: WidgetIdentity) {
   return false;
 }
 
-export async function upsertIdentifiedUser(ctx: any, identity: WidgetIdentity) {
+export async function upsertIdentifiedUser(ctx: WidgetRouterContext, identity: WidgetIdentity) {
   const now = new Date();
   const values = {
     id: `fu${createId()}`,
@@ -124,7 +141,7 @@ export async function upsertIdentifiedUser(ctx: any, identity: WidgetIdentity) {
 }
 
 export async function resolveViewerId(
-  _ctx: any,
+  _ctx: WidgetRouterContext,
   input: {
     userId?: string;
     identity?: WidgetIdentity;
@@ -135,7 +152,7 @@ export async function resolveViewerId(
 }
 
 export async function resolveAuthorId(
-  _ctx: any,
+  _ctx: WidgetRouterContext,
   input: {
     userId?: string;
     identity?: WidgetIdentity;
@@ -146,7 +163,7 @@ export async function resolveAuthorId(
 }
 
 export async function loadVotedPostIds(
-  ctx: any,
+  ctx: WidgetRouterContext,
   postIds: string[],
   viewer: { userId: string | null; fingerprint: string | null },
 ): Promise<Set<string>> {
@@ -165,7 +182,11 @@ export async function loadVotedPostIds(
     .from(vote)
     .where(voteFilter);
 
-  return new Set(rows.map((row: { postId: string }) => row.postId));
+  return new Set(
+    rows
+      .map((row) => row.postId)
+      .filter((postId): postId is string => typeof postId === "string"),
+  );
 }
 
 export function publicPostWhere(
@@ -220,8 +241,8 @@ export function resolveWidgetAuthorImage(row: {
 }) {
   if (!row.isAnonymous && row.authorImage) return row.authorImage;
   const fingerprint =
-    row.metadata && typeof row.metadata === "object" && row.metadata !== null
-      ? String((row.metadata as Record<string, unknown>).fingerprint || "")
+    isRecord(row.metadata) && typeof row.metadata.fingerprint === "string"
+      ? row.metadata.fingerprint
       : "";
   return dicebearAvatar(fingerprint || row.id || row.slug || "guest");
 }
@@ -272,13 +293,12 @@ export function extractTiptapPlainText(content: unknown): string {
 
   const parts: string[] = [];
   const visit = (node: unknown) => {
-    if (!node || typeof node !== "object") return;
-    const record = node as Record<string, unknown>;
-    if (typeof record.text === "string" && record.text.trim()) {
-      parts.push(record.text);
+    if (!isRecord(node)) return;
+    if (typeof node.text === "string" && node.text.trim()) {
+      parts.push(node.text);
     }
-    if (Array.isArray(record.content)) {
-      for (const child of record.content) visit(child);
+    if (Array.isArray(node.content)) {
+      for (const child of node.content) visit(child);
     }
   };
 

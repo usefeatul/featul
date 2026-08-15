@@ -11,9 +11,17 @@ import { WidgetFeedbackCompose } from "./compose";
 import { WidgetFeedbackDetail } from "./detail";
 import { Header } from "./header";
 import { Home } from "./home";
-import { mapChangelogEntries } from "./load";
+import {
+  mapChangelogEntries,
+  parseBoards,
+  parseConfigTabs,
+  parseIdentifiedUser,
+  parseSection,
+  parseThemeMode,
+  parseWidgetRoadmapItems,
+} from "./load";
 import { WidgetFeedbackList } from "./list";
-import { isHostMessage, MessagingProvider, postToParent } from "./messaging";
+import { MessagingProvider, postToParent, readHostMessage } from "./messaging";
 import { Nav } from "./nav";
 import { WidgetRoadmap, type WidgetRoadmapItem } from "./roadmap";
 import { Theme, resolveWidgetAccent, resolveWidgetTheme, widgetSurfaceHex, widgetThemeVars } from "./theme";
@@ -26,6 +34,7 @@ import type {
   WidgetWorkspace,
 } from "./types";
 import { WidgetUpdates, type WidgetChangelogEntry } from "./updates";
+import { readIdentifiedUserId } from "./utils";
 
 type WidgetFrameProps = {
   projectId: string;
@@ -113,12 +122,14 @@ export default function WidgetFrame({
           primaryColor: data.workspace?.primaryColor || null,
           hideBranding: data.workspace?.hideBranding ?? null,
         });
-        const enabledTabs: Section[] = data.config?.enabledTabs?.length
-          ? (data.config.enabledTabs as Section[])
-          : ["feedback", "roadmap", "changelog"];
-        setTabs(["home", ...enabledTabs]);
-        const nextBoards: Board[] = Array.isArray(data.boards) ? data.boards : [];
-        setBoards(nextBoards);
+        const enabledTabs = parseConfigTabs(data.config?.enabledTabs);
+        const fallbackTabs: Array<Exclude<Section, "home">> = [
+          "feedback",
+          "roadmap",
+          "changelog",
+        ];
+        setTabs(["home", ...(enabledTabs.length ? enabledTabs : fallbackTabs)]);
+        setBoards(parseBoards(data.boards));
         setListBoardId("");
       } catch {
         if (!canceled) setMessage("The widget could not load.");
@@ -155,7 +166,7 @@ export default function WidgetFrame({
             fingerprint,
           });
           const data = await res.json();
-          setRoadmap(Array.isArray(data.posts) ? (data.posts as WidgetRoadmapItem[]) : []);
+          setRoadmap(parseWidgetRoadmapItems(data.posts));
         }
         if (section === "home" || section === "changelog") {
           const res = await client.widget.changelog.$get(apiBase);
@@ -172,28 +183,25 @@ export default function WidgetFrame({
 
   React.useEffect(() => {
     async function handleMessage(event: MessageEvent) {
-      if (!isHostMessage(event, parentOrigin)) return;
-      if (event.data.type === "theme") {
-        const mode = (event.data.payload?.mode || event.data.payload?.theme || "auto") as
-          | "light"
-          | "dark"
-          | "auto";
-        if (mode === "light" || mode === "dark" || mode === "auto") {
-          setThemeMode(mode);
-        }
+      const message = readHostMessage(event, parentOrigin);
+      if (!message) return;
+      if (message.type === "theme") {
+        const mode = parseThemeMode(message.payload);
+        if (mode) setThemeMode(mode);
         return;
       }
-      if (event.data.type === "show") {
-        if (event.data.payload?.section) {
-          setSection(event.data.payload.section);
-          if (event.data.payload.section === "feedback") {
+      if (message.type === "show") {
+        const nextSection = parseSection(message.payload);
+        if (nextSection) {
+          setSection(nextSection);
+          if (nextSection === "feedback") {
             setFeedbackView("list");
             setSelectedPost(null);
           }
         }
       }
-      if (event.data.type === "identify") {
-        const nextIdentity = event.data.payload as IdentifiedUser | null;
+      if (message.type === "identify") {
+        const nextIdentity = parseIdentifiedUser(message.payload);
         setIdentity(nextIdentity);
         if (!nextIdentity?.email) return;
         try {
@@ -201,8 +209,8 @@ export default function WidgetFrame({
             ...apiBase,
             user: { ...nextIdentity, email: nextIdentity.email },
           });
-          const data = (await res.json()) as { user?: { id?: string } | null };
-          setUserId(data.user?.id || null);
+          const data = await res.json();
+          setUserId(readIdentifiedUserId(data));
         } catch {
           setUserId(null);
           setMessage("Could not identify this user.");

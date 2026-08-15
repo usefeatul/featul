@@ -11,8 +11,9 @@ import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import { Comments, type UploadedImage } from "./comments";
+import { parseWidgetComment, parseWidgetComments, parseWidgetPost } from "./load";
 import type { IdentifiedUser, WidgetApiBase, WidgetComment, WidgetPost } from "./types";
-import { toPlain, viewerPayload } from "./utils";
+import { isAllowedImageType, toPlain, viewerPayload, readErrorMessage, readSignedUpload } from "./utils";
 import { WidgetVoteButton } from "./vote";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetImage } from "./image";
@@ -72,7 +73,7 @@ export function WidgetFeedbackDetail({
         });
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
-        if (!canceled) setPost(data.post as WidgetPost);
+        if (!canceled) setPost(parseWidgetPost(data.post));
       } catch {
         if (!canceled) setError("Could not load this request.");
       } finally {
@@ -97,15 +98,14 @@ export function WidgetFeedbackDetail({
           postId,
         });
         if (!res.ok) {
-          const body = await res.json().catch(() => null);
           throw new Error(
-            (body as { message?: string } | null)?.message || "Failed to load comments",
+            readErrorMessage(await res.json().catch(() => null), "Failed to load comments"),
           );
         }
         const data = await res.json();
         if (canceled) return;
         setAllowComments(Boolean(data.allowComments ?? true));
-        setComments(Array.isArray(data.comments) ? (data.comments as WidgetComment[]) : []);
+        setComments(parseWidgetComments(data.comments));
         setComposeError("");
       } catch (err) {
         if (!canceled) {
@@ -147,7 +147,7 @@ export function WidgetFeedbackDetail({
     if (fileInputRef.current) fileInputRef.current.value = "";
     if (!file || !post?.boardId) return;
 
-    if (!(IMAGE_UPLOAD_CONTENT_TYPES as readonly string[]).includes(file.type)) {
+    if (!isAllowedImageType(file.type, IMAGE_UPLOAD_CONTENT_TYPES)) {
       setComposeError("Unsupported file type. Use PNG, JPEG, WebP, or GIF.");
       return;
     }
@@ -169,14 +169,10 @@ export function WidgetFeedbackDetail({
         fileSize: file.size,
       });
       if (!signed.ok) {
-        const error = (await signed.json().catch(() => null)) as { message?: string } | null;
-        throw new Error(error?.message || "Failed to get upload URL");
+        throw new Error(readErrorMessage(await signed.json().catch(() => null), "Failed to get upload URL"));
       }
-      const data = (await signed.json()) as {
-        uploadUrl?: string;
-        publicUrl?: string;
-      };
-      if (!data.uploadUrl || !data.publicUrl) throw new Error("Upload URL response was incomplete");
+      const data = readSignedUpload(await signed.json());
+      if (!data) throw new Error("Upload URL response was incomplete");
 
       const put = await fetch(data.uploadUrl, {
         method: "PUT",
@@ -210,13 +206,13 @@ export function WidgetFeedbackDetail({
         image: uploadedImage?.url,
       });
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
         throw new Error(
-          (body as { message?: string } | null)?.message || "Could not post comment",
+          readErrorMessage(await res.json().catch(() => null), "Could not post comment"),
         );
       }
       const data = await res.json();
-      const created = data.comment as WidgetComment;
+      const created = parseWidgetComment(data.comment);
+      if (!created) throw new Error("Could not post comment");
       setComments((prev) => [...prev, created]);
       setPost((prev) =>
         prev

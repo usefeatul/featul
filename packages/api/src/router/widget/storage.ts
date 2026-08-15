@@ -9,7 +9,7 @@ import {
   limitStoragePublicPostAnon,
   limitStoragePublicPostUser,
 } from "../../services/ratelimiter";
-import { resolveAuthorId, resolveWidget } from "./resolve";
+import { getWidgetRequest, resolveAuthorId, resolveWidget } from "./resolve";
 import { uploadImageSchema } from "./schema";
 
 export const widgetUploadImage = publicProcedure.input(uploadImageSchema).post(async ({ ctx, input, c }) => {
@@ -39,7 +39,7 @@ export const widgetUploadImage = publicProcedure.input(uploadImageSchema).post(a
     throw new HTTPException(401, { message: "Please identify before uploading an image" });
   }
 
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
   const rateLimit = uploaderId
     ? await limitStoragePublicPostUser(uploaderId)
     : await limitStoragePublicPostAnon(request);

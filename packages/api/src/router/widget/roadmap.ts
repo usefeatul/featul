@@ -2,14 +2,14 @@ import { and, desc, eq, inArray } from "drizzle-orm";
 import { board, post, user } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import { getRequestFingerprint } from "../../shared/request-fingerprint";
-import { loadVotedPostIds, mapWidgetPostRow, resolveViewerId, resolveWidget } from "./resolve";
+import { getWidgetRequest, loadVotedPostIds, mapWidgetPostRow, resolveViewerId, resolveWidget } from "./resolve";
 import { projectInput, viewerSchema } from "./schema";
 
 export const widgetRoadmap = publicProcedure
   .input(projectInput.merge(viewerSchema))
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(ctx, input.projectId);
-    const request = (c as any)?.req?.raw || (c as any)?.request;
+    const request = getWidgetRequest(c);
     const viewerId = await resolveViewerId(ctx, input);
     const fingerprint = viewerId
       ? null

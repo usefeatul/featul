@@ -13,12 +13,13 @@ import {
   resolveAuthorId,
   resolveViewerId,
   resolveWidget,
+  getWidgetRequest,
 } from "./resolve";
 import { createSchema, postDetailSchema, postsSchema, similarSchema } from "./schema";
 
 export const widgetPosts = publicProcedure.input(postsSchema).get(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
   const viewerId = await resolveViewerId(ctx, input);
   const fingerprint = viewerId
     ? null
@@ -62,7 +63,7 @@ export const widgetPosts = publicProcedure.input(postsSchema).get(async ({ ctx, 
 
 export const widgetPost = publicProcedure.input(postDetailSchema).get(async ({ ctx, input, c }) => {
   const resolved = await resolveWidget(ctx, input.projectId);
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
   const viewerId = await resolveViewerId(ctx, input);
   const fingerprint = viewerId
     ? null
@@ -149,7 +150,7 @@ export const widgetCreate = publicProcedure.input(createSchema).post(async ({ ct
     assertWidgetPostImageUrl(input.image, resolved.workspaceSlug);
   }
 
-  const request = (c as any)?.req?.raw || (c as any)?.request;
+  const request = getWidgetRequest(c);
   const fingerprint = authorId ? null : getRequestFingerprint(request, input.fingerprint);
   const [created] = await ctx.db
     .insert(post)

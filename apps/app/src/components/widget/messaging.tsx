@@ -35,10 +35,22 @@ export function postToParent(
 }
 
 export function isHostMessage(event: MessageEvent, parentOrigin: string) {
-  if (!isSafeParentOrigin(parentOrigin)) return false;
-  if (event.origin !== parentOrigin) return false;
+  return readHostMessage(event, parentOrigin) !== null;
+}
+
+export function readHostMessage(
+  event: MessageEvent,
+  parentOrigin: string,
+): { type: string; payload: unknown } | null {
+  if (!isSafeParentOrigin(parentOrigin)) return null;
+  if (event.origin !== parentOrigin) return null;
   const data = event.data;
-  return Boolean(data && typeof data === "object" && data.source === HOST_SOURCE);
+  if (!data || typeof data !== "object") return null;
+  if (!("source" in data) || data.source !== HOST_SOURCE) return null;
+  return {
+    type: "type" in data && typeof data.type === "string" ? data.type : "",
+    payload: "payload" in data ? data.payload : undefined,
+  };
 }
 
 const MessagingContext = React.createContext<string>("");
