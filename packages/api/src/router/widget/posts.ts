@@ -1,6 +1,6 @@
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { board, post, user, vote, widgetUser } from "@featul/db";
+import { board, post, vote, widgetUser } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import { getRequestFingerprint } from "../../shared/request-fingerprint";
 import {
@@ -8,8 +8,8 @@ import {
   createPostSlug,
   loadVotedPostIds,
   mapWidgetPostRow,
-  postSelectFields,
   publicPostWhere,
+  widgetPostQuery,
   resolveAuthorId,
   resolveViewerId,
   resolveWidget,
@@ -47,12 +47,7 @@ export const widgetPosts = publicProcedure
         ? [desc(post.upvotes), desc(post.createdAt)]
         : [desc(post.isPinned), desc(post.createdAt)];
 
-    const rows = await ctx.db
-      .select(postSelectFields)
-      .from(post)
-      .innerJoin(board, eq(post.boardId, board.id))
-      .leftJoin(user, eq(post.authorId, user.id))
-      .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
+    const rows = await widgetPostQuery(ctx.db)
       .where(
         publicPostWhere(
           resolved.workspaceId,
@@ -103,12 +98,7 @@ export const widgetPost = publicProcedure
       ? eq(post.id, input.postId)
       : eq(post.slug, input.slug!);
 
-    const [row] = await ctx.db
-      .select(postSelectFields)
-      .from(post)
-      .innerJoin(board, eq(post.boardId, board.id))
-      .leftJoin(user, eq(post.authorId, user.id))
-      .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
+    const [row] = await widgetPostQuery(ctx.db)
       .where(and(publicPostWhere(resolved.workspaceId), identityFilter))
       .limit(1);
 

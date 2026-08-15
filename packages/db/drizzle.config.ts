@@ -4,9 +4,11 @@ import path from "node:path"
 
 // Prefer the app env so local schema changes target the same database the app
 // is running against. A shell-provided DATABASE_URL still wins over both files.
-loadEnv({
-  path: path.resolve(process.cwd(), "../../apps/app/.env"),
-})
+for (const envFile of [".env", ".env.local"]) {
+  loadEnv({
+    path: path.resolve(process.cwd(), "../../apps/app", envFile),
+  });
+}
 loadEnv()
 
 export default defineConfig({

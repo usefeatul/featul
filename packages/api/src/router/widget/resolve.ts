@@ -109,7 +109,6 @@ export async function resolveWidget(
       primaryColor: workspace.primaryColor,
       hideBranding: workspace.hideBranding,
       widgetSecret: workspace.widgetSecret,
-      widgetAllowedOrigins: workspace.widgetAllowedOrigins,
       domain: workspace.domain,
       customDomain: workspace.customDomain,
     })
@@ -135,7 +134,6 @@ export async function resolveWidget(
       .map((row: { host: string; status: string }) => row.host),
     appOrigin:
       process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || null,
-    configuredOrigins: ws.widgetAllowedOrigins,
     includeDevOrigins:
       process.env.NODE_ENV !== "production" ||
       process.env.WIDGET_ALLOW_LOCALHOST === "true",
@@ -290,6 +288,16 @@ export function publicPostWhere(
   return and(...filters);
 }
 
+export const widgetPostAuthorName = sql<string | null>`coalesce(
+  (SELECT ${widgetUser.name} FROM ${widgetUser} WHERE ${widgetUser.id} = ${post.widgetUserId}),
+  (SELECT ${user.name} FROM ${user} WHERE ${user.id} = ${post.authorId})
+)`;
+
+export const widgetPostAuthorImage = sql<string | null>`coalesce(
+  (SELECT ${widgetUser.image} FROM ${widgetUser} WHERE ${widgetUser.id} = ${post.widgetUserId}),
+  (SELECT ${user.image} FROM ${user} WHERE ${user.id} = ${post.authorId})
+)`;
+
 export const postSelectFields = {
   id: post.id,
   title: post.title,
@@ -304,10 +312,17 @@ export const postSelectFields = {
   boardName: board.name,
   boardSlug: board.slug,
   isAnonymous: post.isAnonymous,
-  authorName: sql<string | null>`coalesce(${widgetUser.name}, ${user.name})`,
-  authorImage: sql<string | null>`coalesce(${widgetUser.image}, ${user.image})`,
+  authorName: widgetPostAuthorName,
+  authorImage: widgetPostAuthorImage,
   metadata: post.metadata,
 };
+
+export function widgetPostQuery(db: WidgetRouterContext["db"]) {
+  return db
+    .select(postSelectFields)
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id));
+}
 
 export function dicebearAvatar(seed: string) {
   return `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(

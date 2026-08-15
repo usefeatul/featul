@@ -1,5 +1,5 @@
-import { and, desc, eq, inArray, sql } from "drizzle-orm";
-import { board, post, user, widgetUser } from "@featul/db";
+import { and, desc, eq, inArray } from "drizzle-orm";
+import { board, post } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import { getRequestFingerprint } from "../../shared/request-fingerprint";
 import {
@@ -8,6 +8,8 @@ import {
   mapWidgetPostRow,
   resolveViewerId,
   resolveWidget,
+  widgetPostAuthorImage,
+  widgetPostAuthorName,
 } from "./resolve";
 import { projectInput, viewerSchema } from "./schema";
 
@@ -40,18 +42,12 @@ export const widgetRoadmap = publicProcedure
         roadmapStatus: post.roadmapStatus,
         createdAt: post.createdAt,
         isAnonymous: post.isAnonymous,
-        authorName: sql<
-          string | null
-        >`coalesce(${widgetUser.name}, ${user.name})`,
-        authorImage: sql<
-          string | null
-        >`coalesce(${widgetUser.image}, ${user.image})`,
+        authorName: widgetPostAuthorName,
+        authorImage: widgetPostAuthorImage,
         metadata: post.metadata,
       })
       .from(post)
       .innerJoin(board, eq(post.boardId, board.id))
-      .leftJoin(user, eq(post.authorId, user.id))
-      .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
       .where(
         and(
           eq(board.workspaceId, resolved.workspaceId),

@@ -120,9 +120,10 @@ export const widgetSessionIdentity = privateProcedure
     const email = String(sessionUser.email || "")
       .trim()
       .toLowerCase();
-    if (!email) return c.superjson({ user: null });
+    const userId = String(sessionUser.id || "").trim();
+    if (!email || !userId) return c.superjson({ user: null });
     const identity = {
-      id: sessionUser.id,
+      id: userId,
       email,
       name: sessionUser.name || undefined,
       avatar: sessionUser.image || undefined,

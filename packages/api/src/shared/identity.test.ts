@@ -131,7 +131,6 @@ describe("widget parent origin allowlist", () => {
       customDomain: "feedback.convex.dev",
       verifiedHosts: ["notes.convex.dev"],
       appOrigin: "https://app.featul.com",
-      configuredOrigins: ["https://dashboard.convex.dev"],
       includeDevOrigins: true,
     });
     expect(list).toContain("https://convex.featul.com");
@@ -139,7 +138,6 @@ describe("widget parent origin allowlist", () => {
     expect(list).toContain("https://feedback.convex.dev");
     expect(list).toContain("https://notes.convex.dev");
     expect(list).toContain("https://app.featul.com");
-    expect(list).toContain("https://dashboard.convex.dev");
     expect(list).toContain("http://localhost:3000");
   });
 

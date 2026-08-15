@@ -82,13 +82,3 @@ export const updateTimezoneInputSchema = z.object({
   slug: slugSchema,
   timezone: z.string().min(1),
 });
-
-export const updateWidgetInputSchema = z.object({
-  slug: slugSchema,
-  origins: z.array(z.string().trim().url().max(2048)).max(20),
-});
-
-export const rotateWidgetInputSchema = z.object({
-  slug: slugSchema,
-  confirmation: z.literal("rotate"),
-});

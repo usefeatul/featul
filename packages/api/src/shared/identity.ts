@@ -13,11 +13,18 @@ export function widgetIdentityPayload(
   workspaceId: string,
   identity: Omit<WidgetIdentity, "signature">,
 ) {
+  const id = String(identity.id || "").trim();
+  const email = String(identity.email || "")
+    .trim()
+    .toLowerCase();
+  if (!id || !email) {
+    throw new Error("Widget identity requires id and email");
+  }
   return JSON.stringify([
     1,
     workspaceId.trim(),
-    identity.id.trim(),
-    identity.email.trim().toLowerCase(),
+    id,
+    email,
     identity.name?.trim() || "",
     identity.avatar?.trim() || "",
     identity.expiresAt,

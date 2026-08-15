@@ -24,8 +24,6 @@ import {
   deleteWorkspaceInputSchema,
   importCsvInputSchema,
   updateTimezoneInputSchema,
-  updateWidgetInputSchema,
-  rotateWidgetInputSchema,
 } from "../validators/workspace";
 import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain";
 import { Resolver } from "node:dns/promises";
@@ -41,7 +39,7 @@ import { seedWorkspaceOnboarding } from "../services/onboarding";
 import { runWorkspaceCsvImport } from "../services/workspace-csv-import";
 import { isReservedWorkspaceSlug } from "../shared/workspace-slug";
 import { getWorkspaceAccessPlan } from "../shared/access";
-import { createWidgetSecret, normalizeWidgetOrigin } from "../shared/identity";
+import { createWidgetSecret } from "../shared/identity";
 
 const dnsResolver = new Resolver();
 
@@ -130,57 +128,19 @@ export function createWorkspaceRouter() {
           },
         });
       }),
-    widgetSettings: privateProcedure
+    widgetSecret: privateProcedure
       .input(workspaceSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
         const access = await requireWorkspaceManagerWithPlan(ctx, input.slug);
         const [ws] = await ctx.db
-          .select({
-            id: workspace.id,
-            widgetSecret: workspace.widgetSecret,
-            widgetAllowedOrigins: workspace.widgetAllowedOrigins,
-          })
+          .select({ widgetSecret: workspace.widgetSecret })
           .from(workspace)
           .where(eq(workspace.id, access.id))
           .limit(1);
         if (!ws)
           throw new HTTPException(404, { message: "Workspace not found" });
         c.header("Cache-Control", "private, no-store");
-        return c.superjson({
-          secret: ws.widgetSecret,
-          origins: ws.widgetAllowedOrigins,
-        });
-      }),
-    updateWidget: privateProcedure
-      .input(updateWidgetInputSchema)
-      .post(async ({ ctx, input, c }) => {
-        const access = await requireWorkspaceManagerWithPlan(ctx, input.slug);
-        let origins: string[];
-        try {
-          origins = [...new Set(input.origins.map(normalizeWidgetOrigin))];
-        } catch (error) {
-          throw new HTTPException(400, {
-            message:
-              error instanceof Error ? error.message : "Invalid widget origin",
-          });
-        }
-        await ctx.db
-          .update(workspace)
-          .set({ widgetAllowedOrigins: origins })
-          .where(eq(workspace.id, access.id));
-        return c.superjson({ origins });
-      }),
-    rotateWidget: privateProcedure
-      .input(rotateWidgetInputSchema)
-      .post(async ({ ctx, input, c }) => {
-        const access = await requireWorkspaceManagerWithPlan(ctx, input.slug);
-        const secret = createWidgetSecret();
-        await ctx.db
-          .update(workspace)
-          .set({ widgetSecret: secret })
-          .where(eq(workspace.id, access.id));
-        c.header("Cache-Control", "private, no-store");
-        return c.superjson({ secret });
+        return c.superjson({ secret: ws.widgetSecret });
       }),
     checkSlug: privateProcedure
       .input(checkSlugInputSchema)
