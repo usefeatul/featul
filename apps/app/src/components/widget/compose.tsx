@@ -173,7 +173,7 @@ export function WidgetFeedbackCompose({
         boardSlug: selectedBoard?.slug || null,
         isAnonymous: created.isAnonymous ?? !(userId || identity?.email),
         authorName: identity?.name || null,
-        authorImage: identity?.avatar || null,
+        authorImage: created.authorImage || identity?.avatar || null,
         hasVoted: true,
       });
       setTitle("");

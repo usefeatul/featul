@@ -13,6 +13,7 @@ import {
   resolveAuthorId,
   resolveViewerId,
   resolveWidget,
+  resolveWidgetAuthorImage,
   getWidgetRequest,
 } from "./resolve";
 import { createSchema, postDetailSchema, postsSchema, similarSchema } from "./schema";
@@ -175,5 +176,17 @@ export const widgetCreate = publicProcedure.input(createSchema).post(async ({ ct
   });
   await ctx.db.update(post).set({ upvotes: 1 }).where(eq(post.id, created.id));
 
-  return c.superjson({ post: { ...created, upvotes: 1 } });
+  return c.superjson({
+    post: {
+      ...created,
+      upvotes: 1,
+      authorImage: resolveWidgetAuthorImage({
+        id: created.id,
+        slug: created.slug,
+        isAnonymous: created.isAnonymous,
+        authorImage: null,
+        metadata: created.metadata,
+      }),
+    },
+  });
 });

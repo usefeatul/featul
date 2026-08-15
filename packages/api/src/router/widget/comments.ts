@@ -5,10 +5,10 @@ import { publicProcedure } from "../../jstack";
 import { getRequestFingerprint } from "../../shared/request-fingerprint";
 import {
   assertWidgetPostImageUrl,
-  dicebearAvatar,
   resolveAuthorId,
   resolveViewerId,
   resolveWidget,
+  resolveWidgetCommentAuthorImage,
   getWidgetRequest,
 } from "./resolve";
 import { commentsSchema, createCommentSchema } from "./schema";
@@ -123,9 +123,7 @@ export const widgetComments = publicProcedure.input(commentsSchema).get(async ({
         content: (row.content || "").trim(),
         image,
         authorName: row.isAnonymous ? "Guest" : row.authorName || "Guest",
-        authorImage: row.isAnonymous
-          ? dicebearAvatar(row.id)
-          : row.authorImage || dicebearAvatar(row.authorName || row.id),
+        authorImage: resolveWidgetCommentAuthorImage(row),
         isAnonymous: Boolean(row.isAnonymous),
         upvotes: row.upvotes || 0,
         replyCount: row.replyCount || 0,
@@ -266,9 +264,13 @@ export const widgetCreateComment = publicProcedure.input(createCommentSchema).po
       content: created.content?.trim() || "",
       image,
       authorName: created.isAnonymous ? "Guest" : created.authorName || "Guest",
-      authorImage: created.isAnonymous
-        ? dicebearAvatar(created.id)
-        : authorImage || dicebearAvatar(created.authorName || created.id),
+      authorImage: resolveWidgetCommentAuthorImage({
+        id: created.id,
+        isAnonymous: created.isAnonymous,
+        authorImage,
+        authorName: created.authorName,
+        metadata: created.metadata,
+      }),
       isAnonymous: Boolean(created.isAnonymous),
       upvotes: 1,
       replyCount: 0,

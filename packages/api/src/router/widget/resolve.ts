@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import { and, eq, ilike, inArray, isNull, or } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createId } from "@paralleldrive/cuid2";
@@ -229,7 +230,23 @@ export const postSelectFields = {
 };
 
 export function dicebearAvatar(seed: string) {
-  return `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(seed || "guest")}`;
+  return `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
+    (seed || "anonymous").trim() || "anonymous",
+  )}`;
+}
+
+export function fingerprintFromMetadata(metadata: unknown): string | null {
+  if (!isRecord(metadata) || typeof metadata.fingerprint !== "string") return null;
+  const fingerprint = metadata.fingerprint.trim();
+  return fingerprint || null;
+}
+
+export function avatarFromFingerprint(fingerprint?: string | null, fallback = "anonymous") {
+  if (fingerprint) {
+    const seed = createHash("sha256").update(fingerprint).digest("hex");
+    return dicebearAvatar(seed);
+  }
+  return dicebearAvatar(fallback);
 }
 
 export function resolveWidgetAuthorImage(row: {
@@ -237,14 +254,30 @@ export function resolveWidgetAuthorImage(row: {
   slug: string;
   isAnonymous: boolean | null;
   authorImage: string | null;
+  authorName?: string | null;
   metadata?: unknown;
 }) {
   if (!row.isAnonymous && row.authorImage) return row.authorImage;
-  const fingerprint =
-    isRecord(row.metadata) && typeof row.metadata.fingerprint === "string"
-      ? row.metadata.fingerprint
-      : "";
-  return dicebearAvatar(fingerprint || row.id || row.slug || "guest");
+  const fingerprint = fingerprintFromMetadata(row.metadata);
+  if (row.isAnonymous) {
+    return avatarFromFingerprint(fingerprint, row.id || row.slug || "anonymous");
+  }
+  return row.authorImage || dicebearAvatar(row.authorName || row.id || "anonymous");
+}
+
+export function resolveWidgetCommentAuthorImage(row: {
+  id: string;
+  isAnonymous: boolean | null;
+  authorImage: string | null;
+  authorName?: string | null;
+  metadata?: unknown;
+}) {
+  if (!row.isAnonymous && row.authorImage) return row.authorImage;
+  const fingerprint = fingerprintFromMetadata(row.metadata);
+  if (row.isAnonymous) {
+    return avatarFromFingerprint(fingerprint, row.id || "anonymous");
+  }
+  return row.authorImage || dicebearAvatar(row.authorName || row.id || "anonymous");
 }
 
 export function mapWidgetPostRow<T extends {
