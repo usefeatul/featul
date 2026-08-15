@@ -142,6 +142,18 @@ export function createWorkspaceRouter() {
         c.header("Cache-Control", "private, no-store");
         return c.superjson({ secret: ws.widgetSecret });
       }),
+    rotateWidgetSecret: privateProcedure
+      .input(workspaceSlugInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const access = await requireWorkspaceManagerWithPlan(ctx, input.slug);
+        const secret = createWidgetSecret();
+        await ctx.db
+          .update(workspace)
+          .set({ widgetSecret: secret })
+          .where(eq(workspace.id, access.id));
+        c.header("Cache-Control", "private, no-store");
+        return c.superjson({ secret });
+      }),
     checkSlug: privateProcedure
       .input(checkSlugInputSchema)
       .post(async ({ ctx, input, c }) => {

@@ -141,3 +141,39 @@ export const widgetSessionIdentity = privateProcedure
       },
     });
   });
+
+/** Dev-only helper for the in-app widget test embed. */
+export const widgetDevIdentity = privateProcedure
+  .input(projectIdInput)
+  .get(async ({ ctx, input, c }) => {
+    if (process.env.NODE_ENV === "production") {
+      throw new HTTPException(404, { message: "Not found" });
+    }
+
+    const resolved = await resolveWidget(ctx, input.projectId);
+    const sessionUser = ctx.session.user;
+    const email = String(sessionUser.email || "")
+      .trim()
+      .toLowerCase();
+    const userId = String(sessionUser.id || "").trim();
+    if (!email || !userId) return c.superjson({ user: null });
+
+    const identity = {
+      id: userId,
+      email,
+      name: sessionUser.name || undefined,
+      avatar: sessionUser.image || undefined,
+      expiresAt: Math.floor(Date.now() / 1000) + WIDGET_IDENTITY_TTL_SECONDS,
+    };
+
+    return c.superjson({
+      user: {
+        ...identity,
+        signature: signWidgetIdentity(
+          resolved.widgetSecret,
+          resolved.workspaceId,
+          identity,
+        ),
+      },
+    });
+  });

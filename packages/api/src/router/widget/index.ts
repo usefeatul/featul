@@ -1,7 +1,7 @@
 import { j } from "../../jstack";
 import { widgetChangelog } from "./changelog";
 import { widgetComments, widgetCreateComment } from "./comments";
-import { widgetConfig, widgetIdentify, widgetSessionIdentity } from "./config";
+import { widgetConfig, widgetDevIdentity, widgetIdentify, widgetSessionIdentity } from "./config";
 import { widgetCreate, widgetPost, widgetPosts, widgetSimilar } from "./posts";
 import { widgetRoadmap } from "./roadmap";
 import { widgetUploadImage } from "./storage";
@@ -12,6 +12,7 @@ export function createWidgetRouter() {
     config: widgetConfig,
     identify: widgetIdentify,
     sessionIdentity: widgetSessionIdentity,
+    devIdentity: widgetDevIdentity,
     posts: widgetPosts,
     post: widgetPost,
     similar: widgetSimilar,

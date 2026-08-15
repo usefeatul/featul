@@ -26,7 +26,7 @@ export default function WorkspaceSection({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <TimezoneCard slug={slug} initialTimezone={timezone} />
-        <EmbedCard workspaceId={workspaceId} />
+        <EmbedCard workspaceId={workspaceId} slug={slug} />
         <DangerZoneCard slug={slug} workspaceName={workspaceName} />
       </div>
     </SectionCard>

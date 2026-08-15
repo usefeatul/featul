@@ -7,7 +7,7 @@ description: Add the Featul feedback widget to your app and securely identify si
 
 The Featul widget lets customers browse feedback, submit ideas, vote, view your roadmap, and read updates without leaving your app.
 
-Find your **Workspace ID** under **Settings → Workspace → Embed widget**. Featul provisions a widget signing secret automatically for server-side user identification.
+Find your **Workspace ID** and **signing secret** under **Settings → Workspace → Embed widget**. Featul provisions the signing secret automatically when your workspace is created.
 
 ## Install the widget
 
@@ -174,7 +174,7 @@ type FeatulWidgetApi = {
 
 ## Production checklist
 
-- Keep the widget signing secret on your server only.
+- Copy the signing secret from **Settings → Workspace → Embed widget** and keep it on your server only.
 - Featul automatically allows embeds from your workspace domain and verified custom domains.
 - Call `identify` after login and `identify(null)` after logout.
 - Use the versioned `/widget/sdk/v1.js` URL.

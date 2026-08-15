@@ -912,6 +912,7 @@ function boot() {
       state.open = false;
       state.expanded = false;
       state.animating = false;
+      state.user = null;
       state.queue = [];
       state.listeners.ready.clear();
       state.listeners.open.clear();
