@@ -176,7 +176,7 @@ export default function WidgetFrame({
           const data = await res.json();
           setRoadmap(Array.isArray(data.posts) ? (data.posts as WidgetRoadmapItem[]) : []);
         }
-        if (section === "home" || section === "changelog" || section === "roadmap") {
+        if (section === "home" || section === "changelog") {
           const res = await client.widget.changelog.$get(apiBase);
           const data = await res.json();
           const entries = Array.isArray(data.entries) ? data.entries : [];
@@ -818,40 +818,6 @@ export default function WidgetFrame({
             transition={contentTransition}
             className="flex min-h-0 flex-1 flex-col"
           >
-            {homeChangelog.length ? (
-              <section className="border-b border-[rgb(var(--widget-fg)/0.1)] pb-4 pt-1">
-                <div className="mb-2 flex items-center justify-between gap-3 px-5">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
-                    Recent updates
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setSection("changelog")}
-                    className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
-                  >
-                    See updates →
-                  </button>
-                </div>
-                <div>
-                  {homeChangelog.map((entry) => (
-                    <button
-                      key={entry.id}
-                      type="button"
-                      onClick={() => {
-                        setSelectedChangelogId(entry.id);
-                        setSection("changelog");
-                      }}
-                      className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
-                    >
-                      <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
-                      <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
-                        {entry.title}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-            ) : null}
             <WidgetRoadmap
               items={roadmap}
               apiBase={apiBase}
