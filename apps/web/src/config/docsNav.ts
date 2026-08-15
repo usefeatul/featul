@@ -27,6 +27,7 @@ export const docsSections: DocsNavSection[] = [
       { id: "getting-started/private-boards", label: "Private Boards", href: "/docs/getting-started/private-boards" },
       { id: "getting-started/smart-grouping", label: "Smart Grouping", href: "/docs/getting-started/smart-grouping" },
       { id: "getting-started/guest-feedback", label: "Guest Feedback", href: "/docs/getting-started/guest-feedback" },
+      { id: "getting-started/widget", label: "Embed Widget", href: "/docs/getting-started/widget" },
       { id: "getting-started/add-userjot-links", label: "Add UserJot Links", href: "/docs/getting-started/add-userjot-links" },
       { id: "getting-started/mask-identities", label: "Mask Identities", href: "/docs/getting-started/mask-identities" },
     ],

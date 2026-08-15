@@ -7,31 +7,25 @@ description: Link feedback to user accounts for better context and follow-up.
 
 Connect feedback to specific user accounts for enhanced relationship management and data analysis. Identified feedback enables follow-up, segmentation, and personalized responses.
 
-## Identification Methods
+## Widget identification
 
-| Method | Implementation |
-|--------|----------------|
-| **Anonymous** | No user data collected |
-| **Identified** | User context stored with posts |
+Call `featul.identify` with an HMAC-signed user from your backend:
 
-Identified users provide:
-- Contact information for follow-up
-- Account details for segmentation
-- Submission history for analysis
-
-## User Context Data
-
-Pass user information from your application:
-
-```json
-{
-  "user_id": "user_12345",
-  "email": "customer@example.com",
-  "name": "Jane Doe",
-  "plan": "professional",
-  "company": "Acme Inc"
-}
+```js
+featul.identify({
+  id: "user_12345",
+  email: "customer@example.com",
+  name: "Jane Doe",
+  avatar: "https://example.com/jane.jpg",
+  signature: "SERVER_GENERATED_HMAC"
+});
 ```
+
+The signature is `HMAC-SHA256(widgetSecret, id + ":" + lowercaseEmail)` encoded as hexadecimal. Never generate it in browser code or expose the Widget secret.
+
+Call `featul.identify(null)` when the user logs out. Missing or invalid signatures are treated as anonymous guests.
+
+See [Embed the widget](/docs/getting-started/widget) for the complete server and browser setup.
 
 ## Benefits of Identification
 

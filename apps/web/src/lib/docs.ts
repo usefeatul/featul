@@ -18,6 +18,7 @@ export type DocsPageId =
   | "getting-started/private-boards"
   | "getting-started/smart-grouping"
   | "getting-started/guest-feedback"
+  | "getting-started/widget"
   | "getting-started/add-userjot-links"
   | "getting-started/mask-identities"
   | "branding-setup/branding"
@@ -41,6 +42,7 @@ const DOC_IDS: DocsPageId[] = [
   "getting-started/private-boards",
   "getting-started/smart-grouping",
   "getting-started/guest-feedback",
+  "getting-started/widget",
   "getting-started/add-userjot-links",
   "getting-started/mask-identities",
   "branding-setup/branding",

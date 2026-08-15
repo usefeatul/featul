@@ -35,6 +35,7 @@ Distribute your workspace URL through:
 
 - [Learn the keyboard shortcuts](/docs/getting-started/shortcuts) used across the workspace app
 - [Create additional boards](/docs/getting-started/create-boards) for different feedback types
+- [Embed the widget](/docs/getting-started/widget) to collect feedback inside your app
 - [Invite team members](/docs/getting-started/invite-members) to manage feedback together
 - [Plan your roadmap](/docs/getting-started/plan-roadmap) to share upcoming features
 - [Publish updates](/docs/getting-started/publish-updates) through your changelog
