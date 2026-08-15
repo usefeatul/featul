@@ -314,7 +314,7 @@ export default function WidgetFrame({
     <Theme mode={themeMode}>
     <motion.main
       initial={false}
-      className={`flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] shadow-sm ${
+      className={`flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] ${
         fullscreen
           ? "rounded-none border-0"
           : "rounded-xl border border-[rgb(var(--widget-fg)/0.1)]"

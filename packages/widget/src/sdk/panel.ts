@@ -27,7 +27,7 @@ export const panelSource = String.raw`
   }
 
   function panelShadow() {
-    return isFullscreenPanel() ? "none" : "0 24px 70px rgba(0, 0, 0, 0.36)";
+    return "none";
   }
 
   function syncFrameLayout() {
