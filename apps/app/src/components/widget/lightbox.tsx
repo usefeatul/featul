@@ -51,7 +51,7 @@ export function WidgetHostImageDialog() {
       <DialogContent
         fluid
         overlayClassName="z-[2147483647] bg-black/20 backdrop-blur-xs dark:bg-black/20"
-        className="z-[2147483647] max-w-none gap-1 rounded-2xl bg-muted p-1 sm:max-w-none"
+        className="z-2147483647 max-w-none gap-1 rounded-2xl bg-muted p-1 sm:max-w-none"
         style={{
           width: "min(92vw, 1070px)",
           maxWidth: "none",
