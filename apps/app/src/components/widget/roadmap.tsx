@@ -25,10 +25,18 @@ export type WidgetRoadmapItem = {
 };
 
 const SECTIONS = [
-  { key: "progress", label: "In progress", status: "progress" },
-  { key: "planned", label: "Planned", status: "planned" },
-  { key: "completed", label: "Done", status: "completed" },
+  { key: "progress", label: "In progress", status: "progress", color: "#3b82f6" },
+  { key: "planned", label: "Planned", status: "planned", color: "#f59e0b" },
+  { key: "completed", label: "Done", status: "completed", color: "#15CF59" },
 ] as const;
+
+function StatusNode({ status }: { status: string }) {
+  return (
+    <span className="relative z-[2] flex size-4 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))] shadow-[0_0_0_2px_rgb(var(--widget-surface))]">
+      <StatusIcon status={status} className="size-4" />
+    </span>
+  );
+}
 
 const HEADER_HEIGHT = 44;
 const INITIAL_VISIBLE = 6;
@@ -183,7 +191,7 @@ export function WidgetRoadmap({
                 }}
                 aria-label={`Jump to ${section.label}`}
               >
-                <StatusIcon status={section.status} className="size-4 shrink-0" />
+                <StatusNode status={section.status} />
                 <h3 className="flex-1 text-sm font-semibold text-[rgb(var(--widget-fg))]">{section.label}</h3>
                 <span className="tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
                   {String(grouped[section.key].length).padStart(2, "0")}
@@ -225,7 +233,7 @@ export function WidgetRoadmap({
               aria-hidden={isPinned}
               tabIndex={isPinned ? -1 : 0}
             >
-              <StatusIcon status={section.status} className="size-4 shrink-0" />
+              <StatusNode status={section.status} />
               <h3 className="flex-1 text-sm font-semibold text-[rgb(var(--widget-fg))]">{section.label}</h3>
               <span className="tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
                 {String(sectionItems.length).padStart(2, "0")}
@@ -233,10 +241,13 @@ export function WidgetRoadmap({
             </button>
 
             {sectionItems.length ? (
-              <div className="relative bg-[rgb(var(--widget-surface))]">
+              <div className="relative">
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute bottom-4 left-[27px] top-2 w-px bg-[rgb(var(--widget-fg)/0.1)]"
+                  className="pointer-events-none absolute bottom-3 left-[27px] top-2 z-[1] w-px"
+                  style={{
+                    background: `linear-gradient(180deg, ${section.color}00, ${section.color}55 16%, ${section.color}55 84%, ${section.color}00)`,
+                  }}
                 />
                 {visible.map((item) => (
                   <RoadmapItem
@@ -346,37 +357,34 @@ function RoadmapItem({
   compact?: boolean;
 }) {
   const doneDate = formatDoneDate(item.createdAt);
+  const node = <StatusNode status={status} />;
 
   if (compact) {
     return (
       <button
         type="button"
         onClick={() => onOpen?.(item)}
-        className="flex w-full cursor-pointer items-center gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3 text-left"
+        className="flex w-full cursor-pointer items-center gap-3 px-5 py-2.5 text-left"
         aria-label={item.title}
       >
-        <div className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
-          <StatusIcon status={status} className="size-3.5" />
-        </div>
+        {node}
         <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">{item.title}</p>
         {doneDate ? (
-          <span className="shrink-0 text-xs text-[rgb(var(--widget-fg)/0.35)]">{doneDate}</span>
+          <span className="relative z-[2] shrink-0 text-xs text-[rgb(var(--widget-fg)/0.35)]">{doneDate}</span>
         ) : null}
       </button>
     );
   }
 
   return (
-    <div className="relative flex items-center gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
+    <div className="flex items-center gap-3 px-5 py-2.5">
       <button
         type="button"
         onClick={() => onOpen?.(item)}
         className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
         aria-label={item.title}
       >
-        <div className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
-          <StatusIcon status={status} className="size-3.5" />
-        </div>
+        {node}
         <p className="min-w-0 flex-1 truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
           {item.title}
         </p>
@@ -389,7 +397,7 @@ function RoadmapItem({
         userId={userId}
         identity={identity}
         variant="plain"
-        className="shrink-0"
+        className="relative z-[2] shrink-0"
         onChange={({ upvotes, hasVoted }) => onVoteChange?.(item.id, upvotes, hasVoted)}
       />
     </div>
