@@ -115,7 +115,7 @@ export function Comments({
           tree.map((node, index) => (
             <div key={node.id}>
               {index > 0 ? (
-                <div className="border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" />
+                <div className="-mx-5 border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" />
               ) : null}
               <CommentThreadItem
                 node={node}
