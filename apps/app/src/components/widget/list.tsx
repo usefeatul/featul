@@ -376,9 +376,12 @@ export function WidgetFeedbackList({
           <WidgetFeedbackListSkeleton />
         ) : null}
         {error ? (
-          <p className="mx-4 my-4 rounded-md bg-[rgb(var(--widget-fg)/0.04)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
-            {error}
-          </p>
+          <div className="flex flex-col items-center px-5 py-12 text-center">
+            <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">Couldn’t load requests</p>
+            <p className="mt-1 max-w-3xs text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
+              Something went wrong. Pull this list open again in a moment.
+            </p>
+          </div>
         ) : null}
         {!loading && !error && !posts.length ? (
           <div className="flex flex-col items-center px-5 py-12 text-center">

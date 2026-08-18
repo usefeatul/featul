@@ -17,6 +17,7 @@ type Props = {
   feedbackTitle: string;
   fullscreen?: boolean;
   loading?: boolean;
+  hideCompose?: boolean;
   onBack: () => void;
   onCompose: () => void;
   onClose: () => void;
@@ -32,6 +33,7 @@ export function Header({
   feedbackTitle,
   fullscreen = false,
   loading = false,
+  hideCompose = false,
   onBack,
   onCompose,
   onClose,
@@ -97,7 +99,7 @@ export function Header({
             </div>
           )}
 
-          {!showSubpageHeader ? (
+          {!showSubpageHeader && !hideCompose ? (
             <button
               type="button"
               onClick={onCompose}

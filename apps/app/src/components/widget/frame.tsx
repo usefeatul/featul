@@ -89,7 +89,7 @@ export default function WidgetFrame({
     string | null
   >(null);
   const [loading, setLoading] = React.useState(true);
-  const [message, setMessage] = React.useState("");
+  const [loadFailed, setLoadFailed] = React.useState(false);
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(
     null,
   );
@@ -152,6 +152,7 @@ export default function WidgetFrame({
     let canceled = false;
     async function load() {
       setLoading(true);
+      setLoadFailed(false);
       try {
         const res = await client.widget.config.$get(apiBase);
         const data = await res.json();
@@ -175,7 +176,7 @@ export default function WidgetFrame({
         setListBoardId("");
         postToParent(parentOrigin, "ready");
       } catch {
-        if (!canceled) setMessage("The widget could not load.");
+        if (!canceled) setLoadFailed(true);
       } finally {
         if (!canceled) setLoading(false);
       }
@@ -217,10 +218,7 @@ export default function WidgetFrame({
             setRoadmap(parseWidgetRoadmapItems(data.posts));
             setRoadmapReady(true);
           } catch {
-            if (!canceled) {
-              setRoadmapReady(true);
-              setMessage("Could not load this section.");
-            }
+            if (!canceled) setRoadmapReady(true);
           }
         })(),
         (async () => {
@@ -232,10 +230,7 @@ export default function WidgetFrame({
             setChangelog(mapChangelogEntries(entries));
             setChangelogReady(true);
           } catch {
-            if (!canceled) {
-              setChangelogReady(true);
-              setMessage("Could not load this section.");
-            }
+            if (!canceled) setChangelogReady(true);
           }
         })(),
       ]);
@@ -297,7 +292,6 @@ export default function WidgetFrame({
           if (requestVersion !== identifyVersionRef.current) return;
           setIdentity(null);
           setUserId(null);
-          setMessage("Could not identify this user.");
         }
       }
     }
@@ -380,7 +374,9 @@ export default function WidgetFrame({
   const isChangelogDetail =
     section === "changelog" && Boolean(selectedChangelogId);
   const showTabs =
-    (!isFeedback || feedbackView === "list") && !isChangelogDetail;
+    !loadFailed &&
+    (!isFeedback || feedbackView === "list") &&
+    !isChangelogDetail;
   const contentTransition = reduceMotion
     ? { duration: 0 }
     : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
@@ -456,6 +452,7 @@ export default function WidgetFrame({
             onClose={close}
             fullscreen={fullscreen}
             loading={loading}
+            hideCompose={loadFailed}
           />
 
           <div
@@ -488,13 +485,19 @@ export default function WidgetFrame({
                 )}
               </motion.div>
             ) : null}
-            {!loading && message ? (
-              <p className="mb-3 rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
-                {message}
-              </p>
+
+            {!loading && loadFailed ? (
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 text-center">
+                <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">
+                  Couldn’t load right now
+                </p>
+                <p className="mt-1.5 max-w-[240px] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
+                  Check your connection and open the widget again.
+                </p>
+              </div>
             ) : null}
 
-            {!loading ? (
+            {!loading && !loadFailed ? (
               <>
                 <div className={section === "home" ? undefined : "hidden"}>
                   <Home
@@ -581,9 +584,10 @@ export default function WidgetFrame({
                         onCreated={(post) => {
                           setSelectedPost(post);
                           setListRefreshKey((value) => value + 1);
+                        }}
+                        onView={(post) => {
+                          setSelectedPost(post);
                           setFeedbackView("detail");
-                          setMessage("Feedback submitted. Thank you.");
-                          window.setTimeout(() => setMessage(""), 2500);
                         }}
                       />
                     </motion.div>

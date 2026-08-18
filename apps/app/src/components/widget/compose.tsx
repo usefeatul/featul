@@ -6,7 +6,7 @@ import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
 import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
   POST_IMAGE_UPLOAD_MAX_BYTES,
@@ -31,6 +31,7 @@ type Props = {
   primaryColor?: string;
   onCancel: () => void;
   onCreated: (post: WidgetPost) => void;
+  onView: (post: WidgetPost) => void;
 };
 
 type UploadedImage = {
@@ -46,12 +47,14 @@ export function WidgetFeedbackCompose({
   primaryColor = "#3b82f6",
   onCancel: _onCancel,
   onCreated,
+  onView,
 }: Props) {
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
   const [message, setMessage] = React.useState("");
+  const [created, setCreated] = React.useState<WidgetPost | null>(null);
   const [similar, setSimilar] = React.useState<SimilarPost[]>([]);
   const [uploadedImage, setUploadedImage] = React.useState<UploadedImage | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -94,15 +97,15 @@ export function WidgetFeedbackCompose({
     if (!file) return;
 
     if (!boardId) {
-      setMessage("Select a board before uploading an image.");
+      setMessage("Pick a board first.");
       return;
     }
     if (!isAllowedImageType(file.type, IMAGE_UPLOAD_CONTENT_TYPES)) {
-      setMessage("Unsupported file type. Use PNG, JPEG, WebP, or GIF.");
+      setMessage("Use a PNG, JPEG, WebP, or GIF.");
       return;
     }
     if (file.size > POST_IMAGE_UPLOAD_MAX_BYTES) {
-      setMessage("Image too large. Maximum size is 5MB.");
+      setMessage("Images need to be 5MB or smaller.");
       return;
     }
 
@@ -132,8 +135,8 @@ export function WidgetFeedbackCompose({
       if (!put.ok) throw new Error("Upload failed");
 
       setUploadedImage({ url: data.publicUrl, name: file.name });
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not upload image.");
+    } catch {
+      setMessage("That image couldn’t be added.");
       setUploadedImage(null);
     } finally {
       setUploading(false);
@@ -157,39 +160,61 @@ export function WidgetFeedbackCompose({
       });
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
-      const created = data.post;
-      onCreated({
-        id: created.id,
-        title: created.title,
-        slug: created.slug,
-        content: created.content,
-        image: created.image ?? uploadedImage?.url ?? null,
-        upvotes: created.upvotes ?? 1,
-        commentCount: created.commentCount ?? 0,
-        roadmapStatus: created.roadmapStatus ?? "pending",
-        createdAt: created.createdAt ?? new Date().toISOString(),
+      const createdPost = data.post;
+      const post: WidgetPost = {
+        id: createdPost.id,
+        title: createdPost.title,
+        slug: createdPost.slug,
+        content: createdPost.content,
+        image: createdPost.image ?? uploadedImage?.url ?? null,
+        upvotes: createdPost.upvotes ?? 1,
+        commentCount: createdPost.commentCount ?? 0,
+        roadmapStatus: createdPost.roadmapStatus ?? "pending",
+        createdAt: createdPost.createdAt ?? new Date().toISOString(),
         boardId,
         boardName: selectedBoard?.name || null,
         boardSlug: selectedBoard?.slug || null,
-        isAnonymous: created.isAnonymous ?? !(userId || identity?.email),
+        isAnonymous: createdPost.isAnonymous ?? !(userId || identity?.email),
         authorName: identity?.name || null,
-        authorImage: created.authorImage || identity?.avatar || null,
+        authorImage: createdPost.authorImage || identity?.avatar || null,
         hasVoted: true,
-      });
+      };
+      onCreated(post);
+      setCreated(post);
       setTitle("");
       setContent("");
       setSimilar([]);
       setUploadedImage(null);
     } catch {
-      setMessage(
-        identity && !userId
-          ? "Identification failed. Check the email passed to identify()."
-          : "Could not submit feedback.",
-      );
+      setMessage("Couldn’t send this. Try again.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (created) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-2 text-center">
+        <div className="flex size-11 items-center justify-center rounded-full bg-[rgb(var(--widget-cta)/0.12)] text-[rgb(var(--widget-cta))]">
+          <Check className="size-5" strokeWidth={2.5} />
+        </div>
+        <p className="mt-4 text-[15px] font-semibold tracking-tight text-[rgb(var(--widget-fg))]">
+          Thanks for the feedback
+        </p>
+        <p className="mt-1.5 max-w-[240px] text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
+          The team will take a look. You can keep browsing or open your request.
+        </p>
+        <Button
+          type="button"
+          variant="plain"
+          onClick={() => onView(created)}
+          className="mt-6 h-10 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-5 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90"
+        >
+          View request
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
@@ -244,10 +269,6 @@ export function WidgetFeedbackCompose({
         </div>
       ) : null}
 
-      {message ? (
-        <p className="mt-3 rounded-md bg-[rgb(var(--widget-fg)/0.05)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">{message}</p>
-      ) : null}
-
       <div className="flex items-center justify-between gap-3 pt-4">
         <div className="flex items-center gap-1">
           <input
@@ -272,14 +293,19 @@ export function WidgetFeedbackCompose({
             )}
           </button>
         </div>
-        <Button
-          type="submit"
-          variant="plain"
-          disabled={!canSubmit}
-          className="h-10 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-5 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90 disabled:bg-[rgb(var(--widget-fg)/0.2)] disabled:text-[rgb(var(--widget-fg)/0.35)]"
-        >
-          {submitting ? <LoaderIcon className="size-4 animate-spin" /> : "Post"}
-        </Button>
+        <div className="flex min-w-0 items-center gap-3">
+          {message ? (
+            <p className="truncate text-xs text-[rgb(var(--widget-fg)/0.5)]">{message}</p>
+          ) : null}
+          <Button
+            type="submit"
+            variant="plain"
+            disabled={!canSubmit}
+            className="h-10 shrink-0 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-5 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90 disabled:bg-[rgb(var(--widget-fg)/0.2)] disabled:text-[rgb(var(--widget-fg)/0.35)]"
+          >
+            {submitting ? <LoaderIcon className="size-4 animate-spin" /> : "Post"}
+          </Button>
+        </div>
       </div>
     </form>
   );

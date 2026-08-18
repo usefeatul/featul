@@ -28,6 +28,7 @@ export type ComposerProps = {
   canSubmit: boolean;
   submitting: boolean;
   accent: string;
+  error?: string;
   onSubmit: () => void;
 };
 
@@ -92,7 +93,12 @@ export function Comments({
 
       {allowComments && !replyTo ? (
         <div className="mt-3">
-          <CommentComposer {...composerProps} placeholder="Add a comment..." submitLabel="Comment" />
+          <CommentComposer
+            {...composerProps}
+            error={composeError}
+            placeholder="Add a comment..."
+            submitLabel="Comment"
+          />
         </div>
       ) : null}
 
@@ -101,8 +107,6 @@ export function Comments({
           Comments are disabled on this board.
         </p>
       ) : null}
-
-      {composeError ? <p className="mt-3 text-sm text-red-400">{composeError}</p> : null}
 
       <div className="mt-2">
         {commentsLoading ? (
@@ -126,6 +130,7 @@ export function Comments({
                   replyTo ? (
                     <CommentComposer
                       {...composerProps}
+                      error={composeError}
                       placeholder={`Reply to ${replyTo.authorName || "comment"}...`}
                       submitLabel="Reply"
                       autoFocus
@@ -156,6 +161,7 @@ function CommentComposer({
   canSubmit,
   submitting,
   accent,
+  error,
   onSubmit,
   placeholder,
   submitLabel,
@@ -206,15 +212,20 @@ function CommentComposer({
             <ImageIcon className="size-3.5" />
           )}
         </button>
-        <button
-          type="button"
-          disabled={!canSubmit}
-          onClick={onSubmit}
-          className="inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[rgb(var(--widget-fg)/0.12)] disabled:text-[rgb(var(--widget-fg)/0.35)] disabled:opacity-100"
-          style={{ backgroundColor: canSubmit ? accent : undefined }}
-        >
-          {submitting ? <LoaderIcon className="size-3.5 animate-spin" /> : submitLabel}
-        </button>
+        <div className="flex min-w-0 items-center gap-2">
+          {error ? (
+            <p className="truncate text-xs text-[rgb(var(--widget-fg)/0.5)]">{error}</p>
+          ) : null}
+          <button
+            type="button"
+            disabled={!canSubmit}
+            onClick={onSubmit}
+            className="inline-flex h-8 shrink-0 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[rgb(var(--widget-fg)/0.12)] disabled:text-[rgb(var(--widget-fg)/0.35)] disabled:opacity-100"
+            style={{ backgroundColor: canSubmit ? accent : undefined }}
+          >
+            {submitting ? <LoaderIcon className="size-3.5 animate-spin" /> : submitLabel}
+          </button>
+        </div>
       </div>
     </div>
   );

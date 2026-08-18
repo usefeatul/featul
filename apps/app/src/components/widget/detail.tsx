@@ -107,10 +107,9 @@ export function WidgetFeedbackDetail({
         setAllowComments(Boolean(data.allowComments ?? true));
         setComments(parseWidgetComments(data.comments));
         setComposeError("");
-      } catch (err) {
+      } catch {
         if (!canceled) {
           setComments([]);
-          setComposeError(err instanceof Error ? err.message : "Failed to load comments");
         }
       } finally {
         if (!canceled) setCommentsLoading(false);
@@ -148,11 +147,11 @@ export function WidgetFeedbackDetail({
     if (!file || !post?.boardId) return;
 
     if (!isAllowedImageType(file.type, IMAGE_UPLOAD_CONTENT_TYPES)) {
-      setComposeError("Unsupported file type. Use PNG, JPEG, WebP, or GIF.");
+      setComposeError("Use a PNG, JPEG, WebP, or GIF.");
       return;
     }
     if (file.size > POST_IMAGE_UPLOAD_MAX_BYTES) {
-      setComposeError("Image too large. Maximum size is 5MB.");
+      setComposeError("Images need to be 5MB or smaller.");
       return;
     }
 
@@ -182,8 +181,8 @@ export function WidgetFeedbackDetail({
       if (!put.ok) throw new Error("Upload failed");
 
       setUploadedImage({ url: data.publicUrl, name: file.name });
-    } catch (error) {
-      setComposeError(error instanceof Error ? error.message : "Could not upload image.");
+    } catch {
+      setComposeError("That image couldn’t be added.");
       setUploadedImage(null);
     } finally {
       setUploading(false);
@@ -227,8 +226,8 @@ export function WidgetFeedbackDetail({
       );
       clearCompose();
       setReplyTo(null);
-    } catch (err) {
-      setComposeError(err instanceof Error ? err.message : "Could not post comment");
+    } catch {
+      setComposeError("Couldn’t post this. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -240,9 +239,12 @@ export function WidgetFeedbackDetail({
 
   if (error && !post) {
     return (
-      <p className="mx-5 rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
-        {error}
-      </p>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 text-center">
+        <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">Couldn’t load this request</p>
+        <p className="mt-1.5 max-w-[240px] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
+          It may have been removed, or the connection dropped.
+        </p>
+      </div>
     );
   }
 
