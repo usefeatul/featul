@@ -34,6 +34,7 @@ import {
   Theme,
   resolveWidgetAccent,
   resolveWidgetTheme,
+  widgetAccentVars,
   widgetSurfaceHex,
   widgetThemeVars,
 } from "./theme";
@@ -416,7 +417,6 @@ export default function WidgetFrame({
           }`}
           style={
             {
-              ["--widget-accent" as string]: accent,
               backgroundColor: widgetSurfaceHex(theme),
               color: theme === "light" ? "#171717" : "#fafafa",
               paddingTop: fullscreen
@@ -432,6 +432,7 @@ export default function WidgetFrame({
                 ? "env(safe-area-inset-right, 0px)"
                 : undefined,
               ...widgetThemeVars(theme),
+              ...widgetAccentVars(accent),
             } as React.CSSProperties
           }
         >

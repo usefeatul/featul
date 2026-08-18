@@ -16,6 +16,32 @@ export function resolveWidgetAccent(primaryColor?: string | null) {
   return value || WIDGET_ACCENT_FALLBACK;
 }
 
+function parseHexRgb(hex: string): [number, number, number] | null {
+  const value = hex.trim().replace(/^#/, "");
+  const full =
+    value.length === 3
+      ? value
+          .split("")
+          .map((char) => char + char)
+          .join("")
+      : value;
+  if (!/^[0-9a-fA-F]{6}$/.test(full)) return null;
+  const n = Number.parseInt(full, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+export function widgetAccentVars(accent: string): Record<string, string> {
+  const rgb = parseHexRgb(accent);
+  if (!rgb) return { "--widget-accent": accent };
+  const [r, g, b] = rgb;
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return {
+    "--widget-accent": accent,
+    "--widget-cta": `${r} ${g} ${b}`,
+    "--widget-cta-fg": luminance > 0.62 ? "23 23 23" : "255 255 255",
+  };
+}
+
 export function resolveWidgetTheme(mode: WidgetThemeMode): WidgetResolvedTheme {
   if (mode === "light" || mode === "dark") return mode;
   if (typeof window === "undefined") return "dark";

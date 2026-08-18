@@ -4,6 +4,7 @@ import { HTTPException } from "hono/http-exception";
 import { createId } from "@paralleldrive/cuid2";
 import {
   board,
+  brandingConfig,
   post,
   user,
   vote,
@@ -107,12 +108,14 @@ export async function resolveWidget(
       slug: workspace.slug,
       logo: workspace.logo,
       primaryColor: workspace.primaryColor,
+      brandingPrimaryColor: brandingConfig.primaryColor,
       hideBranding: workspace.hideBranding,
       widgetSecret: workspace.widgetSecret,
       domain: workspace.domain,
       customDomain: workspace.customDomain,
     })
     .from(workspace)
+    .leftJoin(brandingConfig, eq(brandingConfig.workspaceId, workspace.id))
     .where(eq(workspace.id, projectId))
     .limit(1);
 
@@ -147,7 +150,7 @@ export async function resolveWidget(
     workspaceName: ws.name,
     workspaceSlug: ws.slug,
     workspaceLogo: ws.logo,
-    primaryColor: ws.primaryColor,
+    primaryColor: ws.brandingPrimaryColor || ws.primaryColor,
     hideBranding: ws.hideBranding,
     widgetSecret: ws.widgetSecret,
     customDomain: ws.customDomain,
