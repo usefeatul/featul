@@ -138,11 +138,14 @@ describe("widget parent origin allowlist", () => {
     expect(list).toContain("https://feedback.convex.dev");
     expect(list).toContain("https://notes.convex.dev");
     expect(list).toContain("https://app.featul.com");
+    expect(list).toContain("https://staging.featul.com");
     expect(list).toContain("http://localhost:3000");
   });
 
-  test("does not implicitly trust localhost in production", () => {
+  test("always allows Featul app and staging hosts", () => {
     const list = buildWidgetOriginAllowlist({ slug: "convex" });
+    expect(list).toContain("https://app.featul.com");
+    expect(list).toContain("https://staging.featul.com");
     expect(list).not.toContain("http://localhost:3000");
   });
 });

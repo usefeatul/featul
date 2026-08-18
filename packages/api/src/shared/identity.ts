@@ -128,6 +128,8 @@ export function buildWidgetOriginAllowlist(input: {
   if (input.appOrigin && isSafeWidgetParentOrigin(input.appOrigin)) {
     origins.add(input.appOrigin);
   }
+  addHost("app.featul.com");
+  addHost("staging.featul.com");
   for (const origin of input.configuredOrigins || []) {
     if (isSafeWidgetParentOrigin(origin)) origins.add(origin);
   }

@@ -42,6 +42,7 @@ Add the loader and initialize Featul with your Workspace ID:
 
 The loader is asynchronous. Calls made before it finishes are queued automatically.
 
+
 ## Configuration
 
 `featul.init(workspaceId, options)` supports:

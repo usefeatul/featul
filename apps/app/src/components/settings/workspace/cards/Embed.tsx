@@ -12,9 +12,10 @@ type Props = {
 
 export default function EmbedCard({ workspaceId }: Props) {
   const snippet = React.useMemo(() => {
+    const envUrl = (process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, "");
     const appUrl =
       typeof window === "undefined"
-        ? "https://app.featul.com"
+        ? envUrl || "https://app.featul.com"
         : window.location.origin;
     return `<script>
   window.$featulq = window.$featulq || [];
@@ -55,7 +56,9 @@ export default function EmbedCard({ workspaceId }: Props) {
               Copy the snippet into your app. Featul trusts your workspace
               domain and verified custom domains with no extra setup. The
               widget uses the same branding, theme, and Roadmap / Changelog
-              visibility as your public workspace site.
+              visibility as your public workspace site. This snippet loads
+              the widget from this Featul environment (local, staging, or
+              production).
             </p>
             <p className="break-all text-sm text-muted-foreground">
               Workspace ID:{" "}

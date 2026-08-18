@@ -9,12 +9,11 @@ import { parseIdentifiedUser } from "./load";
 import { WidgetHostImageDialog } from "./lightbox";
 
 /**
- * Local QA helper for testing the embed in this app.
- * Override with NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID if needed.
+ * Local / staging QA helper. Set NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID
+ * to the workspace id. Empty disables the launcher.
  */
 const TEST_WIDGET_PROJECT_ID =
-  process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
-  "fll7aoyb3a8wpq77rcvzs0qcmu";
+  process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID || "";
 
 export default function WidgetTestEmbed() {
   const pathname = usePathname();
