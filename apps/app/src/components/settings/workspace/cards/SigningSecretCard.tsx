@@ -4,6 +4,7 @@ import React from "react";
 import SettingsCard from "../../../global/SettingsCard";
 import { KeyIcon } from "@featul/ui/icons/key";
 import { Button } from "@featul/ui/components/button";
+import { Input } from "@featul/ui/components/input";
 import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
@@ -94,9 +95,16 @@ export default function SigningSecretCard({ slug }: Props) {
               . Never expose it in browser code.
             </p>
             <div className="flex w-full items-center gap-2">
-              <code className="min-w-0 flex-1 break-all rounded-md border border-border bg-muted/40 px-3 py-1.5 text-sm text-foreground">
-                {maskedSecret}
-              </code>
+              <Input
+                readOnly
+                value={maskedSecret}
+                spellCheck={false}
+                autoComplete="off"
+                className="min-w-0 flex-1 font-mono"
+                onFocus={(event) => {
+                  if (revealed) event.currentTarget.select();
+                }}
+              />
               {secret ? (
                 <Button
                   type="button"
