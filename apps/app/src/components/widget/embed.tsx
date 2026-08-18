@@ -14,7 +14,7 @@ import { WidgetHostImageDialog } from "./lightbox";
  */
 const TEST_WIDGET_PROJECT_ID =
   process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
-  "flwobik8htyanguvr7ni70ubpj";
+  "fll7aoyb3a8wpq77rcvzs0qcmu";
 
 export default function WidgetTestEmbed() {
   const pathname = usePathname();

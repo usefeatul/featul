@@ -5,7 +5,6 @@ import { ChevronDown } from "lucide-react";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
-import { toPlain } from "./utils";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
@@ -346,8 +345,6 @@ function RoadmapItem({
   onOpen?: (item: WidgetRoadmapItem) => void;
   compact?: boolean;
 }) {
-  const author = item.isAnonymous ? "Guest" : item.authorName || "Guest";
-  const excerpt = toPlain(item.content);
   const doneDate = formatDoneDate(item.createdAt);
 
   if (compact) {
@@ -370,23 +367,19 @@ function RoadmapItem({
   }
 
   return (
-    <div className="relative flex items-start gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
+    <div className="relative flex items-center gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
       <button
         type="button"
         onClick={() => onOpen?.(item)}
-        className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 text-left"
+        className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
         aria-label={item.title}
       >
-        <div className="mt-1 flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
+        <div className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
           <StatusIcon status={status} className="size-3.5" />
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">{item.title}</p>
-          {excerpt ? (
-            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.4)]">{excerpt}</p>
-          ) : null}
-          <p className="mt-1.5 truncate text-[11px] text-[rgb(var(--widget-fg)/0.35)]">{author}</p>
-        </div>
+        <p className="min-w-0 flex-1 truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
+          {item.title}
+        </p>
       </button>
       <WidgetVoteButton
         postId={item.id}
