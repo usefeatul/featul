@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
+import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { toPlain } from "./utils";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
 import { WidgetAuthorAvatar } from "./avatar";
-import { WidgetEmpty } from "./empty";
+import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
 import { WidgetVoteButton } from "./vote";
 
 export type WidgetRoadmapItem = {
@@ -152,7 +153,10 @@ export function WidgetRoadmap({
         <WidgetEmpty
           title="No roadmap yet"
           description="Public items will show up here when they’re ready to share."
-        />
+          icon={<FillRoadmapIcon className="size-5" size={20} />}
+        >
+          <WidgetEmptyPlaceholders />
+        </WidgetEmpty>
       </div>
     );
   }

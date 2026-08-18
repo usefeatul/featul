@@ -13,11 +13,12 @@ import {
 import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
 import { LayersIcon } from "@featul/ui/icons/layers";
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { SearchIcon } from "@featul/ui/icons/search";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
-import { WidgetEmpty } from "./empty";
+import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
 import { parseWidgetPosts } from "./load";
 import { WidgetFeedbackListSkeleton, WidgetPostRowSkeleton } from "./skeleton";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
@@ -386,7 +387,9 @@ export function WidgetFeedbackList({
           <WidgetEmpty
             title="No requests yet"
             description="Share an idea or report an issue to get the conversation started."
+            icon={<FillFeedbackIcon className="size-5" size={20} />}
           >
+            <WidgetEmptyPlaceholders />
             <Button
               type="button"
               size="sm"

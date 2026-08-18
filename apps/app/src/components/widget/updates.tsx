@@ -7,7 +7,7 @@ import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { WidgetAuthorAvatar } from "./avatar";
-import { WidgetEmpty, WidgetUpdatePlaceholders } from "./empty";
+import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
 import { WidgetImage } from "./image";
 
 export type WidgetChangelogEntry = {
@@ -120,7 +120,7 @@ export function WidgetUpdates({
           description="New releases, fixes, and product changes will show up here."
           icon={<FillChangelogIcon className="size-5" size={20} />}
         >
-          <WidgetUpdatePlaceholders />
+          <WidgetEmptyPlaceholders />
         </WidgetEmpty>
       </div>
     );

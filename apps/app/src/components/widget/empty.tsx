@@ -45,7 +45,7 @@ export function WidgetSectionEmpty({ children }: { children: ReactNode }) {
   );
 }
 
-export function WidgetUpdatePlaceholders() {
+export function WidgetEmptyPlaceholders() {
   const rows = [
     { meta: "w-16", title: "w-[90%]" },
     { meta: "w-12", title: "w-[72%]" },
