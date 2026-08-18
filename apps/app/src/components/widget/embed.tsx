@@ -88,7 +88,11 @@ export default function WidgetTestEmbed() {
           return;
         }
 
-        const response = await client.widget.devIdentity.$get({
+        const identityClient =
+          process.env.NODE_ENV === "production"
+            ? client.widget.sessionIdentity
+            : client.widget.devIdentity;
+        const response = await identityClient.$get({
           projectId: TEST_WIDGET_PROJECT_ID,
         });
         if (!response.ok) {
