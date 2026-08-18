@@ -1,12 +1,13 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { WidgetAuthorAvatar } from "./avatar";
+import { WidgetEmpty } from "./empty";
 import { RoadmapRow, type WidgetRoadmapItem } from "./roadmap";
 import { Bone, WidgetRoadmapRowSkeleton } from "./skeleton";
-import { WidgetSectionEmpty } from "./empty";
 import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { UpdateMetaRow, type WidgetChangelogEntry } from "./updates";
 
@@ -47,41 +48,13 @@ export function Home({
   changelogLoading = false,
   roadmapLoading = false,
 }: Props) {
-  const roadmapEmpty = !roadmapLoading && !homeRoadmap.length;
-  const updatesEmpty = !changelogLoading && !homeChangelog.length;
-
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {changelogLoading ? (
-        <div
-          className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6"
-          aria-busy="true"
-          aria-label="Loading updates"
-        >
-          <div className="flex items-center gap-2">
-            <Bone className="h-2.5 w-16 rounded-full" />
-            <Bone className="h-2.5 w-24 rounded-full" />
-          </div>
-          <Bone className="mt-3 h-6 w-[92%] rounded-full" />
-          <Bone className="mt-2 h-6 w-[64%] rounded-full" />
-          <Bone className="mt-3 h-3.5 w-full rounded-full" />
-          <Bone className="mt-1.5 h-3.5 w-[80%] rounded-full" />
-          <div className="mt-5 flex items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <Bone className="size-7 shrink-0 rounded-full" />
-              <div>
-                <Bone className="h-3 w-24 rounded-full" />
-                <Bone className="mt-1.5 h-2.5 w-12 rounded-full" />
-              </div>
-            </div>
-            <Bone className="h-3 w-20 rounded-full" />
-          </div>
-        </div>
-      ) : featuredEntry ? (
+      {featuredEntry ? (
         <button
           type="button"
           onClick={() => onOpenChangelog(featuredEntry.id)}
-          className="group w-full border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6 text-left"
+          className="group w-full border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 pb-6 text-left"
         >
           <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="Just Shipped" />
           <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
@@ -126,7 +99,7 @@ export function Home({
         </button>
       ) : null}
 
-      <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-5">
+      <div className="border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 py-5">
         <button
           type="button"
           onClick={onCompose}
@@ -150,11 +123,7 @@ export function Home({
         </button>
       </div>
 
-      <section
-        className={`border-b border-[rgb(var(--widget-fg)/0.1)] py-5 ${
-          roadmapEmpty && !updatesEmpty ? "flex min-h-0 flex-1 flex-col" : ""
-        }`}
-      >
+      <section className="border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] py-5">
         <div className="mb-3 flex items-center justify-between gap-3 px-5">
           <div className="flex items-center gap-2">
             <StatusIcon status="progress" className="size-3.5" />
@@ -170,7 +139,7 @@ export function Home({
             See roadmap →
           </button>
         </div>
-        <div className={roadmapEmpty ? "flex min-h-0 flex-1 flex-col" : undefined}>
+        <div>
           {roadmapLoading ? (
             <div aria-busy="true" aria-label="Loading roadmap">
               {Array.from({ length: 4 }, (_, index) => (
@@ -208,12 +177,14 @@ export function Home({
               />
             ))
           ) : (
-            <WidgetSectionEmpty>Nothing on the roadmap yet</WidgetSectionEmpty>
+            <p className="px-5 py-2 text-sm text-[rgb(var(--widget-fg)/0.45)]">
+              Nothing on the roadmap yet
+            </p>
           )}
         </div>
       </section>
 
-      <section className={`py-5 ${updatesEmpty ? "flex min-h-0 flex-1 flex-col" : ""}`}>
+      <section className="py-5">
         <div className="mb-3 flex items-center justify-between gap-3 px-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
             Updates
@@ -258,7 +229,12 @@ export function Home({
             ))}
           </div>
         ) : (
-          <WidgetSectionEmpty>No updates yet</WidgetSectionEmpty>
+          <WidgetEmpty
+            compact
+            title="No updates yet"
+            description="New releases, fixes, and product changes will show up here."
+            icon={<FillChangelogIcon className="size-5" size={20} />}
+          />
         )}
       </section>
     </div>

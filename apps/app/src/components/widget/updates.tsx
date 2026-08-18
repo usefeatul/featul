@@ -3,10 +3,11 @@
 import * as React from "react";
 import type { JSONContent } from "@tiptap/core";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { WidgetAuthorAvatar } from "./avatar";
-import { WidgetEmpty } from "./empty";
+import { WidgetEmpty, WidgetUpdatePlaceholders } from "./empty";
 import { WidgetImage } from "./image";
 
 export type WidgetChangelogEntry = {
@@ -116,8 +117,11 @@ export function WidgetUpdates({
       <div className="flex min-h-0 flex-1 flex-col">
         <WidgetEmpty
           title="No updates yet"
-          description="Published product changes will show up here."
-        />
+          description="New releases, fixes, and product changes will show up here."
+          icon={<FillChangelogIcon className="size-5" size={20} />}
+        >
+          <WidgetUpdatePlaceholders />
+        </WidgetEmpty>
       </div>
     );
   }
