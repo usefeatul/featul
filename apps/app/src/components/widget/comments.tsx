@@ -330,7 +330,7 @@ function CommentThreadItem({
       {hasReplies ? (
         <>
           <div
-            className="absolute bottom-0 left-3.5 top-10 w-px -translate-x-1/2 bg-[rgb(var(--widget-fg)/0.16)]"
+            className="absolute bottom-0 left-[14px] top-10 w-px -translate-x-1/2 bg-[rgb(var(--widget-fg)/0.16)]"
             aria-hidden
           />
           <div className="relative pl-11">
@@ -362,21 +362,21 @@ function ReplyBranch({ isLast }: { isLast: boolean }) {
     <>
       {isLast ? (
         <div
-          className="pointer-events-none absolute -left-8 top-2.5 bottom-0 z-[1] w-4 bg-[rgb(var(--widget-surface))]"
+          className="pointer-events-none absolute -left-8 top-4 bottom-0 z-[1] w-4 bg-[rgb(var(--widget-surface))]"
           aria-hidden
         />
       ) : null}
       <svg
         aria-hidden
-        viewBox="0 0 36 20"
+        viewBox="0 0 36 14"
         fill="none"
-        className="pointer-events-none absolute -left-[30px] top-2.5 z-[2] h-5 w-9 overflow-visible text-[rgb(var(--widget-fg)/0.16)]"
+        className="pointer-events-none absolute -left-[30.5px] top-4 z-[2] h-3.5 w-9 text-[rgb(var(--widget-fg)/0.16)]"
       >
         <path
-          d="M0.5 0 C 0.5 16 16 19.5 36 19.5"
+          d="M0.5 0 A 13.5 13.5 0 0 0 14 13.5 H 35.5"
           stroke="currentColor"
           strokeWidth="1"
-          strokeLinecap="round"
+          strokeLinecap="butt"
         />
       </svg>
     </>
