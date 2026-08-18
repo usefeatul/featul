@@ -2,7 +2,6 @@
 
 import { ChevronRight } from "lucide-react";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
-import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetEmpty } from "./empty";
@@ -99,29 +98,16 @@ export function Home({
         </button>
       ) : null}
 
-      <div className="border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 py-5">
-        <button
-          type="button"
-          onClick={onCompose}
-          className="group flex w-full cursor-pointer items-center gap-3 rounded-md bg-[rgb(var(--widget-fg)/0.03)] px-3.5 py-3.5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.055)]"
-        >
-          <span
-            className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[rgb(var(--widget-fg)/0.06)]"
-            style={{ color: accent }}
-          >
-            <FillPenIcon className="size-4" size={16} />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block font-heading text-sm font-semibold tracking-tight text-[rgb(var(--widget-fg))]">
-              Give feedback
-            </span>
-            <span className="mt-0.5 block text-xs leading-snug text-[rgb(var(--widget-fg)/0.45)]">
-              Share an idea or report an issue
-            </span>
-          </span>
-          <ChevronRight className="size-4 shrink-0 text-[rgb(var(--widget-fg)/0.3)] transition-transform group-hover:translate-x-0.5 group-hover:text-[rgb(var(--widget-fg)/0.55)]" />
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={onCompose}
+        className="flex w-full cursor-pointer items-center justify-between gap-3 border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 py-4 text-left"
+      >
+        <span className="text-sm text-[rgb(var(--widget-fg)/0.35)]">What’s on your mind?</span>
+        <span className="inline-flex h-8 shrink-0 items-center rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))]">
+          Post
+        </span>
+      </button>
 
       <section className="border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] py-5">
         <div className="mb-3 flex items-center justify-between gap-3 px-5">
