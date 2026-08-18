@@ -496,7 +496,7 @@ export default function WidgetFrame({
 
             {!loading && !loadFailed ? (
               <>
-                <div className={section === "home" ? undefined : "hidden"}>
+                <div className={section === "home" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
                   <Home
                     featuredEntry={featuredEntry}
                     homeRoadmap={homeRoadmap}

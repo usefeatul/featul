@@ -7,7 +7,7 @@ import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { toPlain } from "./utils";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
 import { WidgetAuthorAvatar } from "./avatar";
-import { WidgetEmpty } from "./empty";
+import { WidgetEmpty, WidgetSectionEmpty } from "./empty";
 import { WidgetVoteButton } from "./vote";
 
 export type WidgetRoadmapItem = {
@@ -129,6 +129,8 @@ export function WidgetRoadmap({
     };
   }, [updatePinned, items]);
 
+  const lastEmpty = grouped[SECTIONS[SECTIONS.length - 1].key].length === 0;
+
   const jumpToSection = (index: number) => {
     const sectionEl = sectionRefs.current[index];
     const found = rootRef.current?.closest("[data-widget-scroll]");
@@ -155,7 +157,10 @@ export function WidgetRoadmap({
   }
 
   return (
-    <div ref={rootRef} className="relative pb-[30vh]">
+    <div
+      ref={rootRef}
+      className={lastEmpty ? "relative flex min-h-full flex-1 flex-col" : "relative pb-[30vh]"}
+    >
       {/* Overlay stack: no layout height, so pinning never jumps/glitches */}
       <div className="pointer-events-none sticky top-0 z-50 h-0">
         <div
@@ -195,12 +200,15 @@ export function WidgetRoadmap({
         const canShowMore = sectionItems.length > INITIAL_VISIBLE && !expanded;
         const isPinned = pinnedIndexes.includes(index);
 
+        const isLast = index === SECTIONS.length - 1;
+
         return (
           <section
             key={section.key}
             ref={(node) => {
               sectionRefs.current[index] = node;
             }}
+            className={isLast && !sectionItems.length ? "flex min-h-0 flex-1 flex-col" : undefined}
           >
             <button
               type="button"
@@ -257,9 +265,7 @@ export function WidgetRoadmap({
                 ) : null}
               </div>
             ) : (
-              <p className="bg-[rgb(var(--widget-surface))] px-5 py-3 pl-11 text-xs text-[rgb(var(--widget-fg)/0.3)]">
-                Nothing here yet
-              </p>
+              <WidgetSectionEmpty>Nothing here yet</WidgetSectionEmpty>
             )}
           </section>
         );

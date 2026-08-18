@@ -6,6 +6,7 @@ import StatusIcon from "@/components/requests/StatusIcon";
 import { WidgetAuthorAvatar } from "./avatar";
 import { RoadmapRow, type WidgetRoadmapItem } from "./roadmap";
 import { Bone, WidgetRoadmapRowSkeleton } from "./skeleton";
+import { WidgetSectionEmpty } from "./empty";
 import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { UpdateMetaRow, type WidgetChangelogEntry } from "./updates";
 
@@ -46,8 +47,11 @@ export function Home({
   changelogLoading = false,
   roadmapLoading = false,
 }: Props) {
+  const roadmapEmpty = !roadmapLoading && !homeRoadmap.length;
+  const updatesEmpty = !changelogLoading && !homeChangelog.length;
+
   return (
-    <div className="space-y-0">
+    <div className="flex min-h-0 flex-1 flex-col">
       {changelogLoading ? (
         <div
           className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6"
@@ -146,7 +150,11 @@ export function Home({
         </button>
       </div>
 
-      <section className="border-b border-[rgb(var(--widget-fg)/0.1)] py-5">
+      <section
+        className={`border-b border-[rgb(var(--widget-fg)/0.1)] py-5 ${
+          roadmapEmpty && !updatesEmpty ? "flex min-h-0 flex-1 flex-col" : ""
+        }`}
+      >
         <div className="mb-3 flex items-center justify-between gap-3 px-5">
           <div className="flex items-center gap-2">
             <StatusIcon status="progress" className="size-3.5" />
@@ -162,7 +170,7 @@ export function Home({
             See roadmap →
           </button>
         </div>
-        <div>
+        <div className={roadmapEmpty ? "flex min-h-0 flex-1 flex-col" : undefined}>
           {roadmapLoading ? (
             <div aria-busy="true" aria-label="Loading roadmap">
               {Array.from({ length: 4 }, (_, index) => (
@@ -200,14 +208,12 @@ export function Home({
               />
             ))
           ) : (
-            <p className="px-5 py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
-              Nothing on the roadmap yet.
-            </p>
+            <WidgetSectionEmpty>Nothing on the roadmap yet</WidgetSectionEmpty>
           )}
         </div>
       </section>
 
-      <section className="py-5">
+      <section className={`py-5 ${updatesEmpty ? "flex min-h-0 flex-1 flex-col" : ""}`}>
         <div className="mb-3 flex items-center justify-between gap-3 px-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
             Updates
@@ -252,9 +258,7 @@ export function Home({
             ))}
           </div>
         ) : (
-          <p className="px-5 py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
-            No updates yet.
-          </p>
+          <WidgetSectionEmpty>No updates yet</WidgetSectionEmpty>
         )}
       </section>
     </div>
