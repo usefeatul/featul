@@ -28,7 +28,7 @@ export default function TimezoneCard({ slug, initialTimezone }: Props) {
     };
 
     return (
-        <>
+        <div className="h-full">
             <SettingsCard
                 icon={<Timezone className="size-5 text-primary" />}
                 title="Timezone"
@@ -51,6 +51,6 @@ export default function TimezoneCard({ slug, initialTimezone }: Props) {
             >
                 <TimezonePicker value={timezone} onChange={handleTimezoneChange} now={now} />
             </SettingsDialogShell>
-        </>
+        </div>
     );
 }
