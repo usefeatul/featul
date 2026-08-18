@@ -5,7 +5,9 @@ import type {
   Section,
   SimilarPost,
   WidgetComment,
+  WidgetLayoutStyle,
   WidgetPost,
+  WidgetThemeMode,
 } from "./types";
 import type { WidgetRoadmapItem } from "./roadmap";
 import type { WidgetChangelogEntry } from "./updates";
@@ -309,10 +311,23 @@ export function parseBoards(value: unknown): Board[] {
 
 export function parseConfigTabs(value: unknown): ConfigTab[] {
   if (!Array.isArray(value)) return [];
-  return value.filter(
+  const tabs = value.filter(
     (item): item is ConfigTab =>
       item === "feedback" || item === "roadmap" || item === "changelog",
   );
+  return tabs.includes("feedback") ? tabs : ["feedback", ...tabs];
+}
+
+export function parseLayoutStyle(value: unknown): WidgetLayoutStyle {
+  if (value === "compact" || value === "comfortable" || value === "spacious") {
+    return value;
+  }
+  return "comfortable";
+}
+
+export function parseBrandingTheme(value: unknown): WidgetThemeMode {
+  if (value === "light" || value === "dark" || value === "auto") return value;
+  return "auto";
 }
 
 export function parseSection(value: unknown): Section | null {

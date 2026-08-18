@@ -21,6 +21,9 @@ export const widgetRoadmap = publicProcedure
       input.projectId,
       input.parentOrigin,
     );
+    if (!resolved.roadmapVisible) {
+      return c.superjson({ posts: [] });
+    }
     const request = getWidgetRequest(c);
     const viewerId = await resolveViewerId(
       ctx,

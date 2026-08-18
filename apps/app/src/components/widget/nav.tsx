@@ -4,7 +4,7 @@ import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import { HomeIcon } from "@featul/ui/icons/home";
-import type { Section } from "./types";
+import type { Section, WidgetLayoutStyle } from "./types";
 
 type Props = {
   tabs: Section[];
@@ -12,13 +12,20 @@ type Props = {
   accent: string;
   navBorderVisible: boolean;
   fullscreen?: boolean;
+  layoutStyle?: WidgetLayoutStyle;
   onSelect: (tab: Section) => void;
 };
 
-export function Nav({ tabs, section, accent, navBorderVisible, fullscreen = false, onSelect }: Props) {
+export function Nav({ tabs, section, accent, navBorderVisible, fullscreen = false, layoutStyle = "comfortable", onSelect }: Props) {
+  const navPad =
+    layoutStyle === "compact"
+      ? "px-2 py-1.5"
+      : layoutStyle === "spacious"
+        ? "px-4 py-2.5"
+        : "px-3 py-2";
   return (
     <nav
-      className={`grid shrink-0 px-3 py-2 transition-[box-shadow] duration-200 ${
+      className={`grid shrink-0 ${navPad} transition-[box-shadow] duration-200 ${
         navBorderVisible
           ? "shadow-[inset_0_1px_0_0_rgb(var(--widget-fg)/0.08)]"
           : "shadow-[inset_0_1px_0_0_transparent]"

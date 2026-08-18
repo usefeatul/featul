@@ -36,22 +36,30 @@ export function getWidgetRequest(c: unknown): Request {
   throw new Error("Expected request on widget router context");
 }
 
+export type WidgetEnabledTab = "feedback" | "roadmap" | "changelog";
+export type WidgetThemeMode = "light" | "dark" | "auto";
+export type WidgetLayoutStyle = "compact" | "comfortable" | "spacious";
+
 export type ResolvedWidget = {
   workspaceId: string;
   workspaceName: string;
   workspaceSlug: string;
   workspaceLogo: string | null;
   primaryColor: string | null;
-  hideBranding: boolean | null;
+  hideBranding: boolean;
+  layoutStyle: WidgetLayoutStyle;
+  roadmapVisible: boolean;
+  changelogVisible: boolean;
   widgetSecret: string;
   customDomain: string | null;
   allowedOrigins: string[];
   config: {
     projectId: string;
     defaultBoardId: string | null;
-    theme: "light" | "dark" | "auto";
+    theme: WidgetThemeMode;
     position: "left" | "right";
-    enabledTabs: Array<"feedback" | "roadmap" | "changelog">;
+    enabledTabs: WidgetEnabledTab[];
+    layoutStyle: WidgetLayoutStyle;
     allowGuestPosting: boolean;
   };
 };
@@ -85,13 +93,44 @@ export function assertWidgetPostImageUrl(
   }
 }
 
-function defaultConfig(workspaceId: string): ResolvedWidget["config"] {
+function mapWidgetTheme(
+  brandingTheme?: string | null,
+  workspaceTheme?: string | null,
+): WidgetThemeMode {
+  const theme = brandingTheme || workspaceTheme;
+  if (theme === "light" || theme === "dark") return theme;
+  return "auto";
+}
+
+function mapLayoutStyle(value?: string | null): WidgetLayoutStyle {
+  if (value === "compact" || value === "spacious") return value;
+  return "comfortable";
+}
+
+function isPublicSectionVisible(row?: {
+  isVisible: boolean | null;
+  isPublic: boolean | null;
+}) {
+  return Boolean(row?.isVisible) && Boolean(row?.isPublic);
+}
+
+function buildWidgetConfig(input: {
+  workspaceId: string;
+  theme: WidgetThemeMode;
+  layoutStyle: WidgetLayoutStyle;
+  roadmapVisible: boolean;
+  changelogVisible: boolean;
+}): ResolvedWidget["config"] {
+  const enabledTabs: WidgetEnabledTab[] = ["feedback"];
+  if (input.roadmapVisible) enabledTabs.push("roadmap");
+  if (input.changelogVisible) enabledTabs.push("changelog");
   return {
-    projectId: workspaceId,
+    projectId: input.workspaceId,
     defaultBoardId: null,
-    theme: "auto",
+    theme: input.theme,
     position: "right",
-    enabledTabs: ["feedback", "roadmap", "changelog"],
+    enabledTabs,
+    layoutStyle: input.layoutStyle,
     allowGuestPosting: true,
   };
 }
@@ -108,8 +147,11 @@ export async function resolveWidget(
       slug: workspace.slug,
       logo: workspace.logo,
       primaryColor: workspace.primaryColor,
+      theme: workspace.theme,
       brandingPrimaryColor: brandingConfig.primaryColor,
-      hideBranding: workspace.hideBranding,
+      brandingTheme: brandingConfig.theme,
+      hidePoweredBy: brandingConfig.hidePoweredBy,
+      layoutStyle: brandingConfig.layoutStyle,
       widgetSecret: workspace.widgetSecret,
       domain: workspace.domain,
       customDomain: workspace.customDomain,
@@ -122,10 +164,25 @@ export async function resolveWidget(
   if (!ws)
     throw new HTTPException(404, { message: "Widget project not found" });
 
-  const domains = await ctx.db
-    .select({ host: workspaceDomain.host, status: workspaceDomain.status })
-    .from(workspaceDomain)
-    .where(eq(workspaceDomain.workspaceId, ws.id));
+  const [domains, systemBoards] = await Promise.all([
+    ctx.db
+      .select({ host: workspaceDomain.host, status: workspaceDomain.status })
+      .from(workspaceDomain)
+      .where(eq(workspaceDomain.workspaceId, ws.id)),
+    ctx.db
+      .select({
+        systemType: board.systemType,
+        isVisible: board.isVisible,
+        isPublic: board.isPublic,
+      })
+      .from(board)
+      .where(
+        and(
+          eq(board.workspaceId, ws.id),
+          inArray(board.systemType, ["roadmap", "changelog"]),
+        ),
+      ),
+  ]);
   const allowedOrigins = buildWidgetOriginAllowlist({
     slug: ws.slug,
     workspaceDomain: ws.domain,
@@ -145,17 +202,39 @@ export async function resolveWidget(
     throw new HTTPException(403, { message: "Widget origin is not allowed" });
   }
 
+  const roadmapVisible = isPublicSectionVisible(
+    systemBoards.find(
+      (row: { systemType: string | null }) => row.systemType === "roadmap",
+    ),
+  );
+  const changelogVisible = isPublicSectionVisible(
+    systemBoards.find(
+      (row: { systemType: string | null }) => row.systemType === "changelog",
+    ),
+  );
+  const theme = mapWidgetTheme(ws.brandingTheme, ws.theme);
+  const layoutStyle = mapLayoutStyle(ws.layoutStyle);
+
   return {
     workspaceId: ws.id,
     workspaceName: ws.name,
     workspaceSlug: ws.slug,
     workspaceLogo: ws.logo,
     primaryColor: ws.brandingPrimaryColor || ws.primaryColor,
-    hideBranding: ws.hideBranding,
+    hideBranding: Boolean(ws.hidePoweredBy),
+    layoutStyle,
+    roadmapVisible,
+    changelogVisible,
     widgetSecret: ws.widgetSecret,
     customDomain: ws.customDomain,
     allowedOrigins,
-    config: defaultConfig(ws.id),
+    config: buildWidgetConfig({
+      workspaceId: ws.id,
+      theme,
+      layoutStyle,
+      roadmapVisible,
+      changelogVisible,
+    }),
   };
 }
 

@@ -14,10 +14,13 @@ import { WidgetEmpty } from "./empty";
 import {
   mapChangelogEntries,
   parseBoards,
+  parseBrandingTheme,
   parseConfigTabs,
   parseIdentifiedUser,
+  parseLayoutStyle,
   parseSection,
   parseThemeMode,
+  parseWidgetPosts,
   parseWidgetRoadmapItems,
 } from "./load";
 import { WidgetFeedbackList } from "./list";
@@ -35,6 +38,7 @@ import {
   resolveWidgetAccent,
   resolveWidgetTheme,
   widgetAccentVars,
+  widgetLayoutClass,
   widgetSurfaceHex,
   widgetThemeVars,
 } from "./theme";
@@ -43,11 +47,12 @@ import type {
   FeedbackView,
   IdentifiedUser,
   Section,
+  WidgetLayoutStyle,
   WidgetPost,
   WidgetWorkspace,
 } from "./types";
 import { WidgetUpdates, type WidgetChangelogEntry } from "./updates";
-import { readIdentifiedUserId } from "./utils";
+import { readIdentifiedUserId, viewerPayload } from "./utils";
 
 type WidgetFrameProps = {
   projectId: string;
@@ -72,12 +77,11 @@ export default function WidgetFrame({
   const [workspace, setWorkspace] = React.useState<WidgetWorkspace | null>(
     null,
   );
-  const [tabs, setTabs] = React.useState<Section[]>([
-    "home",
-    "feedback",
-    "roadmap",
-    "changelog",
-  ]);
+  const [tabs, setTabs] = React.useState<Section[]>(["home", "feedback"]);
+  const [layoutStyle, setLayoutStyle] =
+    React.useState<WidgetLayoutStyle>("comfortable");
+  const brandingThemeRef = React.useRef<"light" | "dark" | "auto">("auto");
+  const tabsRef = React.useRef<Section[]>(["home", "feedback"]);
   const [boards, setBoards] = React.useState<Board[]>([]);
   const [listBoardId, setListBoardId] = React.useState("");
   const [userId, setUserId] = React.useState<string | null>(null);
@@ -87,6 +91,8 @@ export default function WidgetFrame({
   const [changelog, setChangelog] = React.useState<WidgetChangelogEntry[]>([]);
   const [roadmapReady, setRoadmapReady] = React.useState(false);
   const [changelogReady, setChangelogReady] = React.useState(false);
+  const [recentPosts, setRecentPosts] = React.useState<WidgetPost[]>([]);
+  const [recentReady, setRecentReady] = React.useState(false);
   const [selectedChangelogId, setSelectedChangelogId] = React.useState<
     string | null
   >(null);
@@ -160,6 +166,12 @@ export default function WidgetFrame({
         const res = await client.widget.config.$get(apiBase);
         const data = await res.json();
         if (canceled) return;
+        const brandingTheme = parseBrandingTheme(data.config?.theme);
+        const nextLayout = parseLayoutStyle(data.config?.layoutStyle);
+        const enabledTabs = parseConfigTabs(data.config?.enabledTabs);
+        const nextTabs: Section[] = ["home", ...enabledTabs];
+        brandingThemeRef.current = brandingTheme;
+        tabsRef.current = nextTabs;
         setWorkspace({
           id: data.workspace?.id || projectId,
           name: data.workspace?.name || "Feedback",
@@ -167,14 +179,15 @@ export default function WidgetFrame({
           logo: data.workspace?.logo || null,
           primaryColor: data.workspace?.primaryColor || null,
           hideBranding: data.workspace?.hideBranding ?? null,
+          layoutStyle: nextLayout,
+          theme: brandingTheme,
         });
-        const enabledTabs = parseConfigTabs(data.config?.enabledTabs);
-        const fallbackTabs: Array<Exclude<Section, "home">> = [
-          "feedback",
-          "roadmap",
-          "changelog",
-        ];
-        setTabs(["home", ...(enabledTabs.length ? enabledTabs : fallbackTabs)]);
+        setLayoutStyle(nextLayout);
+        setTabs(nextTabs);
+        setSection((current) =>
+          nextTabs.includes(current) ? current : "home",
+        );
+        if (initialTheme === "auto") setThemeMode(brandingTheme);
         setBoards(parseBoards(data.boards));
         setListBoardId("");
         postToParent(parentOrigin, "ready");
@@ -188,15 +201,39 @@ export default function WidgetFrame({
     return () => {
       canceled = true;
     };
-  }, [apiBase, parentOrigin, projectId]);
+  }, [apiBase, parentOrigin, projectId, initialTheme]);
 
   React.useEffect(() => {
     let canceled = false;
 
     async function loadLists() {
+      if (loading || loadFailed || !workspace) {
+        if (!loading && !workspace) {
+          setRoadmapReady(true);
+          setChangelogReady(true);
+          setRecentReady(true);
+        }
+        return;
+      }
+
+      const showRoadmap = tabs.includes("roadmap");
+      const showChangelog = tabs.includes("changelog");
+      const showRecent = !showRoadmap && !showChangelog;
+      if (!showRoadmap) {
+        setRoadmap([]);
+        setRoadmapReady(true);
+      }
+      if (!showChangelog) {
+        setChangelog([]);
+        setChangelogReady(true);
+      }
+      if (!showRecent) {
+        setRecentPosts([]);
+        setRecentReady(true);
+      }
+
       const fingerprint =
         userId || identity?.email ? undefined : await getBrowserFingerprint();
-
       const identityPayload = identity?.email
         ? {
             id: identity.id,
@@ -209,33 +246,62 @@ export default function WidgetFrame({
         : undefined;
 
       await Promise.all([
-        (async () => {
-          try {
-            const res = await client.widget.roadmap.$get({
-              ...apiBase,
-              identity: identityPayload,
-              fingerprint,
-            });
-            const data = await res.json();
-            if (canceled) return;
-            setRoadmap(parseWidgetRoadmapItems(data.posts));
-            setRoadmapReady(true);
-          } catch {
-            if (!canceled) setRoadmapReady(true);
-          }
-        })(),
-        (async () => {
-          try {
-            const res = await client.widget.changelog.$get(apiBase);
-            const data = await res.json();
-            if (canceled) return;
-            const entries = Array.isArray(data.entries) ? data.entries : [];
-            setChangelog(mapChangelogEntries(entries));
-            setChangelogReady(true);
-          } catch {
-            if (!canceled) setChangelogReady(true);
-          }
-        })(),
+        showRoadmap
+          ? (async () => {
+              try {
+                const res = await client.widget.roadmap.$get({
+                  ...apiBase,
+                  identity: identityPayload,
+                  fingerprint,
+                });
+                const data = await res.json();
+                if (canceled) return;
+                setRoadmap(parseWidgetRoadmapItems(data.posts));
+                setRoadmapReady(true);
+              } catch {
+                if (!canceled) setRoadmapReady(true);
+              }
+            })()
+          : Promise.resolve(),
+        showChangelog
+          ? (async () => {
+              try {
+                const res = await client.widget.changelog.$get(apiBase);
+                const data = await res.json();
+                if (canceled) return;
+                const entries = Array.isArray(data.entries) ? data.entries : [];
+                setChangelog(mapChangelogEntries(entries));
+                setChangelogReady(true);
+              } catch {
+                if (!canceled) setChangelogReady(true);
+              }
+            })()
+          : Promise.resolve(),
+        showRecent
+          ? (async () => {
+              try {
+                const res = await client.widget.posts.$get({
+                  ...viewerPayload(apiBase, {
+                    userId,
+                    identity,
+                    fingerprint,
+                  }),
+                  sort: "newest",
+                  limit: 6,
+                  offset: 0,
+                });
+                const data = await res.json();
+                if (canceled) return;
+                setRecentPosts(parseWidgetPosts(data.posts));
+                setRecentReady(true);
+              } catch {
+                if (!canceled) {
+                  setRecentPosts([]);
+                  setRecentReady(true);
+                }
+              }
+            })()
+          : Promise.resolve(),
       ]);
     }
 
@@ -243,7 +309,16 @@ export default function WidgetFrame({
     return () => {
       canceled = true;
     };
-  }, [apiBase, identity, userId]);
+  }, [
+    apiBase,
+    identity,
+    userId,
+    tabs,
+    loading,
+    loadFailed,
+    workspace,
+    listRefreshKey,
+  ]);
 
   React.useEffect(() => {
     async function handleMessage(event: MessageEvent) {
@@ -260,14 +335,19 @@ export default function WidgetFrame({
       }
       if (message.type === "theme") {
         const mode = parseThemeMode(message.payload);
-        if (mode) setThemeMode(mode);
+        if (mode) setThemeMode(mode === "auto" ? brandingThemeRef.current : mode);
         return;
       }
       if (message.type === "show") {
         const nextSection = parseSection(message.payload);
-        if (nextSection) {
-          setSection(nextSection);
-          if (nextSection === "feedback") {
+        const allowed = nextSection && tabsRef.current.includes(nextSection)
+          ? nextSection
+          : nextSection
+            ? "home"
+            : null;
+        if (allowed) {
+          setSection(allowed);
+          if (allowed === "feedback") {
             setFeedbackView("list");
             setSelectedPost(null);
           }
@@ -405,12 +485,27 @@ export default function WidgetFrame({
     }
   }, [section]);
 
+  React.useEffect(() => {
+    if (!listVotePatch) return;
+    setRecentPosts((prev) =>
+      prev.map((post) =>
+        post.id === listVotePatch.postId
+          ? {
+              ...post,
+              upvotes: listVotePatch.upvotes,
+              hasVoted: listVotePatch.hasVoted,
+            }
+          : post,
+      ),
+    );
+  }, [listVotePatch]);
+
   return (
     <MessagingProvider parentOrigin={parentOrigin}>
       <Theme mode={themeMode}>
         <motion.main
           initial={false}
-          className={`flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] ${
+          className={`flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] ${widgetLayoutClass(layoutStyle)} ${
             fullscreen
               ? "rounded-none border-0"
               : "rounded-xl border border-[rgb(var(--widget-fg)/0.1)]"
@@ -464,6 +559,7 @@ export default function WidgetFrame({
             fullscreen={fullscreen}
             loading={loading}
             hideCompose={loadFailed}
+            layoutStyle={layoutStyle}
           />
 
           <div
@@ -478,7 +574,13 @@ export default function WidgetFrame({
                     : section === "roadmap"
                       ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide pb-5 pt-0"
                       : section === "home"
-                        ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide pb-5 pt-4"
+                        ? `relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide ${
+                            layoutStyle === "compact"
+                              ? "pb-3 pt-2"
+                              : layoutStyle === "spacious"
+                                ? "pb-7 pt-5"
+                                : "pb-5 pt-4"
+                          }`
                         : "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide px-5 pb-5 pt-3"
             }
             data-widget-scroll=""
@@ -492,7 +594,14 @@ export default function WidgetFrame({
                 ) : section === "changelog" ? (
                   <WidgetUpdatesSkeleton />
                 ) : (
-                  <WidgetHomeSkeleton />
+                  <WidgetHomeSkeleton
+                    featured={tabs.includes("changelog")}
+                    roadmap={tabs.includes("roadmap")}
+                    updates={tabs.includes("changelog")}
+                    recent={
+                      !tabs.includes("roadmap") && !tabs.includes("changelog")
+                    }
+                  />
                 )}
               </motion.div>
             ) : null}
@@ -514,6 +623,14 @@ export default function WidgetFrame({
                     homeRoadmapLabel={homeRoadmapLabel}
                     changelogLoading={!changelogReady}
                     roadmapLoading={!roadmapReady}
+                    showRoadmap={tabs.includes("roadmap")}
+                    showChangelog={tabs.includes("changelog")}
+                    showRecent={
+                      !tabs.includes("roadmap") && !tabs.includes("changelog")
+                    }
+                    recentPosts={recentPosts}
+                    recentLoading={!recentReady}
+                    layoutStyle={layoutStyle}
                     accent={accent}
                     apiBase={apiBase}
                     userId={userId}
@@ -524,6 +641,7 @@ export default function WidgetFrame({
                     }}
                     onSeeUpdates={() => setSection("changelog")}
                     onSeeRoadmap={() => setSection("roadmap")}
+                    onSeeFeedback={() => goFeedback("list")}
                     onCompose={() => goFeedback("compose")}
                     onOpenRoadmapItem={(post) => {
                       setDetailReturn("home");
@@ -533,6 +651,11 @@ export default function WidgetFrame({
                     }}
                     onVoteChange={(id, upvotes, hasVoted) => {
                       setRoadmap((prev) =>
+                        prev.map((row) =>
+                          row.id === id ? { ...row, upvotes, hasVoted } : row,
+                        ),
+                      );
+                      setRecentPosts((prev) =>
                         prev.map((row) =>
                           row.id === id ? { ...row, upvotes, hasVoted } : row,
                         ),
@@ -709,6 +832,7 @@ export default function WidgetFrame({
               accent={accent}
               navBorderVisible={navBorderVisible}
               fullscreen={fullscreen}
+              layoutStyle={layoutStyle}
               onSelect={(tab) => {
                 setSection(tab);
                 if (tab === "feedback") goFeedback("list");

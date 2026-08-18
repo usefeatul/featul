@@ -1,4 +1,6 @@
 export type Section = "home" | "feedback" | "roadmap" | "changelog";
+export type WidgetLayoutStyle = "compact" | "comfortable" | "spacious";
+export type WidgetThemeMode = "light" | "dark" | "auto";
 
 export type FeedbackView = "list" | "compose" | "detail";
 
@@ -73,4 +75,6 @@ export type WidgetWorkspace = {
   logo: string | null;
   primaryColor: string | null;
   hideBranding: boolean | null;
+  layoutStyle: WidgetLayoutStyle;
+  theme: WidgetThemeMode;
 };

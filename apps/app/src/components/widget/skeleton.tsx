@@ -142,10 +142,12 @@ export function WidgetHomeSkeleton({
   featured = true,
   roadmap = true,
   updates = true,
+  recent = false,
 }: {
   featured?: boolean;
   roadmap?: boolean;
   updates?: boolean;
+  recent?: boolean;
 }) {
   return (
     <div className="space-y-0" aria-busy="true" aria-label="Loading">
@@ -215,6 +217,18 @@ export function WidgetHomeSkeleton({
               </div>
               <Bone className="mt-1 h-3.5 w-[82%] rounded-full" />
             </div>
+          ))}
+        </section>
+      ) : null}
+
+      {recent ? (
+        <section className="py-5">
+          <div className="mb-3 flex items-center justify-between gap-3 px-5">
+            <Bone className="h-2.5 w-24 rounded-full" />
+            <Bone className="h-2.5 w-20 rounded-full" />
+          </div>
+          {range(4).map((index) => (
+            <WidgetPostRowSkeleton key={index} />
           ))}
         </section>
       ) : null}

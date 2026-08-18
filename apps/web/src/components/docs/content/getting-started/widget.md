@@ -5,7 +5,7 @@ description: Add the Featul feedback widget to your app and securely identify si
 
 ## Overview
 
-The Featul widget lets customers browse feedback, submit ideas, vote, view your roadmap, and read updates without leaving your app.
+The Featul widget lets customers browse feedback, submit ideas, vote, view your roadmap, and read updates without leaving your app. It uses the same branding and section visibility as your public workspace site: hide Roadmap or Changelog in workspace settings and those tabs disappear from the widget too.
 
 Find your **Workspace ID** and **signing secret** under **Settings → Workspace → Embed widget**. Featul provisions the signing secret automatically when your workspace is created.
 
@@ -49,11 +49,15 @@ The loader is asynchronous. Calls made before it finishes are queued automatical
 | Option           | Values                                             | Default     |
 | ---------------- | -------------------------------------------------- | ----------- |
 | `widget`         | `true`, `false`                                    | `true`      |
-| `theme`          | `"light"`, `"dark"`, `"auto"`                      | `"auto"`    |
+| `theme`          | `"light"`, `"dark"`, `"auto"`                      | Workspace branding (`"auto"` follows the public site, or OS when the site uses system theme) |
 | `position`       | `"left"`, `"right"`                                | `"right"`   |
 | `trigger`        | `"default"`, `"custom"`                            | `"default"` |
 | `defaultSection` | `"home"`, `"feedback"`, `"roadmap"`, `"changelog"` | `"home"`    |
 | `offset`         | `{ bottom, left, right }`                          | none        |
+
+`theme: "auto"` follows **Settings → Branding**. Explicit `"light"` or `"dark"` overrides the workspace theme for that embed only. Launcher `position` stays an embed option and is not tied to sidebar placement.
+
+Roadmap and Changelog tabs follow the same visibility toggles as the public site. If a section is hidden, `defaultSection` and `showWidget({ section })` fall back to Home.
 
 Use `trigger: "custom"` when your own button should open the widget:
 

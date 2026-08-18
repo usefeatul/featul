@@ -53,6 +53,7 @@ export const widgetConfig = publicProcedure
         position: resolved.config.position,
         enabledTabs: resolved.config.enabledTabs,
         defaultBoardId: resolved.config.defaultBoardId,
+        layoutStyle: resolved.config.layoutStyle,
         allowGuestPosting: resolved.config.allowGuestPosting,
         allowedOrigins: resolved.allowedOrigins,
       },

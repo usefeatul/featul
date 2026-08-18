@@ -5,7 +5,7 @@ import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import { WidgetImage } from "./image";
 import { WidgetHeaderSkeleton } from "./skeleton";
-import type { FeedbackView } from "./types";
+import type { FeedbackView, WidgetLayoutStyle } from "./types";
 
 type Props = {
   workspaceName: string;
@@ -18,6 +18,7 @@ type Props = {
   fullscreen?: boolean;
   loading?: boolean;
   hideCompose?: boolean;
+  layoutStyle?: WidgetLayoutStyle;
   onBack: () => void;
   onCompose: () => void;
   onClose: () => void;
@@ -34,13 +35,20 @@ export function Header({
   fullscreen = false,
   loading = false,
   hideCompose = false,
+  layoutStyle = "comfortable",
   onBack,
   onCompose,
   onClose,
 }: Props) {
+  const headerPad =
+    layoutStyle === "compact"
+      ? "px-3 py-2"
+      : layoutStyle === "spacious"
+        ? "px-5 py-4"
+        : "px-4 py-3";
   return (
     <header
-      className={`flex shrink-0 items-center gap-2 px-4 py-3 min-[380px]:gap-2.5 ${
+      className={`flex shrink-0 items-center gap-2 ${headerPad} min-[380px]:gap-2.5 ${
         fullscreen ? "min-h-12" : ""
       }`}
     >

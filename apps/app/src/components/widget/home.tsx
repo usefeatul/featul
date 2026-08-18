@@ -2,13 +2,15 @@
 
 import { ChevronRight } from "lucide-react";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
+import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetEmpty } from "./empty";
 import { RoadmapRow, type WidgetRoadmapItem } from "./roadmap";
-import { Bone, WidgetRoadmapRowSkeleton } from "./skeleton";
-import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
+import { WidgetPostRow } from "./row";
+import { Bone, WidgetPostRowSkeleton, WidgetRoadmapRowSkeleton } from "./skeleton";
+import type { IdentifiedUser, WidgetApiBase, WidgetLayoutStyle, WidgetPost } from "./types";
 import { UpdateMetaRow, type WidgetChangelogEntry } from "./updates";
 
 type Props = {
@@ -22,9 +24,16 @@ type Props = {
   identity?: IdentifiedUser | null;
   changelogLoading?: boolean;
   roadmapLoading?: boolean;
+  showRoadmap?: boolean;
+  showChangelog?: boolean;
+  showRecent?: boolean;
+  recentPosts?: WidgetPost[];
+  recentLoading?: boolean;
+  layoutStyle?: WidgetLayoutStyle;
   onOpenChangelog: (id?: string) => void;
   onSeeUpdates: () => void;
   onSeeRoadmap: () => void;
+  onSeeFeedback: () => void;
   onCompose: () => void;
   onOpenRoadmapItem: (post: WidgetPost) => void;
   onVoteChange: (id: string, upvotes: number, hasVoted: boolean) => void;
@@ -42,17 +51,37 @@ export function Home({
   onOpenChangelog,
   onSeeUpdates,
   onSeeRoadmap,
+  onSeeFeedback,
   onCompose,
   onOpenRoadmapItem,
   onVoteChange,
   changelogLoading = false,
   roadmapLoading = false,
+  showRoadmap = true,
+  showChangelog = true,
+  showRecent = false,
+  recentPosts = [],
+  recentLoading = false,
+  layoutStyle = "comfortable",
 }: Props) {
+  const px =
+    layoutStyle === "compact"
+      ? "px-4"
+      : layoutStyle === "spacious"
+        ? "px-6"
+        : "px-5";
+  const sectionPy =
+    layoutStyle === "compact"
+      ? "py-2.5"
+      : layoutStyle === "spacious"
+        ? "py-6"
+        : "py-5";
+  const emptyPy = layoutStyle === "compact" ? "py-2" : "py-3";
   const composePrompt = (
     <button
       type="button"
       onClick={onCompose}
-      className="flex w-full cursor-pointer items-center justify-between gap-3 border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 py-4 text-left"
+      className={`flex w-full cursor-pointer items-center justify-between gap-3 border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} py-4 text-left`}
     >
       <span className="text-sm text-[rgb(var(--widget-fg)/0.35)]">What’s on your mind?</span>
       <span
@@ -64,14 +93,14 @@ export function Home({
     </button>
   );
 
-  const roadmapSection = (
+  const roadmapSection = showRoadmap ? (
     <section
       className={`border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${
-        !roadmapLoading && !homeRoadmap.length ? "py-3" : "py-5"
+        !roadmapLoading && !homeRoadmap.length ? emptyPy : sectionPy
       }`}
     >
       <div
-        className={`flex items-center justify-between gap-3 px-5 ${
+        className={`flex items-center justify-between gap-3 ${px} ${
           !roadmapLoading && !homeRoadmap.length ? "mb-1.5" : "mb-3"
         }`}
       >
@@ -136,12 +165,12 @@ export function Home({
         )}
       </div>
     </section>
-  );
+  ) : null;
 
-  const updatesSection = (
-    <section className={!changelogLoading && !homeChangelog.length ? "py-3" : "py-5"}>
+  const updatesSection = showChangelog ? (
+    <section className={!changelogLoading && !homeChangelog.length ? emptyPy : sectionPy}>
       <div
-        className={`flex items-center justify-between gap-3 px-5 ${
+        className={`flex items-center justify-between gap-3 ${px} ${
           !changelogLoading && !homeChangelog.length ? "mb-1.5" : "mb-3"
         }`}
       >
@@ -161,7 +190,7 @@ export function Home({
           {Array.from({ length: 3 }, (_, index) => (
             <div
               key={index}
-              className="flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 last:border-b-0"
+              className={`flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 last:border-b-0`}
             >
               <div className="flex items-center gap-2">
                 <Bone className="h-2.5 w-14 rounded-full" />
@@ -178,7 +207,7 @@ export function Home({
               key={entry.id}
               type="button"
               onClick={() => onOpenChangelog(entry.id)}
-              className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left last:border-b-0"
+              className={`flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 text-left last:border-b-0`}
             >
               <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
               <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
@@ -196,42 +225,95 @@ export function Home({
         />
       )}
     </section>
-  );
+  ) : null;
+
+  const recentSection = showRecent ? (
+    <section
+      className={!recentLoading && !recentPosts.length ? emptyPy : sectionPy}
+    >
+      <div
+        className={`flex items-center justify-between gap-3 ${px} ${
+          !recentLoading && !recentPosts.length ? "mb-1.5" : "mb-3"
+        }`}
+      >
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+          Latest feedback
+        </p>
+        <button
+          type="button"
+          onClick={onSeeFeedback}
+          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+        >
+          See all →
+        </button>
+      </div>
+      {recentLoading ? (
+        <div aria-busy="true" aria-label="Loading feedback">
+          {Array.from({ length: 4 }, (_, index) => (
+            <WidgetPostRowSkeleton key={index} />
+          ))}
+        </div>
+      ) : recentPosts.length ? (
+        <div>
+          {recentPosts.map((post) => (
+            <WidgetPostRow
+              key={post.id}
+              post={post}
+              apiBase={apiBase}
+              userId={userId}
+              identity={identity}
+              onOpen={onOpenRoadmapItem}
+              onVoteChange={onVoteChange}
+            />
+          ))}
+        </div>
+      ) : (
+        <WidgetEmpty
+          compact
+          title="No feedback yet"
+          description="Be the first to share an idea or report a problem."
+          icon={<FillFeedbackIcon className="size-5" size={20} />}
+        />
+      )}
+    </section>
+  ) : null;
+
+  const featured = showChangelog ? featuredEntry : undefined;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {featuredEntry ? (
+      {featured ? (
         <button
           type="button"
-          onClick={() => onOpenChangelog(featuredEntry.id)}
-          className="group w-full border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 pb-6 text-left"
+          onClick={() => onOpenChangelog(featured.id)}
+          className={`group w-full border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} pb-6 text-left`}
         >
-          <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="Just Shipped" />
+          <UpdateMetaRow entry={featured} accent={accent} fallbackBadge="Just Shipped" />
           <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
-            {featuredEntry.title}
+            {featured.title}
           </h2>
-          {featuredEntry.preview ? (
+          {featured.preview ? (
             <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.55)]">
-              {featuredEntry.preview}
+              {featured.preview}
             </p>
           ) : null}
-          {featuredEntry.authorName || featuredEntry.authorImage ? (
+          {featured.authorName || featured.authorImage ? (
             <div className="mt-5 flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
                 <WidgetAuthorAvatar
-                  name={featuredEntry.authorName || "Author"}
-                  image={featuredEntry.authorImage}
+                  name={featured.authorName || "Author"}
+                  image={featured.authorImage}
                   className="size-7"
                 />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
-                    {featuredEntry.authorName || "Author"}
+                    {featured.authorName || "Author"}
                   </p>
                   <p
                     className="truncate font-heading text-xs font-medium"
                     style={{ color: accent }}
                   >
-                    {featuredEntry.authorRoleLabel || "Team"}
+                    {featured.authorRoleLabel || "Team"}
                   </p>
                 </div>
               </div>
@@ -249,9 +331,10 @@ export function Home({
         </button>
       ) : null}
 
-      {featuredEntry ? composePrompt : null}
+      {featured ? composePrompt : null}
       {roadmapSection}
-      {featuredEntry ? null : composePrompt}
+      {featured ? null : composePrompt}
+      {recentSection}
       {updatesSection}
     </div>
   );

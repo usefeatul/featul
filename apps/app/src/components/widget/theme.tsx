@@ -10,6 +10,13 @@ export const WIDGET_ACCENT_FALLBACK = "#3b82f6";
 
 export type WidgetThemeMode = "light" | "dark" | "auto";
 export type WidgetResolvedTheme = "light" | "dark";
+export type WidgetLayoutStyle = "compact" | "comfortable" | "spacious";
+
+export function widgetLayoutClass(layout: WidgetLayoutStyle) {
+  if (layout === "compact") return "widget-layout-compact";
+  if (layout === "spacious") return "widget-layout-spacious";
+  return "widget-layout-comfortable";
+}
 
 export function resolveWidgetAccent(primaryColor?: string | null) {
   const value = (primaryColor || "").trim();
