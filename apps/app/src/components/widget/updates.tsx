@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { WidgetAuthorAvatar } from "./avatar";
+import { WidgetEmpty } from "./empty";
 import { WidgetImage } from "./image";
 
 export type WidgetChangelogEntry = {
@@ -112,11 +113,11 @@ export function WidgetUpdates({
 
   if (!entries.length && !selected) {
     return (
-      <div className="px-5 py-10 text-center">
-        <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">No updates yet</p>
-        <p className="mt-1 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
-          Published product changes will show up here.
-        </p>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <WidgetEmpty
+          title="No updates yet"
+          description="Published product changes will show up here."
+        />
       </div>
     );
   }

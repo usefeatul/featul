@@ -10,6 +10,7 @@ import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import { Comments, type UploadedImage } from "./comments";
+import { WidgetEmpty } from "./empty";
 import { parseWidgetComment, parseWidgetComments, parseWidgetPost } from "./load";
 import { WidgetDetailSkeleton } from "./skeleton";
 import type { IdentifiedUser, WidgetApiBase, WidgetComment, WidgetPost } from "./types";
@@ -239,12 +240,10 @@ export function WidgetFeedbackDetail({
 
   if (error && !post) {
     return (
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 text-center">
-        <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">Couldn’t load this request</p>
-        <p className="mt-1.5 max-w-[240px] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
-          It may have been removed, or the connection dropped.
-        </p>
-      </div>
+      <WidgetEmpty
+        title="Couldn’t load this request"
+        description="It may have been removed, or the connection dropped."
+      />
     );
   }
 

@@ -73,73 +73,54 @@ export function Home({
             <Bone className="h-3 w-20 rounded-full" />
           </div>
         </div>
-      ) : (
+      ) : featuredEntry ? (
         <button
           type="button"
-          onClick={() => onOpenChangelog(featuredEntry?.id)}
+          onClick={() => onOpenChangelog(featuredEntry.id)}
           className="group w-full border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6 text-left"
         >
-        {featuredEntry ? (
-          <>
-            <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="Just Shipped" />
-            <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
-              {featuredEntry.title}
-            </h2>
-            {featuredEntry.preview ? (
-              <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.55)]">
-                {featuredEntry.preview}
-              </p>
-            ) : null}
-            {featuredEntry.authorName || featuredEntry.authorImage ? (
-              <div className="mt-5 flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <WidgetAuthorAvatar
-                    name={featuredEntry.authorName || "Author"}
-                    image={featuredEntry.authorImage}
-                    className="size-7"
-                  />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
-                      {featuredEntry.authorName || "Author"}
-                    </p>
-                    <p
-                      className="truncate font-heading text-xs font-medium"
-                      style={{ color: accent }}
-                    >
-                      {featuredEntry.authorRoleLabel || "Team"}
-                    </p>
-                  </div>
+          <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="Just Shipped" />
+          <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+            {featuredEntry.title}
+          </h2>
+          {featuredEntry.preview ? (
+            <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.55)]">
+              {featuredEntry.preview}
+            </p>
+          ) : null}
+          {featuredEntry.authorName || featuredEntry.authorImage ? (
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <WidgetAuthorAvatar
+                  name={featuredEntry.authorName || "Author"}
+                  image={featuredEntry.authorImage}
+                  className="size-7"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
+                    {featuredEntry.authorName || "Author"}
+                  </p>
+                  <p
+                    className="truncate font-heading text-xs font-medium"
+                    style={{ color: accent }}
+                  >
+                    {featuredEntry.authorRoleLabel || "Team"}
+                  </p>
                 </div>
-                <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
-                  View updates
-                  <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                </span>
               </div>
-            ) : (
-              <span className="mt-5 inline-flex items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
+              <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
                 View updates
                 <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
-            )}
-          </>
-        ) : (
-          <>
-            <p
-              className="text-[11px] font-semibold uppercase tracking-[0.14em]"
-              style={{ color: accent }}
-            >
-              Updates
-            </p>
-            <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
-              No updates yet
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
-              New releases and product changes will show up here.
-            </p>
-          </>
-        )}
-      </button>
-      )}
+            </div>
+          ) : (
+            <span className="mt-5 inline-flex items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
+              View updates
+              <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          )}
+        </button>
+      ) : null}
 
       <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-5">
         <button
@@ -220,7 +201,7 @@ export function Home({
             ))
           ) : (
             <p className="px-5 py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
-              No public roadmap items yet.
+              Nothing on the roadmap yet.
             </p>
           )}
         </div>
@@ -272,7 +253,7 @@ export function Home({
           </div>
         ) : (
           <p className="px-5 py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
-            No updates published yet.
+            No updates yet.
           </p>
         )}
       </section>

@@ -7,6 +7,7 @@ import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { toPlain } from "./utils";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
 import { WidgetAuthorAvatar } from "./avatar";
+import { WidgetEmpty } from "./empty";
 import { WidgetVoteButton } from "./vote";
 
 export type WidgetRoadmapItem = {
@@ -143,7 +144,14 @@ export function WidgetRoadmap({
   };
 
   if (!hasAny) {
-    return <p className="px-5 py-6 text-sm text-[rgb(var(--widget-fg)/0.45)]">No public roadmap items yet.</p>;
+    return (
+      <div className="flex min-h-0 flex-1 flex-col">
+        <WidgetEmpty
+          title="No roadmap yet"
+          description="Public items will show up here when they’re ready to share."
+        />
+      </div>
+    );
   }
 
   return (

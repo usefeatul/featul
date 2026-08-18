@@ -17,6 +17,7 @@ import { SearchIcon } from "@featul/ui/icons/search";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
+import { WidgetEmpty } from "./empty";
 import { parseWidgetPosts } from "./load";
 import { WidgetFeedbackListSkeleton, WidgetPostRowSkeleton } from "./skeleton";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
@@ -376,19 +377,16 @@ export function WidgetFeedbackList({
           <WidgetFeedbackListSkeleton />
         ) : null}
         {error ? (
-          <div className="flex flex-col items-center px-5 py-12 text-center">
-            <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">Couldn’t load requests</p>
-            <p className="mt-1 max-w-3xs text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
-              Something went wrong. Pull this list open again in a moment.
-            </p>
-          </div>
+          <WidgetEmpty
+            title="Couldn’t load requests"
+            description="Something went wrong. Open this list again in a moment."
+          />
         ) : null}
         {!loading && !error && !posts.length ? (
-          <div className="flex flex-col items-center px-5 py-12 text-center">
-            <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">No requests yet</p>
-            <p className="mt-1 max-w-3xs text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
-              Share an idea or report an issue to get the conversation started.
-            </p>
+          <WidgetEmpty
+            title="No requests yet"
+            description="Share an idea or report an issue to get the conversation started."
+          >
             <Button
               type="button"
               size="sm"
@@ -397,7 +395,7 @@ export function WidgetFeedbackList({
             >
               Give feedback
             </Button>
-          </div>
+          </WidgetEmpty>
         ) : null}
         {posts.map((post) => (
           <WidgetPostRow

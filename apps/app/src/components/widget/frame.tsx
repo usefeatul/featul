@@ -10,6 +10,7 @@ import { WidgetFeedbackCompose } from "./compose";
 import { WidgetFeedbackDetail } from "./detail";
 import { Header } from "./header";
 import { Home } from "./home";
+import { WidgetEmpty } from "./empty";
 import {
   mapChangelogEntries,
   parseBoards,
@@ -487,14 +488,10 @@ export default function WidgetFrame({
             ) : null}
 
             {!loading && loadFailed ? (
-              <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 text-center">
-                <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">
-                  Couldn’t load right now
-                </p>
-                <p className="mt-1.5 max-w-[240px] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
-                  Check your connection and open the widget again.
-                </p>
-              </div>
+              <WidgetEmpty
+                title="Couldn’t load right now"
+                description="Check your connection and open the widget again."
+              />
             ) : null}
 
             {!loading && !loadFailed ? (
