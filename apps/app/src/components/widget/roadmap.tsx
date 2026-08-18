@@ -284,7 +284,7 @@ export function RoadmapRow({
   const author = item.isAnonymous ? "Guest" : item.authorName || "Guest";
 
   return (
-    <div className="relative border-b border-[rgb(var(--widget-fg)/0.1)] transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]">
+    <div className="relative border-b border-[rgb(var(--widget-fg)/0.1)] last:border-b-0">
       <button
         type="button"
         onClick={onOpen}

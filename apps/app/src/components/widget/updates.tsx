@@ -163,7 +163,7 @@ export function WidgetUpdates({
                   key={entry.id}
                   type="button"
                   onClick={() => onOpen(entry)}
-                  className={`w-full cursor-pointer px-5 py-5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.03)] ${
+                  className={`w-full cursor-pointer px-5 py-5 text-left ${
                     index > 0 ? "border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" : ""
                   }`}
                 >
@@ -298,10 +298,10 @@ function UpdateDetail({
                   onClick={() => {
                     if (!isCurrent) onOpen(item);
                   }}
-                  className={`flex w-full items-center gap-3 px-5 py-3 text-left transition-colors ${
+                  className={`flex w-full items-center gap-3 px-5 py-3 text-left ${
                     isCurrent
                       ? "cursor-default bg-[rgb(var(--widget-fg)/0.03)]"
-                      : "cursor-pointer hover:bg-[rgb(var(--widget-fg)/0.03)]"
+                      : "cursor-pointer"
                   }`}
                 >
                   <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">

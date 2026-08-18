@@ -219,7 +219,7 @@ export function Home({
                 key={entry.id}
                 type="button"
                 onClick={() => onOpenChangelog(entry.id)}
-                className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]"
+                className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left last:border-b-0"
               >
                 <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
                 <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">

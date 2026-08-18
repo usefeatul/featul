@@ -280,7 +280,7 @@ export function WidgetFeedbackCompose({
                       hasVoted: false,
                     })
                   }
-                  className="flex w-full cursor-pointer items-center gap-3 px-5 py-2.5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.04)]"
+                  className="flex w-full cursor-pointer items-center gap-3 px-5 py-2.5 text-left"
                 >
                   <span className="min-w-0 flex-1 truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
                     {item.title}
