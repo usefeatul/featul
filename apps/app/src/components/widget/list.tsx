@@ -151,7 +151,7 @@ export function WidgetFeedbackList({
         if (loadingMoreRef.current) return;
         loadingMoreRef.current = true;
         setLoadingMore(true);
-      } else {
+      } else if (!hasLoadedOnce.current) {
         setLoading(true);
       }
       setError("");

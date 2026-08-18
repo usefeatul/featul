@@ -83,8 +83,8 @@ export default function WidgetFrame({
   const identifyVersionRef = React.useRef(0);
   const [roadmap, setRoadmap] = React.useState<WidgetRoadmapItem[]>([]);
   const [changelog, setChangelog] = React.useState<WidgetChangelogEntry[]>([]);
-  const [roadmapLoading, setRoadmapLoading] = React.useState(true);
-  const [changelogLoading, setChangelogLoading] = React.useState(true);
+  const [roadmapReady, setRoadmapReady] = React.useState(false);
+  const [changelogReady, setChangelogReady] = React.useState(false);
   const [selectedChangelogId, setSelectedChangelogId] = React.useState<
     string | null
   >(null);
@@ -187,65 +187,65 @@ export default function WidgetFrame({
   }, [apiBase, parentOrigin, projectId]);
 
   React.useEffect(() => {
+    let canceled = false;
+
     async function loadLists() {
-      const tasks: Promise<void>[] = [];
+      const fingerprint =
+        userId || identity?.email ? undefined : await getBrowserFingerprint();
 
-      if (section === "home" || section === "roadmap") {
-        tasks.push(
-          (async () => {
-            setRoadmapLoading(true);
-            try {
-              const fingerprint =
-                userId || identity?.email
-                  ? undefined
-                  : await getBrowserFingerprint();
-              const res = await client.widget.roadmap.$get({
-                ...apiBase,
-                identity: identity?.email
-                  ? {
-                      id: identity.id,
-                      email: identity.email,
-                      name: identity.name,
-                      avatar: identity.avatar,
-                      expiresAt: identity.expiresAt,
-                      signature: identity.signature,
-                    }
-                  : undefined,
-                fingerprint,
-              });
-              const data = await res.json();
-              setRoadmap(parseWidgetRoadmapItems(data.posts));
-            } catch {
+      const identityPayload = identity?.email
+        ? {
+            id: identity.id,
+            email: identity.email,
+            name: identity.name,
+            avatar: identity.avatar,
+            expiresAt: identity.expiresAt,
+            signature: identity.signature,
+          }
+        : undefined;
+
+      await Promise.all([
+        (async () => {
+          try {
+            const res = await client.widget.roadmap.$get({
+              ...apiBase,
+              identity: identityPayload,
+              fingerprint,
+            });
+            const data = await res.json();
+            if (canceled) return;
+            setRoadmap(parseWidgetRoadmapItems(data.posts));
+            setRoadmapReady(true);
+          } catch {
+            if (!canceled) {
+              setRoadmapReady(true);
               setMessage("Could not load this section.");
-            } finally {
-              setRoadmapLoading(false);
             }
-          })(),
-        );
-      }
-
-      if (section === "home" || section === "changelog") {
-        tasks.push(
-          (async () => {
-            setChangelogLoading(true);
-            try {
-              const res = await client.widget.changelog.$get(apiBase);
-              const data = await res.json();
-              const entries = Array.isArray(data.entries) ? data.entries : [];
-              setChangelog(mapChangelogEntries(entries));
-            } catch {
+          }
+        })(),
+        (async () => {
+          try {
+            const res = await client.widget.changelog.$get(apiBase);
+            const data = await res.json();
+            if (canceled) return;
+            const entries = Array.isArray(data.entries) ? data.entries : [];
+            setChangelog(mapChangelogEntries(entries));
+            setChangelogReady(true);
+          } catch {
+            if (!canceled) {
+              setChangelogReady(true);
               setMessage("Could not load this section.");
-            } finally {
-              setChangelogLoading(false);
             }
-          })(),
-        );
-      }
-
-      await Promise.all(tasks);
+          }
+        })(),
+      ]);
     }
+
     loadLists();
-  }, [apiBase, identity, section, userId]);
+    return () => {
+      canceled = true;
+    };
+  }, [apiBase, identity, userId]);
 
   React.useEffect(() => {
     async function handleMessage(event: MessageEvent) {
@@ -494,142 +494,32 @@ export default function WidgetFrame({
               </p>
             ) : null}
 
-            {!loading && section === "home" ? (
-              <motion.div key="home" initial={false}>
-                <Home
-                  featuredEntry={featuredEntry}
-                  homeRoadmap={homeRoadmap}
-                  homeChangelog={homeChangelog}
-                  homeRoadmapLabel={homeRoadmapLabel}
-                  changelogLoading={changelogLoading && changelog.length === 0}
-                  roadmapLoading={roadmapLoading && roadmap.length === 0}
-                  accent={accent}
-                  apiBase={apiBase}
-                  userId={userId}
-                  identity={identity}
-                  onOpenChangelog={(id) => {
-                    if (id) setSelectedChangelogId(id);
-                    setSection("changelog");
-                  }}
-                  onSeeUpdates={() => setSection("changelog")}
-                  onSeeRoadmap={() => setSection("roadmap")}
-                  onCompose={() => goFeedback("compose")}
-                  onOpenRoadmapItem={(post) => {
-                    setSelectedPost(post);
-                    setSection("feedback");
-                    setFeedbackView("detail");
-                  }}
-                  onVoteChange={(id, upvotes, hasVoted) => {
-                    setRoadmap((prev) =>
-                      prev.map((row) =>
-                        row.id === id ? { ...row, upvotes, hasVoted } : row,
-                      ),
-                    );
-                  }}
-                />
-              </motion.div>
-            ) : null}
-
-            {!loading && section === "feedback" ? (
-              <div className="relative flex min-h-0 flex-1 flex-col">
-                <div
-                  className={
-                    feedbackView === "list"
-                      ? "flex min-h-0 flex-1 flex-col"
-                      : "pointer-events-none invisible absolute inset-0 flex flex-col"
-                  }
-                  aria-hidden={feedbackView !== "list"}
-                >
-                  <WidgetFeedbackList
+            {!loading ? (
+              <>
+                <div className={section === "home" ? undefined : "hidden"}>
+                  <Home
+                    featuredEntry={featuredEntry}
+                    homeRoadmap={homeRoadmap}
+                    homeChangelog={homeChangelog}
+                    homeRoadmapLabel={homeRoadmapLabel}
+                    changelogLoading={!changelogReady}
+                    roadmapLoading={!roadmapReady}
+                    accent={accent}
                     apiBase={apiBase}
-                    boards={boards}
-                    boardId={listBoardId}
-                    onBoardChange={setListBoardId}
                     userId={userId}
                     identity={identity}
-                    refreshKey={listRefreshKey}
-                    active={feedbackView === "list"}
-                    votePatch={listVotePatch}
+                    onOpenChangelog={(id) => {
+                      if (id) setSelectedChangelogId(id);
+                      setSection("changelog");
+                    }}
+                    onSeeUpdates={() => setSection("changelog")}
+                    onSeeRoadmap={() => setSection("roadmap")}
                     onCompose={() => goFeedback("compose")}
-                    onOpenPost={(post) => {
+                    onOpenRoadmapItem={(post) => {
                       setSelectedPost(post);
+                      setSection("feedback");
                       setFeedbackView("detail");
                     }}
-                  />
-                </div>
-
-                {feedbackView === "compose" ? (
-                  <motion.div
-                    key="feedback-compose"
-                    initial={reduceMotion ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={contentTransition}
-                    className="flex min-h-0 flex-1 flex-col"
-                  >
-                    <WidgetFeedbackCompose
-                      apiBase={apiBase}
-                      boards={boards}
-                      userId={userId}
-                      identity={identity}
-                      primaryColor={accent}
-                      onCancel={() => goFeedback("list")}
-                      onCreated={(post) => {
-                        setSelectedPost(post);
-                        setListRefreshKey((value) => value + 1);
-                        setFeedbackView("detail");
-                        setMessage("Feedback submitted. Thank you.");
-                        window.setTimeout(() => setMessage(""), 2500);
-                      }}
-                    />
-                  </motion.div>
-                ) : null}
-
-                {feedbackView === "detail" && selectedPost ? (
-                  <motion.div
-                    key={`feedback-detail-${selectedPost.id}`}
-                    initial={reduceMotion ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={contentTransition}
-                    className="flex min-h-0 flex-1 flex-col"
-                  >
-                    <WidgetFeedbackDetail
-                      apiBase={apiBase}
-                      workspaceSlug={workspaceSlug}
-                      accent={accent}
-                      postId={selectedPost.id}
-                      initialPost={selectedPost}
-                      userId={userId}
-                      identity={identity}
-                      onVoteChange={(postId, upvotes, hasVoted) => {
-                        setSelectedPost((prev) =>
-                          prev && prev.id === postId
-                            ? { ...prev, upvotes, hasVoted }
-                            : prev,
-                        );
-                        setListVotePatch({ postId, upvotes, hasVoted });
-                      }}
-                    />
-                  </motion.div>
-                ) : null}
-              </div>
-            ) : null}
-
-            {!loading && section === "roadmap" ? (
-              <motion.div
-                key="roadmap"
-                initial={reduceMotion ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={contentTransition}
-                className="flex min-h-0 flex-1 flex-col"
-              >
-                {roadmapLoading && !roadmap.length ? (
-                  <WidgetRoadmapSkeleton />
-                ) : (
-                  <WidgetRoadmap
-                    items={roadmap}
-                    apiBase={apiBase}
-                    userId={userId}
-                    identity={identity}
                     onVoteChange={(id, upvotes, hasVoted) => {
                       setRoadmap((prev) =>
                         prev.map((row) =>
@@ -638,30 +528,142 @@ export default function WidgetFrame({
                       );
                     }}
                   />
-                )}
-              </motion.div>
-            ) : null}
+                </div>
 
-            {!loading && section === "changelog" ? (
-              <motion.div
-                key="changelog"
-                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={contentTransition}
-                className="flex min-h-0 flex-1 flex-col"
-              >
-                {changelogLoading && !changelog.length ? (
-                  <WidgetUpdatesSkeleton />
-                ) : (
-                  <WidgetUpdates
-                    entries={changelog}
-                    accent={accent}
-                    selectedId={selectedChangelogId}
-                    onOpen={(entry) => setSelectedChangelogId(entry.id)}
-                    onBack={() => setSelectedChangelogId(null)}
-                  />
-                )}
-              </motion.div>
+                <div
+                  className={
+                    section === "feedback"
+                      ? "relative flex min-h-0 flex-1 flex-col"
+                      : "hidden"
+                  }
+                >
+                  <div
+                    className={
+                      feedbackView === "list"
+                        ? "flex min-h-0 flex-1 flex-col"
+                        : "pointer-events-none invisible absolute inset-0 flex flex-col"
+                    }
+                    aria-hidden={section !== "feedback" || feedbackView !== "list"}
+                  >
+                    <WidgetFeedbackList
+                      apiBase={apiBase}
+                      boards={boards}
+                      boardId={listBoardId}
+                      onBoardChange={setListBoardId}
+                      userId={userId}
+                      identity={identity}
+                      refreshKey={listRefreshKey}
+                      active={section === "feedback" && feedbackView === "list"}
+                      votePatch={listVotePatch}
+                      onCompose={() => goFeedback("compose")}
+                      onOpenPost={(post) => {
+                        setSelectedPost(post);
+                        setFeedbackView("detail");
+                      }}
+                    />
+                  </div>
+
+                  {feedbackView === "compose" ? (
+                    <motion.div
+                      key="feedback-compose"
+                      initial={reduceMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={contentTransition}
+                      className="flex min-h-0 flex-1 flex-col"
+                    >
+                      <WidgetFeedbackCompose
+                        apiBase={apiBase}
+                        boards={boards}
+                        userId={userId}
+                        identity={identity}
+                        primaryColor={accent}
+                        onCancel={() => goFeedback("list")}
+                        onCreated={(post) => {
+                          setSelectedPost(post);
+                          setListRefreshKey((value) => value + 1);
+                          setFeedbackView("detail");
+                          setMessage("Feedback submitted. Thank you.");
+                          window.setTimeout(() => setMessage(""), 2500);
+                        }}
+                      />
+                    </motion.div>
+                  ) : null}
+
+                  {feedbackView === "detail" && selectedPost ? (
+                    <motion.div
+                      key={`feedback-detail-${selectedPost.id}`}
+                      initial={reduceMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={contentTransition}
+                      className="flex min-h-0 flex-1 flex-col"
+                    >
+                      <WidgetFeedbackDetail
+                        apiBase={apiBase}
+                        workspaceSlug={workspaceSlug}
+                        accent={accent}
+                        postId={selectedPost.id}
+                        initialPost={selectedPost}
+                        userId={userId}
+                        identity={identity}
+                        onVoteChange={(postId, upvotes, hasVoted) => {
+                          setSelectedPost((prev) =>
+                            prev && prev.id === postId
+                              ? { ...prev, upvotes, hasVoted }
+                              : prev,
+                          );
+                          setListVotePatch({ postId, upvotes, hasVoted });
+                        }}
+                      />
+                    </motion.div>
+                  ) : null}
+                </div>
+
+                <div
+                  className={
+                    section === "roadmap"
+                      ? "flex min-h-0 flex-1 flex-col"
+                      : "hidden"
+                  }
+                >
+                  {!roadmapReady ? (
+                    <WidgetRoadmapSkeleton />
+                  ) : (
+                    <WidgetRoadmap
+                      items={roadmap}
+                      apiBase={apiBase}
+                      userId={userId}
+                      identity={identity}
+                      onVoteChange={(id, upvotes, hasVoted) => {
+                        setRoadmap((prev) =>
+                          prev.map((row) =>
+                            row.id === id ? { ...row, upvotes, hasVoted } : row,
+                          ),
+                        );
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div
+                  className={
+                    section === "changelog"
+                      ? "flex min-h-0 flex-1 flex-col"
+                      : "hidden"
+                  }
+                >
+                  {!changelogReady ? (
+                    <WidgetUpdatesSkeleton />
+                  ) : (
+                    <WidgetUpdates
+                      entries={changelog}
+                      accent={accent}
+                      selectedId={selectedChangelogId}
+                      onOpen={(entry) => setSelectedChangelogId(entry.id)}
+                      onBack={() => setSelectedChangelogId(null)}
+                    />
+                  )}
+                </div>
+              </>
             ) : null}
           </div>
 
