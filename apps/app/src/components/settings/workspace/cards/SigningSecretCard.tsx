@@ -93,15 +93,15 @@ export default function SigningSecretCard({ slug }: Props) {
               </code>
               . Never expose it in browser code.
             </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <code className="break-all rounded-md border border-border bg-muted/40 px-2 py-1 text-xs text-foreground">
+            <div className="flex w-full items-center gap-2">
+              <code className="min-w-0 flex-1 break-all rounded-md border border-border bg-muted/40 px-3 py-2.5 text-sm text-foreground">
                 {maskedSecret}
               </code>
               {secret ? (
                 <Button
                   type="button"
-                  variant="outline"
-                  size="xs"
+                  variant="card"
+                  className="shrink-0"
                   onClick={() => setRevealed((value) => !value)}
                 >
                   {revealed ? "Hide" : "Show"}
