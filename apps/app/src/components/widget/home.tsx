@@ -47,6 +47,138 @@ export function Home({
   changelogLoading = false,
   roadmapLoading = false,
 }: Props) {
+  const composePrompt = (
+    <button
+      type="button"
+      onClick={onCompose}
+      className="flex w-full cursor-pointer items-center justify-between gap-3 border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 py-4 text-left"
+    >
+      <span className="text-sm text-[rgb(var(--widget-fg)/0.35)]">What’s on your mind?</span>
+      <span className="inline-flex h-8 shrink-0 items-center rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))]">
+        Post
+      </span>
+    </button>
+  );
+
+  const roadmapSection = (
+    <section className="border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] py-5">
+      <div className="mb-3 flex items-center justify-between gap-3 px-5">
+        <div className="flex items-center gap-2">
+          <StatusIcon status="progress" className="size-3.5" />
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+            {homeRoadmapLabel}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onSeeRoadmap}
+          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+        >
+          See roadmap →
+        </button>
+      </div>
+      <div>
+        {roadmapLoading ? (
+          <div aria-busy="true" aria-label="Loading roadmap">
+            {Array.from({ length: 4 }, (_, index) => (
+              <WidgetRoadmapRowSkeleton key={index} />
+            ))}
+          </div>
+        ) : homeRoadmap.length ? (
+          homeRoadmap.map((item) => (
+            <RoadmapRow
+              key={item.id}
+              item={item}
+              apiBase={apiBase}
+              userId={userId}
+              identity={identity}
+              onOpen={() =>
+                onOpenRoadmapItem({
+                  id: item.id,
+                  title: item.title,
+                  slug: item.slug || item.id,
+                  content: item.content ?? null,
+                  upvotes: item.upvotes,
+                  commentCount: null,
+                  roadmapStatus: item.roadmapStatus,
+                  createdAt: item.createdAt ?? null,
+                  boardId: "",
+                  boardName: null,
+                  boardSlug: null,
+                  isAnonymous: item.isAnonymous ?? null,
+                  authorName: item.authorName ?? null,
+                  authorImage: item.authorImage ?? null,
+                  hasVoted: Boolean(item.hasVoted),
+                })
+              }
+              onVoteChange={onVoteChange}
+            />
+          ))
+        ) : (
+          <p className="px-5 py-2 text-sm text-[rgb(var(--widget-fg)/0.45)]">
+            Nothing on the roadmap yet
+          </p>
+        )}
+      </div>
+    </section>
+  );
+
+  const updatesSection = (
+    <section className="py-5">
+      <div className="mb-3 flex items-center justify-between gap-3 px-5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+          Updates
+        </p>
+        <button
+          type="button"
+          onClick={onSeeUpdates}
+          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+        >
+          See updates →
+        </button>
+      </div>
+      {changelogLoading ? (
+        <div aria-busy="true" aria-label="Loading updates">
+          {Array.from({ length: 3 }, (_, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 last:border-b-0"
+            >
+              <div className="flex items-center gap-2">
+                <Bone className="h-2.5 w-14 rounded-full" />
+                <Bone className="h-2.5 w-16 rounded-full" />
+              </div>
+              <Bone className="mt-1 h-3.5 w-[82%] rounded-full" />
+            </div>
+          ))}
+        </div>
+      ) : homeChangelog.length ? (
+        <div>
+          {homeChangelog.map((entry) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() => onOpenChangelog(entry.id)}
+              className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left last:border-b-0"
+            >
+              <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
+              <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
+                {entry.title}
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <WidgetEmpty
+          compact
+          title="No updates yet"
+          description="New releases, fixes, and product changes will show up here."
+          icon={<FillChangelogIcon className="size-5" size={20} />}
+        />
+      )}
+    </section>
+  );
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {featuredEntry ? (
@@ -98,131 +230,10 @@ export function Home({
         </button>
       ) : null}
 
-      <button
-        type="button"
-        onClick={onCompose}
-        className="flex w-full cursor-pointer items-center justify-between gap-3 border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 py-4 text-left"
-      >
-        <span className="text-sm text-[rgb(var(--widget-fg)/0.35)]">What’s on your mind?</span>
-        <span className="inline-flex h-8 shrink-0 items-center rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))]">
-          Post
-        </span>
-      </button>
-
-      <section className="border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] py-5">
-        <div className="mb-3 flex items-center justify-between gap-3 px-5">
-          <div className="flex items-center gap-2">
-            <StatusIcon status="progress" className="size-3.5" />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
-              {homeRoadmapLabel}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onSeeRoadmap}
-            className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
-          >
-            See roadmap →
-          </button>
-        </div>
-        <div>
-          {roadmapLoading ? (
-            <div aria-busy="true" aria-label="Loading roadmap">
-              {Array.from({ length: 4 }, (_, index) => (
-                <WidgetRoadmapRowSkeleton key={index} />
-              ))}
-            </div>
-          ) : homeRoadmap.length ? (
-            homeRoadmap.map((item) => (
-              <RoadmapRow
-                key={item.id}
-                item={item}
-                apiBase={apiBase}
-                userId={userId}
-                identity={identity}
-                onOpen={() =>
-                  onOpenRoadmapItem({
-                    id: item.id,
-                    title: item.title,
-                    slug: item.slug || item.id,
-                    content: item.content ?? null,
-                    upvotes: item.upvotes,
-                    commentCount: null,
-                    roadmapStatus: item.roadmapStatus,
-                    createdAt: item.createdAt ?? null,
-                    boardId: "",
-                    boardName: null,
-                    boardSlug: null,
-                    isAnonymous: item.isAnonymous ?? null,
-                    authorName: item.authorName ?? null,
-                    authorImage: item.authorImage ?? null,
-                    hasVoted: Boolean(item.hasVoted),
-                  })
-                }
-                onVoteChange={onVoteChange}
-              />
-            ))
-          ) : (
-            <p className="px-5 py-2 text-sm text-[rgb(var(--widget-fg)/0.45)]">
-              Nothing on the roadmap yet
-            </p>
-          )}
-        </div>
-      </section>
-
-      <section className="py-5">
-        <div className="mb-3 flex items-center justify-between gap-3 px-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
-            Updates
-          </p>
-          <button
-            type="button"
-            onClick={onSeeUpdates}
-            className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
-          >
-            See updates →
-          </button>
-        </div>
-        {changelogLoading ? (
-          <div aria-busy="true" aria-label="Loading updates">
-            {Array.from({ length: 3 }, (_, index) => (
-              <div
-                key={index}
-                className="flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 last:border-b-0"
-              >
-                <div className="flex items-center gap-2">
-                  <Bone className="h-2.5 w-14 rounded-full" />
-                  <Bone className="h-2.5 w-16 rounded-full" />
-                </div>
-                <Bone className="mt-1 h-3.5 w-[82%] rounded-full" />
-              </div>
-            ))}
-          </div>
-        ) : homeChangelog.length ? (
-          <div>
-            {homeChangelog.map((entry) => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => onOpenChangelog(entry.id)}
-                className="flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 text-left last:border-b-0"
-              >
-                <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
-                <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
-                  {entry.title}
-                </span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <WidgetEmpty
-            compact
-            title="No updates yet"
-            description="New releases, fixes, and product changes will show up here."
-            icon={<FillChangelogIcon className="size-5" size={20} />}
-          />
-        )}
-      </section>
+      {featuredEntry ? composePrompt : null}
+      {roadmapSection}
+      {featuredEntry ? null : composePrompt}
+      {updatesSection}
     </div>
   );
 }
