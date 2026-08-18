@@ -237,7 +237,7 @@ export function WidgetRoadmap({
               <div className="relative">
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute bottom-8 left-5 top-4 z-0 flex w-2 justify-center"
+                  className="pointer-events-none absolute bottom-8 left-5 top-4 z-0 flex w-4 justify-center"
                 >
                   <div
                     className="h-full w-px rounded-full"
@@ -250,7 +250,7 @@ export function WidgetRoadmap({
                   <RoadmapItem
                     key={item.id}
                     item={item}
-                    color={section.color}
+                    status={section.status}
                     apiBase={apiBase}
                     userId={userId}
                     identity={identity}
@@ -265,7 +265,7 @@ export function WidgetRoadmap({
                     onClick={() =>
                       setExpandedByKey((prev) => ({ ...prev, [section.key]: true }))
                     }
-                    className="flex w-full cursor-pointer items-center gap-1 px-5 py-3 pl-11 text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.7)]"
+                    className="flex w-full cursor-pointer items-center gap-1 px-5 py-3 pl-12 text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.7)]"
                   >
                     Show more
                     <ChevronDown className="size-3.5" />
@@ -336,7 +336,7 @@ function formatDoneDate(value?: string | Date | null): string {
 
 function RoadmapItem({
   item,
-  color,
+  status,
   apiBase,
   userId,
   identity,
@@ -345,7 +345,7 @@ function RoadmapItem({
   compact,
 }: {
   item: WidgetRoadmapItem;
-  color: string;
+  status: string;
   apiBase: WidgetApiBase;
   userId?: string | null;
   identity?: IdentifiedUser | null;
@@ -359,11 +359,11 @@ function RoadmapItem({
 
   return (
     <div className="relative z-[1] flex items-start gap-3 px-5 py-3.5">
-      <span className="relative mt-1.5 flex w-2 shrink-0 justify-center" aria-hidden>
-        <span
-          className="size-2 rounded-full border bg-[rgb(var(--widget-surface))] shadow-[0_0_0_3px_rgb(var(--widget-surface))]"
-          style={{ borderColor: color }}
-        />
+      <span
+        className="relative mt-0.5 flex w-4 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))] shadow-[0_0_0_3px_rgb(var(--widget-surface))]"
+        aria-hidden
+      >
+        <StatusIcon status={status} className="size-4" />
       </span>
       <button
         type="button"

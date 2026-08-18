@@ -89,7 +89,7 @@ export function WidgetRoadmapSkeleton() {
           </div>
           {range(3).map((index) => (
             <div key={index} className="flex items-start gap-3 px-5 py-3.5">
-              <Bone className="mt-1.5 size-2 shrink-0 rounded-full" />
+              <Bone className="mt-0.5 size-4 shrink-0 rounded-full" />
               <div className="min-w-0 flex-1">
                 <Bone className="h-3.5 w-[70%] rounded-full" />
                 <Bone className="mt-2 h-2.5 w-full rounded-full" />
