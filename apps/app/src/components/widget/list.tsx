@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { client } from "@featul/api/client";
-import { Button } from "@featul/ui/components/button";
 import {
   Popover,
   PopoverContent,
@@ -390,14 +389,14 @@ export function WidgetFeedbackList({
             icon={<FillFeedbackIcon className="size-5" size={20} />}
           >
             <WidgetEmptyPlaceholders />
-            <Button
+            <button
               type="button"
-              size="sm"
-              className="mt-5 h-8 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90"
+              className="mt-5 inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-white"
+              style={{ backgroundColor: "var(--widget-accent)" }}
               onClick={onCompose}
             >
               Give feedback
-            </Button>
+            </button>
           </WidgetEmpty>
         ) : null}
         {posts.map((post) => (
