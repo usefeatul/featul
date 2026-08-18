@@ -52,9 +52,8 @@ export default function EmbedCard({ workspaceId }: Props) {
         description={
           <div className="space-y-3">
             <p className="break-words">
-              Copy the snippet into your app. Featul automatically trusts your
-              workspace domain and verified custom domains — no extra setup
-              required. The full snippet is also in the docs.
+              Copy the snippet into your app. Featul trusts your workspace
+              domain and verified custom domains with no extra setup.
             </p>
             <p className="break-all text-sm text-muted-foreground">
               Workspace ID:{" "}
