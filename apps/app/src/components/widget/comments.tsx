@@ -252,7 +252,7 @@ function CommentThreadItem({
   onVoteChange: (id: string, upvotes: number, hasVoted: boolean) => void;
   replyComposer?: React.ReactNode;
 }) {
-  const canReply = allowComments && node.depth < 2;
+  const canReply = allowComments && node.depth < 3;
   const isReplying = replyToId === node.id;
   const hasReplies = node.replies.length > 0;
   const dateLabel = formatShortDate(node.createdAt) || formatRelativeDate(node.createdAt);

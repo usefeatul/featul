@@ -262,11 +262,6 @@ export const widgetCreateComment = publicProcedure
         });
       }
       depth = (parentComment.depth || 0) + 1;
-      if (depth > 2) {
-        throw new HTTPException(400, {
-          message: "Reply nesting limit reached",
-        });
-      }
       await ctx.db
         .update(comment)
         .set({ replyCount: sql`${comment.replyCount} + 1` })
