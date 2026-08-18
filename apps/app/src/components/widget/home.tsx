@@ -2,6 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
+import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetEmpty } from "./empty";
@@ -118,9 +119,12 @@ export function Home({
             />
           ))
         ) : (
-          <p className="px-5 py-2 text-sm text-[rgb(var(--widget-fg)/0.45)]">
-            Nothing on the roadmap yet
-          </p>
+          <WidgetEmpty
+            compact
+            title="No roadmap yet"
+            description="Public items will show up here when they’re ready to share."
+            icon={<FillRoadmapIcon className="size-5" size={20} />}
+          />
         )}
       </div>
     </section>
