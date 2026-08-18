@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
+import { toPlain } from "./utils";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
@@ -29,14 +30,6 @@ const SECTIONS = [
   { key: "planned", label: "Planned", status: "planned", color: "#f59e0b" },
   { key: "completed", label: "Done", status: "completed", color: "#15CF59" },
 ] as const;
-
-function StatusNode({ status }: { status: string }) {
-  return (
-    <span className="relative z-[2] flex size-4 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))] shadow-[0_0_0_2px_rgb(var(--widget-surface))]">
-      <StatusIcon status={status} className="size-4" />
-    </span>
-  );
-}
 
 const HEADER_HEIGHT = 44;
 const INITIAL_VISIBLE = 6;
@@ -191,7 +184,7 @@ export function WidgetRoadmap({
                 }}
                 aria-label={`Jump to ${section.label}`}
               >
-                <StatusNode status={section.status} />
+                <StatusIcon status={section.status} className="size-4 shrink-0" />
                 <h3 className="flex-1 text-sm font-semibold text-[rgb(var(--widget-fg))]">{section.label}</h3>
                 <span className="tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
                   {String(grouped[section.key].length).padStart(2, "0")}
@@ -233,7 +226,7 @@ export function WidgetRoadmap({
               aria-hidden={isPinned}
               tabIndex={isPinned ? -1 : 0}
             >
-              <StatusNode status={section.status} />
+              <StatusIcon status={section.status} className="size-4 shrink-0" />
               <h3 className="flex-1 text-sm font-semibold text-[rgb(var(--widget-fg))]">{section.label}</h3>
               <span className="tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
                 {String(sectionItems.length).padStart(2, "0")}
@@ -244,16 +237,20 @@ export function WidgetRoadmap({
               <div className="relative">
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute bottom-3 left-[27px] top-2 z-[1] w-px"
-                  style={{
-                    background: `linear-gradient(180deg, ${section.color}00, ${section.color}55 16%, ${section.color}55 84%, ${section.color}00)`,
-                  }}
-                />
+                  className="pointer-events-none absolute bottom-8 left-5 top-4 z-0 flex w-2 justify-center"
+                >
+                  <div
+                    className="h-full w-px rounded-full"
+                    style={{
+                      background: `linear-gradient(180deg, ${section.color}00 0%, ${section.color}55 18%, ${section.color}55 82%, ${section.color}00 100%)`,
+                    }}
+                  />
+                </div>
                 {visible.map((item) => (
                   <RoadmapItem
                     key={item.id}
                     item={item}
-                    status={section.status}
+                    color={section.color}
                     apiBase={apiBase}
                     userId={userId}
                     identity={identity}
@@ -268,7 +265,7 @@ export function WidgetRoadmap({
                     onClick={() =>
                       setExpandedByKey((prev) => ({ ...prev, [section.key]: true }))
                     }
-                    className="flex w-full cursor-pointer items-center gap-1 bg-[rgb(var(--widget-surface))] px-5 py-3 pl-[46px] text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.7)]"
+                    className="flex w-full cursor-pointer items-center gap-1 px-5 py-3 pl-11 text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.7)]"
                   >
                     Show more
                     <ChevronDown className="size-3.5" />
@@ -339,7 +336,7 @@ function formatDoneDate(value?: string | Date | null): string {
 
 function RoadmapItem({
   item,
-  status,
+  color,
   apiBase,
   userId,
   identity,
@@ -348,7 +345,7 @@ function RoadmapItem({
   compact,
 }: {
   item: WidgetRoadmapItem;
-  status: string;
+  color: string;
   apiBase: WidgetApiBase;
   userId?: string | null;
   identity?: IdentifiedUser | null;
@@ -357,49 +354,55 @@ function RoadmapItem({
   compact?: boolean;
 }) {
   const doneDate = formatDoneDate(item.createdAt);
-  const node = <StatusNode status={status} />;
-
-  if (compact) {
-    return (
-      <button
-        type="button"
-        onClick={() => onOpen?.(item)}
-        className="flex w-full cursor-pointer items-center gap-3 px-5 py-2.5 text-left"
-        aria-label={item.title}
-      >
-        {node}
-        <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">{item.title}</p>
-        {doneDate ? (
-          <span className="relative z-[2] shrink-0 text-xs text-[rgb(var(--widget-fg)/0.35)]">{doneDate}</span>
-        ) : null}
-      </button>
-    );
-  }
+  const author = item.isAnonymous ? "Guest" : item.authorName || "Guest";
+  const excerpt = toPlain(item.content);
 
   return (
-    <div className="flex items-center gap-3 px-5 py-2.5">
+    <div className="relative z-[1] flex items-start gap-3 px-5 py-3.5">
+      <span className="relative mt-1.5 flex w-2 shrink-0 justify-center" aria-hidden>
+        <span
+          className="size-2 rounded-full border bg-[rgb(var(--widget-surface))] shadow-[0_0_0_3px_rgb(var(--widget-surface))]"
+          style={{ borderColor: color }}
+        />
+      </span>
       <button
         type="button"
         onClick={() => onOpen?.(item)}
-        className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
+        className="min-w-0 flex-1 cursor-pointer text-left"
         aria-label={item.title}
       >
-        {node}
-        <p className="min-w-0 flex-1 truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
+        <p className="pr-2 text-sm font-semibold leading-snug text-[rgb(var(--widget-fg))]">
           {item.title}
         </p>
+        {excerpt ? (
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
+            {excerpt}
+          </p>
+        ) : null}
+        <div className="mt-2.5 flex items-center gap-1.5">
+          <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-4" />
+          <span className="truncate text-[11px] text-[rgb(var(--widget-fg)/0.45)]">{author}</span>
+        </div>
       </button>
-      <WidgetVoteButton
-        postId={item.id}
-        upvotes={item.upvotes || 0}
-        hasVoted={Boolean(item.hasVoted)}
-        apiBase={apiBase}
-        userId={userId}
-        identity={identity}
-        variant="plain"
-        className="relative z-[2] shrink-0"
-        onChange={({ upvotes, hasVoted }) => onVoteChange?.(item.id, upvotes, hasVoted)}
-      />
+      {compact ? (
+        doneDate ? (
+          <span className="relative z-[2] shrink-0 pt-0.5 text-xs text-[rgb(var(--widget-fg)/0.35)]">
+            {doneDate}
+          </span>
+        ) : null
+      ) : (
+        <WidgetVoteButton
+          postId={item.id}
+          upvotes={item.upvotes || 0}
+          hasVoted={Boolean(item.hasVoted)}
+          apiBase={apiBase}
+          userId={userId}
+          identity={identity}
+          variant="plain"
+          className="relative z-[2] shrink-0 self-start"
+          onChange={({ upvotes, hasVoted }) => onVoteChange?.(item.id, upvotes, hasVoted)}
+        />
+      )}
     </div>
   );
 }
