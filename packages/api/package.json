@@ -18,6 +18,7 @@
     "./shared/*": "./src/shared/*.ts",
     "./elysia": "./src/elysia.ts",
     "./upload-policy": "./src/upload-policy.ts",
+    "./widget-config": "./src/router/widget/public-config.ts",
     "./services/github-webhook": "./src/services/github-webhook.ts",
     "./services/github-sync": "./src/services/github-sync.ts",
     "./services/github-app": "./src/services/github-app.ts",

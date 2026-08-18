@@ -78,3 +78,20 @@ export type WidgetWorkspace = {
   layoutStyle: WidgetLayoutStyle;
   theme: WidgetThemeMode;
 };
+
+export type WidgetBootstrap = {
+  workspace?: {
+    id?: string;
+    name?: string;
+    slug?: string;
+    logo?: string | null;
+    primaryColor?: string | null;
+    hideBranding?: boolean | null;
+  } | null;
+  config?: {
+    theme?: string;
+    layoutStyle?: string;
+    enabledTabs?: unknown;
+  } | null;
+  boards?: unknown;
+};

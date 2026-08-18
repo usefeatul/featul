@@ -1,5 +1,7 @@
 import WidgetFrame from "@/components/widget/frame";
 import { isSafeParentOrigin } from "@/components/widget/origin";
+import { db } from "@featul/db";
+import { loadWidgetPublicConfig } from "@featul/api/widget-config";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +24,11 @@ type Props = {
   }>;
 };
 
-function pick<T extends string>(value: string | undefined, allowed: readonly T[], fallback: T): T {
+function pick<T extends string>(
+  value: string | undefined,
+  allowed: readonly T[],
+  fallback: T,
+): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
 }
 
@@ -36,7 +42,15 @@ export default async function WidgetFramePage({ params, searchParams }: Props) {
 
   if (!isSafeProjectId(projectId)) return null;
 
-  const parentOrigin = isSafeParentOrigin(sp.parentOrigin) ? sp.parentOrigin : "";
+  const parentOrigin = isSafeParentOrigin(sp.parentOrigin)
+    ? sp.parentOrigin
+    : "";
+
+  const initialConfig = await loadWidgetPublicConfig(
+    { db },
+    projectId,
+    parentOrigin || undefined,
+  ).catch(() => null);
 
   return (
     <WidgetFrame
@@ -46,6 +60,7 @@ export default async function WidgetFramePage({ params, searchParams }: Props) {
       initialSection={pick<Section>(sp.section, SECTIONS, "home")}
       initialPosition={pick<Position>(sp.position, POSITIONS, "right")}
       initialFullscreen={sp.layout === "full"}
+      initialConfig={initialConfig}
     />
   );
 }

@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { and, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { createId } from "@paralleldrive/cuid2";
 import {
@@ -235,6 +235,72 @@ export async function resolveWidget(
       roadmapVisible,
       changelogVisible,
     }),
+  };
+}
+
+export type WidgetPublicConfig = {
+  workspace: {
+    id: string;
+    name: string;
+    slug: string;
+    logo: string | null;
+    primaryColor: string | null;
+    hideBranding: boolean;
+  };
+  config: ResolvedWidget["config"] & { allowedOrigins: string[] };
+  boards: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    allowAnonymous: boolean | null;
+    allowComments: boolean | null;
+  }>;
+};
+
+export async function loadWidgetPublicConfig(
+  ctx: WidgetRouterContext,
+  projectId: string,
+  parentOrigin?: string,
+): Promise<WidgetPublicConfig> {
+  const resolved = await resolveWidget(ctx, projectId, parentOrigin);
+  const boards = await ctx.db
+    .select({
+      id: board.id,
+      name: board.name,
+      slug: board.slug,
+      allowAnonymous: board.allowAnonymous,
+      allowComments: board.allowComments,
+    })
+    .from(board)
+    .where(
+      and(
+        eq(board.workspaceId, resolved.workspaceId),
+        eq(board.isSystem, false),
+        eq(board.isPublic, true),
+      ),
+    )
+    .orderBy(asc(board.sortOrder), asc(board.createdAt));
+
+  return {
+    workspace: {
+      id: resolved.workspaceId,
+      name: resolved.workspaceName,
+      slug: resolved.workspaceSlug,
+      logo: resolved.workspaceLogo,
+      primaryColor: resolved.primaryColor,
+      hideBranding: resolved.hideBranding,
+    },
+    config: {
+      projectId: resolved.config.projectId,
+      theme: resolved.config.theme,
+      position: resolved.config.position,
+      enabledTabs: resolved.config.enabledTabs,
+      defaultBoardId: resolved.config.defaultBoardId,
+      layoutStyle: resolved.config.layoutStyle,
+      allowGuestPosting: resolved.config.allowGuestPosting,
+      allowedOrigins: resolved.allowedOrigins,
+    },
+    boards,
   };
 }
 

@@ -1,9 +1,13 @@
-import { and, asc, eq } from "drizzle-orm";
-import { board, workspace, workspaceMember } from "@featul/db";
+import { and, eq } from "drizzle-orm";
+import { workspace, workspaceMember } from "@featul/db";
 import { HTTPException } from "hono/http-exception";
 import { privateProcedure, publicProcedure } from "../../jstack";
 import { identifySchema, projectIdInput, projectInput } from "./schema";
-import { resolveWidget, upsertIdentifiedUser } from "./resolve";
+import {
+  loadWidgetPublicConfig,
+  resolveWidget,
+  upsertIdentifiedUser,
+} from "./resolve";
 import {
   isVerifiedIdentity,
   signWidgetIdentity,
@@ -13,52 +17,14 @@ import {
 export const widgetConfig = publicProcedure
   .input(projectInput)
   .get(async ({ ctx, input, c }) => {
-    const resolved = await resolveWidget(
+    const payload = await loadWidgetPublicConfig(
       ctx,
       input.projectId,
       input.parentOrigin,
     );
 
-    const boards = await ctx.db
-      .select({
-        id: board.id,
-        name: board.name,
-        slug: board.slug,
-        allowAnonymous: board.allowAnonymous,
-        allowComments: board.allowComments,
-      })
-      .from(board)
-      .where(
-        and(
-          eq(board.workspaceId, resolved.workspaceId),
-          eq(board.isSystem, false),
-          eq(board.isPublic, true),
-        ),
-      )
-      .orderBy(asc(board.sortOrder), asc(board.createdAt));
-
     c.header("Cache-Control", "public, max-age=30, stale-while-revalidate=120");
-    return c.superjson({
-      workspace: {
-        id: resolved.workspaceId,
-        name: resolved.workspaceName,
-        slug: resolved.workspaceSlug,
-        logo: resolved.workspaceLogo,
-        primaryColor: resolved.primaryColor,
-        hideBranding: resolved.hideBranding,
-      },
-      config: {
-        projectId: resolved.config.projectId,
-        theme: resolved.config.theme,
-        position: resolved.config.position,
-        enabledTabs: resolved.config.enabledTabs,
-        defaultBoardId: resolved.config.defaultBoardId,
-        layoutStyle: resolved.config.layoutStyle,
-        allowGuestPosting: resolved.config.allowGuestPosting,
-        allowedOrigins: resolved.allowedOrigins,
-      },
-      boards,
-    });
+    return c.superjson(payload);
   });
 
 export const widgetIdentify = publicProcedure

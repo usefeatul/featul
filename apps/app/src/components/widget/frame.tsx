@@ -48,6 +48,7 @@ import type {
   FeedbackView,
   IdentifiedUser,
   Section,
+  WidgetBootstrap,
   WidgetLayoutStyle,
   WidgetPost,
   WidgetWorkspace,
@@ -62,7 +63,39 @@ type WidgetFrameProps = {
   initialSection: Section;
   initialPosition: "left" | "right";
   initialFullscreen?: boolean;
+  initialConfig?: WidgetBootstrap | null;
 };
+
+function readBootstrap(
+  data: WidgetBootstrap,
+  projectId: string,
+): {
+  workspace: WidgetWorkspace;
+  tabs: Section[];
+  layoutStyle: WidgetLayoutStyle;
+  theme: WidgetWorkspace["theme"];
+  boards: Board[];
+} {
+  const theme = parseBrandingTheme(data.config?.theme);
+  const layoutStyle = parseLayoutStyle(data.config?.layoutStyle);
+  const enabledTabs = parseConfigTabs(data.config?.enabledTabs);
+  return {
+    theme,
+    layoutStyle,
+    tabs: ["home", ...enabledTabs],
+    boards: parseBoards(data.boards),
+    workspace: {
+      id: data.workspace?.id || projectId,
+      name: data.workspace?.name || "Feedback",
+      slug: data.workspace?.slug || "",
+      logo: data.workspace?.logo || null,
+      primaryColor: data.workspace?.primaryColor || null,
+      hideBranding: data.workspace?.hideBranding ?? null,
+      layoutStyle,
+      theme,
+    },
+  };
+}
 
 export default function WidgetFrame({
   projectId,
@@ -70,21 +103,31 @@ export default function WidgetFrame({
   initialTheme,
   initialSection,
   initialFullscreen = false,
+  initialConfig = null,
 }: WidgetFrameProps) {
-  const [section, setSection] = React.useState<Section>(
-    initialSection || "home",
-  );
+  const hasBootstrap = Boolean(initialConfig);
+  const bootstrap = hasBootstrap && initialConfig
+    ? readBootstrap(initialConfig, projectId)
+    : null;
+  const [section, setSection] = React.useState<Section>(() => {
+    const requested = initialSection || "home";
+    if (bootstrap?.tabs.includes(requested)) return requested;
+    return bootstrap?.tabs[0] || "home";
+  });
   const [feedbackView, setFeedbackView] = React.useState<FeedbackView>("list");
   const [workspace, setWorkspace] = React.useState<WidgetWorkspace | null>(
-    null,
+    bootstrap?.workspace ?? null,
   );
-  const [tabs, setTabs] = React.useState<Section[]>([]);
-  const [tabsReady, setTabsReady] = React.useState(false);
-  const [layoutStyle, setLayoutStyle] =
-    React.useState<WidgetLayoutStyle>("comfortable");
-  const brandingThemeRef = React.useRef<"light" | "dark" | "auto">("auto");
-  const tabsRef = React.useRef<Section[]>([]);
-  const [boards, setBoards] = React.useState<Board[]>([]);
+  const [tabs, setTabs] = React.useState<Section[]>(bootstrap?.tabs ?? []);
+  const [tabsReady, setTabsReady] = React.useState(Boolean(bootstrap));
+  const [layoutStyle, setLayoutStyle] = React.useState<WidgetLayoutStyle>(
+    bootstrap?.layoutStyle ?? "comfortable",
+  );
+  const brandingThemeRef = React.useRef<"light" | "dark" | "auto">(
+    bootstrap?.theme ?? "auto",
+  );
+  const tabsRef = React.useRef<Section[]>(bootstrap?.tabs ?? []);
+  const [boards, setBoards] = React.useState<Board[]>(bootstrap?.boards ?? []);
   const [listBoardId, setListBoardId] = React.useState("");
   const [userId, setUserId] = React.useState<string | null>(null);
   const [identity, setIdentity] = React.useState<IdentifiedUser | null>(null);
@@ -98,7 +141,7 @@ export default function WidgetFrame({
   const [selectedChangelogId, setSelectedChangelogId] = React.useState<
     string | null
   >(null);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(!bootstrap);
   const [loadFailed, setLoadFailed] = React.useState(false);
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(
     null,
@@ -113,10 +156,12 @@ export default function WidgetFrame({
   const [navBorderVisible, setNavBorderVisible] = React.useState(false);
   const [fullscreen, setFullscreen] = React.useState(initialFullscreen);
   const [themeMode, setThemeMode] = React.useState<"light" | "dark" | "auto">(
-    initialTheme,
+    initialTheme === "auto" && bootstrap?.theme ? bootstrap.theme : initialTheme,
   );
   const [theme, setTheme] = React.useState<"light" | "dark">(() =>
-    resolveWidgetTheme(initialTheme),
+    resolveWidgetTheme(
+      initialTheme === "auto" && bootstrap?.theme ? bootstrap.theme : initialTheme,
+    ),
   );
   const navBorderTimeoutRef = React.useRef<number | null>(null);
 
@@ -160,42 +205,36 @@ export default function WidgetFrame({
   }, [accent, parentOrigin, workspace]);
 
   React.useEffect(() => {
+    if (hasBootstrap) postToParent(parentOrigin, "ready");
+  }, [hasBootstrap, parentOrigin]);
+
+  React.useEffect(() => {
     let canceled = false;
     async function load() {
-      setLoading(true);
-      setLoadFailed(false);
+      if (!hasBootstrap) {
+        setLoading(true);
+        setLoadFailed(false);
+      }
       try {
         const res = await client.widget.config.$get(apiBase);
         const data = await res.json();
         if (canceled) return;
-        const brandingTheme = parseBrandingTheme(data.config?.theme);
-        const nextLayout = parseLayoutStyle(data.config?.layoutStyle);
-        const enabledTabs = parseConfigTabs(data.config?.enabledTabs);
-        const nextTabs: Section[] = ["home", ...enabledTabs];
-        brandingThemeRef.current = brandingTheme;
-        tabsRef.current = nextTabs;
-        setWorkspace({
-          id: data.workspace?.id || projectId,
-          name: data.workspace?.name || "Feedback",
-          slug: data.workspace?.slug || "",
-          logo: data.workspace?.logo || null,
-          primaryColor: data.workspace?.primaryColor || null,
-          hideBranding: data.workspace?.hideBranding ?? null,
-          layoutStyle: nextLayout,
-          theme: brandingTheme,
-        });
-        setLayoutStyle(nextLayout);
-        setTabs(nextTabs);
+        const next = readBootstrap(data, projectId);
+        brandingThemeRef.current = next.theme;
+        tabsRef.current = next.tabs;
+        setWorkspace(next.workspace);
+        setLayoutStyle(next.layoutStyle);
+        setTabs(next.tabs);
         setSection((current) =>
-          nextTabs.includes(current) ? current : "home",
+          next.tabs.includes(current) ? current : "home",
         );
-        if (initialTheme === "auto") setThemeMode(brandingTheme);
-        setBoards(parseBoards(data.boards));
+        if (initialTheme === "auto") setThemeMode(next.theme);
+        setBoards(next.boards);
         setListBoardId("");
         setTabsReady(true);
         postToParent(parentOrigin, "ready");
       } catch {
-        if (!canceled) setLoadFailed(true);
+        if (!canceled && !hasBootstrap) setLoadFailed(true);
       } finally {
         if (!canceled) setLoading(false);
       }
@@ -204,7 +243,7 @@ export default function WidgetFrame({
     return () => {
       canceled = true;
     };
-  }, [apiBase, parentOrigin, projectId, initialTheme]);
+  }, [apiBase, parentOrigin, projectId, initialTheme, hasBootstrap]);
 
   React.useEffect(() => {
     let canceled = false;
