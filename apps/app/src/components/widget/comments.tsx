@@ -330,28 +330,56 @@ function CommentThreadItem({
       {hasReplies ? (
         <>
           <div
-            className="absolute bottom-4 left-[13px] top-11 w-px bg-[rgb(var(--widget-fg)/0.12)]"
+            className="absolute bottom-0 left-3.5 top-10 w-px -translate-x-1/2 bg-[rgb(var(--widget-fg)/0.16)]"
             aria-hidden
           />
-          <div className="relative pl-10">
-            {node.replies.map((reply) => (
-              <CommentThreadItem
-                key={reply.id}
-                node={reply}
-                apiBase={apiBase}
-                userId={userId}
-                identity={identity}
-                allowComments={allowComments}
-                replyToId={replyToId}
-                onToggleReply={onToggleReply}
-                onVoteChange={onVoteChange}
-                replyComposer={replyComposer}
-              />
+          <div className="relative pl-11">
+            {node.replies.map((reply, index) => (
+              <div key={reply.id} className="relative">
+                <ReplyBranch isLast={index === node.replies.length - 1} />
+                <CommentThreadItem
+                  node={reply}
+                  apiBase={apiBase}
+                  userId={userId}
+                  identity={identity}
+                  allowComments={allowComments}
+                  replyToId={replyToId}
+                  onToggleReply={onToggleReply}
+                  onVoteChange={onVoteChange}
+                  replyComposer={replyComposer}
+                />
+              </div>
             ))}
           </div>
         </>
       ) : null}
     </div>
+  );
+}
+
+function ReplyBranch({ isLast }: { isLast: boolean }) {
+  return (
+    <>
+      {isLast ? (
+        <div
+          className="pointer-events-none absolute -left-8 top-2.5 bottom-0 z-[1] w-4 bg-[rgb(var(--widget-surface))]"
+          aria-hidden
+        />
+      ) : null}
+      <svg
+        aria-hidden
+        viewBox="0 0 36 20"
+        fill="none"
+        className="pointer-events-none absolute -left-[30px] top-2.5 z-[2] h-5 w-9 overflow-visible text-[rgb(var(--widget-fg)/0.16)]"
+      >
+        <path
+          d="M0.5 0 C 0.5 16 16 19.5 36 19.5"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeLinecap="round"
+        />
+      </svg>
+    </>
   );
 }
 
