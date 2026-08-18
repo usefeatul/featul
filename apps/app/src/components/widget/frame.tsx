@@ -576,7 +576,6 @@ export default function WidgetFrame({
                         boards={boards}
                         userId={userId}
                         identity={identity}
-                        primaryColor={accent}
                         onCancel={() => goFeedback("list")}
                         onCreated={(post) => {
                           setSelectedPost(post);

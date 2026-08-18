@@ -6,7 +6,7 @@ import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
 import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { Check, X } from "lucide-react";
+import { Check, Heart, X } from "lucide-react";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
   POST_IMAGE_UPLOAD_MAX_BYTES,
@@ -28,7 +28,6 @@ type Props = {
   boards: Board[];
   userId?: string | null;
   identity?: IdentifiedUser | null;
-  primaryColor?: string;
   onCancel: () => void;
   onCreated: (post: WidgetPost) => void;
   onView: (post: WidgetPost) => void;
@@ -44,7 +43,6 @@ export function WidgetFeedbackCompose({
   boards,
   userId,
   identity,
-  primaryColor = "#3b82f6",
   onCancel: _onCancel,
   onCreated,
   onView,
@@ -254,15 +252,44 @@ export function WidgetFeedbackCompose({
       ) : null}
 
       {similar.length ? (
-        <div className="mt-2 rounded-md bg-[rgb(var(--widget-fg)/0.04)] p-3">
-          <p className="text-xs font-semibold" style={{ color: primaryColor || "#3b82f6" }}>
+        <div className="-mx-5 mt-3 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]">
+          <p className="px-5 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
             Similar requests
           </p>
-          <ul className="mt-2 space-y-1.5">
-            {similar.map((item) => (
-              <li key={item.id} className="flex items-center justify-between gap-2 text-xs">
-                <span className="truncate text-[rgb(var(--widget-fg)/0.7)]">{item.title}</span>
-                <span className="shrink-0 text-[rgb(var(--widget-fg)/0.4)]">{item.upvotes || 0} votes</span>
+          <ul>
+            {similar.slice(0, 3).map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onView({
+                      id: item.id,
+                      title: item.title,
+                      slug: item.slug,
+                      content: null,
+                      upvotes: item.upvotes,
+                      commentCount: null,
+                      roadmapStatus: "pending",
+                      createdAt: null,
+                      boardId: item.boardId,
+                      boardName: selectedBoard?.name || null,
+                      boardSlug: selectedBoard?.slug || null,
+                      isAnonymous: null,
+                      authorName: null,
+                      authorImage: null,
+                      hasVoted: false,
+                    })
+                  }
+                  className="flex w-full cursor-pointer items-center gap-3 px-5 py-2.5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.04)]"
+                >
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
+                    {item.title}
+                  </span>
+                  <span className="inline-flex shrink-0 items-center gap-1 tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
+                    <Heart className="size-3.5" />
+                    {item.upvotes || 0}
+                  </span>
+                </button>
               </li>
             ))}
           </ul>
