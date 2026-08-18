@@ -18,6 +18,40 @@ function range(count: number) {
   return Array.from({ length: count }, (_, index) => index);
 }
 
+export function WidgetNavSkeleton({
+  fullscreen = false,
+  layoutStyle = "comfortable",
+}: {
+  fullscreen?: boolean;
+  layoutStyle?: "compact" | "comfortable" | "spacious";
+}) {
+  const navPad =
+    layoutStyle === "compact"
+      ? "px-2 py-1.5"
+      : layoutStyle === "spacious"
+        ? "px-4 py-2.5"
+        : "px-3 py-2";
+  return (
+    <nav
+      className={`grid shrink-0 ${navPad} ${fullscreen ? "pb-2.5" : ""}`}
+      style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}
+      aria-hidden
+      aria-busy="true"
+      aria-label="Loading navigation"
+    >
+      {range(4).map((index) => (
+        <div
+          key={index}
+          className="flex flex-col items-center gap-1 px-2 py-1.5"
+        >
+          <Bone className="size-4 rounded-md" />
+          <Bone className="h-2.5 w-10 rounded-full" />
+        </div>
+      ))}
+    </nav>
+  );
+}
+
 export function WidgetPostRowSkeleton() {
   return (
     <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-4 py-3.5 last:border-b-0">

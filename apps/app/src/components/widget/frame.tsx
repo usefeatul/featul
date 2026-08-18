@@ -30,6 +30,7 @@ import { WidgetRoadmap, type WidgetRoadmapItem } from "./roadmap";
 import {
   WidgetFeedbackListSkeleton,
   WidgetHomeSkeleton,
+  WidgetNavSkeleton,
   WidgetRoadmapSkeleton,
   WidgetUpdatesSkeleton,
 } from "./skeleton";
@@ -77,11 +78,12 @@ export default function WidgetFrame({
   const [workspace, setWorkspace] = React.useState<WidgetWorkspace | null>(
     null,
   );
-  const [tabs, setTabs] = React.useState<Section[]>(["home", "feedback"]);
+  const [tabs, setTabs] = React.useState<Section[]>([]);
+  const [tabsReady, setTabsReady] = React.useState(false);
   const [layoutStyle, setLayoutStyle] =
     React.useState<WidgetLayoutStyle>("comfortable");
   const brandingThemeRef = React.useRef<"light" | "dark" | "auto">("auto");
-  const tabsRef = React.useRef<Section[]>(["home", "feedback"]);
+  const tabsRef = React.useRef<Section[]>([]);
   const [boards, setBoards] = React.useState<Board[]>([]);
   const [listBoardId, setListBoardId] = React.useState("");
   const [userId, setUserId] = React.useState<string | null>(null);
@@ -190,6 +192,7 @@ export default function WidgetFrame({
         if (initialTheme === "auto") setThemeMode(brandingTheme);
         setBoards(parseBoards(data.boards));
         setListBoardId("");
+        setTabsReady(true);
         postToParent(parentOrigin, "ready");
       } catch {
         if (!canceled) setLoadFailed(true);
@@ -456,7 +459,7 @@ export default function WidgetFrame({
   const isFeedback = section === "feedback";
   const isChangelogDetail =
     section === "changelog" && Boolean(selectedChangelogId);
-  const showTabs =
+  const showNavSlot =
     !loadFailed &&
     (!isFeedback || feedbackView === "list") &&
     !isChangelogDetail;
@@ -595,12 +598,10 @@ export default function WidgetFrame({
                   <WidgetUpdatesSkeleton />
                 ) : (
                   <WidgetHomeSkeleton
-                    featured={tabs.includes("changelog")}
-                    roadmap={tabs.includes("roadmap")}
-                    updates={tabs.includes("changelog")}
-                    recent={
-                      !tabs.includes("roadmap") && !tabs.includes("changelog")
-                    }
+                    featured={false}
+                    roadmap={false}
+                    updates={false}
+                    recent
                   />
                 )}
               </motion.div>
@@ -825,7 +826,8 @@ export default function WidgetFrame({
             ) : null}
           </div>
 
-          {showTabs ? (
+          {showNavSlot ? (
+            tabsReady ? (
             <Nav
               tabs={displayedTabs}
               section={section}
@@ -838,6 +840,12 @@ export default function WidgetFrame({
                 if (tab === "feedback") goFeedback("list");
               }}
             />
+            ) : (
+              <WidgetNavSkeleton
+                fullscreen={fullscreen}
+                layoutStyle={layoutStyle}
+              />
+            )
           ) : null}
 
           {!workspace?.hideBranding &&
