@@ -86,7 +86,7 @@ export function Comments({
   const tree = React.useMemo(() => buildCommentTree(comments), [comments]);
 
   return (
-    <div className="px-5 py-5">
+    <div className="flex min-h-0 flex-1 flex-col px-5 py-5">
       <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
         Comments · {commentCount}
       </p>
@@ -108,7 +108,7 @@ export function Comments({
         </p>
       ) : null}
 
-      <div className="mt-2">
+      <div className="mt-2 flex min-h-0 flex-1 flex-col">
         {commentsLoading ? (
           <WidgetCommentThreadSkeleton rows={3} />
         ) : tree.length ? (
@@ -141,7 +141,7 @@ export function Comments({
             </div>
           ))
         ) : (
-          <p className="py-4 text-sm text-[rgb(var(--widget-fg)/0.45)]">
+          <p className="flex flex-1 items-center justify-center px-4 py-8 text-center text-sm text-[rgb(var(--widget-fg)/0.45)]">
             No comments yet. Start the conversation.
           </p>
         )}

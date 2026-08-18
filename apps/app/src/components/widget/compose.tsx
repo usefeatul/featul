@@ -195,7 +195,7 @@ export function WidgetFeedbackCompose({
   if (created) {
     return (
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-2 text-center">
-        <div className="flex size-11 items-center justify-center rounded-full bg-[rgb(var(--widget-cta)/0.12)] text-[rgb(var(--widget-cta))]">
+        <div className="flex size-11 items-center justify-center rounded-full bg-emerald-500 text-white">
           <Check className="size-5" strokeWidth={2.5} />
         </div>
         <p className="mt-4 text-[15px] font-semibold tracking-tight text-[rgb(var(--widget-fg))]">
