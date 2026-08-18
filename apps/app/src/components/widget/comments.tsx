@@ -11,6 +11,7 @@ import type { IdentifiedUser, WidgetApiBase, WidgetComment } from "./types";
 import { formatRelativeDate, viewerPayload } from "./utils";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetImage } from "./image";
+import { WidgetCommentThreadSkeleton } from "./skeleton";
 
 type CommentNode = WidgetComment & { replies: CommentNode[] };
 
@@ -105,9 +106,7 @@ export function Comments({
 
       <div className="mt-2">
         {commentsLoading ? (
-          <div className="flex justify-center py-6" aria-label="Loading comments">
-            <LoaderIcon className="size-4 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
-          </div>
+          <WidgetCommentThreadSkeleton rows={3} />
         ) : tree.length ? (
           tree.map((node, index) => (
             <div key={node.id}>

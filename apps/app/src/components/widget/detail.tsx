@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { client } from "@featul/api/client";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
   POST_IMAGE_UPLOAD_MAX_BYTES,
@@ -12,6 +11,7 @@ import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import { Comments, type UploadedImage } from "./comments";
 import { parseWidgetComment, parseWidgetComments, parseWidgetPost } from "./load";
+import { WidgetDetailSkeleton } from "./skeleton";
 import type { IdentifiedUser, WidgetApiBase, WidgetComment, WidgetPost } from "./types";
 import { isAllowedImageType, toPlain, viewerPayload, readErrorMessage, readSignedUpload } from "./utils";
 import { WidgetVoteButton } from "./vote";
@@ -235,14 +235,7 @@ export function WidgetFeedbackDetail({
   };
 
   if (loading && !post) {
-    return (
-      <div
-        className="flex min-h-0 flex-1 items-center justify-center"
-        aria-label="Loading"
-      >
-        <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
-      </div>
-    );
+    return <WidgetDetailSkeleton />;
   }
 
   if (error && !post) {

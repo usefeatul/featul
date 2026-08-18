@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { client } from "@featul/api/client";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { WidgetFeedbackCompose } from "./compose";
 import { WidgetFeedbackDetail } from "./detail";
@@ -24,6 +23,12 @@ import { WidgetFeedbackList } from "./list";
 import { MessagingProvider, postToParent, readHostMessage } from "./messaging";
 import { Nav } from "./nav";
 import { WidgetRoadmap, type WidgetRoadmapItem } from "./roadmap";
+import {
+  WidgetFeedbackListSkeleton,
+  WidgetHomeSkeleton,
+  WidgetRoadmapSkeleton,
+  WidgetUpdatesSkeleton,
+} from "./skeleton";
 import {
   Theme,
   resolveWidgetAccent,
@@ -78,6 +83,8 @@ export default function WidgetFrame({
   const identifyVersionRef = React.useRef(0);
   const [roadmap, setRoadmap] = React.useState<WidgetRoadmapItem[]>([]);
   const [changelog, setChangelog] = React.useState<WidgetChangelogEntry[]>([]);
+  const [roadmapLoading, setRoadmapLoading] = React.useState(true);
+  const [changelogLoading, setChangelogLoading] = React.useState(true);
   const [selectedChangelogId, setSelectedChangelogId] = React.useState<
     string | null
   >(null);
@@ -181,38 +188,61 @@ export default function WidgetFrame({
 
   React.useEffect(() => {
     async function loadLists() {
-      try {
-        if (section === "home" || section === "roadmap") {
-          const fingerprint =
-            userId || identity?.email
-              ? undefined
-              : await getBrowserFingerprint();
-          const res = await client.widget.roadmap.$get({
-            ...apiBase,
-            identity: identity?.email
-              ? {
-                  id: identity.id,
-                  email: identity.email,
-                  name: identity.name,
-                  avatar: identity.avatar,
-                  expiresAt: identity.expiresAt,
-                  signature: identity.signature,
-                }
-              : undefined,
-            fingerprint,
-          });
-          const data = await res.json();
-          setRoadmap(parseWidgetRoadmapItems(data.posts));
-        }
-        if (section === "home" || section === "changelog") {
-          const res = await client.widget.changelog.$get(apiBase);
-          const data = await res.json();
-          const entries = Array.isArray(data.entries) ? data.entries : [];
-          setChangelog(mapChangelogEntries(entries));
-        }
-      } catch {
-        setMessage("Could not load this section.");
+      const tasks: Promise<void>[] = [];
+
+      if (section === "home" || section === "roadmap") {
+        tasks.push(
+          (async () => {
+            setRoadmapLoading(true);
+            try {
+              const fingerprint =
+                userId || identity?.email
+                  ? undefined
+                  : await getBrowserFingerprint();
+              const res = await client.widget.roadmap.$get({
+                ...apiBase,
+                identity: identity?.email
+                  ? {
+                      id: identity.id,
+                      email: identity.email,
+                      name: identity.name,
+                      avatar: identity.avatar,
+                      expiresAt: identity.expiresAt,
+                      signature: identity.signature,
+                    }
+                  : undefined,
+                fingerprint,
+              });
+              const data = await res.json();
+              setRoadmap(parseWidgetRoadmapItems(data.posts));
+            } catch {
+              setMessage("Could not load this section.");
+            } finally {
+              setRoadmapLoading(false);
+            }
+          })(),
+        );
       }
+
+      if (section === "home" || section === "changelog") {
+        tasks.push(
+          (async () => {
+            setChangelogLoading(true);
+            try {
+              const res = await client.widget.changelog.$get(apiBase);
+              const data = await res.json();
+              const entries = Array.isArray(data.entries) ? data.entries : [];
+              setChangelog(mapChangelogEntries(entries));
+            } catch {
+              setMessage("Could not load this section.");
+            } finally {
+              setChangelogLoading(false);
+            }
+          })(),
+        );
+      }
+
+      await Promise.all(tasks);
     }
     loadLists();
   }, [apiBase, identity, section, userId]);
@@ -425,6 +455,7 @@ export default function WidgetFrame({
             onCompose={() => goFeedback("compose")}
             onClose={close}
             fullscreen={fullscreen}
+            loading={loading}
           />
 
           <div
@@ -445,13 +476,16 @@ export default function WidgetFrame({
             data-widget-scroll=""
           >
             {loading ? (
-              <motion.div
-                key="loading"
-                initial={false}
-                className="flex min-h-0 flex-1 items-center justify-center"
-                aria-label="Loading"
-              >
-                <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
+              <motion.div key="loading" initial={false} className="flex min-h-0 flex-1 flex-col">
+                {section === "feedback" ? (
+                  <WidgetFeedbackListSkeleton withToolbar />
+                ) : section === "roadmap" ? (
+                  <WidgetRoadmapSkeleton />
+                ) : section === "changelog" ? (
+                  <WidgetUpdatesSkeleton />
+                ) : (
+                  <WidgetHomeSkeleton />
+                )}
               </motion.div>
             ) : null}
             {!loading && message ? (
@@ -467,6 +501,8 @@ export default function WidgetFrame({
                   homeRoadmap={homeRoadmap}
                   homeChangelog={homeChangelog}
                   homeRoadmapLabel={homeRoadmapLabel}
+                  changelogLoading={changelogLoading && changelog.length === 0}
+                  roadmapLoading={roadmapLoading && roadmap.length === 0}
                   accent={accent}
                   apiBase={apiBase}
                   userId={userId}
@@ -586,19 +622,23 @@ export default function WidgetFrame({
                 transition={contentTransition}
                 className="flex min-h-0 flex-1 flex-col"
               >
-                <WidgetRoadmap
-                  items={roadmap}
-                  apiBase={apiBase}
-                  userId={userId}
-                  identity={identity}
-                  onVoteChange={(id, upvotes, hasVoted) => {
-                    setRoadmap((prev) =>
-                      prev.map((row) =>
-                        row.id === id ? { ...row, upvotes, hasVoted } : row,
-                      ),
-                    );
-                  }}
-                />
+                {roadmapLoading && !roadmap.length ? (
+                  <WidgetRoadmapSkeleton />
+                ) : (
+                  <WidgetRoadmap
+                    items={roadmap}
+                    apiBase={apiBase}
+                    userId={userId}
+                    identity={identity}
+                    onVoteChange={(id, upvotes, hasVoted) => {
+                      setRoadmap((prev) =>
+                        prev.map((row) =>
+                          row.id === id ? { ...row, upvotes, hasVoted } : row,
+                        ),
+                      );
+                    }}
+                  />
+                )}
               </motion.div>
             ) : null}
 
@@ -610,13 +650,17 @@ export default function WidgetFrame({
                 transition={contentTransition}
                 className="flex min-h-0 flex-1 flex-col"
               >
-                <WidgetUpdates
-                  entries={changelog}
-                  accent={accent}
-                  selectedId={selectedChangelogId}
-                  onOpen={(entry) => setSelectedChangelogId(entry.id)}
-                  onBack={() => setSelectedChangelogId(null)}
-                />
+                {changelogLoading && !changelog.length ? (
+                  <WidgetUpdatesSkeleton />
+                ) : (
+                  <WidgetUpdates
+                    entries={changelog}
+                    accent={accent}
+                    selectedId={selectedChangelogId}
+                    onOpen={(entry) => setSelectedChangelogId(entry.id)}
+                    onBack={() => setSelectedChangelogId(null)}
+                  />
+                )}
               </motion.div>
             ) : null}
           </div>

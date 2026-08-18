@@ -5,6 +5,7 @@ import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { WidgetAuthorAvatar } from "./avatar";
 import { RoadmapRow, type WidgetRoadmapItem } from "./roadmap";
+import { Bone, WidgetRoadmapRowSkeleton } from "./skeleton";
 import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { UpdateMetaRow, type WidgetChangelogEntry } from "./updates";
 
@@ -17,6 +18,8 @@ type Props = {
   apiBase: WidgetApiBase;
   userId?: string | null;
   identity?: IdentifiedUser | null;
+  changelogLoading?: boolean;
+  roadmapLoading?: boolean;
   onOpenChangelog: (id?: string) => void;
   onSeeUpdates: () => void;
   onSeeRoadmap: () => void;
@@ -40,14 +43,42 @@ export function Home({
   onCompose,
   onOpenRoadmapItem,
   onVoteChange,
+  changelogLoading = false,
+  roadmapLoading = false,
 }: Props) {
   return (
     <div className="space-y-0">
-      <button
-        type="button"
-        onClick={() => onOpenChangelog(featuredEntry?.id)}
-        className="group w-full border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6 text-left"
-      >
+      {changelogLoading ? (
+        <div
+          className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6"
+          aria-busy="true"
+          aria-label="Loading updates"
+        >
+          <div className="flex items-center gap-2">
+            <Bone className="h-2.5 w-16 rounded-full" />
+            <Bone className="h-2.5 w-24 rounded-full" />
+          </div>
+          <Bone className="mt-3 h-6 w-[92%] rounded-full" />
+          <Bone className="mt-2 h-6 w-[64%] rounded-full" />
+          <Bone className="mt-3 h-3.5 w-full rounded-full" />
+          <Bone className="mt-1.5 h-3.5 w-[80%] rounded-full" />
+          <div className="mt-5 flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <Bone className="size-7 shrink-0 rounded-full" />
+              <div>
+                <Bone className="h-3 w-24 rounded-full" />
+                <Bone className="mt-1.5 h-2.5 w-12 rounded-full" />
+              </div>
+            </div>
+            <Bone className="h-3 w-20 rounded-full" />
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onOpenChangelog(featuredEntry?.id)}
+          className="group w-full border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6 text-left"
+        >
         {featuredEntry ? (
           <>
             <UpdateMetaRow entry={featuredEntry} accent={accent} fallbackBadge="Just Shipped" />
@@ -108,6 +139,7 @@ export function Home({
           </>
         )}
       </button>
+      )}
 
       <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-5">
         <button
@@ -150,7 +182,13 @@ export function Home({
           </button>
         </div>
         <div>
-          {homeRoadmap.length ? (
+          {roadmapLoading ? (
+            <div aria-busy="true" aria-label="Loading roadmap">
+              {Array.from({ length: 4 }, (_, index) => (
+                <WidgetRoadmapRowSkeleton key={index} />
+              ))}
+            </div>
+          ) : homeRoadmap.length ? (
             homeRoadmap.map((item) => (
               <RoadmapRow
                 key={item.id}
@@ -201,7 +239,22 @@ export function Home({
             See updates →
           </button>
         </div>
-        {homeChangelog.length ? (
+        {changelogLoading ? (
+          <div aria-busy="true" aria-label="Loading updates">
+            {Array.from({ length: 3 }, (_, index) => (
+              <div
+                key={index}
+                className="flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 last:border-b-0"
+              >
+                <div className="flex items-center gap-2">
+                  <Bone className="h-2.5 w-14 rounded-full" />
+                  <Bone className="h-2.5 w-16 rounded-full" />
+                </div>
+                <Bone className="mt-1 h-3.5 w-[82%] rounded-full" />
+              </div>
+            ))}
+          </div>
+        ) : homeChangelog.length ? (
           <div>
             {homeChangelog.map((entry) => (
               <button

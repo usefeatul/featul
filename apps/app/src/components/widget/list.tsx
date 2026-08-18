@@ -13,12 +13,12 @@ import {
 import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
 import { LayersIcon } from "@featul/ui/icons/layers";
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 import { SearchIcon } from "@featul/ui/icons/search";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import { parseWidgetPosts } from "./load";
+import { WidgetFeedbackListSkeleton, WidgetPostRowSkeleton } from "./skeleton";
 import type { Board, IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { viewerPayload } from "./utils";
 import { WidgetPostRow } from "./row";
@@ -373,12 +373,7 @@ export function WidgetFeedbackList({
 
       <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide">
         {loading && !hasLoadedOnce.current ? (
-          <div
-            className="flex min-h-0 flex-1 items-center justify-center"
-            aria-label="Loading"
-          >
-            <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
-          </div>
+          <WidgetFeedbackListSkeleton />
         ) : null}
         {error ? (
           <p className="mx-4 my-4 rounded-md bg-[rgb(var(--widget-fg)/0.04)] px-3 py-2 text-sm text-[rgb(var(--widget-fg)/0.85)]">
@@ -415,14 +410,17 @@ export function WidgetFeedbackList({
         {nextOffset !== null ? (
           <div
             ref={sentinelRef}
-            className="flex items-center justify-center py-4"
+            className="w-full"
             aria-hidden={!loadingMore}
             aria-label={loadingMore ? "Loading more" : undefined}
           >
             {loadingMore ? (
-              <LoaderIcon className="size-4 animate-spin text-[rgb(var(--widget-fg)/0.45)]" />
+              <>
+                <WidgetPostRowSkeleton />
+                <WidgetPostRowSkeleton />
+              </>
             ) : (
-              <span className="h-4" />
+              <span className="block h-4" />
             )}
           </div>
         ) : null}
