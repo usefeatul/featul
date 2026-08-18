@@ -17,18 +17,26 @@ export function WidgetEmpty({
     <div
       className={
         compact
-          ? "flex flex-col items-center px-5 py-6 text-center"
+          ? "flex flex-col items-center px-5 py-2 text-center"
           : "flex min-h-0 flex-1 flex-col items-center px-6 pb-8 pt-16 text-center"
       }
     >
       {icon ? (
-        <div className="mb-3 flex size-11 items-center justify-center rounded-full bg-[rgb(var(--widget-fg)/0.06)] text-[rgb(var(--widget-fg)/0.5)]">
+        <div
+          className={`flex items-center justify-center rounded-full bg-[rgb(var(--widget-fg)/0.06)] text-[rgb(var(--widget-fg)/0.5)] ${
+            compact ? "mb-2 size-9" : "mb-3 size-11"
+          }`}
+        >
           {icon}
         </div>
       ) : null}
       <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">{title}</p>
       {description ? (
-        <p className="mt-1.5 max-w-[240px] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">
+        <p
+          className={`max-w-[240px] text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.45)] ${
+            compact ? "mt-1" : "mt-1.5"
+          }`}
+        >
           {description}
         </p>
       ) : null}

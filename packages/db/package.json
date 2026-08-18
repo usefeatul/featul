@@ -13,7 +13,8 @@
     "db:apply-widget-security": "tsx scripts/apply-widget-security-migration.ts",
     "db:drop-all": "tsx scripts/drop-all-tables.ts",
     "db:seed-posts": "tsx scripts/seed-workspace-posts.ts",
-    "db:delete-user": "tsx scripts/delete-user.ts"
+    "db:delete-user": "tsx scripts/delete-user.ts",
+    "db:set-dev-plan": "tsx scripts/set-dev-plan.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

@@ -65,8 +65,16 @@ export function Home({
   );
 
   const roadmapSection = (
-    <section className="border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] py-5">
-      <div className="mb-3 flex items-center justify-between gap-3 px-5">
+    <section
+      className={`border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${
+        !roadmapLoading && !homeRoadmap.length ? "py-3" : "py-5"
+      }`}
+    >
+      <div
+        className={`flex items-center justify-between gap-3 px-5 ${
+          !roadmapLoading && !homeRoadmap.length ? "mb-1.5" : "mb-3"
+        }`}
+      >
         <div className="flex items-center gap-2">
           <StatusIcon status="progress" className="size-3.5" />
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
@@ -131,8 +139,12 @@ export function Home({
   );
 
   const updatesSection = (
-    <section className="py-5">
-      <div className="mb-3 flex items-center justify-between gap-3 px-5">
+    <section className={!changelogLoading && !homeChangelog.length ? "py-3" : "py-5"}>
+      <div
+        className={`flex items-center justify-between gap-3 px-5 ${
+          !changelogLoading && !homeChangelog.length ? "mb-1.5" : "mb-3"
+        }`}
+      >
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
           Updates
         </p>

@@ -17,6 +17,7 @@
     "db:migrate": "turbo run db:migrate --filter=@featul/db",
     "db:push": "turbo run db:push --filter=@featul/db",
     "db:studio": "turbo run db:studio --filter=@featul/db",
+    "db:set-dev-plan": "turbo run db:set-dev-plan --filter=@featul/db",
     "check-types": "turbo run check-types",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
