@@ -94,6 +94,7 @@ export default function WidgetFrame({
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(
     null,
   );
+  const [detailReturn, setDetailReturn] = React.useState<Section | null>(null);
   const [listRefreshKey, setListRefreshKey] = React.useState(0);
   const [listVotePatch, setListVotePatch] = React.useState<{
     postId: string;
@@ -447,6 +448,14 @@ export default function WidgetFrame({
                 setSelectedChangelogId(null);
                 return;
               }
+              if (detailReturn) {
+                const next = detailReturn;
+                setDetailReturn(null);
+                setSelectedPost(null);
+                setFeedbackView("list");
+                setSection(next);
+                return;
+              }
               goFeedback("list");
             }}
             onCompose={() => goFeedback("compose")}
@@ -516,6 +525,7 @@ export default function WidgetFrame({
                     onSeeRoadmap={() => setSection("roadmap")}
                     onCompose={() => goFeedback("compose")}
                     onOpenRoadmapItem={(post) => {
+                      setDetailReturn("home");
                       setSelectedPost(post);
                       setSection("feedback");
                       setFeedbackView("detail");
@@ -557,6 +567,7 @@ export default function WidgetFrame({
                       votePatch={listVotePatch}
                       onCompose={() => goFeedback("compose")}
                       onOpenPost={(post) => {
+                        setDetailReturn(null);
                         setSelectedPost(post);
                         setFeedbackView("detail");
                       }}
@@ -582,6 +593,7 @@ export default function WidgetFrame({
                           setListRefreshKey((value) => value + 1);
                         }}
                         onView={(post) => {
+                          setDetailReturn(null);
                           setSelectedPost(post);
                           setFeedbackView("detail");
                         }}
@@ -639,6 +651,28 @@ export default function WidgetFrame({
                             row.id === id ? { ...row, upvotes, hasVoted } : row,
                           ),
                         );
+                      }}
+                      onOpen={(item) => {
+                        setDetailReturn("roadmap");
+                        setSelectedPost({
+                          id: item.id,
+                          title: item.title,
+                          slug: item.slug || item.id,
+                          content: item.content ?? null,
+                          upvotes: item.upvotes,
+                          commentCount: null,
+                          roadmapStatus: item.roadmapStatus,
+                          createdAt: item.createdAt ?? null,
+                          boardId: "",
+                          boardName: null,
+                          boardSlug: null,
+                          isAnonymous: item.isAnonymous ?? null,
+                          authorName: item.authorName ?? null,
+                          authorImage: item.authorImage ?? null,
+                          hasVoted: Boolean(item.hasVoted),
+                        });
+                        setSection("feedback");
+                        setFeedbackView("detail");
                       }}
                     />
                   )}

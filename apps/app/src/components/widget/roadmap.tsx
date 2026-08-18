@@ -41,6 +41,7 @@ type Props = {
   userId?: string | null;
   identity?: IdentifiedUser | null;
   onVoteChange?: (id: string, upvotes: number, hasVoted: boolean) => void;
+  onOpen?: (item: WidgetRoadmapItem) => void;
 };
 
 export function WidgetRoadmap({
@@ -49,6 +50,7 @@ export function WidgetRoadmap({
   userId,
   identity,
   onVoteChange,
+  onOpen,
 }: Props) {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const sectionRefs = React.useRef<Array<HTMLElement | null>>([]);
@@ -242,6 +244,7 @@ export function WidgetRoadmap({
                     userId={userId}
                     identity={identity}
                     onVoteChange={onVoteChange}
+                    onOpen={onOpen}
                     compact={section.key === "completed"}
                   />
                 ))}
@@ -327,6 +330,7 @@ function RoadmapItem({
   userId,
   identity,
   onVoteChange,
+  onOpen,
   compact,
 }: {
   item: WidgetRoadmapItem;
@@ -335,6 +339,7 @@ function RoadmapItem({
   userId?: string | null;
   identity?: IdentifiedUser | null;
   onVoteChange?: (id: string, upvotes: number, hasVoted: boolean) => void;
+  onOpen?: (item: WidgetRoadmapItem) => void;
   compact?: boolean;
 }) {
   const author = item.isAnonymous ? "Guest" : item.authorName || "Guest";
@@ -343,7 +348,12 @@ function RoadmapItem({
 
   if (compact) {
     return (
-      <div className="flex items-center gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
+      <button
+        type="button"
+        onClick={() => onOpen?.(item)}
+        className="flex w-full cursor-pointer items-center gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3 text-left"
+        aria-label={item.title}
+      >
         <div className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
           <StatusIcon status={status} className="size-3.5" />
         </div>
@@ -351,22 +361,29 @@ function RoadmapItem({
         {doneDate ? (
           <span className="shrink-0 text-xs text-[rgb(var(--widget-fg)/0.35)]">{doneDate}</span>
         ) : null}
-      </div>
+      </button>
     );
   }
 
   return (
-    <div className="flex items-start gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
-      <div className="mt-1 flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
-        <StatusIcon status={status} className="size-3.5" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">{item.title}</p>
-        {excerpt ? (
-          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.4)]">{excerpt}</p>
-        ) : null}
-        <p className="mt-1.5 truncate text-[11px] text-[rgb(var(--widget-fg)/0.35)]">{author}</p>
-      </div>
+    <div className="relative flex items-start gap-3 bg-[rgb(var(--widget-surface))] px-5 py-3">
+      <button
+        type="button"
+        onClick={() => onOpen?.(item)}
+        className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 text-left"
+        aria-label={item.title}
+      >
+        <div className="mt-1 flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--widget-surface))]">
+          <StatusIcon status={status} className="size-3.5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">{item.title}</p>
+          {excerpt ? (
+            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[rgb(var(--widget-fg)/0.4)]">{excerpt}</p>
+          ) : null}
+          <p className="mt-1.5 truncate text-[11px] text-[rgb(var(--widget-fg)/0.35)]">{author}</p>
+        </div>
+      </button>
       <WidgetVoteButton
         postId={item.id}
         upvotes={item.upvotes || 0}
