@@ -226,8 +226,8 @@ export function WidgetFeedbackList({
   const statusFilterLabel = status ? statusLabel(status) : "All statuses";
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center gap-2 px-4 pb-3 pt-1">
+    <div className="relative flex min-h-0 flex-1 flex-col">
+      <div className="relative z-10 flex items-center gap-2 px-4 pb-3 pt-1">
         <div className="relative min-w-0 flex-1">
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[rgb(var(--widget-fg)/0.35)]" size={14} />
           <input
@@ -372,17 +372,16 @@ export function WidgetFeedbackList({
         ) : null}
       </div>
 
-      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide">
-        {loading && !hasLoadedOnce.current ? (
-          <WidgetFeedbackListSkeleton />
-        ) : null}
-        {error ? (
+      {!loading && error ? (
+        <div className="absolute inset-0 flex min-h-0 flex-col">
           <WidgetEmpty
             title="Couldn’t load requests"
             description="Something went wrong. Open this list again in a moment."
           />
-        ) : null}
-        {!loading && !error && !posts.length ? (
+        </div>
+      ) : null}
+      {!loading && !error && !posts.length ? (
+        <div className="absolute inset-0 flex min-h-0 flex-col">
           <WidgetEmpty
             title="No requests yet"
             description="Share an idea or report an issue to get the conversation started."
@@ -398,6 +397,12 @@ export function WidgetFeedbackList({
               Give feedback
             </button>
           </WidgetEmpty>
+        </div>
+      ) : null}
+
+      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide">
+        {loading && !hasLoadedOnce.current ? (
+          <WidgetFeedbackListSkeleton />
         ) : null}
         {posts.map((post) => (
           <WidgetPostRow

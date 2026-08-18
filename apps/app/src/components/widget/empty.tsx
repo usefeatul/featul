@@ -18,7 +18,7 @@ export function WidgetEmpty({
       className={
         compact
           ? "flex flex-col items-center px-5 py-6 text-center"
-          : "flex min-h-0 flex-1 flex-col items-center justify-center px-6 text-center"
+          : "flex min-h-0 flex-1 flex-col items-center px-6 pb-8 pt-16 text-center"
       }
     >
       {icon ? (
