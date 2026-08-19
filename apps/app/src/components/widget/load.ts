@@ -132,6 +132,25 @@ export function mapChangelogEntries(
   });
 }
 
+function parseWidgetPostImages(images: unknown, image: unknown): string[] {
+  const urls: string[] = [];
+  const seen = new Set<string>();
+  const push = (url: string) => {
+    if (!url || seen.has(url)) return;
+    seen.add(url);
+    urls.push(url);
+  };
+  if (Array.isArray(images)) {
+    for (const item of images) {
+      if (typeof item === "string") push(item);
+    }
+  }
+  if (urls.length === 0 && typeof image === "string") {
+    push(image);
+  }
+  return urls;
+}
+
 export function parseWidgetPost(value: unknown): WidgetPost | null {
   if (!isRecord(value)) return null;
   if (
@@ -142,12 +161,14 @@ export function parseWidgetPost(value: unknown): WidgetPost | null {
   ) {
     return null;
   }
+  const image = typeof value.image === "string" ? value.image : null;
   return {
     id: value.id,
     title: value.title,
     slug: value.slug,
     content: typeof value.content === "string" ? value.content : null,
-    image: typeof value.image === "string" ? value.image : null,
+    image,
+    images: parseWidgetPostImages(value.images, image),
     upvotes: typeof value.upvotes === "number" ? value.upvotes : null,
     commentCount:
       typeof value.commentCount === "number" ? value.commentCount : null,

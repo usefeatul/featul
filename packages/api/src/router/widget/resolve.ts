@@ -19,6 +19,7 @@ import {
 } from "../../shared/identity";
 import type { AuthenticatedRouterContext } from "../../types/router";
 import type { WidgetIdentity } from "./schema";
+import { listPostImageUrls } from "../../shared/post-images";
 
 export type WidgetRouterContext = Pick<AuthenticatedRouterContext, "db">;
 
@@ -538,6 +539,7 @@ export function mapWidgetPostRow<
   T extends {
     id: string;
     slug: string;
+    image?: string | null;
     isAnonymous: boolean | null;
     authorName: string | null;
     authorImage: string | null;
@@ -547,6 +549,7 @@ export function mapWidgetPostRow<
   const { metadata: _metadata, ...rest } = row;
   return {
     ...rest,
+    images: listPostImageUrls(row.image, row.metadata),
     authorName: row.isAnonymous ? null : row.authorName,
     authorImage: resolveWidgetAuthorImage(row),
     hasVoted,

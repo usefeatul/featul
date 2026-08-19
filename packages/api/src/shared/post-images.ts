@@ -61,3 +61,52 @@ export function mergePostMetadata(
   }
   return Object.keys(rest).length > 0 ? rest : undefined
 }
+
+export function listPostImageUrls(
+  image: string | null | undefined,
+  metadata?: unknown
+): string[] {
+  const urls: string[] = []
+  const seen = new Set<string>()
+  const push = (url: string) => {
+    if (!url || seen.has(url)) {
+      return
+    }
+    seen.add(url)
+    urls.push(url)
+  }
+
+  if (image) {
+    push(image)
+  }
+
+  if (!metadata || typeof metadata !== "object") {
+    return urls
+  }
+
+  const attachments = (metadata as { attachments?: unknown }).attachments
+  if (!Array.isArray(attachments)) {
+    return urls
+  }
+
+  for (const item of attachments) {
+    if (!item || typeof item !== "object") {
+      continue
+    }
+    const url = (item as { url?: unknown }).url
+    const type = (item as { type?: unknown }).type
+    if (typeof url !== "string" || !url) {
+      continue
+    }
+    if (
+      typeof type === "string" &&
+      type.length > 0 &&
+      !type.startsWith("image")
+    ) {
+      continue
+    }
+    push(url)
+  }
+
+  return urls
+}

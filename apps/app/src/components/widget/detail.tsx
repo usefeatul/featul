@@ -17,7 +17,7 @@ import type { IdentifiedUser, WidgetApiBase, WidgetComment, WidgetPost } from ".
 import { isAllowedImageType, toPlain, viewerPayload, readErrorMessage, readSignedUpload } from "./utils";
 import { WidgetVoteButton } from "./vote";
 import { WidgetAuthorAvatar } from "./avatar";
-import { WidgetImage } from "./image";
+import { WidgetImageStrip } from "./gallery";
 
 type Props = {
   apiBase: WidgetApiBase;
@@ -308,11 +308,11 @@ export function WidgetFeedbackDetail({
           <p className="mt-3 text-sm text-[rgb(var(--widget-fg)/0.4)]">No description provided.</p>
         )}
 
-        {post.image ? (
-          <div className="mt-4">
-            <WidgetImage url={post.image} alt={post.title} imgClassName="h-20 w-20 object-cover" />
-          </div>
-        ) : null}
+        <WidgetImageStrip
+          urls={post.images?.length ? post.images : post.image ? [post.image] : []}
+          alt={post.title}
+          className="mt-4"
+        />
 
         <div className="mt-5 flex items-center justify-between gap-3">
           <div className="inline-flex items-center gap-1.5 text-xs text-[rgb(var(--widget-fg)/0.55)]">
