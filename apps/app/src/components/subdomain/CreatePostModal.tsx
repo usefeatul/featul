@@ -16,6 +16,7 @@ import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
 import SubdomainAuthModal from "./SubdomainAuthModal"
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal"
 import { useCloseThenOpenAuth } from "@/hooks/useCloseThenOpenAuth"
+import { createPostImageTransferHandlers } from "@/lib/post-image-transfer"
 
 interface CreatePostModalProps {
   open: boolean
@@ -56,6 +57,7 @@ export default function CreatePostModal({
     fileInputRef,
     setUploadedImage,
     handleFileSelect,
+    handleImageUpload,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
   } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
@@ -95,6 +97,11 @@ export default function CreatePostModal({
     isPending,
     uploadingImage,
   })
+  const imageTransfer = createPostImageTransferHandlers({
+    onImageFile: handleImageUpload,
+    uploading: uploadingImage,
+    hasImage: !!uploadedImage,
+  })
 
   return (
     <>
@@ -108,7 +115,11 @@ export default function CreatePostModal({
         icon={<DocumentTextIcon className="size-3.5" />}
         expandable
       >
-        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col pb-3">
+        <form
+          onSubmit={handleSubmit}
+          className="flex min-h-0 flex-1 flex-col pb-3"
+          {...imageTransfer}
+        >
           <PostHeader
             user={user}
             initials={initials}

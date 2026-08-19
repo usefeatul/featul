@@ -11,6 +11,7 @@ import { usePostUpdate } from "@/hooks/usePostUpdate";
 import { usePostImageUpload } from "@/hooks/usePostImageUpload";
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard";
 import DocumentTextIcon from "@featul/ui/icons/document-text";
+import { createPostImageTransferHandlers } from "@/lib/post-image-transfer";
 
 interface EditablePost {
   id: string;
@@ -45,6 +46,7 @@ export default function EditPostModal({
     fileInputRef,
     setUploadedImage,
     handleFileSelect,
+    handleImageUpload,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
   } = usePostImageUpload(workspaceSlug, selectedBoard?.slug);
@@ -99,6 +101,11 @@ export default function EditPostModal({
     isPending,
     uploadingImage,
   });
+  const imageTransfer = createPostImageTransferHandlers({
+    onImageFile: handleImageUpload,
+    uploading: uploadingImage,
+    hasImage: !!uploadedImage,
+  });
 
   return (
     <SettingsDialogShell
@@ -109,7 +116,11 @@ export default function EditPostModal({
       offsetY="20%"
       icon={<DocumentTextIcon className="size-3.5" />}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col h-full">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col h-full"
+        {...imageTransfer}
+      >
         <PostHeader
           user={user}
           initials={initials}

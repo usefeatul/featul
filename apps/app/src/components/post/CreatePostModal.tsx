@@ -15,6 +15,7 @@ import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "./SimilarPosts"
 import type { TagSummary, PostUser } from "@/types/post"
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
+import { createPostImageTransferHandlers } from "@/lib/post-image-transfer"
 
 export function CreatePostModal({
   open,
@@ -52,6 +53,7 @@ export function CreatePostModal({
     fileInputRef,
     setUploadedImage,
     handleFileSelect,
+    handleImageUpload,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
   } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
@@ -134,6 +136,12 @@ export function CreatePostModal({
     uploadingImage,
   })
 
+  const imageTransfer = createPostImageTransferHandlers({
+    onImageFile: handleImageUpload,
+    uploading: uploadingImage,
+    hasImage: !!uploadedImage,
+  })
+
   return (
     <SettingsDialogShell
       open={open}
@@ -144,7 +152,11 @@ export function CreatePostModal({
       icon={<DocumentTextIcon className="size-3.5" />}
       expandable
     >
-      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+      <form
+        onSubmit={handleSubmit}
+        className="flex min-h-0 flex-1 flex-col"
+        {...imageTransfer}
+      >
         <PostHeader
           user={user || null}
           initials={user?.name?.[0] || "?"}
