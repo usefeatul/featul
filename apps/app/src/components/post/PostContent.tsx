@@ -2,11 +2,10 @@
 
 import React from "react"
 import { Input } from "@featul/ui/components/input"
-import { XMarkIcon } from "@featul/ui/icons/xmark"
-import ContentImage from "@/components/global/ContentImage"
 import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
 import { useDialogExpanded } from "@/components/settings/global/SettingsDialogShell"
 import { continuePlainList } from "@/lib/continue-plain-list"
+import { PostImageGallery } from "@/components/post/PostImageGallery"
 
 export interface UploadedImage {
   url: string
@@ -132,30 +131,15 @@ export function PostContent({
         />
       </div>
       
-      {uploadedImages.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
-          {uploadedImages.map((image, index) => (
-            <div key={`${image.url}-${index}`} className="relative inline-block w-fit">
-              <div className="relative">
-                <ContentImage
-                  url={image.url}
-                  alt={image.name}
-                  className="w-40 ring-1 ring-border"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className="absolute -top-2 -right-2 cursor-pointer rounded-full bg-destructive text-destructive-foreground p-1 hover:bg-destructive/90 transition-colors shadow-sm z-10"
-                  disabled={uploadingImage}
-                  aria-label={`Remove ${image.name}`}
-                >
-                  <XMarkIcon className="size-3" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {uploadedImages.length > 0 ? (
+        <PostImageGallery
+          items={uploadedImages}
+          alt="Post image"
+          className="mb-1"
+          onRemove={handleRemoveImage}
+          removeDisabled={uploadingImage}
+        />
+      ) : null}
     </div>
   )
 }

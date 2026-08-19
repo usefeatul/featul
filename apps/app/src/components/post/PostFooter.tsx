@@ -58,6 +58,11 @@ export function PostFooter({
             <ImageIcon className="size-5" />
           )}
         </Button>
+        {uploadedImages.length > 0 ? (
+          <span className="text-[11px] text-accent">
+            {uploadedImages.length}/{maxImages}
+          </span>
+        ) : null}
       </div>
 
       <Button
