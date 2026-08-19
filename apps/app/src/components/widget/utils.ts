@@ -165,18 +165,22 @@ export function isWidgetScreenshotDataUrl(value?: string | null): value is strin
 
 export function readScreenshotPayload(
   value: unknown,
-): { dataUrl: string | null; error: boolean } {
+): { dataUrl: string | null; error: "cancelled" | "capture-failed" | null } {
   if (!value || typeof value !== "object") {
-    return { dataUrl: null, error: true };
+    return { dataUrl: null, error: "capture-failed" };
   }
   const dataUrl =
     "dataUrl" in value && typeof value.dataUrl === "string"
       ? value.dataUrl
       : "";
   if (isWidgetScreenshotDataUrl(dataUrl)) {
-    return { dataUrl, error: false };
+    return { dataUrl, error: null };
   }
-  return { dataUrl: null, error: true };
+  const code =
+    "error" in value && value.error === "cancelled"
+      ? "cancelled"
+      : "capture-failed";
+  return { dataUrl: null, error: code };
 }
 
 export async function dataUrlToImageFile(

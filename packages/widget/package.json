@@ -1,14 +1,11 @@
 {
   "name": "@featul/widget",
   "version": "0.0.0",
-  "private": true,
-  "type": "module",
   "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "scripts": {
-    "build": "bun ./scripts/build.ts",
-    "check-types": "tsc --noEmit",
-    "test": "bun test src"
+  "devDependencies": {
+    "@featul/tsconfig": "workspace:*",
+    "bun-types": "^1.3.0",
+    "typescript": "^5.9.2"
   },
   "exports": {
     ".": {
@@ -24,12 +21,15 @@
       "types": "./src/source.ts"
     }
   },
-  "dependencies": {
-    "html2canvas": "^1.4.1"
+  "private": true,
+  "scripts": {
+    "build": "bun ./scripts/build.ts",
+    "check-types": "tsc --noEmit",
+    "test": "bun test src"
   },
-  "devDependencies": {
-    "@featul/tsconfig": "workspace:*",
-    "bun-types": "^1.3.0",
-    "typescript": "^5.9.2"
+  "type": "module",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "html2canvas-pro": "^2.3.9"
   }
 }

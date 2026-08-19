@@ -12,7 +12,10 @@ import {
   readWidgetMessage,
   type WidgetHostEvent,
 } from "../protocol";
-import { captureHostViewport } from "./screenshot";
+import {
+  ScreenshotCaptureError,
+  captureHostViewport,
+} from "./screenshot";
 
 const PANEL_RADIUS = "12px";
 const BUTTON_RADIUS = "8px";
@@ -530,12 +533,17 @@ function boot() {
     if (state.capturing) return;
     state.capturing = true;
     closeImageLightbox();
-    setHiddenForCapture(true);
     try {
-      const dataUrl = await captureHostViewport(widgetCaptureIgnore());
+      const dataUrl = await captureHostViewport(widgetCaptureIgnore(), () => {
+        setHiddenForCapture(true);
+      });
       post("screenshot", { dataUrl });
-    } catch {
-      post("screenshot", { error: "capture-failed" });
+    } catch (error) {
+      const cancelled =
+        error instanceof ScreenshotCaptureError && error.code === "cancelled";
+      post("screenshot", {
+        error: cancelled ? "cancelled" : "capture-failed",
+      });
     } finally {
       setHiddenForCapture(false);
       state.capturing = false;

@@ -4,7 +4,10 @@ export const dynamic = "force-static";
 
 const SCRIPT_HEADERS = {
   "content-type": "application/javascript; charset=utf-8",
-  "cache-control": "public, max-age=31536000, immutable",
+  "cache-control":
+    process.env.NODE_ENV === "development"
+      ? "no-store"
+      : "public, max-age=31536000, immutable",
 };
 
 export function GET() {

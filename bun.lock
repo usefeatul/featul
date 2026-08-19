@@ -295,7 +295,7 @@
       "name": "@featul/widget",
       "version": "0.0.0",
       "dependencies": {
-        "html2canvas": "^1.4.1",
+        "html2canvas-pro": "^2.3.9",
       },
       "devDependencies": {
         "@featul/tsconfig": "workspace:*",
@@ -2149,7 +2149,7 @@
 
     "html-url-attributes": ["html-url-attributes@3.0.1", "", {}, "sha512-ol6UPyBWqsrO6EJySPz2O7ZSr856WDrEzM5zMqp+FJJLGMW35cLYmmZnl0vztAZxRUoNZJFTCohfjuIJ8I4QBQ=="],
 
-    "html2canvas": ["html2canvas@1.4.1", "", { "dependencies": { "css-line-break": "^2.1.0", "text-segmentation": "^1.0.3" } }, "sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA=="],
+    "html2canvas-pro": ["html2canvas-pro@2.3.9", "", { "dependencies": { "css-line-break": "^2.1.0", "text-segmentation": "^1.0.3" } }, "sha512-s5LCNV8QHkKm4DkOuoXDnC+CvIsXjftn9mEA5BOPFWGa9A2M+Tn7wwitRivS5cch2/Bby6KuFmLZac5jlM51Sw=="],
 
     "htmlparser2": ["htmlparser2@10.1.0", "", { "dependencies": { "domelementtype": "^2.3.0", "domhandler": "^5.0.3", "domutils": "^3.2.2", "entities": "^7.0.1" } }, "sha512-VTZkM9GWRAtEpveh7MSF6SjjrpNVNNVJfFup7xTY3UpFtm67foy9HDVXneLtFVt4pMz5kZtgNcvCniNFb1hlEQ=="],
 

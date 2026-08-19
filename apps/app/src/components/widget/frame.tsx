@@ -182,7 +182,7 @@ export default function WidgetFrame({
     const timer = window.setTimeout(() => {
       setCapturingScreenshot(false);
       setCaptureHint("Couldn’t capture this page.");
-    }, 20000);
+    }, 120000);
     return () => window.clearTimeout(timer);
   }, [capturingScreenshot]);
 
@@ -418,7 +418,11 @@ export default function WidgetFrame({
           });
           setScreenshotUrl(shot.dataUrl);
         } else {
-          setCaptureHint("Couldn’t capture this page.");
+          setCaptureHint(
+            shot.error === "cancelled"
+              ? "Screenshot was cancelled."
+              : "Couldn’t capture this page.",
+          );
         }
         return;
       }
