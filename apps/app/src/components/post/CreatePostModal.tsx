@@ -16,6 +16,7 @@ import { SimilarPosts } from "./SimilarPosts"
 import type { TagSummary, PostUser } from "@/types/post"
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
 import { createPostImageTransferHandlers } from "@/lib/post-image-transfer"
+import { useCreatePostDraft } from "@/hooks/useCreatePostDraft"
 
 export function CreatePostModal({
   open,
@@ -59,6 +60,8 @@ export function CreatePostModal({
     ALLOWED_IMAGE_TYPES,
   } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
 
+  const clearDraftRef = React.useRef(() => {})
+
   const {
     title,
     setTitle,
@@ -69,6 +72,7 @@ export function CreatePostModal({
   } = usePostSubmission({
     workspaceSlug,
     onSuccess: () => {
+      clearDraftRef.current()
       onOpenChange(false)
       setUploadedImages([])
       // Reset fields
@@ -80,6 +84,18 @@ export function CreatePostModal({
     },
     skipDefaultRedirect: true
   })
+
+  const { clearDraft } = useCreatePostDraft({
+    workspaceSlug,
+    open,
+    title,
+    content,
+    images: uploadedImages,
+    setTitle,
+    setContent,
+    setImages: setUploadedImages,
+  })
+  clearDraftRef.current = clearDraft
 
   useEffect(() => {
     if (!open) return

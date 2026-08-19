@@ -17,6 +17,7 @@ import SubdomainAuthModal from "./SubdomainAuthModal"
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal"
 import { useCloseThenOpenAuth } from "@/hooks/useCloseThenOpenAuth"
 import { createPostImageTransferHandlers } from "@/lib/post-image-transfer"
+import { useCreatePostDraft } from "@/hooks/useCreatePostDraft"
 
 interface CreatePostModalProps {
   open: boolean
@@ -63,6 +64,8 @@ export default function CreatePostModal({
     ALLOWED_IMAGE_TYPES,
   } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
 
+  const clearDraftRef = React.useRef(() => {})
+
   const {
     title,
     setTitle,
@@ -73,11 +76,24 @@ export default function CreatePostModal({
   } = usePostSubmission({
     workspaceSlug,
     onSuccess: () => {
+      clearDraftRef.current()
       onOpenChange(false)
       setUploadedImages([])
     },
     onAuthRequired: () => closeThenOpenAuth("sign-in"),
   })
+
+  const { clearDraft } = useCreatePostDraft({
+    workspaceSlug,
+    open,
+    title,
+    content,
+    images: uploadedImages,
+    setTitle,
+    setContent,
+    setImages: setUploadedImages,
+  })
+  clearDraftRef.current = clearDraft
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
