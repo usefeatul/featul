@@ -539,7 +539,7 @@ function boot() {
     img.src = url;
     img.alt = alt || "";
     img.style.cssText =
-      "max-height:80dvh;width:100%;object-fit:contain;display:block;";
+      "max-height:min(72dvh,760px);max-width:100%;width:auto;height:auto;object-fit:contain;display:block;margin:0 auto;";
     overlay.onclick = () => closeImageLightbox();
     dialog.onclick = (event) => event.stopPropagation();
     dialog.appendChild(img);

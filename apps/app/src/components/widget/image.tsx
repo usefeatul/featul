@@ -92,8 +92,12 @@ export function WidgetImage({
         icon={<ImageIcon className="size-3.5" />}
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <div className="flex items-center justify-center overflow-hidden rounded-lg bg-muted/40">
-          <WidgetImg url={url} alt={alt} className="h-full w-full object-contain" />
+        <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden rounded-lg bg-muted/40">
+          <WidgetImg
+            url={url}
+            alt={alt}
+            className="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
+          />
         </div>
       </SettingsDialogShell>
     </>

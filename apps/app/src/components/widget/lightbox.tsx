@@ -51,12 +51,11 @@ export function WidgetHostImageDialog() {
       <DialogContent
         fluid
         overlayClassName="z-[2147483647] bg-black/20 backdrop-blur-xs dark:bg-black/20"
-        className="z-2147483647 max-w-none gap-1 rounded-2xl bg-muted p-1 sm:max-w-none"
+        className="z-2147483647 max-h-[90dvh] max-w-none gap-1 overflow-hidden rounded-2xl bg-muted p-1 sm:max-w-none"
         style={{
           width: "min(92vw, 1070px)",
           maxWidth: "none",
           top: "50%",
-          // Keep centered like SettingsDialogShell
           ["--tw-translate-y" as string]: "-50%",
         }}
         onOpenAutoFocus={(event) => event.preventDefault()}
@@ -67,9 +66,14 @@ export function WidgetHostImageDialog() {
             Image
           </DialogTitle>
         </DialogHeader>
-        <div className="rounded-xl border border-border bg-card p-2 dark:bg-black/60">
-          <div className="flex items-center justify-center overflow-hidden rounded-lg bg-muted/40">
-            <WidgetImage url={url} alt={alt} imgClassName="h-full w-full object-contain" preview={false} />
+        <div className="min-h-0 overflow-hidden rounded-xl border border-border bg-card p-2 dark:bg-black/60">
+          <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden rounded-lg bg-muted/40">
+            <WidgetImage
+              url={url}
+              alt={alt}
+              imgClassName="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
+              preview={false}
+            />
           </div>
         </div>
       </DialogContent>
