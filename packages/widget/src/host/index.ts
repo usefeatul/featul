@@ -18,8 +18,8 @@ const BUTTON_RADIUS = "8px";
 const LAUNCHER_SIZE = 36;
 const PANEL_WIDTH = 396;
 const PANEL_WIDTH_EXPANDED = 500;
-const PANEL_HEIGHT = 1080;
-const PANEL_HEIGHT_EXPANDED = 1280;
+const PANEL_HEIGHT = 1600;
+const PANEL_HEIGHT_EXPANDED = 1760;
 const PANEL_EXPAND_MS = 520;
 const PANEL_EXPAND_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const FULLSCREEN_MAX_WIDTH = 768;
@@ -224,7 +224,7 @@ function boot() {
       preferredWidth,
       Math.max(280, view.width - PANEL_GUTTER * 2),
     );
-    const heightPad = state.expanded ? 24 : 40;
+    const heightPad = 16;
     const height = Math.min(
       preferredHeight,
       Math.max(360, view.height - heightPad),
