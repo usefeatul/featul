@@ -4,7 +4,7 @@ import React from "react"
 import { Input } from "@featul/ui/components/input"
 import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
 import { useDialogExpanded } from "@/components/settings/global/SettingsDialogShell"
-import { continuePlainList } from "@/lib/continue-plain-list"
+import { continuePlainList, indentPlainList } from "@/lib/continue-plain-list"
 import { PostImageGallery } from "@/components/post/PostImageGallery"
 
 export interface UploadedImage {
@@ -74,7 +74,29 @@ export function PostContent({
   const handleContentKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if (event.key !== "Enter" || event.nativeEvent.isComposing) {
+    if (event.nativeEvent.isComposing) {
+      return
+    }
+
+    const textarea = event.currentTarget
+
+    if (event.key === "Tab") {
+      const result = indentPlainList(
+        content,
+        textarea.selectionStart,
+        textarea.selectionEnd,
+        event.shiftKey ? "out" : "in"
+      )
+      if (!result) {
+        return
+      }
+      event.preventDefault()
+      pendingCaretRef.current = result.nextCaret
+      setContent(result.nextValue)
+      return
+    }
+
+    if (event.key !== "Enter") {
       return
     }
 
@@ -88,7 +110,6 @@ export function PostContent({
       return
     }
 
-    const textarea = event.currentTarget
     const result = continuePlainList(
       content,
       textarea.selectionStart,
