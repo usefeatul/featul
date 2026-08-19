@@ -9,11 +9,13 @@ import { parseIdentifiedUser } from "./load";
 import { WidgetHostImageDialog } from "./lightbox";
 
 /**
- * Local / staging QA helper. Set NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID
- * to the workspace id. Empty disables the launcher.
+ * Local / staging QA helper. Prefers NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID,
+ * then NEXT_PUBLIC_FEATUL_WORKSPACE_ID. Empty disables the launcher.
  */
 const TEST_WIDGET_PROJECT_ID =
-  process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID || "";
+  process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
+  process.env.NEXT_PUBLIC_FEATUL_WORKSPACE_ID ||
+  "";
 
 export default function WidgetTestEmbed() {
   const pathname = usePathname();

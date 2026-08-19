@@ -103,7 +103,8 @@ export default function RootLayout({
         <Providers>
           <ConditionalThemeProvider>{children}</ConditionalThemeProvider>
         </Providers>
-        {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ? (
+        {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
+        process.env.NEXT_PUBLIC_FEATUL_WORKSPACE_ID ? (
           <WidgetTestEmbed />
         ) : null}
       </body>
