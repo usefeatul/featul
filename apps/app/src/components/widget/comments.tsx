@@ -87,7 +87,7 @@ export function Comments({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col px-5 py-5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
         Comments · {commentCount}
       </p>
 
@@ -275,10 +275,10 @@ function CommentThreadItem({
             </p>
             {dateLabel ? (
               <>
-                <span className="text-[11px] text-[rgb(var(--widget-fg)/0.3)]" aria-hidden>
+                <span className="text-[10px] text-[rgb(var(--widget-fg)/0.3)]" aria-hidden>
                   ·
                 </span>
-                <p className="shrink-0 text-[11px] text-[rgb(var(--widget-fg)/0.4)]">{dateLabel}</p>
+                <p className="shrink-0 text-[10px] text-[rgb(var(--widget-fg)/0.4)]">{dateLabel}</p>
               </>
             ) : null}
           </div>

@@ -106,7 +106,7 @@ export function Home({
       >
         <div className="flex items-center gap-2">
           <StatusIcon status="progress" className="size-3.5" />
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
             {homeRoadmapLabel}
           </p>
         </div>
@@ -174,7 +174,7 @@ export function Home({
           !changelogLoading && !homeChangelog.length ? "mb-1.5" : "mb-3"
         }`}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
           Updates
         </p>
         <button
@@ -236,7 +236,7 @@ export function Home({
           !recentLoading && !recentPosts.length ? "mb-1.5" : "mb-3"
         }`}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
           Latest feedback
         </p>
         <button
@@ -289,7 +289,7 @@ export function Home({
           className={`group w-full border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} pb-6 text-left`}
         >
           <UpdateMetaRow entry={featured} accent={accent} fallbackBadge="Just Shipped" />
-          <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+          <h2 className="mt-3 text-[20px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
             {featured.title}
           </h2>
           {featured.preview ? (

@@ -19,6 +19,9 @@ export default function WidgetLayout({ children }: { children: React.ReactNode }
           background: transparent !important;
           touch-action: manipulation;
         }
+        html {
+          font-size: 14px;
+        }
         .widget-shell button,
         .widget-shell a,
         .widget-shell select,

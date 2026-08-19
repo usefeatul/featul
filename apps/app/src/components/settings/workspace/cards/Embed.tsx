@@ -53,12 +53,9 @@ export default function EmbedCard({ workspaceId }: Props) {
         description={
           <div className="space-y-3">
             <p className="break-words">
-              Copy the snippet into your app. Featul trusts your workspace
-              domain and verified custom domains with no extra setup. The
-              widget uses the same branding, theme, and Roadmap / Changelog
-              visibility as your public workspace site. This snippet loads
-              the widget from this Featul environment (local, staging, or
-              production).
+              Paste this snippet into your app to load the widget. It uses
+              the same branding and public Roadmap / Changelog settings as
+              your workspace site.
             </p>
             <p className="break-all text-sm text-muted-foreground">
               Workspace ID:{" "}

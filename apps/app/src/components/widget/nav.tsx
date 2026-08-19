@@ -37,7 +37,7 @@ export function Nav({ tabs, section, accent, navBorderVisible, fullscreen = fals
           key={tab}
           type="button"
           onClick={() => onSelect(tab)}
-          className={`relative flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[11px] transition-colors ${
+          className={`relative flex cursor-pointer flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[10px] transition-colors ${
             section === tab ? "" : "text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg)/0.75)]"
           }`}
           style={section === tab ? { color: accent } : undefined}

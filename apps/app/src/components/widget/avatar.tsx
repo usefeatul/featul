@@ -31,7 +31,7 @@ export function WidgetAuthorAvatar({ name, image, className = "size-6" }: Props)
 
   return (
     <span
-      className={`${className} inline-flex shrink-0 items-center justify-center rounded-full border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] text-[10px] font-medium text-[rgb(var(--widget-fg)/0.7)]`}
+      className={`${className} inline-flex shrink-0 items-center justify-center rounded-full border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.08)] text-[9px] font-medium text-[rgb(var(--widget-fg)/0.7)]`}
       aria-hidden
     >
       {initials}

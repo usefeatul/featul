@@ -898,7 +898,7 @@ export default function WidgetFrame({
                 href="https://featul.com?utm_source=powered_by&utm_medium=referral&utm_campaign=widget"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 text-[10px] leading-none text-[rgb(var(--widget-fg)/0.35)] transition-colors hover:text-[rgb(var(--widget-fg)/0.6)]"
+                className="inline-flex items-center gap-1 text-[9px] leading-none text-[rgb(var(--widget-fg)/0.35)] transition-colors hover:text-[rgb(var(--widget-fg)/0.6)]"
               >
                 <span>Powered by featul</span>
                 <FeatulLogoIcon className="size-3 shrink-0" size={12} />
