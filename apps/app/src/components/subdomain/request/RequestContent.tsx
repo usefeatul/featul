@@ -86,7 +86,7 @@ export function RequestContent({
         image={post.image}
         metadata={post.metadata}
         alt={post.title}
-        className="w-48 h-36 mb-4"
+        className="mb-4"
       />
       {post.duplicateOfId && post.mergedInto ? (
         <div className="mt-2 flex justify-center">

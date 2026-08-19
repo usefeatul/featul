@@ -132,7 +132,7 @@ export default function RequestDetail({
                   image={post.image}
                   metadata={post.metadata}
                   alt={post.title}
-                  className="h-40 w-auto max-w-full rounded-md"
+                  className="mt-3"
                 />
               </div>
               {isMobile ? (
