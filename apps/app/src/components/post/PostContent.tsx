@@ -48,10 +48,44 @@ export function PostContent({
     pendingCaretRef.current = null
   }, [content])
 
+  const submitForm = (from: HTMLElement) => {
+    const form = from.closest("form")
+    if (!form) {
+      return
+    }
+    const submit = form.querySelector<HTMLButtonElement>('[type="submit"]')
+    if (submit?.disabled) {
+      return
+    }
+    form.requestSubmit()
+  }
+
+  const handleTitleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      event.key !== "Enter" ||
+      event.nativeEvent.isComposing ||
+      !(event.metaKey || event.ctrlKey)
+    ) {
+      return
+    }
+    event.preventDefault()
+    submitForm(event.currentTarget)
+  }
+
   const handleContentKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing) {
+    if (event.key !== "Enter" || event.nativeEvent.isComposing) {
+      return
+    }
+
+    if (event.metaKey || event.ctrlKey) {
+      event.preventDefault()
+      submitForm(event.currentTarget)
+      return
+    }
+
+    if (event.shiftKey) {
       return
     }
 
@@ -77,6 +111,7 @@ export function PostContent({
         placeholder="Post title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        onKeyDown={handleTitleKeyDown}
         required
         maxLength={100}
         className="text-lg md:text-xl  font-semibold h-auto py-2 placeholder:text-accent "

@@ -59,6 +59,7 @@ export function PostFooter({
         type="submit"
         variant="default"
         disabled={disabled}
+        aria-keyshortcuts="Meta+Enter Control+Enter"
         className="bg-primary text-primary-foreground hover:bg-primary/90 px-6"
       >
         {isPending && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
