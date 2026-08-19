@@ -48,13 +48,14 @@ export function CreatePostModal({
   }, [open, initialStatus])
 
   const {
-    uploadedImage,
+    uploadedImages,
     uploadingImage,
     fileInputRef,
-    setUploadedImage,
+    setUploadedImages,
     handleFileSelect,
-    handleImageUpload,
+    handleImageFiles,
     handleRemoveImage,
+    maxFiles,
     ALLOWED_IMAGE_TYPES,
   } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
 
@@ -69,7 +70,7 @@ export function CreatePostModal({
     workspaceSlug,
     onSuccess: () => {
       onOpenChange(false)
-      setUploadedImage(null)
+      setUploadedImages([])
       // Reset fields
       setStatus(initialStatus)
       setSelectedTags([])
@@ -111,7 +112,7 @@ export function CreatePostModal({
     e?.preventDefault()
     // Find tag IDs from selected slugs/ids
     const tagIds = availableTags.filter(t => selectedTags.includes(t.id)).map(t => t.id)
-    submitPost(selectedBoard, user ?? null, uploadedImage?.url, status, tagIds)
+    submitPost(selectedBoard, user ?? null, uploadedImages, status, tagIds)
   }
 
   const { posts: similarPosts } = useSimilarPosts({
@@ -137,9 +138,10 @@ export function CreatePostModal({
   })
 
   const imageTransfer = createPostImageTransferHandlers({
-    onImageFile: handleImageUpload,
+    onImageFiles: handleImageFiles,
     uploading: uploadingImage,
-    hasImage: !!uploadedImage,
+    imageCount: uploadedImages.length,
+    maxImages: maxFiles,
   })
 
   return (
@@ -174,7 +176,7 @@ export function CreatePostModal({
           setTitle={setTitle}
           content={content}
           setContent={setContent}
-          uploadedImage={uploadedImage}
+          uploadedImages={uploadedImages}
           uploadingImage={uploadingImage}
           handleRemoveImage={handleRemoveImage}
         />
@@ -182,11 +184,12 @@ export function CreatePostModal({
         <PostFooter
           isPending={isPending}
           disabled={!canSubmit}
-          uploadedImage={uploadedImage}
+          uploadedImages={uploadedImages}
           uploadingImage={uploadingImage}
           fileInputRef={fileInputRef}
           handleFileSelect={handleFileSelect}
           ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
+          maxImages={maxFiles}
         />
 
         <SimilarPosts

@@ -21,7 +21,12 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const updatePost = async (selectedBoard: { slug: string } | null, image?: string | null, roadmapStatus?: string, tags?: string[]) => {
+  const updatePost = async (
+    selectedBoard: { slug: string } | null,
+    images?: Array<{ url: string; name?: string; type?: string }>,
+    roadmapStatus?: string,
+    tags?: string[]
+  ) => {
     if (!selectedBoard) return
 
     const normalizedTitle = title.trim()
@@ -38,7 +43,12 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
           postId,
           title: normalizedTitle,
           content: normalizedContent,
-          image: image,
+          image: images?.[0]?.url ?? null,
+          images: (images ?? []).map((item) => ({
+            url: item.url,
+            name: item.name,
+            type: item.type,
+          })),
           boardSlug: selectedBoard.slug,
           roadmapStatus: roadmapStatus || undefined,
           tags: tags || undefined,
@@ -48,7 +58,7 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
           captureAnalyticsEvent(analyticsEvents.postUpdated, {
             post_id: postId,
             board_slug: selectedBoard.slug,
-            has_image: Boolean(image),
+            has_image: Boolean(images?.length),
             has_content: Boolean(normalizedContent),
             tag_count: tags?.length ?? 0,
             roadmap_status: roadmapStatus || null,

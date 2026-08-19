@@ -52,13 +52,14 @@ export default function CreatePostModal({
   })
 
   const {
-    uploadedImage,
+    uploadedImages,
     uploadingImage,
     fileInputRef,
-    setUploadedImage,
+    setUploadedImages,
     handleFileSelect,
-    handleImageUpload,
+    handleImageFiles,
     handleRemoveImage,
+    maxFiles,
     ALLOWED_IMAGE_TYPES,
   } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
 
@@ -73,14 +74,14 @@ export default function CreatePostModal({
     workspaceSlug,
     onSuccess: () => {
       onOpenChange(false)
-      setUploadedImage(null)
+      setUploadedImages([])
     },
     onAuthRequired: () => closeThenOpenAuth("sign-in"),
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await submitPost(selectedBoard, user, uploadedImage?.url)
+    await submitPost(selectedBoard, user, uploadedImages)
   }
 
   const { posts: similarPosts } = useSimilarPosts({
@@ -98,9 +99,10 @@ export default function CreatePostModal({
     uploadingImage,
   })
   const imageTransfer = createPostImageTransferHandlers({
-    onImageFile: handleImageUpload,
+    onImageFiles: handleImageFiles,
     uploading: uploadingImage,
-    hasImage: !!uploadedImage,
+    imageCount: uploadedImages.length,
+    maxImages: maxFiles,
   })
 
   return (
@@ -133,7 +135,7 @@ export default function CreatePostModal({
             setTitle={setTitle}
             content={content}
             setContent={setContent}
-            uploadedImage={uploadedImage}
+            uploadedImages={uploadedImages}
             uploadingImage={uploadingImage}
             handleRemoveImage={handleRemoveImage}
           />
@@ -141,11 +143,12 @@ export default function CreatePostModal({
           <PostFooter
             isPending={isPending}
             disabled={!canSubmit}
-            uploadedImage={uploadedImage}
+            uploadedImages={uploadedImages}
             uploadingImage={uploadingImage}
             fileInputRef={fileInputRef}
             handleFileSelect={handleFileSelect}
             ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
+            maxImages={maxFiles}
           />
 
           <SimilarPosts

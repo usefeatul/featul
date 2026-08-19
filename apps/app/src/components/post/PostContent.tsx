@@ -19,9 +19,9 @@ export interface PostContentProps {
   setTitle: (value: string) => void
   content: string
   setContent: (value: string) => void
-  uploadedImage: UploadedImage | null
+  uploadedImages: UploadedImage[]
   uploadingImage: boolean
-  handleRemoveImage: () => void
+  handleRemoveImage: (index: number) => void
 }
 
 export function PostContent({
@@ -29,7 +29,7 @@ export function PostContent({
   setTitle,
   content,
   setContent,
-  uploadedImage,
+  uploadedImages,
   uploadingImage,
   handleRemoveImage,
 }: PostContentProps) {
@@ -132,25 +132,28 @@ export function PostContent({
         />
       </div>
       
-      {/* Image Preview */}
-      {uploadedImage && (
-        <div className="relative inline-block w-fit mb-2">
-          <div className="relative">
-            <ContentImage
-              url={uploadedImage.url}
-              alt={uploadedImage.name}
-              className="w-40 ring-1 ring-border"
-            />
-            <button
-              type="button"
-              onClick={handleRemoveImage}
-              className="absolute -top-2 -right-2 cursor-pointer rounded-full bg-destructive text-destructive-foreground p-1 hover:bg-destructive/90 transition-colors shadow-sm z-10"
-              disabled={uploadingImage}
-              aria-label="Remove image"
-            >
-              <XMarkIcon className="size-3" />
-            </button>
-          </div>
+      {uploadedImages.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {uploadedImages.map((image, index) => (
+            <div key={`${image.url}-${index}`} className="relative inline-block w-fit">
+              <div className="relative">
+                <ContentImage
+                  url={image.url}
+                  alt={image.name}
+                  className="w-40 ring-1 ring-border"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(index)}
+                  className="absolute -top-2 -right-2 cursor-pointer rounded-full bg-destructive text-destructive-foreground p-1 hover:bg-destructive/90 transition-colors shadow-sm z-10"
+                  disabled={uploadingImage}
+                  aria-label={`Remove ${image.name}`}
+                >
+                  <XMarkIcon className="size-3" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

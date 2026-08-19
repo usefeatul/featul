@@ -3,6 +3,7 @@ export const BRANDING_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg", "image/
 
 export const AVATAR_UPLOAD_MAX_BYTES = 5 * 1024 * 1024
 export const POST_IMAGE_UPLOAD_MAX_BYTES = 5 * 1024 * 1024
+export const POST_MAX_IMAGES = 5
 export const COMMENT_IMAGE_UPLOAD_MAX_BYTES = 5 * 1024 * 1024
 export const CHANGELOG_IMAGE_UPLOAD_MAX_BYTES = 5 * 1024 * 1024
 export const BRANDING_LOGO_UPLOAD_MAX_BYTES = 2 * 1024 * 1024

@@ -1,6 +1,7 @@
 import { getPostImageUploadUrl } from "@/lib/post/service";
 import { useSignedImageUpload } from "./useSignedImageUpload";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
+import { POST_MAX_IMAGES } from "@featul/api/upload-policy";
 
 export {
   ALLOWED_IMAGE_TYPES,
@@ -10,6 +11,7 @@ export {
 
 export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
   return useSignedImageUpload({
+    maxFiles: POST_MAX_IMAGES,
     getPreUploadError: () => {
       if (!boardSlug) {
         return "Select a board before uploading an image.";

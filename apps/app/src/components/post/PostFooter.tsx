@@ -9,24 +9,28 @@ import type { UploadedImage } from "./PostContent"
 export interface PostFooterProps {
   isPending: boolean
   disabled: boolean
-  uploadedImage: UploadedImage | null
+  uploadedImages: UploadedImage[]
   uploadingImage: boolean
   fileInputRef: React.RefObject<HTMLInputElement | null>
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
   ALLOWED_IMAGE_TYPES: string[]
+  maxImages?: number
   submitLabel?: string
 }
 
 export function PostFooter({ 
   isPending, 
   disabled, 
-  uploadedImage, 
+  uploadedImages, 
   uploadingImage, 
   fileInputRef, 
   handleFileSelect,
   ALLOWED_IMAGE_TYPES,
+  maxImages = 5,
   submitLabel = "Create"
 }: PostFooterProps) {
+  const atLimit = uploadedImages.length >= maxImages
+
   return (
     <div className="flex items-center justify-between p-3 md:p-4">
       <div className="flex items-center gap-2">
@@ -36,7 +40,8 @@ export function PostFooter({
           accept={ALLOWED_IMAGE_TYPES.join(",")}
           onChange={handleFileSelect}
           className="hidden"
-          disabled={uploadingImage}
+          disabled={uploadingImage || atLimit}
+          multiple={maxImages > 1}
         />
         <Button
           type="button"
@@ -44,7 +49,7 @@ export function PostFooter({
           variant="card"
           className="h-8 w-8 p-0 rounded-md text-accent hover:text-foreground"
           onClick={() => fileInputRef.current?.click()}
-          disabled={uploadingImage || !!uploadedImage}
+          disabled={uploadingImage || atLimit}
           aria-label="Add image"
         >
           {uploadingImage ? (

@@ -8,7 +8,7 @@ import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getDisplayUser } from "@/utils/user";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
-import ContentImage from "@/components/global/ContentImage";
+import { PostImageGallery } from "@/components/post/PostImageGallery";
 import { RequestActions } from "./RequestActions";
 import { isOnboardingPost } from "@/lib/onboarding/post";
 import { OnboardingPostContent } from "@/components/requests/OnboardingPostContent";
@@ -82,34 +82,13 @@ export function RequestContent({
       ) : null}
 
       {/* Content */}
-      {post.image ? (
-        <>
-          <ContentImage
-            url={post.image}
-            alt={post.title}
-            className="w-48 h-36 mb-4"
-          />
-          {post.duplicateOfId && post.mergedInto ? (
-            <div className="mt-2 flex justify-center">
-              <div className="inline-flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs">
-                <StatusIcon status={post.mergedInto.roadmapStatus || "pending"} className="size-4" />
-                <span className="text-accent">Merged into</span>
-                <Link
-                  href={`/board/p/${post.mergedInto.slug}`}
-                  className="font-medium text-foreground hover:underline"
-                >
-                  {post.mergedInto.title}
-                </Link>
-                {post.mergedInto.boardName ? (
-                  <span className="text-accent">({post.mergedInto.boardName})</span>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-        </>
-      ) : null}
-      {/* Fallback: show merged banner centered even without image */}
-      {!post.image && post.duplicateOfId && post.mergedInto ? (
+      <PostImageGallery
+        image={post.image}
+        metadata={post.metadata}
+        alt={post.title}
+        className="w-48 h-36 mb-4"
+      />
+      {post.duplicateOfId && post.mergedInto ? (
         <div className="mt-2 flex justify-center">
           <div className="inline-flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs">
             <StatusIcon status={post.mergedInto.roadmapStatus || "pending"} className="size-4" />

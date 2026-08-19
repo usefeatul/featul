@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import ContentImage from "@/components/global/ContentImage"
+import { PostImageGallery } from "@/components/post/PostImageGallery"
 import RequestNavigation from "./RequestNavigation"
 import { useRequestNavigation } from "@/hooks/useRequestNavigation"
 import { buildRequestsUrl } from "@/utils/request"
@@ -128,11 +128,12 @@ export default function RequestDetail({
                     </div>
                   )
                 ) : null}
-                {post.image ? (
-                  <div className="flex justify-start">
-                    <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
-                  </div>
-                ) : null}
+                <PostImageGallery
+                  image={post.image}
+                  metadata={post.metadata}
+                  alt={post.title}
+                  className="h-40 w-auto max-w-full rounded-md"
+                />
               </div>
               {isMobile ? (
                 <div className="flex items-center justify-between gap-3 text-sm text-accent">

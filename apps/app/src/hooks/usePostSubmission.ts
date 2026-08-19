@@ -39,7 +39,7 @@ export function usePostSubmission({
   const submitPost = async (
     selectedBoard: BoardRef | null,
     user: PostUser | null,
-    image?: string | null,
+    images?: Array<{ url: string; name?: string; type?: string }>,
     roadmapStatus?: string,
     tags?: string[]
   ) => {
@@ -67,7 +67,14 @@ export function usePostSubmission({
         const res = await client.post.create.$post({
           title: normalizedTitle,
           content: normalizedContent,
-          image: image || undefined,
+          image: images?.[0]?.url,
+          images: images?.length
+            ? images.map((item) => ({
+                url: item.url,
+                name: item.name,
+                type: item.type,
+              }))
+            : undefined,
           workspaceSlug,
           boardSlug: selectedBoard.slug,
           fingerprint: user ? undefined : fingerprint,
@@ -80,7 +87,7 @@ export function usePostSubmission({
           captureAnalyticsEvent(analyticsEvents.postCreated, {
             workspace_slug: workspaceSlug,
             board_slug: selectedBoard.slug,
-            has_image: Boolean(image),
+            has_image: Boolean(images?.length),
             has_content: Boolean(normalizedContent),
             is_anonymous: !user,
             tag_count: tags?.length ?? 0,

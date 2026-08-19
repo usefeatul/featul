@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from "react";
+import { useCallback, useRef, useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
@@ -30,6 +30,7 @@ type UseSignedImageUploadOptions = {
   loadingMessage?: string;
   successMessage?: string;
   defaultErrorMessage?: string;
+  maxFiles?: number;
 };
 
 export function getImageUploadValidationError(file: File): string | null {
@@ -63,12 +64,17 @@ export function useSignedImageUpload({
   loadingMessage = "Uploading image...",
   successMessage = "Image uploaded",
   defaultErrorMessage = "Failed to upload image",
+  maxFiles = 1,
 }: UseSignedImageUploadOptions) {
-  const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(
-    null,
-  );
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imagesRef = useRef<UploadedImage[]>([]);
+
+  const setImages = useCallback((next: UploadedImage[]) => {
+    imagesRef.current = next;
+    setUploadedImages(next);
+  }, []);
 
   const handleImageUpload = async (file: File) => {
     const preUploadError = getPreUploadError?.(file);
@@ -83,6 +89,11 @@ export function useSignedImageUpload({
       return;
     }
 
+    if (imagesRef.current.length >= maxFiles) {
+      toast.error(`You can add up to ${maxFiles} images.`);
+      return;
+    }
+
     setUploadingImage(true);
     const toastId = toast.loading(loadingMessage);
 
@@ -90,11 +101,14 @@ export function useSignedImageUpload({
       const { uploadUrl, publicUrl } = await getUploadTarget(file);
       await uploadFileToSignedUrl(uploadUrl, file);
 
-      setUploadedImage({
+      const nextImage: UploadedImage = {
         url: publicUrl,
         name: file.name,
         type: file.type,
-      });
+      };
+      setImages(
+        maxFiles === 1 ? [nextImage] : [...imagesRef.current, nextImage],
+      );
       try {
         onUploadSuccess?.({ file, publicUrl, uploadUrl });
       } catch (analyticsError) {
@@ -110,10 +124,21 @@ export function useSignedImageUpload({
     }
   };
 
+  const handleImageFiles = async (files: File[]) => {
+    const remaining = Math.max(0, maxFiles - imagesRef.current.length);
+    const accepted = files.slice(0, remaining);
+    if (files.length > accepted.length) {
+      toast.error(`You can add up to ${maxFiles} images.`);
+    }
+    for (const file of accepted) {
+      await handleImageUpload(file);
+    }
+  };
+
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      void handleImageUpload(file);
+    const files = Array.from(event.target.files ?? []);
+    if (files.length > 0) {
+      void handleImageFiles(files);
     }
 
     if (fileInputRef.current) {
@@ -121,16 +146,32 @@ export function useSignedImageUpload({
     }
   };
 
-  const handleRemoveImage = () => {
-    setUploadedImage(null);
-  };
+  const handleRemoveImage = useCallback(
+    (index = 0) => {
+      setImages(imagesRef.current.filter((_, itemIndex) => itemIndex !== index));
+    },
+    [setImages],
+  );
+
+  const setUploadedImage = useCallback(
+    (value: UploadedImage | null) => {
+      setImages(value ? [value] : []);
+    },
+    [setImages],
+  );
+
+  const uploadedImage = uploadedImages[0] ?? null;
 
   return {
     uploadedImage,
+    uploadedImages,
     uploadingImage,
     fileInputRef,
+    maxFiles,
     setUploadedImage,
+    setUploadedImages: setImages,
     handleImageUpload,
+    handleImageFiles,
     handleFileSelect,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,

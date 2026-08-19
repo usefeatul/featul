@@ -1,44 +1,49 @@
 import type { ClipboardEvent, DragEvent } from "react"
 import { toast } from "sonner"
 
-export function getImageFileFromDataTransfer(
+export function getImageFilesFromDataTransfer(
   data: DataTransfer | null
-): File | null {
+): File[] {
   if (!data) {
-    return null
+    return []
   }
 
-  const fromFiles = Array.from(data.files).find((file) =>
+  const fromFiles = Array.from(data.files).filter((file) =>
     file.type.startsWith("image/")
   )
-  if (fromFiles) {
+  if (fromFiles.length > 0) {
     return fromFiles
   }
 
+  const fromItems: File[] = []
   for (const item of Array.from(data.items)) {
     if (item.kind === "file" && item.type.startsWith("image/")) {
-      return item.getAsFile()
+      const file = item.getAsFile()
+      if (file) {
+        fromItems.push(file)
+      }
     }
   }
-
-  return null
+  return fromItems
 }
 
 export function createPostImageTransferHandlers({
-  onImageFile,
+  onImageFiles,
   uploading,
-  hasImage,
+  imageCount,
+  maxImages,
 }: {
-  onImageFile: (file: File) => void
+  onImageFiles: (files: File[]) => void
   uploading: boolean
-  hasImage: boolean
+  imageCount: number
+  maxImages: number
 }) {
   const accept = (
     event: ClipboardEvent | DragEvent,
     data: DataTransfer | null
   ) => {
-    const file = getImageFileFromDataTransfer(data)
-    if (!file) {
+    const files = getImageFilesFromDataTransfer(data)
+    if (files.length === 0) {
       return
     }
 
@@ -48,12 +53,12 @@ export function createPostImageTransferHandlers({
       return
     }
 
-    if (hasImage) {
-      toast.error("Remove the current image before adding another.")
+    if (imageCount >= maxImages) {
+      toast.error(`You can add up to ${maxImages} images.`)
       return
     }
 
-    onImageFile(file)
+    onImageFiles(files)
   }
 
   return {

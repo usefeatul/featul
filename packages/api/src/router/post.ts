@@ -13,6 +13,9 @@ import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
 import { getRequestFingerprint } from "../shared/request-fingerprint"
 import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
 import type { RequestCarrier } from "../types/post"
+import { mergePostMetadata, resolvePostImageFields } from "../shared/post-images"
+
+type PostMetadata = NonNullable<(typeof post.$inferInsert)["metadata"]>
 
 function getRequestFromContext(c: unknown): Request {
   const carrier = c as RequestCarrier
@@ -66,7 +69,7 @@ export function createPostRouter() {
       .post(async ({ ctx, input, c }) => {
         const request = getRequestFromContext(c)
         enforceTrustedBrowserOrigin(request)
-        const { title, content, image, workspaceSlug, boardSlug, fingerprint, roadmapStatus, tags } = input
+        const { title, content, image, images, workspaceSlug, boardSlug, fingerprint, roadmapStatus, tags } = input
 
         const userId = await getOptionalSessionUserId(c)
 
@@ -134,16 +137,24 @@ export function createPostRouter() {
         const randomSuffix = Math.random().toString(36).substring(2, 8)
         const slug = slugBase ? `${slugBase}-${randomSuffix}` : `post-${randomSuffix}`
 
+        const imageFields = resolvePostImageFields({ image, images }) ?? {
+          image: image ?? null,
+          attachments: [],
+        }
+
         // Create Post
         const [newPost] = await ctx.db.insert(post).values({
           boardId: b.id,
           title,
           content,
-          image,
+          image: imageFields.image,
           slug,
           authorId: userId || null,
           isAnonymous: !userId,
-          metadata: !userId ? { fingerprint: anonymousFingerprint } : undefined,
+          metadata: mergePostMetadata(
+            !userId ? { fingerprint: anonymousFingerprint } : undefined,
+            imageFields.attachments
+          ) as PostMetadata | undefined,
           roadmapStatus: roadmapStatus || "pending",
         }).returning()
 
@@ -249,7 +260,7 @@ export function createPostRouter() {
     update: privateProcedure
       .input(updatePostSchema)
       .post(async ({ ctx, input, c }) => {
-        const { postId, title, content, image, boardSlug, roadmapStatus, tags } = input
+        const { postId, title, content, image, images, boardSlug, roadmapStatus, tags } = input
         const userId = ctx.session.user.id
 
         // Get existing post
@@ -328,13 +339,24 @@ export function createPostRouter() {
           }
         }
 
+        const imageFields = resolvePostImageFields({ image, images })
+        const nextImage =
+          imageFields ? imageFields.image : existingPost.image
+        const nextMetadata = imageFields
+          ? mergePostMetadata(
+              (existingPost.metadata as Record<string, unknown> | null) ?? undefined,
+              imageFields.attachments
+            )
+          : existingPost.metadata
+
         // Update Post
         const [updatedPost] = await ctx.db
           .update(post)
           .set({
             title: title ?? existingPost.title,
             content: content ?? existingPost.content,
-            image: image !== undefined ? image : existingPost.image,
+            image: nextImage,
+            metadata: nextMetadata as PostMetadata | undefined,
             boardId,
             roadmapStatus: roadmapStatus ?? existingPost.roadmapStatus,
             updatedAt: new Date(),
