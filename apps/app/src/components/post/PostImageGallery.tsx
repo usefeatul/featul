@@ -50,7 +50,7 @@ export function PostImageGallery({
     <div className={cn("min-w-0", className)}>
       <div
         ref={scrollerRef}
-        className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x snap-mandatory [-webkit-overflow-scrolling:touch]"
+        className="flex gap-1.5 overflow-x-auto pt-2 pb-1 scrollbar-hide snap-x snap-mandatory [-webkit-overflow-scrolling:touch]"
       >
         {images.map((item, index) => (
           <div
@@ -60,7 +60,7 @@ export function PostImageGallery({
             <ContentImage
               url={item.url}
               alt={item.name || (images.length > 1 ? `${alt} ${index + 1}` : alt)}
-              className="h-24 w-32 rounded-md"
+              className="h-16 w-24 rounded-md"
             />
             {onRemove ? (
               <button
@@ -69,11 +69,11 @@ export function PostImageGallery({
                   event.stopPropagation()
                   onRemove(index)
                 }}
-                className="absolute -top-1.5 -right-1.5 z-10 cursor-pointer rounded-full bg-destructive p-0.5 text-destructive-foreground shadow-sm transition-colors hover:bg-destructive/90"
+                className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-background hover:bg-destructive/90"
                 disabled={removeDisabled}
                 aria-label={`Remove ${item.name || `image ${index + 1}`}`}
               >
-                <XMarkIcon className="size-3" />
+                <XMarkIcon className="size-2.5" />
               </button>
             ) : null}
           </div>
