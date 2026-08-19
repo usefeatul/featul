@@ -14,7 +14,8 @@ export type WidgetMessageType =
   | "theme"
   | "panel"
   | "open-image"
-  | "close-image";
+  | "close-image"
+  | "capture-screenshot";
 
 const FRAME_SOURCE = "featul-widget-frame";
 const HOST_SOURCE = "featul-widget";

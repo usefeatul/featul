@@ -8,7 +8,7 @@
   "scripts": {
     "build": "bun ./scripts/build.ts",
     "check-types": "tsc --noEmit",
-    "test": "bun test ./src"
+    "test": "bun test src"
   },
   "exports": {
     ".": {
@@ -23,6 +23,9 @@
       "import": "./src/source.ts",
       "types": "./src/source.ts"
     }
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1"
   },
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",

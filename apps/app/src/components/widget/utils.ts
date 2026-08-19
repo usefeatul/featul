@@ -154,6 +154,42 @@ export function readIdentifiedUserId(value: unknown): string | null {
   return user.id;
 }
 
+export function isWidgetScreenshotDataUrl(value?: string | null): value is string {
+  const url = String(value || "");
+  return (
+    /^data:image\/(png|jpeg|jpg|webp);base64,/i.test(url) &&
+    url.length > 32 &&
+    url.length < 12_000_000
+  );
+}
+
+export function readScreenshotPayload(
+  value: unknown,
+): { dataUrl: string | null; error: boolean } {
+  if (!value || typeof value !== "object") {
+    return { dataUrl: null, error: true };
+  }
+  const dataUrl =
+    "dataUrl" in value && typeof value.dataUrl === "string"
+      ? value.dataUrl
+      : "";
+  if (isWidgetScreenshotDataUrl(dataUrl)) {
+    return { dataUrl, error: false };
+  }
+  return { dataUrl: null, error: true };
+}
+
+export async function dataUrlToImageFile(
+  dataUrl: string,
+  fileName: string,
+): Promise<File> {
+  const response = await fetch(dataUrl);
+  const blob = await response.blob();
+  const type =
+    blob.type && blob.type.startsWith("image/") ? blob.type : "image/jpeg";
+  return new File([blob], fileName, { type });
+}
+
 export function resolveBugsBoard<
   T extends { id: string; name?: string | null; slug?: string | null },
 >(boards: T[]): T | null {

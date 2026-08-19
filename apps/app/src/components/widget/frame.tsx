@@ -54,7 +54,7 @@ import type {
   WidgetWorkspace,
 } from "./types";
 import { WidgetUpdates, type WidgetChangelogEntry } from "./updates";
-import { readIdentifiedUserId, viewerPayload } from "./utils";
+import { readIdentifiedUserId, readScreenshotPayload, viewerPayload } from "./utils";
 
 type WidgetFrameProps = {
   projectId: string;
@@ -155,6 +155,9 @@ export default function WidgetFrame({
   } | null>(null);
   const [navBorderVisible, setNavBorderVisible] = React.useState(false);
   const [fullscreen, setFullscreen] = React.useState(initialFullscreen);
+  const [screenshotUrl, setScreenshotUrl] = React.useState<string | null>(null);
+  const [capturingScreenshot, setCapturingScreenshot] = React.useState(false);
+  const [captureHint, setCaptureHint] = React.useState("");
   const [themeMode, setThemeMode] = React.useState<"light" | "dark" | "auto">(
     initialTheme === "auto" && bootstrap?.theme ? bootstrap.theme : initialTheme,
   );
@@ -173,6 +176,15 @@ export default function WidgetFrame({
   const workspaceName = workspace?.name || "Feedback";
   const workspaceSlug = workspace?.slug || "";
   const workspaceLogo = workspace?.logo || null;
+
+  React.useEffect(() => {
+    if (!capturingScreenshot) return;
+    const timer = window.setTimeout(() => {
+      setCapturingScreenshot(false);
+      setCaptureHint("Couldn’t capture this page.");
+    }, 20000);
+    return () => window.clearTimeout(timer);
+  }, [capturingScreenshot]);
 
   React.useEffect(() => {
     const applyTheme = (next: "light" | "dark") => {
@@ -395,6 +407,21 @@ export default function WidgetFrame({
           }
         }
       }
+      if (message.type === "screenshot") {
+        setCapturingScreenshot(false);
+        const shot = readScreenshotPayload(message.payload);
+        if (shot.dataUrl) {
+          setCaptureHint("");
+          postToParent(parentOrigin, "panel", {
+            expanded: false,
+            overlay: true,
+          });
+          setScreenshotUrl(shot.dataUrl);
+        } else {
+          setCaptureHint("Couldn’t capture this page.");
+        }
+        return;
+      }
       if (message.type === "identify") {
         const requestVersion = ++identifyVersionRef.current;
         const nextIdentity = parseIdentifiedUser(message.payload);
@@ -450,6 +477,10 @@ export default function WidgetFrame({
     setSection("feedback");
     setFeedbackView(view);
     if (view !== "detail") setSelectedPost(null);
+    if (view !== "compose") {
+      setScreenshotUrl(null);
+      setCapturingScreenshot(false);
+    }
   };
 
   React.useEffect(() => {
@@ -500,6 +531,7 @@ export default function WidgetFrame({
     section === "changelog" && Boolean(selectedChangelogId);
   const showNavSlot =
     !loadFailed &&
+    !screenshotUrl &&
     (!isFeedback || feedbackView === "list") &&
     !isChangelogDetail;
   const contentTransition = reduceMotion
@@ -515,8 +547,11 @@ export default function WidgetFrame({
     (isFeedback && feedbackView !== "list") || isChangelogDetail;
 
   React.useEffect(() => {
-    postToParent(parentOrigin, "panel", { expanded: isChangelogDetail });
-  }, [isChangelogDetail, parentOrigin]);
+    postToParent(parentOrigin, "panel", {
+      expanded: isChangelogDetail,
+      overlay: Boolean(screenshotUrl),
+    });
+  }, [isChangelogDetail, parentOrigin, screenshotUrl]);
 
   const prevSectionRef = React.useRef(section);
   React.useEffect(() => {
@@ -573,6 +608,7 @@ export default function WidgetFrame({
             } as React.CSSProperties
           }
         >
+          {!screenshotUrl ? (
           <Header
             workspaceName={workspaceName}
             workspaceLogo={workspaceLogo}
@@ -603,10 +639,13 @@ export default function WidgetFrame({
             hideCompose={loadFailed}
             layoutStyle={layoutStyle}
           />
+          ) : null}
 
           <div
             className={
-              isFeedback &&
+              isFeedback && screenshotUrl
+                ? "relative flex min-h-0 flex-1 flex-col"
+                : isFeedback &&
               (feedbackView === "list" || feedbackView === "detail")
                 ? "relative flex min-h-0 flex-1 flex-col"
                 : isChangelogDetail || section === "changelog"
@@ -751,6 +790,20 @@ export default function WidgetFrame({
                         boards={boards}
                         userId={userId}
                         identity={identity}
+                        accent={accent}
+                        ink={theme === "light" ? "#171717" : "#fafafa"}
+                        screenshotUrl={screenshotUrl}
+                        capturing={capturingScreenshot}
+                        captureHint={captureHint}
+                        onCapture={() => {
+                          setCaptureHint("");
+                          setCapturingScreenshot(true);
+                          postToParent(parentOrigin, "capture-screenshot");
+                        }}
+                        onScreenshotConsumed={() => {
+                          setScreenshotUrl(null);
+                          setCaptureHint("");
+                        }}
                         onCancel={() => goFeedback("list")}
                         onCreated={(post) => {
                           setSelectedPost(post);
@@ -888,6 +941,7 @@ export default function WidgetFrame({
           ) : null}
 
           {!workspace?.hideBranding &&
+          !screenshotUrl &&
           !(
             isFeedback &&
             (feedbackView === "compose" || feedbackView === "detail")

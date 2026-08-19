@@ -6,7 +6,8 @@ import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
 import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { Check, Heart, X } from "lucide-react";
+import { Camera, Check, Heart, X } from "lucide-react";
+import { ScreenshotAnnotator } from "./annotate";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
   POST_IMAGE_UPLOAD_MAX_BYTES,
@@ -20,7 +21,7 @@ import type {
   WidgetPost,
 } from "./types";
 import { parseSimilarPosts } from "./load";
-import { isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload } from "./utils";
+import { dataUrlToImageFile, isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload } from "./utils";
 import { WidgetImage } from "./image";
 
 type Props = {
@@ -28,6 +29,13 @@ type Props = {
   boards: Board[];
   userId?: string | null;
   identity?: IdentifiedUser | null;
+  accent: string;
+  ink: string;
+  screenshotUrl?: string | null;
+  capturing?: boolean;
+  captureHint?: string;
+  onCapture: () => void;
+  onScreenshotConsumed: () => void;
   onCancel: () => void;
   onCreated: (post: WidgetPost) => void;
   onView: (post: WidgetPost) => void;
@@ -43,6 +51,13 @@ export function WidgetFeedbackCompose({
   boards,
   userId,
   identity,
+  accent,
+  ink,
+  screenshotUrl = null,
+  capturing = false,
+  captureHint = "",
+  onCapture,
+  onScreenshotConsumed,
   onCancel: _onCancel,
   onCreated,
   onView,
@@ -56,6 +71,10 @@ export function WidgetFeedbackCompose({
   const [similar, setSimilar] = React.useState<SimilarPost[]>([]);
   const [uploadedImage, setUploadedImage] = React.useState<UploadedImage | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (captureHint) setMessage(captureHint);
+  }, [captureHint]);
 
   const selectedBoard = React.useMemo(() => resolveBugsBoard(boards), [boards]);
   const boardId = selectedBoard?.id || "";
@@ -89,22 +108,18 @@ export function WidgetFeedbackCompose({
     };
   }, [apiBase, boardId, title]);
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    if (!file) return;
-
+  const uploadFile = async (file: File) => {
     if (!boardId) {
       setMessage("Pick a board first.");
-      return;
+      return false;
     }
     if (!isAllowedImageType(file.type, IMAGE_UPLOAD_CONTENT_TYPES)) {
       setMessage("Use a PNG, JPEG, WebP, or GIF.");
-      return;
+      return false;
     }
     if (file.size > POST_IMAGE_UPLOAD_MAX_BYTES) {
       setMessage("Images need to be 5MB or smaller.");
-      return;
+      return false;
     }
 
     setUploading(true);
@@ -133,12 +148,21 @@ export function WidgetFeedbackCompose({
       if (!put.ok) throw new Error("Upload failed");
 
       setUploadedImage({ url: data.publicUrl, name: file.name });
+      return true;
     } catch {
       setMessage("That image couldn’t be added.");
       setUploadedImage(null);
+      return false;
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (!file) return;
+    await uploadFile(file);
   };
 
   const submit = async (event: React.FormEvent) => {
@@ -189,6 +213,23 @@ export function WidgetFeedbackCompose({
       setSubmitting(false);
     }
   };
+
+  if (screenshotUrl) {
+    return (
+      <ScreenshotAnnotator
+        imageUrl={screenshotUrl}
+        accent={accent}
+        ink={ink}
+        attaching={uploading}
+        onCancel={onScreenshotConsumed}
+        onAttach={async (dataUrl) => {
+          const file = await dataUrlToImageFile(dataUrl, "screenshot.jpg");
+          const ok = await uploadFile(file);
+          if (ok) onScreenshotConsumed();
+        }}
+      />
+    );
+  }
 
   if (created) {
     return (
@@ -304,12 +345,12 @@ export function WidgetFeedbackCompose({
             accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
             onChange={handleFileSelect}
             className="hidden"
-            disabled={uploading || Boolean(uploadedImage)}
+            disabled={uploading || capturing || Boolean(uploadedImage)}
           />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploading || Boolean(uploadedImage)}
+            disabled={uploading || capturing || Boolean(uploadedImage)}
             className="flex size-9 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="Add image"
           >
@@ -317,6 +358,19 @@ export function WidgetFeedbackCompose({
               <LoaderIcon className="size-4 animate-spin" />
             ) : (
               <ImageIcon className="size-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={onCapture}
+            disabled={uploading || capturing || Boolean(uploadedImage)}
+            className="flex size-9 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Capture screenshot"
+          >
+            {capturing ? (
+              <LoaderIcon className="size-4 animate-spin" />
+            ) : (
+              <Camera className="size-4" strokeWidth={1.75} />
             )}
           </button>
         </div>

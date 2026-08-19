@@ -12,6 +12,7 @@ import {
   readWidgetMessage,
   type WidgetHostEvent,
 } from "../protocol";
+import { captureHostViewport } from "./screenshot";
 
 const PANEL_RADIUS = "12px";
 const BUTTON_RADIUS = "8px";
@@ -43,6 +44,8 @@ type WidgetState = {
   open: boolean;
   ready: boolean;
   expanded: boolean;
+  overlay: boolean;
+  capturing: boolean;
   closeTimer: number | null;
   morphTimer: number | null;
   panelAnim: Animation | null;
@@ -78,6 +81,8 @@ function boot() {
     open: false,
     ready: false,
     expanded: false,
+    overlay: false,
+    capturing: false,
     closeTimer: null,
     morphTimer: null,
     panelAnim: null,
@@ -176,7 +181,7 @@ function boot() {
   }
 
   function panelCornerRadius() {
-    return isFullscreenPanel() ? "0px" : PANEL_RADIUS;
+    return state.overlay || isFullscreenPanel() ? "0px" : PANEL_RADIUS;
   }
 
   function panelShadow() {
@@ -185,11 +190,13 @@ function boot() {
 
   function syncFrameLayout() {
     if (!state.ready) return;
-    post("layout", { fullscreen: isFullscreenPanel() });
+    post("layout", {
+      fullscreen: isFullscreenPanel() || state.overlay,
+    });
   }
 
   function setHostScrollLocked(locked: boolean) {
-    const shouldLock = Boolean(locked) && isFullscreenPanel();
+    const shouldLock = Boolean(locked) && (isFullscreenPanel() || state.overlay);
     if (!shouldLock) {
       if (!state.scrollLock) return;
       document.documentElement.style.overflow = state.scrollLock.html;
@@ -208,7 +215,7 @@ function boot() {
 
   function getPanelRect(position: "left" | "right"): Rect {
     const view = getViewport();
-    if (isFullscreenPanel()) {
+    if (state.overlay || isFullscreenPanel()) {
       return {
         left: view.left,
         top: view.top,
@@ -477,10 +484,62 @@ function boot() {
     const next = Boolean(expanded);
     if (state.expanded === next) return;
     state.expanded = next;
-    if (!state.open) return;
+    if (!state.open || state.overlay) return;
     applyPanelRect();
     applyShellPanelRect();
     syncFrameLayout();
+  }
+
+  function setPanelOverlay(overlay: boolean) {
+    const next = Boolean(overlay);
+    if (state.overlay === next) return;
+    state.overlay = next;
+    if (!state.open) return;
+    applyPanelRect();
+    applyShellPanelRect();
+    setHostScrollLocked(true);
+    syncFrameLayout();
+  }
+
+  function widgetCaptureIgnore(): Element[] {
+    const nodes: Element[] = [];
+    if (state.iframe) nodes.push(state.iframe);
+    if (state.shell) nodes.push(state.shell);
+    if (state.button) nodes.push(state.button);
+    if (state.safeProbe) nodes.push(state.safeProbe);
+    if (state.lightbox) {
+      if ("overlay" in state.lightbox) {
+        nodes.push(state.lightbox.overlay, state.lightbox.dialog);
+      } else {
+        nodes.push(state.lightbox);
+      }
+    }
+    return nodes;
+  }
+
+  function setHiddenForCapture(hidden: boolean) {
+    const visibility = hidden ? "hidden" : "visible";
+    if (state.iframe) {
+      state.iframe.style.visibility = visibility;
+      state.iframe.style.pointerEvents = hidden ? "none" : "auto";
+    }
+    if (state.shell) state.shell.style.visibility = visibility;
+  }
+
+  async function captureScreenshot() {
+    if (state.capturing) return;
+    state.capturing = true;
+    closeImageLightbox();
+    setHiddenForCapture(true);
+    try {
+      const dataUrl = await captureHostViewport(widgetCaptureIgnore());
+      post("screenshot", { dataUrl });
+    } catch {
+      post("screenshot", { error: "capture-failed" });
+    } finally {
+      setHiddenForCapture(false);
+      state.capturing = false;
+    }
   }
 
   function clearTimers() {
@@ -583,6 +642,7 @@ function boot() {
     if (isFullscreenPanel()) params.set("layout", "full");
     iframe.src = `${baseUrl}/widget/${encodeURIComponent(state.projectId)}/frame?${params.toString()}`;
     iframe.title = "Featul feedback widget";
+    iframe.setAttribute("data-featul-widget", "frame");
     iframe.setAttribute("aria-hidden", "true");
     iframe.setAttribute(
       "sandbox",
@@ -606,6 +666,7 @@ function boot() {
 
     const shell = document.createElement("div");
     shell.setAttribute("aria-hidden", "true");
+    shell.setAttribute("data-featul-widget", "shell");
     shell.style.position = "fixed";
     shell.style.zIndex = "2147483646";
     shell.style.display = "none";
@@ -617,6 +678,7 @@ function boot() {
       const button = document.createElement("button");
       button.type = "button";
       button.setAttribute("aria-label", "Open feedback");
+      button.setAttribute("data-featul-widget", "launcher");
       button.innerHTML = FEATUL_LOGO;
       button.style.position = "fixed";
       button.style.bottom = `${PANEL_GUTTER}px`;
@@ -652,6 +714,7 @@ function boot() {
     if (!open) {
       cancelPanelAnim();
       state.expanded = false;
+      state.overlay = false;
       setHostScrollLocked(false);
     } else {
       setHostScrollLocked(true);
@@ -815,7 +878,9 @@ function boot() {
         mode: state.options.theme || "auto",
         theme: state.theme,
       });
-      post("layout", { fullscreen: isFullscreenPanel() });
+      post("layout", {
+        fullscreen: isFullscreenPanel() || state.overlay,
+      });
       flush();
       if (state.open) post("show", {});
       emit("ready");
@@ -835,17 +900,21 @@ function boot() {
     }
     if (data.type === "close") {
       state.expanded = false;
+      state.overlay = false;
       setOpen(false);
     }
+    if (data.type === "capture-screenshot") {
+      void captureScreenshot();
+    }
     if (data.type === "panel") {
-      setPanelExpanded(
-        Boolean(
-          data.payload &&
-            typeof data.payload === "object" &&
-            "expanded" in data.payload &&
-            (data.payload as { expanded?: unknown }).expanded,
-        ),
-      );
+      const payload =
+        data.payload && typeof data.payload === "object"
+          ? (data.payload as { expanded?: unknown; overlay?: unknown })
+          : {};
+      setPanelOverlay(Boolean(payload.overlay));
+      if (!payload.overlay) {
+        setPanelExpanded(Boolean(payload.expanded));
+      }
     }
     if (
       data.type === "open-image" &&
@@ -911,6 +980,8 @@ function boot() {
       state.ready = false;
       state.open = false;
       state.expanded = false;
+      state.overlay = false;
+      state.capturing = false;
       state.animating = false;
       state.user = null;
       state.queue = [];
