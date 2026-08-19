@@ -6,6 +6,7 @@ import { XMarkIcon } from "@featul/ui/icons/xmark"
 import ContentImage from "@/components/global/ContentImage"
 import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
 import { useDialogExpanded } from "@/components/settings/global/SettingsDialogShell"
+import { continuePlainList } from "@/lib/continue-plain-list"
 
 export interface UploadedImage {
   url: string
@@ -34,6 +35,40 @@ export function PostContent({
 }: PostContentProps) {
   const expanded = useDialogExpanded()
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const pendingCaretRef = React.useRef<number | null>(null)
+
+  React.useLayoutEffect(() => {
+    const caret = pendingCaretRef.current
+    const node = textareaRef.current
+    if (caret === null || !node) {
+      return
+    }
+    node.selectionStart = caret
+    node.selectionEnd = caret
+    pendingCaretRef.current = null
+  }, [content])
+
+  const handleContentKeyDown = (
+    event: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing) {
+      return
+    }
+
+    const textarea = event.currentTarget
+    const result = continuePlainList(
+      content,
+      textarea.selectionStart,
+      textarea.selectionEnd
+    )
+    if (!result) {
+      return
+    }
+
+    event.preventDefault()
+    pendingCaretRef.current = result.nextCaret
+    setContent(result.nextValue)
+  }
 
   return (
     <div className="px-3 md:px-4 flex min-h-0 flex-1 flex-col gap-2">
@@ -55,6 +90,7 @@ export function PostContent({
           placeholder="Add post contents"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          onKeyDown={handleContentKeyDown}
           minRows={2}
           maxRows={expanded ? 22 : 10}
           className={`w-full resize-none min-h-[72px] overflow-y-auto py-2 text-base placeholder:text-accent wrap-break-word border-none outline-none ${expanded ? "max-h-[52dvh]" : "max-h-[32dvh]"}`}
