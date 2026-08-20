@@ -61,19 +61,12 @@ export default function ContentImage({
         icon={<ImageIcon className="size-3.5" />}
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <div className={cn(overlayShellClass, "p-1")}>
-          <div
-            className={cn(
-              overlayInnerClass,
-              "flex max-h-[min(72dvh,760px)] items-center justify-center bg-background",
-            )}
-          >
-            <img
-              src={url}
-              alt={alt}
-              className="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
-            />
-          </div>
+        <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden">
+          <img
+            src={url}
+            alt={alt}
+            className="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
+          />
         </div>
       </SettingsDialogShell>
     </>
