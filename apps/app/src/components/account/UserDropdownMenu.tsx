@@ -17,8 +17,12 @@ import { PlusIcon } from "@featul/ui/icons/plus";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { getInitials } from "@/utils/user";
+import { cn } from "@featul/ui/lib/utils";
 import type { UserDropdownAccount } from "./types";
 import { MAX_DEVICE_ACCOUNTS } from "./constants";
+
+const SIDEBAR_HOVER_ITEM_CLASS =
+  "hover:bg-muted dark:hover:bg-black/40 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40";
 
 type UserDropdownMenuProps = {
   showAccounts: boolean;
@@ -62,7 +66,10 @@ export default function UserDropdownMenu({
     >
       <DropdownMenuItem
         onSelect={onAccount}
-        className="h-9 rounded-md px-2.5 flex items-center gap-2 group"
+        className={cn(
+          "h-9 rounded-md px-2.5 flex items-center gap-2 group",
+          SIDEBAR_HOVER_ITEM_CLASS,
+        )}
       >
         <AccountIcon className="size-4 text-foreground transition-colors group-hover:opacity-100 group-hover:text-primary " />
         <span className="transition-colors group-hover:text-foreground">
@@ -90,7 +97,10 @@ export default function UserDropdownMenu({
                       void onSwitchAccount(account.userId);
                     }}
                     disabled={disabled}
-                    className="h-8 rounded-md px-2.5 flex items-center gap-2 group"
+                    className={cn(
+                      "h-8 rounded-md px-2.5 flex items-center gap-2 group",
+                      SIDEBAR_HOVER_ITEM_CLASS,
+                    )}
                   >
                     <Avatar
                       className="size-4"
@@ -134,7 +144,10 @@ export default function UserDropdownMenu({
                 onOpenAddAccount();
               }}
               disabled={isAddAccountDisabled}
-              className="mt-1 h-8 rounded-md px-2.5 flex items-center gap-2 whitespace-nowrap group"
+              className={cn(
+                "mt-1 h-8 rounded-md px-2.5 flex items-center gap-2 whitespace-nowrap group",
+                SIDEBAR_HOVER_ITEM_CLASS,
+              )}
             >
               <PlusIcon className="size-4 text-foreground transition-colors group-hover:text-primary" />
               <span className="transition-colors group-hover:text-foreground">
@@ -147,7 +160,10 @@ export default function UserDropdownMenu({
       <DropdownMenuSeparator />
       <DropdownMenuItem
         onSelect={onSignOut}
-        className="h-9 rounded-md px-2.5 flex items-center gap-2 group"
+        className={cn(
+          "h-9 rounded-md px-2.5 flex items-center gap-2 group",
+          SIDEBAR_HOVER_ITEM_CLASS,
+        )}
         aria-disabled={loading || isBusy}
       >
         <LogoutIcon className="size-4 text-foreground group-hover:opacity-100 group-hover:text-red-500 transition-colors" />

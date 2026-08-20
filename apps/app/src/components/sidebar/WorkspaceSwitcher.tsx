@@ -17,6 +17,9 @@ import { PlusIcon } from "@featul/ui/icons/plus";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";
 
+const SIDEBAR_HOVER_ITEM_CLASS =
+  "hover:bg-muted dark:hover:bg-black/40 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40"
+
 export default function WorkspaceSwitcher({
   className = "",
   initialWorkspace,
@@ -95,8 +98,9 @@ export default function WorkspaceSwitcher({
                         key={w.slug}
                         onSelect={() => onSelectWorkspace(w.slug)}
                         className={cn(
-                          "flex items-center gap-3 px-2 py-2 rounded-sm cursor-pointer",
-                          isCurrent ? "bg-muted" : "hover:bg-muted"
+                          "flex items-center gap-3 px-2 py-2 cursor-pointer",
+                          SIDEBAR_HOVER_ITEM_CLASS,
+                          isCurrent && "bg-muted dark:bg-black/40",
                         )}
                       >
                         {logoUrl ? (
@@ -126,7 +130,10 @@ export default function WorkspaceSwitcher({
               <div className="flex flex-col gap-1 pt-1 border-t border-border -mx-2 px-2">
                 <DropdownMenuItem
                   onSelect={onCreateNew}
-                  className="flex items-center gap-3 px-2 py-2 rounded-sm cursor-pointer hover:bg-muted"
+                  className={cn(
+                    "flex items-center gap-3 px-2 py-2 cursor-pointer",
+                    SIDEBAR_HOVER_ITEM_CLASS,
+                  )}
                 >
                   <div className="relative w-8 h-8 shrink-0 flex items-center justify-center">
                     <PlusIcon className="size-5 text-muted-foreground" />
