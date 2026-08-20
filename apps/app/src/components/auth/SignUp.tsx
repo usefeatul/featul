@@ -126,6 +126,7 @@ export default function SignUp({
         isLoading={isLoading}
         onGoogle={onGoogle}
         onGithub={onGithub}
+        variant={styles.socialButtonVariant}
         className={styles.socialGapCls}
       />
 

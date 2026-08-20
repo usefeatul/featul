@@ -20,18 +20,20 @@ export type AuthLayoutStyles = {
   dividerTextCls: string;
   secondaryActionCls: string;
   errorTextCls: string;
+  socialButtonVariant: "card" | "nav";
 };
 
 export function getAuthLayoutStyles(embedded: boolean = false): AuthLayoutStyles {
   if (embedded) {
     return {
-      sectionCls: "flex flex-1 px-4 sm:px-5 py-3 sm:py-4 items-center justify-center",
-      formCls: "m-auto h-fit w-full max-w-sm",
-      bodyPaddingCls: "p-4 sm:p-5 pb-4 sm:pb-4",
-      footerPaddingCls: "p-3 sm:p-4",
-      headingCls: "mb-2 mt-1 text-lg sm:text-xl font-semibold text-center",
-      sectionSpacingCls: "mt-4 space-y-4",
-      socialGapCls: "gap-2",
+      sectionCls: "w-full",
+      formCls: "w-full",
+      bodyPaddingCls: "p-0",
+      footerPaddingCls: "pt-3",
+      headingCls: "sr-only",
+      sectionSpacingCls: "space-y-3",
+      socialGapCls: "gap-1.5",
+      socialButtonVariant: "card",
       dividerCls: "my-1 grid grid-cols-[1fr_auto_1fr] items-center gap-2",
       fieldSpacingCls: "space-y-1.5",
       pwdSpacingCls: "space-y-0.5",
@@ -70,6 +72,7 @@ export function getAuthLayoutStyles(embedded: boolean = false): AuthLayoutStyles
     secondaryActionCls:
       "text-sm font-medium text-white/85 hover:text-white flex items-center gap-2 transition-colors cursor-pointer",
     errorTextCls: "text-xs text-center text-red-200",
+    socialButtonVariant: "nav",
   };
 }
 
@@ -92,9 +95,13 @@ export function AuthLayout({
     <section className={styles.sectionCls}>
       <form noValidate className={styles.formCls} onSubmit={onSubmit}>
         <div className={styles.bodyPaddingCls}>
-          <div className="text-center">
-            <h1 className={styles.headingCls}>{title}</h1>
-          </div>
+          {embedded ? (
+            <h1 className="sr-only">{title}</h1>
+          ) : (
+            <div className="text-center">
+              <h1 className={styles.headingCls}>{title}</h1>
+            </div>
+          )}
 
           <div className={styles.sectionSpacingCls}>{children}</div>
         </div>

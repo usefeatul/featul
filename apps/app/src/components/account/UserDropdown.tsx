@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { getSlugFromPath } from "@/config/nav";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { AccountIcon } from "@featul/ui/icons/account";
 import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
 import type { AuthMode } from "@/types/auth";
@@ -348,12 +349,13 @@ export default function UserDropdown({
 
       <Dialog open={authModalOpen} onOpenChange={setAuthModalOpen}>
         <DialogContent fluid className="w-[min(90vw,400px)]">
-          <DialogHeader className="sr-only">
-            <DialogTitle>
+          <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+            <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+              <AccountIcon className="size-3.5 text-primary" />
               {authMode === "sign-in" ? "Add account" : "Create account"}
             </DialogTitle>
           </DialogHeader>
-          <DialogInner className="max-h-[66vh] overflow-y-auto p-0">
+          <DialogInner className="max-h-[66vh] overflow-y-auto">
             {authMode === "sign-in" ? (
               <SignIn
                 redirectTo={authRedirectTo}

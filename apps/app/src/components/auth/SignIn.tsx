@@ -133,7 +133,7 @@ export default function SignIn({
       }}
       footer={
         <>
-          <p className={`${styles.footerTextCls} mb-4`}>
+          <p className={`${styles.footerTextCls} ${embedded ? "mb-2" : "mb-4"}`}>
             Don't have an account ?
             {embedded && onSwitchMode ? (
               <Button
@@ -177,6 +177,7 @@ export default function SignIn({
         onGoogle={onGoogle}
         onGithub={onGithub}
         lastUsedMethod={lastUsedMethod}
+        variant={styles.socialButtonVariant}
         className={styles.socialGapCls}
       />
 
