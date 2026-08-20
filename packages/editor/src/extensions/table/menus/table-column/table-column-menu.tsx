@@ -1,4 +1,6 @@
 import { Button } from "@featul/ui/components/button";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react/menus";
 import { ArrowLeftIcon, ArrowRightIcon, Trash2Icon } from "lucide-react";
@@ -51,7 +53,7 @@ function TableColumnMenuComponent({
   return (
     <TiptapBubbleMenu
       appendTo={() => appendTo?.current ?? document.body}
-      className="flex flex-col items-center gap-0.5 overflow-hidden rounded-lg border bg-background p-1 shadow-sm"
+      className={cn(overlayDialogClass, "flex flex-col gap-2")}
       editor={editor}
       options={{
         placement: "top",
@@ -61,12 +63,16 @@ function TableColumnMenuComponent({
       shouldShow={shouldShow}
       updateDelay={0}
     >
+      <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+        Column
+      </div>
+      <div className={cn(overlayInnerClass, "flex flex-col p-1")}>
       <Button
         className="w-full justify-start gap-2"
         onClick={onAddColumnBefore}
         size="sm"
         type="button"
-        variant="ghost"
+        variant="plain"
       >
         <ArrowLeftIcon className="size-4" />
         <span>Add column before</span>
@@ -77,7 +83,7 @@ function TableColumnMenuComponent({
         onClick={onAddColumnAfter}
         size="sm"
         type="button"
-        variant="ghost"
+        variant="plain"
       >
         <ArrowRightIcon className="size-4" />
         <span>Add column after</span>
@@ -88,11 +94,12 @@ function TableColumnMenuComponent({
         onClick={onDeleteColumn}
         size="sm"
         type="button"
-        variant="ghost"
+        variant="plain"
       >
         <Trash2Icon className="size-4" />
         <span>Delete column</span>
       </Button>
+      </div>
     </TiptapBubbleMenu>
   );
 }

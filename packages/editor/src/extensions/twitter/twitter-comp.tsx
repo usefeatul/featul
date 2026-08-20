@@ -26,7 +26,7 @@ export const TwitterComp = ({
       placeholder="https://x.com/username/status/..."
       submitLabel="Embed Tweet"
       invalidUrlMessage="Invalid Tweet link"
-      icon={<Twitter className="size-3.5" />}
+      icon={<Twitter className="size-3.5 text-primary" />}
       isValidUrl={isValidTwitterUrl}
       normalizeUrl={normalizeTwitterUrl}
     />

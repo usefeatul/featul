@@ -1,6 +1,7 @@
 import type { NodeViewProps } from "@tiptap/core";
-import { NodeViewWrapper } from "@tiptap/react";
 import { useCallback } from "react";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { ImageUploadComp } from "./image-upload-comp";
 import { pendingUploads } from "./image-upload";
 import { EditorNodeViewWrapper } from "../../components/shared/node-view-wrapper";
@@ -64,11 +65,16 @@ export const ImageUploadView = ({
   if (!options.upload) {
     return (
       <EditorNodeViewWrapper>
-        <div className="flex items-center justify-center rounded-md  border border-muted bg-muted/50 p-8">
-          <p className="text-muted-foreground text-sm">
-            Image upload is not configured. Please configure the ImageUpload
-            extension with an upload handler.
-          </p>
+        <div className={cn(overlayDialogClass, "flex flex-col gap-2")}>
+          <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+            Image upload
+          </div>
+          <div className={cn(overlayInnerClass, "px-4 py-3")}>
+            <p className="text-sm text-accent">
+              Image upload is not configured. Please configure the ImageUpload
+              extension with an upload handler.
+            </p>
+          </div>
         </div>
       </EditorNodeViewWrapper>
     );

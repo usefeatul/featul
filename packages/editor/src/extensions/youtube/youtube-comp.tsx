@@ -26,7 +26,7 @@ export const YouTubeComp = ({
       placeholder="https://www.youtube.com/watch?v=..."
       submitLabel="Embed Video"
       invalidUrlMessage="Invalid YouTube URL"
-      icon={<YouTubeIcon className="size-4" />}
+      icon={<YouTubeIcon className="size-3.5 text-primary" />}
       isValidUrl={isValidYouTubeUrl}
       normalizeUrl={normalizeYouTubeUrl}
     />

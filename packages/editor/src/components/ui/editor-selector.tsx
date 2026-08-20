@@ -6,6 +6,7 @@ import {
 	PopoverListItem,
 	PopoverTrigger,
 } from "@featul/ui/components/popover";
+import { overlayInnerClass, overlayDialogClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor } from "@tiptap/react";
 import { ChevronDownIcon } from "lucide-react";
@@ -82,16 +83,17 @@ export const EditorSelector = ({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
+				unstyled
 				align="start"
 				className={cn(
-					"min-w-0 w-fit p-0 z-[100] [&_[data-slot=button]]:!rounded-none",
+					overlayDialogClass,
+					"z-[100] flex w-fit min-w-0 flex-col text-popover-foreground outline-hidden [&_[data-slot=button]]:!rounded-none",
+					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
 					className,
 				)}
-				list={true}
 				side="bottom"
 				sideOffset={8}
 				onInteractOutside={(e) => {
-					// Don't close if clicking on bubble menu
 					const bubbleMenu = (e.target as Element).closest(
 						"[data-bubble-menu]",
 					);
@@ -101,6 +103,7 @@ export const EditorSelector = ({
 				}}
 				{...props}
 			>
+				<div className={cn(overlayInnerClass, "p-1")}>
 				<PopoverList>
 					{Array.isArray(children)
 						? children.map((child, index) => (
@@ -129,6 +132,7 @@ export const EditorSelector = ({
 								</PopoverListItem>
 							)}
 				</PopoverList>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);

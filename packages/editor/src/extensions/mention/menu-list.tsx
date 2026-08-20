@@ -10,6 +10,9 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
+import { AtSign } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { MentionSuggestionItem } from "../../types";
 
@@ -104,55 +107,64 @@ export const EditorMentionMenu = ({
       </PopoverAnchor>
       <PopoverContent
         id="mention-command"
-        className="w-72"
-        list={true}
+        unstyled
         side="bottom"
         align="start"
-        sideOffset={10}
+        sideOffset={8}
         onOpenAutoFocus={(event) => event.preventDefault()}
-      >
-        {items.length === 0 ? (
-          <div className="flex w-full items-center justify-center p-4 text-sm text-muted-foreground">
-            <p>No people found</p>
-          </div>
-        ) : (
-          <PopoverList
-            ref={listRef}
-            className="flex max-h-[260px] flex-col gap-1 overflow-y-auto p-1"
-          >
-            {items.map((item, index) => (
-              <PopoverListItem
-                key={item.id}
-                ref={(el: HTMLButtonElement | null) => {
-                  itemRefs.current[index] = el;
-                }}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50 data-[selected=true]:bg-muted/50"
-                onClick={() => selectItem(index)}
-                onMouseDown={(event: MouseEvent<HTMLButtonElement>) =>
-                  event.preventDefault()
-                }
-                onMouseEnter={() => setSelectedIndex(index)}
-                data-selected={selectedIndex === index}
-                style={{
-                  backgroundColor:
-                    selectedIndex === index ? "var(--muted)" : "transparent",
-                }}
-              >
-                <Avatar className="size-7">
-                  <AvatarImage src={item.avatarUrl ?? undefined} />
-                  <AvatarFallback className="text-[11px]">
-                    {getInitials(item.label)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <span className="font-medium text-sm truncate block">
-                    {item.label}
-                  </span>
-                </div>
-              </PopoverListItem>
-            ))}
-          </PopoverList>
+        className={cn(
+          overlayDialogClass,
+          "z-50 flex w-72 flex-col gap-2 text-popover-foreground outline-hidden",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
         )}
+      >
+        <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+          <AtSign className="size-3.5 text-primary" />
+          Mention
+        </div>
+        <div className={cn(overlayInnerClass, "p-1")}>
+          {items.length === 0 ? (
+            <div className="flex w-full items-center justify-center px-3 py-4 text-sm text-accent">
+              No people found
+            </div>
+          ) : (
+            <PopoverList
+              ref={listRef}
+              className="flex max-h-[260px] flex-col overflow-y-auto"
+            >
+              {items.map((item, index) => (
+                <PopoverListItem
+                  key={item.id}
+                  ref={(el: HTMLButtonElement | null) => {
+                    itemRefs.current[index] = el;
+                  }}
+                  className={cn(
+                    "gap-2 text-sm",
+                    selectedIndex === index && "bg-muted/40",
+                  )}
+                  onClick={() => selectItem(index)}
+                  onMouseDown={(event: MouseEvent<HTMLButtonElement>) =>
+                    event.preventDefault()
+                  }
+                  onMouseEnter={() => setSelectedIndex(index)}
+                  data-selected={selectedIndex === index}
+                >
+                  <Avatar className="size-7 rounded-md">
+                    <AvatarImage src={item.avatarUrl ?? undefined} />
+                    <AvatarFallback className="rounded-md text-[11px]">
+                      {getInitials(item.label)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <span className="block truncate font-medium leading-none">
+                      {item.label}
+                    </span>
+                  </div>
+                </PopoverListItem>
+              ))}
+            </PopoverList>
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   );

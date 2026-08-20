@@ -2,10 +2,9 @@ import { Button } from "@featul/ui/components/button";
 import {
 	Popover,
 	PopoverContent,
-	PopoverList,
-	PopoverListItem,
 	PopoverTrigger,
 } from "@featul/ui/components/popover";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor, useEditorState } from "@tiptap/react";
 import { ChevronDownIcon, Highlighter } from "lucide-react";
@@ -99,8 +98,13 @@ export const EditorMarkHighlight = ({
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent
+					unstyled
 					align="start"
-					className="w-80 p-0 z-[100]"
+					className={cn(
+						overlayDialogClass,
+						"z-[100] flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
+						"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+					)}
 					onOpenAutoFocus={(event) => event.preventDefault()}
 					side="bottom"
 					sideOffset={8}
@@ -113,11 +117,17 @@ export const EditorMarkHighlight = ({
 						}
 					}}
 				>
-					<ColorPicker
-						color={currentHighlight}
-						onChange={handleColorChange}
-						onClear={handleClearHighlight}
-					/>
+					<div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+						<Highlighter className="size-3.5 text-primary" />
+						Highlight
+					</div>
+					<div className={cn(overlayInnerClass, "px-4 py-3")}>
+						<ColorPicker
+							color={currentHighlight}
+							onChange={handleColorChange}
+							onClear={handleClearHighlight}
+						/>
+					</div>
 				</PopoverContent>
 			</Popover>
 		);
@@ -162,8 +172,13 @@ export const EditorMarkHighlight = ({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
+				unstyled
 				align="start"
-				className="w-80 p-0 z-[100]"
+				className={cn(
+					overlayDialogClass,
+					"z-[100] flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
+					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+				)}
 				onOpenAutoFocus={(event) => event.preventDefault()}
 				side="bottom"
 				sideOffset={8}
@@ -176,15 +191,17 @@ export const EditorMarkHighlight = ({
 					}
 				}}
 			>
-				<PopoverList className="p-0">
-					<PopoverListItem className="p-0">
-						<ColorPicker
-							color={currentHighlight}
-							onChange={handleColorChange}
-							onClear={handleClearHighlight}
-						/>
-					</PopoverListItem>
-				</PopoverList>
+				<div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+					<Highlighter className="size-3.5 text-primary" />
+					Highlight
+				</div>
+				<div className={cn(overlayInnerClass, "px-4 py-3")}>
+					<ColorPicker
+						color={currentHighlight}
+						onChange={handleColorChange}
+						onClear={handleClearHighlight}
+					/>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);

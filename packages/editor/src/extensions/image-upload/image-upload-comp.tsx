@@ -1,7 +1,7 @@
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { CheckIcon, ImageIcon, XIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
@@ -155,15 +155,13 @@ export const ImageUploadComp = ({
 	};
 
 	return (
-		<div className={cn(overlayShellClass, "flex flex-col gap-1 p-1")}>
-			<div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5">
-				<div className="flex items-center gap-2 text-base font-normal">
-					<ImageIcon className="size-3.5" />
-					Upload or embed an image
-				</div>
+		<div className={cn(overlayDialogClass, "flex flex-col gap-2")}>
+			<div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+				<ImageIcon className="size-3.5 text-primary" />
+				Upload or embed an image
 			</div>
 
-			<div className={cn(overlayInnerClass, "p-4")}>
+			<div className={cn(overlayInnerClass, "px-4 py-3")}>
 				{/* Dropzone or Uploading state */}
 				{loading ? (
 					<div className="flex min-h-[120px] flex-1 flex-col items-center justify-center">
@@ -175,7 +173,7 @@ export const ImageUploadComp = ({
 					<div
 						aria-label="Upload image by clicking or dragging and dropping"
 						className={cn(
-							"flex min-h-[140px] flex-1 cursor-pointer flex-col items-center justify-center rounded-md transition-colors",
+							"flex min-h-[140px] flex-1 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed transition-colors",
 							draggedInside
 								? "border-primary bg-primary/5"
 								: "border-muted-foreground/25 hover:border-muted-foreground/50",
@@ -214,7 +212,7 @@ export const ImageUploadComp = ({
 						<div className="flex flex-1 items-center gap-2">
 							<Input
 								className={cn(
-									"flex-1 h-11 text-base placeholder:text-accent dark:placeholder:text-accent",
+									"flex-1 h-8 text-sm placeholder:text-accent dark:placeholder:text-accent",
 									urlError && "border-destructive",
 								)}
 								disabled={isValidatingUrl || loading}
@@ -236,12 +234,11 @@ export const ImageUploadComp = ({
 								value={embedUrl}
 							/>
 							<Button
-								className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/40 disabled:text-primary-foreground/70 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 dark:disabled:bg-primary/40 dark:disabled:text-primary-foreground/70"
+								className="shrink-0"
 								disabled={!embedUrl || isValidatingUrl || loading}
 								onClick={() => handleEmbedUrl(embedUrl)}
-								size="default"
+								size="sm"
 								type="button"
-								variant="card"
 							>
 								{isValidatingUrl ? (
 									<LoaderIcon className="size-4 animate-spin" />
@@ -257,7 +254,7 @@ export const ImageUploadComp = ({
 									setEmbedUrl("");
 									setUrlError(null);
 								}}
-								size="default"
+								size="sm"
 								type="button"
 								variant="card"
 							>
@@ -271,7 +268,7 @@ export const ImageUploadComp = ({
 									className="shrink-0"
 									disabled={loading}
 									onClick={() => setIsGalleryOpen(true)}
-									size="default"
+									size="sm"
 									type="button"
 									variant="card"
 								>
@@ -279,12 +276,11 @@ export const ImageUploadComp = ({
 								</Button>
 							)}
 							<Button
-								className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/40 disabled:text-primary-foreground/70 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 dark:disabled:bg-primary/40 dark:disabled:text-primary-foreground/70"
+								className="shrink-0"
 								disabled={loading}
 								onClick={() => setShowEmbedInput(true)}
-								size="default"
+								size="sm"
 								type="button"
-								variant="card"
 							>
 								Embed URL
 							</Button>
@@ -294,7 +290,7 @@ export const ImageUploadComp = ({
 						className="shrink-0"
 						disabled={loading}
 						onClick={onCancel}
-						size="default"
+						size="sm"
 						type="button"
 						variant="card"
 					>

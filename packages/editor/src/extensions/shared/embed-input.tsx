@@ -1,6 +1,6 @@
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -75,20 +75,18 @@ export const EmbedInput = ({
   );
 
   return (
-    <div className={cn(overlayShellClass, "flex flex-col gap-1 p-1")}>
-      <div className="mt-0.5 flex flex-row items-center justify-between space-y-0 px-2 py-0.5 pb-0">
-        <div className="flex items-center gap-2 text-base font-normal">
-          {icon}
-          {title}
-        </div>
+    <div className={cn(overlayDialogClass, "flex flex-col gap-2")}>
+      <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+        {icon}
+        {title}
       </div>
 
-      <div className={cn(overlayInnerClass, "p-4")}>
-        <div className="flex flex-col gap-4">
+      <div className={cn(overlayInnerClass, "px-4 py-3")}>
+        <div className="flex flex-col gap-3">
           <Input
             autoFocus={autoFocus}
             className={cn(
-              "h-11 text-base placeholder:text-accent dark:placeholder:text-accent",
+              "h-8 text-sm placeholder:text-accent dark:placeholder:text-accent",
               error && "border-destructive focus-visible:ring-destructive",
             )}
             onChange={handleInputChange}
@@ -99,22 +97,20 @@ export const EmbedInput = ({
           {error ? <p className="text-xs text-destructive">{error}</p> : null}
         </div>
 
-        <div className="mt-4 flex items-center justify-end gap-2">
+        <div className="mt-3 flex items-center justify-end gap-2">
           <Button
             onClick={onCancel}
-            size="default"
+            size="sm"
             type="button"
             variant="card"
           >
             Cancel
           </Button>
           <Button
-            className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/40 disabled:text-primary-foreground/70 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 dark:disabled:bg-primary/40 dark:disabled:text-primary-foreground/70"
             disabled={!url || !isValidUrl(url)}
             onClick={validateAndSubmit}
-            size="default"
+            size="sm"
             type="button"
-            variant="card"
           >
             {submitLabel}
           </Button>

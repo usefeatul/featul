@@ -1,4 +1,6 @@
 import { Button } from "@featul/ui/components/button";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import type { EditorState } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
 import type { Editor } from "@tiptap/react";
@@ -47,7 +49,7 @@ function TableRowMenuComponent({ editor, appendTo }: MenuProps): JSX.Element {
   return (
     <TiptapBubbleMenu
       appendTo={() => appendTo?.current ?? document.body}
-      className="flex flex-col gap-0.5 overflow-hidden rounded-lg border bg-background p-1 shadow-sm"
+      className={cn(overlayDialogClass, "flex flex-col gap-2")}
       editor={editor}
       options={{
         placement: "left",
@@ -57,12 +59,16 @@ function TableRowMenuComponent({ editor, appendTo }: MenuProps): JSX.Element {
       shouldShow={shouldShow}
       updateDelay={0}
     >
+      <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+        Row
+      </div>
+      <div className={cn(overlayInnerClass, "flex flex-col p-1")}>
       <Button
         className="justify-start gap-2"
         onClick={onAddRowBefore}
         size="sm"
         type="button"
-        variant="ghost"
+        variant="plain"
       >
         <ArrowUpIcon className="size-4" />
         <span>Add row before</span>
@@ -73,7 +79,7 @@ function TableRowMenuComponent({ editor, appendTo }: MenuProps): JSX.Element {
         onClick={onAddRowAfter}
         size="sm"
         type="button"
-        variant="ghost"
+        variant="plain"
       >
         <ArrowDownIcon className="size-4" />
         <span>Add row after</span>
@@ -84,11 +90,12 @@ function TableRowMenuComponent({ editor, appendTo }: MenuProps): JSX.Element {
         onClick={onDeleteRow}
         size="sm"
         type="button"
-        variant="ghost"
+        variant="plain"
       >
         <Trash2Icon className="size-4" />
         <span>Delete row</span>
       </Button>
+      </div>
     </TiptapBubbleMenu>
   );
 }

@@ -10,6 +10,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@featul/ui/components/tooltip";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor } from "@tiptap/react";
 import {
@@ -129,12 +130,21 @@ export const EditorLinkSelector = ({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
+				unstyled
 				align="start"
-				className="z-[100] w-fit"
 				onOpenAutoFocus={(event) => event.preventDefault()}
-				sideOffset={10}
+				sideOffset={8}
+				className={cn(
+					overlayDialogClass,
+					"z-[100] flex w-fit flex-col gap-2 text-popover-foreground outline-hidden",
+					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+				)}
 			>
-				<div className="flex items-center gap-0.5 p-0.5">
+				<div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+					<Link className="size-3.5 text-primary" />
+					Link
+				</div>
+				<div className={cn(overlayInnerClass, "flex items-center p-1")}>
 					<form className="flex items-center gap-0.5" onSubmit={handleSubmit}>
 						<input
 							aria-label="Link URL"
