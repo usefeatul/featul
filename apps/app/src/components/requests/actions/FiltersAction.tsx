@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   PopoverList,
   PopoverListItem,
+  PopoverListBack,
   PopoverSeparator,
 } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
@@ -354,11 +355,7 @@ export default function FiltersAction({
           </PopoverList>
         ) : (
           <>
-            <button
-              type="button"
-              onClick={() => setView("root")}
-              className="flex w-full items-center gap-2 border-b border-border px-3 py-2 text-left text-sm hover:bg-muted"
-            >
+            <PopoverListBack onClick={() => setView("root")}>
               <ChevronLeftIcon className="size-3.5 shrink-0" size={14} />
               <span className="font-medium">
                 {view === "boards"
@@ -367,7 +364,7 @@ export default function FiltersAction({
                     ? "Status"
                     : "Tags"}
               </span>
-            </button>
+            </PopoverListBack>
             {view === "boards" ? (
               <RequestMultiSelectFilterList
                 items={boards.map((item) => ({

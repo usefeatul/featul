@@ -86,6 +86,26 @@ function PopoverListItem({
   );
 }
 
+function PopoverListBack({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"button">) {
+  return (
+    <button
+      type="button"
+      data-slot="popover-list-back"
+      className={cn(
+        "flex w-full cursor-pointer items-center gap-2 border-b border-border px-3 py-2 text-left text-sm hover:bg-muted",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
 function PopoverAnchor({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
@@ -112,5 +132,6 @@ export {
   PopoverAnchor,
   PopoverList,
   PopoverListItem,
+  PopoverListBack,
   PopoverSeparator,
 };

@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   PopoverList,
   PopoverListItem,
+  PopoverListBack,
 } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
@@ -176,16 +177,12 @@ export default function RoadmapFiltersAction({
           </PopoverList>
         ) : (
           <>
-            <button
-              type="button"
-              onClick={() => setView("root")}
-              className="flex w-full items-center gap-2 border-b border-border px-3 py-2 text-left text-sm hover:bg-muted"
-            >
+            <PopoverListBack onClick={() => setView("root")}>
               <ChevronLeftIcon className="size-3.5 shrink-0" size={14} />
               <span className="font-medium">
                 {view === "boards" ? "Boards" : "Tags"}
               </span>
-            </button>
+            </PopoverListBack>
             {view === "boards" ? (
               <RequestMultiSelectFilterList
                 items={boards.map((item) => ({
