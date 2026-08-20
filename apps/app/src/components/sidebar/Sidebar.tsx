@@ -21,6 +21,7 @@ import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { LayoutGroup } from "framer-motion";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
@@ -116,6 +117,7 @@ export default function Sidebar({
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <LayoutGroup id="desktop-sidebar-nav">
         {isSettings ? (
           <>
             <SidebarSection>
@@ -128,6 +130,7 @@ export default function Sidebar({
                 }}
                 pathname={pathname}
                 mutedIcon
+                indicator={false}
               />
             </SidebarSection>
             <SidebarSection title="SETTINGS" className="mt-4">
@@ -162,6 +165,7 @@ export default function Sidebar({
             </SidebarSection>
           </>
         )}
+        </LayoutGroup>
       </div>
 
       <SidebarSection className="pb-4 py-2">
@@ -186,6 +190,7 @@ export default function Sidebar({
             item={item}
             pathname={pathname}
             mutedIcon
+            indicator={false}
           />
         ))}
         <UserDropdown

@@ -17,6 +17,7 @@ import { getSlugFromPath, isWorkspaceSettingsPath, workspaceBase } from "../../c
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
 import { CreatePostModal } from "../post/CreatePostModal";
+import { LayoutGroup } from "framer-motion";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
 export default function MobileDrawerContent({
@@ -90,7 +91,7 @@ export default function MobileDrawerContent({
         </div>
 
         {isSettings ? (
-          <>
+          <LayoutGroup id="mobile-settings-nav">
             <SidebarSection>
               <SidebarItem
                 item={{
@@ -101,28 +102,31 @@ export default function MobileDrawerContent({
                 }}
                 pathname={pathname}
                 mutedIcon
+                indicator={false}
                 onClick={onLinkClick}
               />
             </SidebarSection>
             <SidebarSection title="SETTINGS" className="mt-4">
               <SettingsNav onLinkClick={onLinkClick} />
             </SidebarSection>
-          </>
+          </LayoutGroup>
         ) : (
-          <SidebarSection title="REQUEST">
-            {primaryNav.map((item) => (
-              <SidebarItem
-                key={item.label}
-                item={item}
-                pathname={pathname}
-                count={
-                  statusCounts ? statusCounts[statusKey(item.label)] : undefined
-                }
-                mutedIcon={false}
-                onClick={onLinkClick}
-              />
-            ))}
-          </SidebarSection>
+          <LayoutGroup id="mobile-workspace-nav">
+            <SidebarSection title="REQUEST">
+              {primaryNav.map((item) => (
+                <SidebarItem
+                  key={item.label}
+                  item={item}
+                  pathname={pathname}
+                  count={
+                    statusCounts ? statusCounts[statusKey(item.label)] : undefined
+                  }
+                  mutedIcon={false}
+                  onClick={onLinkClick}
+                />
+              ))}
+            </SidebarSection>
+          </LayoutGroup>
         )}
 
         <SidebarSection className="pb-8">
@@ -146,6 +150,7 @@ export default function MobileDrawerContent({
               item={item}
               pathname={pathname}
               mutedIcon
+              indicator={false}
               onClick={onLinkClick}
             />
           ))}
