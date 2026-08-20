@@ -48,6 +48,10 @@ export const getAvatarUploadUrlInputSchema = z.object({
   fileSize: fileSizeSchema,
 })
 
+export const deleteUploadInputSchema = z.object({
+  url: z.string().url().max(2048),
+})
+
 export type GetUploadUrlInput = z.infer<typeof getUploadUrlInputSchema>
 export type GetCommentImageUploadUrlInput = z.infer<typeof getCommentImageUploadUrlInputSchema>
 export type GetPostImageUploadUrlInput = z.infer<typeof getPostImageUploadUrlInputSchema>

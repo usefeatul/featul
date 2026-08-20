@@ -21,7 +21,7 @@ import type {
   WidgetPost,
 } from "./types";
 import { parseSimilarPosts } from "./load";
-import { dataUrlToImageFile, isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload } from "./utils";
+import { dataUrlToImageFile, isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload, deleteWidgetUploadedImage } from "./utils";
 import { WidgetImage } from "./image";
 
 type Props = {
@@ -158,6 +158,21 @@ export function WidgetFeedbackCompose({
     }
   };
 
+  const removeUploadedImage = async () => {
+    const url = uploadedImage?.url;
+    setUploadedImage(null);
+    if (!url) return;
+    const fingerprint =
+      userId || identity?.email ? undefined : await getBrowserFingerprint();
+    await deleteWidgetUploadedImage({
+      apiBase,
+      url,
+      userId,
+      identity,
+      fingerprint,
+    });
+  };
+
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -283,7 +298,7 @@ export function WidgetFeedbackCompose({
           />
           <button
             type="button"
-            onClick={() => setUploadedImage(null)}
+            onClick={() => void removeUploadedImage()}
             className="absolute right-0.5 top-0.5 z-[1] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
             aria-label="Remove image"
           >

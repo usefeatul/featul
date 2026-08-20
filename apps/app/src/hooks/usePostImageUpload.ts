@@ -1,4 +1,4 @@
-import { getPostImageUploadUrl } from "@/lib/post/service";
+import { getPostImageUploadUrl, deletePostImageUpload } from "@/lib/post/service";
 import { useSignedImageUpload } from "./useSignedImageUpload";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import { POST_MAX_IMAGES } from "@featul/api/upload-policy";
@@ -27,6 +27,7 @@ export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
         file.size,
         boardSlug as string,
       ),
+    onDeleteUpload: deletePostImageUpload,
     onUploadSuccess: ({ file }) => {
       captureAnalyticsEvent(analyticsEvents.imageUploaded, {
         upload_target: "post",

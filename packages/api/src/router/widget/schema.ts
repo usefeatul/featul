@@ -84,6 +84,12 @@ export const uploadImageSchema = projectInput.extend({
   fingerprint: z.string().min(1).max(256).optional(),
 });
 
+export const deleteImageSchema = projectInput.extend({
+  url: widgetUrlSchema,
+  identity: widgetIdentitySchema.optional(),
+  fingerprint: z.string().min(1).max(256).optional(),
+});
+
 export const voteSchema = projectInput.extend({
   postId: z.string().min(1).max(128),
   identity: widgetIdentitySchema.optional(),

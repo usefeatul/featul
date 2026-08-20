@@ -13,7 +13,8 @@ import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
 import { getRequestFingerprint } from "../shared/request-fingerprint"
 import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
 import type { RequestCarrier } from "../types/post"
-import { mergePostMetadata, resolvePostImageFields } from "../shared/post-images"
+import { mergePostMetadata, resolvePostImageFields, listPostImageUrls, droppedImageUrls } from "../shared/post-images"
+import { deleteUnreferencedImageUrls } from "../services/storage-delete"
 
 type PostMetadata = NonNullable<(typeof post.$inferInsert)["metadata"]>
 
@@ -349,6 +350,13 @@ export function createPostRouter() {
             )
           : existingPost.metadata
 
+        const previousImageUrls = listPostImageUrls(
+          existingPost.image,
+          existingPost.metadata
+        )
+        const nextImageUrls = listPostImageUrls(nextImage, nextMetadata)
+        const removedImageUrls = droppedImageUrls(previousImageUrls, nextImageUrls)
+
         // Update Post
         const [updatedPost] = await ctx.db
           .update(post)
@@ -475,6 +483,8 @@ export function createPostRouter() {
           }
         }
 
+        await deleteUnreferencedImageUrls(ctx.db, removedImageUrls)
+
         return c.superjson({ post: updatedPost })
       }),
 
@@ -544,6 +554,11 @@ export function createPostRouter() {
           .limit(1)
 
         await ctx.db.delete(post).where(eq(post.id, postId))
+
+        await deleteUnreferencedImageUrls(
+          ctx.db,
+          listPostImageUrls(existingPost.image, existingPost.metadata)
+        )
 
         if (boardRow) {
           await ctx.db.insert(activityLog).values({

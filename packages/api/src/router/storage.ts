@@ -1,5 +1,5 @@
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { getUploadUrlInputSchema, getCommentImageUploadUrlInputSchema, getPostImageUploadUrlInputSchema, getAvatarUploadUrlInputSchema } from "../validators/storage"
+import { getUploadUrlInputSchema, getCommentImageUploadUrlInputSchema, getPostImageUploadUrlInputSchema, getAvatarUploadUrlInputSchema, deleteUploadInputSchema } from "../validators/storage"
 import { HTTPException } from "hono/http-exception"
 import { and, eq } from "drizzle-orm"
 import { workspace, post, board } from "@featul/db"
@@ -9,9 +9,12 @@ import {
   limitStoragePublicPostAnon,
   limitStoragePublicPostUser,
   limitStorageComment,
+  limitStorageDeleteAnon,
+  limitStorageDeleteUser,
   applyRateLimitHeaders,
 } from "../services/ratelimiter"
 import { createStorageContext, buildSignedUpload } from "../services/storage-signer"
+import { deleteUploadByPublicUrl } from "../services/storage-delete"
 import {
   AVATAR_UPLOAD_POLICY,
   POST_IMAGE_UPLOAD_POLICY,
@@ -226,6 +229,22 @@ export function createStorageRouter() {
           key,
           contentType: normalizedContentType,
           contentLength: input.fileSize,
+        })
+        return c.json(payload)
+      }),
+
+    deleteUpload: publicProcedure
+      .input(deleteUploadInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const userId = await getSessionUserId(c.req.raw.headers)
+        const deleteRateLimit = userId
+          ? await limitStorageDeleteUser(userId)
+          : await limitStorageDeleteAnon(c.req.raw)
+        applyRateLimitHeaders(c, deleteRateLimit, "Too many delete requests. Please try again shortly.")
+
+        const payload = await deleteUploadByPublicUrl({
+          db: ctx.db,
+          publicUrl: input.url,
         })
         return c.json(payload)
       }),

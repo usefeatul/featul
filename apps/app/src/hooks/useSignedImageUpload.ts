@@ -27,6 +27,7 @@ type UseSignedImageUploadOptions = {
     publicUrl: string;
     uploadUrl: string;
   }) => void;
+  onDeleteUpload?: (publicUrl: string) => Promise<void>;
   loadingMessage?: string;
   successMessage?: string;
   defaultErrorMessage?: string;
@@ -61,6 +62,7 @@ export function useSignedImageUpload({
   getUploadTarget,
   getPreUploadError,
   onUploadSuccess,
+  onDeleteUpload,
   loadingMessage = "Uploading image...",
   successMessage = "Image uploaded",
   defaultErrorMessage = "Failed to upload image",
@@ -101,6 +103,8 @@ export function useSignedImageUpload({
       const { uploadUrl, publicUrl } = await getUploadTarget(file);
       await uploadFileToSignedUrl(uploadUrl, file);
 
+      const replaced =
+        maxFiles === 1 ? imagesRef.current[0] : undefined;
       const nextImage: UploadedImage = {
         url: publicUrl,
         name: file.name,
@@ -109,6 +113,9 @@ export function useSignedImageUpload({
       setImages(
         maxFiles === 1 ? [nextImage] : [...imagesRef.current, nextImage],
       );
+      if (replaced?.url && replaced.url !== publicUrl) {
+        void onDeleteUpload?.(replaced.url).catch(() => undefined);
+      }
       try {
         onUploadSuccess?.({ file, publicUrl, uploadUrl });
       } catch (analyticsError) {
@@ -148,9 +155,13 @@ export function useSignedImageUpload({
 
   const handleRemoveImage = useCallback(
     (index = 0) => {
+      const removed = imagesRef.current[index];
       setImages(imagesRef.current.filter((_, itemIndex) => itemIndex !== index));
+      if (removed?.url) {
+        void onDeleteUpload?.(removed.url).catch(() => undefined);
+      }
     },
-    [setImages],
+    [onDeleteUpload, setImages],
   );
 
   const setUploadedImage = useCallback(

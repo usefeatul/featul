@@ -4,7 +4,7 @@ import { widgetComments, widgetCreateComment } from "./comments";
 import { widgetConfig, widgetDevIdentity, widgetIdentify, widgetSessionIdentity } from "./config";
 import { widgetCreate, widgetPost, widgetPosts, widgetSimilar } from "./posts";
 import { widgetRoadmap } from "./roadmap";
-import { widgetUploadImage } from "./storage";
+import { widgetUploadImage, widgetDeleteImage } from "./storage";
 import { widgetVote, widgetVoteComment } from "./votes";
 
 export function createWidgetRouter() {
@@ -17,6 +17,7 @@ export function createWidgetRouter() {
     post: widgetPost,
     similar: widgetSimilar,
     uploadImage: widgetUploadImage,
+    deleteImage: widgetDeleteImage,
     create: widgetCreate,
     vote: widgetVote,
     comments: widgetComments,

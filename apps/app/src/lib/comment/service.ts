@@ -22,3 +22,9 @@ export async function getCommentImageUploadUrl(
     publicUrl: data.publicUrl,
   }
 }
+
+export async function deleteCommentImageUpload(url: string): Promise<void> {
+  const res = await client.storage.deleteUpload.$post({ url })
+  if (res.ok || res.status === 409) return
+  throw new Error("Failed to delete image")
+}

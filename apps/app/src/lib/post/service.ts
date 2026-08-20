@@ -35,3 +35,10 @@ export async function getPostImageUploadUrl(
     publicUrl: data.publicUrl,
   }
 }
+
+export async function deletePostImageUpload(url: string): Promise<void> {
+  const res = await client.storage.deleteUpload.$post({ url })
+  if (res.ok || res.status === 409) return
+  const error = (await res.json().catch(() => null)) as UploadUrlResponse | null
+  throw new Error(error?.message || "Failed to delete image")
+}

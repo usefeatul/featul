@@ -24,6 +24,7 @@
     "./services/github-app": "./src/services/github-app.ts",
     "./services/github-status-suggest": "./src/services/github-status-suggest.ts",
     "./services/github-setup-state": "./src/services/github-setup-state.ts",
+    "./services/storage-delete": "./src/services/storage-delete.ts",
     "./services/member-activity": "./src/services/member-activity.ts",
     "./services/changelog-ai-stream": "./src/services/changelog-ai-stream.ts",
     "./services/changelog-ai-stream-parser": "./src/services/changelog-ai-stream-parser.ts",

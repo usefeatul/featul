@@ -182,6 +182,22 @@ const ratelimitStorageComment = redis
       prefix: "rl:storage:comment",
     })
   : null;
+const ratelimitStorageDeleteAnon = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "60 s"),
+      analytics: false,
+      prefix: "rl:storage:delete:anon",
+    })
+  : null;
+const ratelimitStorageDeleteUser = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, "60 s"),
+      analytics: false,
+      prefix: "rl:storage:delete:user",
+    })
+  : null;
 
 export async function limitStorageAvatar(
   userId: string,
@@ -218,4 +234,18 @@ export async function limitStorageComment(
 ): Promise<RateLimitResult> {
   if (!ratelimitStorageComment) return createBypassRateLimitResult();
   return withEnabledResult(await ratelimitStorageComment.limit(userId));
+}
+
+export async function limitStorageDeleteAnon(
+  req: Request,
+): Promise<RateLimitResult> {
+  if (!ratelimitStorageDeleteAnon) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitStorageDeleteAnon.limit(getIp(req)));
+}
+
+export async function limitStorageDeleteUser(
+  userId: string,
+): Promise<RateLimitResult> {
+  if (!ratelimitStorageDeleteUser) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitStorageDeleteUser.limit(userId));
 }

@@ -30,6 +30,8 @@ import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
 import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
 import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
+import { deleteUnreferencedImageUrls } from "../services/storage-delete";
+import { droppedImageUrls, listCommentImageUrls } from "../shared/post-images";
 
 async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
   try {
@@ -562,6 +564,14 @@ export function createCommentRouter() {
           .where(eq(comment.id, commentId))
           .returning();
 
+        await deleteUnreferencedImageUrls(
+          ctx.db,
+          droppedImageUrls(
+            listCommentImageUrls(existingComment.metadata),
+            listCommentImageUrls(updatedComment?.metadata),
+          ),
+        );
+
         const [postInfo] = await ctx.db
           .select({
             workspaceId: workspace.id,
@@ -740,6 +750,7 @@ export function createCommentRouter() {
             authorId: comment.authorId,
             postId: comment.postId,
             parentId: comment.parentId,
+            metadata: comment.metadata,
           })
           .from(comment)
           .where(eq(comment.id, commentId))
@@ -783,6 +794,11 @@ export function createCommentRouter() {
 
         // Hard delete
         await ctx.db.delete(comment).where(eq(comment.id, commentId));
+
+        await deleteUnreferencedImageUrls(
+          ctx.db,
+          listCommentImageUrls(existingComment.metadata),
+        );
 
         // Recalculate post comment count
         const [{ count }] = await ctx.db

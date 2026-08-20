@@ -1,3 +1,4 @@
+import { client } from "@featul/api/client";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
 
 export function toPlain(value?: string | null): string {
@@ -138,6 +139,27 @@ export function readSignedUpload(
       : "";
   if (!uploadUrl || !publicUrl) return null;
   return { uploadUrl, publicUrl };
+}
+
+export async function deleteWidgetUploadedImage(opts: {
+  apiBase: WidgetApiBase;
+  url: string;
+  userId?: string | null;
+  identity?: IdentifiedUser | null;
+  fingerprint?: string | null;
+}): Promise<void> {
+  try {
+    await client.widget.deleteImage.$post({
+      ...viewerPayload(opts.apiBase, {
+        userId: opts.userId,
+        identity: opts.identity,
+        fingerprint: opts.fingerprint,
+      }),
+      url: opts.url,
+    });
+  } catch {
+    // Best-effort: UI already dropped the image.
+  }
 }
 
 export function readIdentifiedUserId(value: unknown): string | null {

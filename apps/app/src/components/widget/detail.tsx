@@ -14,7 +14,7 @@ import { WidgetEmpty } from "./empty";
 import { parseWidgetComment, parseWidgetComments, parseWidgetPost } from "./load";
 import { WidgetDetailSkeleton } from "./skeleton";
 import type { IdentifiedUser, WidgetApiBase, WidgetComment, WidgetPost } from "./types";
-import { isAllowedImageType, toPlain, viewerPayload, readErrorMessage, readSignedUpload } from "./utils";
+import { isAllowedImageType, toPlain, viewerPayload, readErrorMessage, readSignedUpload, deleteWidgetUploadedImage } from "./utils";
 import { WidgetVoteButton } from "./vote";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetImageStrip } from "./gallery";
@@ -122,6 +122,23 @@ export function WidgetFeedbackDetail({
     };
   }, [apiBase, identity, postId, userId]);
 
+  const discardUploadedImage = () => {
+    const url = uploadedImage?.url;
+    setUploadedImage(null);
+    if (!url) return;
+    void (async () => {
+      const fingerprint =
+        userId || identity?.email ? undefined : await getBrowserFingerprint();
+      await deleteWidgetUploadedImage({
+        apiBase,
+        url,
+        userId,
+        identity,
+        fingerprint,
+      });
+    })();
+  };
+
   const clearCompose = () => {
     setDraft("");
     setUploadedImage(null);
@@ -130,7 +147,9 @@ export function WidgetFeedbackDetail({
 
   const cancelReply = () => {
     setReplyTo(null);
-    clearCompose();
+    discardUploadedImage();
+    setDraft("");
+    setComposeError("");
   };
 
   const startReply = (item: WidgetComment) => {
@@ -139,7 +158,9 @@ export function WidgetFeedbackDetail({
       return;
     }
     setReplyTo(item);
-    clearCompose();
+    discardUploadedImage();
+    setDraft("");
+    setComposeError("");
   };
 
   const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -261,7 +282,7 @@ export function WidgetFeedbackDetail({
     draft,
     onDraftChange: setDraft,
     uploadedImage,
-    onRemoveImage: () => setUploadedImage(null),
+    onRemoveImage: discardUploadedImage,
     fileInputRef,
     onPickImage: () => fileInputRef.current?.click(),
     uploading,

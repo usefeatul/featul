@@ -110,3 +110,12 @@ export function listPostImageUrls(
 
   return urls
 }
+
+export function listCommentImageUrls(metadata?: unknown): string[] {
+  return listPostImageUrls(null, metadata)
+}
+
+export function droppedImageUrls(previous: string[], next: string[]): string[] {
+  const kept = new Set(next)
+  return previous.filter((url) => url && !kept.has(url))
+}
