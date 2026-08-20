@@ -4,7 +4,7 @@ import * as React from "react";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { SelectBoxIcon } from "@featul/ui/icons/select-box";
-import { ArrowUpRight, Plus, Type, Undo2, X } from "lucide-react";
+import { ArrowUpRight, Plus, Redo2, Type, Undo2, X } from "lucide-react";
 
 type Tool = "draw" | "arrow" | "rect" | "text";
 type Point = { x: number; y: number };
@@ -109,12 +109,20 @@ function drawStroke(ctx: CanvasRenderingContext2D, stroke: Stroke) {
   ctx.restore();
 }
 
-const TOOLS: { id: Tool; label: string }[] = [
-  { id: "draw", label: "Draw" },
-  { id: "arrow", label: "Arrow" },
-  { id: "rect", label: "Highlight" },
-  { id: "text", label: "Text" },
+const TOOLS: { id: Tool; label: string; shortcut: string }[] = [
+  { id: "draw", label: "Draw", shortcut: "1" },
+  { id: "arrow", label: "Arrow", shortcut: "2" },
+  { id: "rect", label: "Highlight", shortcut: "3" },
+  { id: "text", label: "Text", shortcut: "4" },
 ];
+
+function toolButtonClass(active: boolean) {
+  return `flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors ${
+    active
+      ? "bg-[rgb(var(--widget-fg)/0.1)] text-[rgb(var(--widget-fg))]"
+      : "text-[rgb(var(--widget-fg)/0.5)] hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
+  }`;
+}
 
 export function ScreenshotAnnotator({
   imageUrl,
@@ -129,6 +137,7 @@ export function ScreenshotAnnotator({
   const [tool, setTool] = React.useState<Tool>("draw");
   const [color, setColor] = React.useState(accent);
   const [strokes, setStrokes] = React.useState<Stroke[]>([]);
+  const [redoStack, setRedoStack] = React.useState<Stroke[]>([]);
   const [draft, setDraft] = React.useState<Stroke | null>(null);
   const [textDraft, setTextDraft] = React.useState<{
     at: Point;
@@ -184,31 +193,71 @@ export function ScreenshotAnnotator({
     if (image?.complete && image.naturalWidth) fitCanvas();
   }, [fitCanvas, imageUrl]);
 
+  const pushStroke = React.useCallback((stroke: Stroke) => {
+    setStrokes((prev) => [...prev, stroke]);
+    setRedoStack([]);
+  }, []);
+
+  const undo = React.useCallback(() => {
+    setStrokes((prev) => {
+      if (!prev.length) return prev;
+      const next = prev.slice(0, -1);
+      const last = prev[prev.length - 1];
+      if (last) setRedoStack((stack) => [...stack, last]);
+      return next;
+    });
+  }, []);
+
+  const redo = React.useCallback(() => {
+    setRedoStack((prev) => {
+      if (!prev.length) return prev;
+      const next = prev.slice(0, -1);
+      const last = prev[prev.length - 1];
+      if (last) setStrokes((stack) => [...stack, last]);
+      return next;
+    });
+  }, []);
+
   React.useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !attaching) onCancel();
+      if (attaching) return;
+      const typing = event.target instanceof HTMLInputElement;
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        if (event.shiftKey) redo();
+        else undo();
+        return;
+      }
+      if (event.key === "Escape") {
+        if (textDraft) {
+          setTextDraft(null);
+          return;
+        }
+        onCancel();
+        return;
+      }
+      if (typing) return;
+      const nextTool = TOOLS.find((item) => item.shortcut === event.key);
+      if (nextTool) setTool(nextTool.id);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [attaching, onCancel]);
+  }, [attaching, onCancel, redo, textDraft, undo]);
 
   const commitText = React.useCallback(() => {
     if (!textDraft) return;
     const value = textDraft.value.trim();
     if (value) {
-      setStrokes((prev) => [
-        ...prev,
-        {
-          kind: "text",
-          at: textDraft.at,
-          value,
-          color,
-          size: textSize(),
-        },
-      ]);
+      pushStroke({
+        kind: "text",
+        at: textDraft.at,
+        value,
+        color,
+        size: textSize(),
+      });
     }
     setTextDraft(null);
-  }, [color, textDraft, textSize]);
+  }, [color, pushStroke, textDraft, textSize]);
 
   const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
     if (attaching || event.button !== 0) return;
@@ -256,7 +305,7 @@ export function ScreenshotAnnotator({
           : draft.kind === "text"
             ? true
             : distance(draft.from, draft.to) < 4;
-      if (!tiny) setStrokes((prev) => [...prev, draft]);
+      if (!tiny) pushStroke(draft);
     }
     setDraft(null);
   };
@@ -299,13 +348,13 @@ export function ScreenshotAnnotator({
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col bg-[rgb(var(--widget-surface))]">
-      <header className="flex shrink-0 items-center gap-2 px-4 py-3">
+      <header className="flex shrink-0 items-center gap-2 px-4 py-2.5">
         <div className="min-w-0 flex-1">
           <p className="text-[13px] font-semibold tracking-tight">
             Mark it up
           </p>
           <p className="mt-0.5 text-xs text-[rgb(var(--widget-fg)/0.45)]">
-            Draw on the screenshot, then attach it.
+            Draw, then attach to your request.
           </p>
         </div>
         <button
@@ -319,7 +368,7 @@ export function ScreenshotAnnotator({
         </button>
       </header>
 
-      <div className="relative flex min-h-0 flex-1 items-center justify-center px-3 pb-24 pt-1">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center px-3 pb-[4.5rem] pt-1">
         <img
           ref={imageRef}
           src={imageUrl}
@@ -334,7 +383,7 @@ export function ScreenshotAnnotator({
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           className={`max-h-full max-w-full cursor-crosshair touch-none rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.04)] ${
-            ready ? "shadow-sm" : "opacity-0"
+            ready ? "" : "opacity-0"
           }`}
           style={{ width: "auto", height: "auto" }}
         />
@@ -356,7 +405,10 @@ export function ScreenshotAnnotator({
               event.preventDefault();
               commitText();
             }
-            if (event.key === "Escape") setTextDraft(null);
+            if (event.key === "Escape") {
+              event.preventDefault();
+              setTextDraft(null);
+            }
           }}
           className="fixed z-20 min-w-[8rem] border-0 bg-transparent font-semibold outline-none"
           style={textStyle()}
@@ -365,7 +417,7 @@ export function ScreenshotAnnotator({
       ) : null}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-        <div className="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-surface))] p-1.5 shadow-[0_8px_30px_rgb(var(--widget-fg)/0.12)]">
+        <div className="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-lg border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-surface))] p-1">
           <div className="flex items-center">
             {TOOLS.map((item) => {
               const active = tool === item.id;
@@ -374,13 +426,10 @@ export function ScreenshotAnnotator({
                   key={item.id}
                   type="button"
                   onClick={() => setTool(item.id)}
+                  title={`${item.label} (${item.shortcut})`}
                   aria-label={item.label}
                   aria-pressed={active}
-                  className={`flex size-9 cursor-pointer items-center justify-center rounded-md transition-colors ${
-                    active
-                      ? "bg-[rgb(var(--widget-fg)/0.08)] text-[rgb(var(--widget-fg))]"
-                      : "text-[rgb(var(--widget-fg)/0.45)] hover:bg-[rgb(var(--widget-fg)/0.05)] hover:text-[rgb(var(--widget-fg))]"
-                  }`}
+                  className={toolButtonClass(active)}
                 >
                   {item.id === "draw" ? (
                     <FillPenIcon className="size-4" size={16} />
@@ -394,28 +443,46 @@ export function ScreenshotAnnotator({
                 </button>
               );
             })}
+          </div>
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-[rgb(var(--widget-fg)/0.1)]" />
+          <div className="flex items-center">
             <button
               type="button"
-              onClick={() => setStrokes((prev) => prev.slice(0, -1))}
+              onClick={undo}
               disabled={!strokes.length}
+              title="Undo"
               aria-label="Undo"
-              className="flex size-9 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.05)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-30"
+              className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent`}
             >
-              <Undo2 className="size-4" strokeWidth={2} />
+              <Undo2 className="size-3.5" strokeWidth={2} />
+            </button>
+            <button
+              type="button"
+              onClick={redo}
+              disabled={!redoStack.length}
+              title="Redo"
+              aria-label="Redo"
+              className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent`}
+            >
+              <Redo2 className="size-3.5" strokeWidth={2} />
             </button>
           </div>
-          <div className="mx-1 h-6 w-px bg-[rgb(var(--widget-fg)/0.1)]" />
-          <div className="flex items-center gap-1.5 px-1">
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-[rgb(var(--widget-fg)/0.1)]" />
+          <div className="flex items-center gap-1.5 px-1.5">
             {colors.map((value) => {
               const active = color.toLowerCase() === value.toLowerCase();
               return (
                 <button
                   key={value}
                   type="button"
+                  title="Ink color"
                   aria-label={`Color ${value}`}
+                  aria-pressed={active}
                   onClick={() => setColor(value)}
-                  className={`size-5 cursor-pointer rounded-full border border-[rgb(var(--widget-fg)/0.12)] ${
-                    active ? "ring-2 ring-[rgb(var(--widget-fg)/0.35)] ring-offset-1 ring-offset-[rgb(var(--widget-surface))]" : ""
+                  className={`size-4 cursor-pointer rounded-full border transition-[transform,box-shadow] ${
+                    active
+                      ? "scale-110 border-[rgb(var(--widget-fg)/0.7)]"
+                      : "border-[rgb(var(--widget-fg)/0.18)] hover:scale-105"
                   }`}
                   style={{ background: value }}
                 />
@@ -426,10 +493,10 @@ export function ScreenshotAnnotator({
             type="button"
             onClick={attach}
             disabled={attaching || !ready}
-            className="ml-1 inline-flex h-9 cursor-pointer items-center gap-1 rounded-md bg-[rgb(var(--widget-cta))] px-3 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="ml-0.5 inline-flex h-8 cursor-pointer items-center gap-1 rounded-md bg-[rgb(var(--widget-cta))] px-2.5 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             {attaching ? (
-              <LoaderIcon className="size-4 animate-spin" />
+              <LoaderIcon className="size-3.5 animate-spin" />
             ) : (
               <>
                 <Plus className="size-3.5" strokeWidth={2.5} />
