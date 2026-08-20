@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@featul/ui/components/button";
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
 import { cn } from "@featul/ui/lib/utils";
 import {
@@ -52,8 +53,10 @@ export function FilterIslandHeader({
       </div>
 
       {expanded ? (
-        <button
+        <Button
           type="button"
+          variant="card"
+          size="xs"
           onClick={(event) => {
             event.stopPropagation();
             onClearAll();
@@ -61,7 +64,7 @@ export function FilterIslandHeader({
           className={FILTER_ISLAND_CLEAR_ALL_CLASS}
         >
           Clear all
-        </button>
+        </Button>
       ) : null}
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@featul/ui/components/button";
 import { XMarkIcon } from "@featul/ui/icons/xmark";
 import {
   FILTER_ISLAND_CHIP_CLASS,
@@ -18,9 +19,11 @@ export function FilterIslandChips({ items }: FilterIslandChipsProps) {
       <div aria-hidden className={FILTER_ISLAND_DIVIDER_CLASS} />
       <div className={FILTER_ISLAND_CHIPS_ROW_CLASS}>
         {items.map((item) => (
-          <button
+          <Button
             key={item.key}
             type="button"
+            variant="card"
+            size="xs"
             onClick={(event) => {
               event.stopPropagation();
               item.onRemove();
@@ -30,7 +33,7 @@ export function FilterIslandChips({ items }: FilterIslandChipsProps) {
           >
             <span className="truncate">{item.label}</span>
             <XMarkIcon className="size-2.5 shrink-0 text-muted-foreground" />
-          </button>
+          </Button>
         ))}
       </div>
     </>

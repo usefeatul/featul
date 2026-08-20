@@ -14,7 +14,7 @@ export const FILTER_ISLAND_CLEAR_ALL_CLASS =
   "h-6 shrink-0 rounded-sm px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_CLASS =
-  "inline-flex h-6 max-w-[9rem] cursor-pointer items-center gap-1.5 rounded-md px-2 text-[11px] leading-none text-foreground transition-colors hover:bg-muted/40 dark:hover:bg-muted/30";
+  "h-6 max-w-[9rem] gap-1.5 rounded-sm px-2 text-[11px] font-medium has-[>svg]:px-2";
 
 export const FILTER_ISLAND_CONTENT_CLASS =
   "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";
@@ -22,9 +22,10 @@ export const FILTER_ISLAND_CONTENT_CLASS =
 export const FILTER_ISLAND_INSET_X_CLASS = "px-2.5";
 
 export const FILTER_ISLAND_CHIPS_ROW_CLASS =
-  "flex flex-wrap items-center gap-1.5 px-2.5 pb-1.5 pt-1.5";
+  "flex flex-wrap items-center gap-2 px-2 pb-2 pt-1.5";
 
-export const FILTER_ISLAND_DIVIDER_CLASS = "w-full border-t border-border";
+export const FILTER_ISLAND_DIVIDER_CLASS =
+  "mx-1 h-px bg-border dark:bg-white/10";
 
 export type FilterIslandTransitions = {
   layout: Transition;
