@@ -165,8 +165,17 @@ export default function TeamSection({
 
   return (
     <SectionCard
-      title="Manage Members"
-      description="Members have access to your workspace."
+      title="Members"
+      description="People with access to this workspace."
+      action={
+        <Button
+          type="button"
+          onClick={() => setInviteOpen(true)}
+          disabled={isLoading || inviteAccessLoading || !canInvite}
+        >
+          Invite member
+        </Button>
+      }
     >
       <div className="space-y-2">
         <div className="space-y-2">
@@ -213,26 +222,13 @@ export default function TeamSection({
           />
         </div>
 
-        <div className="pt-2 space-y-2">
-          <div className="text-sm text-accent">
-            Invite a new member to your workspace.
-          </div>
-          <PlanNotice
-            slug={slug}
-            feature="team"
-            plan={initialPlan}
-            membersCount={(data.members || []).length}
-          />
-          <div className="mt-2 flex items-center justify-start">
-            <Button
-              type="button"
-              onClick={() => setInviteOpen(true)}
-              disabled={isLoading || inviteAccessLoading || !canInvite}
-            >
-              Invite Member
-            </Button>
-          </div>
-          <InviteMemberModal
+        <PlanNotice
+          slug={slug}
+          feature="team"
+          plan={initialPlan}
+          membersCount={(data.members || []).length}
+        />
+        <InviteMemberModal
             slug={slug}
             open={inviteOpen}
             onOpenChange={setInviteOpen}
@@ -242,7 +238,6 @@ export default function TeamSection({
               await refresh();
             }}
           />
-        </div>
       </div>
     </SectionCard>
   );

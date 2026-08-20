@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
 import SlackCard from "./SlackCard";
 import DiscordCard from "./DiscordCard";
@@ -90,41 +89,35 @@ export default function IntegrationsSection({ slug, plan, initialIntegrations }:
   };
 
   return (
-    <SectionCard
-      title="Available Integrations"
-      description="Connect your integrations here."
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <SlackCard
-          integration={slackIntegration}
-          onConnect={handleConnectSlack}
-          onDisconnect={handleDisconnectSlack}
-          onTest={allowIntegrations ? handleTestSlack : undefined}
-          isPending={pendingIntegration === "slack"}
-          disabled={
-            isLoading
-            || (pendingIntegration !== null && pendingIntegration !== "slack")
-            || !slackActionsEnabled
-          }
-        />
-        <DiscordCard
-          integration={discordIntegration}
-          onConnect={handleConnectDiscord}
-          onDisconnect={handleDisconnectDiscord}
-          onTest={allowIntegrations ? handleTestDiscord : undefined}
-          isPending={pendingIntegration === "discord"}
-          disabled={
-            isLoading
-            || (pendingIntegration !== null && pendingIntegration !== "discord")
-            || !discordActionsEnabled
-          }
-        />
-        <SuggestIntegrationCard />
-      </div>
-
-      <div className="mt-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SlackCard
+        integration={slackIntegration}
+        onConnect={handleConnectSlack}
+        onDisconnect={handleDisconnectSlack}
+        onTest={allowIntegrations ? handleTestSlack : undefined}
+        isPending={pendingIntegration === "slack"}
+        disabled={
+          isLoading
+          || (pendingIntegration !== null && pendingIntegration !== "slack")
+          || !slackActionsEnabled
+        }
+      />
+      <DiscordCard
+        integration={discordIntegration}
+        onConnect={handleConnectDiscord}
+        onDisconnect={handleDisconnectDiscord}
+        onTest={allowIntegrations ? handleTestDiscord : undefined}
+        isPending={pendingIntegration === "discord"}
+        disabled={
+          isLoading
+          || (pendingIntegration !== null && pendingIntegration !== "discord")
+          || !discordActionsEnabled
+        }
+      />
+      <SuggestIntegrationCard />
+      <div className="md:col-span-2">
         <PlanNotice slug={slug} plan={plan} feature="integrations" />
       </div>
-    </SectionCard>
+    </div>
   );
 }

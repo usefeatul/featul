@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
+import SectionCard from "../global/SectionCard"
 
 type ChangelogSettingsResponse = {
   isVisible?: boolean
@@ -70,13 +71,14 @@ export default function ChangelogVisibility({ slug, initialIsVisible }: { slug: 
   }
 
   return (
-    <div className="space-y-2">
-      <div className="text-md font-medium">Changelog Visibility</div>
-      <div className="text-sm text-accent">Show or hide your changelog on the public site and widget.</div>
-      <div className="bg-background flex items-center justify-between rounded-md border p-3">
+    <SectionCard
+      title="Visibility"
+      description="Show or hide your changelog on the public site and widget."
+    >
+      <div className="flex items-center justify-between">
         <div className="text-sm">Visible on public site and widget</div>
         <Switch checked={visible} onCheckedChange={handleToggleVisible} aria-label="Toggle Changelog Visibility" />
       </div>
-    </div>
+    </SectionCard>
   )
 }

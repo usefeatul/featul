@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import SectionCard from "../global/SectionCard"
 import AllowAnonymousToggle from "./AllowAnonymousToggle"
 import AllowCommentsToggle from "./AllowCommentsToggle"
 import ManageBoards from "./ManageBoards"
@@ -18,13 +17,11 @@ export default function BoardSettings({
   initialBoards?: FeedbackBoardSettings[]
 }) {
   return (
-    <SectionCard title="Board Settings" description="Configure board settings">
-      <div className="space-y-3">
-        <AllowAnonymousToggle slug={slug} initialBoards={initialBoards} />
-        <AllowCommentsToggle slug={slug} initialBoards={initialBoards} />
-        <HidePublicMemberIdentityToggle slug={slug} initialBoards={initialBoards} />
-        <ManageBoards slug={slug} plan={plan} initialBoards={initialBoards} />
-      </div>
-    </SectionCard>
+    <div className="space-y-4">
+      <AllowAnonymousToggle slug={slug} initialBoards={initialBoards} />
+      <AllowCommentsToggle slug={slug} initialBoards={initialBoards} />
+      <HidePublicMemberIdentityToggle slug={slug} initialBoards={initialBoards} />
+      <ManageBoards slug={slug} plan={plan} initialBoards={initialBoards} />
+    </div>
   )
 }

@@ -7,7 +7,7 @@ import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
-import { SECTIONS, WORKSPACE_TITLES } from "@/config/sections";
+import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
@@ -37,11 +37,14 @@ export default function WorkspaceHeader() {
   const isMemberDetail = isMembersSection && rest.length > 1;
   const isChangelogSection = rest[0] === "changelog";
   const isSettingsSection = rest[0] === "settings";
+  const settingsMeta = isSettingsSection
+    ? getSectionMeta(rest[1] || "branding")
+    : null;
   const editorContext = useEditorHeaderActionsOptional();
 
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
-    title = "Settings";
+    title = settingsMeta?.label || "Settings";
   } else if (rest.length > 0) {
     const t = resolveTitle(rest[0] ?? "");
     title = t || "";
@@ -133,10 +136,13 @@ export default function WorkspaceHeader() {
       <div className="mt-4 mb-6.5">
         <div className="flex items-center justify-between gap-3">
           {title ? (
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="min-w-0">
               <h1 className="text-xl font-heading leading-tight font-semibold truncate">
                 {title}
               </h1>
+              {settingsMeta?.desc ? (
+                <p className="mt-1 text-sm text-accent">{settingsMeta.desc}</p>
+              ) : null}
             </div>
           ) : (
             <div />

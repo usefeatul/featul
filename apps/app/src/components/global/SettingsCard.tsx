@@ -1,7 +1,10 @@
 import React from "react";
 import { Button } from "@featul/ui/components/button";
-import { Card } from "@featul/ui/components/card";
 import { LoaderIcon } from "@featul/ui/icons/loader";
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard";
 
 type Props = {
   icon: React.ReactNode;
@@ -33,8 +36,7 @@ export default function SettingsCard({
   children,
 }: Props) {
   return (
-    <Card className="flex h-full flex-col rounded-xl bg-background dark:bg-background overflow-hidden px-2 pt-2 pb-2 border border-border gap-0
-    " variant="plain">
+    <div className={`${settingsCardShellClass} h-full`}>
       <div className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex items-center justify-center size-5 shrink-0">
@@ -83,12 +85,11 @@ export default function SettingsCard({
           )}
         </div>
       </div>
-      {/* Description section */}
-      <div className="flex flex-1 flex-col px-4 pt-3 pb-2 bg-card dark:bg-black/40 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black rounded-lg min-h-[60px]">
+      <div className={`${settingsCardInnerClass} min-h-[60px]`}>
         <div className="text-sm text-accent leading-relaxed wrap-break-word">
           {description}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
