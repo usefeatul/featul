@@ -3,18 +3,29 @@ import type { Transition } from "framer-motion";
 export const FILTER_ISLAND_EASE = [0.32, 0.72, 0, 1] as const;
 
 export const FILTER_ISLAND_MAX_WIDTH_CLASS =
-  "max-w-[min(22rem,calc(100vw-8rem))]";
+  "max-w-[min(32rem,calc(100vw-6rem))]";
+
+export const FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS = "min-w-[20rem]";
 
 export const FILTER_ISLAND_SHELL_CLASS =
   "cursor-pointer overflow-hidden rounded-xl border border-border bg-card p-1 text-foreground dark:border-white/10 dark:bg-black";
 
 export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
 
+export const FILTER_ISLAND_BUTTON_HOVER_CLASS =
+  "transition-colors hover:bg-muted/40 hover:text-accent-foreground dark:hover:bg-muted/30";
+
 export const FILTER_ISLAND_CLEAR_ALL_CLASS =
-  "h-6 shrink-0 rounded-sm px-2 text-[11px] font-medium";
+  "inline-flex h-full items-center justify-center whitespace-nowrap px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_CLASS =
-  "h-6 max-w-[9rem] gap-1.5 rounded-sm px-2 text-[11px] font-medium has-[>svg]:px-2";
+  "inline-flex h-full min-w-fit items-center gap-1.5 whitespace-nowrap px-2 text-[11px] font-medium";
+
+export const FILTER_ISLAND_CHIP_SHELL_CLASS =
+  "flex w-fit min-w-fit shrink-0 items-stretch rounded-lg border border-border bg-card p-0.5 text-foreground dark:border-white/10 dark:bg-black";
+
+export const FILTER_ISLAND_CHIP_INNER_CLASS =
+  "flex h-6 min-h-6 min-w-fit items-stretch overflow-hidden rounded-md bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";
 
 export const FILTER_ISLAND_CONTENT_CLASS =
   "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";

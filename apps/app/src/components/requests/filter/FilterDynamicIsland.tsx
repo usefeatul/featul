@@ -7,6 +7,7 @@ import { FilterIslandChips } from "@/components/requests/filter/FilterIslandChip
 import { FilterIslandHeader } from "@/components/requests/filter/FilterIslandHeader";
 import {
   FILTER_ISLAND_CONTENT_CLASS,
+  FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS,
   FILTER_ISLAND_MAX_WIDTH_CLASS,
   FILTER_ISLAND_SHELL_CLASS,
 } from "@/components/requests/filter/constants";
@@ -57,10 +58,15 @@ export default function FilterDynamicIsland() {
               FILTER_ISLAND_SHELL_CLASS,
               "absolute left-0 top-0 w-fit transform-gpu",
               FILTER_ISLAND_MAX_WIDTH_CLASS,
+              expanded && FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS,
             )}
           >
             <div
-              className={cn(FILTER_ISLAND_CONTENT_CLASS, "min-w-0 w-max max-w-full")}
+              className={cn(
+                FILTER_ISLAND_CONTENT_CLASS,
+                "min-w-0 max-w-full",
+                expanded ? "w-full" : "w-max",
+              )}
             >
               <FilterIslandHeader
                 count={count}

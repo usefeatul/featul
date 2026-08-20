@@ -1,9 +1,12 @@
 "use client";
 
-import { Button } from "@featul/ui/components/button";
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 import {
+  FILTER_ISLAND_BUTTON_HOVER_CLASS,
+  FILTER_ISLAND_CHIP_INNER_CLASS,
+  FILTER_ISLAND_CHIP_SHELL_CLASS,
   FILTER_ISLAND_CLEAR_ALL_CLASS,
   FILTER_ISLAND_INSET_X_CLASS,
   FILTER_ISLAND_MUTED_ICON_CLASS,
@@ -31,13 +34,13 @@ export function FilterIslandHeader({
         expanded ? "w-full justify-between gap-2" : "gap-1.5",
       )}
     >
-      <div className="flex shrink-0 items-center gap-1.5">
+      <div className="flex min-w-0 items-center gap-1.5">
         <ListFilterIcon
           className={cn("size-3 shrink-0", FILTER_ISLAND_MUTED_ICON_CLASS)}
         />
 
         {!expanded ? (
-          <span className="flex items-center gap-1.5 text-[11px] font-medium">
+          <span className="flex min-w-0 items-center gap-1.5 text-[11px] font-medium">
             <span className="tabular-nums text-foreground">{count}</span>
             <span className="text-border">·</span>
             <span className="truncate text-muted-foreground">
@@ -53,18 +56,24 @@ export function FilterIslandHeader({
       </div>
 
       {expanded ? (
-        <Button
-          type="button"
-          variant="card"
-          size="xs"
-          onClick={(event) => {
-            event.stopPropagation();
-            onClearAll();
-          }}
-          className={FILTER_ISLAND_CLEAR_ALL_CLASS}
+        <div
+          className={cn(FILTER_ISLAND_CHIP_SHELL_CLASS, "max-w-none")}
+          onClick={(event) => event.stopPropagation()}
         >
-          Clear all
-        </Button>
+          <div className={FILTER_ISLAND_CHIP_INNER_CLASS}>
+            <button
+              type="button"
+              onClick={onClearAll}
+              className={cn(
+                toolbarItemClass,
+                FILTER_ISLAND_CLEAR_ALL_CLASS,
+                FILTER_ISLAND_BUTTON_HOVER_CLASS,
+              )}
+            >
+              Clear all
+            </button>
+          </div>
+        </div>
       ) : null}
     </div>
   );
