@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";
 import { uploadFileToSignedUrl } from "@/lib/upload";
 import { cn } from "@featul/ui/lib/utils";
+import { ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 interface CoverImageUploaderProps {
     workspaceSlug: string;
@@ -120,8 +121,8 @@ export function CoverImageUploader({
     }
 
     return (
-        <div className="flex items-center gap-1">
-            <label className="cursor-pointer">
+        <>
+            <label className="flex h-full cursor-pointer">
                 <input
                     type="file"
                     accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
@@ -130,9 +131,9 @@ export function CoverImageUploader({
                     disabled={isUploading}
                 />
                 <Button
-                    variant="card"
+                    variant="plain"
                     size="icon"
-                    className="h-7 w-7 dark:border-white/10 dark:bg-black"
+                    className={cn(toolbarItemClass, "px-3")}
                     asChild
                     disabled={isUploading}
                     aria-label={coverImage ? "Change cover image" : "Add cover image"}
@@ -145,17 +146,20 @@ export function CoverImageUploader({
                 </Button>
             </label>
             {coverImage ? (
-                <Button
-                    type="button"
-                    variant="card"
-                    size="icon"
-                    className="h-7 w-7 dark:border-white/10 dark:bg-black"
-                    onClick={() => onCoverImageChange(null)}
-                    aria-label="Remove cover image"
-                >
-                    <X className="size-3.5" />
-                </Button>
+                <>
+                    <ToolbarSeparator />
+                    <Button
+                        type="button"
+                        variant="plain"
+                        size="icon"
+                        className={cn(toolbarItemClass, "px-3")}
+                        onClick={() => onCoverImageChange(null)}
+                        aria-label="Remove cover image"
+                    >
+                        <X className="size-3.5" />
+                    </Button>
+                </>
             ) : null}
-        </div>
+        </>
     );
 }

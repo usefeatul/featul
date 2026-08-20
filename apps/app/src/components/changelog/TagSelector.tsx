@@ -5,6 +5,8 @@ import { Button } from "@featul/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@featul/ui/components/popover";
 import { TagIcon } from "@featul/ui/icons/tag";
 import XMarkIcon from "@featul/ui/icons/xmark";
+import { ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 
 export interface WorkspaceTag {
     id: string;
@@ -12,7 +14,7 @@ export interface WorkspaceTag {
     slug: string;
     color?: string | null;
 }
- 
+
 interface TagSelectorProps {
     availableTags: WorkspaceTag[];
     selectedTags: string[];
@@ -38,35 +40,41 @@ export function TagSelector({
 
     return (
         <>
-            {/* Empty State */}
-            {selectedTags.length === 0 && (
-                <div className="flex h-7 select-none items-center rounded-md border border-border bg-card px-2.5 text-xs text-muted-foreground shadow-none dark:border-white/10 dark:bg-black">
+            {selectedTags.length === 0 ? (
+                <span className={cn(toolbarItemClass, "px-3 text-xs text-muted-foreground")}>
                     No tags
-                </div>
+                </span>
+            ) : (
+                selectedTagObjects.map((tag, index) => (
+                    <span key={tag.id} className="contents">
+                        {index > 0 ? <ToolbarSeparator /> : null}
+                        <Button
+                            type="button"
+                            variant="plain"
+                            size="sm"
+                            className={cn(toolbarItemClass, "gap-1.5 px-3 text-xs")}
+                            onClick={() => toggleTag(tag.id)}
+                        >
+                            {tag.name}
+                            <XMarkIcon className="size-3 text-muted-foreground" />
+                        </Button>
+                    </span>
+                ))
             )}
-
-            {/* Selected Tags */}
-            {selectedTagObjects.map((tag) => (
-                <Button
-                    key={tag.id}
-                    variant="card"
-                    size="sm"
-                    className="h-7 gap-1.5 px-2.5 text-xs shadow-none dark:border-white/10 dark:bg-black"
-                    onClick={() => toggleTag(tag.id)}
-                >
-                    {tag.name}
-                    <XMarkIcon className="size-3 text-muted-foreground"/>
-                </Button>
-            ))}
-
-            {/* Add Tag Button */}
+            <ToolbarSeparator />
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                    <Button variant="card" size="icon" className="h-7 w-7 dark:border-white/10 dark:bg-black">
+                    <Button
+                        type="button"
+                        variant="plain"
+                        size="icon"
+                        className={cn(toolbarItemClass, "px-3")}
+                        aria-label="Add tag"
+                    >
                         <TagIcon size={16} className="text-muted-foreground" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent list align="start" className="min-w-0 w-fit">
+                <PopoverContent list align="center" className="min-w-0 w-fit">
                     <PopoverList>
                         {availableTags.length === 0 ? (
                             <div className="px-3 py-2 text-sm text-muted-foreground">

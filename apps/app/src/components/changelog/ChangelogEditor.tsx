@@ -22,6 +22,7 @@ import {
   settingsCardInnerClass,
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard";
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -192,7 +193,7 @@ export function ChangelogEditor({
     return (
         <div className="pb-10">
             <article className={cn(settingsCardShellClass, "w-full")}>
-                <div className={cn(settingsCardInnerClass, "mb-2 overflow-hidden p-0")}>
+                <div className={cn(settingsCardInnerClass, "mb-2 w-full overflow-hidden p-0")}>
                     <CoverImageUploader
                         variant="image"
                         workspaceSlug={workspaceSlug}
@@ -204,48 +205,53 @@ export function ChangelogEditor({
                     />
                 </div>
 
-                <div className={cn(settingsCardInnerClass, "min-h-[400px]")}>
-                    <div className="mb-4 flex flex-wrap items-center gap-1">
-                        <TagSelector
-                            availableTags={availableTags}
-                            selectedTags={selectedTags}
-                            onTagsChange={(tags) => {
-                                setSelectedTags(tags);
-                                setIsDirty(true);
-                            }}
-                        />
-                        <CoverImageUploader
-                            workspaceSlug={workspaceSlug}
-                            coverImage={coverImage}
-                            onCoverImageChange={(url) => {
-                                setCoverImage(url);
-                                setIsDirty(true);
-                            }}
-                        />
-                    </div>
+                <div className={cn(settingsCardInnerClass, "min-h-[400px] w-full p-0")}>
+                    <header className="flex justify-center px-2 py-2">
+                        <Toolbar size="sm" className="w-fit max-w-full">
+                            <TagSelector
+                                availableTags={availableTags}
+                                selectedTags={selectedTags}
+                                onTagsChange={(tags) => {
+                                    setSelectedTags(tags);
+                                    setIsDirty(true);
+                                }}
+                            />
+                            <ToolbarSeparator />
+                            <CoverImageUploader
+                                workspaceSlug={workspaceSlug}
+                                coverImage={coverImage}
+                                onCoverImageChange={(url) => {
+                                    setCoverImage(url);
+                                    setIsDirty(true);
+                                }}
+                            />
+                        </Toolbar>
+                    </header>
 
-                    <TextareaAutosize
-                        value={title}
-                        onChange={(e) => {
-                            setTitle(e.target.value);
-                            setIsDirty(true);
-                        }}
-                        placeholder="Enter a title"
-                        className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
-                        minRows={1}
-                        autoFocus={mode === "create"}
-                    />
-                    <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
-                        <FeedEditor
-                            ref={editorRef}
-                            initialContent={initialData?.content}
-                            placeholder="Start typing or type /ai for AI commands"
-                            className="min-h-[400px]"
-                            mentionSuggestions={mentionSuggestions}
-                            onImageUpload={handleImageUpload}
-                            additionalSlashSuggestions={additionalSlashSuggestions}
-                            onUpdate={() => setIsDirty(true)}
+                    <div className="px-4 py-3">
+                        <TextareaAutosize
+                            value={title}
+                            onChange={(e) => {
+                                setTitle(e.target.value);
+                                setIsDirty(true);
+                            }}
+                            placeholder="Enter a title"
+                            className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
+                            minRows={1}
+                            autoFocus={mode === "create"}
                         />
+                        <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
+                            <FeedEditor
+                                ref={editorRef}
+                                initialContent={initialData?.content}
+                                placeholder="Start typing or type /ai for AI commands"
+                                className="min-h-[400px]"
+                                mentionSuggestions={mentionSuggestions}
+                                onImageUpload={handleImageUpload}
+                                additionalSlashSuggestions={additionalSlashSuggestions}
+                                onUpdate={() => setIsDirty(true)}
+                            />
+                        </div>
                     </div>
                 </div>
             </article>
