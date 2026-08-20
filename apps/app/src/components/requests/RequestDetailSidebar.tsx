@@ -143,7 +143,7 @@ export default function RequestDetailSidebar({
           </div>
 
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-            <div className="flex items-center justify-between border-b border-border/50 pb-3">
+            <div className="-mx-4 flex items-center justify-between border-b border-border/50 px-4 pb-3">
               <span className="text-sm font-medium text-muted-foreground">
                 Flags
               </span>
