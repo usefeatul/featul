@@ -34,7 +34,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 export function MemberHeader({ member, userId, stats }: MemberHeaderProps) {
   return (
-    <section className={settingsCardShellClass}>
+    <section className={cn(settingsCardShellClass, "w-full")}>
       <header className="flex min-w-0 items-center gap-3 py-2">
         <div className="relative shrink-0">
           <Avatar className="relative size-10 overflow-visible">

@@ -25,7 +25,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className }: MemberT
   const displayedPosts = topPosts.slice(0, 5)
 
   return (
-    <section className={cn(settingsCardShellClass, className)}>
+    <section className={cn(settingsCardShellClass, "w-full min-w-0", className)}>
       <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">

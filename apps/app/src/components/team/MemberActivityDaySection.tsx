@@ -23,7 +23,7 @@ const headingClassName =
   "px-2 pt-1 font-heading text-[12px] font-semibold uppercase leading-none tracking-[0.16em] text-foreground"
 
 const groupButtonClassName =
-  "block w-full -mx-2 rounded-md px-2 py-2.5 text-left hover:bg-muted/40"
+  "block w-full rounded-md px-2 py-2.5 text-left hover:bg-muted/40"
 
 const groupRowClassName = "text-xs text-accent flex items-center gap-2 min-w-0"
 
@@ -66,7 +66,7 @@ export function MemberActivityDaySection({
     <section className={sectionClassName}>
       <div className={headingClassName}>{dayGroup.label}</div>
 
-      <ul className="divide-y divide-border/60 dark:divide-white/10">
+      <ul className="w-full min-w-0 divide-y divide-border/60 dark:divide-white/10">
         {dayGroup.rows.map((row) => {
           if (row.kind === "item") {
             return <MemberActivityItemRow key={row.key} item={row.item} href={row.href} />

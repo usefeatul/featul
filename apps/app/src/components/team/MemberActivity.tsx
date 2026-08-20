@@ -11,6 +11,7 @@ import {
   settingsCardInnerClass,
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard"
+import { cn } from "@featul/ui/lib/utils"
 
 interface MemberActivityProps {
   workspaceSlug: string
@@ -53,13 +54,13 @@ export function MemberActivity({
   const shouldShowLoadMore = Boolean(hasNextPage && hasVisibleActivity)
 
   return (
-    <section className={settingsCardShellClass}>
+    <section className={cn(settingsCardShellClass, "w-full min-w-0")}>
       <header className="flex items-center py-2">
         <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
           Activity
         </h2>
       </header>
-      <div className={settingsCardInnerClass}>
+      <div className={cn(settingsCardInnerClass, "min-w-0")}>
         <MemberActivityFilters
           categoryFilter={categoryFilter}
           statusFilter={statusFilter}
@@ -75,7 +76,7 @@ export function MemberActivity({
         ) : dayGroups.length === 0 ? (
           <div className="py-6 text-center text-sm text-accent">No matching activity</div>
         ) : (
-          <div>
+          <div className="min-w-0 w-full">
             {dayGroups.map((day) => (
               <MemberActivityDaySection
                 key={day.key}

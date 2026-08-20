@@ -80,33 +80,33 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
     )
 
   return (
-    <div className="grid items-start gap-4 lg:grid-cols-[0.7fr_0.3fr]">
-      <div className="flex min-w-0 flex-col gap-4">
-        <MemberHeader member={member} userId={userId} stats={stats} />
+    <div className="flex flex-col gap-4">
+      <MemberHeader member={member} userId={userId} stats={stats} />
 
-        <div className="lg:hidden">
-          <Toolbar size="sm">
-            <Button
-              type="button"
-              variant="plain"
-              className={tabClass("activity")}
-              onClick={() => setMobileTab("activity")}
-            >
-              Activity
-            </Button>
-            <ToolbarSeparator />
-            <Button
-              type="button"
-              variant="plain"
-              className={tabClass("top-posts")}
-              onClick={() => setMobileTab("top-posts")}
-            >
-              Top posts
-            </Button>
-          </Toolbar>
-        </div>
+      <div className="md:hidden">
+        <Toolbar size="sm">
+          <Button
+            type="button"
+            variant="plain"
+            className={tabClass("activity")}
+            onClick={() => setMobileTab("activity")}
+          >
+            Activity
+          </Button>
+          <ToolbarSeparator />
+          <Button
+            type="button"
+            variant="plain"
+            className={tabClass("top-posts")}
+            onClick={() => setMobileTab("top-posts")}
+          >
+            Top posts
+          </Button>
+        </Toolbar>
+      </div>
 
-        <div className={cn(mobileTab === "activity" ? "block" : "hidden lg:block")}>
+      <div className="grid items-start gap-4 md:grid-cols-[minmax(0,0.7fr)_minmax(0,0.3fr)]">
+        <div className={cn("min-w-0", mobileTab === "activity" ? "block" : "hidden md:block")}>
           <MemberActivity
             workspaceSlug={slug}
             items={items}
@@ -120,14 +120,18 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
             onStatusChange={setStatusFilter}
           />
         </div>
-      </div>
-
-      <div className={cn(mobileTab === "top-posts" ? "block" : "hidden lg:block")}>
-        <MemberTopPosts
-          slug={slug}
-          topPosts={topPosts}
-          isLoading={isStatsLoading || isStatsFetching}
-        />
+        <div
+          className={cn(
+            "min-w-0 md:sticky md:top-24",
+            mobileTab === "top-posts" ? "block" : "hidden md:block",
+          )}
+        >
+          <MemberTopPosts
+            slug={slug}
+            topPosts={topPosts}
+            isLoading={isStatsLoading || isStatsFetching}
+          />
+        </div>
       </div>
     </div>
   )
