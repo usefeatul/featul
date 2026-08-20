@@ -63,7 +63,7 @@ export function CoverImageUploader({
                 <img
                     src={coverImage}
                     alt="Cover"
-                    className="w-full h-auto max-h-80 object-cover"
+                    className="h-auto max-h-80 w-full object-cover"
                 />
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                     <label className="cursor-pointer">

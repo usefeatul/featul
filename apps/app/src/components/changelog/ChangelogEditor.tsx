@@ -190,37 +190,24 @@ export function ChangelogEditor({
     }, [setActions, clearActions, handleSave, isSaving, isDraft, isDirty, router, workspaceSlug, setIsDraft, setIsDirty]);
 
     return (
-        <div>
+        <div className="pb-10">
             <article className={cn(settingsCardShellClass, "mx-auto max-w-3xl")}>
-                <header className="flex flex-col gap-3 py-2">
-                    <div className="flex flex-wrap items-center gap-1">
-                        <TagSelector
-                            availableTags={availableTags}
-                            selectedTags={selectedTags}
-                            onTagsChange={(tags) => {
-                                setSelectedTags(tags);
-                                setIsDirty(true);
-                            }}
-                        />
-                        <CoverImageUploader
-                            workspaceSlug={workspaceSlug}
-                            coverImage={null}
-                            onCoverImageChange={(url) => {
-                                setCoverImage(url);
-                                setIsDirty(true);
-                            }}
-                        />
-                    </div>
-                    <TextareaAutosize
-                        value={title}
-                        onChange={(e) => {
-                            setTitle(e.target.value);
+                <header className="flex flex-wrap items-center gap-1 py-2">
+                    <TagSelector
+                        availableTags={availableTags}
+                        selectedTags={selectedTags}
+                        onTagsChange={(tags) => {
+                            setSelectedTags(tags);
                             setIsDirty(true);
                         }}
-                        placeholder="Enter a title"
-                        className="w-full resize-none overflow-hidden border-none bg-transparent text-xl font-semibold leading-tight text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 md:text-2xl"
-                        minRows={1}
-                        autoFocus={mode === "create"}
+                    />
+                    <CoverImageUploader
+                        workspaceSlug={workspaceSlug}
+                        coverImage={null}
+                        onCoverImageChange={(url) => {
+                            setCoverImage(url);
+                            setIsDirty(true);
+                        }}
                     />
                 </header>
 
@@ -238,12 +225,23 @@ export function ChangelogEditor({
                 ) : null}
 
                 <div className={cn(settingsCardInnerClass, "min-h-[400px]")}>
+                    <TextareaAutosize
+                        value={title}
+                        onChange={(e) => {
+                            setTitle(e.target.value);
+                            setIsDirty(true);
+                        }}
+                        placeholder="Enter a title"
+                        className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
+                        minRows={1}
+                        autoFocus={mode === "create"}
+                    />
                     <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
                         <FeedEditor
                             ref={editorRef}
                             initialContent={initialData?.content}
                             placeholder="Start typing or type /ai for AI commands"
-                            className="min-h-[360px]"
+                            className="min-h-[400px]"
                             mentionSuggestions={mentionSuggestions}
                             onImageUpload={handleImageUpload}
                             additionalSlashSuggestions={additionalSlashSuggestions}
