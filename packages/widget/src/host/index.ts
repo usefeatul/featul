@@ -18,8 +18,10 @@ import {
 } from "./screenshot";
 
 const PANEL_RADIUS = "12px";
-const BUTTON_RADIUS = "8px";
-const LAUNCHER_SIZE = 36;
+const BUTTON_RADIUS = "12px";
+const LAUNCHER_SIZE = 40;
+const LAUNCHER_PAD = 3;
+const LAUNCHER_INNER_RADIUS = "9px";
 const PANEL_WIDTH = 396;
 const PANEL_WIDTH_EXPANDED = 500;
 const PANEL_HEIGHT = 800;
@@ -125,13 +127,47 @@ function boot() {
     return state.theme === "light" ? "#171717" : "#fafafa";
   }
 
-  function syncLauncherTheme() {
-    if (state.button) {
-      state.button.style.background = panelBackground();
-      state.button.style.color = launcherForeground();
+  function launcherBorder() {
+    return state.theme === "light"
+      ? "1px solid rgba(23, 23, 23, 0.1)"
+      : "1px solid rgba(250, 250, 250, 0.1)";
+  }
+
+  function launcherInnerRing() {
+    return state.theme === "light"
+      ? "inset 0 0 0 1px rgba(23, 23, 23, 0.1)"
+      : "inset 0 0 0 1px rgba(250, 250, 250, 0.1)";
+  }
+
+  function applyLauncherChrome() {
+    const button = state.button;
+    if (!button) return;
+    button.style.boxSizing = "border-box";
+    button.style.width = `${LAUNCHER_SIZE}px`;
+    button.style.height = `${LAUNCHER_SIZE}px`;
+    button.style.padding = `${LAUNCHER_PAD}px`;
+    button.style.border = launcherBorder();
+    button.style.borderRadius = BUTTON_RADIUS;
+    button.style.background = shellBackground();
+    button.style.color = launcherForeground();
+    const face = button.querySelector("[data-featul-widget='launcher-face']");
+    if (face instanceof HTMLElement) {
+      face.style.display = "flex";
+      face.style.alignItems = "center";
+      face.style.justifyContent = "center";
+      face.style.width = "100%";
+      face.style.height = "100%";
+      face.style.borderRadius = LAUNCHER_INNER_RADIUS;
+      face.style.background = panelBackground();
+      face.style.boxShadow = launcherInnerRing();
+      face.style.pointerEvents = "none";
     }
+  }
+
+  function syncLauncherTheme() {
+    applyLauncherChrome();
     if (state.shell && !state.open)
-      state.shell.style.background = panelBackground();
+      state.shell.style.background = shellBackground();
   }
 
   function syncTheme() {
@@ -463,7 +499,7 @@ function boot() {
     applyRect(state.shell, getLauncherRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = BUTTON_RADIUS;
-    state.shell.style.background = panelBackground();
+    state.shell.style.background = shellBackground();
     state.shell.style.boxShadow = "none";
   }
 
@@ -697,24 +733,18 @@ function boot() {
       button.type = "button";
       button.setAttribute("aria-label", "Open feedback");
       button.setAttribute("data-featul-widget", "launcher");
-      button.innerHTML = FEATUL_LOGO;
+      button.innerHTML = `<span data-featul-widget="launcher-face">${FEATUL_LOGO}</span>`;
       button.style.position = "fixed";
       button.style.bottom = `${PANEL_GUTTER}px`;
       button.style[position] = `${PANEL_GUTTER}px`;
       button.style.display = "inline-flex";
       button.style.alignItems = "center";
       button.style.justifyContent = "center";
-      button.style.width = `${LAUNCHER_SIZE}px`;
-      button.style.height = `${LAUNCHER_SIZE}px`;
-      button.style.padding = "0";
-      button.style.border = "0";
-      button.style.borderRadius = BUTTON_RADIUS;
-      button.style.background = panelBackground();
-      button.style.color = launcherForeground();
       button.style.cursor = "pointer";
       button.style.zIndex = "2147483647";
       button.style.transition =
         "bottom 220ms cubic-bezier(0.22, 1, 0.36, 1), left 220ms cubic-bezier(0.22, 1, 0.36, 1), right 220ms cubic-bezier(0.22, 1, 0.36, 1)";
+      applyLauncherChrome();
       button.onclick = () => api.showWidget();
       document.body.appendChild(button);
       state.button = button;

@@ -134,12 +134,13 @@ export default function WorkspaceHeader() {
 
   if (!title && !pageActions) return null;
 
+  const showFilterSummary = showRequestsActions || showRoadmapActions;
+
   return (
-    <>
-      {showRequestsActions || showRoadmapActions ? <FilterDynamicIsland /> : null}
-      <div className="mt-4 mb-6.5">
-        <div className="flex items-center justify-between gap-3">
-          {title ? (
+    <div className="mt-4 mb-6.5">
+      <div className="flex items-center justify-between gap-3">
+        {title ? (
+          <div className="flex min-w-0 items-center gap-3">
             <div className="min-w-0">
               <h1 className="text-xl font-heading leading-tight font-semibold truncate">
                 {title}
@@ -148,12 +149,13 @@ export default function WorkspaceHeader() {
                 <p className="mt-1 text-sm text-accent">{settingsMeta.desc}</p>
               ) : null}
             </div>
-          ) : (
-            <div />
-          )}
-          {pageActions}
-        </div>
+            {showFilterSummary ? <FilterDynamicIsland /> : null}
+          </div>
+        ) : (
+          <div />
+        )}
+        {pageActions}
       </div>
-    </>
+    </div>
   );
 }

@@ -29,7 +29,7 @@ export function FilterIslandChips({ items }: FilterIslandChipsProps) {
             className={FILTER_ISLAND_CHIP_CLASS}
           >
             <span className="truncate">{item.label}</span>
-            <XMarkIcon className="size-2.5 shrink-0 text-white/60 dark:text-neutral-950/60" />
+            <XMarkIcon className="size-2.5 shrink-0 text-muted-foreground" />
           </button>
         ))}
       </div>

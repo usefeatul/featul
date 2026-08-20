@@ -25,7 +25,7 @@ export function FilterIslandHeader({
   return (
     <div
       className={cn(
-        "flex h-6 items-center whitespace-nowrap",
+        "flex h-8 items-center whitespace-nowrap",
         FILTER_ISLAND_INSET_X_CLASS,
         expanded ? "w-full justify-between gap-2" : "gap-1.5",
       )}
@@ -37,17 +37,15 @@ export function FilterIslandHeader({
 
         {!expanded ? (
           <span className="flex items-center gap-1.5 text-[11px] font-medium">
-            <span className="tabular-nums text-white/90 dark:text-neutral-950/90">
-              {count}
-            </span>
-            <span className="text-white/30 dark:text-neutral-950/30">·</span>
-            <span className="text-white/75 dark:text-neutral-950/75">
+            <span className="tabular-nums text-foreground">{count}</span>
+            <span className="text-border">·</span>
+            <span className="truncate text-muted-foreground">
               {preview}
               {getFilterPreviewSuffix(count)}
             </span>
           </span>
         ) : (
-          <span className="text-[11px] font-medium text-white/85 dark:text-neutral-950/85">
+          <span className="text-[11px] font-medium text-foreground">
             {count} filter{count === 1 ? "" : "s"}
           </span>
         )}

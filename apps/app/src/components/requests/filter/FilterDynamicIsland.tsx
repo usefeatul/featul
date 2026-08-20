@@ -39,11 +39,11 @@ export default function FilterDynamicIsland() {
       {isVisible ? (
         <motion.div
           key="filter-dynamic-island"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
           transition={transitions.visibility}
-          className="pointer-events-none fixed inset-x-0 top-0 z-[100] flex justify-center"
+          className="relative z-20 h-10 shrink-0"
           aria-live="polite"
         >
           <motion.div
@@ -55,7 +55,7 @@ export default function FilterDynamicIsland() {
             aria-label={getFilterIslandLabel(count, expanded)}
             className={cn(
               FILTER_ISLAND_SHELL_CLASS,
-              "w-fit transform-gpu",
+              "absolute left-0 top-0 w-fit transform-gpu",
               FILTER_ISLAND_MAX_WIDTH_CLASS,
             )}
           >
