@@ -164,7 +164,7 @@ export default function CommentVote({
   }
 
   return (
-    <Toolbar size="sm" variant="plain" className="h-8 bg-card dark:bg-black/50 border-border">
+    <Toolbar size="sm">
       <Button
         type="button"
         variant="plain"

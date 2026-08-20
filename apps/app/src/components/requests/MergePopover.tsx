@@ -6,6 +6,7 @@ import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@featul/ui/components/command"
 import { MergeIcon } from "@featul/ui/icons/merge"
+import { toolbarItemClass } from "@featul/ui/components/toolbar"
 import { client } from "@featul/api/client"
 import { useQuery } from "@tanstack/react-query"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
@@ -90,7 +91,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
             type="button"
             variant="nav"
             size="icon-sm"
-            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+            className={toolbarItemClass}
             aria-label="Merge"
           >
             <MergeIcon className="size-3.5" />

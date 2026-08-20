@@ -81,7 +81,7 @@ export default function CommentList({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border bg-background dark:bg-background p-3.5">
+      <div className="rounded-lg border border-border bg-card p-3.5 dark:border-white/10 dark:bg-black">
         <CommentForm
           postId={postId}
           onSuccess={handleCommentSuccess}

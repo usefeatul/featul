@@ -18,6 +18,11 @@ import RoleBadge from "../global/RoleBadge";
 import type { RequestDetailData } from "@/types/request";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { CircleQuestionMarkIcon } from "@featul/ui/icons/circle-question-mark";
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard";
+import { cn } from "@featul/ui/lib/utils";
 
 export type RequestDetailSidebarProps = {
   post: RequestDetailData;
@@ -58,40 +63,40 @@ export default function RequestDetailSidebar({
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
   return (
-    <aside className="hidden h-full md:block">
-      <div className="h-full px-4 py-4 md:px-6 md:py-5">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="relative">
-            <Avatar className="relative size-10 overflow-visible">
-              {displayAuthor.image ? (
-                <AvatarImage
-                  src={displayAuthor.image}
-                  alt={displayAuthor.name}
-                  className={displayAuthor.image?.includes('data:image/svg+xml') ? 'p-1' : ''}
-                />
-              ) : (
-                <AvatarFallback className="bg-muted text-xs text-muted-foreground">
-                  {authorInitials}
-                </AvatarFallback>
-              )}
-              <RoleBadge
-                role={post.role}
-                isOwner={post.isOwner}
-                isFeatul={post.isFeatul}
-                className="-bottom-1 -right-1 bg-card"
+    <aside className={cn(settingsCardShellClass, "hidden md:flex")}>
+      <header className="flex items-center gap-3 py-2">
+        <div className="relative">
+          <Avatar className="relative size-8 overflow-visible">
+            {displayAuthor.image ? (
+              <AvatarImage
+                src={displayAuthor.image}
+                alt={displayAuthor.name}
+                className={displayAuthor.image?.includes('data:image/svg+xml') ? 'p-1' : ''}
               />
-            </Avatar>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">
-              {displayAuthor.name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {timeLabel}
-            </span>
-          </div>
+            ) : (
+              <AvatarFallback className="bg-muted text-xs text-muted-foreground">
+                {authorInitials}
+              </AvatarFallback>
+            )}
+            <RoleBadge
+              role={post.role}
+              isOwner={post.isOwner}
+              isFeatul={post.isFeatul}
+              className="-bottom-1 -right-1 bg-card"
+            />
+          </Avatar>
         </div>
+        <div className="flex min-w-0 flex-col">
+          <span className="truncate text-sm font-medium leading-none text-foreground">
+            {displayAuthor.name}
+          </span>
+          <span className="mt-1 text-xs text-muted-foreground">
+            {timeLabel}
+          </span>
+        </div>
+      </header>
 
+      <div className={settingsCardInnerClass}>
         <div className="space-y-5">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground">

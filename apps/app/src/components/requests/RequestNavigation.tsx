@@ -6,7 +6,7 @@ import { cn } from "@featul/ui/lib/utils"
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { MergePopover } from "./MergePopover"
 import { DeletePostButton } from "./DeletePostButton"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 
 type NavItem = {
   slug: string
@@ -25,15 +25,19 @@ export interface RequestNavigationProps {
   showActions?: boolean
 }
 
+const navButtonClass = cn(toolbarItemClass, "h-8 gap-2 px-3")
+const shortcutClass =
+  "hidden sm:inline-flex h-5 items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight tabular-nums text-accent dark:border-white/10 dark:bg-black"
+
 export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions }: RequestNavigationProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <Toolbar size="sm" variant="plain">
+      <Toolbar size="sm">
         <Button
           asChild
           variant="nav"
           size="sm"
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+          className={navButtonClass}
           disabled={!backHref}
         >
           {backHref ? (
@@ -53,18 +57,18 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           asChild
           variant="nav"
           size="sm"
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+          className={navButtonClass}
           disabled={!prevHref}
         >
           {prevHref ? (
             <Link href={prevHref} title={prev?.title ? `Previous: ${prev.title} (Z)` : "Previous (Z)"} aria-label="Previous post" aria-keyshortcuts="z">
               <span className="text-xs font-medium">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+              <span className={shortcutClass}>Z</span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
               <span className="text-xs font-medium opacity-50">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+              <span className={shortcutClass}>Z</span>
             </span>
           )}
         </Button>
@@ -73,17 +77,17 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           asChild
           variant="nav"
           size="sm"
-          className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+          className={navButtonClass}
           disabled={!nextHref}
         >
           {nextHref ? (
             <Link href={nextHref} title={next?.title ? `Next: ${next.title} (X)` : "Next (X)"} aria-label="Next post" aria-keyshortcuts="x">
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent h-5">X</span>
+              <span className={shortcutClass}>X</span>
               <span className="text-xs font-medium">Next</span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent h-5">X</span>
+              <span className={shortcutClass}>X</span>
               <span className="text-xs font-medium opacity-50">Next</span>
             </span>
           )}
@@ -91,7 +95,7 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
       </Toolbar>
 
       {showActions ? (
-        <Toolbar size="sm" variant="plain">
+        <Toolbar size="sm">
           <MergePopover postId={postId} workspaceSlug={workspaceSlug} />
           <ToolbarSeparator />
           <DeletePostButton postId={postId} workspaceSlug={workspaceSlug} backHref={backHref} />

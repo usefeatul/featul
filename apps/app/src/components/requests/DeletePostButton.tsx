@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@featul/ui/components/button";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { TrashIcon } from "@featul/ui/icons/trash";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -67,7 +68,7 @@ export function DeletePostButton({
         type="button"
         variant="nav"
         size="icon-sm"
-        className={`rounded-none border-none shadow-none hover:bg-background focus-visible:ring-0 focus-visible:ring-offset-0 ${className || ""}`}
+        className={`${toolbarItemClass} ${className || ""}`}
         aria-label="Delete"
         onClick={() => setConfirmOpen(true)}
         disabled={isPending}
