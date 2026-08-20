@@ -164,6 +164,7 @@ export default function TeamSection({
   };
 
   return (
+    <div className="space-y-4">
     <SectionCard
       title="Members"
       description="People with access to this workspace."
@@ -222,12 +223,6 @@ export default function TeamSection({
           />
         </div>
 
-        <PlanNotice
-          slug={slug}
-          feature="team"
-          plan={initialPlan}
-          membersCount={(data.members || []).length}
-        />
         <InviteMemberModal
             slug={slug}
             open={inviteOpen}
@@ -240,5 +235,12 @@ export default function TeamSection({
           />
       </div>
     </SectionCard>
+    <PlanNotice
+      slug={slug}
+      feature="team"
+      plan={initialPlan}
+      membersCount={(data.members || []).length}
+    />
+    </div>
   );
 }

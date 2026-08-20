@@ -92,6 +92,7 @@ export default function ManageBoards({
   };
 
   return (
+    <div className="space-y-4">
     <SectionCard
       title="Boards"
       description="Boards organize feedback into buckets for a product or feature."
@@ -226,12 +227,6 @@ export default function ManageBoards({
           </TableBody>
         </Table>
       </div>
-      <PlanNotice
-        slug={slug}
-        feature="boards"
-        plan={plan}
-        boardsCount={(otherBoards || []).length}
-      />
       <ModalCreateBoard
         open={createOpen}
         onOpenChange={setCreateOpen}
@@ -275,5 +270,12 @@ export default function ManageBoards({
       />
       </div>
     </SectionCard>
+    <PlanNotice
+      slug={slug}
+      feature="boards"
+      plan={plan}
+      boardsCount={(otherBoards || []).length}
+    />
+    </div>
   );
 }

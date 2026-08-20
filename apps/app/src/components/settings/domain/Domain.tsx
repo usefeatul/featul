@@ -39,6 +39,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
   });
 
   return (
+    <div className="space-y-4">
     <SectionCard
       title="Manage Domain"
       description="Create a custom domain for your workspace."
@@ -105,8 +106,8 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
           saving={createMutation.isPending}
         />
 
-        <PlanNotice slug={slug} feature="domain" plan={initialPlan || plan} />
-
     </SectionCard>
+    <PlanNotice slug={slug} feature="domain" plan={initialPlan || plan} />
+    </div>
   );
 }

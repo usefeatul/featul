@@ -2,10 +2,10 @@ import React from "react";
 import { cn } from "@featul/ui/lib/utils";
 
 export const settingsCardShellClass =
-  "flex flex-col overflow-hidden rounded-xl border border-border bg-card px-2 pt-2 pb-2 text-foreground dark:bg-black";
+  "flex flex-col overflow-hidden rounded-xl border border-border bg-card px-2 pt-2 pb-2 text-foreground dark:border-white/10 dark:bg-black";
 
 export const settingsCardInnerClass =
-  "flex flex-1 flex-col rounded-lg bg-background px-4 py-3 ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-offset-black";
+  "flex flex-1 flex-col rounded-lg bg-background px-4 py-3 ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";
 
 export default function SectionCard({
   title,

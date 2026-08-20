@@ -156,6 +156,7 @@ export function TagManagerSection<T extends ManagedTag>({
   };
 
   return (
+    <div className="space-y-4">
     <SectionCard
       title={title}
       description={description}
@@ -226,7 +227,6 @@ export function TagManagerSection<T extends ManagedTag>({
             </TableBody>
           </Table>
         </div>
-        {renderPlanNotice(tags.length)}
       </div>
       <TagNameDialog
         open={createOpen}
@@ -240,5 +240,7 @@ export function TagManagerSection<T extends ManagedTag>({
         disableWhenEmpty
       />
     </SectionCard>
+    {renderPlanNotice(tags.length)}
+    </div>
   );
 }

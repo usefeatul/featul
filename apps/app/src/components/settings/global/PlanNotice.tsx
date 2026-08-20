@@ -2,7 +2,6 @@
 
 import React from "react";
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { cn } from "@featul/ui/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
   normalizePlan,
@@ -11,6 +10,7 @@ import {
   type PlanLimits,
 } from "@/lib/plan";
 import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace/client";
+import SectionCard from "./SectionCard";
 
 type Feature =
   | "branding"
@@ -169,19 +169,14 @@ export default function PlanNotice({
     boards: boardsCount,
   });
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-md border border-border bg-card text-foreground dark:bg-black before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(0,0,0,0.12)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.45)] px-2 py-2 text-xs sm:text-sm",
-        className,
-      )}
-    >
-      <div className="relative z-10 flex items-center gap-2">
+    <SectionCard title="Plan" className={className}>
+      <div className="flex items-center gap-2">
         <AccentBar width={6} height={30} className="shrink-0" />
         <div className="leading-tight">
           <div className="font-medium">{msg.title}</div>
           {msg.detail ? <div className="text-accent">{msg.detail}</div> : null}
         </div>
       </div>
-    </div>
+    </SectionCard>
   );
 }

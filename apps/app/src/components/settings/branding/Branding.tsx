@@ -238,6 +238,7 @@ export default function BrandingSection({
   };
 
   return (
+    <div className="space-y-4">
     <SectionCard title="Branding" description="Change your brand settings.">
       <div className="space-y-6">
         <div className="flex items-center justify-between ">
@@ -317,7 +318,6 @@ export default function BrandingSection({
         </div>
 
         <div className="pt-2 space-y-2">
-          <PlanNotice slug={slug} feature="branding" plan={plan} />
           <div className="mt-2 flex items-center justify-start">
             <LoadingButton
               onClick={handleSave}
@@ -331,5 +331,7 @@ export default function BrandingSection({
       </div>
 
     </SectionCard>
+    <PlanNotice slug={slug} feature="branding" plan={plan} />
+    </div>
   );
 }
