@@ -1,5 +1,35 @@
 import { z } from "zod";
 import { POST_IMAGE_UPLOAD_POLICY } from "../../storage/upload";
+import { isSafeWidgetParentOrigin } from "../../shared/identity";
+
+function unwrapQueryValue(value: unknown): unknown {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(trimmed) as { json?: unknown };
+        if (parsed && typeof parsed === "object" && "json" in parsed) {
+          return parsed.json;
+        }
+      } catch {
+        return value;
+      }
+    }
+    return value;
+  }
+  if (value && typeof value === "object" && "json" in value) {
+    return (value as { json: unknown }).json;
+  }
+  return value;
+}
+
+function isLocalWidgetHostname(hostname: string) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".localhost")
+  );
+}
 
 const widgetUrlSchema = z
   .string()
@@ -8,26 +38,20 @@ const widgetUrlSchema = z
   .max(2048)
   .refine((value) => {
     const url = new URL(value);
-    const isLocalhost =
-      url.hostname === "localhost" || url.hostname === "127.0.0.1";
     return (
-      url.protocol === "https:" || (url.protocol === "http:" && isLocalhost)
+      url.protocol === "https:" ||
+      (url.protocol === "http:" && isLocalWidgetHostname(url.hostname))
     );
   }, "URL must use HTTPS");
 
-export const parentOriginSchema = z
-  .string()
-  .url()
-  .max(2048)
-  .refine((value) => {
-    const url = new URL(value);
-    const isLocalhost =
-      url.hostname === "localhost" || url.hostname === "127.0.0.1";
-    return (
-      value === url.origin &&
-      (url.protocol === "https:" || (url.protocol === "http:" && isLocalhost))
-    );
-  }, "Invalid widget parent origin");
+export const parentOriginSchema = z.preprocess(
+  unwrapQueryValue,
+  z
+    .string()
+    .trim()
+    .max(2048)
+    .refine(isSafeWidgetParentOrigin, "Invalid widget parent origin"),
+);
 export const projectIdInput = z.object({
   projectId: z
     .string()

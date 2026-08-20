@@ -64,6 +64,14 @@ export function isVerifiedIdentity(
   return safeEqualString(identity.signature, expected);
 }
 
+function isLocalWidgetHostname(hostname: string) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".localhost")
+  );
+}
+
 export function isSafeWidgetParentOrigin(
   value?: string | null,
 ): value is string {
@@ -74,7 +82,7 @@ export function isSafeWidgetParentOrigin(
     if (origin !== url.origin) return false;
     if (url.protocol === "https:") return true;
     if (url.protocol !== "http:") return false;
-    return url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    return isLocalWidgetHostname(url.hostname);
   } catch {
     return false;
   }
@@ -134,8 +142,21 @@ export function buildWidgetOriginAllowlist(input: {
     if (isSafeWidgetParentOrigin(origin)) origins.add(origin);
   }
   if (input.includeDevOrigins) {
-    origins.add("http://localhost:3000");
-    origins.add("http://127.0.0.1:3000");
+    const slug = String(input.slug || "").trim().toLowerCase();
+    const devPorts = new Set(["3000"]);
+    if (input.appOrigin) {
+      try {
+        const app = new URL(input.appOrigin);
+        if (app.port) devPorts.add(app.port);
+      } catch {
+        /* ignore invalid app origin */
+      }
+    }
+    for (const port of devPorts) {
+      origins.add(`http://localhost:${port}`);
+      origins.add(`http://127.0.0.1:${port}`);
+      if (slug) origins.add(`http://${slug}.localhost:${port}`);
+    }
   }
   return [...origins];
 }
