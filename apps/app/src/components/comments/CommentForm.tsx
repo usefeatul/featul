@@ -28,6 +28,7 @@ interface CommentFormProps {
   workspaceSlug?: string
   surface?: CommentSurface
   defaultInternal?: boolean
+  compact?: boolean
 }
 
 export default function CommentForm({
@@ -41,6 +42,7 @@ export default function CommentForm({
   workspaceSlug,
   surface = "workspace",
   defaultInternal = false,
+  compact = false,
 }: CommentFormProps) {
   const [content, setContent] = useState("")
   const [isInternal, setIsInternal] = useState(defaultInternal)
@@ -100,7 +102,10 @@ export default function CommentForm({
           }}
           placeholder={placeholder}
           variant="plain"
-          className="min-h-[60px] resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-accent"
+          className={cn(
+            "min-h-[60px] resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-accent",
+            compact && "min-h-[44px] py-1.5",
+          )}
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}

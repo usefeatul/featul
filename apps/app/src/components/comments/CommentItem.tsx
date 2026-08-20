@@ -14,6 +14,7 @@ import CommentHeader from "./CommentHeader"
 import CommentContent from "./CommentContent"
 import CommentEditor from "./CommentEditor"
 import CommentFooter from "./CommentFooter"
+import CommentActions from "./actions/CommentActions"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
@@ -54,7 +55,7 @@ export default function CommentItem({
   const canDelete = isAuthor || (workspaceSlug ? isOwner : false)
   const canUseInternalComments = Boolean(workspaceSlug && (isOwner || role !== null))
   const canToggleVisibility = surface === "workspace" && canDelete && canUseInternalComments
-  const canReply = depth < 3 // Limit nesting to 3 levels
+  const canReply = depth < 3
 
   const {
     isEditing,
@@ -70,7 +71,6 @@ export default function CommentItem({
     onUpdate,
   })
 
-  // Identity hiding logic
   const displayUser = getPrivacySafeDisplayUser(
     {
       name: comment.authorName || "Guest",
@@ -78,75 +78,98 @@ export default function CommentItem({
       email: ""
     },
     hidePublicMemberIdentity,
-    comment.id // Use comment ID as seed
+    comment.id
   )
 
   const isGuest = !comment.authorName || comment.authorName === "Guest"
   const showHiddenIdentity = hidePublicMemberIdentity && !isGuest
-
   const initials = getInitials(displayUser.name)
+  const indentPx = depth * 24
 
   return (
     <div className="group min-w-0">
-      <div className="flex min-w-0 items-start gap-2.5">
-        <Avatar className="relative mt-0.5 size-7 shrink-0 overflow-visible">
-          <AvatarImage src={displayUser.image} alt={displayUser.name} />
-          <AvatarFallback className="bg-muted text-[10px] text-muted-foreground">
-            {initials}
-          </AvatarFallback>
-          {!showHiddenIdentity && (
-            <RoleBadge role={comment.role} isOwner={comment.isOwner} />
-          )}
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <CommentHeader
-            comment={comment}
-            isEditing={isEditing}
-            isAuthor={isAuthor}
-            isOwner={isOwner}
-            canDelete={canDelete}
-            canToggleVisibility={canToggleVisibility}
-            hasReplies={hasReplies}
-            isCollapsed={isCollapsed || false}
-            onToggleCollapse={onToggleCollapse}
-            onEdit={() => setIsEditing(true)}
-            onDeleteSuccess={onUpdate}
-            surface={surface}
-            hidePublicMemberIdentity={showHiddenIdentity}
-          />
-
-          <div className="mt-1">
-            {isEditing ? (
-              <CommentEditor
-                value={editContent}
-                onChange={setEditContent}
-                onKeyDown={handleKeyDown}
-                onBlur={handleBlur}
-                isPending={isPending}
-              />
-            ) : (
-              <CommentContent
-                content={comment.content}
-                metadata={comment.metadata}
-              />
+      <div className="flex min-w-0 items-start gap-2">
+        <div
+          className="flex min-w-0 flex-1 items-start gap-2.5"
+          style={{ paddingLeft: indentPx }}
+        >
+          {depth > 0 ? (
+            <span
+              aria-hidden
+              className="mt-3 h-px w-3 shrink-0 bg-border/70 dark:bg-white/15"
+            />
+          ) : null}
+          <Avatar className="relative mt-0.5 size-7 shrink-0 overflow-visible">
+            <AvatarImage src={displayUser.image} alt={displayUser.name} />
+            <AvatarFallback className="bg-muted text-[10px] text-muted-foreground">
+              {initials}
+            </AvatarFallback>
+            {!showHiddenIdentity && (
+              <RoleBadge role={comment.role} isOwner={comment.isOwner} />
             )}
-          </div>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <CommentHeader
+              comment={comment}
+              isOwner={isOwner}
+              hasReplies={hasReplies}
+              isCollapsed={isCollapsed || false}
+              onToggleCollapse={onToggleCollapse}
+              hidePublicMemberIdentity={showHiddenIdentity}
+            />
 
-          {!isEditing && (
-            <CommentFooter
+            <div className="mt-1">
+              {isEditing ? (
+                <CommentEditor
+                  value={editContent}
+                  onChange={setEditContent}
+                  onKeyDown={handleKeyDown}
+                  onBlur={handleBlur}
+                  isPending={isPending}
+                />
+              ) : (
+                <CommentContent
+                  content={comment.content}
+                  metadata={comment.metadata}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {!isEditing ? (
+          <div className="shrink-0">
+            <CommentActions
               commentId={comment.id}
               postId={comment.postId}
+              isAuthor={isAuthor}
+              canDelete={canDelete}
+              canToggleVisibility={canToggleVisibility}
+              canPin={isOwner}
+              isPinned={!!comment.isPinned}
+              isInternal={Boolean(comment.isInternal)}
               surface={surface}
-              upvotes={comment.upvotes}
-              downvotes={comment.downvotes}
-              userVote={comment.userVote}
-              canReply={canReply}
-              showReplyForm={showReplyForm}
-              onToggleReply={() => setShowReplyForm(!showReplyForm)}
+              onEdit={() => setIsEditing(true)}
+              onDeleteSuccess={onUpdate}
             />
-          )}
-        </div>
+          </div>
+        ) : null}
       </div>
+
+      {!isEditing ? (
+        <CommentFooter
+          commentId={comment.id}
+          postId={comment.postId}
+          surface={surface}
+          upvotes={comment.upvotes}
+          downvotes={comment.downvotes}
+          userVote={comment.userVote}
+          canReply={canReply}
+          showReplyForm={showReplyForm}
+          onToggleReply={() => setShowReplyForm(!showReplyForm)}
+          indentPx={indentPx}
+        />
+      ) : null}
 
       {showReplyForm ? (
         <div className={cn(settingsCardInnerClass, "mt-3")}>
@@ -161,6 +184,7 @@ export default function CommentItem({
               onReplySuccess?.()
             }}
             onCancel={() => setShowReplyForm(false)}
+            compact
             placeholder="Write a reply..."
             autoFocus
             buttonText="Reply"

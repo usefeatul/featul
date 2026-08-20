@@ -118,7 +118,7 @@ function ThreadItem({
           "border-b border-border/60 last:border-b-0 dark:border-b-white/10",
       )}
     >
-      <div className={cn(depth === 0 ? "px-4 py-3" : "py-2.5")}>
+      <div className="px-4 py-3">
         <CommentItem
           comment={comment}
           currentUserId={currentUserId}
@@ -136,23 +136,21 @@ function ThreadItem({
 
       {hasReplies && (
         <AnimatedReplies isOpen={!isCollapsed}>
-          <div className="ml-8 space-y-0 border-l border-border/50 pl-3 dark:border-white/10">
-            {replies.map((reply) => (
-              <ThreadItem
-                key={reply.id}
-                comment={reply}
-                getReplies={getReplies}
-                currentUserId={currentUserId}
-                onUpdate={onUpdate}
-                depth={depth + 1}
-                collapsedIds={collapsedIds}
-                onToggleCollapse={onToggleCollapse}
-                workspaceSlug={workspaceSlug}
-                surface={surface}
-                hidePublicMemberIdentity={hidePublicMemberIdentity}
-              />
-            ))}
-          </div>
+          {replies.map((reply) => (
+            <ThreadItem
+              key={reply.id}
+              comment={reply}
+              getReplies={getReplies}
+              currentUserId={currentUserId}
+              onUpdate={onUpdate}
+              depth={depth + 1}
+              collapsedIds={collapsedIds}
+              onToggleCollapse={onToggleCollapse}
+              workspaceSlug={workspaceSlug}
+              surface={surface}
+              hidePublicMemberIdentity={hidePublicMemberIdentity}
+            />
+          ))}
         </AnimatedReplies>
       )}
     </div>
