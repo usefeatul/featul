@@ -162,11 +162,11 @@ export default function NotificationsBell({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        asChild
+        unstyled
         side={side}
         align={align}
         sideOffset={8}
-        className="bg-transparent p-0 border-none shadow-none w-auto"
+        className="w-auto border-0 bg-transparent p-0 shadow-none"
       >
         <NotificationsPanel
           notifications={notifications}

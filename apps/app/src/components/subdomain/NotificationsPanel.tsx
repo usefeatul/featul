@@ -64,7 +64,7 @@ const NotificationsPanel = React.forwardRef<
       {...props}
       className={cn(
         overlayShellClass,
-        "z-50 max-h-[36rem] max-w-[90vw] overflow-y-auto p-1 text-popover-foreground shadow-md",
+        "z-50 w-80 max-h-[36rem] max-w-[90vw] overflow-y-auto p-1 text-popover-foreground",
       )}
       role="dialog"
       aria-label="Notifications"
@@ -73,69 +73,65 @@ const NotificationsPanel = React.forwardRef<
       exit={{ opacity: 0, y: -6, scale: 0.98 }}
       transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
     >
-      <div className={cn(overlayInnerClass, "p-0")}>
-      <div className="px-3 py-2.5 space-x-4 text-sm font-medium flex items-center justify-between">
-        <span>Notifications</span>
-
-        {onMarkAllRead && (
+      <header className="flex items-center justify-between gap-3 px-1 py-2">
+        <span className="text-sm font-medium">Notifications</span>
+        {onMarkAllRead ? (
           <button
             type="button"
-            className="text-xs rounded-md bg-muted ring-1 ring-border px-2 py-1.5 cursor-pointer"
+            className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
             onClick={onMarkAllRead}
           >
             Mark all as read
           </button>
-        )}
-      </div>
-
-      {notifications.length === 0 ? (
-        <div className="px-5 py-5 text-sm text-accent flex justify-center">
-          No notifications
-        </div>
-      ) : (
-        <ul className="list-none">
-          {notifications.map((n) => (
-            <li key={n.id} className="px-2">
-              <Link
-                href={resolveNotificationHref(n, linkMode)}
-                className="px-2 py-1.5 flex items-center gap-2 rounded-md hover:bg-muted dark:hover:bg-black/40"
-                onClick={() => markRead(n.id)}
-              >
-                <div className="relative">
-                  <Avatar className="size-7">
-                    <AvatarImage src={n.authorImage ?? ""} />
-                    <AvatarFallback className="text-sm font-medium">
-                      {getInitials(n.authorName || "U")}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  {!n.isRead && (
-                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-orange-500 ring-1 ring-background" />
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="text-xs">
-                    <span className="font-bold">{n.authorName || "Guest"}</span>
-                    <span className="text-accent ml-1 font-medium">
-                      {n.type === "changelog"
-                        ? "mentioned you in changelog."
-                        : "mentioned you in feedback."}
-                    </span>
-                  </div>
-                  <div className="text-xs text-accent">
-                    {relativeTime(
-                      typeof n.createdAt === "string"
-                        ? n.createdAt
-                        : n.createdAt.toISOString(),
+        ) : null}
+      </header>
+      <div className={cn(overlayInnerClass, "p-0")}>
+        {notifications.length === 0 ? (
+          <div className="px-5 py-5 text-sm text-muted-foreground flex justify-center">
+            No notifications
+          </div>
+        ) : (
+          <ul className="list-none">
+            {notifications.map((n) => (
+              <li key={n.id} className="px-1.5 py-1">
+                <Link
+                  href={resolveNotificationHref(n, linkMode)}
+                  className="px-2 py-1.5 flex items-center gap-2 rounded-md hover:bg-muted/40"
+                  onClick={() => markRead(n.id)}
+                >
+                  <div className="relative">
+                    <Avatar className="size-7">
+                      <AvatarImage src={n.authorImage ?? ""} />
+                      <AvatarFallback className="text-sm font-medium">
+                        {getInitials(n.authorName || "U")}
+                      </AvatarFallback>
+                    </Avatar>
+                    {!n.isRead && (
+                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-orange-500" />
                     )}
                   </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+                  <div className="flex-1">
+                    <div className="text-xs">
+                      <span className="font-bold">{n.authorName || "Guest"}</span>
+                      <span className="text-accent ml-1 font-medium">
+                        {n.type === "changelog"
+                          ? "mentioned you in changelog."
+                          : "mentioned you in feedback."}
+                      </span>
+                    </div>
+                    <div className="text-xs text-accent">
+                      {relativeTime(
+                        typeof n.createdAt === "string"
+                          ? n.createdAt
+                          : n.createdAt.toISOString(),
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </motion.div>
   )
