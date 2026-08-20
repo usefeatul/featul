@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { POST_MAX_IMAGES } from "../../upload/policy";
 import { POST_IMAGE_UPLOAD_POLICY } from "../../storage/upload";
 import { isSafeWidgetParentOrigin } from "../../shared/identity";
 
@@ -79,11 +80,23 @@ export const identifySchema = projectInput.extend({
   user: widgetIdentitySchema.nullable().optional(),
 });
 
+const widgetPostImagesSchema = z
+  .array(
+    z.object({
+      url: widgetUrlSchema,
+      name: z.string().max(255).optional(),
+      type: z.string().max(128).optional(),
+    }),
+  )
+  .max(POST_MAX_IMAGES)
+  .optional();
+
 export const createSchema = projectInput.extend({
   title: z.string().trim().min(3).max(120),
   content: z.string().trim().min(1).max(5000),
   boardId: z.string().min(1).max(128),
   image: widgetUrlSchema.optional(),
+  images: widgetPostImagesSchema,
   identity: widgetIdentitySchema.optional(),
   fingerprint: z.string().min(1).max(256).optional(),
 });

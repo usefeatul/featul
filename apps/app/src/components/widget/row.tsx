@@ -7,7 +7,7 @@ import type { IdentifiedUser, WidgetApiBase, WidgetPost } from "./types";
 import { formatRelativeDate, toPlain } from "./utils";
 import { WidgetVoteButton } from "./vote";
 import { WidgetAuthorAvatar } from "./avatar";
-import { WidgetImage } from "./image";
+import { WidgetImageStrip } from "./gallery";
 
 type Props = {
   post: WidgetPost;
@@ -27,6 +27,8 @@ export function WidgetPostRow({
   onVoteChange,
 }: Props) {
   const excerpt = toPlain(post.content);
+  const imageUrls =
+    post.images?.length ? post.images : post.image ? [post.image] : [];
   const author = post.isAnonymous ? "Guest" : post.authorName || "Guest";
   const meta = [
     author,
@@ -54,9 +56,9 @@ export function WidgetPostRow({
             <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.45)]">{excerpt}</p>
           ) : null}
 
-          {post.image ? (
-            <div className="pointer-events-auto mt-2 inline-block">
-              <WidgetImage url={post.image} alt={post.title} className="h-16 w-24" />
+          {imageUrls.length ? (
+            <div className="pointer-events-auto mt-2">
+              <WidgetImageStrip urls={imageUrls} alt={post.title} />
             </div>
           ) : null}
 

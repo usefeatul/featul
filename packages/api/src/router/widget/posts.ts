@@ -2,6 +2,11 @@ import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { board, post, vote, widgetUser } from "@featul/db";
 import { publicProcedure } from "../../jstack";
+import {
+  listPostImageUrls,
+  mergePostMetadata,
+  resolvePostImageFields,
+} from "../../storage/images";
 import { getRequestFingerprint } from "../../request/fingerprint";
 import {
   assertWidgetPostImageUrl,
@@ -205,25 +210,39 @@ export const widgetCreate = publicProcedure
       });
     }
 
-    if (input.image) {
-      assertWidgetPostImageUrl(input.image, resolved.workspaceSlug);
+    const imageFields = resolvePostImageFields({
+      image: input.image,
+      images: input.images,
+    }) ?? {
+      image: input.image ?? null,
+      attachments: [],
+    };
+
+    for (const url of listPostImageUrls(
+      imageFields.image,
+      mergePostMetadata(undefined, imageFields.attachments),
+    )) {
+      assertWidgetPostImageUrl(url, resolved.workspaceSlug);
     }
 
     const request = getWidgetRequest(c);
     const fingerprint = authorId
       ? null
       : getRequestFingerprint(request, input.fingerprint);
+    const baseMetadata = authorId
+      ? { widget: true as const }
+      : { fingerprint, widget: true as const };
     const [created] = await ctx.db
       .insert(post)
       .values({
         boardId: targetBoard.id,
         title: input.title,
         content: input.content,
-        image: input.image || null,
+        image: imageFields.image,
         slug: createPostSlug(input.title),
         widgetUserId: authorId,
         isAnonymous: !authorId,
-        metadata: authorId ? { widget: true } : { fingerprint, widget: true },
+        metadata: mergePostMetadata(baseMetadata, imageFields.attachments),
         roadmapStatus: "pending",
       })
       .returning();
@@ -243,6 +262,7 @@ export const widgetCreate = publicProcedure
       post: {
         ...created,
         upvotes: 1,
+        images: listPostImageUrls(created.image, created.metadata),
         authorName: identifiedAuthor?.name || identifiedAuthor?.email || null,
         authorImage: resolveWidgetAuthorImage({
           id: created.id,

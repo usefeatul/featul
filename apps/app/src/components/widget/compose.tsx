@@ -6,11 +6,12 @@ import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
 import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { Camera, Check, Heart, X } from "lucide-react";
+import { Camera, Check, Heart } from "lucide-react";
 import { ScreenshotAnnotator } from "./annotate";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
   POST_IMAGE_UPLOAD_MAX_BYTES,
+  POST_MAX_IMAGES,
 } from "@featul/api/upload/policy";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type {
@@ -20,9 +21,9 @@ import type {
   WidgetApiBase,
   WidgetPost,
 } from "./types";
-import { parseSimilarPosts } from "./load";
+import { parseSimilarPosts, parseWidgetPost } from "./load";
 import { dataUrlToImageFile, isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload, deleteWidgetUploadedImage } from "./utils";
-import { WidgetImage } from "./image";
+import { WidgetImageStrip } from "./gallery";
 import {
   widgetToolbarInnerClass,
   widgetToolbarItemClass,
@@ -50,6 +51,7 @@ type Props = {
 type UploadedImage = {
   url: string;
   name: string;
+  type: string;
 };
 
 export function WidgetFeedbackCompose({
@@ -75,8 +77,15 @@ export function WidgetFeedbackCompose({
   const [message, setMessage] = React.useState("");
   const [created, setCreated] = React.useState<WidgetPost | null>(null);
   const [similar, setSimilar] = React.useState<SimilarPost[]>([]);
-  const [uploadedImage, setUploadedImage] = React.useState<UploadedImage | null>(null);
+  const [uploadedImages, setUploadedImages] = React.useState<UploadedImage[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const uploadedImagesRef = React.useRef<UploadedImage[]>([]);
+
+  React.useEffect(() => {
+    uploadedImagesRef.current = uploadedImages;
+  }, [uploadedImages]);
+
+  const atImageLimit = uploadedImages.length >= POST_MAX_IMAGES;
 
   React.useEffect(() => {
     if (captureHint) setMessage(captureHint);
@@ -119,6 +128,10 @@ export function WidgetFeedbackCompose({
       setMessage("Pick a board first.");
       return false;
     }
+    if (uploadedImagesRef.current.length >= POST_MAX_IMAGES) {
+      setMessage(`You can add up to ${POST_MAX_IMAGES} images.`);
+      return false;
+    }
     if (!isAllowedImageType(file.type, IMAGE_UPLOAD_CONTENT_TYPES)) {
       setMessage("Use a PNG, JPEG, WebP, or GIF.");
       return false;
@@ -153,26 +166,28 @@ export function WidgetFeedbackCompose({
       });
       if (!put.ok) throw new Error("Upload failed");
 
-      setUploadedImage({ url: data.publicUrl, name: file.name });
+      setUploadedImages((prev) => [
+        ...prev,
+        { url: data.publicUrl, name: file.name, type: file.type },
+      ]);
       return true;
     } catch {
       setMessage("That image couldn’t be added.");
-      setUploadedImage(null);
       return false;
     } finally {
       setUploading(false);
     }
   };
 
-  const removeUploadedImage = async () => {
-    const url = uploadedImage?.url;
-    setUploadedImage(null);
-    if (!url) return;
+  const removeUploadedImage = async (index: number) => {
+    const removed = uploadedImagesRef.current[index];
+    setUploadedImages((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
+    if (!removed?.url) return;
     const fingerprint =
       userId || identity?.email ? undefined : await getBrowserFingerprint();
     await deleteWidgetUploadedImage({
       apiBase,
-      url,
+      url: removed.url,
       userId,
       identity,
       fingerprint,
@@ -180,10 +195,18 @@ export function WidgetFeedbackCompose({
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
     if (fileInputRef.current) fileInputRef.current.value = "";
-    if (!file) return;
-    await uploadFile(file);
+    if (!files.length) return;
+
+    const remaining = Math.max(0, POST_MAX_IMAGES - uploadedImagesRef.current.length);
+    const accepted = files.slice(0, remaining);
+    if (files.length > accepted.length) {
+      setMessage(`You can add up to ${POST_MAX_IMAGES} images.`);
+    }
+    for (const file of accepted) {
+      await uploadFile(file);
+    }
   };
 
   const submit = async (event: React.FormEvent) => {
@@ -199,17 +222,21 @@ export function WidgetFeedbackCompose({
         boardId,
         title: title.trim().slice(0, 120),
         content: (content.trim() || title.trim()).slice(0, 5000),
-        image: uploadedImage?.url,
+        image: uploadedImages[0]?.url,
+        images: uploadedImages.length
+          ? uploadedImages.map((item) => ({
+              url: item.url,
+              name: item.name,
+              type: item.type,
+            }))
+          : undefined,
       });
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
-      const createdPost = data.post;
+      const createdPost = parseWidgetPost(data.post);
+      if (!createdPost) throw new Error("Failed");
       const post: WidgetPost = {
-        id: createdPost.id,
-        title: createdPost.title,
-        slug: createdPost.slug,
-        content: createdPost.content,
-        image: createdPost.image ?? uploadedImage?.url ?? null,
+        ...createdPost,
         upvotes: createdPost.upvotes ?? 1,
         commentCount: createdPost.commentCount ?? 0,
         roadmapStatus: createdPost.roadmapStatus ?? "pending",
@@ -218,7 +245,7 @@ export function WidgetFeedbackCompose({
         boardName: selectedBoard?.name || null,
         boardSlug: selectedBoard?.slug || null,
         isAnonymous: createdPost.isAnonymous ?? !(userId || identity?.email),
-        authorName: identity?.name || null,
+        authorName: identity?.name || createdPost.authorName || null,
         authorImage: createdPost.authorImage || identity?.avatar || null,
         hasVoted: true,
       };
@@ -227,7 +254,7 @@ export function WidgetFeedbackCompose({
       setTitle("");
       setContent("");
       setSimilar([]);
-      setUploadedImage(null);
+      setUploadedImages([]);
     } catch {
       setMessage("Couldn’t send this. Try again.");
     } finally {
@@ -295,22 +322,14 @@ export function WidgetFeedbackCompose({
         className="min-h-0 flex-1 resize-none px-0 py-2 text-base leading-relaxed text-[rgb(var(--widget-fg)/0.85)] shadow-none placeholder:text-[rgb(var(--widget-fg)/0.25)] focus-visible:ring-0"
       />
 
-      {uploadedImage ? (
-        <div className="relative mt-2 w-fit shrink-0">
-          <WidgetImage
-            url={uploadedImage.url}
-            alt={uploadedImage.name}
-            className="h-16 w-24"
-          />
-          <button
-            type="button"
-            onClick={() => void removeUploadedImage()}
-            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-[rgb(var(--widget-surface))] hover:bg-destructive/90"
-            aria-label="Remove image"
-          >
-            <X className="size-2.5" />
-          </button>
-        </div>
+      {uploadedImages.length ? (
+        <WidgetImageStrip
+          urls={uploadedImages.map((item) => item.url)}
+          alt={title.trim() || "Attached image"}
+          className="mt-2 shrink-0"
+          onRemove={(index) => void removeUploadedImage(index)}
+          removeDisabled={uploading}
+        />
       ) : null}
 
       {similar.length ? (
@@ -367,12 +386,13 @@ export function WidgetFeedbackCompose({
             accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
             onChange={handleFileSelect}
             className="hidden"
-            disabled={uploading || capturing || Boolean(uploadedImage)}
+            multiple
+            disabled={uploading || capturing || atImageLimit}
           />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploading || capturing || Boolean(uploadedImage)}
+            disabled={uploading || capturing || atImageLimit}
             className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40`}
             aria-label="Add image"
           >
@@ -382,11 +402,19 @@ export function WidgetFeedbackCompose({
               <ImageIcon className="size-4" />
             )}
           </button>
+          {uploadedImages.length ? (
+            <>
+              <div className={widgetToolbarSeparatorClass} />
+              <span className="flex h-full items-center px-2.5 text-[11px] tabular-nums text-[rgb(var(--widget-fg)/0.45)]">
+                {uploadedImages.length}/{POST_MAX_IMAGES}
+              </span>
+            </>
+          ) : null}
           <div className={widgetToolbarSeparatorClass} />
           <button
             type="button"
             onClick={onCapture}
-            disabled={uploading || capturing || Boolean(uploadedImage)}
+            disabled={uploading || capturing || atImageLimit}
             className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40`}
             aria-label="Capture screenshot"
           >
