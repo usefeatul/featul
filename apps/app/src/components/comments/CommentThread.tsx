@@ -59,7 +59,7 @@ export default function CommentThread({
       )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {rootComments.map((comment) => (
         <ThreadItem
           key={comment.id}
@@ -108,10 +108,9 @@ function ThreadItem({
   const replies = getReplies(comment.id)
   const isCollapsed = collapsedIds.has(comment.id)
   const hasReplies = replies.length > 0
-  const isOpen = hasReplies && !isCollapsed
 
   return (
-    <div className="group/thread relative">
+    <div className="relative">
       <CommentItem
         comment={comment}
         currentUserId={currentUserId}
@@ -126,70 +125,27 @@ function ThreadItem({
         hidePublicMemberIdentity={hidePublicMemberIdentity}
       />
 
-      {/* Vertical thread line */}
-      {isOpen && <ThreadLine />}
-
-      {/* Replies */}
       {hasReplies && (
         <AnimatedReplies isOpen={!isCollapsed}>
-          <div className="relative pl-9 pt-2">
-            <div className="space-y-4">
-              {replies.map((reply, index) => (
-                <ReplyWrapper
-                  key={reply.id}
-                  isLast={index === replies.length - 1}
-                >
-                  <ThreadItem
-                    comment={reply}
-                    getReplies={getReplies}
-                    currentUserId={currentUserId}
-                    onUpdate={onUpdate}
-                    depth={depth + 1}
-                    collapsedIds={collapsedIds}
-                    onToggleCollapse={onToggleCollapse}
-                    workspaceSlug={workspaceSlug}
-                    surface={surface}
-                    hidePublicMemberIdentity={hidePublicMemberIdentity}
-                  />
-                </ReplyWrapper>
-              ))}
-            </div>
+          <div className="ml-3 space-y-3 border-l border-border/50 pt-3 pl-4 dark:border-white/10">
+            {replies.map((reply) => (
+              <ThreadItem
+                key={reply.id}
+                comment={reply}
+                getReplies={getReplies}
+                currentUserId={currentUserId}
+                onUpdate={onUpdate}
+                depth={depth + 1}
+                collapsedIds={collapsedIds}
+                onToggleCollapse={onToggleCollapse}
+                workspaceSlug={workspaceSlug}
+                surface={surface}
+                hidePublicMemberIdentity={hidePublicMemberIdentity}
+              />
+            ))}
           </div>
         </AnimatedReplies>
       )}
-    </div>
-  )
-}
-
-// --- Thread Decorators ---
-
-function ThreadLine() {
-  return (
-    <div
-      className="absolute left-[15px] top-8 bottom-0 w-px bg-border/50 transition-colors dark:bg-white/10"
-      aria-hidden="true"
-    />
-  )
-}
-
-function ReplyWrapper({
-  isLast,
-  children,
-}: {
-  isLast: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <div className="relative">
-      {/* Curved connector */}
-      <div className="absolute -left-[21px] top-[14px] size-[18px] rounded-bl-xl border-l border-b border-border/50 transition-colors dark:border-white/10" />
-
-      {/* Mask vertical line at last item */}
-      {isLast && (
-        <div className="absolute -left-[21px] top-[14px] bottom-0 w-px bg-background z-10" />
-      )}
-
-      {children}
     </div>
   )
 }

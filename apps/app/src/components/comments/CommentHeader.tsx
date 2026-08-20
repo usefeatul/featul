@@ -49,8 +49,8 @@ export default function CommentHeader({
   const editedLabel = relativeTime(editedAt)
 
   return (
-    <div className="flex items-start justify-between gap-2">
-      <div className="flex items-center gap-2 flex-wrap leading-none">
+    <div className="flex items-center justify-between gap-2">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 leading-none">
         <span className="text-sm font-semibold text-foreground">
           {displayName}
         </span>
