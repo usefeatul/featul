@@ -14,12 +14,14 @@ interface CoverImageUploaderProps {
     workspaceSlug: string;
     coverImage: string | null;
     onCoverImageChange: (url: string | null) => void;
+    variant?: "image" | "button";
 }
 
 export function CoverImageUploader({
     workspaceSlug,
     coverImage,
     onCoverImageChange,
+    variant = "button",
 }: CoverImageUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
 
@@ -57,59 +59,54 @@ export function CoverImageUploader({
         }
     }, [workspaceSlug, onCoverImageChange]);
 
-    if (coverImage) {
+    if (variant === "image" && coverImage) {
         return (
-            <div className="relative group overflow-hidden">
-                <img
-                    src={coverImage}
-                    alt="Cover"
-                    className="h-auto max-h-80 w-full object-cover"
-                />
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                    <label className="cursor-pointer">
-                        <input
-                            type="file"
-                            accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
-                            className="hidden"
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) handleUpload(file);
-                            }}
-                        />
-                        <Button size="sm" className="h-7 px-2 text-xs" asChild>
-                            <span>Change</span>
-                        </Button>
-                    </label>
-                    <Button
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={() => onCoverImageChange(null)}
-                    >
-                        <X className="size-3.5" />
-                    </Button>
-                </div>
-            </div>
+            <img
+                src={coverImage}
+                alt="Cover"
+                className="h-auto w-full object-cover"
+            />
         );
     }
 
     return (
-        <label className="cursor-pointer">
-            <input
-                type="file"
-                accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
-                className="hidden"
-                onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleUpload(file);
-                }}
-            />
-            <Button variant="card" size="icon" className="h-7 w-7 dark:border-white/10 dark:bg-black" asChild disabled={isUploading}>
-                {isUploading ? (
-                    <span><LoaderIcon className="size-4 animate-spin" /></span>
-                ) : (
-                    <span><ImageIcon className="text-muted-foreground size-4" /></span>
-                )}
-            </Button>
-        </label>
+        <div className="flex items-center gap-1">
+            <label className="cursor-pointer">
+                <input
+                    type="file"
+                    accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
+                    className="hidden"
+                    onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUpload(file);
+                    }}
+                />
+                <Button
+                    variant="card"
+                    size="icon"
+                    className="h-7 w-7 dark:border-white/10 dark:bg-black"
+                    asChild
+                    disabled={isUploading}
+                >
+                    {isUploading ? (
+                        <span><LoaderIcon className="size-4 animate-spin" /></span>
+                    ) : (
+                        <span><ImageIcon className="size-4 text-muted-foreground" /></span>
+                    )}
+                </Button>
+            </label>
+            {coverImage ? (
+                <Button
+                    type="button"
+                    variant="card"
+                    size="icon"
+                    className="h-7 w-7 dark:border-white/10 dark:bg-black"
+                    onClick={() => onCoverImageChange(null)}
+                    aria-label="Remove cover image"
+                >
+                    <X className="size-3.5" />
+                </Button>
+            ) : null}
+        </div>
     );
 }
