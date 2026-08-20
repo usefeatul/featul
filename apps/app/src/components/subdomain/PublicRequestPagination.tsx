@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@featul/ui/components/button"
 import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import PaginationHotkeys from "@/components/pagination/PaginationHotkeys"
 
 export function PublicRequestPagination({
@@ -59,14 +60,14 @@ export function PublicRequestPagination({
           <Button asChild variant="card" size="sm" disabled={page <= 1} className={`${toolbarItemClass} h-8 px-3 gap-2`}>
             <Link prefetch={false} href={prevHref} rel="prev" aria-label="Previous page" aria-keyshortcuts="z" title="Prev (Z)" className="group">
               <span className="text-xs font-medium">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">Z</span>
+              <OverlayChip className="hidden sm:inline-flex" innerClassName="px-1.5">Z</OverlayChip>
             </Link>
           </Button>
           <ToolbarSeparator />
           <Button asChild variant="card" size="sm" disabled={page >= totalPages || totalCount === 0} className={`${toolbarItemClass} h-8 px-3 gap-2`}>
             <Link prefetch={false} href={nextHref} rel="next" aria-label="Next page" aria-keyshortcuts="x" title="Next (X)" className="group">
               <span className="text-xs font-medium">Next</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">X</span>
+              <OverlayChip className="hidden sm:inline-flex" innerClassName="px-1.5">X</OverlayChip>
             </Link>
           </Button>
         </Toolbar>

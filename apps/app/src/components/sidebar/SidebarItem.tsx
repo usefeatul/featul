@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
-import { sidebarBadgeClassName } from "./badge";
+import { SidebarBadge } from "./badge";
 
 const pillTransition = (reduce: boolean | null) =>
   reduce
@@ -76,13 +76,13 @@ function SidebarItem({
       />
       <span className="relative z-[1] transition-colors duration-200">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <span className={cn("relative z-[1] ml-auto", sidebarBadgeClassName(count < 10))}>
+        <SidebarBadge className="relative z-[1] ml-auto" fixedWidth={count < 10}>
           {count}
-        </span>
+        </SidebarBadge>
       ) : shortcut ? (
-        <span className={cn("relative z-[1] ml-auto", sidebarBadgeClassName(true))}>
+        <SidebarBadge className="relative z-[1] ml-auto">
           {shortcut}
-        </span>
+        </SidebarBadge>
       ) : null}
     </>
   );

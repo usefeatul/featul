@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
 import {
   buildChangelogUrl,
   buildRequestsUrl,
@@ -131,9 +132,9 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Prev</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">
+                <OverlayChip className="hidden sm:inline-flex" innerClassName="px-1.5">
                   Z
-                </span>
+                </OverlayChip>
               </Link>
             </Button>
             <ToolbarSeparator />
@@ -154,9 +155,9 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Next</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">
+                <OverlayChip className="hidden sm:inline-flex" innerClassName="px-1.5">
                   X
-                </span>
+                </OverlayChip>
               </Link>
             </Button>
           </Toolbar>

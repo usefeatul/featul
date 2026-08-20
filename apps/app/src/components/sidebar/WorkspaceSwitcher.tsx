@@ -15,7 +15,7 @@ import { getSlugFromPath } from "../../config/nav";
 import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
-import { sidebarBadgeClassName } from "./badge";
+import { SidebarBadge } from "./badge";
 
 export default function WorkspaceSwitcher({
   className = "",
@@ -69,9 +69,9 @@ export default function WorkspaceSwitcher({
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
               <span className="text-xs text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
             </div>
-            <span className={cn("ml-auto", sidebarBadgeClassName(true))}>
+            <SidebarBadge className="ml-auto">
               <ChevronIcon className="size-3 text-accent" />
-            </span>
+            </SidebarBadge>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent

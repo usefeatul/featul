@@ -7,6 +7,7 @@ import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { MergePopover } from "./MergePopover"
 import { DeletePostButton } from "./DeletePostButton"
 import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 
 type NavItem = {
   slug: string
@@ -26,8 +27,14 @@ export interface RequestNavigationProps {
 }
 
 const navButtonClass = cn(toolbarItemClass, "h-8 gap-2 px-3")
-const shortcutClass =
-  "hidden sm:inline-flex h-5 items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight tabular-nums text-accent dark:border-white/10 dark:bg-black"
+
+function ShortcutKey({ children }: { children: string }) {
+  return (
+    <OverlayChip className="hidden sm:inline-flex" innerClassName="px-1.5">
+      {children}
+    </OverlayChip>
+  )
+}
 
 export default function RequestNavigation({ postId, workspaceSlug, prev, next, prevHref, nextHref, backHref, className, showActions }: RequestNavigationProps) {
   return (
@@ -63,12 +70,12 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
           {prevHref ? (
             <Link href={prevHref} title={prev?.title ? `Previous: ${prev.title} (Z)` : "Previous (Z)"} aria-label="Previous post" aria-keyshortcuts="z">
               <span className="text-xs font-medium">Prev</span>
-              <span className={shortcutClass}>Z</span>
+              <ShortcutKey>Z</ShortcutKey>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
               <span className="text-xs font-medium opacity-50">Prev</span>
-              <span className={shortcutClass}>Z</span>
+              <ShortcutKey>Z</ShortcutKey>
             </span>
           )}
         </Button>
@@ -82,12 +89,12 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
         >
           {nextHref ? (
             <Link href={nextHref} title={next?.title ? `Next: ${next.title} (X)` : "Next (X)"} aria-label="Next post" aria-keyshortcuts="x">
-              <span className={shortcutClass}>X</span>
+              <ShortcutKey>X</ShortcutKey>
               <span className="text-xs font-medium">Next</span>
             </Link>
           ) : (
             <span aria-hidden="true" className="flex items-center gap-2">
-              <span className={shortcutClass}>X</span>
+              <ShortcutKey>X</ShortcutKey>
               <span className="text-xs font-medium opacity-50">Next</span>
             </span>
           )}
