@@ -41,7 +41,7 @@ export function TagSelector({
     return (
         <>
             {selectedTags.length === 0 ? (
-                <span className={cn(toolbarItemClass, "px-3 text-xs text-muted-foreground")}>
+                <span className={cn(toolbarItemClass, "inline-flex items-center px-3 text-xs leading-none text-muted-foreground")}>
                     No tags
                 </span>
             ) : (
