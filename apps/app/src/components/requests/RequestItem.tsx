@@ -64,12 +64,12 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     isSelectingMode,
     isSelectedMode,
     cn(
-      "flex items-center gap-3 px-3 sm:px-4 py-3 border-b border-l border-border/70 bg-card dark:bg-black/40 last:border-b-0 relative overflow-hidden",
+      "relative flex items-center gap-3 overflow-hidden border-b border-l-2 border-border/60 px-4 py-3 last:border-b-0 dark:border-b-white/10",
       isSnoozed
         ? "border-l-sky-500 dark:border-l-sky-400"
         : isStale
           ? "border-l-amber-600 dark:border-l-amber-500"
-          : "border-l-border",
+          : "border-l-transparent",
     ),
   )
   const actionsClassName = cn(
@@ -103,7 +103,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           onClick={(e) => e.stopPropagation()}
         />
       ) : null}
-      <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
+      <StatusIcon status={item.roadmapStatus || undefined} className="size-5 shrink-0 text-foreground/80" />
       <Link
         href={href}
         className={cn(
