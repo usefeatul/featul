@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import {
@@ -346,17 +347,13 @@ export default function UserDropdown({
       />
 
       <Dialog open={authModalOpen} onOpenChange={setAuthModalOpen}>
-        <DialogContent
-          fluid
-          showCloseButton={false}
-          className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-2"
-        >
+        <DialogContent fluid className="w-[min(90vw,400px)]">
           <DialogHeader className="sr-only">
             <DialogTitle>
               {authMode === "sign-in" ? "Add account" : "Create account"}
             </DialogTitle>
           </DialogHeader>
-          <div className="w-[min(90vw,400px)] max-h-[66vh] overflow-y-auto rounded-2xl bg-background border border-border shadow-xl">
+          <DialogInner className="max-h-[66vh] overflow-y-auto p-0">
             {authMode === "sign-in" ? (
               <SignIn
                 redirectTo={authRedirectTo}
@@ -370,7 +367,7 @@ export default function UserDropdown({
                 onSwitchMode={() => setAuthMode("sign-in")}
               />
             )}
-          </div>
+          </DialogInner>
         </DialogContent>
       </Dialog>
     </div>

@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import SignIn from "@/components/auth/SignIn";
@@ -28,15 +29,11 @@ export default function SubdomainAuthModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        fluid
-        showCloseButton={false}
-        className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-2"
-      >
+      <DialogContent fluid className="w-[min(90vw,400px)]">
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="w-[min(90vw,400px)] max-h-[66vh] overflow-y-auto rounded-2xl bg-background border border-border shadow-xl">
+        <DialogInner className="max-h-[66vh] overflow-y-auto p-0">
           {mode === "sign-in" ? (
             <SignIn
               redirectTo={redirectTo}
@@ -50,7 +47,7 @@ export default function SubdomainAuthModal({
               onSwitchMode={() => onModeChange("sign-in")}
             />
           )}
-        </div>
+        </DialogInner>
       </DialogContent>
     </Dialog>
   );

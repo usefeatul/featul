@@ -1,5 +1,6 @@
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -74,7 +75,7 @@ export const EmbedInput = ({
   );
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-muted p-3 dark:bg-black/40">
+    <div className={cn(overlayShellClass, "flex flex-col gap-1 p-1")}>
       <div className="mt-0.5 flex flex-row items-center justify-between space-y-0 px-2 py-0.5 pb-0">
         <div className="flex items-center gap-2 text-base font-normal">
           {icon}
@@ -82,7 +83,7 @@ export const EmbedInput = ({
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4 dark:bg-black/40">
+      <div className={cn(overlayInnerClass, "p-4")}>
         <div className="flex flex-col gap-4">
           <Input
             autoFocus={autoFocus}

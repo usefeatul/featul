@@ -1,4 +1,5 @@
 import { Separator } from "@featul/ui/components/separator";
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor } from "@tiptap/react";
 import {
@@ -72,7 +73,8 @@ export const EditorBubbleMenu = ({
 	return (
 		<TiptapBubbleMenu
 			className={cn(
-				"p-1 bg-muted dark:bg-black rounded-2xl gap-1 shadow-none border-none",
+				overlayShellClass,
+				"flex flex-col gap-1 p-1 shadow-md",
 				className,
 			)}
 			editor={editor ?? undefined}
@@ -86,7 +88,7 @@ export const EditorBubbleMenu = ({
 					Text
 				</div>
 			</div>
-			<div className="bg-card dark:bg-background border border-border rounded-xl flex items-center gap-0.5 p-0.5">
+			<div className={cn(overlayInnerClass, "flex items-center gap-0.5 p-0.5")}>
 				{children}
 			</div>
 		</TiptapBubbleMenu>

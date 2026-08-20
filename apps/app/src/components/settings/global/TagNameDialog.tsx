@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogInner, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
 import { Input } from "@featul/ui/components/input"
 import TagIcon from "@featul/ui/icons/tag"
 import { LoadingButton } from "@/components/global/LoadingButton"
@@ -48,7 +48,7 @@ export function TagNameDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-1 bg-muted rounded-2xl gap-1">
+      <DialogContent>
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
             <TagIcon className="size-3.5" />
@@ -56,7 +56,7 @@ export function TagNameDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className=" bg-card rounded-xl p-2 dark:bg-black/40 border border-border">
+        <DialogInner>
           <DialogDescription className="text-sm mb-2 ">{description}</DialogDescription>
 
           <Input
@@ -81,7 +81,7 @@ export function TagNameDialog({
               {saving ? loadingLabel : actionLabel}
             </LoadingButton>
           </div>
-        </div>
+        </DialogInner>
       </DialogContent>
     </Dialog>
   )

@@ -3,6 +3,7 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { cn } from "@featul/ui/lib/utils"
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay"
 import { XMarkIcon } from '@featul/ui/icons/xmark';
 
 function Dialog({
@@ -37,9 +38,19 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/20 backdrop-blur-xs dark:bg-black/20 ",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/20 backdrop-blur-xs dark:bg-black/40",
         className
       )}
+      {...props}
+    />
+  )
+}
+
+function DialogInner({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-inner"
+      className={cn(overlayInnerClass, "p-3", className)}
       {...props}
     />
   )
@@ -63,9 +74,11 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
+          overlayDialogClass,
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-2 duration-200 outline-none",
           fluid
-            ? "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-auto sm:w-auto max-w-none sm:max-w-none translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl border p-6 shadow-lg duration-200 outline-none ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border-border"
-            : "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl border p-6 shadow-lg duration-200 outline-none sm:max-w-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border-border",
+            ? "w-auto max-w-none sm:max-w-none"
+            : "w-full max-w-[calc(100%-2rem)] sm:max-w-md",
           className
         )}
         {...props}
@@ -141,6 +154,7 @@ export {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogInner,
   DialogOverlay,
   DialogPortal,
   DialogTitle,

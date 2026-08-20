@@ -2,7 +2,7 @@
 
 import React from "react"
 import { motion } from "framer-motion"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogInner, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
 import MaximizeIcon from "@featul/ui/icons/maximize"
 import MinimizeIcon from "@featul/ui/icons/minimize"
 
@@ -96,8 +96,8 @@ export function SettingsDialogShell({
   )
 
   const body = (
-    <div
-      className={`bg-card rounded-xl p-2 dark:bg-black/60 border border-border ${expandable ? "flex min-h-0 flex-1 flex-col" : ""}`}
+    <DialogInner
+      className={expandable ? "flex min-h-0 flex-1 flex-col" : undefined}
     >
       {description ? (
         <DialogDescription className="text-sm mb-2">
@@ -107,7 +107,7 @@ export function SettingsDialogShell({
       <DialogExpandedContext.Provider value={expanded}>
         {children}
       </DialogExpandedContext.Provider>
-    </div>
+    </DialogInner>
   )
 
   return (
@@ -115,12 +115,12 @@ export function SettingsDialogShell({
       <DialogContent
         fluid
         style={{ ...(expandable ? {} : styleWidth), ...positionStyle }}
-        className={`max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1`}
+        className="max-w-none sm:max-w-none"
         onOpenAutoFocus={onOpenAutoFocus}
       >
         {expandable ? (
           <motion.div
-            className="flex min-w-0 flex-col gap-1"
+            className="flex min-w-0 flex-col gap-2"
             initial={false}
             animate={{
               width: expanded ? EXPANDED_WIDTH_PX[width] : BASE_WIDTH_PX[width],

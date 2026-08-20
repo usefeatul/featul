@@ -2,6 +2,7 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
@@ -205,7 +206,8 @@ export default function WorkspaceShortcutsDrawer() {
         aria-modal="true"
         aria-labelledby="workspace-shortcuts-title"
         className={cn(
-          "fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-[0_18px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.35)]",
+          overlayDialogClass,
+          "fixed z-50 flex flex-col",
           "top-4 right-4 bottom-4 left-4 sm:left-auto sm:w-[340px]",
           "transition-all duration-200 ease-out",
           open
@@ -213,7 +215,7 @@ export default function WorkspaceShortcutsDrawer() {
             : "pointer-events-none translate-x-6 opacity-0",
         )}
       >
-        <div className="flex flex-col gap-3 border-b border-border px-4 pt-4 pb-3">
+        <div className="flex flex-col gap-3 px-2 py-2">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <h2
@@ -237,53 +239,56 @@ export default function WorkspaceShortcutsDrawer() {
               <XMarkIcon className="size-4" />
             </Button>
           </div>
-
-          <div className="relative">
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              ref={inputRef}
-              value={query}
-              onChange={(event) => setQuery(event.currentTarget.value)}
-              placeholder="Search shortcuts"
-              aria-label="Search shortcuts"
-              className={cn(
-                "h-10 bg-background pl-8 text-sm text-foreground",
-                "placeholder:text-muted-foreground",
-              )}
-            />
-          </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-          <div className="px-4 pt-3 pb-5">
-            {groupedShortcuts.length > 0 ? (
-              <div className="space-y-5">
-                {groupedShortcuts.map((section) => (
-                  <section key={section.group} className="space-y-2">
-                    <div className="text-[11px] font-semibold text-muted-foreground">
-                      {GROUP_LABELS[section.group] ?? section.group}
-                    </div>
-                    <div className="space-y-1">
-                      {section.items.map((shortcut) => (
-                        <div
-                          key={shortcut.id}
-                          className="flex items-start justify-between gap-4 px-0 py-1"
-                        >
-                          <div className="min-w-0 text-[13px] font-medium leading-5 text-foreground">
-                            {shortcut.title}
+        <div className={cn(overlayInnerClass, "flex min-h-0 flex-1 flex-col")}>
+          <div className="px-3 pt-3">
+            <div className="relative">
+              <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                ref={inputRef}
+                value={query}
+                onChange={(event) => setQuery(event.currentTarget.value)}
+                placeholder="Search shortcuts"
+                aria-label="Search shortcuts"
+                className={cn(
+                  "h-10 bg-background pl-8 text-sm text-foreground",
+                  "placeholder:text-muted-foreground",
+                )}
+              />
+            </div>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+            <div className="px-3 pt-3 pb-5">
+              {groupedShortcuts.length > 0 ? (
+                <div className="space-y-5">
+                  {groupedShortcuts.map((section) => (
+                    <section key={section.group} className="space-y-2">
+                      <div className="text-[11px] font-semibold text-muted-foreground">
+                        {GROUP_LABELS[section.group] ?? section.group}
+                      </div>
+                      <div className="space-y-1">
+                        {section.items.map((shortcut) => (
+                          <div
+                            key={shortcut.id}
+                            className="flex items-start justify-between gap-4 px-0 py-1"
+                          >
+                            <div className="min-w-0 text-[13px] font-medium leading-5 text-foreground">
+                              {shortcut.title}
+                            </div>
+                            <ShortcutBindingStack bindings={shortcut.bindings} />
                           </div>
-                          <ShortcutBindingStack bindings={shortcut.bindings} />
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-xl border border-border bg-background px-4 py-6 text-sm text-muted-foreground">
-                No shortcuts found.
-              </div>
-            )}
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <div className="px-1 py-6 text-sm text-muted-foreground">
+                  No shortcuts found.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

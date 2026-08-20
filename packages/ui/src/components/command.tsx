@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog"
 
@@ -62,21 +63,21 @@ function CommandDialog({
 
   return (
     <Dialog open={props.open ?? false} onOpenChange={props.onOpenChange}>
-      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1">
+      <DialogContent fluid style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none">
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
             {icon ?? <SearchIcon className="size-3.5 opacity-80" />}
             {title}
           </DialogTitle>
         </DialogHeader>
-        <div className="bg-card overflow-hidden rounded-xl border border-border dark:bg-black/40">
+        <DialogInner className="p-0">
           <div className="p-2">
             <Command className="">
               {children}
             </Command>
           </div>
           {footer}
-        </div>
+        </DialogInner>
       </DialogContent>
     </Dialog>
   )
@@ -89,7 +90,7 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="bg-card dark:bg-black/5 flex h-8 items-center gap-3  px-6"
+      className="flex h-8 items-center gap-3 px-6"
     >
       <SearchIcon className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input

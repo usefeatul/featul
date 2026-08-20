@@ -104,7 +104,7 @@ export const EditorMentionMenu = ({
       </PopoverAnchor>
       <PopoverContent
         id="mention-command"
-        className="p-1 bg-muted dark:bg-black/40 rounded-2xl gap-1 w-72 shadow-none border-none"
+        className="w-72"
         list={true}
         side="bottom"
         align="start"
@@ -112,13 +112,13 @@ export const EditorMentionMenu = ({
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
         {items.length === 0 ? (
-          <div className="bg-card border border-border rounded-lg flex w-full items-center justify-center p-4 text-muted-foreground text-sm">
+          <div className="flex w-full items-center justify-center p-4 text-sm text-muted-foreground">
             <p>No people found</p>
           </div>
         ) : (
           <PopoverList
             ref={listRef}
-            className="bg-card border border-border rounded-lg p-2 flex flex-col gap-1 max-h-[260px] overflow-y-auto"
+            className="flex max-h-[260px] flex-col gap-1 overflow-y-auto p-1"
           >
             {items.map((item, index) => (
               <PopoverListItem

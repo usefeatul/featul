@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import { ImageIcon } from "@featul/ui/icons/image";
@@ -51,7 +52,7 @@ export function WidgetHostImageDialog() {
       <DialogContent
         fluid
         overlayClassName="z-[2147483647] bg-black/20 backdrop-blur-xs dark:bg-black/20"
-        className="z-2147483647 max-h-[90dvh] max-w-none gap-1 overflow-hidden rounded-2xl bg-muted p-1 sm:max-w-none"
+        className="z-[2147483647] max-h-[90dvh] max-w-none sm:max-w-none"
         style={{
           width: "min(92vw, 1070px)",
           maxWidth: "none",
@@ -66,8 +67,8 @@ export function WidgetHostImageDialog() {
             Image
           </DialogTitle>
         </DialogHeader>
-        <div className="min-h-0 overflow-hidden rounded-xl border border-border bg-card p-2 dark:bg-black/60">
-          <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden rounded-lg bg-muted/40">
+        <DialogInner className="min-h-0 p-2">
+          <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden rounded-md bg-muted/40">
             <WidgetImage
               url={url}
               alt={alt}
@@ -75,7 +76,7 @@ export function WidgetHostImageDialog() {
               preview={false}
             />
           </div>
-        </div>
+        </DialogInner>
       </DialogContent>
     </Dialog>
   );

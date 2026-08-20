@@ -130,11 +130,11 @@ export const EditorLinkSelector = ({
 			</PopoverTrigger>
 			<PopoverContent
 				align="start"
-				className="w-fit p-1 z-[100] bg-muted dark:bg-black rounded-2xl shadow-none border-none"
+				className="z-[100] w-fit"
 				onOpenAutoFocus={(event) => event.preventDefault()}
 				sideOffset={10}
 			>
-				<div className="bg-card dark:bg-background border border-border rounded-xl p-0.5">
+				<div className="flex items-center gap-0.5 p-0.5">
 					<form className="flex items-center gap-0.5" onSubmit={handleSubmit}>
 						<input
 							aria-label="Link URL"

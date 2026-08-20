@@ -91,7 +91,7 @@ export const EditorSlashMenu = ({
       </PopoverAnchor>
       <PopoverContent
         id="slash-command"
-        className="p-1 bg-muted dark:bg-black/40 rounded-2xl gap-1 w-80 shadow-none border-none"
+        className="w-80"
         list={true}
         side="bottom"
         align="start"
@@ -105,13 +105,13 @@ export const EditorSlashMenu = ({
           </div>
         </div>
         {items.length === 0 ? (
-          <div className="bg-card border border-border rounded-lg flex w-full items-center justify-center p-4 text-muted-foreground text-sm">
+          <div className="flex w-full items-center justify-center p-4 text-sm text-muted-foreground">
             <p>No results</p>
           </div>
         ) : (
           <PopoverList
             ref={listRef}
-            className="bg-card border border-border rounded-lg p-2 flex flex-col gap-1 max-h-[300px] overflow-y-auto"
+            className="flex max-h-[300px] flex-col gap-1 overflow-y-auto p-1"
           >
             {items.map((item, index) => (
               <PopoverListItem
