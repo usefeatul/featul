@@ -1,19 +1,25 @@
 "use client"
 
 import React from "react"
-import { cn } from "@featul/ui/lib/utils"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { PinIcon } from "@featul/ui/icons/pin"
 
-export default function PinnedBadge({ className, size = 12 }: { className?: string; size?: number }) {
+export default function PinnedBadge({ className, size = 10 }: { className?: string; size?: number }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className={cn("inline-flex items-center rounded-full bg-background p-0.5", className)} aria-label="Pinned">
+        <OverlayChip
+          className={className}
+          innerClassName="bg-primary/10 text-primary dark:bg-primary/10"
+          aria-label="Pinned"
+        >
           <PinIcon width={size} height={size} className="text-primary" />
-        </span>
+        </OverlayChip>
       </TooltipTrigger>
-      <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1">Pinned</TooltipContent>
+      <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1">
+        Pinned
+      </TooltipContent>
     </Tooltip>
   )
 }

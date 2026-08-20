@@ -180,7 +180,7 @@ export default function CommentForm({
                     className={cn(
                       toolbarItemClass,
                       "w-8 px-0",
-                      isInternal && "bg-muted/40 text-green-600 dark:text-green-400",
+                      isInternal && "bg-primary/10 text-primary dark:bg-primary/10",
                     )}
                     disabled={isPending || uploadingImage || internalForced}
                     aria-label={
@@ -193,7 +193,7 @@ export default function CommentForm({
                     <LockIcon
                       className={cn(
                         "size-4",
-                        isInternal && "text-green-600 dark:text-green-400"
+                        isInternal && "text-primary"
                       )}
                     />
                   </Button>

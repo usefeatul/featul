@@ -2,7 +2,7 @@ import React from "react"
 import { relativeTime } from "@/lib/time"
 import PinnedBadge from "./PinnedBadge"
 import CommentCollapseToggle from "./CommentCollapseToggle"
-import { Badge } from "@featul/ui/components/badge"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { EditIcon } from "@featul/ui/icons/edit"
 import { LockIcon } from "@featul/ui/icons/lock"
@@ -42,10 +42,10 @@ export default function CommentHeader({
       {comment.isEdited && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge variant="nav" className="gap-1 px-1 py-0.5 text-[10px] leading-none text-accent">
-              <EditIcon width={12} height={12} className="text-accent" />
+            <OverlayChip innerClassName="gap-1 bg-primary/10 px-1.5 font-medium text-primary dark:bg-primary/10">
+              <EditIcon width={10} height={10} className="text-primary" />
               Edited
-            </Badge>
+            </OverlayChip>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
             {editedLabel ? `Edited ${editedLabel}` : "Edited"}
@@ -56,10 +56,10 @@ export default function CommentHeader({
       {comment.isInternal && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge variant="nav" className="gap-1 px-1 py-0.5 text-[10px] leading-none text-accent">
-              <LockIcon width={11} height={11} className="text-accent" />
+            <OverlayChip innerClassName="gap-1 bg-primary/10 px-1.5 font-medium text-primary dark:bg-primary/10">
+              <LockIcon width={10} height={10} className="text-primary" />
               Internal
-            </Badge>
+            </OverlayChip>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
             Internal only
