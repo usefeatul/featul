@@ -89,17 +89,19 @@ export function SelectableListShell({
         className,
       )}
     >
-      {isNested ? (
+      {isNested && (toolbar || title || headerAction) ? (
         <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
           {toolbar ? (
             <div className="min-w-0 flex-1">{toolbar}</div>
           ) : (
             <>
-              <div className="flex min-w-0 items-center gap-3">
-                <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
-                  {title}
-                </h2>
-              </div>
+              {title ? (
+                <div className="flex min-w-0 items-center gap-3">
+                  <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
+                    {title}
+                  </h2>
+                </div>
+              ) : null}
               {headerAction ? (
                 <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
                   {headerAction}

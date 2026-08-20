@@ -34,22 +34,9 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
   })
 
   const items = data
-  const memberCount = items.length
 
   return (
     <section className={settingsCardShellClass}>
-      <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
-          <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
-            Members
-          </h2>
-        </div>
-        <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
-          <span className="text-xs tabular-nums text-accent">
-            {memberCount} {memberCount === 1 ? "member" : "members"}
-          </span>
-        </div>
-      </header>
       <div className={cn(settingsCardInnerClass, "overflow-hidden p-0")}>
         {items.length === 0 && !isLoading ? (
           <p className="px-4 py-8 text-center text-sm text-accent">No members</p>
