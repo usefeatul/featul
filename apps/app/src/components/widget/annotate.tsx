@@ -2,19 +2,18 @@
 
 import * as React from "react";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
+import { ArrowIcon } from "@featul/ui/icons/arrow";
+import { SelectBoxIcon } from "@featul/ui/icons/select-box";
+import { DocumentTextIcon } from "@featul/ui/icons/document-text";
+import { LockIcon } from "@featul/ui/icons/lock";
+import { TrashIcon } from "@featul/ui/icons/trash";
+import { PlusIcon } from "@featul/ui/icons/plus";
+import { XMarkIcon } from "@featul/ui/icons/xmark";
 import { LoaderIcon } from "@featul/ui/icons/loader";
+import { Redo2, Undo2 } from "lucide-react";
 import {
-  ArrowUpRight,
-  EyeOff,
-  Highlighter,
-  Plus,
-  Redo2,
-  Trash2,
-  Type,
-  Undo2,
-  X,
-} from "lucide-react";
-import {
+  widgetChipInnerClass,
+  widgetChipShellClass,
   widgetImageInnerClass,
   widgetImageShellClass,
   widgetToolbarInnerClass,
@@ -241,11 +240,25 @@ function drawStroke(
 }
 
 function toolButtonClass(active: boolean) {
-  return `${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center transition-colors ${
-    active
-      ? "bg-[rgb(var(--widget-fg)/0.1)] text-[rgb(var(--widget-fg))]"
-      : "text-[rgb(var(--widget-fg)/0.5)] hover:text-[rgb(var(--widget-fg))]"
+  return `${widgetToolbarItemClass} flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] ${
+    active ? "bg-[rgb(var(--widget-fg)/0.08)] text-[rgb(var(--widget-fg))]" : ""
   }`;
+}
+
+function ToolIcon({ id }: { id: Tool }) {
+  const iconClass = "size-3.5";
+  if (id === "draw") return <FillPenIcon className={iconClass} size={14} />;
+  if (id === "arrow") return <ArrowIcon className={iconClass} width={14} height={14} />;
+  if (id === "rect") return <SelectBoxIcon className={iconClass} size={14} />;
+  if (id === "text") return <DocumentTextIcon className={iconClass} size={14} />;
+  if (id === "redact") return <LockIcon className={iconClass} width={14} height={14} />;
+  return (
+    <span className={`${widgetChipShellClass} scale-90`}>
+      <span className={`${widgetChipInnerClass} px-1 text-[10px] font-medium tabular-nums`}>
+        1
+      </span>
+    </span>
+  );
 }
 
 function cursorFor(tool: Tool) {
@@ -575,7 +588,7 @@ export function ScreenshotAnnotator({
           className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:opacity-40"
           aria-label="Cancel screenshot"
         >
-          <X className="size-4" />
+          <XMarkIcon className="size-4" size={16} />
         </button>
       </header>
 
@@ -630,141 +643,139 @@ export function ScreenshotAnnotator({
       ) : null}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-        <div className={`${widgetToolbarShellClass} pointer-events-auto max-w-full`}>
-          <div className={`${widgetToolbarInnerClass} items-center overflow-x-auto p-0.5`}>
-          <div className="flex items-center">
-            {TOOLS.map((item) => {
-              const active = tool === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setTool(item.id)}
-                  title={`${item.label} (${item.shortcut})`}
-                  aria-label={item.label}
-                  aria-pressed={active}
-                  className={toolButtonClass(active)}
-                >
-                  {item.id === "draw" ? (
-                    <FillPenIcon className="size-4" size={16} />
-                  ) : item.id === "arrow" ? (
-                    <ArrowUpRight className="size-4" strokeWidth={2} />
-                  ) : item.id === "rect" ? (
-                    <Highlighter className="size-4" strokeWidth={2} />
-                  ) : item.id === "text" ? (
-                    <Type className="size-4" strokeWidth={2} />
-                  ) : item.id === "redact" ? (
-                    <EyeOff className="size-4" strokeWidth={2} />
-                  ) : (
-                    <span className="flex size-4 items-center justify-center rounded-full border border-current text-[11px] font-semibold leading-none">
-                      1
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          <div className={`${widgetToolbarSeparatorClass} mx-0.5 h-5`} />
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={undo}
-              disabled={!strokes.length}
-              title="Undo"
-              aria-label="Undo"
-              className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent`}
-            >
-              <Undo2 className="size-3.5" strokeWidth={2} />
-            </button>
-            <button
-              type="button"
-              onClick={redo}
-              disabled={!redoStack.length}
-              title="Redo"
-              aria-label="Redo"
-              className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent`}
-            >
-              <Redo2 className="size-3.5" strokeWidth={2} />
-            </button>
-            <button
-              type="button"
-              onClick={clearAll}
-              disabled={!strokes.length}
-              title="Clear marks"
-              aria-label="Clear marks"
-              className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent`}
-            >
-              <Trash2 className="size-3.5" strokeWidth={2} />
-            </button>
-          </div>
-          {showWeight ? (
-            <>
-              <div className={`${widgetToolbarSeparatorClass} mx-0.5 h-5`} />
-              <div className="flex items-center px-0.5">
-                {([0, 1, 2] as Weight[]).map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    title="Thickness"
-                    aria-label={`Thickness ${value + 1}`}
-                    aria-pressed={weight === value}
-                    onClick={() => setWeight(value)}
-                    className={toolButtonClass(weight === value)}
-                  >
-                    <span
-                      className="rounded-full bg-current"
-                      style={{
-                        width: 4 + value * 3,
-                        height: 4 + value * 3,
-                      }}
-                    />
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : null}
-          {showInk ? (
-            <>
-              <div className={`${widgetToolbarSeparatorClass} mx-0.5 h-5`} />
-              <div className="flex items-center gap-1.5 px-1.5">
-                {colors.map((value) => {
-                  const active = color.toLowerCase() === value.toLowerCase();
+        <div className="pointer-events-auto flex max-w-full items-center gap-2">
+          <div className={`${widgetToolbarShellClass} min-w-0 max-w-full`}>
+            <div className={`${widgetToolbarInnerClass} min-w-0 items-stretch overflow-x-auto`}>
+              <div className="flex items-stretch">
+                {TOOLS.map((item) => {
+                  const active = tool === item.id;
                   return (
                     <button
-                      key={value}
+                      key={item.id}
                       type="button"
-                      title="Ink color"
-                      aria-label={`Color ${value}`}
+                      onClick={() => setTool(item.id)}
+                      title={`${item.label} (${item.shortcut})`}
+                      aria-label={item.label}
                       aria-pressed={active}
-                      onClick={() => setColor(value)}
-                      className={`size-4 cursor-pointer rounded-full border transition-transform ${
-                        active
-                          ? "scale-110 border-[rgb(var(--widget-fg)/0.7)]"
-                          : "border-[rgb(var(--widget-fg)/0.18)] hover:scale-105"
-                      }`}
-                      style={{ background: value }}
-                    />
+                      className={toolButtonClass(active)}
+                    >
+                      <ToolIcon id={item.id} />
+                    </button>
                   );
                 })}
               </div>
-            </>
-          ) : null}
+              <div className={widgetToolbarSeparatorClass} />
+              <div className="flex items-stretch">
+                <button
+                  type="button"
+                  onClick={undo}
+                  disabled={!strokes.length}
+                  title="Undo"
+                  aria-label="Undo"
+                  className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30`}
+                >
+                  <Undo2 className="size-3.5" strokeWidth={1.75} />
+                </button>
+                <button
+                  type="button"
+                  onClick={redo}
+                  disabled={!redoStack.length}
+                  title="Redo"
+                  aria-label="Redo"
+                  className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30`}
+                >
+                  <Redo2 className="size-3.5" strokeWidth={1.75} />
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  disabled={!strokes.length}
+                  title="Clear marks"
+                  aria-label="Clear marks"
+                  className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30`}
+                >
+                  <TrashIcon className="size-3.5" width={14} height={14} />
+                </button>
+              </div>
+              {showWeight ? (
+                <>
+                  <div className={widgetToolbarSeparatorClass} />
+                  <div className="flex items-center gap-1 px-1.5">
+                    {([0, 1, 2] as Weight[]).map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        title="Thickness"
+                        aria-label={`Thickness ${value + 1}`}
+                        aria-pressed={weight === value}
+                        onClick={() => setWeight(value)}
+                        className={widgetChipShellClass}
+                      >
+                        <span
+                          className={`${widgetChipInnerClass} ${
+                            weight === value
+                              ? "bg-[rgb(var(--widget-fg)/0.12)] text-[rgb(var(--widget-fg))]"
+                              : "text-[rgb(var(--widget-fg)/0.45)]"
+                          }`}
+                        >
+                          <span
+                            className="rounded-full bg-current"
+                            style={{
+                              width: 4 + value * 3,
+                              height: 4 + value * 3,
+                            }}
+                          />
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+              {showInk ? (
+                <>
+                  <div className={widgetToolbarSeparatorClass} />
+                  <div className="flex items-center gap-1 px-1.5">
+                    {colors.map((value) => {
+                      const active = color.toLowerCase() === value.toLowerCase();
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          title="Ink color"
+                          aria-label={`Color ${value}`}
+                          aria-pressed={active}
+                          onClick={() => setColor(value)}
+                          className={widgetChipShellClass}
+                        >
+                          <span
+                            className={`${widgetChipInnerClass} ${
+                              active ? "ring-1 ring-inset ring-[rgb(var(--widget-fg)/0.35)]" : ""
+                            }`}
+                            style={{ background: value }}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
           <button
             type="button"
             onClick={attach}
             disabled={attaching || !ready}
-            className="ml-0.5 inline-flex h-8 cursor-pointer items-center gap-1 rounded-md bg-[rgb(var(--widget-cta))] px-2.5 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             {attaching ? (
               <LoaderIcon className="size-3.5 animate-spin" />
             ) : (
               <>
-                <Plus className="size-3.5" strokeWidth={2.5} />
+                <PlusIcon className="size-3.5" size={14} />
                 Attach
               </>
             )}
           </button>
-          </div>
         </div>
       </div>
     </div>
