@@ -3,6 +3,10 @@
 import React from "react"
 import { type PlanKey } from "@/lib/plan"
 import { cn } from "@featul/ui/lib/utils"
+import {
+  settingsPlanCardCurrentClass,
+  settingsPlanCardShellClass,
+} from "../global/SectionCard"
 import PlanFlagRibbon from "./PlanFlagRibbon"
 import PlanCheckoutButton from "./PlanCheckoutButton"
 import { type BillingCycle, getPlan } from "./data"
@@ -33,31 +37,25 @@ export default function PlanOptionCard({
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-md border bg-linear-to-b from-background via-background to-stone-100/90 p-4 dark:to-stone-900/75",
-        planKey === "free"
-          ? "border-border/70"
-          : isCurrent
-            ? "border-primary/60"
-            : "border-border/70",
+        settingsPlanCardShellClass,
+        isCurrent && settingsPlanCardCurrentClass,
       )}
     >
       {ribbon ? (
         <div
           className={cn(
             "pointer-events-none absolute inset-0 z-1",
-            getRibbonSpotlightClass(ribbon.tone),
+            "bg-[radial-gradient(340px_240px_at_100%_0%,var(--primary),transparent_58%)] opacity-20 dark:opacity-25",
           )}
         />
       ) : null}
       {ribbon ? <PlanFlagRibbon label={ribbon.label} tone={ribbon.tone} /> : null}
 
-      <div className="relative z-10 mb-3 flex items-start justify-between gap-2">
-        <div className="relative z-10">
-          <div className="text-2xl font-heading font-semibold leading-none text-foreground">
-            {plan.label}
-          </div>
-          <div className="mt-1.5 text-sm leading-snug text-accent">{plan.tagline}</div>
+      <div className="relative z-10 mb-3">
+        <div className="text-2xl font-heading font-semibold leading-none text-foreground">
+          {plan.label}
         </div>
+        <div className="mt-1.5 text-sm leading-snug text-accent">{plan.tagline}</div>
       </div>
 
       <div className="relative z-10 mb-4">
@@ -68,21 +66,19 @@ export default function PlanOptionCard({
           </span>
         </div>
         {plan.trialDays ? (
-          <div className="mt-1 text-sm text-accent">
-            <span className="font-medium text-foreground">{plan.trialDays}-day free trial</span>
+          <div className="mt-1 text-sm font-medium text-foreground">
+            {plan.trialDays}-day free trial
           </div>
         ) : null}
       </div>
 
-      <ul className="relative z-10 mb-4 flex-1 space-y-1.5 text-sm text-accent">
+      <ul className="relative z-10 mb-5 flex-1 space-y-1.5 text-sm leading-relaxed text-accent">
         {plan.features.map((feature) => (
-          <li key={feature.title} className="leading-relaxed">
-            {feature.title}
-          </li>
+          <li key={feature.title}>{feature.title}</li>
         ))}
       </ul>
 
-      <div className="relative z-10">
+      <div className="relative z-10 mt-auto">
         <PlanCheckoutButton
           plan={plan}
           billingCycle={billingCycle}
@@ -98,14 +94,7 @@ export default function PlanOptionCard({
   )
 }
 
-function getPlanRibbon(planKey: PlanKey): { label: string; tone: "popular" | "value" } | null {
-  if (planKey === "professional") return { label: "Most popular", tone: "value" }
+function getPlanRibbon(planKey: PlanKey): { label: string; tone: "popular" } | null {
+  if (planKey === "professional") return { label: "Most popular", tone: "popular" }
   return null
-}
-
-function getRibbonSpotlightClass(tone: "popular" | "value") {
-  if (tone === "popular") {
-    return "bg-[radial-gradient(340px_240px_at_100%_0%,var(--primary),transparent_58%)] opacity-30 dark:opacity-35"
-  }
-  return "bg-[radial-gradient(340px_240px_at_100%_0%,#f59e0b,transparent_58%)] opacity-30 dark:opacity-35"
 }

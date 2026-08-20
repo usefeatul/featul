@@ -3,7 +3,6 @@
 import React from "react"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
-import { cn } from "@featul/ui/lib/utils"
 import { LoadingButton } from "@/components/global/LoadingButton"
 import { type BillingCycle, type PlanOption } from "./data"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
@@ -31,7 +30,6 @@ export default function PlanCheckoutButton({
 }: PlanCheckoutButtonProps) {
   const [isCheckingOut, setIsCheckingOut] = React.useState(false)
   const isFreePlan = plan.id === "free"
-  const isProfessional = plan.id === "professional"
 
   const handleCheckout = async () => {
     if (isCheckingOut) return
@@ -89,7 +87,7 @@ export default function PlanCheckoutButton({
 
   if (isCurrent) {
     return (
-      <LoadingButton variant="nav" disabled className={cn("opacity-50", className)}>
+      <LoadingButton variant="nav" disabled className={className}>
         Current
       </LoadingButton>
     )
@@ -97,7 +95,7 @@ export default function PlanCheckoutButton({
 
   if (isFreePlan) {
     return (
-      <LoadingButton variant="nav" disabled className={cn("opacity-50", className)}>
+      <LoadingButton variant="nav" disabled className={className}>
         Free plan
       </LoadingButton>
     )
@@ -105,10 +103,8 @@ export default function PlanCheckoutButton({
 
   return (
     <LoadingButton
-      className={cn(
-        className,
-        isProfessional && "bg-orange-400! text-white! hover:bg-orange-400! dark:bg-orange-400! dark:hover:bg-orange-400! border-orange-400!",
-      )}
+      variant="default"
+      className={className}
       loading={isCheckingOut}
       disabled={!canManageBilling || isCurrent || isCheckingOut}
       onClick={handleCheckout}
