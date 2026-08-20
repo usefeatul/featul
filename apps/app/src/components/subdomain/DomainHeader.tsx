@@ -16,6 +16,7 @@ import { useSession } from "@featul/auth/client";
 import type { AuthUser } from "@/types/auth";
 import { hasAuthUser } from "@/utils/auth";
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { getWorkspaceDashboardUrl } from "@/utils/urls";
 
 type WorkspaceInfo = {
@@ -62,13 +63,6 @@ export function DomainHeader({
     setMode: setAuthMode,
     openAuth,
   } = useSubdomainAuthModal();
-  const navItemCls = (active: boolean) =>
-    cn(
-      "relative px-3 py-1.5 text-sm font-medium transition-colors",
-      active
-        ? "text-foreground"
-        : "text-muted-foreground hover:text-foreground"
-    );
   React.useEffect(() => {
     let active = true;
     (async () => {
@@ -201,21 +195,24 @@ export function DomainHeader({
         </Link>
 
         <nav className="flex-1 flex items-center justify-center">
-          <div className="flex items-center gap-1">
+          <Toolbar size="sm" className="w-fit">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={navItemCls(item.active)}
+                className={cn(
+                  toolbarItemClass,
+                  "relative px-3 py-1.5 text-sm font-medium",
+                  item.active
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
                 aria-current={item.active ? "page" : undefined}
               >
                 {item.label}
-                {item.active && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full" />
-                )}
               </Link>
             ))}
-          </div>
+          </Toolbar>
         </nav>
 
         <div className="flex items-center gap-3">

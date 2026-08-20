@@ -12,6 +12,11 @@ import { PostImageGallery } from "@/components/post/PostImageGallery";
 import { RequestActions } from "./RequestActions";
 import { isOnboardingPost } from "@/lib/onboarding/post";
 import { OnboardingPostContent } from "@/components/requests/OnboardingPostContent";
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard";
+import { cn } from "@featul/ui/lib/utils";
 
 
 
@@ -49,20 +54,21 @@ export function RequestContent({
   const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
 
   return (
-    <div className="min-w-0 rounded-md border bg-card dark:bg-background p-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-      {/* Status & Actions */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="inline-flex items-center gap-2">
-          <StatusIcon
-            status={post.roadmapStatus || undefined}
-            className="size-5 text-foreground/80"
-          />
-          <span className="text-sm text-accent">
-            {statusLabel(String(post.roadmapStatus || "pending"))}
-          </span>
-        </div>
-        <RequestActions post={post} workspaceSlug={workspaceSlug} />
-      </div>
+    <div className="min-w-0 space-y-4">
+      <article className={settingsCardShellClass}>
+        <header className="flex items-center justify-between py-2">
+          <div className="inline-flex items-center gap-2">
+            <StatusIcon
+              status={post.roadmapStatus || undefined}
+              className="size-5 text-foreground/80"
+            />
+            <span className="text-sm text-accent">
+              {statusLabel(String(post.roadmapStatus || "pending"))}
+            </span>
+          </div>
+          <RequestActions post={post} workspaceSlug={workspaceSlug} />
+        </header>
+        <div className={cn(settingsCardInnerClass)}>
 
       {/* Post Title */}
       <h1 className="text-xl font-semibold text-foreground mb-4">
@@ -123,9 +129,10 @@ export function RequestContent({
         </div>
       </div>
 
-      {/* Comments */}
-      <div className="mt-6 pt-6">
-        <CommentList
+        </div>
+      </article>
+
+      <CommentList
           postId={post.id}
           initialCount={visibleCommentCount}
           workspaceSlug={workspaceSlug}
@@ -135,7 +142,6 @@ export function RequestContent({
           initialCollapsedIds={initialCollapsedIds}
           hidePublicMemberIdentity={showHiddenIdentity}
         />
-      </div>
     </div>
   );
 }

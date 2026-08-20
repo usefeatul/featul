@@ -12,6 +12,11 @@ import StatusIcon from "../requests/StatusIcon"
 import { Badge } from "@featul/ui/components/badge"
 import { PoweredBy } from "./PoweredBy"
 import RoleBadge from "../global/RoleBadge"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
+import { cn } from "@featul/ui/lib/utils"
 
 
 export type PostSidebarProps = {
@@ -77,11 +82,10 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
 
   return (
     <aside className="hidden md:block space-y-4 min-w-0">
-      <div className="rounded-xl bg-card dark:bg-background p-4 border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-        {/* Header: User & Time */}
-        <div className="flex items-center gap-3 mb-6">
+      <section className={settingsCardShellClass}>
+        <header className="flex items-center gap-3 py-2">
           <div className="relative">
-            <Avatar className="size-10 relative overflow-visible">
+            <Avatar className="size-8 relative overflow-visible">
               {displayUser.image ? (
                 <AvatarImage
                   src={displayUser.image}
@@ -94,14 +98,12 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
               {!showHiddenIdentity && <RoleBadge role={post.role} isOwner={post.isOwner} isFeatul={post.isFeatul} className="-bottom-1 -right-0.5" />}
             </Avatar>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">{displayUser.name}</span>
-            <span className="text-xs text-muted-foreground">{timeLabel}</span>
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate text-sm font-medium leading-none text-foreground">{displayUser.name}</span>
+            <span className="mt-1 text-xs text-muted-foreground">{timeLabel}</span>
           </div>
-        </div>
-
-        {/* Properties */}
-        <div className="space-y-5">
+        </header>
+        <div className={cn(settingsCardInnerClass, "space-y-5")}>
           {/* Board */}
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground font-medium">Board</span>
@@ -164,7 +166,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
             </div>
           )}
         </div>
-      </div>
+      </section>
       <PoweredBy />
     </aside>
   )

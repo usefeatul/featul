@@ -5,6 +5,8 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { getInitials } from "@/utils/user"
 import { relativeTime } from "@/lib/time"
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay"
+import { cn } from "@featul/ui/lib/utils"
 import { motion, type HTMLMotionProps } from "framer-motion"
 
 export interface NotificationItem {
@@ -60,7 +62,10 @@ const NotificationsPanel = React.forwardRef<
     <motion.div
       ref={ref}
       {...props}
-      className="z-50 max-w-[90vw] max-h-[36rem] bg-card dark:bg-black overflow-y-auto rounded-md border p-2 text-popover-foreground shadow-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
+      className={cn(
+        overlayShellClass,
+        "z-50 max-h-[36rem] max-w-[90vw] overflow-y-auto p-1 text-popover-foreground shadow-md",
+      )}
       role="dialog"
       aria-label="Notifications"
       initial={{ opacity: 0, y: -6, scale: 0.98 }}
@@ -68,7 +73,8 @@ const NotificationsPanel = React.forwardRef<
       exit={{ opacity: 0, y: -6, scale: 0.98 }}
       transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
     >
-      <div className="px-2.5 py-2.5 space-x-4 text-sm font-medium flex items-center justify-between">
+      <div className={cn(overlayInnerClass, "p-0")}>
+      <div className="px-3 py-2.5 space-x-4 text-sm font-medium flex items-center justify-between">
         <span>Notifications</span>
 
         {onMarkAllRead && (
@@ -130,6 +136,7 @@ const NotificationsPanel = React.forwardRef<
           ))}
         </ul>
       )}
+      </div>
     </motion.div>
   )
 })
