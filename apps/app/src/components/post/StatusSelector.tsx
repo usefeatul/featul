@@ -9,6 +9,8 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 
 const STATUSES = ["pending", "review", "planned", "progress", "completed", "closed"] as const;
 
@@ -24,9 +26,9 @@ export function StatusSelector({ status, onStatusChange }: StatusSelectorProps) 
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="card"
+          variant="plain"
           size="sm"
-          className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+          className={cn(toolbarItemClass, "px-3 font-medium text-muted-foreground hover:text-foreground")}
         >
           <span className="capitalize">{status}</span>
         </Button>

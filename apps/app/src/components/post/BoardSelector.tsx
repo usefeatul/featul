@@ -9,6 +9,7 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 
 import type { BoardSummary } from "@/types/post";
@@ -30,9 +31,9 @@ export function BoardSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="card"
+          variant="plain"
           size="sm"
-          className="h-8 gap-1 px-2 font-medium text-foreground hover:bg-muted"
+          className={cn(toolbarItemClass, "px-3 font-medium text-foreground")}
         >
           {selectedBoard ? selectedBoard.name : "Select Board"}
         </Button>

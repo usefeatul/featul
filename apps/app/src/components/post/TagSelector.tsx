@@ -10,6 +10,8 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 
 import type { TagSummary } from "@/types/post";
 
@@ -30,9 +32,9 @@ export function TagSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="card"
+          variant="plain"
           size="sm"
-          className="h-8 gap-1 px-2 font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+          className={cn(toolbarItemClass, "px-2.5 font-medium text-muted-foreground hover:text-foreground")}
         >
           <TagIcon className="size-3.5 opacity-70" />
           {selectedTags.length > 0 && (
