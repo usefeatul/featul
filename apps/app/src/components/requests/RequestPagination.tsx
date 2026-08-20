@@ -116,7 +116,7 @@ export default function RequestPagination({
           <Toolbar size="sm">
             <Button
               asChild
-              variant="card"
+              variant="plain"
               size="sm"
               disabled={page <= 1}
               className={`${toolbarItemClass} h-8 px-3 gap-2`}
@@ -139,7 +139,7 @@ export default function RequestPagination({
             <ToolbarSeparator />
             <Button
               asChild
-              variant="card"
+              variant="plain"
               size="sm"
               disabled={page >= totalPages || effectiveTotal === 0}
               className={`${toolbarItemClass} h-8 px-3 gap-2`}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type RefObject } from "react";
+import { Fragment, useEffect, useMemo, useState, type RefObject } from "react";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
 import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize";
@@ -13,6 +13,7 @@ import {
 } from "@featul/ui/components/sheet";
 import { AiIcon } from "@featul/ui/icons/ai";
 import { LoaderIcon } from "@featul/ui/icons/loader";
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 import { SelectionToolbar } from "@/components/selection/SelectionToolbar";
 import type { FeedEditorRef } from "@/components/editor/editor";
@@ -251,28 +252,31 @@ export function ChangelogAiPanel({
             </div>
           </div>
 
-          <div className="flex rounded-md border border-border bg-background p-0.5 dark:bg-black/30">
+          <Toolbar size="sm">
             {(
               [
                 { id: "shipped", label: "From feedback" },
                 { id: "refine", label: "Refine entry" },
               ] as const
-            ).map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                className={cn(
-                  "flex-1 cursor-pointer rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
-                  activeTab === tab.id
-                    ? "bg-muted text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
-                )}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
+            ).map((tab, index) => (
+              <Fragment key={tab.id}>
+                {index > 0 ? <ToolbarSeparator /> : null}
+                <button
+                  type="button"
+                  className={cn(
+                    toolbarItemClass,
+                    "flex-1 cursor-pointer px-3 py-1.5 text-xs font-medium",
+                    activeTab === tab.id
+                      ? "text-foreground"
+                      : "text-muted-foreground",
+                  )}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              </Fragment>
             ))}
-          </div>
+          </Toolbar>
         </SheetHeader>
 
         {activeTab === "shipped" ? (

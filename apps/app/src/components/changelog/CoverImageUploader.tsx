@@ -59,7 +59,7 @@ export function CoverImageUploader({
 
     if (coverImage) {
         return (
-            <div className="relative group mb-6 rounded-lg overflow-hidden">
+            <div className="relative group overflow-hidden">
                 <img
                     src={coverImage}
                     alt="Cover"
@@ -103,7 +103,7 @@ export function CoverImageUploader({
                     if (file) handleUpload(file);
                 }}
             />
-            <Button variant="card" size="icon" className="h-7 w-7" asChild disabled={isUploading}>
+            <Button variant="card" size="icon" className="h-7 w-7 dark:border-white/10 dark:bg-black" asChild disabled={isUploading}>
                 {isUploading ? (
                     <span><LoaderIcon className="size-4 animate-spin" /></span>
                 ) : (

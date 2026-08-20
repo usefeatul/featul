@@ -7,6 +7,10 @@ import { MemberActivityFilters } from "@/components/team/MemberActivityFilters"
 import type { ActivityCategory } from "@/components/team/activity/utils"
 import { useMemberActivityFilters } from "@/components/team/useMemberActivityFilters"
 import type { ActivityItem } from "@/types/activity"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
 
 interface MemberActivityProps {
   workspaceSlug: string
@@ -49,46 +53,54 @@ export function MemberActivity({
   const shouldShowLoadMore = Boolean(hasNextPage && hasVisibleActivity)
 
   return (
-    <div className="lg:pr-4 lg:border-r lg:border-border/60">
-      <div className="flex items-center justify-between mb-3">
-        <div className="font-semibold">Activity</div>
+    <section className={settingsCardShellClass}>
+      <header className="flex items-center py-2">
+        <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
+          Activity
+        </h2>
+      </header>
+      <div className={settingsCardInnerClass}>
+        <MemberActivityFilters
+          categoryFilter={categoryFilter}
+          statusFilter={statusFilter}
+          availableStatuses={availableStatuses}
+          onCategoryChange={onCategoryChange}
+          onStatusChange={onStatusChange}
+        />
+
+        {isLoading && items.length === 0 ? (
+          <div className="py-6">
+            <LoadingSpinner label="Loading activity..." />
+          </div>
+        ) : dayGroups.length === 0 ? (
+          <div className="py-6 text-center text-sm text-accent">No matching activity</div>
+        ) : (
+          <div>
+            {dayGroups.map((day) => (
+              <MemberActivityDaySection
+                key={day.key}
+                dayGroup={day}
+                expandedGroups={expandedGroups}
+                onToggleGroup={toggleGroup}
+                workspaceSlug={workspaceSlug}
+              />
+            ))}
+          </div>
+        )}
+
+        {shouldShowLoadMore ? (
+          <div className="mt-3 flex justify-center border-t border-border/60 pt-3 dark:border-white/10">
+            <Button
+              variant="plain"
+              className="dark:border-white/10 dark:bg-black"
+              onClick={onLoadMore}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? "Loading..." : "Load more"}
+            </Button>
+          </div>
+        ) : null}
       </div>
-
-      <MemberActivityFilters
-        categoryFilter={categoryFilter}
-        statusFilter={statusFilter}
-        availableStatuses={availableStatuses}
-        onCategoryChange={onCategoryChange}
-        onStatusChange={onStatusChange}
-      />
-
-      {isLoading && items.length === 0 ? (
-        <div className="py-6">
-          <LoadingSpinner label="Loading activity..." />
-        </div>
-      ) : dayGroups.length === 0 ? (
-        <div className="py-6 text-accent text-sm text-center">No matching activity</div>
-      ) : (
-        <div>
-          {dayGroups.map((day) => (
-            <MemberActivityDaySection
-              key={day.key}
-              dayGroup={day}
-              expandedGroups={expandedGroups}
-              onToggleGroup={toggleGroup}
-              workspaceSlug={workspaceSlug}
-            />
-          ))}
-        </div>
-      )}
-
-      {shouldShowLoadMore ? (
-        <div className="pt-3 mt-1 border-t flex justify-center">
-          <Button variant="nav" onClick={onLoadMore} disabled={isFetchingNextPage}>
-            {isFetchingNextPage ? "Loading..." : "Load more"}
-          </Button>
-        </div>
-      ) : null}
-    </div>
+    </section>
   )
 }

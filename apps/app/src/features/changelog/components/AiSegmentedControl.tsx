@@ -1,3 +1,4 @@
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 
 export function AiSegmentedControl<T extends string>({
@@ -16,12 +17,8 @@ export function AiSegmentedControl<T extends string>({
       <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <div
-        className="flex rounded-md border border-border bg-background p-0.5 dark:bg-black/30"
-        role="radiogroup"
-        aria-label={label}
-      >
-        {options.map((option) => {
+      <Toolbar size="sm" role="radiogroup" aria-label={label}>
+        {options.map((option, index) => {
           const isActive = value === option.value;
 
           return (
@@ -32,10 +29,10 @@ export function AiSegmentedControl<T extends string>({
               aria-checked={isActive}
               onClick={() => onChange(option.value)}
               className={cn(
-                "flex-1 cursor-pointer rounded-sm px-2 py-2 text-center transition-colors",
-                isActive
-                  ? "bg-muted text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+                toolbarItemClass,
+                "flex-1 cursor-pointer px-2 py-2 text-center",
+                isActive ? "text-foreground" : "text-muted-foreground",
+                index > 0 && "border-l border-border dark:border-white/10",
               )}
             >
               <span className="block text-xs font-medium">{option.label}</span>
@@ -47,7 +44,7 @@ export function AiSegmentedControl<T extends string>({
             </button>
           );
         })}
-      </div>
+      </Toolbar>
     </div>
   );
 }

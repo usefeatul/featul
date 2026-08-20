@@ -54,7 +54,7 @@ export default function WorkspaceHeader() {
     <Toolbar size="sm">
       <Button
         asChild
-        variant="card"
+        variant="plain"
         className={`${toolbarItemClass} px-3 text-xs font-medium text-muted-foreground hover:text-foreground`}
       >
         <Link
@@ -76,7 +76,7 @@ export default function WorkspaceHeader() {
       <ToolbarSeparator />
       <Button
         asChild
-        variant="card"
+        variant="plain"
         className={`${toolbarItemClass} px-3 text-xs font-medium text-muted-foreground hover:text-foreground`}
       >
         <Link href={`/workspaces/${workspaceSlug}/changelog/new`}>
@@ -115,7 +115,7 @@ export default function WorkspaceHeader() {
           ) : null,
           <Button
             key={action.key}
-            variant="ghost"
+            variant="plain"
             size="xs"
             onClick={action.onClick}
             disabled={action.disabled}

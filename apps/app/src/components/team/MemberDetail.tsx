@@ -16,6 +16,8 @@ import {
   fetchWorkspaceMembers,
 } from "@/lib/team/client"
 import type { MemberStats, MemberTopPost } from "@/lib/team"
+import { Button } from "@featul/ui/components/button"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 
 interface Props {
   slug: string
@@ -70,62 +72,62 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
     initialActivity,
   })
 
-  const tabButtonClass = (tab: "activity" | "top-posts") =>
+  const tabClass = (tab: "activity" | "top-posts") =>
     cn(
-      "px-3 py-1.5 text-xs rounded-sm transition-colors",
-      mobileTab === tab ? "bg-muted text-foreground" : "text-accent hover:text-foreground",
+      toolbarItemClass,
+      "h-8 flex-1 px-3 text-xs",
+      mobileTab === tab ? "text-foreground" : "text-accent",
     )
 
   return (
-    <div className="rounded-sm border bg-card dark:bg-black/40 p-4 lg:p-6 space-y-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-      <MemberHeader member={member} userId={userId} stats={stats} />
+    <div className="grid items-start gap-4 lg:grid-cols-[0.7fr_0.3fr]">
+      <div className="flex min-w-0 flex-col gap-4">
+        <MemberHeader member={member} userId={userId} stats={stats} />
 
-      <div className="pt-4 mt-2 border-t space-y-3">
-        <div className="lg:hidden inline-flex rounded-md border border-border p-1">
-          <button
-            type="button"
-            className={tabButtonClass("activity")}
-            onClick={() => setMobileTab("activity")}
-          >
-            Activity
-          </button>
-          <button
-            type="button"
-            className={tabButtonClass("top-posts")}
-            onClick={() => setMobileTab("top-posts")}
-          >
-            Top posts
-          </button>
+        <div className="lg:hidden">
+          <Toolbar size="sm">
+            <Button
+              type="button"
+              variant="plain"
+              className={tabClass("activity")}
+              onClick={() => setMobileTab("activity")}
+            >
+              Activity
+            </Button>
+            <ToolbarSeparator />
+            <Button
+              type="button"
+              variant="plain"
+              className={tabClass("top-posts")}
+              onClick={() => setMobileTab("top-posts")}
+            >
+              Top posts
+            </Button>
+          </Toolbar>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2.8fr)_minmax(0,1fr)] gap-4">
-          <div className={cn(mobileTab === "activity" ? "block" : "hidden lg:block")}>
-            <MemberActivity
-              workspaceSlug={slug}
-              items={items}
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-              onLoadMore={() => fetchNextPage()}
-              isLoading={isActivityLoading || isActivityFetching}
-              categoryFilter={categoryFilter}
-              onCategoryChange={setCategoryFilter}
-              statusFilter={statusFilter}
-              onStatusChange={setStatusFilter}
-            />
-          </div>
-          <div
-            className={cn(
-              "lg:sticky lg:top-24 lg:self-start lg:flex lg:justify-center",
-              mobileTab === "top-posts" ? "block" : "hidden lg:block",
-            )}
-          >
-            <MemberTopPosts
-              slug={slug}
-              topPosts={topPosts}
-              isLoading={isStatsLoading || isStatsFetching}
-            />
-          </div>
+        <div className={cn(mobileTab === "activity" ? "block" : "hidden lg:block")}>
+          <MemberActivity
+            workspaceSlug={slug}
+            items={items}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            onLoadMore={() => fetchNextPage()}
+            isLoading={isActivityLoading || isActivityFetching}
+            categoryFilter={categoryFilter}
+            onCategoryChange={setCategoryFilter}
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+          />
         </div>
+      </div>
+
+      <div className={cn(mobileTab === "top-posts" ? "block" : "hidden lg:block")}>
+        <MemberTopPosts
+          slug={slug}
+          topPosts={topPosts}
+          isLoading={isStatsLoading || isStatsFetching}
+        />
       </div>
     </div>
   )

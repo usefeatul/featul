@@ -18,6 +18,11 @@ import { fetchWorkspaceMembers } from "@/lib/team/client";
 import ChangelogAiPanel from "./ChangelogAiPanel";
 import type { AiPanelTab, AiQuickAction } from "@/features/changelog/types";
 import { getChangelogAiSlashSuggestions } from "./ai/slash";
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard";
+import { cn } from "@featul/ui/lib/utils";
 
 const ENABLE_CHANGELOG_AI = true;
 
@@ -143,7 +148,7 @@ export function ChangelogEditor({
                           key: "ai",
                           label: "AI",
                           type: "button" as const,
-                          variant: "card" as const,
+                          variant: "plain" as const,
                           icon: <AiIcon className="size-4" />,
                           onClick: () => {
                               setAiPanelTab("shipped");
@@ -166,7 +171,7 @@ export function ChangelogEditor({
                 key: "save",
                 label: "Save",
                 type: "button",
-                variant: "card",
+                variant: "plain",
                 icon: isSaving ? <LoaderIcon className="size-4 animate-spin" /> : isDirty ? <InfoIcon className="size-4" /> : <TickIcon className="size-4" />,
                 onClick: handleSave,
                 disabled: isSaving,
@@ -175,7 +180,7 @@ export function ChangelogEditor({
                 key: "back",
                 label: "",
                 type: "button",
-                variant: "card",
+                variant: "plain",
                 icon: <ChevronLeftIcon className="size-3" />,
                 onClick: () => router.push(`/workspaces/${workspaceSlug}/changelog`),
             },
@@ -185,64 +190,68 @@ export function ChangelogEditor({
     }, [setActions, clearActions, handleSave, isSaving, isDraft, isDirty, router, workspaceSlug, setIsDraft, setIsDirty]);
 
     return (
-        <div className="min-h-screen bg-background">
-            <main className="mx-auto max-w-3xl px-4 pt-0 pb-10">
-                {coverImage && (
-                    <CoverImageUploader
-                        workspaceSlug={workspaceSlug}
-                        coverImage={coverImage}
-                        onCoverImageChange={(url) => {
-                            setCoverImage(url);
+        <div>
+            <article className={cn(settingsCardShellClass, "mx-auto max-w-3xl")}>
+                <header className="flex flex-col gap-3 py-2">
+                    <div className="flex flex-wrap items-center gap-1">
+                        <TagSelector
+                            availableTags={availableTags}
+                            selectedTags={selectedTags}
+                            onTagsChange={(tags) => {
+                                setSelectedTags(tags);
+                                setIsDirty(true);
+                            }}
+                        />
+                        <CoverImageUploader
+                            workspaceSlug={workspaceSlug}
+                            coverImage={null}
+                            onCoverImageChange={(url) => {
+                                setCoverImage(url);
+                                setIsDirty(true);
+                            }}
+                        />
+                    </div>
+                    <TextareaAutosize
+                        value={title}
+                        onChange={(e) => {
+                            setTitle(e.target.value);
                             setIsDirty(true);
                         }}
+                        placeholder="Enter a title"
+                        className="w-full resize-none overflow-hidden border-none bg-transparent text-xl font-semibold leading-tight text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0 md:text-2xl"
+                        minRows={1}
+                        autoFocus={mode === "create"}
                     />
-                )}
+                </header>
 
-                <div className="mb-4 flex flex-wrap items-center gap-1">
-                    <TagSelector
-                        availableTags={availableTags}
-                        selectedTags={selectedTags}
-                        onTagsChange={(tags) => {
-                            setSelectedTags(tags);
-                            setIsDirty(true);
-                        }}
-                    />
+                {coverImage ? (
+                    <div className={cn(settingsCardInnerClass, "mb-2 overflow-hidden p-0")}>
+                        <CoverImageUploader
+                            workspaceSlug={workspaceSlug}
+                            coverImage={coverImage}
+                            onCoverImageChange={(url) => {
+                                setCoverImage(url);
+                                setIsDirty(true);
+                            }}
+                        />
+                    </div>
+                ) : null}
 
-                    <CoverImageUploader
-                        workspaceSlug={workspaceSlug}
-                        coverImage={null}
-                        onCoverImageChange={(url) => {
-                            setCoverImage(url);
-                            setIsDirty(true);
-                        }}
-                    />
+                <div className={cn(settingsCardInnerClass, "min-h-[400px]")}>
+                    <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
+                        <FeedEditor
+                            ref={editorRef}
+                            initialContent={initialData?.content}
+                            placeholder="Start typing or type /ai for AI commands"
+                            className="min-h-[360px]"
+                            mentionSuggestions={mentionSuggestions}
+                            onImageUpload={handleImageUpload}
+                            additionalSlashSuggestions={additionalSlashSuggestions}
+                            onUpdate={() => setIsDirty(true)}
+                        />
+                    </div>
                 </div>
-
-                <TextareaAutosize
-                    value={title}
-                    onChange={(e) => {
-                        setTitle(e.target.value);
-                        setIsDirty(true);
-                    }}
-                    placeholder="Enter a title"
-                    className="mb-8 w-full resize-none overflow-hidden border-none bg-transparent text-3xl font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
-                    minRows={1}
-                    autoFocus={mode === "create"}
-                />
-
-                <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
-                    <FeedEditor
-                        ref={editorRef}
-                        initialContent={initialData?.content}
-                        placeholder="Start typing or type /ai for AI commands"
-                        className="min-h-[400px]"
-                        mentionSuggestions={mentionSuggestions}
-                        onImageUpload={handleImageUpload}
-                        additionalSlashSuggestions={additionalSlashSuggestions}
-                        onUpdate={() => setIsDirty(true)}
-                    />
-                </div>
-            </main>
+            </article>
 
             {ENABLE_CHANGELOG_AI ? (
                 <ChangelogAiPanel

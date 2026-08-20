@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query"
 import type { Member } from "@/types/team"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@featul/ui/components/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import Link from "next/link"
 import { format } from "date-fns"
@@ -12,6 +11,10 @@ import { getInitials } from "@/utils/user"
 import RoleBadge from "@/components/global/RoleBadge"
 import { fetchWorkspaceMembers } from "@/lib/team/client"
 import { teamQueryKeys } from "@/lib/team/keys"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
 
 interface Props {
   slug: string
@@ -31,53 +34,68 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
   })
 
   const items = data
+  const memberCount = items.length
 
   return (
-    <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border [&_[data-slot=table-container]]:bg-transparent [&_[data-slot=table-container]]:border-0 [&_[data-slot=table-container]]:rounded-none">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="px-4">Member</TableHead>
-            <TableHead className="px-4 w-48 text-center">Role</TableHead>
-            <TableHead className="px-4 w-40">Joined</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.length === 0 && !isLoading ? (
-            <TableRow>
-              <TableCell colSpan={3} className="px-4 py-6 text-accent">No members</TableCell>
-            </TableRow>
-          ) : (
-            items.map((m) => (
-              <TableRow key={m.userId} className="cursor-pointer bg-card dark:bg-black/40 hover:bg-background dark:hover:bg-background">
-                <TableCell className="px-4">
-                  <Link href={`/workspaces/${slug}/members/${m.userId}`} className="flex items-center gap-3 min-w-0">
-                    <div className="relative">
-                      <Avatar className="size-8">
-                        <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
-                        <AvatarFallback>{getInitials(m.name || m.email || "")}</AvatarFallback>
-                      </Avatar>
+    <section className={settingsCardShellClass}>
+      <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
+            Members
+          </h2>
+        </div>
+        <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
+          <span className="text-xs tabular-nums text-accent">
+            {memberCount} {memberCount === 1 ? "member" : "members"}
+          </span>
+        </div>
+      </header>
+      <div className={cn(settingsCardInnerClass, "overflow-hidden p-0")}>
+        {items.length === 0 && !isLoading ? (
+          <p className="px-4 py-8 text-center text-sm text-accent">No members</p>
+        ) : (
+          <ul className="m-0 list-none p-0">
+            {items.map((m) => (
+              <li
+                key={m.userId}
+                className="border-b border-border/60 last:border-b-0 dark:border-b-white/10"
+              >
+                <Link
+                  href={`/workspaces/${slug}/members/${m.userId}`}
+                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
+                >
+                  <div className="relative shrink-0">
+                    <Avatar className="relative size-8 overflow-visible">
+                      <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
+                      <AvatarFallback className="bg-muted text-xs text-muted-foreground">
+                        {getInitials(m.name || m.email || "")}
+                      </AvatarFallback>
                       <RoleBadge role={m.role} isOwner={m.isOwner} />
+                    </Avatar>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium text-foreground">
+                      {m.name || m.email || m.userId}
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{m.name || m.email || m.userId}</div>
-                      <div className="text-xs text-accent truncate">{m.email}</div>
-                    </div>
-                  </Link>
-                </TableCell>
-                <TableCell className="px-4 w-48 text-center">
-                  <span className={cn("inline-block h-6 leading-6 text-xs px-2 rounded-sm capitalize", roleBadgeClass(m.role, m.isOwner))}>
+                    <div className="truncate text-xs text-accent">{m.email}</div>
+                  </div>
+                  <span
+                    className={cn(
+                      "hidden h-6 shrink-0 rounded-sm px-2 text-xs capitalize leading-6 sm:inline-block",
+                      roleBadgeClass(m.role, m.isOwner),
+                    )}
+                  >
                     {m.isOwner ? "owner" : m.role}
                   </span>
-                </TableCell>
-                <TableCell className="px-4 w-40">
-                  {m.joinedAt ? format(new Date(m.joinedAt), "MMM d") : "—"}
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
+                  <span className="w-16 shrink-0 text-right text-xs text-accent">
+                    {m.joinedAt ? format(new Date(m.joinedAt), "MMM d") : "—"}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
   )
 }

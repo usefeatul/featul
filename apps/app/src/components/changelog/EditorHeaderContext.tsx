@@ -17,7 +17,7 @@ interface EditorAction {
     destructive?: boolean
     type?: "button" | "switch" | "menu"
     checked?: boolean
-    variant?: "card"
+    variant?: "card" | "plain"
 }
 
 interface EditorHeaderContextValue {

@@ -240,7 +240,7 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
     <>
       <Button
         type="button"
-        variant="card"
+        variant="plain"
         className={`${toolbarItemClass} px-3 text-xs font-medium text-muted-foreground hover:text-foreground`}
         onClick={openDialog}
       >

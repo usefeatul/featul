@@ -40,7 +40,7 @@ export function TagSelector({
         <>
             {/* Empty State */}
             {selectedTags.length === 0 && (
-                <div className="h-7 px-2.5 text-xs border border-border bg-card text-muted-foreground rounded-md flex items-center shadow-none select-none">
+                <div className="flex h-7 select-none items-center rounded-md border border-border bg-card px-2.5 text-xs text-muted-foreground shadow-none dark:border-white/10 dark:bg-black">
                     No tags
                 </div>
             )}
@@ -51,7 +51,7 @@ export function TagSelector({
                     key={tag.id}
                     variant="card"
                     size="sm"
-                    className="h-7 text-xs px-2.5 shadow-none gap-1.5"
+                    className="h-7 gap-1.5 px-2.5 text-xs shadow-none dark:border-white/10 dark:bg-black"
                     onClick={() => toggleTag(tag.id)}
                 >
                     {tag.name}
@@ -62,7 +62,7 @@ export function TagSelector({
             {/* Add Tag Button */}
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                    <Button variant="card" size="icon" className="h-7 w-7">
+                    <Button variant="card" size="icon" className="h-7 w-7 dark:border-white/10 dark:bg-black">
                         <TagIcon size={16} className="text-muted-foreground" />
                     </Button>
                 </PopoverTrigger>

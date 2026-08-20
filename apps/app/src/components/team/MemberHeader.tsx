@@ -8,6 +8,10 @@ import { format } from "date-fns"
 import { roleBadgeClass } from "@/components/settings/team/RoleBadge"
 import { cn } from "@featul/ui/lib/utils"
 import RoleBadge from "@/components/global/RoleBadge"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
 
 interface MemberHeaderProps {
   member?: Member
@@ -19,49 +23,56 @@ interface MemberHeaderProps {
   }
 }
 
-interface StatCardProps {
-  label: string
-  value: number
-}
-
-function StatCard({ label, value }: StatCardProps) {
+function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-sm p-0">
-      <div className="text-sm text-accent">{label}</div>
-      <div className="text-2xl font-semibold">{value}</div>
+    <div>
+      <div className="text-xs text-accent">{label}</div>
+      <div className="text-xl font-semibold tabular-nums">{value}</div>
     </div>
   )
 }
 
 export function MemberHeader({ member, userId, stats }: MemberHeaderProps) {
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          <Avatar className="size-12">
+    <section className={settingsCardShellClass}>
+      <header className="flex min-w-0 items-center gap-3 py-2">
+        <div className="relative shrink-0">
+          <Avatar className="relative size-10 overflow-visible">
             <AvatarImage src={member?.image || ""} alt={member?.name || member?.email || ""} />
-            <AvatarFallback>{getInitials(member?.name || member?.email || "")}</AvatarFallback>
+            <AvatarFallback className="bg-muted text-sm text-muted-foreground">
+              {getInitials(member?.name || member?.email || "")}
+            </AvatarFallback>
+            <RoleBadge
+              role={member?.role}
+              isOwner={member?.isOwner}
+              className="-bottom-0 -right-0"
+            />
           </Avatar>
-          <RoleBadge role={member?.role} isOwner={member?.isOwner} className="-bottom-0 -right-0" />
         </div>
-        <div className="min-w-0 space-y-1">
-          <div className="text-base font-semibold truncate">{member?.name || member?.email || userId}</div>
-          <div className="text-xs text-accent truncate">{member?.email}</div>
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-semibold text-foreground">
+            {member?.name || member?.email || userId}
+          </div>
+          <div className="truncate text-xs text-accent">{member?.email}</div>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
             <span className={cn("px-2 py-0.5", roleBadgeClass(member?.role || "member", member?.isOwner))}>
               {member?.isOwner ? "owner" : member?.role}
             </span>
             {member?.joinedAt ? (
-              <span className="text-accent">Joined {format(new Date(member.joinedAt), "LLL d, yyyy")}</span>
+              <span className="text-accent">
+                Joined {format(new Date(member.joinedAt), "LLL d, yyyy")}
+              </span>
             ) : null}
           </div>
         </div>
+      </header>
+      <div className={settingsCardInnerClass}>
+        <div className="grid grid-cols-3 gap-3">
+          <StatCard label="Posts" value={Number(stats.posts || 0)} />
+          <StatCard label="Comments" value={Number(stats.comments || 0)} />
+          <StatCard label="Upvotes" value={Number(stats.upvotes || 0)} />
+        </div>
       </div>
-      <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
-        <StatCard label="Posts" value={Number(stats.posts || 0)} />
-        <StatCard label="Comments" value={Number(stats.comments || 0)} />
-        <StatCard label="Upvotes" value={Number(stats.upvotes || 0)} />
-      </div>
-    </div>
+    </section>
   )
 }
