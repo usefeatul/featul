@@ -19,7 +19,7 @@ export default function CommentReplyButton({ onClick, isActive, className }: Com
       variant="card"
       size="xs"
       className={cn(
-        "min-w-[72px] h-8 gap-1.5",
+        "min-w-[72px] h-8 gap-1.5 dark:border-white/10 dark:bg-black",
         isActive
           ? "text-destructive dark:text-destructive hover:text-destructive dark:hover:text-destructive"
           : "text-accent hover:text-foreground",

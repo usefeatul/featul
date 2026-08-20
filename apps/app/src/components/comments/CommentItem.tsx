@@ -18,6 +18,10 @@ import CommentFooter from "./CommentFooter"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
 
 interface CommentItemProps {
   comment: CommentData
@@ -87,7 +91,7 @@ export default function CommentItem({
 
   return (
     <div className={cn("flex gap-3 group")}>
-      <div className="relative not-visited:shrink-0">
+      <div className="relative shrink-0">
         <Avatar className="size-8 relative overflow-visible">
           <AvatarImage src={displayUser.image} alt={displayUser.name} />
           <AvatarFallback className="text-xs bg-muted text-muted-foreground">
@@ -97,8 +101,8 @@ export default function CommentItem({
         </Avatar>
       </div>
 
-      <div className="flex-1 min-w-0 pt-1">
-        <div className="space-y-1">
+      <div className={cn(settingsCardShellClass, "min-w-0 flex-1")}>
+        <header className="flex items-center py-2">
           <CommentHeader
             comment={comment}
             isEditing={isEditing}
@@ -114,7 +118,9 @@ export default function CommentItem({
             surface={surface}
             hidePublicMemberIdentity={showHiddenIdentity}
           />
+        </header>
 
+        <div className={settingsCardInnerClass}>
           {isEditing ? (
             <CommentEditor
               value={editContent}
@@ -129,42 +135,38 @@ export default function CommentItem({
               metadata={comment.metadata}
             />
           )}
+
+          {!isEditing && (
+            <CommentFooter
+              commentId={comment.id}
+              postId={comment.postId}
+              surface={surface}
+              upvotes={comment.upvotes}
+              downvotes={comment.downvotes}
+              userVote={comment.userVote}
+              canReply={canReply}
+              showReplyForm={showReplyForm}
+              onToggleReply={() => setShowReplyForm(!showReplyForm)}
+            />
+          )}
         </div>
 
-        {!isEditing && (
-          <CommentFooter
-            commentId={comment.id}
-            postId={comment.postId}
-            surface={surface}
-            upvotes={comment.upvotes}
-            downvotes={comment.downvotes}
-            userVote={comment.userVote}
-            canReply={canReply}
-            showReplyForm={showReplyForm}
-            onToggleReply={() => setShowReplyForm(!showReplyForm)}
-          />
-        )}
-
         {showReplyForm && (
-          <div className="mt-3 pt-2">
-            <div className="pl-1">
-              <div className="rounded-md border bg-background dark:bg-background p-3.5">
-                <CommentForm
-                  postId={comment.postId}
-                  parentId={comment.id}
-                  workspaceSlug={workspaceSlug}
-                  surface={surface}
-                  defaultInternal={Boolean(comment.isInternal)}
-                  onSuccess={() => {
-                    setShowReplyForm(false)
-                    onReplySuccess?.()
-                  }}
-                  placeholder="Write a reply..."
-                  autoFocus
-                  buttonText="Reply"
-                />
-              </div>
-            </div>
+          <div className={cn(settingsCardInnerClass, "mt-2")}>
+            <CommentForm
+              postId={comment.postId}
+              parentId={comment.id}
+              workspaceSlug={workspaceSlug}
+              surface={surface}
+              defaultInternal={Boolean(comment.isInternal)}
+              onSuccess={() => {
+                setShowReplyForm(false)
+                onReplySuccess?.()
+              }}
+              placeholder="Write a reply..."
+              autoFocus
+              buttonText="Reply"
+            />
           </div>
         )}
       </div>

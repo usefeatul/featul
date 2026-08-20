@@ -62,6 +62,7 @@ export default function RequestDetail({
   return (
     <section>
       <div className="grid items-start gap-4 md:grid-cols-[0.7fr_0.3fr]">
+      <div className="flex min-w-0 flex-col gap-4">
       <article className={settingsCardShellClass}>
         <header className="flex flex-col gap-3 py-2">
           {isMobile ? (
@@ -186,19 +187,18 @@ export default function RequestDetail({
               <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
             </div>
           )}
-          <div className="mt-1">
-            <CommentList
-              postId={post.id}
-              initialCount={post.commentCount}
-              workspaceSlug={workspaceSlug}
-              surface="workspace"
-              allowComments={post.allowComments}
-              initialComments={initialComments}
-              initialCollapsedIds={initialCollapsedIds}
-            />
-          </div>
         </div>
       </article>
+      <CommentList
+        postId={post.id}
+        initialCount={post.commentCount}
+        workspaceSlug={workspaceSlug}
+        surface="workspace"
+        allowComments={post.allowComments}
+        initialComments={initialComments}
+        initialCollapsedIds={initialCollapsedIds}
+      />
+      </div>
 
       <RequestDetailSidebar post={post} workspaceSlug={workspaceSlug} readonly={readonly} />
       </div>

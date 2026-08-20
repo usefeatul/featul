@@ -17,13 +17,14 @@ export default function CommentEditor({
   isPending,
 }: CommentEditorProps) {
   return (
-    <div className="mt-2">
+    <div>
       <Textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         onBlur={onBlur}
-        className="min-h-[80px] resize-none text-sm bg-card dark:bg-background border-border focus:border-primary transition-colors"
+        variant="plain"
+        className="min-h-[80px] resize-none text-sm"
         disabled={isPending}
         autoFocus
         aria-label="Edit comment"

@@ -98,7 +98,8 @@ export default function CommentForm({
             checkForMention(next, caret)
           }}
           placeholder={placeholder}
-          className="min-h-[60px] resize-none text-sm shadow-none placeholder:text-accent border-none focus-visible:ring-0"
+          variant="plain"
+          className="min-h-[60px] resize-none text-sm"
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}
@@ -150,7 +151,7 @@ export default function CommentForm({
             type="button"
             size="xs"
             variant="card"
-            className="h-8 w-8 p-0 rounded-md dark:bg-black/40"
+            className="h-8 w-8 p-0 rounded-md dark:border-white/10 dark:bg-black"
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -171,7 +172,7 @@ export default function CommentForm({
                   variant="card"
                   onClick={() => setIsInternal((prev) => !prev)}
                   className={cn(
-                    "h-8 w-8 p-0 rounded-md dark:bg-black/40",
+                    "h-8 w-8 p-0 rounded-md dark:border-white/10 dark:bg-black",
                     isInternal && "bg-muted border-green-600/40 text-green-600 dark:text-green-400"
                   )}
                   disabled={isPending || uploadingImage || internalForced}
@@ -206,6 +207,7 @@ export default function CommentForm({
             type="submit"
             size="xs"
             variant="card"
+            className="dark:border-white/10 dark:bg-black"
             disabled={
               (!content.trim() && !uploadedImage) || isPending || uploadingImage
             }
@@ -220,7 +222,8 @@ export default function CommentForm({
             <Button
               type="button"
               size="xs"
-              variant="nav"
+              variant="card"
+              className="dark:border-white/10 dark:bg-black"
               onClick={onCancel}
               disabled={isPending || uploadingImage}
             >

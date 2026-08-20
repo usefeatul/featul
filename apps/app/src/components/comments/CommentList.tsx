@@ -14,6 +14,11 @@ import {
   type CommentListResponse,
   type CommentSurface,
 } from "@/lib/comment/shared"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
+import { cn } from "@featul/ui/lib/utils"
 
 interface CommentListProps {
   postId: string
@@ -81,36 +86,49 @@ export default function CommentList({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-border bg-card p-3.5 dark:border-white/10 dark:bg-black">
-        <CommentForm
-          postId={postId}
-          onSuccess={handleCommentSuccess}
-          workspaceSlug={workspaceSlug}
-          surface={surface}
-        />
+      <div className={settingsCardShellClass}>
+        <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
+              Comments
+            </h2>
+          </div>
+          <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
+            <span className="text-xs tabular-nums text-accent">
+              {commentCount} {commentCount === 1 ? "comment" : "comments"}
+            </span>
+          </div>
+        </header>
+        <div className={settingsCardInnerClass}>
+          <CommentForm
+            postId={postId}
+            onSuccess={handleCommentSuccess}
+            workspaceSlug={workspaceSlug}
+            surface={surface}
+          />
+        </div>
+        {commentCount === 0 && !isLoading ? (
+          <div className={cn(settingsCardInnerClass, "mt-2 py-8 text-center")}>
+            <p className="text-sm text-accent">
+              No comments yet. Be the first to comment!
+            </p>
+          </div>
+        ) : null}
       </div>
-      {commentCount === 0 && !isLoading ? (
-        <div className="p-6 text-center">
-          <p className="text-sm text-accent">
-            No comments yet. Be the first to comment!
-          </p>
+      {commentCount > 0 ? (
+        <div className="relative space-y-4">
+          <CommentThread
+            postId={postId}
+            comments={comments}
+            currentUserId={currentUserId}
+            onUpdate={handleCommentSuccess}
+            workspaceSlug={workspaceSlug}
+            surface={surface}
+            initialCollapsedIds={initialCollapsedIds}
+            hidePublicMemberIdentity={hidePublicMemberIdentity}
+          />
         </div>
-      ) : (
-        <div className="space-y-4 relative">
-          {comments.length > 0 && (
-            <CommentThread
-              postId={postId}
-              comments={comments}
-              currentUserId={currentUserId}
-              onUpdate={handleCommentSuccess}
-              workspaceSlug={workspaceSlug}
-              surface={surface}
-              initialCollapsedIds={initialCollapsedIds}
-              hidePublicMemberIdentity={hidePublicMemberIdentity}
-            />
-          )}
-        </div>
-      )}
+      ) : null}
     </div>
   )
 }
