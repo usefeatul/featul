@@ -69,7 +69,7 @@ export default function WorkspaceSwitcher({
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
               <span className="text-xs text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
             </div>
-            <SidebarBadge className="ml-auto">
+            <SidebarBadge className="ml-auto shrink-0">
               <ChevronIcon className="size-3 text-accent" />
             </SidebarBadge>
           </div>

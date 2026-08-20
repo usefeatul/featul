@@ -45,7 +45,7 @@ function SidebarItem({
     (pathname === activePrefix ||
       (!item.exact && activePrefix !== "/" && pathname.startsWith(activePrefix)));
   const classes = cn(
-    "group relative flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm",
+    "group relative flex min-w-0 items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm",
     active ? "text-foreground" : "text-accent",
     className
   );
@@ -74,13 +74,13 @@ function SidebarItem({
           !active && mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
         )}
       />
-      <span className="relative z-[1] transition-colors duration-200">{item.label}</span>
+      <span className="relative z-[1] min-w-0 flex-1 truncate transition-colors duration-200">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <SidebarBadge className="relative z-[1] ml-auto" fixedWidth={count < 10}>
+        <SidebarBadge className="relative z-[1] ml-auto shrink-0" fixedWidth={count < 10}>
           {count}
         </SidebarBadge>
       ) : shortcut ? (
-        <SidebarBadge className="relative z-[1] ml-auto">
+        <SidebarBadge className="relative z-[1] ml-auto shrink-0">
           {shortcut}
         </SidebarBadge>
       ) : null}

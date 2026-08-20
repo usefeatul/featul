@@ -17,7 +17,7 @@ export const SidebarBadge = forwardRef<
   return (
     <OverlayChip
       ref={ref}
-      className={cn(fixedWidth && "w-5", className)}
+      className={cn("shrink-0", fixedWidth && "min-w-5", className)}
       innerClassName={innerClassName}
     >
       {children}

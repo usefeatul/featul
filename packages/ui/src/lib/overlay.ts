@@ -6,7 +6,7 @@ export const overlayInnerClass =
 
 /** Outer chip shell — same two-tone frame as integration cards, `rounded-md`. */
 export const overlayChipShellClass =
-  "inline-flex shrink-0 items-stretch overflow-hidden rounded-md border border-border bg-card p-0.5 text-foreground dark:border-white/10 dark:bg-black"
+  "box-border inline-flex shrink-0 items-stretch rounded-md border border-border bg-card p-0.5 text-foreground dark:border-white/10 dark:bg-black"
 
 /** Inner chip surface — `bg-background` on the dark shell. No ring-offset (that doubled the border at this size). */
 export const overlayChipInnerClass =
