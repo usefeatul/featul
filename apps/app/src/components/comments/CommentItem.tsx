@@ -17,6 +17,8 @@ import CommentFooter from "./CommentFooter"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
+import { settingsCardInnerClass } from "@/components/settings/global/SectionCard"
+import { cn } from "@featul/ui/lib/utils"
 
 interface CommentItemProps {
   comment: CommentData
@@ -143,27 +145,28 @@ export default function CommentItem({
               onToggleReply={() => setShowReplyForm(!showReplyForm)}
             />
           )}
-
-          {showReplyForm ? (
-            <div className="mt-3">
-              <CommentForm
-                postId={comment.postId}
-                parentId={comment.id}
-                workspaceSlug={workspaceSlug}
-                surface={surface}
-                defaultInternal={Boolean(comment.isInternal)}
-                onSuccess={() => {
-                  setShowReplyForm(false)
-                  onReplySuccess?.()
-                }}
-                placeholder="Write a reply..."
-                autoFocus
-                buttonText="Reply"
-              />
-            </div>
-          ) : null}
         </div>
       </div>
+
+      {showReplyForm ? (
+        <div className={cn(settingsCardInnerClass, "mt-3")}>
+          <CommentForm
+            postId={comment.postId}
+            parentId={comment.id}
+            workspaceSlug={workspaceSlug}
+            surface={surface}
+            defaultInternal={Boolean(comment.isInternal)}
+            onSuccess={() => {
+              setShowReplyForm(false)
+              onReplySuccess?.()
+            }}
+            onCancel={() => setShowReplyForm(false)}
+            placeholder="Write a reply..."
+            autoFocus
+            buttonText="Reply"
+          />
+        </div>
+      ) : null}
     </div>
   )
 }
