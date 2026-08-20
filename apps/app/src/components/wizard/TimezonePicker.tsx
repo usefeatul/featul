@@ -13,7 +13,19 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [mounted, setMounted] = useState(false)
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null)
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    if (!open) {
+      setPortalContainer(null)
+      return
+    }
+    const dialog = document.querySelector(
+      '[data-slot="dialog-content"][data-state="open"]',
+    )
+    setPortalContainer(dialog instanceof HTMLElement ? dialog : null)
+  }, [open])
 
   const timezones = useMemo(() => {
     const base = ["UTC", "Europe/London", "Europe/Paris", "America/New_York", "America/Los_Angeles", "Asia/Tokyo"]
@@ -53,7 +65,11 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="outline" className="w-full h-10 justify-between bg-muted/50 border-input font-normal hover:bg-muted/70 px-3">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-10 justify-between bg-muted/50 border-input font-normal hover:bg-muted/70 px-3"
+        >
           <div className="flex items-center gap-2 truncate">
             <Timezone className="size-4 text-muted-foreground shrink-0" />
             <span className="truncate">
@@ -67,28 +83,29 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="z-60 w-[calc(100vw-2rem)] sm:w-[450px] p-0"
+        className="z-[100] w-[calc(100vw-2rem)] sm:w-[450px] p-0"
         align="center"
         list
-        container={typeof document !== "undefined" ? (document.querySelector('[data-slot="dialog-content"]') as HTMLElement | null) : undefined}
+        container={portalContainer}
+        onWheel={(event) => event.stopPropagation()}
       >
-        <div className="p-2 border-b">
-          <div className="w-fit bg-muted/50 dark:bg-black rounded-sm  px-1.5 py-1 mb-1.5">
+        <div className="border-b p-2">
+          <div className="mb-1.5 w-fit rounded-sm bg-muted/50 px-1.5 py-1 dark:bg-black">
             <span className="text-xs font-light text-accent" suppressHydrationWarning>
               Your local time - {formatTimeWithDate((typeof window !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC"), now)}
             </span>
           </div>
           <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by city or country..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-8 h-9 bg-transparent border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
+              className="h-9 border-none bg-transparent pl-8 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
             />
           </div>
         </div>
-        <PopoverList className="max-h-[300px] overflow-y-auto p-0">
+        <PopoverList className="max-h-[300px] touch-pan-y overflow-y-auto overscroll-contain p-0 [-webkit-overflow-scrolling:touch]">
           {filtered.map((tz) => (
             <PopoverListItem
               key={tz}
@@ -97,10 +114,10 @@ export default function TimezonePicker({ value, onChange, now }: { value: string
                 onChange(tz)
                 setOpen(false)
               }}
-              className={`flex items-center gap-1.5 px-3 py-2.5 cursor-pointer text-sm hover:bg-muted/50 ${value === tz ? "text-accent-foreground" : ""}`}
+              className={`flex cursor-pointer items-center gap-1.5 px-3 py-2.5 text-sm hover:bg-muted/50 ${value === tz ? "text-accent-foreground" : ""}`}
             >
               <span className="font-medium" suppressHydrationWarning>{mounted ? formatTimeWithDate(tz, now) : "--:--"}.</span>
-              <span className="text-accent truncate">{friendlyTZ(tz)}</span>
+              <span className="truncate text-accent">{friendlyTZ(tz)}</span>
             </PopoverListItem>
           ))}
         </PopoverList>

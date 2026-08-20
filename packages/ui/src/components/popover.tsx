@@ -41,6 +41,7 @@ function PopoverContent({
         data-variant={list ? "list" : undefined}
         className={cn(
           !unstyled && overlayShellClass,
+          list && "overflow-visible",
           "z-50 flex w-80 flex-col text-popover-foreground outline-hidden",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           list && "w-fit min-w-0",
@@ -54,7 +55,10 @@ function PopoverContent({
           <div className="p-1">
             <div
               data-slot="popover-content-inner"
-              className={cn(overlayInnerClass, list ? "p-0" : "p-2")}
+              className={cn(
+                overlayInnerClass,
+                list ? "overflow-visible p-0" : "p-2",
+              )}
             >
               {children}
             </div>

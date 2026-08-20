@@ -97,7 +97,10 @@ export function SettingsDialogShell({
 
   const body = (
     <DialogInner
-      className={expandable ? "flex min-h-0 flex-1 flex-col" : undefined}
+      className={cn(
+        expandable ? "flex min-h-0 flex-1 flex-col" : undefined,
+        "overflow-visible",
+      )}
     >
       {description ? (
         <DialogDescription className="text-sm mb-2">
@@ -115,7 +118,7 @@ export function SettingsDialogShell({
       <DialogContent
         fluid
         style={{ ...(expandable ? {} : styleWidth), ...positionStyle }}
-        className="max-w-none sm:max-w-none"
+        className="max-w-none overflow-visible sm:max-w-none"
         onOpenAutoFocus={onOpenAutoFocus}
       >
         {expandable ? (
