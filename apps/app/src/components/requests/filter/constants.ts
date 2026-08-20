@@ -11,10 +11,10 @@ export const FILTER_ISLAND_SHELL_CLASS =
 export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
 
 export const FILTER_ISLAND_CLEAR_ALL_CLASS =
-  "shrink-0 cursor-pointer rounded-sm px-1 py-px text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground";
+  "h-6 shrink-0 rounded-sm px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_CLASS =
-  "inline-flex h-6 max-w-[9rem] cursor-pointer items-center gap-1.5 rounded-sm border border-border bg-muted/50 px-2.5 py-0.5 text-[11px] leading-none text-foreground transition-colors hover:bg-muted";
+  "inline-flex h-6 max-w-[9rem] cursor-pointer items-center gap-1.5 rounded-md px-2 text-[11px] leading-none text-foreground transition-colors hover:bg-muted/40 dark:hover:bg-muted/30";
 
 export const FILTER_ISLAND_CONTENT_CLASS =
   "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";
