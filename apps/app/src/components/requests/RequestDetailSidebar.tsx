@@ -200,14 +200,18 @@ export default function RequestDetailSidebar({
                   ) : null}
                 </div>
                 {tags && tags.length > 0 ? (
-                  <div className="flex w-full flex-wrap justify-start gap-1">
+                  <div className="flex w-full flex-wrap justify-start gap-1.5">
                     {tags.map((t) => (
-                      <span
-                        key={t.id}
-                        className="inline-flex items-center rounded-md border border-primary/25 bg-primary/10 px-2 py-0.5 text-xs font-medium leading-5 text-primary"
-                      >
-                        {t.name}
-                      </span>
+                      <Toolbar key={t.id} size="sm" className="w-fit">
+                        <span
+                          className={cn(
+                            toolbarItemClass,
+                            "flex h-8 items-center bg-primary/10 px-2.5 text-xs font-medium text-primary hover:bg-primary/15 dark:bg-primary/10 dark:hover:bg-primary/15",
+                          )}
+                        >
+                          {t.name}
+                        </span>
+                      </Toolbar>
                     ))}
                   </div>
                 ) : null}
