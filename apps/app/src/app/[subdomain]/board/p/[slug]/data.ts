@@ -1,4 +1,4 @@
-import { db, board, post, user, widgetUser, workspaceMember } from "@featul/db";
+import { db, board, post, postTag, tag, user, widgetUser, workspaceMember } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { getServerSession } from "@featul/auth/session";
 import { readHasVotedForPost } from "@/lib/vote.server";
@@ -115,6 +115,7 @@ export async function loadPublicBoardRequestDetailPageData({
 
   const isOwner = !!rawPost.authorId && rawPost.authorId === ws.ownerId;
 
+  const tags = await loadPostTags(rawPost.id);
   const hasVoted = await readHasVotedForPost(rawPost.id);
   const { initialComments, initialCollapsedIds } = await loadPostComments(
     rawPost.id,
@@ -149,6 +150,7 @@ export async function loadPublicBoardRequestDetailPageData({
     isOwner,
     isFeatul: rawPost.authorId === "featul-founder",
     viewerCanEdit,
+    tags,
   };
 
   return {
@@ -206,4 +208,12 @@ async function loadPostWithAuthorAndBoard(
     mergedCount,
     mergedInto,
   };
+}
+
+async function loadPostTags(postId: string) {
+  return db
+    .select({ id: tag.id, name: tag.name, slug: tag.slug, color: tag.color })
+    .from(postTag)
+    .innerJoin(tag, eq(postTag.tagId, tag.id))
+    .where(eq(postTag.postId, postId));
 }

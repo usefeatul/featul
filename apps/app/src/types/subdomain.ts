@@ -47,5 +47,11 @@ export type SubdomainRequestDetailData = {
     image: string | null;
     email: string | null;
   } | null;
+  tags?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    color?: string | null;
+  }>;
   metadata?: Record<string, unknown> | null;
 };
