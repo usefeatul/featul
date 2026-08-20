@@ -14,6 +14,7 @@ type Props = {
   className?: string;
   imgClassName?: string;
   preview?: boolean;
+  onPreview?: () => void;
 };
 
 function isInIframe() {
@@ -58,6 +59,7 @@ export function WidgetImage({
   className = "",
   imgClassName = "h-full w-full object-cover",
   preview = true,
+  onPreview,
 }: Props) {
   const parentOrigin = useParentOrigin();
   const [open, setOpen] = React.useState(false);
@@ -71,6 +73,10 @@ export function WidgetImage({
   }
 
   const openPreview = () => {
+    if (onPreview) {
+      onPreview();
+      return;
+    }
     if (requestHostImagePreview(parentOrigin, url, alt)) return;
     setOpen(true);
   };
@@ -98,23 +104,25 @@ export function WidgetImage({
         </div>
       </button>
 
-      <SettingsDialogShell
-        open={open}
-        onOpenChange={setOpen}
-        title="Image"
-        width="xxl"
-        contentClassName="max-h-[92dvh]"
-        icon={<ImageIcon className="size-3.5" />}
-        onOpenAutoFocus={(event) => event.preventDefault()}
-      >
-        <div className="flex max-h-[min(84dvh,1080px)] items-center justify-center overflow-hidden">
-          <WidgetImg
-            url={url}
-            alt={alt}
-            className="max-h-[min(84dvh,1080px)] max-w-full h-auto w-auto object-contain"
-          />
-        </div>
-      </SettingsDialogShell>
+      {preview && !onPreview ? (
+        <SettingsDialogShell
+          open={open}
+          onOpenChange={setOpen}
+          title="Image"
+          width="xxl"
+          contentClassName="max-h-[92dvh]"
+          icon={<ImageIcon className="size-3.5" />}
+          onOpenAutoFocus={(event) => event.preventDefault()}
+        >
+          <div className="flex max-h-[min(84dvh,1080px)] items-center justify-center overflow-hidden">
+            <WidgetImg
+              url={url}
+              alt={alt}
+              className="max-h-[min(84dvh,1080px)] max-w-full h-auto w-auto object-contain"
+            />
+          </div>
+        </SettingsDialogShell>
+      ) : null}
     </>
   );
 }

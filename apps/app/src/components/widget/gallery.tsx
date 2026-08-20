@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import { X } from "lucide-react";
+import { ImageLightbox } from "@/components/global/ImageLightbox";
 import { WidgetImage } from "./image";
+import { isSafeImageUrl, postToParent, useParentOrigin } from "./messaging";
 
 type Props = {
   urls: string[];
@@ -12,6 +14,14 @@ type Props = {
   removeDisabled?: boolean;
 };
 
+function isInIframe() {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}
+
 export function WidgetImageStrip({
   urls,
   alt,
@@ -19,8 +29,10 @@ export function WidgetImageStrip({
   onRemove,
   removeDisabled = false,
 }: Props) {
+  const parentOrigin = useParentOrigin();
   const scrollerRef = React.useRef<HTMLDivElement>(null);
   const previousCountRef = React.useRef(0);
+  const [viewerIndex, setViewerIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     if (urls.length > previousCountRef.current) {
@@ -37,6 +49,25 @@ export function WidgetImageStrip({
   }
 
   const removable = Boolean(onRemove);
+  const lightboxImages = urls.map((url, index) => ({
+    url,
+    alt: urls.length > 1 ? `${alt} ${index + 1}` : alt,
+  }));
+
+  const openAt = (index: number) => {
+    const item = lightboxImages[index];
+    if (!item || !isSafeImageUrl(item.url)) return;
+    if (isInIframe()) {
+      postToParent(parentOrigin, "open-image", {
+        url: item.url,
+        alt,
+        urls: lightboxImages.map((image) => image.url),
+        index,
+      });
+      return;
+    }
+    setViewerIndex(index);
+  };
 
   return (
     <div className={`min-w-0 ${className}`}>
@@ -52,6 +83,7 @@ export function WidgetImageStrip({
               url={url}
               alt={urls.length > 1 ? `${alt} ${index + 1}` : alt}
               className="h-16 w-24"
+              onPreview={() => openAt(index)}
             />
             {onRemove ? (
               <button
@@ -67,6 +99,15 @@ export function WidgetImageStrip({
           </div>
         ))}
       </div>
+      <ImageLightbox
+        open={viewerIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setViewerIndex(null);
+        }}
+        images={lightboxImages}
+        index={viewerIndex ?? 0}
+        onIndexChange={setViewerIndex}
+      />
     </div>
   );
 }

@@ -46,6 +46,8 @@ type SettingsDialogShellProps = {
   onOpenAutoFocus?: (event: Event) => void
   /** Merged onto DialogContent (e.g. taller max-height for image previews). */
   contentClassName?: string
+  /** Rendered inside the dialog shell, outside DialogInner (e.g. side nav). */
+  aside?: React.ReactNode
   children: React.ReactNode
 }
 
@@ -60,6 +62,7 @@ export function SettingsDialogShell({
   expandable = false,
   onOpenAutoFocus,
   contentClassName,
+  aside,
   children,
 }: SettingsDialogShellProps) {
   const [expanded, setExpanded] = React.useState(false)
@@ -69,7 +72,7 @@ export function SettingsDialogShell({
   }, [open])
 
   const styleWidth = {
-    width: `min(${width === "xxl" ? 96 : 92}vw, ${BASE_WIDTH_PX[width]}px)`,
+    width: `min(${width === "xxl" ? "calc(100vw - 8rem)" : "92vw"}, ${BASE_WIDTH_PX[width]}px)`,
     maxWidth: "none" as const,
   }
 
@@ -138,11 +141,13 @@ export function SettingsDialogShell({
           >
             {header}
             {body}
+            {aside}
           </motion.div>
         ) : (
           <>
             {header}
             {body}
+            {aside}
           </>
         )}
       </DialogContent>

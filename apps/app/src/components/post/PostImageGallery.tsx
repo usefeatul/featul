@@ -2,6 +2,7 @@
 
 import React from "react"
 import ContentImage from "@/components/global/ContentImage"
+import { ImageLightbox } from "@/components/global/ImageLightbox"
 import { listPostImages } from "@/lib/post/images"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { cn } from "@featul/ui/lib/utils"
@@ -31,6 +32,12 @@ export function PostImageGallery({
   const images = items ?? listPostImages(image, metadata)
   const scrollerRef = React.useRef<HTMLDivElement>(null)
   const previousCountRef = React.useRef(0)
+  const [viewerIndex, setViewerIndex] = React.useState<number | null>(null)
+
+  const lightboxImages = images.map((item, index) => ({
+    url: item.url,
+    alt: item.name || (images.length > 1 ? `${alt} ${index + 1}` : alt),
+  }))
 
   React.useEffect(() => {
     if (images.length > previousCountRef.current) {
@@ -61,6 +68,7 @@ export function PostImageGallery({
               url={item.url}
               alt={item.name || (images.length > 1 ? `${alt} ${index + 1}` : alt)}
               className="h-16 w-24"
+              onPreview={() => setViewerIndex(index)}
             />
             {onRemove ? (
               <button
@@ -79,6 +87,15 @@ export function PostImageGallery({
           </div>
         ))}
       </div>
+      <ImageLightbox
+        open={viewerIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setViewerIndex(null)
+        }}
+        images={lightboxImages}
+        index={viewerIndex ?? 0}
+        onIndexChange={setViewerIndex}
+      />
     </div>
   )
 }

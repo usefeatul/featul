@@ -9,12 +9,21 @@ import {
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import { ImageIcon } from "@featul/ui/icons/image";
-import { WidgetImage } from "./image";
+import { ImageLightboxNav, ImageLightboxView, type LightboxImage } from "@/components/global/ImageLightbox";
 import { isSafeImageUrl } from "./messaging";
+
+type OpenHostImageExtras = {
+  urls?: string[];
+  index?: number;
+};
 
 declare global {
   interface Window {
-    __featulOpenHostImage?: (url: string, alt?: string) => void;
+    __featulOpenHostImage?: (
+      url: string,
+      alt?: string,
+      extras?: OpenHostImageExtras,
+    ) => void;
     __featulCloseHostImage?: () => void;
   }
 }
@@ -26,14 +35,40 @@ declare global {
  */
 export function WidgetHostImageDialog() {
   const [open, setOpen] = React.useState(false);
-  const [url, setUrl] = React.useState("");
-  const [alt, setAlt] = React.useState("");
+  const [images, setImages] = React.useState<LightboxImage[]>([]);
+  const [index, setIndex] = React.useState(0);
 
   React.useEffect(() => {
-    const openImage = (nextUrl: string, nextAlt = "") => {
-      if (!isSafeImageUrl(nextUrl)) return;
-      setUrl(nextUrl);
-      setAlt(nextAlt);
+    const openImage = (
+      nextUrl: string,
+      nextAlt = "",
+      extras?: OpenHostImageExtras,
+    ) => {
+      const galleryUrls = Array.isArray(extras?.urls)
+        ? extras.urls.filter(isSafeImageUrl)
+        : [];
+      const nextImages =
+        galleryUrls.length > 0
+          ? galleryUrls.map((url, imageIndex) => ({
+              url,
+              alt:
+                galleryUrls.length > 1
+                  ? `${nextAlt || "Image"} ${imageIndex + 1}`
+                  : nextAlt,
+            }))
+          : isSafeImageUrl(nextUrl)
+            ? [{ url: nextUrl, alt: nextAlt }]
+            : [];
+      if (nextImages.length === 0) return;
+      const nextIndex =
+        typeof extras?.index === "number" ? extras.index : galleryUrls.indexOf(nextUrl);
+      setImages(nextImages);
+      setIndex(
+        Math.min(
+          Math.max(nextIndex < 0 ? 0 : nextIndex, 0),
+          nextImages.length - 1,
+        ),
+      );
       setOpen(true);
     };
     const closeImage = () => setOpen(false);
@@ -47,14 +82,17 @@ export function WidgetHostImageDialog() {
     };
   }, []);
 
+  const title =
+    images.length > 1 ? `Image ${index + 1} of ${images.length}` : "Image";
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         fluid
         overlayClassName="z-[2147483647] bg-black/20 backdrop-blur-xs dark:bg-black/20"
-        className="z-[2147483647] max-h-[92dvh] max-w-none sm:max-w-none"
+        className="z-[2147483647] max-h-[92dvh] max-w-none overflow-visible sm:max-w-none"
         style={{
-          width: "min(96vw, 1400px)",
+          width: "min(calc(100vw - 8rem), 1400px)",
           maxWidth: "none",
           top: "50%",
           ["--tw-translate-y" as string]: "-50%",
@@ -64,19 +102,29 @@ export function WidgetHostImageDialog() {
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <DialogTitle className="mt-0.5 flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
             <ImageIcon className="size-3.5" />
-            Image
+            {title}
           </DialogTitle>
         </DialogHeader>
         <DialogInner className="min-h-0 p-2">
-          <div className="flex max-h-[min(84dvh,1080px)] items-center justify-center overflow-hidden">
-            <WidgetImage
-              url={url}
-              alt={alt}
-              imgClassName="max-h-[min(84dvh,1080px)] max-w-full h-auto w-auto object-contain"
-              preview={false}
-            />
-          </div>
+          <ImageLightboxView
+            images={images}
+            index={index}
+            onIndexChange={setIndex}
+            enabled={open}
+          />
         </DialogInner>
+        {images.length > 1 ? (
+          <ImageLightboxNav
+            onPrev={() =>
+              setIndex((current) =>
+                (current - 1 + images.length) % images.length,
+              )
+            }
+            onNext={() =>
+              setIndex((current) => (current + 1) % images.length)
+            }
+          />
+        ) : null}
       </DialogContent>
     </Dialog>
   );

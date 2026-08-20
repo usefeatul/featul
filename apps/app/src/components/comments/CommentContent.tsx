@@ -1,5 +1,8 @@
+"use client"
+
 import React from "react"
 import ContentImage from "@/components/global/ContentImage"
+import { ImageLightbox } from "@/components/global/ImageLightbox"
 import type { CommentData } from "../../types/comment"
 
 interface CommentContentProps {
@@ -8,6 +11,14 @@ interface CommentContentProps {
 }
 
 export default function CommentContent({ content, metadata }: CommentContentProps) {
+  const [viewerIndex, setViewerIndex] = React.useState<number | null>(null)
+  const imageAttachments = (metadata?.attachments || []).filter((att) =>
+    att.type.startsWith("image/"),
+  )
+  const lightboxImages = imageAttachments.map((att) => ({
+    url: att.url,
+    alt: att.name,
+  }))
   const renderText = () => {
     const text = content || ""
     const mentions = (metadata?.mentions || [])
@@ -44,20 +55,28 @@ export default function CommentContent({ content, metadata }: CommentContentProp
         </div>
       )}
       {/* Display images from metadata */}
-      {metadata?.attachments && metadata.attachments.length > 0 && (
+      {imageAttachments.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
-          {metadata.attachments
-            .filter((att) => att.type.startsWith("image/"))
-            .map((att, idx) => (
+          {imageAttachments.map((att, idx) => (
               <ContentImage
                 key={idx}
                 url={att.url}
                 alt={att.name}
                 className="h-16 w-24"
+                onPreview={() => setViewerIndex(idx)}
               />
             ))}
         </div>
       )}
+      <ImageLightbox
+        open={viewerIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setViewerIndex(null)
+        }}
+        images={lightboxImages}
+        index={viewerIndex ?? 0}
+        onIndexChange={setViewerIndex}
+      />
     </>
   )
 }

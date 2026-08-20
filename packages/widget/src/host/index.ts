@@ -621,16 +621,24 @@ function boot() {
     if (event.key === "Escape") closeImageLightbox();
   }
 
-  function openImageLightbox(url: string, alt: string) {
+  function openImageLightbox(
+    url: string,
+    alt: string,
+    extras?: { urls?: string[]; index?: number },
+  ) {
     if (!url.startsWith("http://") && !url.startsWith("https://")) return;
     const opener = (
       window as Window & {
-        __featulOpenHostImage?: (url: string, alt: string) => void;
+        __featulOpenHostImage?: (
+          url: string,
+          alt?: string,
+          extras?: { urls?: string[]; index?: number },
+        ) => void;
       }
     ).__featulOpenHostImage;
     if (typeof opener === "function") {
       closeImageLightbox();
-      opener(url, alt || "");
+      opener(url, alt || "", extras);
       return;
     }
     closeImageLightbox();
@@ -970,8 +978,20 @@ function boot() {
       typeof data.payload === "object" &&
       "url" in data.payload
     ) {
-      const payload = data.payload as { url?: string; alt?: string };
-      if (payload.url) openImageLightbox(payload.url, payload.alt || "");
+      const payload = data.payload as {
+        url?: string;
+        alt?: string;
+        urls?: unknown;
+        index?: unknown;
+      };
+      if (payload.url) {
+        openImageLightbox(payload.url, payload.alt || "", {
+          urls: Array.isArray(payload.urls)
+            ? payload.urls.filter((url): url is string => typeof url === "string")
+            : undefined,
+          index: typeof payload.index === "number" ? payload.index : undefined,
+        });
+      }
     }
     if (data.type === "close-image") closeImageLightbox();
   });

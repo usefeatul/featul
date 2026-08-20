@@ -2,23 +2,32 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ImageIcon } from "@featul/ui/icons/image";
 import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
+import { ImageLightbox } from "@/components/global/ImageLightbox";
 
 interface ContentImageProps {
   url: string;
   alt: string;
   className?: string;
+  onPreview?: () => void;
 }
 
 export default function ContentImage({
   url,
   alt,
   className,
+  onPreview,
 }: ContentImageProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const openPreview = () => {
+    if (onPreview) {
+      onPreview();
+      return;
+    }
+    setIsOpen(true);
+  };
 
   return (
     <>
@@ -28,13 +37,13 @@ export default function ContentImage({
           "relative cursor-pointer p-0.5 transition-opacity hover:opacity-90",
           className,
         )}
-        onClick={() => setIsOpen(true)}
+        onClick={openPreview}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            setIsOpen(true);
+            openPreview();
           }
         }}
         aria-label="Click to view full size image"
@@ -53,23 +62,15 @@ export default function ContentImage({
         </div>
       </div>
 
-      <SettingsDialogShell
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        title="Image"
-        width="xxl"
-        contentClassName="max-h-[92dvh]"
-        icon={<ImageIcon className="size-3.5" />}
-        onOpenAutoFocus={(event) => event.preventDefault()}
-      >
-        <div className="flex max-h-[min(84dvh,1080px)] items-center justify-center overflow-hidden">
-          <img
-            src={url}
-            alt={alt}
-            className="max-h-[min(84dvh,1080px)] max-w-full h-auto w-auto object-contain"
-          />
-        </div>
-      </SettingsDialogShell>
+      {onPreview ? null : (
+        <ImageLightbox
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          images={[{ url, alt }]}
+          index={0}
+          onIndexChange={() => undefined}
+        />
+      )}
     </>
   );
 }
