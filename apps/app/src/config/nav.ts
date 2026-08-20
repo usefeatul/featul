@@ -11,14 +11,18 @@ import { SettingIcon } from "@featul/ui/icons/setting"
 import { DocIcon } from "@featul/ui/icons/doc"
 import MemberIcon from "@featul/ui/icons/member"
 import ImageIcon from "@featul/ui/icons/image"
-import FillFeedbackIcon from "@featul/ui/icons/fill-feedback"
+import FeedbackIcon from "@featul/ui/icons/feedback"
 import DomainIcon from "@featul/ui/icons/domain"
 import IntegrationIcon from "@featul/ui/icons/integration"
 import FileExportIcon from "@featul/ui/icons/file-export"
 import BoxIcon from "@featul/ui/icons/box"
 import CreditCardIcon from "@featul/ui/icons/credit-card"
+import AccountIcon from "@featul/ui/icons/account"
+import ShieldIcon from "@featul/ui/icons/shield"
+import LayersIcon from "@featul/ui/icons/layers"
 import type { NavItem } from "../types/nav"
 import { SECTIONS } from "./sections"
+import { ACCOUNT_SECTIONS } from "./account/sections"
 
 function w(slug: string, p: string) {
   return slug ? `/workspaces/${slug}${p}` : `/workspaces${p}`
@@ -39,6 +43,12 @@ export function isWorkspaceSettingsPath(pathname: string) {
   const parts = pathname.split("/").filter(Boolean)
   const idx = parts.indexOf("workspaces")
   return idx >= 0 && parts[idx + 2] === "settings"
+}
+
+export function isWorkspaceAccountPath(pathname: string) {
+  const parts = pathname.split("/").filter(Boolean)
+  const idx = parts.indexOf("workspaces")
+  return idx >= 0 && parts[idx + 2] === "account"
 }
 
 export function buildTopNav(slug: string): NavItem[] {
@@ -76,7 +86,7 @@ export function buildBottomNav(): NavItem[] {
 const SETTINGS_ICONS: Record<string, NavItem["icon"]> = {
   branding: ImageIcon,
   team: MemberIcon,
-  feedback: FillFeedbackIcon,
+  feedback: FeedbackIcon,
   changelog: ChangelogIcon,
   board: BoardIcon,
   billing: CreditCardIcon,
@@ -91,6 +101,21 @@ export function buildSettingsNav(slug: string): NavItem[] {
     label: section.label,
     href: w(slug, `/settings/${section.value}`),
     icon: SETTINGS_ICONS[section.value] || SettingIcon,
+    replace: true,
+  }))
+}
+
+const ACCOUNT_ICONS: Record<string, NavItem["icon"]> = {
+  profile: AccountIcon,
+  security: ShieldIcon,
+  appearance: LayersIcon,
+}
+
+export function buildAccountNav(slug: string): NavItem[] {
+  return ACCOUNT_SECTIONS.map((section) => ({
+    label: section.label,
+    href: w(slug, `/account/${section.value}`),
+    icon: ACCOUNT_ICONS[section.value] || AccountIcon,
     replace: true,
   }))
 }

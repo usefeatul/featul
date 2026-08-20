@@ -1,23 +1,46 @@
-import React from 'react'
+import React from "react"
 
 interface IntegrationIconProps {
   className?: string
   size?: number
+  opacity?: number
 }
 
-export const IntegrationIcon: React.FC<IntegrationIconProps> = ({ className = '', size = 24 }) => {
+export const IntegrationIcon: React.FC<IntegrationIconProps> = ({
+  className = "",
+  size = 18,
+  opacity = 1,
+}) => {
   return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width={size} 
-      height={size} 
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
       viewBox="0 0 18 18"
+      opacity={opacity}
       className={className}
     >
-      <path 
-        d="M14.25,3h-5.75c-.414,0-.75,.336-.75,.75,0,.551-.449,1-1,1s-1-.449-1-1c0-.414-.336-.75-.75-.75h-1.25c-1.517,0-2.75,1.233-2.75,2.75v6.5c0,1.517,1.233,2.75,2.75,2.75h1.25c.414,0,.75-.336,.75-.75,0-.551,.449-1,1-1s1,.449,1,1c0,.414,.336,.75,.75,.75h5.75c1.517,0,2.75-1.233,2.75-2.75V5.75c0-1.517-1.233-2.75-2.75-2.75ZM6.75,11.188c-.414,0-.75-.336-.75-.75s.336-.75,.75-.75,.75,.336,.75,.75-.336,.75-.75,.75Zm0-2.875c-.414,0-.75-.336-.75-.75s.336-.75,.75-.75,.75,.336,.75,.75-.336,.75-.75,.75Z" 
-        fill="currentColor"
-      />
+      <title>integration</title>
+      <g fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" stroke="currentColor">
+        <rect
+          x="2.25"
+          y="2.25"
+          width="7.5"
+          height="7.5"
+          rx="1.5"
+          fill="currentColor"
+          fillOpacity="0.3"
+          className="origin-center transition-transform duration-300 ease-[cubic-bezier(.2,.0,0,1)] group-hover:-translate-x-px group-hover:-translate-y-px"
+        />
+        <rect
+          x="8.25"
+          y="8.25"
+          width="7.5"
+          height="7.5"
+          rx="1.5"
+          className="origin-center transition-transform duration-300 delay-75 ease-[cubic-bezier(.2,.0,0,1)] group-hover:translate-x-px group-hover:translate-y-px"
+        />
+      </g>
     </svg>
   )
 }

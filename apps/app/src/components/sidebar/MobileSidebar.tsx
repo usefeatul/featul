@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import { Drawer } from "@featul/ui/components/drawer";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
-import { buildBottomNav, buildSettingsNav, getSlugFromPath, isWorkspaceSettingsPath } from "../../config/nav";
+import { buildAccountNav, buildBottomNav, buildSettingsNav, getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath } from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
@@ -60,13 +60,15 @@ export default function MobileSidebar({
   );
   const secondaryNav = buildBottomNav();
   const settingsNav = React.useMemo(() => buildSettingsNav(slug), [slug]);
+  const accountNav = React.useMemo(() => buildAccountNav(slug), [slug]);
   const isSettings = isWorkspaceSettingsPath(pathname);
+  const isAccount = isWorkspaceAccountPath(pathname);
   const [open, setOpen] = React.useState(false);
 
   return (
     <div className={cn("lg:hidden", className)}>
       <Drawer direction="right" open={open} onOpenChange={setOpen}>
-        <MobileBottomBar items={isSettings ? settingsNav : middleNav} />
+        <MobileBottomBar items={isSettings ? settingsNav : isAccount ? accountNav : middleNav} />
         <MobileDrawerContent
           pathname={pathname}
           primaryNav={primaryNav}

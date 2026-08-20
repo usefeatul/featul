@@ -4,9 +4,10 @@ import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
-import { buildBottomNav, getSlugFromPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
+import { buildBottomNav, getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
 import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
 import SettingsNav from "@/components/settings/global/SettingsNav";
+import AccountNav from "@/components/account/AccountNav";
 import {
   useSidebarHotkeys,
   getShortcutForLabel,
@@ -69,6 +70,7 @@ export default function Sidebar({
   const router = useRouter();
   const slug = getSlugFromPath(pathname);
   const isSettings = isWorkspaceSettingsPath(pathname);
+  const isAccount = isWorkspaceAccountPath(pathname);
 
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
@@ -118,7 +120,7 @@ export default function Sidebar({
 
       <div className="flex-1 overflow-y-auto scrollbar-hide">
         <LayoutGroup id="desktop-sidebar-nav">
-        {isSettings ? (
+        {isSettings || isAccount ? (
           <>
             <SidebarSection>
               <SidebarItem
@@ -133,8 +135,8 @@ export default function Sidebar({
                 indicator={false}
               />
             </SidebarSection>
-            <SidebarSection title="SETTINGS" className="mt-4">
-              <SettingsNav />
+            <SidebarSection title={isSettings ? "SETTINGS" : "ACCOUNT"} className="mt-4">
+              {isSettings ? <SettingsNav /> : <AccountNav />}
             </SidebarSection>
           </>
         ) : (

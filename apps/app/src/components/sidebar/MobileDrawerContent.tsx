@@ -13,8 +13,9 @@ import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
-import { getSlugFromPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
+import { getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
 import SettingsNav from "@/components/settings/global/SettingsNav";
+import AccountNav from "@/components/account/AccountNav";
 import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
 import { CreatePostModal } from "../post/CreatePostModal";
 import { LayoutGroup } from "framer-motion";
@@ -64,6 +65,7 @@ export default function MobileDrawerContent({
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
   const isSettings = isWorkspaceSettingsPath(pathname);
+  const isAccount = isWorkspaceAccountPath(pathname);
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
@@ -90,8 +92,8 @@ export default function MobileDrawerContent({
           />
         </div>
 
-        {isSettings ? (
-          <LayoutGroup id="mobile-settings-nav">
+        {isSettings || isAccount ? (
+          <LayoutGroup id={isSettings ? "mobile-settings-nav" : "mobile-account-nav"}>
             <SidebarSection>
               <SidebarItem
                 item={{
@@ -106,8 +108,12 @@ export default function MobileDrawerContent({
                 onClick={onLinkClick}
               />
             </SidebarSection>
-            <SidebarSection title="SETTINGS" className="mt-4">
-              <SettingsNav onLinkClick={onLinkClick} />
+            <SidebarSection title={isSettings ? "SETTINGS" : "ACCOUNT"} className="mt-4">
+              {isSettings ? (
+                <SettingsNav onLinkClick={onLinkClick} />
+              ) : (
+                <AccountNav onLinkClick={onLinkClick} />
+              )}
             </SidebarSection>
           </LayoutGroup>
         ) : (

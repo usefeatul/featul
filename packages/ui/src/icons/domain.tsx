@@ -1,13 +1,15 @@
-import React from "react";
+import React from "react"
 
 interface DomainIconProps {
-  className?: string;
-  size?: number;
+  className?: string
+  size?: number
+  opacity?: number
 }
 
 export const DomainIcon: React.FC<DomainIconProps> = ({
   className = "",
   size = 18,
+  opacity = 1,
 }) => {
   return (
     <svg
@@ -15,6 +17,7 @@ export const DomainIcon: React.FC<DomainIconProps> = ({
       width={size}
       height={size}
       viewBox="0 0 18 18"
+      opacity={opacity}
       className={className}
     >
       <title>globe</title>
@@ -46,6 +49,7 @@ export const DomainIcon: React.FC<DomainIconProps> = ({
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
+        className="origin-center transition-transform duration-500 ease-[cubic-bezier(.2,.0,0,1)] group-hover:rotate-12"
       />
       <path
         d="M1.75 9H16.25"
@@ -53,9 +57,10 @@ export const DomainIcon: React.FC<DomainIconProps> = ({
         strokeWidth="1.5"
         strokeLinecap="round"
         fill="none"
+        className="origin-center transition-transform duration-300 ease-[cubic-bezier(.2,.0,0,1)] group-hover:scale-x-90"
       />
     </svg>
-  );
-};
+  )
+}
 
-export default DomainIcon;
+export default DomainIcon

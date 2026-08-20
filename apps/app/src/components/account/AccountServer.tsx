@@ -1,5 +1,4 @@
 import React from "react"
-import AccountTabsHeader from "./AccountTabsHeader"
 import ProfileSection from "./Profile"
 import SecuritySection from "./Security"
 import AppearanceSection from "./Appearance"
@@ -8,7 +7,6 @@ import type { PasskeyItem } from "./Passkeys"
 import type { SessionItem } from "@/types/session"
 
 type Props = {
-  slug: string
   selectedSection?: string
   initialUser?: { name?: string; email?: string; image?: string | null } | null
   twoFactorEnabled?: boolean
@@ -17,18 +15,15 @@ type Props = {
   initialPasskeys?: PasskeyItem[]
 }
 
-export default function AccountServer({ slug, selectedSection, initialUser, twoFactorEnabled, initialSessions, initialAccounts, initialPasskeys }: Props) {
+export default function AccountServer({ selectedSection, initialUser, twoFactorEnabled, initialSessions, initialAccounts, initialPasskeys }: Props) {
   const sections = ACCOUNT_SECTIONS
   const defaultSection = sections[0]?.value || "profile"
   const selected = typeof selectedSection === "string" && sections.some((section) => section.value === selectedSection)
     ? selectedSection
     : defaultSection
   return (
-    <section className="space-y-4">
-      <AccountTabsHeader slug={slug} selected={selected} />
-      <div className="mt-2">
-        <SectionRenderer section={selected} initialUser={initialUser || undefined} twoFactorEnabled={twoFactorEnabled} initialSessions={initialSessions} initialAccounts={initialAccounts} initialPasskeys={initialPasskeys} />
-      </div>
+    <section>
+      <SectionRenderer section={selected} initialUser={initialUser || undefined} twoFactorEnabled={twoFactorEnabled} initialSessions={initialSessions} initialAccounts={initialAccounts} initialPasskeys={initialPasskeys} />
     </section>
   )
 }

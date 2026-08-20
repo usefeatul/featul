@@ -8,6 +8,7 @@ import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/componen
 import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
+import { getAccountSectionMeta } from "@/config/account/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
@@ -37,14 +38,20 @@ export default function WorkspaceHeader() {
   const isMemberDetail = isMembersSection && rest.length > 1;
   const isChangelogSection = rest[0] === "changelog";
   const isSettingsSection = rest[0] === "settings";
+  const isAccountSection = rest[0] === "account";
   const settingsMeta = isSettingsSection
     ? getSectionMeta(rest[1] || "branding")
+    : null;
+  const accountMeta = isAccountSection
+    ? getAccountSectionMeta(rest[1] || "profile")
     : null;
   const editorContext = useEditorHeaderActionsOptional();
 
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
     title = settingsMeta?.label || "Settings";
+  } else if (isAccountSection) {
+    title = accountMeta?.label || "Account";
   } else if (rest.length > 0) {
     const t = resolveTitle(rest[0] ?? "");
     title = t || "";
@@ -145,8 +152,10 @@ export default function WorkspaceHeader() {
               <h1 className="text-xl font-heading leading-tight font-semibold truncate">
                 {title}
               </h1>
-              {settingsMeta?.desc ? (
-                <p className="mt-1 text-sm text-accent">{settingsMeta.desc}</p>
+              {settingsMeta?.desc || accountMeta?.desc ? (
+                <p className="mt-1 text-sm text-accent">
+                  {settingsMeta?.desc || accountMeta?.desc}
+                </p>
               ) : null}
             </div>
             {showFilterSummary ? <FilterDynamicIsland /> : null}
