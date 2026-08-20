@@ -5,36 +5,48 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@featul/ui/lib/utils"
 
-const toolbarVariants = cva(
-    "flex items-stretch rounded-sm border bg-background/95 backdrop-blur transition-all duration-300 overflow-hidden",
-    {
-        variants: {
-            variant: {
-                default: "border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black",
-                plain: "border-border",
-            },
-            size: {
-                default: "h-9",
-                sm: "h-8",
-            },
+export const toolbarShellClass =
+  "flex items-stretch overflow-hidden rounded-xl border border-border bg-card p-1 text-foreground dark:border-white/10 dark:bg-black"
+
+export const toolbarInnerClass =
+  "flex min-h-8 flex-1 items-stretch overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
+
+export const toolbarItemClass =
+  "h-full rounded-none border-none bg-transparent shadow-none ring-0 hover:bg-muted/40 dark:bg-transparent dark:hover:bg-muted/30"
+
+const toolbarVariants = cva("flex items-stretch overflow-hidden", {
+    variants: {
+        variant: {
+            default: toolbarShellClass,
+            plain: "rounded-sm border border-border",
         },
-        defaultVariants: {
-            variant: "default",
-            size: "default",
+        size: {
+            default: "",
+            sm: "",
         },
-    }
-)
+    },
+    defaultVariants: {
+        variant: "default",
+        size: "default",
+    },
+})
 
 const Toolbar = React.forwardRef<
     HTMLDivElement,
     React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof toolbarVariants>
->(({ className, size, variant, ...props }, ref) => (
-    <div
-        ref={ref}
-        className={cn(toolbarVariants({ size, variant, className }))}
-        {...props}
-    />
-))
+>(({ className, size, variant = "default", children, ...props }, ref) => {
+    const isNested = variant !== "plain"
+
+    return (
+        <div
+            ref={ref}
+            className={cn(toolbarVariants({ size, variant }), className)}
+            {...props}
+        >
+            {isNested ? <div className={toolbarInnerClass}>{children}</div> : children}
+        </div>
+    )
+})
 Toolbar.displayName = "Toolbar"
 
 const ToolbarSeparator = React.forwardRef<
@@ -43,7 +55,7 @@ const ToolbarSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("w-px bg-border shrink-0 z-10", className)}
+        className={cn("w-px shrink-0 bg-border z-10 dark:bg-white/10", className)}
         {...props}
     />
 ))

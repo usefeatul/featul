@@ -41,7 +41,7 @@ function ChangelogItem({ item, workspaceSlug, isSelecting, isSelected, onToggle 
     const rowClassName = getSelectableRowClassName(
         isSelectingMode,
         isSelectedMode,
-        "flex items-center gap-3 px-4 py-3 border-b border-border/70 bg-card dark:bg-black/40 relative overflow-hidden",
+        "relative flex items-center gap-3 overflow-hidden border-b border-border/60 px-4 py-3 last:border-b-0 dark:border-b-white/10",
     )
 
     return (

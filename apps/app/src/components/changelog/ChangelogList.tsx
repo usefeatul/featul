@@ -60,6 +60,13 @@ export function ChangelogList({
 
   return (
     <SelectableListShell
+      variant="nested"
+      title="Changelog"
+      headerAction={
+        <span className="text-xs tabular-nums text-accent">
+          {listItems.length} {listItems.length === 1 ? "entry" : "entries"}
+        </span>
+      }
       isPending={isPending}
       selection={selection}
       confirmOpen={confirmOpen}

@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@featul/ui/lib/utils"
+import { toolbarItemClass } from "@featul/ui/components/toolbar"
 import NotificationsBell from "@/components/subdomain/NotificationsBell"
 
 export default function WorkspaceNotificationsAction({
@@ -15,10 +16,7 @@ export default function WorkspaceNotificationsAction({
       align="end"
       variant="card"
       size="icon-sm"
-      className={cn(
-        "h-full rounded-none border-none hover:bg-muted px-3",
-        className,
-      )}
+      className={cn(toolbarItemClass, "px-3", className)}
     />
   )
 }

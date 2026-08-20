@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { NotraIcon } from "@featul/ui/icons/notra";
 import { NotraConnectionSection } from "@/components/changelog/notra/NotraConnectionSection";
 import { NotraCredentialsSection } from "@/components/changelog/notra/NotraCredentialsSection";
@@ -240,7 +241,7 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
       <Button
         type="button"
         variant="card"
-        className="h-full rounded-none border-none hover:bg-muted px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
+        className={`${toolbarItemClass} px-3 text-xs font-medium text-muted-foreground hover:text-foreground`}
         onClick={openDialog}
       >
         <NotraIcon className="size-4 mr-2" />

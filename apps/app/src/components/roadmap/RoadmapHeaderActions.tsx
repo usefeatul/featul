@@ -1,11 +1,12 @@
 "use client";
 
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
 import RoadmapSearchAction from "./actions/RoadmapSearchAction";
 import RoadmapFiltersAction from "./actions/RoadmapFiltersAction";
 import RoadmapSortAction from "./actions/RoadmapSortAction";
 import RoadmapShortcutsHint from "./RoadmapShortcutsHint";
 import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
+import { cn } from "@featul/ui/lib/utils";
 
 export default function RoadmapHeaderActions({
   className = "",
@@ -14,13 +15,13 @@ export default function RoadmapHeaderActions({
 }) {
   return (
     <Toolbar size="sm" className={className}>
-      <RoadmapSearchAction className="h-full rounded-none border-none hover:bg-muted px-3" />
+      <RoadmapSearchAction className={cn(toolbarItemClass, "px-3")} />
       <ToolbarSeparator />
-      <RoadmapFiltersAction className="h-full rounded-none border-none hover:bg-muted px-3" />
+      <RoadmapFiltersAction className={cn(toolbarItemClass, "px-3")} />
       <ToolbarSeparator />
-      <RoadmapSortAction className="h-full rounded-none border-none hover:bg-muted px-3" />
+      <RoadmapSortAction className={cn(toolbarItemClass, "px-3")} />
       <ToolbarSeparator />
-      <RoadmapShortcutsHint className="h-full rounded-none border-none hover:bg-muted px-3" />
+      <RoadmapShortcutsHint className={cn(toolbarItemClass, "px-3")} />
       <ToolbarSeparator />
       <WorkspaceNotificationsAction />
     </Toolbar>

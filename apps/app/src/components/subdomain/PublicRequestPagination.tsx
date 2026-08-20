@@ -4,7 +4,7 @@ import React, { useMemo } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@featul/ui/components/button"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 import PaginationHotkeys from "@/components/pagination/PaginationHotkeys"
 
 export function PublicRequestPagination({
@@ -56,17 +56,17 @@ export function PublicRequestPagination({
       />
       <div className="order-1 flex min-w-0 w-full flex-col items-end gap-2 sm:order-2 sm:w-auto">
         <Toolbar size="sm">
-          <Button asChild variant="card" size="sm" disabled={page <= 1} className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card">
+          <Button asChild variant="card" size="sm" disabled={page <= 1} className={`${toolbarItemClass} h-8 px-3 gap-2`}>
             <Link prefetch={false} href={prevHref} rel="prev" aria-label="Previous page" aria-keyshortcuts="z" title="Prev (Z)" className="group">
               <span className="text-xs font-medium">Prev</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">Z</span>
+              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">Z</span>
             </Link>
           </Button>
           <ToolbarSeparator />
-          <Button asChild variant="card" size="sm" disabled={page >= totalPages || totalCount === 0} className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card">
+          <Button asChild variant="card" size="sm" disabled={page >= totalPages || totalCount === 0} className={`${toolbarItemClass} h-8 px-3 gap-2`}>
             <Link prefetch={false} href={nextHref} rel="next" aria-label="Next page" aria-keyshortcuts="x" title="Next (X)" className="group">
               <span className="text-xs font-medium">Next</span>
-              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">X</span>
+              <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">X</span>
             </Link>
           </Button>
         </Toolbar>

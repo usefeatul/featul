@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
 import {
   buildChangelogUrl,
   buildRequestsUrl,
@@ -119,7 +119,7 @@ export default function RequestPagination({
               variant="card"
               size="sm"
               disabled={page <= 1}
-              className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+              className={`${toolbarItemClass} h-8 px-3 gap-2`}
             >
               <Link
                 prefetch={false}
@@ -131,7 +131,7 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Prev</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">
                   Z
                 </span>
               </Link>
@@ -142,7 +142,7 @@ export default function RequestPagination({
               variant="card"
               size="sm"
               disabled={page >= totalPages || effectiveTotal === 0}
-              className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+              className={`${toolbarItemClass} h-8 px-3 gap-2`}
             >
               <Link
                 prefetch={false}
@@ -154,7 +154,7 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Next</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border border-border bg-card px-1.5 text-xs font-extralight text-accent tabular-nums h-5 dark:border-white/10 dark:bg-black">
                   X
                 </span>
               </Link>
