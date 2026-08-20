@@ -192,19 +192,17 @@ export function ChangelogEditor({
     return (
         <div className="pb-10">
             <article className={cn(settingsCardShellClass, "w-full")}>
-                {coverImage ? (
-                    <div className={cn(settingsCardInnerClass, "mb-2 overflow-hidden p-0")}>
-                        <CoverImageUploader
-                            variant="image"
-                            workspaceSlug={workspaceSlug}
-                            coverImage={coverImage}
-                            onCoverImageChange={(url) => {
-                                setCoverImage(url);
-                                setIsDirty(true);
-                            }}
-                        />
-                    </div>
-                ) : null}
+                <div className={cn(settingsCardInnerClass, "mb-2 overflow-hidden p-0")}>
+                    <CoverImageUploader
+                        variant="image"
+                        workspaceSlug={workspaceSlug}
+                        coverImage={coverImage}
+                        onCoverImageChange={(url) => {
+                            setCoverImage(url);
+                            setIsDirty(true);
+                        }}
+                    />
+                </div>
 
                 <div className={cn(settingsCardInnerClass, "min-h-[400px]")}>
                     <div className="mb-4 flex flex-wrap items-center gap-1">
