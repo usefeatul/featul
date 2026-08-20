@@ -4,7 +4,6 @@ import React from "react"
 import ContentImage from "@/components/global/ContentImage"
 import { listPostImages } from "@/lib/post/images"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 
 type GalleryImage = {
@@ -58,15 +57,11 @@ export function PostImageGallery({
             key={`${item.url}-${index}`}
             className="relative shrink-0 snap-start"
           >
-            <div className={cn(overlayShellClass, "p-0.5")}>
-              <div className={overlayInnerClass}>
-                <ContentImage
-                  url={item.url}
-                  alt={item.name || (images.length > 1 ? `${alt} ${index + 1}` : alt)}
-                  className="h-16 w-24 rounded-none border-0 bg-transparent"
-                />
-              </div>
-            </div>
+            <ContentImage
+              url={item.url}
+              alt={item.name || (images.length > 1 ? `${alt} ${index + 1}` : alt)}
+              className="h-16 w-24"
+            />
             {onRemove ? (
               <button
                 type="button"

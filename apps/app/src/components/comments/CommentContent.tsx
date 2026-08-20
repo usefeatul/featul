@@ -53,7 +53,7 @@ export default function CommentContent({ content, metadata }: CommentContentProp
                 key={idx}
                 url={att.url}
                 alt={att.name}
-                className="max-w-[120px] max-h-20"
+                className="h-16 w-24"
               />
             ))}
         </div>

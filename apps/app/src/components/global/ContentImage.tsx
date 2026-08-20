@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ImageIcon } from "@featul/ui/icons/image";
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 
@@ -23,8 +24,9 @@ export default function ContentImage({
     <>
       <div
         className={cn(
-          "relative rounded-md  border overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity",
-          className
+          overlayShellClass,
+          "relative cursor-pointer p-0.5 transition-opacity hover:opacity-90",
+          className,
         )}
         onClick={() => setIsOpen(true)}
         role="button"
@@ -37,15 +39,17 @@ export default function ContentImage({
         }}
         aria-label="Click to view full size image"
       >
-        <div className="relative aspect-video w-full h-full min-h-[60px] bg-muted">
-          <Image
-            src={url}
-            alt={alt}
-            fill
-            className="object-cover"
-            unoptimized
-            loader={({ src }) => src}
-          />
+        <div className={overlayInnerClass}>
+          <div className="relative aspect-video h-full w-full min-h-[60px] bg-background">
+            <Image
+              src={url}
+              alt={alt}
+              fill
+              className="object-cover"
+              unoptimized
+              loader={({ src }) => src}
+            />
+          </div>
         </div>
       </div>
 
@@ -57,12 +61,19 @@ export default function ContentImage({
         icon={<ImageIcon className="size-3.5" />}
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden rounded-lg bg-muted/40">
-          <img
-            src={url}
-            alt={alt}
-            className="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
-          />
+        <div className={cn(overlayShellClass, "p-1")}>
+          <div
+            className={cn(
+              overlayInnerClass,
+              "flex max-h-[min(72dvh,760px)] items-center justify-center bg-background",
+            )}
+          >
+            <img
+              src={url}
+              alt={alt}
+              className="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
+            />
+          </div>
         </div>
       </SettingsDialogShell>
     </>

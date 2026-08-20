@@ -118,22 +118,20 @@ export default function CommentForm({
       {/* Image Preview */}
       {uploadedImage && (
         <div className="relative inline-block">
-          <div className="relative">
-            <ContentImage
-              url={uploadedImage.url}
-              alt={uploadedImage.name}
-              className="max-w-[120px] max-h-20"
-            />
-            <button
-              type="button"
-              onClick={() => handleRemoveImage()}
-              className="absolute -top-1 -right-1 rounded-xl bg-destructive text-destructive-foreground p-0.5 hover:bg-destructive/90 transition-colors z-10 cursor-pointer"
-              disabled={isPending || uploadingImage}
-              aria-label="Remove image"
-            >
-              <XMarkIcon className="size-3" />
-            </button>
-          </div>
+          <ContentImage
+            url={uploadedImage.url}
+            alt={uploadedImage.name}
+            className="h-16 w-24"
+          />
+          <button
+            type="button"
+            onClick={() => handleRemoveImage()}
+            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-background hover:bg-destructive/90"
+            disabled={isPending || uploadingImage}
+            aria-label="Remove image"
+          >
+            <XMarkIcon className="size-2.5" />
+          </button>
         </div>
       )}
 
