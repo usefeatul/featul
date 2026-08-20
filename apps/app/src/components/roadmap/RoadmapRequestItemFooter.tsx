@@ -41,7 +41,7 @@ export default function RoadmapRequestItemFooter({
 }) {
   return (
     <div
-      className={`mt-auto flex shrink-0 items-center gap-2 rounded-b-[inherit] border-t border-border/60 px-3 py-2 ${toneFooterClass}`}
+      className={`mt-auto flex shrink-0 items-center gap-2 rounded-b-lg border-t border-border/60 px-3 py-2 ${toneFooterClass}`}
     >
       <Avatar className="relative size-5.5 shrink-0 overflow-visible bg-card ring-1 ring-border/70 dark:bg-black/50">
         <AvatarImage src={avatarSrc} alt={authorLabel} />

@@ -6,8 +6,15 @@ import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
 import { MoveHorizontalIcon } from "@featul/ui/icons/horizontal";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
 import RoadmapEmptyColumn from "@/components/roadmap/RoadmapEmptyColumn";
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function RoadmapColumn({
@@ -34,7 +41,11 @@ export default function RoadmapColumn({
   return (
     <motion.div
       ref={setNodeRef}
-      className={`h-full overflow-hidden rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border transition-colors duration-200 flex flex-col ${isOver ? "border-green-500/70 bg-green-500/[0.04]" : ""}`}
+      className={cn(
+        settingsCardShellClass,
+        "h-full transition-colors duration-200",
+        isOver && "border-green-500/70 dark:border-green-500/70",
+      )}
       layout
       initial={false}
       transition={{
@@ -44,7 +55,7 @@ export default function RoadmapColumn({
       }}
     >
       <div
-        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between border-b border-border/60 px-3 py-2.5"} cursor-pointer`}
+        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between px-2 py-2"} cursor-pointer`}
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
@@ -62,9 +73,9 @@ export default function RoadmapColumn({
               status={id}
               className="mx-auto block size-4.5 text-foreground/80"
             />
-            <div className="mx-auto block px-1 text-xs font-mono tabular-nums text-accent">
+            <OverlayChip className="mx-auto" innerClassName="min-w-5 px-1.5">
               {count}
-            </div>
+            </OverlayChip>
           </>
         ) : (
           <>
@@ -93,9 +104,9 @@ export default function RoadmapColumn({
                   <FillPlusIcon className="size-4" size={16} />
                 </Button>
               ) : null}
-              <div className="inline-flex h-6 min-w-6 items-center justify-center px-1.5 text-xs font-mono tabular-nums leading-none text-accent">
+              <OverlayChip innerClassName="min-w-5 px-1.5">
                 {count}
-              </div>
+              </OverlayChip>
               <MoveVerticalIcon className="size-4 text-accent" />
             </div>
           </>
@@ -104,7 +115,10 @@ export default function RoadmapColumn({
       <AnimatePresence initial={false}>
         {!collapsed ? (
           <motion.ul
-            className="min-h-[260px] flex-1 space-y-2 p-2"
+            className={cn(
+              settingsCardInnerClass,
+              "min-h-[260px] space-y-2 overflow-y-auto p-2",
+            )}
             initial={false}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -123,13 +137,15 @@ export default function RoadmapColumn({
             ) : null}
             {isOver ? (
               <motion.li
-                className="mt-2 h-16 rounded-md border border-dashed border-green-500/70 bg-green-500/[0.04]"
+                className={cn(overlayShellClass, "mt-2 h-16 border-dashed border-green-500/70 p-1")}
                 aria-hidden
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: disableMotion ? 0 : 0.08 }}
-              />
+              >
+                <div className={cn(overlayInnerClass, "h-full bg-green-500/[0.04]")} />
+              </motion.li>
             ) : null}
           </motion.ul>
         ) : null}

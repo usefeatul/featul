@@ -2,6 +2,8 @@
 
 import { Button } from "@featul/ui/components/button";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 
 export default function RoadmapEmptyColumn({
   label,
@@ -11,24 +13,31 @@ export default function RoadmapEmptyColumn({
   onCreate?: () => void;
 }) {
   return (
-    <li className="flex min-h-[152px] flex-col items-center justify-center rounded-md border border-dashed border-border/70 bg-background/50 px-4 py-6 text-center">
-      <p className="text-xs text-accent">No items in {label}</p>
-      {onCreate ? (
-        <Button
-          type="button"
-          variant="plain"
-          size="sm"
-          className="mt-2 h-7 gap-1.5 px-2 text-xs text-accent hover:text-foreground"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            onCreate();
-          }}
-        >
-          <FillPlusIcon className="size-3.5" size={14} />
-          Add item
-        </Button>
-      ) : null}
+    <li className={cn(overlayShellClass, "flex min-h-[152px] flex-col p-1")}>
+      <div
+        className={cn(
+          overlayInnerClass,
+          "flex flex-1 flex-col items-center justify-center px-4 py-6 text-center",
+        )}
+      >
+        <p className="text-xs text-accent">No items in {label}</p>
+        {onCreate ? (
+          <Button
+            type="button"
+            variant="plain"
+            size="sm"
+            className="mt-2 h-7 gap-1.5 px-2 text-xs text-accent hover:text-foreground"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onCreate();
+            }}
+          >
+            <FillPlusIcon className="size-3.5" size={14} />
+            Add item
+          </Button>
+        ) : null}
+      </div>
     </li>
   );
 }

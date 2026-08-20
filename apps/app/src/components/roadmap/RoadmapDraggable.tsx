@@ -4,6 +4,7 @@ import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 export default function RoadmapDraggable({
@@ -35,7 +36,8 @@ export default function RoadmapDraggable({
         transform: transform ? CSS.Translate.toString(transform) : undefined,
       }}
       className={cn(
-        "h-[152px] cursor-grab overflow-hidden rounded-md border border-border bg-background shadow-xs transition-[border-color,box-shadow,opacity] hover:border-foreground/20 hover:shadow-sm active:cursor-grabbing dark:hover:border-white/15",
+        overlayShellClass,
+        "h-[152px] cursor-grab p-1 shadow-none transition-[border-color,opacity] hover:border-foreground/20 active:cursor-grabbing dark:hover:border-white/15",
         isSaving && "border-primary/60 opacity-80",
         isDragging && "opacity-0",
         className,
@@ -43,7 +45,9 @@ export default function RoadmapDraggable({
       layout
       transition={{ type: "spring", stiffness: 180, damping: 36 }}
     >
-      <div className="h-full min-w-0">{children}</div>
+      <div className={cn(overlayInnerClass, "flex h-full min-w-0 flex-col")}>
+        {children}
+      </div>
     </motion.li>
   );
 }
