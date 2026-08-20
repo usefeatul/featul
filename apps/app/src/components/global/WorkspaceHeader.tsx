@@ -36,10 +36,13 @@ export default function WorkspaceHeader() {
   const isMembersSection = rest[0] === "members";
   const isMemberDetail = isMembersSection && rest.length > 1;
   const isChangelogSection = rest[0] === "changelog";
+  const isSettingsSection = rest[0] === "settings";
   const editorContext = useEditorHeaderActionsOptional();
 
   let title = rest.length === 0 ? "Requests" : "";
-  if (rest.length > 0) {
+  if (isSettingsSection) {
+    title = "Settings";
+  } else if (rest.length > 0) {
     const t = resolveTitle(rest[0] ?? "");
     title = t || "";
   }

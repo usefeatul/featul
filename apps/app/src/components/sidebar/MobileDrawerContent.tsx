@@ -13,7 +13,9 @@ import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
-import { getSlugFromPath } from "../../config/nav";
+import { getSlugFromPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
+import SettingsNav from "@/components/settings/global/SettingsNav";
+import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
@@ -60,6 +62,7 @@ export default function MobileDrawerContent({
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
+  const isSettings = isWorkspaceSettingsPath(pathname);
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
@@ -86,20 +89,41 @@ export default function MobileDrawerContent({
           />
         </div>
 
-        <SidebarSection title="REQUEST">
-          {primaryNav.map((item) => (
-            <SidebarItem
-              key={item.label}
-              item={item}
-              pathname={pathname}
-              count={
-                statusCounts ? statusCounts[statusKey(item.label)] : undefined
-              }
-              mutedIcon={false}
-              onClick={onLinkClick}
-            />
-          ))}
-        </SidebarSection>
+        {isSettings ? (
+          <>
+            <SidebarSection>
+              <SidebarItem
+                item={{
+                  label: "Back",
+                  href: workspaceBase(slug),
+                  icon: ChevronLeftIcon,
+                  exact: true,
+                }}
+                pathname={pathname}
+                mutedIcon
+                onClick={onLinkClick}
+              />
+            </SidebarSection>
+            <SidebarSection title="SETTINGS" className="mt-4">
+              <SettingsNav onLinkClick={onLinkClick} />
+            </SidebarSection>
+          </>
+        ) : (
+          <SidebarSection title="REQUEST">
+            {primaryNav.map((item) => (
+              <SidebarItem
+                key={item.label}
+                item={item}
+                pathname={pathname}
+                count={
+                  statusCounts ? statusCounts[statusKey(item.label)] : undefined
+                }
+                mutedIcon={false}
+                onClick={onLinkClick}
+              />
+            ))}
+          </SidebarSection>
+        )}
 
         <SidebarSection className="pb-8">
           <Button

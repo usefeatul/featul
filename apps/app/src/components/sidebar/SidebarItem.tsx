@@ -28,11 +28,12 @@ function SidebarItem({
   React.useEffect(() => {
     setMounted(true);
   }, []);
+  const activePrefix = item.match || item.href
   const active =
     mounted &&
     !item.external &&
-    (pathname === item.href ||
-      (item.href !== "/" && pathname.startsWith(item.href)));
+    (pathname === activePrefix ||
+      (!item.exact && activePrefix !== "/" && pathname.startsWith(activePrefix)));
   const classes = cn(
     "group flex items-center gap-2 rounded-md  px-3 py-2 text-xs md:text-sm",
     active ? "bg-transparent text-foreground" : "text-accent hover:bg-muted dark:hover:bg-black/40",
@@ -42,8 +43,11 @@ function SidebarItem({
     <>
       <Icon
         className={cn(
-          "size-5 text-foreground group-hover:text-primary transition-colors",
-          mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
+          "size-5 transition-colors",
+          active
+            ? "text-primary opacity-100"
+            : "text-foreground group-hover:text-primary",
+          !active && mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
         )}
       />
       <span className="transition-colors">{item.label}</span>
@@ -77,6 +81,7 @@ function SidebarItem({
   return (
     <Link
       href={item.href}
+      replace={item.replace}
       className={classes}
       aria-current={active ? "page" : undefined}
       onClick={onClick}

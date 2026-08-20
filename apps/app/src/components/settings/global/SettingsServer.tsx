@@ -17,8 +17,6 @@ import type { BrandingConfig } from "../../../types/branding";
 import type { FeedbackBoardSettings } from "@/hooks/useGlobalBoardToggle";
 import type { FeedbackTag } from "../feedback/ManageTags";
 import type { ChangelogTag } from "../changelog/ChangelogTags";
-import { SECTIONS } from "../../../config/sections";
-import SettingsTabsHeader from "./SettingsTabsHeader";
 
 type Props = {
   slug: string;
@@ -70,36 +68,32 @@ export default function SettingsServer({
   initialFeedbackTags,
   initialIntegrations,
 }: Props) {
-  const sections = SECTIONS;
   const selected: string =
     typeof selectedSection === "string" && selectedSection
       ? selectedSection
-      : sections[0]?.value || "branding";
+      : "branding";
   return (
-    <section className="space-y-4 mt-6.5">
-      <SettingsTabsHeader slug={slug} selected={selected} />
-      <div className="mt-2">
-        <SectionRenderer
-          slug={slug}
-          initialWorkspaceId={initialWorkspaceId}
-          initialWorkspaceOwnerId={initialWorkspaceOwnerId}
-          initialBillingSubscription={initialBillingSubscription}
-          section={selected}
-          initialTimezone={initialTimezone}
-          initialTeam={initialTeam}
-          initialChangelogVisible={initialChangelogVisible}
-          initialChangelogTags={initialChangelogTags}
-          initialHidePoweredBy={initialHidePoweredBy}
-          initialPlan={initialPlan}
-          initialBrandingConfig={initialBrandingConfig}
-          initialWorkspaceName={initialWorkspaceName}
-          initialDomainInfo={initialDomainInfo}
-          initialDefaultDomain={initialDefaultDomain}
-          initialFeedbackBoards={initialFeedbackBoards}
-          initialFeedbackTags={initialFeedbackTags}
-          initialIntegrations={initialIntegrations}
-        />
-      </div>
+    <section>
+      <SectionRenderer
+        slug={slug}
+        initialWorkspaceId={initialWorkspaceId}
+        initialWorkspaceOwnerId={initialWorkspaceOwnerId}
+        initialBillingSubscription={initialBillingSubscription}
+        section={selected}
+        initialTimezone={initialTimezone}
+        initialTeam={initialTeam}
+        initialChangelogVisible={initialChangelogVisible}
+        initialChangelogTags={initialChangelogTags}
+        initialHidePoweredBy={initialHidePoweredBy}
+        initialPlan={initialPlan}
+        initialBrandingConfig={initialBrandingConfig}
+        initialWorkspaceName={initialWorkspaceName}
+        initialDomainInfo={initialDomainInfo}
+        initialDefaultDomain={initialDefaultDomain}
+        initialFeedbackBoards={initialFeedbackBoards}
+        initialFeedbackTags={initialFeedbackTags}
+        initialIntegrations={initialIntegrations}
+      />
     </section>
   );
 }

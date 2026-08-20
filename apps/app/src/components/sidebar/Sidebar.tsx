@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
-import { buildBottomNav, getSlugFromPath } from "../../config/nav";
+import { buildBottomNav, getSlugFromPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
+import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import SettingsNav from "@/components/settings/global/SettingsNav";
 import {
   useSidebarHotkeys,
   getShortcutForLabel,
@@ -65,6 +67,7 @@ export default function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const slug = getSlugFromPath(pathname);
+  const isSettings = isWorkspaceSettingsPath(pathname);
 
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
@@ -113,30 +116,52 @@ export default function Sidebar({
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-hide">
-        <SidebarSection title="REQUEST">
-          {primaryNav.map((item) => (
-            <SidebarItem
-              key={item.label}
-              item={item}
-              pathname={pathname}
-              count={
-                statusCounts ? statusCounts[statusKey(item.label)] : undefined
-              }
-              mutedIcon={false}
-            />
-          ))}
-        </SidebarSection>
-        <SidebarSection title="WORKSPACE" className="mt-4">
-          {middleNav.map((item) => (
-            <SidebarItem
-              key={item.label}
-              item={item}
-              pathname={pathname}
-              shortcut={getShortcutForLabel(item.label)}
-              mutedIcon
-            />
-          ))}
-        </SidebarSection>
+        {isSettings ? (
+          <>
+            <SidebarSection>
+              <SidebarItem
+                item={{
+                  label: "Back",
+                  href: workspaceBase(slug),
+                  icon: ChevronLeftIcon,
+                  exact: true,
+                }}
+                pathname={pathname}
+                mutedIcon
+              />
+            </SidebarSection>
+            <SidebarSection title="SETTINGS" className="mt-4">
+              <SettingsNav />
+            </SidebarSection>
+          </>
+        ) : (
+          <>
+            <SidebarSection title="REQUEST">
+              {primaryNav.map((item) => (
+                <SidebarItem
+                  key={item.label}
+                  item={item}
+                  pathname={pathname}
+                  count={
+                    statusCounts ? statusCounts[statusKey(item.label)] : undefined
+                  }
+                  mutedIcon={false}
+                />
+              ))}
+            </SidebarSection>
+            <SidebarSection title="WORKSPACE" className="mt-4">
+              {middleNav.map((item) => (
+                <SidebarItem
+                  key={item.label}
+                  item={item}
+                  pathname={pathname}
+                  shortcut={getShortcutForLabel(item.label)}
+                  mutedIcon
+                />
+              ))}
+            </SidebarSection>
+          </>
+        )}
       </div>
 
       <SidebarSection className="pb-4 py-2">
