@@ -52,9 +52,9 @@ export function WidgetHostImageDialog() {
       <DialogContent
         fluid
         overlayClassName="z-[2147483647] bg-black/20 backdrop-blur-xs dark:bg-black/20"
-        className="z-[2147483647] max-h-[90dvh] max-w-none sm:max-w-none"
+        className="z-[2147483647] max-h-[92dvh] max-w-none sm:max-w-none"
         style={{
-          width: "min(92vw, 1070px)",
+          width: "min(96vw, 1400px)",
           maxWidth: "none",
           top: "50%",
           ["--tw-translate-y" as string]: "-50%",
@@ -68,11 +68,11 @@ export function WidgetHostImageDialog() {
           </DialogTitle>
         </DialogHeader>
         <DialogInner className="min-h-0 p-2">
-          <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden">
+          <div className="flex max-h-[min(84dvh,1080px)] items-center justify-center overflow-hidden">
             <WidgetImage
               url={url}
               alt={alt}
-              imgClassName="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
+              imgClassName="max-h-[min(84dvh,1080px)] max-w-full h-auto w-auto object-contain"
               preview={false}
             />
           </div>

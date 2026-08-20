@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Dialog, DialogContent, DialogHeader, DialogInner, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
 import MaximizeIcon from "@featul/ui/icons/maximize"
 import MinimizeIcon from "@featul/ui/icons/minimize"
+import { cn } from "@featul/ui/lib/utils"
 
 const DialogExpandedContext = React.createContext(false)
 
@@ -20,7 +21,7 @@ const BASE_WIDTH_PX: Record<DialogWidth, number> = {
   wide: 490,
   widest: 650,
   xl: 750,
-  xxl: 1070,
+  xxl: 1400,
 }
 
 const EXPANDED_WIDTH_PX: Record<DialogWidth, number> = {
@@ -28,7 +29,7 @@ const EXPANDED_WIDTH_PX: Record<DialogWidth, number> = {
   wide: 640,
   widest: 800,
   xl: 880,
-  xxl: 1200,
+  xxl: 1600,
 }
 
 type SettingsDialogShellProps = {
@@ -43,6 +44,8 @@ type SettingsDialogShellProps = {
   /** Shows an expand/collapse toggle that grows the dialog with a framer-motion animation. */
   expandable?: boolean
   onOpenAutoFocus?: (event: Event) => void
+  /** Merged onto DialogContent (e.g. taller max-height for image previews). */
+  contentClassName?: string
   children: React.ReactNode
 }
 
@@ -56,6 +59,7 @@ export function SettingsDialogShell({
   icon,
   expandable = false,
   onOpenAutoFocus,
+  contentClassName,
   children,
 }: SettingsDialogShellProps) {
   const [expanded, setExpanded] = React.useState(false)
@@ -65,7 +69,7 @@ export function SettingsDialogShell({
   }, [open])
 
   const styleWidth = {
-    width: `min(92vw, ${BASE_WIDTH_PX[width]}px)`,
+    width: `min(${width === "xxl" ? 96 : 92}vw, ${BASE_WIDTH_PX[width]}px)`,
     maxWidth: "none" as const,
   }
 
@@ -115,7 +119,10 @@ export function SettingsDialogShell({
       <DialogContent
         fluid
         style={{ ...(expandable ? {} : styleWidth), ...positionStyle }}
-        className="flex max-h-[min(92dvh,680px)] max-w-none flex-col overflow-hidden sm:max-w-none"
+        className={cn(
+          "flex max-h-[min(92dvh,680px)] max-w-none flex-col overflow-hidden sm:max-w-none",
+          contentClassName,
+        )}
         onOpenAutoFocus={onOpenAutoFocus}
       >
         {expandable ? (

@@ -644,7 +644,7 @@ function boot() {
     dialog.setAttribute("aria-modal", "true");
     dialog.setAttribute("aria-label", "Image");
     dialog.style.cssText =
-      "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483647;width:min(92vw,1070px);box-sizing:border-box;padding:4px;border-radius:16px;display:flex;flex-direction:column;gap:4px;outline:none;" +
+      "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483647;width:min(96vw,1400px);box-sizing:border-box;padding:4px;border-radius:16px;display:flex;flex-direction:column;gap:4px;outline:none;" +
       (dark
         ? "background:#171717;color:#fafafa;border:1px solid rgba(255,255,255,0.12);"
         : "background:#f4f4f5;color:#171717;border:1px solid rgba(0,0,0,0.1);");
@@ -652,7 +652,7 @@ function boot() {
     img.src = url;
     img.alt = alt || "";
     img.style.cssText =
-      "max-height:min(72dvh,760px);max-width:100%;width:auto;height:auto;object-fit:contain;display:block;margin:0 auto;";
+      "max-height:min(84dvh,1080px);max-width:100%;width:auto;height:auto;object-fit:contain;display:block;margin:0 auto;";
     overlay.onclick = () => closeImageLightbox();
     dialog.onclick = (event) => event.stopPropagation();
     dialog.appendChild(img);

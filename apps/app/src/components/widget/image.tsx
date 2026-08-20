@@ -103,14 +103,15 @@ export function WidgetImage({
         onOpenChange={setOpen}
         title="Image"
         width="xxl"
+        contentClassName="max-h-[92dvh]"
         icon={<ImageIcon className="size-3.5" />}
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden">
+        <div className="flex max-h-[min(84dvh,1080px)] items-center justify-center overflow-hidden">
           <WidgetImg
             url={url}
             alt={alt}
-            className="max-h-[min(72dvh,760px)] max-w-full h-auto w-auto object-contain"
+            className="max-h-[min(84dvh,1080px)] max-w-full h-auto w-auto object-contain"
           />
         </div>
       </SettingsDialogShell>
