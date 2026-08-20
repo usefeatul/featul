@@ -7,10 +7,11 @@ import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 
-export type LightboxImage = {
-  url: string;
-  alt: string;
-};
+export const imageLightboxContentClassName =
+  "h-[min(88dvh,860px)] max-h-[92dvh] overflow-visible";
+
+export const imageLightboxStageClassName =
+  "flex h-full min-h-0 w-full flex-1 items-center justify-center overflow-hidden";
 
 function wrapIndex(index: number, length: number, delta: number) {
   if (length <= 0) return 0;
@@ -99,11 +100,11 @@ export function ImageLightboxView({
   if (!current) return null;
 
   return (
-    <div className="flex max-h-[min(84dvh,1080px)] items-center justify-center overflow-hidden">
+    <div className={imageLightboxStageClassName}>
       <img
         src={current.url}
         alt={current.alt}
-        className="max-h-[min(84dvh,1080px)] h-auto w-auto max-w-full object-contain"
+        className="max-h-full max-w-full h-auto w-auto object-contain"
       />
     </div>
   );
@@ -134,7 +135,7 @@ export function ImageLightbox({
       onOpenChange={onOpenChange}
       title={title}
       width="xxl"
-      contentClassName="max-h-[92dvh] overflow-visible"
+      contentClassName={imageLightboxContentClassName}
       icon={<ImageIcon className="size-3.5" />}
       onOpenAutoFocus={(event) => event.preventDefault()}
       aside={

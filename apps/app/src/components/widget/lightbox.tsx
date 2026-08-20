@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import { ImageIcon } from "@featul/ui/icons/image";
-import { ImageLightboxNav, ImageLightboxView, type LightboxImage } from "@/components/global/ImageLightbox";
+import { ImageLightboxNav, ImageLightboxView, imageLightboxContentClassName, type LightboxImage } from "@/components/global/ImageLightbox";
 import { isSafeImageUrl } from "./messaging";
 
 type OpenHostImageExtras = {
@@ -90,7 +90,7 @@ export function WidgetHostImageDialog() {
       <DialogContent
         fluid
         overlayClassName="z-[2147483647] bg-black/20 backdrop-blur-xs dark:bg-black/20"
-        className="z-[2147483647] max-h-[92dvh] max-w-none overflow-visible sm:max-w-none"
+        className={`z-[2147483647] flex max-w-none flex-col sm:max-w-none ${imageLightboxContentClassName}`}
         style={{
           width: "min(calc(100vw - 8rem), 1400px)",
           maxWidth: "none",
@@ -105,7 +105,7 @@ export function WidgetHostImageDialog() {
             {title}
           </DialogTitle>
         </DialogHeader>
-        <DialogInner className="min-h-0 p-2">
+        <DialogInner className="flex min-h-0 flex-1 flex-col overflow-hidden p-2">
           <ImageLightboxView
             images={images}
             index={index}
