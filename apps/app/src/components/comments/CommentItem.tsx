@@ -6,7 +6,6 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@featul/ui/components/avatar"
-import { cn } from "@featul/ui/lib/utils"
 import CommentForm from "./CommentForm"
 import RoleBadge from "../global/RoleBadge"
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
@@ -18,10 +17,6 @@ import CommentFooter from "./CommentFooter"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
-import {
-  settingsCardInnerClass,
-  settingsCardShellClass,
-} from "@/components/settings/global/SectionCard"
 
 interface CommentItemProps {
   comment: CommentData
@@ -90,9 +85,9 @@ export default function CommentItem({
   const initials = getInitials(displayUser.name)
 
   return (
-    <div className={cn(settingsCardShellClass, "group min-w-0")}>
-      <header className="flex min-w-0 items-center gap-2.5 py-2">
-        <Avatar className="relative size-7 shrink-0 overflow-visible">
+    <div className="group min-w-0">
+      <div className="flex min-w-0 items-start gap-2.5">
+        <Avatar className="relative mt-0.5 size-7 shrink-0 overflow-visible">
           <AvatarImage src={displayUser.image} alt={displayUser.name} />
           <AvatarFallback className="bg-muted text-[10px] text-muted-foreground">
             {initials}
@@ -117,58 +112,58 @@ export default function CommentItem({
             surface={surface}
             hidePublicMemberIdentity={showHiddenIdentity}
           />
+
+          <div className="mt-1">
+            {isEditing ? (
+              <CommentEditor
+                value={editContent}
+                onChange={setEditContent}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+                isPending={isPending}
+              />
+            ) : (
+              <CommentContent
+                content={comment.content}
+                metadata={comment.metadata}
+              />
+            )}
+          </div>
+
+          {!isEditing && (
+            <CommentFooter
+              commentId={comment.id}
+              postId={comment.postId}
+              surface={surface}
+              upvotes={comment.upvotes}
+              downvotes={comment.downvotes}
+              userVote={comment.userVote}
+              canReply={canReply}
+              showReplyForm={showReplyForm}
+              onToggleReply={() => setShowReplyForm(!showReplyForm)}
+            />
+          )}
+
+          {showReplyForm ? (
+            <div className="mt-3">
+              <CommentForm
+                postId={comment.postId}
+                parentId={comment.id}
+                workspaceSlug={workspaceSlug}
+                surface={surface}
+                defaultInternal={Boolean(comment.isInternal)}
+                onSuccess={() => {
+                  setShowReplyForm(false)
+                  onReplySuccess?.()
+                }}
+                placeholder="Write a reply..."
+                autoFocus
+                buttonText="Reply"
+              />
+            </div>
+          ) : null}
         </div>
-      </header>
-
-      <div className={settingsCardInnerClass}>
-        {isEditing ? (
-          <CommentEditor
-            value={editContent}
-            onChange={setEditContent}
-            onKeyDown={handleKeyDown}
-            onBlur={handleBlur}
-            isPending={isPending}
-          />
-        ) : (
-          <CommentContent
-            content={comment.content}
-            metadata={comment.metadata}
-          />
-        )}
-
-        {!isEditing && (
-          <CommentFooter
-            commentId={comment.id}
-            postId={comment.postId}
-            surface={surface}
-            upvotes={comment.upvotes}
-            downvotes={comment.downvotes}
-            userVote={comment.userVote}
-            canReply={canReply}
-            showReplyForm={showReplyForm}
-            onToggleReply={() => setShowReplyForm(!showReplyForm)}
-          />
-        )}
       </div>
-
-      {showReplyForm && (
-        <div className={cn(settingsCardInnerClass, "mt-2")}>
-          <CommentForm
-            postId={comment.postId}
-            parentId={comment.id}
-            workspaceSlug={workspaceSlug}
-            surface={surface}
-            defaultInternal={Boolean(comment.isInternal)}
-            onSuccess={() => {
-              setShowReplyForm(false)
-              onReplySuccess?.()
-            }}
-            placeholder="Write a reply..."
-            autoFocus
-            buttonText="Reply"
-          />
-        </div>
-      )}
     </div>
   )
 }

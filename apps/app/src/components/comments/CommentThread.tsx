@@ -4,6 +4,7 @@ import AnimatedReplies from "./AnimatedReplies"
 import CommentItem from "./CommentItem"
 import { updateCommentCollapseState } from "@/lib/comments.actions"
 import type { CommentSurface } from "@/lib/comment/shared"
+import { cn } from "@featul/ui/lib/utils"
 
 interface CommentThreadProps {
   postId: string
@@ -59,7 +60,7 @@ export default function CommentThread({
       )
 
   return (
-    <div className="space-y-4">
+    <div>
       {rootComments.map((comment) => (
         <ThreadItem
           key={comment.id}
@@ -110,24 +111,32 @@ function ThreadItem({
   const hasReplies = replies.length > 0
 
   return (
-    <div className="relative">
-      <CommentItem
-        comment={comment}
-        currentUserId={currentUserId}
-        onUpdate={onUpdate}
-        onReplySuccess={onUpdate}
-        depth={depth}
-        hasReplies={hasReplies}
-        isCollapsed={isCollapsed}
-        onToggleCollapse={() => onToggleCollapse(comment.id)}
-        workspaceSlug={workspaceSlug}
-        surface={surface}
-        hidePublicMemberIdentity={hidePublicMemberIdentity}
-      />
+    <div
+      className={cn(
+        "relative",
+        depth === 0 &&
+          "border-b border-border/60 last:border-b-0 dark:border-b-white/10",
+      )}
+    >
+      <div className={cn(depth === 0 ? "px-4 py-3" : "py-2.5")}>
+        <CommentItem
+          comment={comment}
+          currentUserId={currentUserId}
+          onUpdate={onUpdate}
+          onReplySuccess={onUpdate}
+          depth={depth}
+          hasReplies={hasReplies}
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => onToggleCollapse(comment.id)}
+          workspaceSlug={workspaceSlug}
+          surface={surface}
+          hidePublicMemberIdentity={hidePublicMemberIdentity}
+        />
+      </div>
 
       {hasReplies && (
         <AnimatedReplies isOpen={!isCollapsed}>
-          <div className="ml-3 space-y-3 border-l border-border/50 pt-3 pl-4 dark:border-white/10">
+          <div className="ml-8 space-y-0 border-l border-border/50 pl-3 dark:border-white/10">
             {replies.map((reply) => (
               <ThreadItem
                 key={reply.id}

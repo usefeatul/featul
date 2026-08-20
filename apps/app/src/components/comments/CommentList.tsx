@@ -116,17 +116,19 @@ export default function CommentList({
         ) : null}
       </div>
       {commentCount > 0 ? (
-        <div className="relative space-y-4">
-          <CommentThread
-            postId={postId}
-            comments={comments}
-            currentUserId={currentUserId}
-            onUpdate={handleCommentSuccess}
-            workspaceSlug={workspaceSlug}
-            surface={surface}
-            initialCollapsedIds={initialCollapsedIds}
-            hidePublicMemberIdentity={hidePublicMemberIdentity}
-          />
+        <div className={cn(settingsCardShellClass, "pt-2")}>
+          <div className={cn(settingsCardInnerClass, "overflow-hidden p-0")}>
+            <CommentThread
+              postId={postId}
+              comments={comments}
+              currentUserId={currentUserId}
+              onUpdate={handleCommentSuccess}
+              workspaceSlug={workspaceSlug}
+              surface={surface}
+              initialCollapsedIds={initialCollapsedIds}
+              hidePublicMemberIdentity={hidePublicMemberIdentity}
+            />
+          </div>
         </div>
       ) : null}
     </div>
