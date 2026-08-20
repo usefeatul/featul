@@ -15,12 +15,12 @@ import { PoweredBy } from "./PoweredBy"
 import RoleBadge from "../global/RoleBadge"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { CircleQuestionMarkIcon } from "@featul/ui/icons/circle-question-mark"
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import type { SubdomainRequestDetailData } from "@/types/subdomain"
 
 export type PostSidebarProps = {
@@ -60,6 +60,9 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
   const authorInitials = getInitials(displayUser.name)
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
+  const showTags = tags.length > 0 || canEdit
+  const showMerge = Boolean(post.duplicateOfId || (post.mergedSources && post.mergedSources.length > 0))
+  const showFlagsDivider = showTags || showMerge
 
   return (
     <aside className="hidden min-w-0 flex-col gap-4 md:flex">
@@ -138,7 +141,12 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
             </div>
 
             {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-              <div className="-mx-4 flex items-center justify-between border-b border-border/50 px-4 pb-3">
+              <div
+                className={cn(
+                  "flex items-center justify-between",
+                  showFlagsDivider && "-mx-4 border-b border-border/50 px-4 pb-3",
+                )}
+              >
                 <span className="text-sm font-medium text-muted-foreground">Flags</span>
                 {canEdit ? (
                   <FlagsPicker
@@ -162,7 +170,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
               </div>
             )}
 
-            {(tags.length > 0) || canEdit ? (
+            {showTags ? (
               <div className="pt-1">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-start justify-between">
@@ -212,7 +220,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
               </div>
             ) : null}
 
-            {(post.duplicateOfId || (post.mergedSources && post.mergedSources.length > 0)) ? (
+            {showMerge ? (
               <div className="space-y-3">
                 <div className="-mx-4 h-px bg-border/50" />
                 <div>

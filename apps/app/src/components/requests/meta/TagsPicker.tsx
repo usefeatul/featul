@@ -76,7 +76,6 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
       setSelectedIds(nextIds)
       const nextTags = items.filter((t) => nextIds.includes(t.id))
       onChange?.(nextTags)
-      // Invalidate any queries that might depend on this post's tags
       await queryClient.invalidateQueries({ queryKey: ["tags", workspaceSlug], exact: false })
     },
   })
@@ -136,7 +135,6 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
         </PopoverContent>
         </Popover>
       </Toolbar>
-
     </div>
   )
 }

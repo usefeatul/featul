@@ -62,6 +62,9 @@ export default function RequestDetailSidebar({
   const authorInitials = getInitials(displayAuthor.name);
 
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
+  const showTags = (tags && tags.length > 0) || canEdit;
+  const showMerge = Boolean(post.duplicateOfId || (post.mergedSources && post.mergedSources.length > 0));
+  const showFlagsDivider = showTags || showMerge;
 
   return (
     <aside className={cn(settingsCardShellClass, "hidden md:flex")}>
@@ -143,7 +146,12 @@ export default function RequestDetailSidebar({
           </div>
 
           {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
-            <div className="-mx-4 flex items-center justify-between border-b border-border/50 px-4 pb-3">
+            <div
+              className={cn(
+                "flex items-center justify-between",
+                showFlagsDivider && "-mx-4 border-b border-border/50 px-4 pb-3",
+              )}
+            >
               <span className="text-sm font-medium text-muted-foreground">
                 Flags
               </span>
@@ -169,7 +177,7 @@ export default function RequestDetailSidebar({
             </div>
           )}
 
-          {(post.tags && post.tags.length > 0) || canEdit ? (
+          {showTags ? (
             <div className="pt-1">
               <div className="flex flex-col gap-2">
                 <div className="flex items-start justify-between">
@@ -219,7 +227,7 @@ export default function RequestDetailSidebar({
             </div>
           ) : null}
 
-          {(post.duplicateOfId || (post.mergedSources && post.mergedSources.length > 0)) ? (
+          {showMerge ? (
             <div className="space-y-3">
               <div className="h-px w-full bg-border/50" />
               <div>
