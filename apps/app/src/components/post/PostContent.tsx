@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { Input } from "@featul/ui/components/input"
 import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
 import { useDialogExpanded } from "@/components/settings/global/SettingsDialogShell"
 import { continuePlainList, indentPlainList } from "@/lib/list/plain"
@@ -126,15 +125,14 @@ export function PostContent({
 
   return (
     <div className="px-3 md:px-4 flex min-h-0 flex-1 flex-col gap-2">
-      <Input
-        variant="plain"
+      <input
         placeholder="Post title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={handleTitleKeyDown}
         required
         maxLength={100}
-        className="text-lg md:text-xl  font-semibold h-auto py-2 placeholder:text-accent "
+        className="h-auto w-full bg-transparent py-2 text-lg font-semibold text-foreground outline-none placeholder:text-accent md:text-xl"
       />
       <div
         className="flex min-h-0 flex-1 cursor-text flex-col"
@@ -148,7 +146,7 @@ export function PostContent({
           onKeyDown={handleContentKeyDown}
           minRows={2}
           maxRows={expanded ? 22 : 10}
-          className={`w-full resize-none min-h-[72px] overflow-y-auto py-2 text-base placeholder:text-accent wrap-break-word border-none outline-none ${expanded ? "max-h-[52dvh]" : "max-h-[32dvh]"}`}
+          className={`w-full min-h-[72px] resize-none overflow-y-auto border-none bg-transparent py-2 text-base text-foreground outline-none placeholder:text-accent wrap-break-word ${expanded ? "max-h-[52dvh]" : "max-h-[32dvh]"}`}
         />
       </div>
       
