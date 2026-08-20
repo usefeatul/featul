@@ -36,11 +36,15 @@ export function WidgetImageStrip({
     return null;
   }
 
+  const removable = Boolean(onRemove);
+
   return (
     <div className={`min-w-0 ${className}`}>
       <div
         ref={scrollerRef}
-        className="flex gap-1.5 overflow-x-auto pt-1 pb-1 scrollbar-hide snap-x snap-mandatory [-webkit-overflow-scrolling:touch]"
+        className={`flex gap-1.5 overflow-x-auto scrollbar-hide snap-x snap-mandatory [-webkit-overflow-scrolling:touch] ${
+          removable ? "pt-2.5 pb-1 pr-1.5" : "pt-1 pb-1"
+        }`}
       >
         {urls.map((url, index) => (
           <div key={`${url}-${index}`} className="relative shrink-0 snap-start">

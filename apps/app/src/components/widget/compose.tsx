@@ -326,7 +326,7 @@ export function WidgetFeedbackCompose({
         <WidgetImageStrip
           urls={uploadedImages.map((item) => item.url)}
           alt={title.trim() || "Attached image"}
-          className="mt-2 shrink-0"
+          className="mt-2 shrink-0 pt-0.5"
           onRemove={(index) => void removeUploadedImage(index)}
           removeDisabled={uploading}
         />
