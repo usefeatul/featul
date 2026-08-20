@@ -46,7 +46,7 @@ export function WidgetPostRow({
         <WidgetAuthorAvatar name={author} image={post.authorImage} className="mt-0.5 size-9 shrink-0" />
 
         <div className="min-w-0 flex-1">
-          <h3 className="text-[13px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+          <h3 className="text-[15px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
             {post.title}
           </h3>
 
@@ -60,7 +60,7 @@ export function WidgetPostRow({
             </div>
           ) : null}
 
-          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-[10px] text-[rgb(var(--widget-fg)/0.4)]">
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[rgb(var(--widget-fg)/0.4)]">
             {meta.map((part, index) => (
               <React.Fragment key={`${part}-${index}`}>
                 {index > 0 ? <span aria-hidden className="text-[rgb(var(--widget-fg)/0.2)]">·</span> : null}

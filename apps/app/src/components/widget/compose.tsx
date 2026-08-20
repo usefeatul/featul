@@ -237,7 +237,7 @@ export function WidgetFeedbackCompose({
         <div className="flex size-11 items-center justify-center rounded-full bg-emerald-500 text-white">
           <Check className="size-5" strokeWidth={2.5} />
         </div>
-        <p className="mt-4 text-[13px] font-semibold tracking-tight text-[rgb(var(--widget-fg))]">
+        <p className="mt-4 text-[15px] font-semibold tracking-tight text-[rgb(var(--widget-fg))]">
           Thanks for the feedback
         </p>
         <p className="mt-1.5 max-w-[240px] text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
@@ -294,7 +294,7 @@ export function WidgetFeedbackCompose({
 
       {similar.length ? (
         <div className="-mx-5 mt-3 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]">
-          <p className="px-5 pt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+          <p className="px-5 pt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
             Similar requests
           </p>
           <ul>

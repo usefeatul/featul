@@ -381,7 +381,7 @@ function RoadmapItem({
         ) : null}
         <div className="mt-2.5 flex items-center gap-1.5">
           <WidgetAuthorAvatar name={author} image={item.authorImage} className="size-4" />
-          <span className="truncate text-[10px] text-[rgb(var(--widget-fg)/0.45)]">{author}</span>
+          <span className="truncate text-xs text-[rgb(var(--widget-fg)/0.45)]">{author}</span>
         </div>
       </button>
       {compact ? (

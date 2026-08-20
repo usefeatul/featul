@@ -20,7 +20,7 @@ export default function WidgetLayout({ children }: { children: React.ReactNode }
           touch-action: manipulation;
         }
         html {
-          font-size: 14px;
+          font-size: 16px;
         }
         .widget-shell button,
         .widget-shell a,

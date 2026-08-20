@@ -100,7 +100,7 @@ export function Header({
           ) : isChangelogDetail ? (
             <div className="min-w-0 flex-1" />
           ) : isFeedback && feedbackView === "compose" ? (
-            <p className="min-w-0 flex-1 text-[13px] font-semibold tracking-tight">{feedbackTitle}</p>
+            <p className="min-w-0 flex-1 text-[15px] font-semibold tracking-tight">{feedbackTitle}</p>
           ) : (
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold tracking-tight">{workspaceName}</p>

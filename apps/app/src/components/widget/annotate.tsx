@@ -553,7 +553,7 @@ export function ScreenshotAnnotator({
     <div className="relative flex min-h-0 flex-1 flex-col bg-[rgb(var(--widget-surface))]">
       <header className="flex shrink-0 items-center gap-2 px-4 py-2.5">
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold tracking-tight">
+          <p className="text-[15px] font-semibold tracking-tight">
             Mark it up
           </p>
           <p className="mt-0.5 text-xs text-[rgb(var(--widget-fg)/0.45)]">
@@ -645,7 +645,7 @@ export function ScreenshotAnnotator({
                   ) : item.id === "redact" ? (
                     <EyeOff className="size-4" strokeWidth={2} />
                   ) : (
-                    <span className="flex size-4 items-center justify-center rounded-full border border-current text-[9px] font-semibold leading-none">
+                    <span className="flex size-4 items-center justify-center rounded-full border border-current text-[11px] font-semibold leading-none">
                       1
                     </span>
                   )}

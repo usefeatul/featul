@@ -79,7 +79,7 @@ export function UpdateMetaRow({
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-x-1.5 font-heading text-[10px] font-semibold uppercase tracking-[0.08em] ${className}`}
+      className={`flex flex-wrap items-center gap-x-1.5 font-heading text-xs font-semibold uppercase tracking-[0.08em] ${className}`}
     >
       {dateLabel ? (
         <span className="text-[rgb(var(--widget-fg))]">{dateLabel}</span>
@@ -173,7 +173,7 @@ export function WidgetUpdates({
                     fallbackBadge={isRecent ? "Just Shipped" : null}
                   />
 
-                  <h3 className="mt-2 text-[15px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+                  <h3 className="mt-2 text-[17px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
                     {entry.title}
                   </h3>
 
@@ -195,7 +195,7 @@ export function WidgetUpdates({
                           {entry.authorName}
                         </p>
                         {entry.authorRoleLabel ? (
-                          <p className="truncate font-heading text-[10px] text-[rgb(var(--widget-fg)/0.4)]">
+                          <p className="truncate font-heading text-xs text-[rgb(var(--widget-fg)/0.4)]">
                             {entry.authorRoleLabel}
                           </p>
                         ) : null}
@@ -231,7 +231,7 @@ function UpdateDetail({
       <div className="px-5 pb-4 pt-1">
         <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
 
-        <h1 className="mt-3 text-[20px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+        <h1 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
           {entry.title}
         </h1>
 
@@ -247,7 +247,7 @@ function UpdateDetail({
                 {entry.authorName}
               </p>
               {entry.authorRoleLabel ? (
-                <p className="truncate font-heading text-[10px] text-[rgb(var(--widget-fg)/0.4)]">
+                <p className="truncate font-heading text-xs text-[rgb(var(--widget-fg)/0.4)]">
                   {entry.authorRoleLabel}
                 </p>
               ) : null}
@@ -276,7 +276,7 @@ function UpdateDetail({
             className="prose-headings:scroll-mt-4 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[rgb(var(--widget-fg))] prose-p:text-[rgb(var(--widget-fg)/0.72)] prose-p:leading-7 prose-strong:text-[rgb(var(--widget-fg))] prose-li:text-[rgb(var(--widget-fg)/0.72)] prose-a:text-[rgb(var(--widget-fg))] prose-a:underline prose-a:decoration-[rgb(var(--widget-fg)/0.35)] hover:prose-a:decoration-[rgb(var(--widget-fg)/0.7)] prose-code:rounded-md prose-code:border prose-code:border-[rgb(var(--widget-fg)/0.12)] prose-code:bg-[rgb(var(--widget-fg)/0.06)] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[rgb(var(--widget-fg)/0.85)] prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-md prose-pre:border prose-pre:border-[rgb(var(--widget-fg)/0.12)] prose-pre:bg-[rgb(var(--widget-fg)/0.05)]"
           />
         ) : entry.preview ? (
-          <p className="whitespace-pre-wrap text-[13px] leading-7 text-[rgb(var(--widget-fg)/0.72)]">
+          <p className="whitespace-pre-wrap text-[15px] leading-7 text-[rgb(var(--widget-fg)/0.72)]">
             {entry.preview}
           </p>
         ) : null}

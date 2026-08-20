@@ -289,7 +289,7 @@ export function WidgetFeedbackDetail({
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">{author}</p>
             {post.createdAt ? (
-              <p className="mt-0.5 text-[10px] text-[rgb(var(--widget-fg)/0.4)]">
+              <p className="mt-0.5 text-xs text-[rgb(var(--widget-fg)/0.4)]">
                 {formatShortDate(post.createdAt)}
               </p>
             ) : null}
@@ -301,7 +301,7 @@ export function WidgetFeedbackDetail({
         </h2>
 
         {body ? (
-          <p className="mt-3 whitespace-pre-wrap text-[13px] leading-7 text-[rgb(var(--widget-fg)/0.7)]">
+          <p className="mt-3 whitespace-pre-wrap text-[15px] leading-7 text-[rgb(var(--widget-fg)/0.7)]">
             {body}
           </p>
         ) : (
