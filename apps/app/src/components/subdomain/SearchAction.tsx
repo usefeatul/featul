@@ -3,6 +3,7 @@
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import {
   WorkspaceSearchAction,
   type WorkspaceSearchResult,
@@ -33,11 +34,13 @@ export function SearchAction({ slug, className = "" }: SearchActionProps) {
       workspaceSlug={slug}
       currentSearch={currentSearch}
       className={cn(
+        toolbarItemClass,
+        "px-3",
         className,
         currentSearch &&
           "bg-primary/10 ring-1 ring-primary/30 dark:bg-primary/15",
       )}
-      buttonVariant="nav"
+      buttonVariant="card"
       placeholder="Search feedback…"
       showNoResults
       onSearchSubmit={runSearch}

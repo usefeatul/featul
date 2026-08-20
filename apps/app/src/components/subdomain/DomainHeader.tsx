@@ -16,7 +16,7 @@ import { useSession } from "@featul/auth/client";
 import type { AuthUser } from "@/types/auth";
 import { hasAuthUser } from "@/utils/auth";
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal";
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { getWorkspaceDashboardUrl } from "@/utils/urls";
 
 type WorkspaceInfo = {
@@ -134,17 +134,22 @@ export function DomainHeader({
     [workspace.logo, workspace.name]
   );
 
+  const headerItemClass = cn(
+    toolbarItemClass,
+    "inline-flex h-full items-center px-3 text-sm font-medium",
+  );
+
   return (
     <header className={cn("py-3 sm:py-5")}>
       <div className="md:hidden flex items-center justify-between gap-3 w-full">
-        <div className="flex items-center gap-2">
+        <Toolbar size="sm" className="w-fit">
           <MobileBoardsMenu
             slug={workspace.slug}
             subdomain={subdomain}
             roadmapVisible={roadmapVisible}
             changelogVisible={changelogVisible}
           />
-        </div>
+        </Toolbar>
         <Link
           href="/"
           aria-label="Home"
@@ -152,11 +157,16 @@ export function DomainHeader({
         >
           <BrandMark size="sm" showName />
         </Link>
-        <div className="flex items-center gap-2">
+        <Toolbar size="sm" className="w-fit">
           {isSignedIn ? (
             <>
-              <NotificationsBell />
-              <Button asChild size="xs" variant="nav" aria-label="Dashboard">
+              <NotificationsBell
+                variant="card"
+                size="icon-sm"
+                className={cn(headerItemClass, "px-2.5")}
+              />
+              <ToolbarSeparator />
+              <Button asChild variant="plain" size="xs" aria-label="Dashboard" className={headerItemClass}>
                 <Link
                   href={dashboardUrl}
                   target="_blank"
@@ -170,19 +180,21 @@ export function DomainHeader({
                   />
                 </Link>
               </Button>
+              <ToolbarSeparator />
               <SubdomainUserDropdown subdomain={workspace.slug} initialUser={user || null} />
             </>
           ) : (
             <>
-              <Button size="xs" variant="nav" onClick={() => openAuth("sign-in")}>
+              <Button size="xs" variant="plain" className={headerItemClass} onClick={() => openAuth("sign-in")}>
                 Sign in
               </Button>
-              <Button size="xs" onClick={() => openAuth("sign-up")}>
+              <ToolbarSeparator />
+              <Button size="xs" variant="plain" className={headerItemClass} onClick={() => openAuth("sign-up")}>
                 Sign up
               </Button>
             </>
           )}
-        </div>
+        </Toolbar>
       </div>
 
       <div className="hidden md:flex items-center justify-between gap-4 w-full">
@@ -196,47 +208,55 @@ export function DomainHeader({
 
         <nav className="flex-1 flex items-center justify-center">
           <Toolbar size="sm" className="w-fit">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  toolbarItemClass,
-                  "relative px-3 py-1.5 text-sm font-medium",
-                  item.active
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-                aria-current={item.active ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
+            {navItems.map((item, index) => (
+              <React.Fragment key={item.href}>
+                {index > 0 ? <ToolbarSeparator /> : null}
+                <Link
+                  href={item.href}
+                  className={cn(
+                    headerItemClass,
+                    item.active
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                  aria-current={item.active ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              </React.Fragment>
             ))}
           </Toolbar>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <Toolbar size="sm" className="w-fit">
           {isSignedIn ? (
             <>
-              <NotificationsBell />
-              <Button asChild size="xs" variant="nav">
+              <NotificationsBell
+                variant="card"
+                size="icon-sm"
+                className={cn(headerItemClass, "px-2.5")}
+              />
+              <ToolbarSeparator />
+              <Button asChild variant="plain" size="xs" className={headerItemClass}>
                 <Link href={dashboardUrl} target="_blank" rel="noopener noreferrer">
                   Dashboard
                 </Link>
               </Button>
+              <ToolbarSeparator />
               <SubdomainUserDropdown subdomain={workspace.slug} initialUser={user || null} />
             </>
           ) : (
             <>
-              <Button size="xs" variant="nav" onClick={() => openAuth("sign-in")}>
+              <Button size="xs" variant="plain" className={headerItemClass} onClick={() => openAuth("sign-in")}>
                 Sign in
               </Button>
-              <Button size="xs" onClick={() => openAuth("sign-up")}>
+              <ToolbarSeparator />
+              <Button size="xs" variant="plain" className={headerItemClass} onClick={() => openAuth("sign-up")}>
                 Sign up
               </Button>
             </>
           )}
-        </div>
+        </Toolbar>
       </div>
       <SubdomainAuthModal
         open={isAuthOpen}

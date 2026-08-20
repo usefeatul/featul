@@ -10,6 +10,8 @@ import {
   PopoverSeparator,
 } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 import { RequestEditAction } from "./actions/RequestEditAction";
 import { RequestShareAction } from "./actions/RequestShareAction";
 import { RequestReportAction } from "./actions/RequestReportAction";
@@ -31,13 +33,14 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
 
   return (
     <>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="plain" size="icon" className="h-8 w-8 bg-card">
-            <MoreVertical className="size-4" />
-            <span className="sr-only">More options</span>
-          </Button>
-        </PopoverTrigger>
+      <Toolbar size="sm" className="w-fit">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="plain" size="icon" className={cn(toolbarItemClass, "h-8 w-8 px-2.5")}>
+              <MoreVertical className="size-4" />
+              <span className="sr-only">More options</span>
+            </Button>
+          </PopoverTrigger>
         <PopoverContent align="end" className="w-fit" list>
           <PopoverList>
             {canEdit ? <RequestEditAction onClick={() => setEditOpen(true)} /> : null}
@@ -51,7 +54,8 @@ export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
             ) : null}
           </PopoverList>
         </PopoverContent>
-      </Popover>
+        </Popover>
+      </Toolbar>
 
       {canEdit ? (
         <EditPostModal

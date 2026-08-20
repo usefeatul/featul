@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@featul/ui/components/dropdown-menu"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { cn } from "@featul/ui/lib/utils"
+import { toolbarItemClass } from "@featul/ui/components/toolbar"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
 import { getInitials, getDisplayUser } from "@/utils/user"
@@ -98,7 +99,10 @@ export default function SubdomainUserDropdown({
           <button
             suppressHydrationWarning
             type="button"
-            className="group flex items-center gap-2 rounded-mdbg-background/60 px-1.5 py-1 text-xs md:text-sm text-foreground shadow-xs hover:bg-muted/80"
+            className={cn(
+              toolbarItemClass,
+              "inline-flex h-full items-center px-2 text-xs text-foreground md:text-sm",
+            )}
           >
             <Avatar className="size-5.5">
               {d.image ? (

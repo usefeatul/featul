@@ -16,6 +16,8 @@ import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
 } from "@/utils/search/params"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { cn } from "@featul/ui/lib/utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -67,20 +69,24 @@ export default async function ChangelogPage({
           title="Changelog"
           sidebarPosition={sidebarPosition}
           desktopSecondary={
-            <a
-              href="/changelog/feed.xml"
-              className="text-xs text-accent underline-offset-2 hover:text-foreground hover:underline"
-            >
-              RSS feed
-            </a>
+            <Toolbar size="sm" className="w-fit">
+              <a
+                href="/changelog/feed.xml"
+                className={cn(toolbarItemClass, "inline-flex items-center px-3 text-xs text-accent")}
+              >
+                RSS feed
+              </a>
+            </Toolbar>
           }
           mobileSecondary={
-            <a
-              href="/changelog/feed.xml"
-              className="text-xs text-accent underline-offset-2 hover:text-foreground hover:underline"
-            >
-              RSS
-            </a>
+            <Toolbar size="sm" className="w-fit">
+              <a
+                href="/changelog/feed.xml"
+                className={cn(toolbarItemClass, "inline-flex items-center px-3 text-xs text-accent")}
+              >
+                RSS
+              </a>
+            </Toolbar>
           }
         />
         <SubdomainListCard>

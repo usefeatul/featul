@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@featul/ui/components/button";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 
 interface RequestHeaderProps {
   sidebarPosition: "left" | "right";
@@ -26,11 +28,13 @@ export function RequestHeader({ sidebarPosition, backLink = "/" }: RequestHeader
       <div
         className={`flex items-center gap-3 ${sidebarPosition === "left" ? "justify-end" : ""}`}
       >
-        <Button variant="nav" size="icon" asChild>
-          <Link href={backLink} aria-label="Back to board">
-            <ChevronLeft className="size-4" />
-          </Link>
-        </Button>
+        <Toolbar size="sm" className="w-fit">
+          <Button variant="plain" size="icon" asChild className={cn(toolbarItemClass, "px-2.5")}>
+            <Link href={backLink} aria-label="Back to board">
+              <ChevronLeft className="size-4" />
+            </Link>
+          </Button>
+        </Toolbar>
         <h1 className="text-xl font-semibold text-foreground">Submissions</h1>
       </div>
 

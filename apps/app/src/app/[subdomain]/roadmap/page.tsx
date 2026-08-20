@@ -19,6 +19,7 @@ import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
 } from "@/utils/search/params"
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -69,15 +70,16 @@ export default async function RoadmapPage({
           mobileTitlePosition={sidebarPosition === "left" ? "top" : "bottom"}
           breakpoint="lg"
           mobileActions={
-            <>
+            <Toolbar size="sm" className="w-fit">
               <SortPopover
                 subdomain={subdomain}
                 slug={slug}
                 basePath="/roadmap"
                 keepParams={["page", "search"]}
               />
+              <ToolbarSeparator />
               <SearchAction slug={slug} />
-            </>
+            </Toolbar>
           }
         />
         <div className="lg:hidden mb-4">
