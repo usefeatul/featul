@@ -76,6 +76,7 @@ function RequestListBase(props: RequestListProps) {
     <SelectableListShell
       variant="nested"
       title="Requests"
+      toolbarClassName="border-l-2 border-l-transparent"
       headerAction={
         <span className="text-xs tabular-nums text-accent">
           {listItems.length} {listItems.length === 1 ? "post" : "posts"}

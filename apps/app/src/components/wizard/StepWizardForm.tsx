@@ -168,13 +168,13 @@ export default function StepWizardForm({
   }, [step])
 
   return (
-    <Card variant="plain" className="w-full max-w-[520px] mx-auto">
+    <Card variant="plain" className="w-full max-w-[520px] mx-auto bg-background dark:bg-background">
       <CardHeader>
         <div className="flex items-center gap-1 mb-2">
           {steps.map((_, i) => (
             <div
               key={i}
-              className={`h-1 rounded-full ${i <= step ? "bg-foreground" : "bg-muted"}`}
+              className={`h-1 rounded-full ${i <= step ? "bg-foreground" : "bg-foreground/20"}`}
               style={{ width: i === step ? 32 : 18 }}
             />
           ))}

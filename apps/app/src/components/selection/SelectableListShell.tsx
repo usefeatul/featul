@@ -74,7 +74,7 @@ export function SelectableListShell({
       className={
         isNested
           ? cn(
-              "h-auto border-0 bg-transparent px-0 py-0 backdrop-blur-none sticky top-0",
+              "h-auto border-b-0 bg-transparent px-4 py-0 backdrop-blur-none sticky top-0",
               toolbarClassName,
             )
           : toolbarClassName
