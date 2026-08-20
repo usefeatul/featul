@@ -1,7 +1,6 @@
 "use client";
 
 import { XMarkIcon } from "@featul/ui/icons/xmark";
-import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 import {
   FILTER_ISLAND_BUTTON_HOVER_CLASS,
@@ -33,7 +32,7 @@ export function FilterIslandChips({ items }: FilterIslandChipsProps) {
                 }}
                 aria-label={`Remove ${item.label} filter`}
                 className={cn(
-                  toolbarItemClass,
+                  "h-full rounded-none border-none bg-transparent shadow-none ring-0 ring-offset-0",
                   FILTER_ISLAND_CHIP_CLASS,
                   FILTER_ISLAND_BUTTON_HOVER_CLASS,
                 )}

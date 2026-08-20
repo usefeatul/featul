@@ -1,7 +1,6 @@
 "use client";
 
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
-import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 import {
   FILTER_ISLAND_BUTTON_HOVER_CLASS,
@@ -65,7 +64,7 @@ export function FilterIslandHeader({
               type="button"
               onClick={onClearAll}
               className={cn(
-                toolbarItemClass,
+                "h-full rounded-none border-none bg-transparent shadow-none ring-0 ring-offset-0",
                 FILTER_ISLAND_CLEAR_ALL_CLASS,
                 FILTER_ISLAND_BUTTON_HOVER_CLASS,
               )}

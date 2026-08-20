@@ -13,13 +13,13 @@ export const FILTER_ISLAND_SHELL_CLASS =
 export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
 
 export const FILTER_ISLAND_BUTTON_HOVER_CLASS =
-  "transition-colors hover:bg-muted/40 hover:text-accent-foreground dark:hover:bg-muted/30";
+  "cursor-pointer transition-colors hover:bg-muted/20 hover:text-accent-foreground dark:hover:bg-black/30";
 
 export const FILTER_ISLAND_CLEAR_ALL_CLASS =
-  "inline-flex h-full items-center justify-center whitespace-nowrap px-2 text-[11px] font-medium";
+  "inline-flex h-full cursor-pointer items-center justify-center whitespace-nowrap px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_CLASS =
-  "inline-flex h-full min-w-fit items-center gap-1.5 whitespace-nowrap px-2 text-[11px] font-medium";
+  "inline-flex h-full min-w-fit cursor-pointer items-center gap-1.5 whitespace-nowrap px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_SHELL_CLASS =
   "flex w-fit min-w-fit shrink-0 items-stretch rounded-lg border border-border bg-card p-0.5 text-foreground dark:border-white/10 dark:bg-black";
