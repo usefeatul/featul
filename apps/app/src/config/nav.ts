@@ -12,11 +12,11 @@ import { DocIcon } from "@featul/ui/icons/doc"
 import MemberIcon from "@featul/ui/icons/member"
 import ImageIcon from "@featul/ui/icons/image"
 import FillFeedbackIcon from "@featul/ui/icons/fill-feedback"
-import StarIcon from "@featul/ui/icons/star"
 import DomainIcon from "@featul/ui/icons/domain"
 import IntegrationIcon from "@featul/ui/icons/integration"
 import FileExportIcon from "@featul/ui/icons/file-export"
 import BoxIcon from "@featul/ui/icons/box"
+import CreditCardIcon from "@featul/ui/icons/credit-card"
 import type { NavItem } from "../types/nav"
 import { SECTIONS } from "./sections"
 
@@ -79,7 +79,7 @@ const SETTINGS_ICONS: Record<string, NavItem["icon"]> = {
   feedback: FillFeedbackIcon,
   changelog: ChangelogIcon,
   board: BoardIcon,
-  billing: StarIcon,
+  billing: CreditCardIcon,
   domain: DomainIcon,
   integrations: IntegrationIcon,
   data: FileExportIcon,

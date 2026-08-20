@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
 import { buildBottomNav, getSlugFromPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import {
   useSidebarHotkeys,
@@ -123,7 +123,7 @@ export default function Sidebar({
                 item={{
                   label: "Back",
                   href: workspaceBase(slug),
-                  icon: ChevronLeftIcon,
+                  icon: ArrowBackIcon,
                   exact: true,
                 }}
                 pathname={pathname}

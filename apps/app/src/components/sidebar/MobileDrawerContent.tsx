@@ -15,7 +15,7 @@ import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { getSlugFromPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
 import SettingsNav from "@/components/settings/global/SettingsNav";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 
@@ -96,7 +96,7 @@ export default function MobileDrawerContent({
                 item={{
                   label: "Back",
                   href: workspaceBase(slug),
-                  icon: ChevronLeftIcon,
+                  icon: ArrowBackIcon,
                   exact: true,
                 }}
                 pathname={pathname}

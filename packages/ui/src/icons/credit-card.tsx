@@ -1,11 +1,11 @@
 import React from "react";
 
-interface DomainIconProps {
+interface CreditCardIconProps {
   className?: string;
   size?: number;
 }
 
-export const DomainIcon: React.FC<DomainIconProps> = ({
+export const CreditCardIcon: React.FC<CreditCardIconProps> = ({
   className = "",
   size = 18,
 }) => {
@@ -17,30 +17,23 @@ export const DomainIcon: React.FC<DomainIconProps> = ({
       viewBox="0 0 18 18"
       className={className}
     >
-      <title>globe</title>
-      <circle
-        cx="9"
-        cy="9"
-        r="7.25"
+      <title>credit-card</title>
+      <rect
+        x="1.75"
+        y="2.75"
+        width="14.5"
+        height="12.5"
+        rx="2"
         fill="currentColor"
         fillOpacity="0.3"
         data-color="color-2"
       />
-      <circle
-        cx="9"
-        cy="9"
-        r="7.25"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <ellipse
-        cx="9"
-        cy="9"
-        rx="3"
-        ry="7.25"
+      <rect
+        x="1.75"
+        y="2.75"
+        width="14.5"
+        height="12.5"
+        rx="2"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
@@ -48,14 +41,22 @@ export const DomainIcon: React.FC<DomainIconProps> = ({
         fill="none"
       />
       <path
-        d="M1.75 9H16.25"
+        d="M1.75 6.75H16.25"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         fill="none"
       />
+      <path
+        d="M4.25 12.25H8.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        fill="none"
+        className="transition-transform duration-200 origin-left group-hover:scale-x-110"
+      />
     </svg>
   );
 };
 
-export default DomainIcon;
+export default CreditCardIcon;
