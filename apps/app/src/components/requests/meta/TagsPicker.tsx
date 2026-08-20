@@ -6,6 +6,7 @@ import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { DropdownIcon } from "@featul/ui/icons/dropdown"
 import { cn } from "@featul/ui/lib/utils"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { client } from "@featul/api/client"
 
 type Tag = {
@@ -88,26 +89,27 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
 
   return (
     <div className={cn("flex flex-col items-end gap-1", className)}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "h-6 rounded-md border border-border/60 bg-background px-2.5 text-xs font-medium text-foreground/90 transition-colors hover:bg-muted/60",
-              selectedIds.length > 0 && "border-primary/25 bg-primary/10 text-primary hover:bg-primary/15",
-              mutation.isPending && "opacity-70 cursor-wait"
-            )}
-            aria-label="Manage tags"
-            disabled={mutation.isPending}
-          >
-            <span className="truncate max-w-[140px]">
-              {selectedIds.length > 0 ? `${selectedIds.length} tag${selectedIds.length > 1 ? "s" : ""}` : "Tags"}
-            </span>
-            <DropdownIcon className="ml-1.5  size-3" />
-          </Button>
-        </PopoverTrigger>
+      <Toolbar size="sm" className="w-fit">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="plain"
+              size="sm"
+              className={cn(
+                toolbarItemClass,
+                "h-8 gap-1.5 px-2.5 text-xs font-medium",
+                mutation.isPending && "opacity-70 cursor-wait"
+              )}
+              aria-label="Manage tags"
+              disabled={mutation.isPending}
+            >
+              <span className="max-w-[140px] truncate">
+                {selectedIds.length > 0 ? `${selectedIds.length} tag${selectedIds.length > 1 ? "s" : ""}` : "Tags"}
+              </span>
+              <DropdownIcon className="size-3" />
+            </Button>
+          </PopoverTrigger>
         <PopoverContent list className="w-fit" align="end">
           {isLoading ? (
             <div className="p-3 text-sm text-accent">Loading...</div>
@@ -132,7 +134,8 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
             </PopoverList>
           )}
         </PopoverContent>
-      </Popover>
+        </Popover>
+      </Toolbar>
 
     </div>
   )

@@ -12,6 +12,7 @@ import {
 import { DropdownIcon } from "@featul/ui/icons/dropdown";
 import { client } from "@featul/api/client";
 import { cn } from "@featul/ui/lib/utils";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import {
   REQUEST_FLAG_OPTIONS,
   type RequestFlagKey,
@@ -55,24 +56,26 @@ export default function FlagsPicker({
         : `${activeOptions.length} flags`;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-6 px-2.5 border text-xs font-medium transition-colors hover:bg-muted",
-            saving && "opacity-70 cursor-wait",
-            className,
-          )}
-          aria-label="Manage flags"
-          disabled={saving}
-        >
-          <span className="truncate max-w-[140px]">{label}</span>
-          <DropdownIcon className="ml-1.5 size-3" />
-        </Button>
-      </PopoverTrigger>
+    <Toolbar size="sm" className="w-fit">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="plain"
+            size="sm"
+            className={cn(
+              toolbarItemClass,
+              "h-8 gap-1.5 px-2.5 text-xs font-medium",
+              saving && "opacity-70 cursor-wait",
+              className,
+            )}
+            aria-label="Manage flags"
+            disabled={saving}
+          >
+            <span className="max-w-[140px] truncate">{label}</span>
+            <DropdownIcon className="size-3" />
+          </Button>
+        </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
           {REQUEST_FLAG_OPTIONS.map((option) => {
@@ -91,6 +94,7 @@ export default function FlagsPicker({
           })}
         </PopoverList>
       </PopoverContent>
-    </Popover>
+      </Popover>
+    </Toolbar>
   );
 }

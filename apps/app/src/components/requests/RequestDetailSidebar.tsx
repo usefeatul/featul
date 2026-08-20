@@ -23,6 +23,7 @@ import {
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard";
 import { cn } from "@featul/ui/lib/utils";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 export type RequestDetailSidebarProps = {
   post: RequestDetailData;
@@ -110,9 +111,11 @@ export default function RequestDetailSidebar({
                 onChange={setBoard}
               />
             ) : (
-              <div className="flex h-6 items-center rounded-md border px-2.5 text-xs font-medium">
-                {board.name}
-              </div>
+              <Toolbar size="sm" className="w-fit">
+                <div className={cn(toolbarItemClass, "flex h-8 items-center px-2.5 text-xs font-medium")}>
+                  {board.name}
+                </div>
+              </Toolbar>
             )}
           </div>
 
@@ -127,13 +130,15 @@ export default function RequestDetailSidebar({
                 onChange={(v) => setMeta((m) => ({ ...m, roadmapStatus: v }))}
               />
             ) : (
-              <div className="flex h-8 items-center rounded-md border  px-2 pl-1.5 text-xs font-medium capitalize">
-                <StatusIcon
-                  status={meta.roadmapStatus || "pending"}
-                  className="mr-2 size-4"
-                />
-                {meta.roadmapStatus || "Open"}
-              </div>
+              <Toolbar size="sm" className="w-fit">
+                <div className={cn(toolbarItemClass, "flex h-8 items-center gap-1.5 px-2.5 text-xs font-medium capitalize")}>
+                  <StatusIcon
+                    status={meta.roadmapStatus || "pending"}
+                    className="size-4"
+                  />
+                  {meta.roadmapStatus || "Open"}
+                </div>
+              </Toolbar>
             )}
           </div>
 
@@ -149,22 +154,17 @@ export default function RequestDetailSidebar({
                   onChange={(v) => setMeta((m) => ({ ...m, ...v }))}
                 />
               ) : (
-                <div className="flex gap-1">
-                  {[
-                    meta.isPinned ? "Pinned" : null,
-                    meta.isLocked ? "Locked" : null,
-                    meta.isFeatured ? "Featured" : null,
-                  ]
-                    .filter(Boolean)
-                    .map((f) => (
-                      <span
-                        key={f as string}
-                        className="rounded-md border bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
-                      >
-                        {f}
-                      </span>
-                    ))}
-                </div>
+                <Toolbar size="sm" className="w-fit">
+                  <div className={cn(toolbarItemClass, "flex h-8 items-center gap-1.5 px-2.5 text-xs font-medium")}>
+                    {[
+                      meta.isPinned ? "Pinned" : null,
+                      meta.isLocked ? "Locked" : null,
+                      meta.isFeatured ? "Featured" : null,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </div>
+                </Toolbar>
               )}
             </div>
           )}

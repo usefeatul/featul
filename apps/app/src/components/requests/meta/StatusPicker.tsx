@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { getSlugFromPath } from "@/config/nav"
 import { cn } from "@featul/ui/lib/utils"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { normalizeRoadmapStatus, type RoadmapStatus } from "@/lib/roadmap"
 import StatusIcon from "../StatusIcon"
 
@@ -48,22 +49,24 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-8 px-2 pl-1.5 rounded-md  border text-xs font-medium transition-colors hover:bg-muted",
-            className
-          )}
-        >
-          <StatusIcon status={currentStatus} className="size-4 mr-2" />
-          <span className="capitalize">{currentStatus}</span>
-          <DropdownIcon className="ml-1.5  size-3" />
-        </Button>
-      </PopoverTrigger>
+    <Toolbar size="sm" className="w-fit">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="plain"
+            size="sm"
+            className={cn(
+              toolbarItemClass,
+              "h-8 gap-1.5 px-2.5 text-xs font-medium",
+              className
+            )}
+          >
+            <StatusIcon status={currentStatus} className="size-4" />
+            <span className="capitalize">{currentStatus}</span>
+            <DropdownIcon className="size-3" />
+          </Button>
+        </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
           {STATUSES.map((s) => (
@@ -74,6 +77,7 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
           ))}
         </PopoverList>
       </PopoverContent>
-    </Popover>
+      </Popover>
+    </Toolbar>
   )
 }
