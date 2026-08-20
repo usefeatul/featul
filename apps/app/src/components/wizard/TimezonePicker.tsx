@@ -70,6 +70,7 @@ export default function TimezonePicker({
         onWheel={(event) => event.stopPropagation()}
       >
         <TimezoneSelectPanel
+          className="max-h-[min(70dvh,420px)]"
           value={value}
           now={now}
           onChange={(tz) => {

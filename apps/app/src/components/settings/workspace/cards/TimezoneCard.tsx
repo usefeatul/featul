@@ -63,6 +63,7 @@ export default function TimezoneCard({ slug, initialTimezone }: Props) {
           value={timezone}
           onChange={handleTimezoneChange}
           now={now}
+          className="h-full max-h-[min(58dvh,420px)]"
         />
       </SettingsDialogShell>
     </div>

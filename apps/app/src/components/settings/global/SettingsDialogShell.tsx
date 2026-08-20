@@ -3,7 +3,6 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { Dialog, DialogContent, DialogHeader, DialogInner, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
-import { cn } from "@featul/ui/lib/utils"
 import MaximizeIcon from "@featul/ui/icons/maximize"
 import MinimizeIcon from "@featul/ui/icons/minimize"
 
@@ -97,20 +96,17 @@ export function SettingsDialogShell({
   )
 
   const body = (
-    <DialogInner
-      className={cn(
-        expandable ? "flex min-h-0 flex-1 flex-col" : undefined,
-        "overflow-visible",
-      )}
-    >
+    <DialogInner className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {description ? (
-        <DialogDescription className="text-sm mb-2">
+        <DialogDescription className="mb-2 shrink-0 text-sm">
           {description}
         </DialogDescription>
       ) : null}
-      <DialogExpandedContext.Provider value={expanded}>
-        {children}
-      </DialogExpandedContext.Provider>
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <DialogExpandedContext.Provider value={expanded}>
+          {children}
+        </DialogExpandedContext.Provider>
+      </div>
     </DialogInner>
   )
 
@@ -119,7 +115,7 @@ export function SettingsDialogShell({
       <DialogContent
         fluid
         style={{ ...(expandable ? {} : styleWidth), ...positionStyle }}
-        className="max-w-none overflow-visible sm:max-w-none"
+        className="flex max-h-[min(92dvh,680px)] max-w-none flex-col overflow-hidden sm:max-w-none"
         onOpenAutoFocus={onOpenAutoFocus}
       >
         {expandable ? (

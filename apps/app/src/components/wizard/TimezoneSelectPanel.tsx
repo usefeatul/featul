@@ -55,8 +55,14 @@ export function TimezoneSelectPanel({
       : "UTC";
 
   return (
-    <div className={cn(settingsTableShellClass, className)}>
-      <div className="border-b border-border/60 p-3 dark:border-white/10">
+    <div
+      className={cn(
+        settingsTableShellClass,
+        "flex min-h-0 flex-col",
+        className,
+      )}
+    >
+      <div className="shrink-0 border-b border-border/60 p-3 dark:border-white/10">
         <div className="mb-2 w-fit rounded-sm bg-muted/50 px-1.5 py-1 dark:bg-black/40">
           <span
             className="text-xs font-light text-accent"
@@ -78,7 +84,7 @@ export function TimezoneSelectPanel({
       </div>
 
       <ul
-        className="max-h-[min(52dvh,360px)] touch-pan-y overflow-y-auto overscroll-contain p-1 [-webkit-overflow-scrolling:touch]"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1 [-webkit-overflow-scrolling:touch] touch-pan-y scrollbar-hide"
         role="listbox"
         aria-label="Timezones"
       >
