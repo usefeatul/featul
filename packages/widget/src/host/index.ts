@@ -117,6 +117,10 @@ function boot() {
     return state.theme === "light" ? "#ffffff" : "#1a1a1c";
   }
 
+  function shellBackground() {
+    return state.theme === "light" ? "#f4f4f5" : "#000000";
+  }
+
   function launcherForeground() {
     return state.theme === "light" ? "#171717" : "#fafafa";
   }
@@ -133,11 +137,11 @@ function boot() {
   function syncTheme() {
     state.theme = resolveTheme(state.options.theme || "auto");
     if (state.iframe) {
-      state.iframe.style.background = panelBackground();
+      state.iframe.style.background = shellBackground();
       state.iframe.style.colorScheme = state.theme;
     }
     if (state.shell && state.open)
-      state.shell.style.background = panelBackground();
+      state.shell.style.background = shellBackground();
     syncLauncherTheme();
   }
 
@@ -451,7 +455,7 @@ function boot() {
     applyRect(state.shell, getPanelRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = panelCornerRadius();
-    state.shell.style.background = panelBackground();
+    state.shell.style.background = shellBackground();
     state.shell.style.boxShadow = panelShadow();
   }
 
@@ -673,7 +677,7 @@ function boot() {
     iframe.style.zIndex = "2147483647";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
-    iframe.style.background = panelBackground();
+    iframe.style.background = shellBackground();
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
     state.iframe = iframe;
@@ -909,7 +913,7 @@ function boot() {
       state.theme = theme === "light" ? "light" : "dark";
       if (state.iframe) state.iframe.style.colorScheme = state.theme;
       if (state.shell && state.open)
-        state.shell.style.background = panelBackground();
+        state.shell.style.background = shellBackground();
       syncLauncherTheme();
     }
     if (data.type === "close") {

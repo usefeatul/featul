@@ -27,7 +27,7 @@ export default function EmbedCard({ workspaceId }: Props) {
 <script>
   featul.init("${workspaceId || "YOUR_WORKSPACE_ID"}", {
     widget: true,
-    theme: "auto",
+    theme: "dark",
     position: "right"
   });
 </script>`;

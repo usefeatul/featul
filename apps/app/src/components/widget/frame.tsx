@@ -11,6 +11,8 @@ import { WidgetFeedbackDetail } from "./detail";
 import { Header } from "./header";
 import { Home } from "./home";
 import { WidgetEmpty } from "./empty";
+import { widgetCardInnerClass, widgetCardShellClass } from "./chrome";
+import { cn } from "@featul/ui/lib/utils";
 import {
   mapChangelogEntries,
   parseBoards,
@@ -40,6 +42,7 @@ import {
   resolveWidgetTheme,
   widgetAccentVars,
   widgetLayoutClass,
+  widgetShellHex,
   widgetSurfaceHex,
   widgetThemeVars,
 } from "./theme";
@@ -190,7 +193,7 @@ export default function WidgetFrame({
     const applyTheme = (next: "light" | "dark") => {
       setTheme(next);
       document.documentElement.style.colorScheme = next;
-      document.body.style.background = widgetSurfaceHex(next);
+      document.body.style.background = widgetShellHex(next);
     };
 
     applyTheme(resolveWidgetTheme(themeMode));
@@ -586,32 +589,43 @@ export default function WidgetFrame({
       <Theme mode={themeMode}>
         <motion.main
           initial={false}
-          className={`flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))] ${widgetLayoutClass(layoutStyle)} ${
-            fullscreen
-              ? "rounded-none border-0"
-              : "rounded-xl border border-[rgb(var(--widget-fg)/0.1)]"
-          }`}
+          className={cn(
+            widgetLayoutClass(layoutStyle),
+            screenshotUrl
+              ? "flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))]"
+              : cn(widgetCardShellClass, "h-full min-h-0 w-full"),
+            fullscreen ? "rounded-none border-0" : "",
+          )}
           style={
             {
-              backgroundColor: widgetSurfaceHex(theme),
+              backgroundColor: screenshotUrl
+                ? widgetSurfaceHex(theme)
+                : widgetShellHex(theme),
               color: theme === "light" ? "#171717" : "#fafafa",
               paddingTop: fullscreen
-                ? "env(safe-area-inset-top, 0px)"
+                ? "max(0.25rem, env(safe-area-inset-top, 0px))"
                 : undefined,
               paddingBottom: fullscreen
-                ? "env(safe-area-inset-bottom, 0px)"
+                ? "max(0.25rem, env(safe-area-inset-bottom, 0px))"
                 : undefined,
               paddingLeft: fullscreen
-                ? "env(safe-area-inset-left, 0px)"
+                ? "max(0.25rem, env(safe-area-inset-left, 0px))"
                 : undefined,
               paddingRight: fullscreen
-                ? "env(safe-area-inset-right, 0px)"
+                ? "max(0.25rem, env(safe-area-inset-right, 0px))"
                 : undefined,
               ...widgetThemeVars(theme),
               ...widgetAccentVars(accent),
             } as React.CSSProperties
           }
         >
+          <div
+            className={
+              screenshotUrl
+                ? "flex min-h-0 flex-1 flex-col"
+                : cn(widgetCardInnerClass, "flex min-h-0 flex-1 flex-col overflow-hidden")
+            }
+          >
           {!screenshotUrl ? (
           <Header
             workspaceName={workspaceName}
@@ -963,6 +977,7 @@ export default function WidgetFrame({
               </a>
             </div>
           ) : null}
+          </div>
         </motion.main>
       </Theme>
     </MessagingProvider>

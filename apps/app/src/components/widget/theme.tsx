@@ -6,6 +6,8 @@ import { postToParent, useParentOrigin } from "./messaging";
 
 export const WIDGET_SURFACE_DARK = "#1a1a1c";
 export const WIDGET_SURFACE_LIGHT = "#ffffff";
+export const WIDGET_SHELL_DARK = "#000000";
+export const WIDGET_SHELL_LIGHT = "#f4f4f5";
 export const WIDGET_ACCENT_FALLBACK = "#3b82f6";
 
 export type WidgetThemeMode = "light" | "dark" | "auto";
@@ -58,6 +60,7 @@ export function resolveWidgetTheme(mode: WidgetThemeMode): WidgetResolvedTheme {
 export function widgetThemeVars(theme: WidgetResolvedTheme): Record<string, string> {
   if (theme === "light") {
     return {
+      "--widget-shell": "244 244 245",
       "--widget-surface": "255 255 255",
       "--widget-fg": "23 23 23",
       "--widget-cta": "23 23 23",
@@ -65,6 +68,7 @@ export function widgetThemeVars(theme: WidgetResolvedTheme): Record<string, stri
     };
   }
   return {
+    "--widget-shell": "0 0 0",
     "--widget-surface": "26 26 28",
     "--widget-fg": "250 250 250",
     "--widget-cta": "250 250 250",
@@ -74,6 +78,10 @@ export function widgetThemeVars(theme: WidgetResolvedTheme): Record<string, stri
 
 export function widgetSurfaceHex(theme: WidgetResolvedTheme) {
   return theme === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
+}
+
+export function widgetShellHex(theme: WidgetResolvedTheme) {
+  return theme === "light" ? WIDGET_SHELL_LIGHT : WIDGET_SHELL_DARK;
 }
 
 function ThemeSync({
@@ -102,7 +110,7 @@ function ThemeSync({
       root.style.setProperty(key, value);
     }
     document.body.style.background =
-      resolved === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
+      resolved === "light" ? WIDGET_SHELL_LIGHT : WIDGET_SHELL_DARK;
     postToParent(parentOrigin, "theme", { theme: resolved, mode });
   }, [resolvedTheme, mode, parentOrigin]);
 
