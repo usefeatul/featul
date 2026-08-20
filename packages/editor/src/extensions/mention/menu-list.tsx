@@ -114,7 +114,7 @@ export const EditorMentionMenu = ({
         onOpenAutoFocus={(event) => event.preventDefault()}
         className={cn(
           overlayDialogClass,
-          "z-50 flex w-72 flex-col gap-2 text-popover-foreground outline-hidden",
+          "z-50 flex w-max min-w-40 max-w-[min(20rem,calc(100vw-2rem))] flex-col gap-2 text-popover-foreground outline-hidden",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
         )}
       >
@@ -156,7 +156,7 @@ export const EditorMentionMenu = ({
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <span className="block truncate font-medium leading-none">
+                    <span className="block whitespace-nowrap font-medium leading-none">
                       {item.label}
                     </span>
                   </div>
