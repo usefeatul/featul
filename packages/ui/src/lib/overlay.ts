@@ -12,5 +12,5 @@ export const overlayChipShellClass =
 export const overlayChipInnerClass =
   "inline-flex h-4 min-h-4 min-w-4 flex-1 items-center justify-center overflow-hidden rounded-[4px] bg-background text-xs font-extralight tabular-nums text-accent"
 
-/** Same shell as cards/toolbars, with the card padding so inner `rounded-lg` sits flush. */
+/** Same nested frame as settings/integration cards: `rounded-xl` shell, `p-2`, inner `rounded-lg`. */
 export const overlayDialogClass = `${overlayShellClass} p-2`

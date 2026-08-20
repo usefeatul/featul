@@ -50,7 +50,7 @@ function DialogInner({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-inner"
-      className={cn(overlayInnerClass, "p-3", className)}
+      className={cn(overlayInnerClass, "px-4 py-3", className)}
       {...props}
     />
   )

@@ -50,7 +50,7 @@ function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="alert-dialog-inner"
-      className={cn(overlayInnerClass, "p-3", className)}
+      className={cn(overlayInnerClass, "px-4 py-3", className)}
       {...props}
     />
   )
