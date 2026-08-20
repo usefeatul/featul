@@ -8,6 +8,7 @@ import { LoaderIcon } from "@featul/ui/icons/loader"
 import { ImageIcon } from "@featul/ui/icons/image"
 import { LockIcon } from "@featul/ui/icons/lock"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import ContentImage from "@/components/global/ContentImage"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
@@ -136,7 +137,7 @@ export default function CommentForm({
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <Toolbar size="sm" className="w-fit">
           <input
             ref={fileInputRef}
             type="file"
@@ -148,8 +149,8 @@ export default function CommentForm({
           <Button
             type="button"
             size="xs"
-            variant="card"
-            className="h-8 w-8 p-0 rounded-md dark:border-white/10 dark:bg-black"
+            variant="plain"
+            className={cn(toolbarItemClass, "w-8 px-0 text-accent hover:text-foreground")}
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -157,48 +158,52 @@ export default function CommentForm({
             {uploadingImage ? (
               <LoaderIcon className="h-4 w-4 animate-spin" />
             ) : (
-              <ImageIcon className="size-4 " />
+              <ImageIcon className="size-4" />
             )}
           </Button>
 
           {canMarkInternal && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  size="xs"
-                  variant="card"
-                  onClick={() => setIsInternal((prev) => !prev)}
-                  className={cn(
-                    "h-8 w-8 p-0 rounded-md dark:border-white/10 dark:bg-black",
-                    isInternal && "bg-muted border-green-600/40 text-green-600 dark:text-green-400"
-                  )}
-                  disabled={isPending || uploadingImage || internalForced}
-                  aria-label={
-                    isInternal
-                      ? "Disable internal comment"
-                      : "Enable internal comment"
-                  }
-                  aria-pressed={isInternal}
-                >
-                  <LockIcon
+            <>
+              <ToolbarSeparator />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="plain"
+                    onClick={() => setIsInternal((prev) => !prev)}
                     className={cn(
-                      "size-4",
-                      isInternal && "text-green-600 dark:text-green-400"
+                      toolbarItemClass,
+                      "w-8 px-0",
+                      isInternal && "bg-muted/40 text-green-600 dark:text-green-400",
                     )}
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
-                {internalForced
-                  ? "Internal reply"
-                  : isInternal
-                    ? "Internal only"
-                    : "Make internal"}
-              </TooltipContent>
-            </Tooltip>
+                    disabled={isPending || uploadingImage || internalForced}
+                    aria-label={
+                      isInternal
+                        ? "Disable internal comment"
+                        : "Enable internal comment"
+                    }
+                    aria-pressed={isInternal}
+                  >
+                    <LockIcon
+                      className={cn(
+                        "size-4",
+                        isInternal && "text-green-600 dark:text-green-400"
+                      )}
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
+                  {internalForced
+                    ? "Internal reply"
+                    : isInternal
+                      ? "Internal only"
+                      : "Make internal"}
+                </TooltipContent>
+              </Tooltip>
+            </>
           )}
-        </div>
+        </Toolbar>
 
         <div className="flex items-center gap-2">
           <Button

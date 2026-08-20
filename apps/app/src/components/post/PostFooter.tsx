@@ -4,6 +4,8 @@ import React from "react"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import { ImageIcon } from "lucide-react"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { cn } from "@featul/ui/lib/utils"
 import type { UploadedImage } from "./PostContent"
 
 export interface PostFooterProps {
@@ -43,26 +45,31 @@ export function PostFooter({
           disabled={uploadingImage || atLimit}
           multiple={maxImages > 1}
         />
-        <Button
-          type="button"
-          size="xs"
-          variant="card"
-          className="h-8 w-8 p-0 rounded-md text-accent hover:text-foreground"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploadingImage || atLimit}
-          aria-label="Add image"
-        >
-          {uploadingImage ? (
-            <LoaderIcon className="h-4 w-4 animate-spin" />
-          ) : (
-            <ImageIcon className="size-5" />
-          )}
-        </Button>
-        {uploadedImages.length > 0 ? (
-          <span className="text-[11px] text-accent">
-            {uploadedImages.length}/{maxImages}
-          </span>
-        ) : null}
+        <Toolbar size="sm" className="w-fit">
+          <Button
+            type="button"
+            variant="plain"
+            size="xs"
+            className={cn(toolbarItemClass, "w-8 px-0 text-accent hover:text-foreground")}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploadingImage || atLimit}
+            aria-label="Add image"
+          >
+            {uploadingImage ? (
+              <LoaderIcon className="h-4 w-4 animate-spin" />
+            ) : (
+              <ImageIcon className="size-4" />
+            )}
+          </Button>
+          {uploadedImages.length > 0 ? (
+            <>
+              <ToolbarSeparator />
+              <span className="flex h-full items-center px-2.5 text-[11px] tabular-nums text-accent">
+                {uploadedImages.length}/{maxImages}
+              </span>
+            </>
+          ) : null}
+        </Toolbar>
       </div>
 
       <Button
