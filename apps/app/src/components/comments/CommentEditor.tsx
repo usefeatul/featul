@@ -24,7 +24,7 @@ export default function CommentEditor({
         onKeyDown={onKeyDown}
         onBlur={onBlur}
         variant="plain"
-        className="min-h-[80px] resize-none text-sm"
+        className="min-h-[80px] resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-accent"
         disabled={isPending}
         autoFocus
         aria-label="Edit comment"

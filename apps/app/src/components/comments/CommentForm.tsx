@@ -100,7 +100,7 @@ export default function CommentForm({
           }}
           placeholder={placeholder}
           variant="plain"
-          className="min-h-[60px] resize-none text-sm"
+          className="min-h-[60px] resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-accent"
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}
@@ -206,11 +206,25 @@ export default function CommentForm({
         </Toolbar>
 
         <div className="flex items-center gap-2">
+          {onCancel ? (
+            <Toolbar size="sm" className="w-fit">
+              <Button
+                type="button"
+                size="xs"
+                variant="plain"
+                className={cn(toolbarItemClass, "px-3")}
+                onClick={onCancel}
+                disabled={isPending || uploadingImage}
+              >
+                Cancel
+              </Button>
+            </Toolbar>
+          ) : null}
           <Button
             type="submit"
             size="xs"
-            variant="card"
-            className="dark:border-white/10 dark:bg-black"
+            variant="default"
+            className="bg-primary px-4 text-primary-foreground hover:bg-primary/90"
             disabled={
               (!content.trim() && !uploadedImage) || isPending || uploadingImage
             }
@@ -221,18 +235,6 @@ export default function CommentForm({
               buttonText
             )}
           </Button>
-          {onCancel && (
-            <Button
-              type="button"
-              size="xs"
-              variant="card"
-              className="dark:border-white/10 dark:bg-black"
-              onClick={onCancel}
-              disabled={isPending || uploadingImage}
-            >
-              Cancel
-            </Button>
-          )}
         </div>
       </div>
     </form>

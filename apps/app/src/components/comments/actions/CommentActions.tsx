@@ -8,6 +8,9 @@ import {
   PopoverContent,
   PopoverList,
 } from "@featul/ui/components/popover"
+import { Button } from "@featul/ui/components/button"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { cn } from "@featul/ui/lib/utils"
 import CommentDeleteAction from "./CommentDeleteAction"
 import CommentReportAction from "./CommentReportAction"
 import CommentEditAction from "./CommentEditAction"
@@ -48,15 +51,19 @@ export default function CommentActions({
 
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button
-            className="h-6 w-6 flex items-center justify-center rounded-md  text-xs text-muted-foreground/60 hover:text-foreground transition-colors hover:bg-muted cursor-pointer"
-            aria-label="More options"
-          >
-            <MoreVertical className="h-3.5 w-3.5" />
-          </button>
-        </PopoverTrigger>
+      <Toolbar size="sm" className="w-fit">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="plain"
+              size="xs"
+              className={cn(toolbarItemClass, "h-8 w-8 px-0")}
+              aria-label="More options"
+            >
+              <MoreVertical className="size-3.5" />
+            </Button>
+          </PopoverTrigger>
         <PopoverContent align="end" list>
           <PopoverList>
             {canPin && (
@@ -120,6 +127,7 @@ export default function CommentActions({
           </PopoverList>
         </PopoverContent>
       </Popover>
+      </Toolbar>
       
       <CommentReportDialog 
         open={showReportDialog} 

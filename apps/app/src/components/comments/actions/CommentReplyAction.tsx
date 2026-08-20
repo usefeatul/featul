@@ -2,6 +2,7 @@
 
 import React from "react"
 import { Button } from "@featul/ui/components/button"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -13,21 +14,23 @@ interface CommentReplyButtonProps {
 
 export default function CommentReplyButton({ onClick, isActive, className }: CommentReplyButtonProps) {
   return (
-    <Button
-      onClick={onClick}
-      type="button"
-      variant="card"
-      size="xs"
-      className={cn(
-        "min-w-[72px] h-8 gap-1.5 dark:border-white/10 dark:bg-black",
-        isActive
-          ? "text-destructive dark:text-destructive hover:text-destructive dark:hover:text-destructive"
-          : "text-accent hover:text-foreground",
-        className
-      )}
-      aria-label={isActive ? "Cancel reply" : "Reply to comment"}
-      aria-expanded={isActive}
-    >
+    <Toolbar size="sm" className="w-fit">
+      <Button
+        onClick={onClick}
+        type="button"
+        variant="plain"
+        size="xs"
+        className={cn(
+          toolbarItemClass,
+          "min-w-[72px] px-3",
+          isActive
+            ? "text-destructive dark:text-destructive hover:text-destructive dark:hover:text-destructive"
+            : "text-accent hover:text-foreground",
+          className
+        )}
+        aria-label={isActive ? "Cancel reply" : "Reply to comment"}
+        aria-expanded={isActive}
+      >
       <AnimatePresence mode="wait" initial={false}>
         {isActive ? (
            <motion.span
@@ -54,5 +57,6 @@ export default function CommentReplyButton({ onClick, isActive, className }: Com
         )}
       </AnimatePresence>
     </Button>
+    </Toolbar>
   )
 }
