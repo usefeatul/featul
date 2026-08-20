@@ -603,10 +603,18 @@ function boot() {
     state.morphTimer = null;
   }
 
+  let lightboxGallery: {
+    urls: string[];
+    index: number;
+    img: HTMLImageElement;
+    dialog: HTMLElement;
+  } | null = null;
+
   function closeImageLightbox() {
     const closer = (window as Window & { __featulCloseHostImage?: () => void })
       .__featulCloseHostImage;
     if (typeof closer === "function") closer();
+    lightboxGallery = null;
     if (!state.lightbox) return;
     const nodes =
       "overlay" in state.lightbox
@@ -617,8 +625,80 @@ function boot() {
     document.removeEventListener("keydown", onLightboxKeydown, true);
   }
 
+  function showLightboxImage() {
+    if (!lightboxGallery) return;
+    const { urls, index, img, dialog } = lightboxGallery;
+    const url = urls[index];
+    if (!url) return;
+    img.src = url;
+    img.alt =
+      urls.length > 1 ? `Image ${index + 1} of ${urls.length}` : img.alt;
+    dialog.setAttribute(
+      "aria-label",
+      urls.length > 1 ? `Image ${index + 1} of ${urls.length}` : "Image",
+    );
+  }
+
+  function stepLightbox(delta: number) {
+    if (!lightboxGallery || lightboxGallery.urls.length < 2) return;
+    const length = lightboxGallery.urls.length;
+    lightboxGallery.index =
+      (lightboxGallery.index + delta + length) % length;
+    showLightboxImage();
+  }
+
   function onLightboxKeydown(event: KeyboardEvent) {
-    if (event.key === "Escape") closeImageLightbox();
+    if (event.key === "Escape") {
+      closeImageLightbox();
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      stepLightbox(-1);
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      stepLightbox(1);
+    }
+  }
+
+  function createLightboxNavButton(
+    direction: "prev" | "next",
+    dark: boolean,
+  ) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute(
+      "aria-label",
+      direction === "prev" ? "Previous image" : "Next image",
+    );
+    button.style.cssText =
+      "flex:0 0 auto;padding:0;border:0;background:transparent;cursor:pointer;color:inherit;";
+    const shell = document.createElement("span");
+    shell.style.cssText =
+      "display:flex;align-items:stretch;overflow:hidden;border-radius:10px;padding:2px;border:1px solid " +
+      (dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)") +
+      ";background:" +
+      (dark ? "#171717" : "#f4f4f5") +
+      ";";
+    const inner = document.createElement("span");
+    inner.style.cssText =
+      "display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;background:" +
+      (dark ? "#0a0a0a" : "#ffffff") +
+      ";box-shadow:inset 0 0 0 1px " +
+      (dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)") +
+      ";";
+    inner.innerHTML =
+      '<svg width="14" height="14" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"' +
+      (direction === "next" ? ' style="transform:rotate(180deg)"' : "") +
+      '><path d="m7.75,11c-.192,0-.384-.073-.53-.22L2.97,6.53c-.293-.293-.293-.768,0-1.061L7.22,1.22c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-3.72,3.72,3.72,3.72c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z"/></svg>';
+    shell.appendChild(inner);
+    button.appendChild(shell);
+    button.onclick = (event) => {
+      event.stopPropagation();
+      stepLightbox(direction === "prev" ? -1 : 1);
+    };
+    return button;
   }
 
   function openImageLightbox(
@@ -642,30 +722,60 @@ function boot() {
       return;
     }
     closeImageLightbox();
+    const galleryUrls = (
+      Array.isArray(extras?.urls) && extras.urls.length > 0
+        ? extras.urls
+        : [url]
+    ).filter(
+      (item) => item.startsWith("http://") || item.startsWith("https://"),
+    );
+    if (galleryUrls.length === 0) return;
+    let galleryIndex =
+      typeof extras?.index === "number" ? extras.index : galleryUrls.indexOf(url);
+    if (galleryIndex < 0 || galleryIndex >= galleryUrls.length) galleryIndex = 0;
+
     const dark = state.theme === "dark";
     const overlay = document.createElement("div");
     overlay.setAttribute("role", "presentation");
     overlay.style.cssText =
-      "position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,0.20);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);";
+      "position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 8px;background:rgba(0,0,0,0.20);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);";
     const dialog = document.createElement("div");
     dialog.setAttribute("role", "dialog");
     dialog.setAttribute("aria-modal", "true");
     dialog.setAttribute("aria-label", "Image");
     dialog.style.cssText =
-      "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483647;width:min(96vw,1400px);box-sizing:border-box;padding:4px;border-radius:16px;display:flex;flex-direction:column;gap:4px;outline:none;" +
+      "position:relative;z-index:1;width:min(calc(100vw - 8rem),1400px);height:min(88dvh,860px);max-height:92dvh;box-sizing:border-box;padding:8px;border-radius:16px;display:flex;flex-direction:column;outline:none;flex:0 1 auto;" +
       (dark
         ? "background:#171717;color:#fafafa;border:1px solid rgba(255,255,255,0.12);"
         : "background:#f4f4f5;color:#171717;border:1px solid rgba(0,0,0,0.1);");
+    const stage = document.createElement("div");
+    stage.style.cssText =
+      "flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px;" +
+      (dark ? "background:#0a0a0a;" : "background:#ffffff;");
     const img = document.createElement("img");
-    img.src = url;
-    img.alt = alt || "";
     img.style.cssText =
-      "max-height:min(84dvh,1080px);max-width:100%;width:auto;height:auto;object-fit:contain;display:block;margin:0 auto;";
+      "max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;display:block;";
     overlay.onclick = () => closeImageLightbox();
     dialog.onclick = (event) => event.stopPropagation();
-    dialog.appendChild(img);
+    stage.appendChild(img);
+    dialog.appendChild(stage);
+
+    lightboxGallery = {
+      urls: galleryUrls,
+      index: galleryIndex,
+      img,
+      dialog,
+    };
+    showLightboxImage();
+
+    if (galleryUrls.length > 1) {
+      overlay.appendChild(createLightboxNavButton("prev", dark));
+    }
+    overlay.appendChild(dialog);
+    if (galleryUrls.length > 1) {
+      overlay.appendChild(createLightboxNavButton("next", dark));
+    }
     document.body.appendChild(overlay);
-    document.body.appendChild(dialog);
     state.lightbox = { overlay, dialog };
     document.addEventListener("keydown", onLightboxKeydown, true);
   }
