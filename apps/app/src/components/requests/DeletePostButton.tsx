@@ -66,7 +66,7 @@ export function DeletePostButton({
     <>
       <Button
         type="button"
-        variant="nav"
+        variant="plain"
         size="icon-sm"
         className={`${toolbarItemClass} ${className || ""}`}
         aria-label="Delete"

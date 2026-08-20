@@ -89,7 +89,7 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
         <PopoverTrigger asChild>
           <Button
             type="button"
-            variant="nav"
+            variant="plain"
             size="icon-sm"
             className={toolbarItemClass}
             aria-label="Merge"

@@ -35,7 +35,7 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
       <Toolbar size="sm">
         <Button
           asChild
-          variant="nav"
+          variant="plain"
           size="sm"
           className={navButtonClass}
           disabled={!backHref}
@@ -55,7 +55,7 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
         <ToolbarSeparator />
         <Button
           asChild
-          variant="nav"
+          variant="plain"
           size="sm"
           className={navButtonClass}
           disabled={!prevHref}
@@ -75,7 +75,7 @@ export default function RequestNavigation({ postId, workspaceSlug, prev, next, p
         <ToolbarSeparator />
         <Button
           asChild
-          variant="nav"
+          variant="plain"
           size="sm"
           className={navButtonClass}
           disabled={!nextHref}

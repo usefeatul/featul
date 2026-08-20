@@ -68,7 +68,7 @@ export default function RequestDetail({
           {isMobile ? (
             <>
               <div className="flex items-center justify-between gap-2">
-                <Button asChild variant="nav" size="xs">
+                <Button asChild variant="plain" size="xs">
                   <Link href={backHref} aria-label="Back to requests">
                     <ChevronLeftIcon className="size-3" />
                   </Link>
@@ -142,7 +142,7 @@ export default function RequestDetail({
               <Toolbar size="sm">
                 <Button
                   asChild
-                  variant="nav"
+                  variant="plain"
                   size="sm"
                   className={cn(toolbarItemClass, "h-8 gap-2 px-3")}
                   disabled={!prevHref}
@@ -162,7 +162,7 @@ export default function RequestDetail({
                 <ToolbarSeparator />
                 <Button
                   asChild
-                  variant="nav"
+                  variant="plain"
                   size="sm"
                   className={cn(toolbarItemClass, "h-8 gap-2 px-3")}
                   disabled={!nextHref}

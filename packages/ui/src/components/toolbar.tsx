@@ -17,7 +17,7 @@ export const toolbarInnerClass = cn(
 )
 
 export const toolbarItemClass =
-  "h-full rounded-none border-none bg-transparent shadow-none ring-0 hover:bg-muted/40 dark:bg-transparent dark:hover:bg-muted/30"
+  "h-full rounded-none border-none bg-transparent shadow-none ring-0 ring-offset-0 before:hidden hover:bg-muted/40 dark:bg-transparent dark:shadow-none dark:hover:bg-muted/30"
 
 const toolbarVariants = cva("flex items-stretch overflow-hidden", {
     variants: {
