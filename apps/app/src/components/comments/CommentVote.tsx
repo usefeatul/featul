@@ -6,7 +6,7 @@ import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
 import { Button } from "@featul/ui/components/button"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { motion, AnimatePresence } from "framer-motion"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
@@ -164,7 +164,7 @@ export default function CommentVote({
   }
 
   return (
-    <Toolbar size="sm">
+    <Toolbar size="sm" className="w-fit">
       <Button
         type="button"
         variant="plain"
@@ -172,7 +172,8 @@ export default function CommentVote({
         onClick={() => handleVote("upvote")}
         disabled={isPending}
         className={cn(
-          "h-8 min-w-[58px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
+          toolbarItemClass,
+          "min-w-10 justify-center gap-1.5 px-2.5",
           userVote === "upvote"
             ? "text-green-600 dark:text-green-400"
             : "text-accent hover:text-foreground"
@@ -187,7 +188,7 @@ export default function CommentVote({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="font-medium tabular-nums pr-1"
+              className="font-medium tabular-nums"
             >
               {upvotes}
             </motion.span>
@@ -204,7 +205,8 @@ export default function CommentVote({
         onClick={() => handleVote("downvote")}
         disabled={isPending}
         className={cn(
-          "h-8 min-w-[48px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
+          toolbarItemClass,
+          "min-w-10 justify-center gap-1.5 px-2.5",
           userVote === "downvote"
             ? "text-red-600 dark:text-red-400"
             : "text-accent hover:text-foreground"
@@ -219,7 +221,7 @@ export default function CommentVote({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="font-medium tabular-nums pr-1"
+              className="font-medium tabular-nums"
             >
               {downvotes}
             </motion.span>

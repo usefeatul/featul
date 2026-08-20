@@ -13,7 +13,8 @@ import { getInitials, getPrivacySafeDisplayUser } from "@/utils/user"
 import CommentHeader from "./CommentHeader"
 import CommentContent from "./CommentContent"
 import CommentEditor from "./CommentEditor"
-import CommentFooter from "./CommentFooter"
+import CommentVote from "./CommentVote"
+import CommentReplyButton from "./actions/CommentReplyAction"
 import CommentActions from "./actions/CommentActions"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
 import type { CommentData } from "../../types/comment"
@@ -134,11 +135,24 @@ export default function CommentItem({
                 />
               )}
             </div>
+
+            {!isEditing ? (
+              <div className="mt-2">
+                <CommentVote
+                  commentId={comment.id}
+                  postId={comment.postId}
+                  surface={surface}
+                  initialUpvotes={comment.upvotes}
+                  initialDownvotes={comment.downvotes}
+                  initialUserVote={comment.userVote}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
 
         {!isEditing ? (
-          <div className="shrink-0">
+          <div className="flex shrink-0 flex-col items-end justify-between self-stretch">
             <CommentActions
               commentId={comment.id}
               postId={comment.postId}
@@ -152,24 +166,15 @@ export default function CommentItem({
               onEdit={() => setIsEditing(true)}
               onDeleteSuccess={onUpdate}
             />
+            {canReply && !showReplyForm ? (
+              <CommentReplyButton
+                onClick={() => setShowReplyForm(true)}
+                isActive={false}
+              />
+            ) : null}
           </div>
         ) : null}
       </div>
-
-      {!isEditing ? (
-        <CommentFooter
-          commentId={comment.id}
-          postId={comment.postId}
-          surface={surface}
-          upvotes={comment.upvotes}
-          downvotes={comment.downvotes}
-          userVote={comment.userVote}
-          canReply={canReply}
-          showReplyForm={showReplyForm}
-          onToggleReply={() => setShowReplyForm(!showReplyForm)}
-          indentPx={indentPx}
-        />
-      ) : null}
 
       {showReplyForm ? (
         <div className={cn(settingsCardInnerClass, "mt-3")}>
