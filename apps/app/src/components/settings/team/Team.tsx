@@ -181,8 +181,7 @@ export default function TeamSection({
       <div className="space-y-2">
         <div className="space-y-2">
           <Label>Members</Label>
-          <div className="rounded-md  border overflow-hidden">
-            <Table>
+          <Table variant="settings">
               <TableHeader>
                 <TableRow>
                   <TableHead className="px-4">Name</TableHead>
@@ -210,7 +209,6 @@ export default function TeamSection({
                 )}
               </TableBody>
             </Table>
-          </div>
         </div>
 
         <div className="space-y-2 mt-3">

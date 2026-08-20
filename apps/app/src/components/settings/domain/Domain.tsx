@@ -94,9 +94,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
         {info?.host ? (
           <div className="space-y-2 mb-3">
             <Label>DNS Records</Label>
-            <div className="rounded-md  border overflow-hidden">
-              <RecordsTable info={info} />
-            </div>
+            <RecordsTable info={info} />
           </div>
         ) : null}
         <AddDomainDialog

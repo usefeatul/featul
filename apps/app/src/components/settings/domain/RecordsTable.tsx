@@ -23,7 +23,7 @@ function CopyableValue({ value, label }: { value: string; label: string }) {
 export default function RecordsTable({ info }: { info: DomainInfo }) {
   if (!info) return null;
   return (
-    <Table>
+    <Table variant="settings">
       <TableHeader>
         <TableRow>
           <TableHead className="px-3 w-20">Type</TableHead>

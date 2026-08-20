@@ -157,90 +157,89 @@ export function TagManagerSection<T extends ManagedTag>({
 
   return (
     <div className="space-y-4">
-    <SectionCard
-      title={title}
-      description={description}
-      action={
-        <LoadingButton type="button" onClick={() => setCreateOpen(true)}>
-          {createButtonLabel}
-        </LoadingButton>
-      }
-    >
-      <div className="space-y-4">
-        <div className="overflow-hidden rounded-md border">
-          <Table>
-            <TableHeader>
+      <SectionCard
+        title={title}
+        description={description}
+        action={
+          <LoadingButton type="button" onClick={() => setCreateOpen(true)}>
+            {createButtonLabel}
+          </LoadingButton>
+        }
+      >
+        <Table variant="settings">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-4">Tag</TableHead>
+              <TableHead className="w-14 px-2 text-right" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tags.length === 0 && !isLoading ? (
               <TableRow>
-                <TableHead className="px-4">Tag</TableHead>
-                <TableHead className="w-14 pl-2 pr-3 text-right" />
+                <TableCell colSpan={2} className="px-4 py-8 text-accent">
+                  {emptyLabel}
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tags.length === 0 && !isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={2} className="px-4 py-6 text-accent">
-                    {emptyLabel}
+            ) : (
+              tags.map((tag) => (
+                <TableRow key={tag.id}>
+                  <TableCell className="px-4">
+                    <span className="inline-flex min-w-0 items-center gap-2.5">
+                      <span
+                        aria-hidden
+                        className="inline-block size-2.5 shrink-0 rounded-full bg-primary"
+                      />
+                      <span className="truncate font-medium">{tag.name}</span>
+                    </span>
+                  </TableCell>
+                  <TableCell className="px-2 text-right">
+                    <Popover
+                      open={actionOpenId === tag.id}
+                      onOpenChange={(open) =>
+                        setActionOpenId(open ? String(tag.id) : null)
+                      }
+                    >
+                      <PopoverTrigger asChild>
+                        <LoadingButton
+                          type="button"
+                          variant="nav"
+                          size="icon-sm"
+                          aria-label={`Actions for ${tag.name}`}
+                          className="ml-auto"
+                        >
+                          <MoreVertical className="size-4 opacity-70" />
+                        </LoadingButton>
+                      </PopoverTrigger>
+                      <PopoverContent list className="min-w-0 w-fit">
+                        <PopoverList>
+                          <PopoverListItem
+                            role="menuitem"
+                            onClick={() => void handleDelete(tag)}
+                          >
+                            <span className="text-sm text-red-500">Delete</span>
+                          </PopoverListItem>
+                        </PopoverList>
+                      </PopoverContent>
+                    </Popover>
                   </TableCell>
                 </TableRow>
-              ) : (
-                tags.map((tag) => (
-                  <TableRow key={tag.id}>
-                    <TableCell className="px-4 text-sm">
-                      <span className="inline-flex items-center gap-2">
-                        <span className="inline-block size-3 rounded-full bg-primary" />
-                        <span>{tag.name}</span>
-                      </span>
-                    </TableCell>
-                    <TableCell className="pl-2 pr-3 text-right">
-                      <Popover
-                        open={actionOpenId === tag.id}
-                        onOpenChange={(open) =>
-                          setActionOpenId(open ? String(tag.id) : null)
-                        }
-                      >
-                        <PopoverTrigger asChild>
-                          <LoadingButton
-                            type="button"
-                            variant="nav"
-                            size="icon-sm"
-                            aria-label="More"
-                            className="ml-auto"
-                          >
-                            <MoreVertical className="size-4" />
-                          </LoadingButton>
-                        </PopoverTrigger>
-                        <PopoverContent list className="min-w-0 w-fit">
-                          <PopoverList>
-                            <PopoverListItem
-                              role="menuitem"
-                              onClick={() => void handleDelete(tag)}
-                            >
-                              <span className="text-sm text-red-500">Delete</span>
-                            </PopoverListItem>
-                          </PopoverList>
-                        </PopoverContent>
-                      </Popover>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-      <TagNameDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        onSave={handleCreate}
-        saving={creating}
-        title={createDialogTitle}
-        description={createDialogDescription}
-        actionLabel={createActionLabel}
-        loadingLabel={createLoadingLabel}
-        disableWhenEmpty
-      />
-    </SectionCard>
-    {renderPlanNotice(tags.length)}
+              ))
+            )}
+          </TableBody>
+        </Table>
+        <TagNameDialog
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          onSave={handleCreate}
+          saving={creating}
+          title={createDialogTitle}
+          description={createDialogDescription}
+          actionLabel={createActionLabel}
+          loadingLabel={createLoadingLabel}
+          disableWhenEmpty
+        />
+      </SectionCard>
+      {renderPlanNotice(tags.length)}
     </div>
   );
 }

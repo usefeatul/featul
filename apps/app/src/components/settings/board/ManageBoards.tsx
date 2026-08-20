@@ -107,8 +107,7 @@ export default function ManageBoards({
       }
     >
       <div className="space-y-4">
-      <div className="rounded-md  border overflow-hidden">
-        <Table>
+        <Table variant="settings">
           <TableHeader>
             <TableRow>
               <TableHead className="px-4">Board</TableHead>
@@ -226,7 +225,6 @@ export default function ManageBoards({
             )}
           </TableBody>
         </Table>
-      </div>
       <ModalCreateBoard
         open={createOpen}
         onOpenChange={setCreateOpen}
