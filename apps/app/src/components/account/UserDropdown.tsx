@@ -355,7 +355,7 @@ export default function UserDropdown({
               {authMode === "sign-in" ? "Add account" : "Create account"}
             </DialogTitle>
           </DialogHeader>
-          <DialogInner className="max-h-[66vh] overflow-y-auto">
+          <DialogInner className="max-h-[66vh] overflow-y-auto pt-5 pb-4">
             {authMode === "sign-in" ? (
               <SignIn
                 redirectTo={authRedirectTo}

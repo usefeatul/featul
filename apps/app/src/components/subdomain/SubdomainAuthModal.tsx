@@ -37,7 +37,7 @@ export default function SubdomainAuthModal({
             {title}
           </DialogTitle>
         </DialogHeader>
-        <DialogInner className="max-h-[66vh] overflow-y-auto">
+        <DialogInner className="max-h-[66vh] overflow-y-auto pt-5 pb-4">
           {mode === "sign-in" ? (
             <SignIn
               redirectTo={redirectTo}
