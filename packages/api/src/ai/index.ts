@@ -26,7 +26,7 @@ export {
   fetchAiSourcePostsList,
   formatSourcePostsBlock,
   getWorkspaceNameForAi,
-} from "./source-posts";
+} from "./sources";
 
 export {
   extractTitleFromMarkdown,
@@ -41,4 +41,4 @@ export {
   changelogAiJsonResponse,
 } from "./auth";
 
-export { createChangelogAiStreamResponse } from "./stream-handler";
+export { createChangelogAiStreamResponse } from "./handler";

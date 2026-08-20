@@ -1,5 +1,5 @@
 import { HTTPException } from "hono/http-exception";
-import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
+import { enforceTrustedBrowserOrigin } from "../request/origin";
 import { limitPrivate } from "../services/ratelimiter";
 
 type ChangelogAiSession = {

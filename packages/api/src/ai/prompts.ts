@@ -3,7 +3,7 @@ import {
   DETAIL_GUIDANCE,
   TONE_GUIDANCE,
 } from "./constants";
-import { formatSourcePostsBlock } from "./source-posts";
+import { formatSourcePostsBlock } from "./sources";
 import type {
   AiAction,
   AiDetailLevel,

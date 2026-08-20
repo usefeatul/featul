@@ -1,7 +1,7 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { board, post } from "@featul/db";
 import { publicProcedure } from "../../jstack";
-import { getRequestFingerprint } from "../../shared/request-fingerprint";
+import { getRequestFingerprint } from "../../request/fingerprint";
 import {
   getWidgetRequest,
   loadVotedPostIds,

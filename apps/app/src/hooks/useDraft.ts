@@ -4,10 +4,10 @@ import {
   clearCreatePostDraft,
   readCreatePostDraft,
   writeCreatePostDraft,
-} from "@/lib/create-post-draft"
-import type { UploadedImage } from "@/hooks/useSignedImageUpload"
+} from "@/lib/post/draft"
+import type { UploadedImage } from "@/hooks/useSignedUpload"
 
-export function useCreatePostDraft({
+export function useDraft({
   workspaceSlug,
   open,
   title,

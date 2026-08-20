@@ -7,7 +7,7 @@ import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { X } from "lucide-react";
 import { toast } from "sonner";
-import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy";
+import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";
 import { uploadFileToSignedUrl } from "@/lib/upload";
 
 interface CoverImageUploaderProps {

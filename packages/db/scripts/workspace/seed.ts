@@ -1,6 +1,6 @@
 import { config as loadEnv } from 'dotenv'
 import path from 'node:path'
-import { db, post, board, workspace, user } from '../index'
+import { db, post, board, workspace, user } from '../../index'
 import { eq, inArray } from 'drizzle-orm'
 
 loadEnv({ path: path.resolve(process.cwd(), '../../apps/app/.env') })

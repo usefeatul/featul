@@ -7,7 +7,7 @@ import {
   workspace,
   workspaceMember,
 } from "@featul/db";
-import { loadMemberActivityPage } from "@featul/api/services/member-activity";
+import { loadMemberActivityPage } from "@featul/api/member/load";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import type { ActivityMetadata, PaginatedActivity } from "@/types/activity";
 

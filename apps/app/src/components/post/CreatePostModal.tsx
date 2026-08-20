@@ -7,7 +7,7 @@ import { PostHeader } from "./PostHeader"
 import { PostContent } from "./PostContent"
 import { PostFooter } from "./PostFooter"
 import { usePostSubmission } from "@/hooks/usePostSubmission"
-import { usePostImageUpload } from "@/hooks/usePostImageUpload"
+import { usePostUpload } from "@/hooks/usePostUpload"
 import { useWorkspaceBoards } from "@/hooks/useWorkspaceBoards"
 import { client } from "@featul/api/client"
 import { useRouter } from "next/navigation"
@@ -15,8 +15,8 @@ import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "./SimilarPosts"
 import type { TagSummary, PostUser } from "@/types/post"
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
-import { createPostImageTransferHandlers } from "@/lib/post-image-transfer"
-import { useCreatePostDraft } from "@/hooks/useCreatePostDraft"
+import { createPostImageTransferHandlers } from "@/lib/post/transfer"
+import { useDraft } from "@/hooks/useDraft"
 
 export function CreatePostModal({
   open,
@@ -58,7 +58,7 @@ export function CreatePostModal({
     handleRemoveImage,
     maxFiles,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
+  } = usePostUpload(workspaceSlug, selectedBoard?.slug)
 
   const clearDraftRef = React.useRef(() => {})
 
@@ -85,7 +85,7 @@ export function CreatePostModal({
     skipDefaultRedirect: true
   })
 
-  const { clearDraft } = useCreatePostDraft({
+  const { clearDraft } = useDraft({
     workspaceSlug,
     open,
     title,

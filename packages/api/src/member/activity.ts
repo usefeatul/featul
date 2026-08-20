@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTIONS } from "./activity-actions"
+import { ACTIVITY_ACTIONS } from "../activity/actions"
 
 export const ACTIVITY_CATEGORIES = [
   "all",

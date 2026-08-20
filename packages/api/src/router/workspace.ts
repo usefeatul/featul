@@ -36,8 +36,8 @@ import {
 } from "../services/vercel";
 import { isDataImportsAllowed } from "../shared/plan";
 import { seedWorkspaceOnboarding } from "../services/onboarding";
-import { runWorkspaceCsvImport } from "../services/workspace-csv-import";
-import { isReservedWorkspaceSlug } from "../shared/workspace-slug";
+import { runWorkspaceCsvImport } from "../workspace/import";
+import { isReservedWorkspaceSlug } from "../workspace/slug";
 import { getWorkspaceAccessPlan } from "../shared/access";
 import { createWidgetSecret } from "../shared/identity";
 

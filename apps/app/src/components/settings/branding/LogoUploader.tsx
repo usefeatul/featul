@@ -5,7 +5,7 @@ import Image from "next/image"
 import { toast } from "sonner"
 import { getLogoUploadUrl, saveBranding } from "../../../lib/branding/service"
 import { setWorkspaceLogo } from "@/lib/branding/store"
-import { BRANDING_UPLOAD_CONTENT_TYPES, BRANDING_LOGO_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy"
+import { BRANDING_UPLOAD_CONTENT_TYPES, BRANDING_LOGO_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 
 type Props = {

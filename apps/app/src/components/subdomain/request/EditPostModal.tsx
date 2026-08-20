@@ -8,11 +8,11 @@ import { PostContent } from "../../post/PostContent";
 import { PostFooter } from "../../post/PostFooter";
 import { useCreatePostData } from "@/hooks/useCreatePostData";
 import { usePostUpdate } from "@/hooks/usePostUpdate";
-import { usePostImageUpload } from "@/hooks/usePostImageUpload";
+import { usePostUpload } from "@/hooks/usePostUpload";
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard";
 import DocumentTextIcon from "@featul/ui/icons/document-text";
-import { createPostImageTransferHandlers } from "@/lib/post-image-transfer";
-import { listPostImages } from "@/lib/post-images";
+import { createPostImageTransferHandlers } from "@/lib/post/transfer";
+import { listPostImages } from "@/lib/post/images";
 
 interface EditablePost {
   id: string;
@@ -52,7 +52,7 @@ export default function EditPostModal({
     handleRemoveImage,
     maxFiles,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug);
+  } = usePostUpload(workspaceSlug, selectedBoard?.slug);
 
   const { title, setTitle, content, setContent, isPending, updatePost } =
     usePostUpdate({

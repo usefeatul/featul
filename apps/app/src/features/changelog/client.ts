@@ -3,7 +3,7 @@ import type {
   AiDetailLevel,
   AiTone,
   ChangelogAiStreamEvent,
-} from "@featul/api/changelog-ai/types";
+} from "@featul/api/ai/types";
 
 export type ChangelogAiStreamInput = {
   slug: string;

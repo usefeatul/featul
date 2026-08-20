@@ -5,7 +5,7 @@ import {
   POST_TITLE_MAX_LENGTH,
   POST_TITLE_MIN_LENGTH,
 } from "./postValidation"
-import { POST_MAX_IMAGES } from "../upload-policy"
+import { POST_MAX_IMAGES } from "../upload/policy"
 
 const postTitleSchema = z
   .string()

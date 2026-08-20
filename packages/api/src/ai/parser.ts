@@ -5,4 +5,4 @@ export {
   resolveAiChangelogTitle,
   buildFallbackChangelogTitle,
   usesStructuredChangelogStream,
-} from "../changelog-ai/title";
+} from "./title";

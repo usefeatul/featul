@@ -2,7 +2,7 @@ import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { board, post, vote, widgetUser } from "@featul/db";
 import { publicProcedure } from "../../jstack";
-import { getRequestFingerprint } from "../../shared/request-fingerprint";
+import { getRequestFingerprint } from "../../request/fingerprint";
 import {
   assertWidgetPostImageUrl,
   createPostSlug,

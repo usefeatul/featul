@@ -22,8 +22,8 @@ import { createSseStreamHeaders, encodeChangelogAiSseEvent } from "./sse";
 import {
   fetchAiSourcePostsByIds,
   getWorkspaceNameForAi,
-} from "./source-posts";
-import { streamStructuredChangelog } from "./structured-generation";
+} from "./sources";
+import { streamStructuredChangelog } from "./generation";
 import {
   extractSummaryFromMarkdown,
   extractTitleFromMarkdown,

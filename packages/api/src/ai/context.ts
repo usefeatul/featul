@@ -1,1 +1,1 @@
-export * from "../changelog-ai/index";
+export * from "./index";

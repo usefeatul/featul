@@ -5,8 +5,8 @@ import {
   sendBillingPaymentDueEmail,
   sendBillingPaymentFailedEmail,
   sendBillingUpgradeEmail,
-} from "./email"
-import { type StripeBillingPlanName } from "./stripe"
+} from "../email"
+import { type StripeBillingPlanName } from "../stripe"
 
 type BillingNotificationKind = "upgrade" | "payment_failed" | "payment_due"
 

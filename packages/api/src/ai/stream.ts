@@ -1,1 +1,1 @@
-export { createChangelogAiStreamResponse } from "../changelog-ai/stream-handler";
+export { createChangelogAiStreamResponse } from "./handler";

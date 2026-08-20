@@ -5,7 +5,7 @@ import {
   normalizeActivityStatus,
   readActivityStatus,
   type ActivityCategory,
-} from "../shared/member-activity"
+} from "../member/activity"
 
 type Database = typeof import("@featul/db").db
 

@@ -1,7 +1,7 @@
 import { j, privateProcedure } from "../jstack"
 import { HTTPException } from "hono/http-exception"
 import { and, eq, sql, isNull } from "drizzle-orm"
-import { loadMemberActivityPage } from "../services/member-activity"
+import { loadMemberActivityPage } from "../member/load"
 import {
   workspace,
   workspaceMember,

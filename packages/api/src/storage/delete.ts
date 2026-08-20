@@ -2,13 +2,13 @@ import { DeleteObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3"
 import { or, eq, isNotNull, sql, asc } from "drizzle-orm"
 import { comment, post } from "@featul/db"
 import { HTTPException } from "hono/http-exception"
-import { createStorageContext, type StorageContext } from "./storage-signer"
-import { listCommentImageUrls, listPostImageUrls } from "../shared/post-images"
+import { createStorageContext, type StorageContext } from "./signer"
+import { listCommentImageUrls, listPostImageUrls } from "./images"
 import {
   isDeletableContentKey,
   objectKeyFromPublicUrl,
   publicUrlForKey,
-} from "../shared/storage-object"
+} from "./object"
 
 const attachmentContains = (url: string) =>
   JSON.stringify([{ url }])

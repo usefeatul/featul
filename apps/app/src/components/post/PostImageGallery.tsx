@@ -2,7 +2,7 @@
 
 import React from "react"
 import ContentImage from "@/components/global/ContentImage"
-import { listPostImages } from "@/lib/post-images"
+import { listPostImages } from "@/lib/post/images"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { cn } from "@featul/ui/lib/utils"
 

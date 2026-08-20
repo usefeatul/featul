@@ -1,4 +1,4 @@
-import type { ActivityAction } from "@featul/api/shared/activity-actions";
+import type { ActivityAction } from "@featul/api/activity/actions";
 
 export interface TagSummary {
     id?: string;

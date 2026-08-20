@@ -1,4 +1,4 @@
-import { POST_MAX_IMAGES } from "../upload-policy"
+import { POST_MAX_IMAGES } from "../upload/policy"
 
 export type PostImageInput = {
   url: string

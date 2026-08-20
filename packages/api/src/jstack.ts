@@ -3,7 +3,7 @@ import { auth } from "@featul/auth/auth";
 import { HTTPException } from "hono/http-exception";
 import { headers } from "next/headers";
 import { db } from "@featul/db";
-import { enforceTrustedBrowserOrigin } from "./shared/request-origin";
+import { enforceTrustedBrowserOrigin } from "./request/origin";
 import {
   applyRateLimitHeaders,
   limitPublic,

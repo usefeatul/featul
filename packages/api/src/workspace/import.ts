@@ -11,7 +11,7 @@ import {
   inferAttachmentType,
   parseCsvContent,
   parseUrlList,
-} from "../shared/csv-import"
+} from "../csv/import"
 
 export type WorkspaceCsvImportIssue = {
   row: number | null

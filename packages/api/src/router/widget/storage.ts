@@ -5,11 +5,11 @@ import { publicProcedure } from "../../jstack";
 import {
   createStorageContext,
   buildSignedUpload,
-} from "../../services/storage-signer";
+} from "../../storage/signer";
 import {
   POST_IMAGE_UPLOAD_POLICY,
   validateUploadInput,
-} from "../../shared/storage-upload";
+} from "../../storage/upload";
 import {
   applyRateLimitHeaders,
   limitStoragePublicPostAnon,
@@ -17,12 +17,12 @@ import {
 } from "../../services/ratelimiter";
 import { getWidgetRequest, resolveAuthorId, resolveWidget } from "./resolve";
 import { deleteImageSchema, uploadImageSchema } from "./schema";
-import { deleteUploadByPublicUrl } from "../../services/storage-delete";
+import { deleteUploadByPublicUrl } from "../../storage/delete";
 import {
   isDeletableContentKey,
   objectKeyFromPublicUrl,
   workspaceSlugFromContentKey,
-} from "../../shared/storage-object";
+} from "../../storage/object";
 
 export const widgetUploadImage = publicProcedure
   .input(uploadImageSchema)

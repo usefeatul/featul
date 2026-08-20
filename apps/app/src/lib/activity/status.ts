@@ -1,7 +1,7 @@
 import {
   normalizeActivityStatus,
   readActivityStatus,
-} from "@featul/api/shared/member-activity"
+} from "@featul/api/member/activity"
 import type { ActivityItem } from "@/types/activity"
 
 function toTitleCase(value: string) {

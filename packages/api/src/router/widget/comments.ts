@@ -9,7 +9,7 @@ import {
   widgetUser,
 } from "@featul/db";
 import { publicProcedure } from "../../jstack";
-import { getRequestFingerprint } from "../../shared/request-fingerprint";
+import { getRequestFingerprint } from "../../request/fingerprint";
 import {
   assertWidgetPostImageUrl,
   resolveAuthorId,

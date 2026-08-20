@@ -28,7 +28,7 @@ import type {
 import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
 import type { DomainInfo } from "../types/domain";
-import { buildPostFtsFilter } from "@featul/api/shared/post-search";
+import { buildPostFtsFilter } from "@featul/api/post/search";
 import {
   STALE_STATUS_KEY,
   STALE_THRESHOLD_DAYS,

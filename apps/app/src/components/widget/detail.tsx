@@ -5,7 +5,7 @@ import { client } from "@featul/api/client";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
   POST_IMAGE_UPLOAD_MAX_BYTES,
-} from "@featul/api/upload-policy";
+} from "@featul/api/upload/policy";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";

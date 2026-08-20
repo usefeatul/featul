@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { SIGNED_UPLOAD_INPUT_MAX_BYTES, WORKSPACE_UPLOAD_FOLDERS } from "../upload-policy"
+import { SIGNED_UPLOAD_INPUT_MAX_BYTES, WORKSPACE_UPLOAD_FOLDERS } from "../upload/policy"
 
 const fileNameSchema = z
   .string()

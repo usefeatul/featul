@@ -1,4 +1,4 @@
-import { getValidatedTrustedOrigins, isConfiguredTrustedOrigin } from "./trusted-origins"
+import { getValidatedTrustedOrigins, isConfiguredTrustedOrigin } from "./origins/trusted"
 
 const configuredTrustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS")
 

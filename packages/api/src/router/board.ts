@@ -30,11 +30,11 @@ import {
   requireBoardManagerBySlug,
 } from "../shared/access";
 import { createHash } from "crypto";
-import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
-import { buildPostFtsFilter, boardSlugsForSearch } from "../shared/post-search";
-import { resolveIncludePrivateBoardPosts } from "../shared/workspace-search-access";
-import { hasWorkspaceContentAccess } from "../shared/storage-access";
-import { notifyPostStatusChange } from "../services/status-change-notify";
+import { ACTIVITY_ACTIONS } from "../activity/actions";
+import { buildPostFtsFilter, boardSlugsForSearch } from "../post/search";
+import { resolveIncludePrivateBoardPosts } from "../workspace/access";
+import { hasWorkspaceContentAccess } from "../storage/access";
+import { notifyPostStatusChange } from "../status/notify";
 import { normalizeStatus } from "../shared/status";
 
 export function createBoardRouter() {

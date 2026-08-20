@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { POST_IMAGE_UPLOAD_POLICY } from "../../shared/storage-upload";
+import { POST_IMAGE_UPLOAD_POLICY } from "../../storage/upload";
 
 const widgetUrlSchema = z
   .string()

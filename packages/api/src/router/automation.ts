@@ -8,7 +8,7 @@ import {
 } from "@featul/db";
 import { getPlanLimits } from "../shared/plan";
 import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
-import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
+import { ACTIVITY_ACTIONS } from "../activity/actions";
 import {
   deleteNotraConnectionSchema,
   getNotraConnectionSchema,
@@ -26,7 +26,7 @@ import {
   getMaxTokensByAction,
   getWorkspaceNameForAi,
   type AiAction,
-} from "../changelog-ai";
+} from "../ai";
 import {
   deleteStoredNotraConnection,
   getStoredNotraConnection,
@@ -35,11 +35,11 @@ import {
   NotraStoredConnectionError,
   runNotraImport,
   storeNotraConnection,
-} from "../services/notra-import";
+} from "../notra/import";
 import {
   canEncryptSecrets,
   SecretCryptoError,
-} from "../services/secret-crypto";
+} from "../crypto/secret";
 
 const AI_SYSTEM_PROMPT = [
   "You are an expert product changelog writer for SaaS products.",

@@ -1,10 +1,10 @@
 import { getCommentImageUploadUrl, deleteCommentImageUpload } from "@/lib/comment/service";
-import { useSignedImageUpload } from "./useSignedImageUpload";
+import { useSignedUpload } from "./useSignedUpload";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
-export { type UploadedImage } from "./useSignedImageUpload";
+export { type UploadedImage } from "./useSignedUpload";
 
 export function useImageUpload(postId: string) {
-  return useSignedImageUpload({
+  return useSignedUpload({
     getUploadTarget: (file) =>
       getCommentImageUploadUrl(postId, file.name, file.type, file.size),
     onDeleteUpload: deleteCommentImageUpload,

@@ -1,4 +1,4 @@
-import { createChangelogAiStreamResponse } from "@featul/api/services/changelog-ai-stream";
+import { createChangelogAiStreamResponse } from "@featul/api/ai/stream";
 import { getServerSession } from "@featul/auth/session";
 
 export const runtime = "nodejs";

@@ -3,7 +3,7 @@
   "bunVersion": "1.x",
   "crons": [
     {
-      "path": "/api/cron/storage-gc",
+      "path": "/api/cron/gc",
       "schedule": "0 4 * * *"
     }
   ]

@@ -7,7 +7,7 @@ import {
   workspaceMember,
 } from "@featul/db";
 import { publicProcedure } from "../../jstack";
-import { findTagsByIds, getChangelogTags } from "../../shared/changelog-types";
+import { findTagsByIds, getChangelogTags } from "../../changelog/types";
 import {
   extractTiptapPlainText,
   resolveAuthorRoleLabel,

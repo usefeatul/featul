@@ -9,15 +9,15 @@ import { PostContent } from "../post/PostContent"
 import { PostFooter } from "../post/PostFooter"
 import { useCreatePostData } from "../../hooks/useCreatePostData"
 import { usePostSubmission } from "../../hooks/usePostSubmission"
-import { usePostImageUpload } from "../../hooks/usePostImageUpload"
+import { usePostUpload } from "../../hooks/usePostUpload"
 import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "../post/SimilarPosts"
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
 import SubdomainAuthModal from "./SubdomainAuthModal"
 import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal"
 import { useCloseThenOpenAuth } from "@/hooks/useCloseThenOpenAuth"
-import { createPostImageTransferHandlers } from "@/lib/post-image-transfer"
-import { useCreatePostDraft } from "@/hooks/useCreatePostDraft"
+import { createPostImageTransferHandlers } from "@/lib/post/transfer"
+import { useDraft } from "@/hooks/useDraft"
 
 interface CreatePostModalProps {
   open: boolean
@@ -62,7 +62,7 @@ export default function CreatePostModal({
     handleRemoveImage,
     maxFiles,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
+  } = usePostUpload(workspaceSlug, selectedBoard?.slug)
 
   const clearDraftRef = React.useRef(() => {})
 
@@ -83,7 +83,7 @@ export default function CreatePostModal({
     onAuthRequired: () => closeThenOpenAuth("sign-in"),
   })
 
-  const { clearDraft } = useCreatePostDraft({
+  const { clearDraft } = useDraft({
     workspaceSlug,
     open,
     title,

@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import { SIGNED_UPLOAD_URL_TTL_SECONDS } from "../shared/storage-upload"
+import { SIGNED_UPLOAD_URL_TTL_SECONDS } from "./upload"
 
 function getEnv(name: string): string {
   const v = process.env[name]

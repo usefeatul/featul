@@ -13,8 +13,8 @@ import {
   limitStorageDeleteUser,
   applyRateLimitHeaders,
 } from "../services/ratelimiter"
-import { createStorageContext, buildSignedUpload } from "../services/storage-signer"
-import { deleteUploadByPublicUrl } from "../services/storage-delete"
+import { createStorageContext, buildSignedUpload } from "../storage/signer"
+import { deleteUploadByPublicUrl } from "../storage/delete"
 import {
   AVATAR_UPLOAD_POLICY,
   POST_IMAGE_UPLOAD_POLICY,
@@ -22,8 +22,8 @@ import {
   WORKSPACE_UPLOAD_POLICIES,
   resolveWorkspaceUploadFolder,
   validateUploadInput,
-} from "../shared/storage-upload"
-import { getSessionUserId, hasWorkspaceContentAccess, canUploadWorkspaceAsset } from "../shared/storage-access"
+} from "../storage/upload"
+import { getSessionUserId, hasWorkspaceContentAccess, canUploadWorkspaceAsset } from "../storage/access"
 
 function isAnonymousPublicPostImageUploadEnabled(): boolean {
   const raw = String(process.env.ALLOW_ANONYMOUS_PUBLIC_POST_IMAGE_UPLOADS || "").trim().toLowerCase()

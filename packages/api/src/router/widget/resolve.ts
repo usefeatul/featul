@@ -19,7 +19,7 @@ import {
 } from "../../shared/identity";
 import type { AuthenticatedRouterContext } from "../../types/router";
 import type { WidgetIdentity } from "./schema";
-import { listPostImageUrls } from "../../shared/post-images";
+import { listPostImageUrls } from "../../storage/images";
 
 export type WidgetRouterContext = Pick<AuthenticatedRouterContext, "db">;
 

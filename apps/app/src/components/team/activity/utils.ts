@@ -4,11 +4,11 @@ import {
   isChangelogActivity,
   isPostOrCommentActivity,
   type ActivityCategory,
-} from "@featul/api/shared/member-activity"
+} from "@featul/api/member/activity"
 import { getActivityStatus } from "@/lib/activity/status"
 import type { ActivityItem } from "@/types/activity"
 
-export type { ActivityCategory } from "@featul/api/shared/member-activity"
+export type { ActivityCategory } from "@featul/api/member/activity"
 
 export type ActivityRow =
   | { kind: "item"; key: string; item: ActivityItem; href: string }

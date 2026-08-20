@@ -14,19 +14,19 @@ import { HTTPException } from "hono/http-exception";
 import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug } from "../shared/slug";
 import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
-import { createChangelogAutomationProcedures } from "./changelog-automation";
+import { createChangelogAutomationProcedures } from "./automation";
 import {
   getChangelogTags,
   findTagsByIds,
   createTagsMap,
   type ChangelogTag,
-} from "../shared/changelog-types";
+} from "../changelog/types";
 import {
   bySlugSchema,
   createEntrySchema,
   updateEntrySchema,
 } from "../validators/changelog";
-import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
+import { ACTIVITY_ACTIONS } from "../activity/actions";
 
 function extractMentionedUserIdsFromContent(content: unknown): string[] {
   const ids = new Set<string>();

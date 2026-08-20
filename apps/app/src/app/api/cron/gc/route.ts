@@ -1,5 +1,5 @@
 import { db } from "@featul/db";
-import { runStorageOrphanGc } from "@featul/api/services/storage-delete";
+import { runStorageOrphanGc } from "@featul/api/storage/delete";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;

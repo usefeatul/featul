@@ -2,9 +2,9 @@ import { z } from "zod"
 import {
   isReservedWorkspaceName,
   isReservedWorkspaceSlug,
-} from "@featul/api/shared/workspace-slug"
+} from "@featul/api/workspace/slug"
 
-export { isReservedWorkspaceName, isReservedWorkspaceSlug } from "@featul/api/shared/workspace-slug"
+export { isReservedWorkspaceName, isReservedWorkspaceSlug } from "@featul/api/workspace/slug"
 
 const validTlds = new Set([
   "com","net","org","io","co","ai","app","dev","gg","xyz","me","us","uk","ca","de","fr","it","es","nl","br","in","jp","ru","ch","se","no","fi","pl","cz","sk","id","au","nz","be","dk","pt","gr","mx","za","ar","tw","kr","hk","sg","ie","il","at","tr","sa","ua","vn","ph","th","my","cl","pe","uy","lu","li","ro","bg","hu","lt","lv","ee","rs","ba","md","ge","am","az","by","kz","uz","tm","tj","kg","pa","do","cr","gt","hn","ni","jm","tt","pr","ae","qa","kw","om","bh","eg","ma","tn","dz","cc","biz","info","tech"

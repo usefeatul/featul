@@ -1,16 +1,16 @@
 import { getPostImageUploadUrl, deletePostImageUpload } from "@/lib/post/service";
-import { useSignedImageUpload } from "./useSignedImageUpload";
+import { useSignedUpload } from "./useSignedUpload";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
-import { POST_MAX_IMAGES } from "@featul/api/upload-policy";
+import { POST_MAX_IMAGES } from "@featul/api/upload/policy";
 
 export {
   ALLOWED_IMAGE_TYPES,
   MAX_IMAGE_SIZE,
   type UploadedImage,
-} from "./useSignedImageUpload";
+} from "./useSignedUpload";
 
-export function usePostImageUpload(workspaceSlug: string, boardSlug?: string) {
-  return useSignedImageUpload({
+export function usePostUpload(workspaceSlug: string, boardSlug?: string) {
+  return useSignedUpload({
     maxFiles: POST_MAX_IMAGES,
     getPreUploadError: () => {
       if (!boardSlug) {

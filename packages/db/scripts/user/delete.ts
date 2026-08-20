@@ -73,7 +73,7 @@ async function main(userIdentifier: string) {
     workspaceSlugReservation,
     postReport,
     commentReport,
-  } = await import("../index.js");
+  } = await import("../../index.js");
 
   let userId: string;
 

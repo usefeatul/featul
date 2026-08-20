@@ -9,7 +9,7 @@ import {
   CHANGELOG_IMAGE_UPLOAD_MAX_BYTES,
   BRANDING_LOGO_UPLOAD_MAX_BYTES,
   type WorkspaceUploadFolder,
-} from "../upload-policy"
+} from "../upload/policy"
 
 export { SIGNED_UPLOAD_URL_TTL_SECONDS, type WorkspaceUploadFolder }
 

@@ -2,7 +2,7 @@ import { HTTPException } from "hono/http-exception";
 import {
   getValidatedTrustedOrigins,
   isConfiguredTrustedOrigin,
-} from "@featul/auth/trusted-origins";
+} from "@featul/auth/origins/trusted";
 
 const REQUEST_ORIGIN_WARNINGS = new Set<string>();
 

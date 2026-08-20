@@ -7,7 +7,7 @@ import { readInitialCollapsedByStatus } from "@/lib/roadmap.server";
 import { getServerSession } from "@featul/auth/session";
 import { resolveSearchParams } from "@/utils/search/params";
 import { parseRoadmapFiltersFromRecord } from "@/utils/roadmap/url";
-import { boardSlugsForSearch } from "@featul/api/shared/post-search";
+import { boardSlugsForSearch } from "@featul/api/post/search";
 
 export const revalidate = 30;
 

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { ACTIVITY_CATEGORIES } from "../shared/member-activity"
+import { ACTIVITY_CATEGORIES } from "../member/activity"
 import { slugSchema } from "./workspace"
 
 export const memberByWorkspaceInputSchema = z.object({

@@ -7,7 +7,7 @@ import {
 } from "@/utils/search/params"
 import type { RequestItemData } from "@/types/request"
 import { parseRequestFiltersFromRecord } from "@/utils/request/filters"
-import { boardSlugsForSearch } from "@featul/api/shared/post-search"
+import { boardSlugsForSearch } from "@featul/api/post/search"
 
 const PAGE_SIZE = 20
 

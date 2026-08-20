@@ -8,22 +8,22 @@ import {
   createNotraClient,
   listNotraPostsPage,
   NotraApiError,
-} from "./notra-client";
-import type { NotraClientFactory, NotraPost } from "./notra-client";
+} from "./client";
+import type { NotraClientFactory, NotraPost } from "./client";
 import {
   markdownToTiptapDoc,
   resolveNotraMarkdown,
   toNotraChangelogSlug,
   toPlainText,
-} from "./notra-content";
+} from "./content";
 import {
   decryptSecret,
   encryptSecret,
   getSecretKeyVersion,
   hasSecretKeyVersion,
   SecretCryptoError,
-} from "./secret-crypto";
-import { IMPORT_RATE_LIMIT_ACTIONS } from "../shared/activity-actions";
+} from "../crypto/secret";
+import { IMPORT_RATE_LIMIT_ACTIONS } from "../activity/actions";
 
 type StatusFilter = "draft" | "published";
 type PublishBehavior = "preserve" | "draft_only";

@@ -1,4 +1,4 @@
-import { getSessionUserId, hasWorkspaceContentAccess } from "./storage-access"
+import { getSessionUserId, hasWorkspaceContentAccess } from "../storage/access"
 
 type WorkspaceRef = { id: string; ownerId: string }
 

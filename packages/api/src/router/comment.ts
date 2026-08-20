@@ -15,7 +15,7 @@ import {
   changelogEntry,
 } from "@featul/db";
 import { auth } from "@featul/auth";
-import { createCommentMentionProcedures } from "./comment-mentions";
+import { createCommentMentionProcedures } from "./mentions";
 import {
   createCommentInputSchema,
   updateCommentInputSchema,
@@ -28,10 +28,10 @@ import {
 } from "../validators/comment";
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
-import { enforceTrustedBrowserOrigin } from "../shared/request-origin";
-import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
-import { deleteUnreferencedImageUrls } from "../services/storage-delete";
-import { droppedImageUrls, listCommentImageUrls } from "../shared/post-images";
+import { enforceTrustedBrowserOrigin } from "../request/origin";
+import { ACTIVITY_ACTIONS } from "../activity/actions";
+import { deleteUnreferencedImageUrls } from "../storage/delete";
+import { droppedImageUrls, listCommentImageUrls } from "../storage/images";
 
 async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
   try {

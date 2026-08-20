@@ -45,7 +45,7 @@ if (requestedPlan !== "starter" && requestedPlan !== "professional") {
 
 async function main() {
   const { and, eq } = await import("drizzle-orm");
-  const { db, user, workspace, workspaceMember, subscription } = await import("../index.js");
+  const { db, user, workspace, workspaceMember, subscription } = await import("../../index.js");
 
   const [found] = await db
     .select({ id: user.id, email: user.email, name: user.name })

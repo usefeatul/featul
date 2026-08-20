@@ -10,11 +10,11 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
-    "db:apply-widget-security": "tsx scripts/apply-widget-security-migration.ts",
-    "db:drop-all": "tsx scripts/drop-all-tables.ts",
-    "db:seed-posts": "tsx scripts/seed-workspace-posts.ts",
-    "db:delete-user": "tsx scripts/delete-user.ts",
-    "db:set-dev-plan": "tsx scripts/set-dev-plan.ts"
+    "db:apply-widget-security": "tsx scripts/widget/security.ts",
+    "db:drop-all": "tsx scripts/tables/drop.ts",
+    "db:seed-posts": "tsx scripts/workspace/seed.ts",
+    "db:delete-user": "tsx scripts/user/delete.ts",
+    "db:set-dev-plan": "tsx scripts/dev/plan.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

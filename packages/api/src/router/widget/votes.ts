@@ -3,7 +3,7 @@ import { HTTPException } from "hono/http-exception";
 import { board, comment, commentReaction, post } from "@featul/db";
 import { vote } from "@featul/db";
 import { publicProcedure } from "../../jstack";
-import { getRequestFingerprint } from "../../shared/request-fingerprint";
+import { getRequestFingerprint } from "../../request/fingerprint";
 import { getWidgetRequest, resolveAuthorId, resolveWidget } from "./resolve";
 import { voteCommentSchema, voteSchema } from "./schema";
 

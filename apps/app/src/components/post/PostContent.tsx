@@ -4,7 +4,7 @@ import React from "react"
 import { Input } from "@featul/ui/components/input"
 import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize"
 import { useDialogExpanded } from "@/components/settings/global/SettingsDialogShell"
-import { continuePlainList, indentPlainList } from "@/lib/continue-plain-list"
+import { continuePlainList, indentPlainList } from "@/lib/list/plain"
 import { PostImageGallery } from "@/components/post/PostImageGallery"
 
 export interface UploadedImage {

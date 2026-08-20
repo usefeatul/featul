@@ -3,7 +3,7 @@ import { domainUrlSchema, isDomainHostValid } from "./domain";
 import {
   isReservedWorkspaceName,
   isReservedWorkspaceSlug,
-} from "../shared/workspace-slug";
+} from "../workspace/slug";
 
 export const slugSchema = z
   .string()

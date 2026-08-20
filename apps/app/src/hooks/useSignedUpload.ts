@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
   POST_IMAGE_UPLOAD_MAX_BYTES,
-} from "@featul/api/upload-policy";
+} from "@featul/api/upload/policy";
 
 export const ALLOWED_IMAGE_TYPES: string[] = [...IMAGE_UPLOAD_CONTENT_TYPES];
 export const MAX_IMAGE_SIZE = POST_IMAGE_UPLOAD_MAX_BYTES;
@@ -19,7 +19,7 @@ type UploadTarget = {
   publicUrl: string;
 };
 
-type UseSignedImageUploadOptions = {
+type UseSignedUploadOptions = {
   getUploadTarget: (file: File) => Promise<UploadTarget>;
   getPreUploadError?: (file: File) => string | null;
   onUploadSuccess?: (context: {
@@ -58,7 +58,7 @@ async function uploadFileToSignedUrl(uploadUrl: string, file: File) {
   }
 }
 
-export function useSignedImageUpload({
+export function useSignedUpload({
   getUploadTarget,
   getPreUploadError,
   onUploadSuccess,
@@ -67,7 +67,7 @@ export function useSignedImageUpload({
   successMessage = "Image uploaded",
   defaultErrorMessage = "Failed to upload image",
   maxFiles = 1,
-}: UseSignedImageUploadOptions) {
+}: UseSignedUploadOptions) {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
