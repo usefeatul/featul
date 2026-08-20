@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 type TooltipProviderProps = React.PropsWithChildren<
@@ -100,12 +101,20 @@ function TooltipContent({
 				<BaseTooltip.Popup
 					data-slot="tooltip-content"
 					className={cn(
-						"bg-zinc-800 text-white dark:bg-white dark:text-zinc-900 border-2 border-border shadow-xs outline-hidden animate-in fade-in-0 zoom-in-95 data-ending-style:opacity-0 data-starting-style:opacity-0 z-50 w-fit max-w-3xs whitespace-normal wrap-break-word leading-relaxed rounded-md px-1.5 py-1 text-sm",
-						className,
+						overlayShellClass,
+						"z-50 w-fit max-w-3xs p-1 outline-hidden animate-in fade-in-0 zoom-in-95 data-ending-style:opacity-0 data-starting-style:opacity-0",
 					)}
 					{...props}
 				>
-					{children}
+					<div
+						className={cn(
+							overlayInnerClass,
+							"bg-black px-2 py-1.5 text-sm leading-relaxed text-white whitespace-normal wrap-break-word dark:bg-white dark:text-zinc-900",
+							className,
+						)}
+					>
+						{children}
+					</div>
 				</BaseTooltip.Popup>
 			</BaseTooltip.Positioner>
 		</BaseTooltip.Portal>
