@@ -54,7 +54,7 @@ export default function UserDropdownMenu({
 
   return (
     <DropdownMenuContent
-      className="w-40 max-w-[85vw] p-1.5"
+      className="w-40 max-w-[85vw]"
       side="bottom"
       align="center"
       sideOffset={8}

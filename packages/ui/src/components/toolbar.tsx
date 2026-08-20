@@ -3,13 +3,18 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 
-export const toolbarShellClass =
-  "flex items-stretch overflow-hidden rounded-xl border border-border bg-card p-1 text-foreground dark:border-white/10 dark:bg-black"
+export const toolbarShellClass = cn(
+  overlayShellClass,
+  "flex items-stretch p-1"
+)
 
-export const toolbarInnerClass =
-  "flex min-h-8 flex-1 items-stretch overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
+export const toolbarInnerClass = cn(
+  overlayInnerClass,
+  "flex min-h-8 flex-1 items-stretch"
+)
 
 export const toolbarItemClass =
   "h-full rounded-none border-none bg-transparent shadow-none ring-0 hover:bg-muted/40 dark:bg-transparent dark:hover:bg-muted/30"

@@ -110,7 +110,7 @@ export default function SubdomainUserDropdown({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-36 max-w-[85vw] p-1.5"
+          className="w-36 max-w-[85vw]"
           side="bottom"
           align="center"
           sideOffset={8}
