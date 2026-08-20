@@ -68,7 +68,7 @@ export function WidgetHostImageDialog() {
           </DialogTitle>
         </DialogHeader>
         <DialogInner className="min-h-0 p-2">
-          <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden rounded-md bg-muted/40">
+          <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden">
             <WidgetImage
               url={url}
               alt={alt}

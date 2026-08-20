@@ -260,14 +260,11 @@ function UpdateDetail({
 
       <div className="px-5 pb-4 pt-5">
         {entry.coverImage ? (
-          <div className="mb-5 overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)]">
-            <WidgetImage
-              url={entry.coverImage}
-              alt=""
-              className="w-full"
-              imgClassName="max-h-56 w-full object-cover"
-            />
-          </div>
+          <WidgetImage
+            url={entry.coverImage}
+            alt=""
+            className="mb-5 w-full max-h-56"
+          />
         ) : null}
 
         {content ? (

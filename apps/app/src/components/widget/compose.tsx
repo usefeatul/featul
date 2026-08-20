@@ -23,6 +23,12 @@ import type {
 import { parseSimilarPosts } from "./load";
 import { dataUrlToImageFile, isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload, deleteWidgetUploadedImage } from "./utils";
 import { WidgetImage } from "./image";
+import {
+  widgetToolbarInnerClass,
+  widgetToolbarItemClass,
+  widgetToolbarSeparatorClass,
+  widgetToolbarShellClass,
+} from "./chrome";
 
 type Props = {
   apiBase: WidgetApiBase;
@@ -294,15 +300,15 @@ export function WidgetFeedbackCompose({
           <WidgetImage
             url={uploadedImage.url}
             alt={uploadedImage.name}
-            imgClassName="h-14 w-14 object-cover"
+            className="h-16 w-24"
           />
           <button
             type="button"
             onClick={() => void removeUploadedImage()}
-            className="absolute right-0.5 top-0.5 z-[1] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
+            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-[rgb(var(--widget-surface))] hover:bg-destructive/90"
             aria-label="Remove image"
           >
-            <X className="size-3" />
+            <X className="size-2.5" />
           </button>
         </div>
       ) : null}
@@ -353,7 +359,8 @@ export function WidgetFeedbackCompose({
       ) : null}
 
       <div className="flex items-center justify-between gap-3 pt-4">
-        <div className="flex items-center gap-1">
+        <div className={widgetToolbarShellClass}>
+          <div className={widgetToolbarInnerClass}>
           <input
             ref={fileInputRef}
             type="file"
@@ -366,7 +373,7 @@ export function WidgetFeedbackCompose({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading || capturing || Boolean(uploadedImage)}
-            className="flex size-9 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40"
+            className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40`}
             aria-label="Add image"
           >
             {uploading ? (
@@ -375,11 +382,12 @@ export function WidgetFeedbackCompose({
               <ImageIcon className="size-4" />
             )}
           </button>
+          <div className={widgetToolbarSeparatorClass} />
           <button
             type="button"
             onClick={onCapture}
             disabled={uploading || capturing || Boolean(uploadedImage)}
-            className="flex size-9 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40"
+            className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40`}
             aria-label="Capture screenshot"
           >
             {capturing ? (
@@ -388,6 +396,7 @@ export function WidgetFeedbackCompose({
               <Camera className="size-4" strokeWidth={1.75} />
             )}
           </button>
+          </div>
         </div>
         <div className="flex min-w-0 items-center gap-3">
           {message ? (

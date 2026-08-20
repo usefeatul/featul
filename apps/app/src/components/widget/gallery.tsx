@@ -22,8 +22,7 @@ export function WidgetImageStrip({ urls, alt, className = "" }: Props) {
             key={`${url}-${index}`}
             url={url}
             alt={urls.length > 1 ? `${alt} ${index + 1}` : alt}
-            className="shrink-0 snap-start"
-            imgClassName="h-16 w-24 object-cover"
+            className="h-16 w-24 shrink-0 snap-start"
           />
         ))}
       </div>

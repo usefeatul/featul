@@ -21,6 +21,8 @@ import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
 import { setWorkspaceLogo } from "@/lib/branding/store";
 import { Input } from "@featul/ui/components/input";
+import { cn } from "@featul/ui/lib/utils";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
@@ -242,19 +244,23 @@ export default function BrandingSection({
     <SectionCard title="Branding" description="Change your brand settings.">
       <div className="space-y-6">
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Workspace Name</div>
+          <div className="text-sm font-medium text-muted-foreground">Workspace Name</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <Input
-              value={workspaceName}
-              onChange={(e) => setWorkspaceName(e.target.value)}
-              className="h-8 w-auto min-w-[4ch] px-2 text-right"
-              size={workspaceNameInputSize}
-              maxLength={15}
-            />
+            <Toolbar size="sm" className="w-fit">
+              <Input
+                variant="plain"
+                value={workspaceName}
+                onChange={(e) => setWorkspaceName(e.target.value)}
+                className={cn(toolbarItemClass, "h-8 w-auto min-w-[4ch] px-2.5 text-right text-xs font-medium")}
+                size={workspaceNameInputSize}
+                maxLength={15}
+                disabled={!canEditBranding}
+              />
+            </Toolbar>
           </div>
         </div>
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Logo</div>
+          <div className="text-sm font-medium text-muted-foreground">Logo</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <LogoUploader
               slug={slug}
@@ -265,7 +271,7 @@ export default function BrandingSection({
           </div>
         </div>
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Primary Color</div>
+          <div className="text-sm font-medium text-muted-foreground">Primary Color</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <ColorPicker
               valueHex={primaryColor}
@@ -278,7 +284,7 @@ export default function BrandingSection({
           </div>
         </div>
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Sidebar Position</div>
+          <div className="text-sm font-medium text-muted-foreground">Sidebar Position</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <SidebarPositionPicker value={sidebarPosition} onSelect={(p) => setSidebarPosition(p)} disabled={!canEditBranding} />
 
@@ -286,7 +292,7 @@ export default function BrandingSection({
         </div>
 
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Theme</div>
+          <div className="text-sm font-medium text-muted-foreground">Theme</div>
           <div className="w-full max-w-md flex items-center justify-end">
 
                  <ThemePicker value={theme} onSelect={(t) => setTheme(t)} disabled={!canEditBranding} />
@@ -294,7 +300,7 @@ export default function BrandingSection({
         </div>
 
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Layout Style</div>
+          <div className="text-sm font-medium text-muted-foreground">Layout Style</div>
           <div className="w-full max-w-md flex items-center justify-end">
 
             <LayoutStylePicker value={layoutStyle} onSelect={(l) => setLayoutStyle(l)} disabled={!canEditBranding} />
@@ -304,7 +310,7 @@ export default function BrandingSection({
         </div>
 
         <div className="flex items-center justify-between ">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm font-medium text-muted-foreground">
             Hide "Powered by" Branding
           </div>
           <div className="w-full max-w-md flex items-center justify-end">

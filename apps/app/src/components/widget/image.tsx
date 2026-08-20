@@ -3,7 +3,9 @@
 import * as React from "react";
 import Image from "next/image";
 import { ImageIcon } from "@featul/ui/icons/image";
+import { cn } from "@featul/ui/lib/utils";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
+import { widgetImageInnerClass, widgetImageShellClass } from "./chrome";
 import { isSafeImageUrl, postToParent, useParentOrigin } from "./messaging";
 
 type Props = {
@@ -54,7 +56,7 @@ export function WidgetImage({
   url,
   alt = "",
   className = "",
-  imgClassName = "h-14 w-14 object-cover",
+  imgClassName = "h-full w-full object-cover",
   preview = true,
 }: Props) {
   const parentOrigin = useParentOrigin();
@@ -78,10 +80,22 @@ export function WidgetImage({
       <button
         type="button"
         onClick={openPreview}
-        className={`inline-block cursor-pointer overflow-hidden rounded-md bg-[rgb(var(--widget-fg)/0.04)] transition-opacity hover:opacity-90 ${className}`}
+        className={cn(
+          widgetImageShellClass,
+          "cursor-pointer transition-opacity hover:opacity-90",
+          className,
+        )}
         aria-label="View full size image"
       >
-        {image}
+        <div className={widgetImageInnerClass}>
+          <div className="relative aspect-video h-full w-full min-h-[60px] bg-[rgb(var(--widget-surface))]">
+            <WidgetImg
+              url={url}
+              alt={alt}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
+        </div>
       </button>
 
       <SettingsDialogShell
@@ -92,7 +106,7 @@ export function WidgetImage({
         icon={<ImageIcon className="size-3.5" />}
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden rounded-lg bg-muted/40">
+        <div className="flex max-h-[min(72dvh,760px)] items-center justify-center overflow-hidden">
           <WidgetImg
             url={url}
             alt={alt}

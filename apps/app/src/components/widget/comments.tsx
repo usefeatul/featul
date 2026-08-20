@@ -12,6 +12,11 @@ import { formatRelativeDate, viewerPayload } from "./utils";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetImage } from "./image";
 import { WidgetCommentThreadSkeleton } from "./skeleton";
+import {
+  widgetToolbarInnerClass,
+  widgetToolbarItemClass,
+  widgetToolbarShellClass,
+} from "./chrome";
 
 type CommentNode = WidgetComment & { replies: CommentNode[] };
 
@@ -186,32 +191,36 @@ function CommentComposer({
           <WidgetImage
             url={uploadedImage.url}
             alt={uploadedImage.name}
-            imgClassName="h-14 w-14 object-cover"
+            className="h-16 w-24"
           />
           <button
             type="button"
             onClick={onRemoveImage}
-            className="absolute right-0.5 top-0.5 z-[1] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white/85 transition-colors hover:bg-black/85 hover:text-white"
+            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-[rgb(var(--widget-surface))] hover:bg-destructive/90"
             aria-label="Remove image"
           >
-            <X className="size-3" />
+            <X className="size-2.5" />
           </button>
         </div>
       ) : null}
       <div className="mt-2 flex items-center justify-between gap-2">
-        <button
-          type="button"
-          onClick={onPickImage}
-          disabled={uploading || Boolean(uploadedImage) || !canUpload}
-          className="flex size-8 cursor-pointer items-center justify-center rounded-md text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40"
-          aria-label="Add image"
-        >
-          {uploading ? (
-            <LoaderIcon className="size-3.5 animate-spin" />
-          ) : (
-            <ImageIcon className="size-3.5" />
-          )}
-        </button>
+        <div className={widgetToolbarShellClass}>
+          <div className={widgetToolbarInnerClass}>
+            <button
+              type="button"
+              onClick={onPickImage}
+              disabled={uploading || Boolean(uploadedImage) || !canUpload}
+              className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40`}
+              aria-label="Add image"
+            >
+              {uploading ? (
+                <LoaderIcon className="size-3.5 animate-spin" />
+              ) : (
+                <ImageIcon className="size-3.5" />
+              )}
+            </button>
+          </div>
+        </div>
         <div className="flex min-w-0 items-center gap-2">
           {error ? (
             <p className="truncate text-xs text-[rgb(var(--widget-fg)/0.5)]">{error}</p>
@@ -291,7 +300,7 @@ function CommentThreadItem({
 
           {node.image ? (
             <div className="mt-2">
-              <WidgetImage url={node.image} imgClassName="h-16 w-16 object-cover" />
+              <WidgetImage url={node.image} className="h-16 w-24" />
             </div>
           ) : null}
 

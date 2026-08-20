@@ -14,6 +14,14 @@ import {
   Undo2,
   X,
 } from "lucide-react";
+import {
+  widgetImageInnerClass,
+  widgetImageShellClass,
+  widgetToolbarInnerClass,
+  widgetToolbarItemClass,
+  widgetToolbarSeparatorClass,
+  widgetToolbarShellClass,
+} from "./chrome";
 
 type Tool = "draw" | "arrow" | "rect" | "text" | "redact" | "pin";
 type Point = { x: number; y: number };
@@ -233,10 +241,10 @@ function drawStroke(
 }
 
 function toolButtonClass(active: boolean) {
-  return `flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors ${
+  return `${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center transition-colors ${
     active
       ? "bg-[rgb(var(--widget-fg)/0.1)] text-[rgb(var(--widget-fg))]"
-      : "text-[rgb(var(--widget-fg)/0.5)] hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
+      : "text-[rgb(var(--widget-fg)/0.5)] hover:text-[rgb(var(--widget-fg))]"
   }`;
 }
 
@@ -579,17 +587,19 @@ export function ScreenshotAnnotator({
           onLoad={fitCanvas}
           className="pointer-events-none absolute h-px w-px opacity-0"
         />
-        <canvas
-          ref={canvasRef}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          className={`max-h-full max-w-full touch-none rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.04)] ${
-            ready ? "" : "opacity-0"
-          }`}
-          style={{ width: "auto", height: "auto", cursor: cursorFor(tool) }}
-        />
+        <div className={`${widgetImageShellClass} max-h-full max-w-full`}>
+          <div className={widgetImageInnerClass}>
+            <canvas
+              ref={canvasRef}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              className={`max-h-full max-w-full touch-none ${ready ? "" : "opacity-0"}`}
+              style={{ width: "auto", height: "auto", cursor: cursorFor(tool) }}
+            />
+          </div>
+        </div>
         {!ready ? (
           <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.4)]" />
         ) : null}
@@ -620,7 +630,8 @@ export function ScreenshotAnnotator({
       ) : null}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-        <div className="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-lg border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-surface))] p-1">
+        <div className={`${widgetToolbarShellClass} pointer-events-auto max-w-full`}>
+          <div className={`${widgetToolbarInnerClass} items-center overflow-x-auto p-0.5`}>
           <div className="flex items-center">
             {TOOLS.map((item) => {
               const active = tool === item.id;
@@ -653,7 +664,7 @@ export function ScreenshotAnnotator({
               );
             })}
           </div>
-          <div className="mx-0.5 h-5 w-px shrink-0 bg-[rgb(var(--widget-fg)/0.1)]" />
+          <div className={`${widgetToolbarSeparatorClass} mx-0.5 h-5`} />
           <div className="flex items-center">
             <button
               type="button"
@@ -688,7 +699,7 @@ export function ScreenshotAnnotator({
           </div>
           {showWeight ? (
             <>
-              <div className="mx-0.5 h-5 w-px shrink-0 bg-[rgb(var(--widget-fg)/0.1)]" />
+              <div className={`${widgetToolbarSeparatorClass} mx-0.5 h-5`} />
               <div className="flex items-center px-0.5">
                 {([0, 1, 2] as Weight[]).map((value) => (
                   <button
@@ -714,7 +725,7 @@ export function ScreenshotAnnotator({
           ) : null}
           {showInk ? (
             <>
-              <div className="mx-0.5 h-5 w-px shrink-0 bg-[rgb(var(--widget-fg)/0.1)]" />
+              <div className={`${widgetToolbarSeparatorClass} mx-0.5 h-5`} />
               <div className="flex items-center gap-1.5 px-1.5">
                 {colors.map((value) => {
                   const active = color.toLowerCase() === value.toLowerCase();
@@ -753,6 +764,7 @@ export function ScreenshotAnnotator({
               </>
             )}
           </button>
+          </div>
         </div>
       </div>
     </div>

@@ -56,7 +56,7 @@ export function WidgetPostRow({
 
           {post.image ? (
             <div className="pointer-events-auto mt-2 inline-block">
-              <WidgetImage url={post.image} alt={post.title} imgClassName="h-14 w-14 object-cover" />
+              <WidgetImage url={post.image} alt={post.title} className="h-16 w-24" />
             </div>
           ) : null}
 
