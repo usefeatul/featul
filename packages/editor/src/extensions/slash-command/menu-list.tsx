@@ -6,6 +6,8 @@ import {
   PopoverListItem,
 } from "@featul/ui/components/popover";
 import { AspectIcon } from "@featul/ui/icons/aspect";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import type { EditorSlashMenuProps } from "../../types";
 
@@ -91,56 +93,61 @@ export const EditorSlashMenu = ({
       </PopoverAnchor>
       <PopoverContent
         id="slash-command"
-        className="w-80"
-        list={true}
+        unstyled
         side="bottom"
         align="start"
-        sideOffset={12}
+        sideOffset={8}
         onOpenAutoFocus={(e) => e.preventDefault()}
-      >
-        <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
-          <div className="flex items-center gap-2 text-sm font-normal ">
-            <AspectIcon className="size-3.5 text-primary" />
-            Commands
-          </div>
-        </div>
-        {items.length === 0 ? (
-          <div className="flex w-full items-center justify-center p-4 text-sm text-muted-foreground">
-            <p>No results</p>
-          </div>
-        ) : (
-          <PopoverList
-            ref={listRef}
-            className="flex max-h-[300px] flex-col gap-1 overflow-y-auto p-1"
-          >
-            {items.map((item, index) => (
-              <PopoverListItem
-                key={item.title}
-                ref={(el: HTMLButtonElement | null) => {
-                  itemRefs.current[index] = el;
-                }}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50 data-[selected=true]:bg-muted/50"
-                onClick={() => selectItem(index)}
-                onMouseEnter={() => setSelectedIndex(index)}
-                data-selected={selectedIndex === index}
-                style={{
-                  backgroundColor:
-                    selectedIndex === index ? "var(--muted)" : "transparent",
-                }}
-              >
-                <div className="flex size-7 shrink-0 items-center justify-center rounded border bg-secondary">
-                  <item.icon className="text-muted-foreground size-3.5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-medium text-sm">{item.title}</span>
-                  <span className="text-accent text-xs">
-                    {item.description}
-                  </span>
-                </div>
-              </PopoverListItem>
-            ))}
-          </PopoverList>
+        className={cn(
+          overlayDialogClass,
+          "z-50 flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
         )}
+      >
+        <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+          <AspectIcon className="size-3.5 text-primary" />
+          Commands
+        </div>
+        <div className={cn(overlayInnerClass, "p-1")}>
+          {items.length === 0 ? (
+            <div className="flex w-full items-center justify-center px-3 py-4 text-sm text-accent">
+              No results
+            </div>
+          ) : (
+            <PopoverList
+              ref={listRef}
+              className="flex max-h-[300px] flex-col overflow-y-auto"
+            >
+              {items.map((item, index) => (
+                <PopoverListItem
+                  key={item.title}
+                  ref={(el: HTMLButtonElement | null) => {
+                    itemRefs.current[index] = el;
+                  }}
+                  className={cn(
+                    "gap-2 text-sm",
+                    selectedIndex === index && "bg-muted/40",
+                  )}
+                  onClick={() => selectItem(index)}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                  data-selected={selectedIndex === index}
+                >
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-background">
+                    <item.icon className="size-3.5 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate font-medium leading-none">
+                      {item.title}
+                    </span>
+                    <span className="mt-0.5 block truncate text-xs text-accent">
+                      {item.description}
+                    </span>
+                  </div>
+                </PopoverListItem>
+              ))}
+            </PopoverList>
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   );
