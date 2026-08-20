@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@featul/ui/components/popover";
 import { ImageIcon } from "@featul/ui/icons/image";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { NodeViewProps } from "@tiptap/core";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
@@ -288,21 +289,23 @@ export const FigureView = ({
         {/* Toolbar in Popover - only shown in editable mode */}
         {isEditable && (
           <PopoverContent
+            unstyled
             align="start"
-            className="w-80"
             onOpenAutoFocus={(event) => event.preventDefault()}
             side="right"
-            sideOffset={18}
+            sideOffset={12}
+            className={cn(
+              overlayDialogClass,
+              "z-50 flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+            )}
           >
-            <div className="flex flex-row items-center justify-between space-y-0 pb-0 px-2 mt-0.5 py-0.5 mb-1">
-              <div className="flex items-center gap-2 text-sm font-normal">
-                <ImageIcon className="size-3.5 text-primary" />
-                Image Settings
-              </div>
+            <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+              <ImageIcon className="size-3.5 text-primary" />
+              Image Settings
             </div>
 
-            <div className="bg-card rounded-xl p-3 dark:bg-black border border-border flex flex-col gap-3">
-              {/* Width Controls - Only percent for now */}
+            <div className={cn(overlayInnerClass, "flex flex-col gap-3 px-4 py-3")}>
               <div className="space-y-1">
                 <Label
                   className="font-normal text-xs text-muted-foreground"
@@ -321,14 +324,13 @@ export const FigureView = ({
                 />
               </div>
 
-              {/* Alignment Controls */}
               <div className="space-y-1">
                 <Label className="font-normal text-xs text-muted-foreground">
                   Alignment
                 </Label>
                 <div className="grid grid-cols-3 gap-1.5">
                   <Button
-                    className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                    className="w-full h-8 shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
                     data-active={alignValue === "left"}
                     onClick={() => handleAlignChange("left")}
                     type="button"
@@ -338,7 +340,7 @@ export const FigureView = ({
                     Left
                   </Button>
                   <Button
-                    className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                    className="w-full h-8 shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
                     data-active={alignValue === "center"}
                     onClick={() => handleAlignChange("center")}
                     type="button"
@@ -348,7 +350,7 @@ export const FigureView = ({
                     Center
                   </Button>
                   <Button
-                    className="!rounded-md w-full h-8 shadow-none border-border data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
+                    className="w-full h-8 shadow-none data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:border-primary/20"
                     data-active={alignValue === "right"}
                     onClick={() => handleAlignChange("right")}
                     type="button"
