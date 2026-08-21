@@ -155,7 +155,7 @@ export default function NotificationsBell({
         >
           <Bell className="size-4 text-foreground opacity-100 group-hover:text-primary transition-colors" />
           {unread > 0 ? (
-            <span className="absolute top-0.5 right-0.5 inline-flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-semibold leading-none text-white tabular-nums">
+            <span className="absolute top-0.5 right-0.5 inline-flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-none text-primary-foreground tabular-nums">
               {unread > 99 ? "99+" : unread}
             </span>
           ) : null}
