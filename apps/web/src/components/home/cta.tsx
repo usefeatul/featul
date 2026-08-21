@@ -1,3 +1,5 @@
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 import { HotkeyLink } from "../global/hotkey";
 import { LiveDemo } from "../global/demo";
@@ -7,10 +9,14 @@ export default function CTA() {
     <section className="relative mb-0 mt-6 bg-background pb-10 pt-4 sm:mt-8 sm:pb-12 sm:pt-6" data-component="CTA">
       <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div
-            className="overflow-hidden rounded-md border border-black/10 bg-white bg-cover bg-center bg-no-repeat p-6 text-left ring-offset-background transition-all sm:p-8"
-            style={{ backgroundImage: "url(/image/sky.PNG)" }}
-          >
+          <div className={overlayDialogClass}>
+            <div
+              className={cn(
+                overlayInnerClass,
+                "bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8",
+              )}
+              style={{ backgroundImage: "url(/image/sky.PNG)" }}
+            >
             <h2 className="font-heading max-w-lg sm:max-w-2xl text-balance text-xl sm:text-2xl lg:text-3xl font-medium text-white">
               <span className="text-white">
                 Collect and prioritize feedback.
@@ -28,6 +34,7 @@ export default function CTA() {
                 className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
               />
               <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-white/70 bg-white/95 text-accent shadow-sm hover:bg-white" />
+            </div>
             </div>
           </div>
         </div>

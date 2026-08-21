@@ -9,6 +9,8 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { HorizontalScrollControls } from "./scroll";
 
 type IntegrationItem = {
@@ -138,9 +140,18 @@ export default function Integrations() {
                     className="group block w-[min(82vw,280px)] shrink-0 snap-start sm:w-[min(46vw,300px)] lg:w-[min(32vw,310px)]"
                     aria-label={`Learn more about ${item.name}`}
                   >
-                    <article className="flex h-full flex-col overflow-hidden rounded-md border border-foreground/10 bg-white transition-[transform,box-shadow,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:border-foreground/15 group-hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
+                    <article
+                      className={cn(
+                        overlayDialogClass,
+                        "flex h-full flex-col",
+                      )}
+                    >
                       <div
-                        className={`relative flex min-h-[168px] items-center justify-center overflow-hidden sm:min-h-[188px] ${item.panelClassName}`}
+                        className={cn(
+                          overlayInnerClass,
+                          "relative mb-2 flex min-h-[168px] items-center justify-center p-0 sm:min-h-[188px]",
+                          item.panelClassName,
+                        )}
                       >
                         <div
                           aria-hidden
@@ -167,7 +178,12 @@ export default function Integrations() {
                         </div>
                       </div>
 
-                      <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5">
+                      <div
+                        className={cn(
+                          overlayInnerClass,
+                          "flex flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4",
+                        )}
+                      >
                         <h3 className="text-foreground text-lg font-semibold tracking-[-0.02em]">
                           {item.name}
                         </h3>

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Check, Globe, Users } from "lucide-react";
 
 import { AccentBar } from "@featul/ui/components/cardElements";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 import { DomainIcon } from "@featul/ui/icons/domain";
 import { CsvIcon } from "@featul/ui/icons/csv";
@@ -52,8 +54,9 @@ export default function Create() {
               className="block min-w-0"
               aria-label="Learn more about creating your workspace"
             >
-              <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
-                <div className="flex min-h-[240px] items-center justify-center rounded-md bg-[#4f9df6] p-4 sm:min-h-[360px] sm:p-8">
+              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+                <div className={cn(overlayInnerClass, "mb-2 p-0")}>
+                <div className="flex min-h-[240px] items-center justify-center bg-[#4f9df6] p-4 sm:min-h-[360px] sm:p-8">
                   <div className="w-full max-w-[360px] space-y-2.5 sm:space-y-3">
                     <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
                       <div className="flex items-center gap-3">
@@ -88,8 +91,9 @@ export default function Create() {
                     </div>
                   </div>
                 </div>
+                </div>
 
-                <div className="px-1 pb-1 pt-4 sm:px-0 sm:pt-5">
+                <div className={cn(overlayInnerClass, "flex flex-1 flex-col px-4 py-3")}>
                   <h3 className="text-foreground text-left text-base font-medium">
                     Create your workspace
                   </h3>
@@ -106,8 +110,9 @@ export default function Create() {
               className="block min-w-0"
               aria-label="Learn more about sharing your board"
             >
-              <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
-                <div className="flex min-h-[240px] items-center justify-center rounded-md bg-[#5ec4a0] p-4 sm:min-h-[360px] sm:p-8">
+              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+                <div className={cn(overlayInnerClass, "mb-2 p-0")}>
+                <div className="flex min-h-[240px] items-center justify-center bg-[#5ec4a0] p-4 sm:min-h-[360px] sm:p-8">
                   <div className="w-full max-w-[360px] space-y-2.5 sm:space-y-3">
                     <div className="rounded-md border border-black/10 bg-white p-3 sm:p-4">
                       <div className="flex items-center gap-3">
@@ -144,8 +149,9 @@ export default function Create() {
                     </div>
                   </div>
                 </div>
+                </div>
 
-                <div className="px-1 pb-1 pt-4 sm:px-0 sm:pt-5">
+                <div className={cn(overlayInnerClass, "flex flex-1 flex-col px-4 py-3")}>
                   <h3 className="text-foreground text-left text-base font-medium">
                     Share your board
                   </h3>
@@ -173,8 +179,14 @@ export default function Create() {
                 return (
                   <div
                     key={item.title}
-                    className="rounded-md border border-foreground/10 bg-white p-4 sm:p-5"
+                    className={cn(overlayDialogClass, "h-full")}
                   >
+                    <div
+                      className={cn(
+                        overlayInnerClass,
+                        "flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4",
+                      )}
+                    >
                     <span
                       className={`inline-flex size-8 items-center justify-center rounded-md p-1.5 ${item.iconClassName}`}
                     >
@@ -186,6 +198,7 @@ export default function Create() {
                     <p className="text-accent mt-1.5 text-sm leading-6">
                       {item.description}
                     </p>
+                    </div>
                   </div>
                 );
               })}

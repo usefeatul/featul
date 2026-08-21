@@ -1,6 +1,8 @@
 import { Check, Sparkles } from "lucide-react";
 
 import { AccentBar } from "@featul/ui/components/cardElements";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 
 const requestTags = [
@@ -31,19 +33,21 @@ export default function FeaturesSection() {
           </div>
 
         <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
-          <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
-            <div className="flex min-h-[220px] items-center justify-center rounded-md bg-[#4f9df6] p-4 sm:min-h-[380px] sm:p-8">
-              <div className="flex min-h-[140px] w-full max-w-[430px] flex-col items-center justify-center rounded-md border border-black/10 bg-white px-5 text-center shadow-[0_10px_28px_rgba(15,23,42,0.12)] sm:min-h-[168px] sm:px-6">
-                <span className="flex size-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                  <Check className="size-4" strokeWidth={2.4} />
-                </span>
-                <p className="text-foreground mt-4 text-sm font-semibold">
-                  You are all caught up
-                </p>
+          <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+            <div className={cn(overlayInnerClass, "mb-2 p-0")}>
+              <div className="flex min-h-[220px] items-center justify-center bg-[#4f9df6] p-4 sm:min-h-[380px] sm:p-8">
+                <div className="flex min-h-[140px] w-full max-w-[430px] flex-col items-center justify-center rounded-md border border-black/10 bg-white px-5 text-center shadow-[0_10px_28px_rgba(15,23,42,0.12)] sm:min-h-[168px] sm:px-6">
+                  <span className="flex size-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                    <Check className="size-4" strokeWidth={2.4} />
+                  </span>
+                  <p className="text-foreground mt-4 text-sm font-semibold">
+                    You are all caught up
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="px-1 pb-1 pt-5 sm:px-0">
+            <div className={cn(overlayInnerClass, "flex flex-1 flex-col px-4 py-3")}>
               <h3 className="text-foreground text-left text-base font-medium">
                 You control what gets prioritized.
               </h3>
@@ -54,8 +58,9 @@ export default function FeaturesSection() {
             </div>
           </article>
 
-          <article className="rounded-md border border-foreground/10 bg-white p-3 sm:p-5">
-            <div className="flex min-h-[260px] items-center justify-center rounded-md bg-[#ff955d] p-4 sm:min-h-[380px] sm:p-8">
+          <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+            <div className={cn(overlayInnerClass, "mb-2 p-0")}>
+              <div className="flex min-h-[260px] items-center justify-center bg-[#ff955d] p-4 sm:min-h-[380px] sm:p-8">
               <div className="w-full max-w-[430px] space-y-2.5 sm:space-y-3">
                 <div className="flex items-center justify-between gap-3 rounded-md border border-black/10 bg-white p-3 shadow-[0_10px_28px_rgba(15,23,42,0.12)] sm:gap-5 sm:p-4">
                   <div className="min-w-0">
@@ -112,9 +117,10 @@ export default function FeaturesSection() {
                   </div>
                 </div>
               </div>
+              </div>
             </div>
 
-            <div className="px-1 pb-1 pt-5 sm:px-0">
+            <div className={cn(overlayInnerClass, "flex flex-1 flex-col px-4 py-3")}>
               <h3 className="text-foreground text-left text-base font-medium">
                 Let Featul surface what matters.
               </h3>
