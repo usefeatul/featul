@@ -97,16 +97,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const visitorsToken = process.env.VISITORS_TOKEN?.trim();
+  const selineToken = process.env.NEXT_PUBLIC_SELINE_TOKEN?.trim();
 
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
-        {visitorsToken ? (
+        {selineToken ? (
           <Script
-            src="https://cdn.visitors.now/v.js"
-            data-token={visitorsToken}
-            data-persist=""
+            src="https://cdn.seline.com/seline.js"
+            data-token={selineToken}
             strategy="afterInteractive"
           />
         ) : null}
