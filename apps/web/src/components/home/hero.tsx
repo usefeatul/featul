@@ -1,63 +1,61 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 import { HeroContent } from "./content";
-import { DashboardDemo } from "./demo/dashboard";
-import type { DemoView } from "./demo/data";
 
-const DEMO_WIDTH = 960;
-const DEMO_HEIGHT = 760;
+type HeroView = "requests" | "roadmap" | "changelog";
 
-const DEMO_TABS: { id: DemoView; label: string }[] = [
-  { id: "requests", label: "Featul" },
-  { id: "roadmap", label: "Roadmap" },
-  { id: "changelog", label: "Changelog" },
+const HERO_TABS: {
+  id: HeroView;
+  label: string;
+  src: string;
+  alt: string;
+}[] = [
+  {
+    id: "requests",
+    label: "Featul",
+    src: "/image/dashboard.png",
+    alt: "Featul feedback dashboard",
+  },
+  {
+    id: "roadmap",
+    label: "Roadmap",
+    src: "/image/roadmap.png",
+    alt: "Featul public roadmap",
+  },
+  {
+    id: "changelog",
+    label: "Changelog",
+    src: "/image/changelog.png",
+    alt: "Featul changelog",
+  },
 ];
 
+const BLUR_DATA_URL =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA40lEQVR4nGNgQAJmVta/bWxs/zMwMDAwMjL+Z2Rk/M/IyPifmZn5PxMT039WVtb/zOzs/zk4OP5zcnL+5+Li+s/Nzf2fh4fnPy8v739+fv7/AgIC/4WEhP4LCwv/FxER+S8qKvpfTEzsv7i4+H8JCYn/kpKS/6WkpP5LS0v/l5GR+S8rK/tfTk7uv7y8/H8FBYX/ioqK/5WUlP4rKyv/V1FR+a+qqvpfTU3tv7q6+n8NDY3/mpqa/7W0tP5ra2v/19HR+a+rq/tfT0/vv76+/n8DA4P/hoaG/42Mjf4bGxv/BwB2mFqQvpnLTAAAAABJRU5ErkJggg==";
+
 export function Hero() {
-  const [view, setView] = useState<DemoView>("requests");
-  const shellRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const [view, setView] = useState<HeroView>("requests");
   const shouldReduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    const shell = shellRef.current;
-    if (!shell) return;
-
-    const update = () => {
-      const width = shell.clientWidth;
-      if (width <= 0) return;
-      // Always fill the shell so no empty strip shows on the right.
-      setScale(width / DEMO_WIDTH);
-    };
-
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(shell);
-    return () => observer.disconnect();
-  }, []);
-
-  const scaledHeight = Math.round(DEMO_HEIGHT * scale);
+  const active = HERO_TABS.find((tab) => tab.id === view) ?? HERO_TABS[0];
 
   return (
     <section
       className="relative left-1/2 mb-6 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden sm:mb-8"
       data-component="Hero"
     >
-      {/* Full-bleed sky backdrop */}
       <div
         aria-hidden
         className="absolute inset-0 bg-cover bg-[position:center_top]"
         style={{ backgroundImage: "url(/image/sky.PNG)" }}
       />
-      {/* Blend the sky's top edge into the solid navbar color above it */}
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0063d2] from-[64px] to-transparent"
       />
-      {/* Soft fog into the page background — keeps the demo sharp */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 -bottom-8 z-[1] h-24 bg-background blur-2xl sm:h-32"
@@ -84,21 +82,19 @@ export function Hero() {
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
-            <div
-              ref={shellRef}
-              className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-background"
-              style={{ height: scaledHeight }}
-            >
-              <div
-                className="origin-top-left will-change-transform"
-                style={{
-                  width: DEMO_WIDTH,
-                  height: DEMO_HEIGHT,
-                  transform: `scale(${scale})`,
-                }}
-              >
-                <DashboardDemo view={view} onViewChange={setView} />
-              </div>
+            <div className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-background">
+              <Image
+                key={active.src}
+                src={active.src}
+                alt={active.alt}
+                width={1762}
+                height={1124}
+                priority
+                sizes="(max-width: 1280px) 100vw, 1152px"
+                placeholder="blur"
+                blurDataURL={BLUR_DATA_URL}
+                className="block h-auto w-full"
+              />
             </div>
 
             <div className="mt-4 flex justify-center sm:mt-5">
@@ -107,8 +103,8 @@ export function Hero() {
                 role="tablist"
                 aria-label="Explore product views"
               >
-                {DEMO_TABS.map((tab) => {
-                  const active = tab.id === view;
+                {HERO_TABS.map((tab) => {
+                  const isActive = tab.id === view;
                   return (
                     <motion.button
                       key={tab.id}
@@ -118,13 +114,13 @@ export function Hero() {
                       whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                       className={cn(
                         "relative cursor-pointer rounded-md px-3.5 py-1.5 font-heading text-xs transition-colors duration-200",
-                        active
+                        isActive
                           ? "font-semibold text-[#0063d2]"
                           : "font-medium text-[#005eb8]/75 hover:bg-white/25 hover:text-[#0063d2]",
                       )}
-                      aria-selected={active}
+                      aria-selected={isActive}
                     >
-                      {active ? (
+                      {isActive ? (
                         <motion.span
                           layoutId="hero-demo-tab-pill"
                           className="absolute inset-0 rounded-md border border-white/80 bg-white/70 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.95),0_4px_16px_rgba(255,255,255,0.35)] backdrop-blur-md supports-[backdrop-filter]:bg-white/75"
