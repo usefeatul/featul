@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { SkyPageShell } from "@/components/layout/shell";
 import { getDefinitionContent } from "@/content/definitions";
 import type { Definition } from "@/types/definitions";
-import { useIsMobile } from "@featul/ui/hooks/use-mobile";
+import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 
 export default function DefinitionDetail({ def }: { def: Definition }) {
   const overview = def.overview ?? `${def.practical} ${def.expert}`;
@@ -96,9 +96,13 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
                 ) : null}
               </div>
               {def.formula.code ? (
-                <pre className="mt-4 whitespace-pre-wrap rounded-md bg-foreground/5 p-4 text-sm text-foreground">
-                  {def.formula.code}
-                </pre>
+                <OverlayCard className="mt-4">
+                  <OverlayCardPanel className="p-0">
+                    <pre className="whitespace-pre-wrap px-4 py-3 text-sm text-foreground">
+                      {def.formula.code}
+                    </pre>
+                  </OverlayCardPanel>
+                </OverlayCard>
               ) : null}
             </section>
           ) : null}
@@ -175,14 +179,16 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
                   <p>{def.essay.relatedContext}</p>
                 ) : null}
               </div>
-              <div className="mt-3 flex flex-wrap gap-x-3 gap-y-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {def.related.map((r) => (
-                  <Link
-                    key={r}
-                    href={`/definitions/${r}`}
-                    className="text-accent underline-offset-2 hover:text-primary hover:underline"
-                  >
-                    {r}
+                  <Link key={r} href={`/definitions/${r}`} className="group block">
+                    <OverlayCard>
+                      <OverlayCardPanel className="px-4 py-3">
+                        <span className="text-sm font-medium text-foreground group-hover:text-primary">
+                          {r}
+                        </span>
+                      </OverlayCardPanel>
+                    </OverlayCard>
                   </Link>
                 ))}
               </div>
@@ -192,19 +198,21 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
           {def.faqs && def.faqs.length ? (
             <section>
               <h2 className="text-lg font-semibold text-foreground">FAQs</h2>
-              <div className="mt-4 space-y-4 text-accent">
+              <div className="mt-4 space-y-3 text-accent">
                 {def.essay?.faqsContext ? (
                   <p className="text-sm leading-7 sm:text-base">
                     {def.essay.faqsContext}
                   </p>
                 ) : null}
                 {def.faqs.map((f, i) => (
-                  <div key={i} className="space-y-2">
-                    <p className="font-medium text-foreground">{f.q}</p>
-                    <p className="text-sm leading-7 text-accent sm:text-base">
-                      {f.a}
-                    </p>
-                  </div>
+                  <OverlayCard key={i}>
+                    <OverlayCardPanel className="px-4 py-3">
+                      <p className="font-medium text-foreground">{f.q}</p>
+                      <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
+                        {f.a}
+                      </p>
+                    </OverlayCardPanel>
+                  </OverlayCard>
                 ))}
               </div>
             </section>

@@ -3,6 +3,10 @@ import { Prose } from "@/components/blog/prose";
 import { generateToc } from "@/lib/toc";
 import { TableOfContents } from "@/components/blog/toc";
 import { PromoCard } from "@/components/blog/promo";
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card";
 import type { MarblePost } from "@/types/marble";
 import { ReadingProgress } from "@/components/blog/progress";
 import Image from "next/image";
@@ -111,7 +115,8 @@ export function SinglePost({ post, showHeader = true }: SinglePostProps) {
           ) : null}
 
           {post.coverImage ? (
-            <div className="mb-8 overflow-hidden rounded-md  border w-full">
+            <OverlayCard className="mb-8 w-full">
+              <OverlayCardPanel className="p-0">
               <Image
                 src={post.coverImage}
                 alt={`${post.title} – cover image`}
@@ -121,10 +126,10 @@ export function SinglePost({ post, showHeader = true }: SinglePostProps) {
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA40lEQVR4nGNgQAJmVta/bWxs/zMwMDAwMjL+Z2Rk/M/IyPifmZn5PxMT039WVtb/7Ozs/zk4OP5zcnL+5+Li+s/Nzf2fh4fnPy8v739+fv7/AgIC/4WEhP4LCwv/FxER+S8qKvpfTEzsv7i4+H8JCYn/kpKS/6WkpP5LS0v/l5GR+S8rK/tfTk7uv7y8/H8FBYX/ioqK/5WUlP4rKyv/V1FR+a+qqvpfTU3tv7q6+n8NDY3/mpqa/7W0tP5ra2v/19HR+a+rq/tfT0/vv76+/n8DA4P/hoaG/42Mjf4bGxv/BwB2mFqQvpnLTAAAAABJRU5ErkJggg=="
                 className="w-full object-cover"
               />
-            </div>
+              </OverlayCardPanel>
+            </OverlayCard>
           ) : null}
 
-          {/* Mobile ToC at the start of content (after image) */}
           {items.length > 0 ? (
             <div className="mb-8 lg:hidden w-full">
               <TableOfContents items={items} />

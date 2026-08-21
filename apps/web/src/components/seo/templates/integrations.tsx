@@ -24,6 +24,10 @@ import { IntegrationHero } from "@/components/integrations/hero";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
 import { RelatedLinks } from "@/components/seo/links";
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card";
 import { SectionStack } from "@/components/layout/stack";
 import { SquareIcon } from "@featul/ui/icons/square";
 import { SetupIcon } from "@featul/ui/icons/setup";
@@ -97,14 +101,16 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                   What your team gets when Featul and {integration.name} work
                   together.
                 </p>
-                <ul className="mt-10 space-y-4">
+                <ul className="mt-10 grid gap-3 sm:grid-cols-2">
                   {sections.benefits.map((benefit, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 text-accent leading-relaxed"
-                    >
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-                      <span>{benefit.description}</span>
+                    <li key={i} className="h-full">
+                      <OverlayCard>
+                        <OverlayCardPanel className="flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4">
+                          <p className="text-sm leading-relaxed text-accent sm:text-base">
+                            {benefit.description}
+                          </p>
+                        </OverlayCardPanel>
+                      </OverlayCard>
                     </li>
                   ))}
                 </ul>
@@ -122,16 +128,19 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                 <p className="mt-3 text-accent">
                   A short setup path from Featul into {integration.name}.
                 </p>
-                <ol className="mt-10 space-y-5">
+                <ol className="mt-10 grid gap-3 sm:grid-cols-2">
                   {sections.howItWorks.map((step, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 text-accent leading-relaxed"
-                    >
-                      <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-foreground">
-                        {i + 1}
-                      </span>
-                      <span>{step}</span>
+                    <li key={i} className="h-full">
+                      <OverlayCard>
+                        <OverlayCardPanel className="flex h-full items-start gap-3 px-4 py-3 sm:px-5 sm:py-4">
+                          <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-foreground">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm leading-relaxed text-accent sm:text-base">
+                            {step}
+                          </span>
+                        </OverlayCardPanel>
+                      </OverlayCard>
                     </li>
                   ))}
                 </ol>
@@ -142,10 +151,11 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
             <section className="py-10 sm:py-14" data-component="IntegrationVerdict">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <div
-                  className="rounded-md bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
-                  style={{ backgroundImage: "url(/image/sky.PNG)" }}
-                >
+                <OverlayCard>
+                  <OverlayCardPanel
+                    className="bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
+                    style={{ backgroundImage: "url(/image/sky.PNG)" }}
+                  >
                   <p className="text-sm text-white/85">
                     {meta.h1}
                   </p>
@@ -163,7 +173,8 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                     />
                     <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] border-white/60 bg-white text-accent hover:bg-white/95 sm:w-auto" />
                   </div>
-                </div>
+                  </OverlayCardPanel>
+                </OverlayCard>
               </div>
             </section>
           </Container>
@@ -181,22 +192,25 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                   <Accordion
                     type="single"
                     collapsible
-                    className="mt-8 w-full border-y border-border/60"
+                    className="mt-8 w-full space-y-3"
                   >
                     {faqs.map((faq, i) => (
-                      <AccordionItem
-                        key={i}
-                        id={`faq-${integration.slug}-${i + 1}`}
-                        value={`faq-${integration.slug}-${i + 1}`}
-                        className="px-0"
-                      >
-                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm leading-relaxed text-accent">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
+                      <OverlayCard key={i}>
+                        <OverlayCardPanel className="px-4 py-1">
+                          <AccordionItem
+                            id={`faq-${integration.slug}-${i + 1}`}
+                            value={`faq-${integration.slug}-${i + 1}`}
+                            className="border-none px-0"
+                          >
+                            <AccordionTrigger className="py-3 text-left text-base font-medium !no-underline hover:!no-underline">
+                              {faq.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="text-sm leading-relaxed text-accent">
+                              {faq.answer}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </OverlayCardPanel>
+                      </OverlayCard>
                     ))}
                   </Accordion>
                 </div>

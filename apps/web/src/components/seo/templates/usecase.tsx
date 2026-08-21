@@ -7,6 +7,10 @@
 import Link from "next/link";
 import { Container } from "@/components/global/container";
 import { RelatedLinks } from "@/components/seo/links";
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card";
 import { UseCaseHero } from "@/components/use-cases/hero";
 import { SectionStack } from "@/components/layout/stack";
 import { HotkeyLink } from "@/components/global/hotkey";
@@ -77,15 +81,19 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 <p className="mt-3 text-accent">
                   Common friction points this use case is built to solve.
                 </p>
-                <ul className="mt-10 space-y-5">
+                <ul className="mt-10 grid gap-3 sm:grid-cols-2">
                   {sections.painPoints.map((item, i) => (
-                    <li key={i} className="border-b border-border/60 pb-5 last:border-0 last:pb-0">
-                      <h3 className="text-base font-medium text-foreground sm:text-lg">
-                        {item.problem}
-                      </h3>
-                      <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
-                        {item.impact}
-                      </p>
+                    <li key={i} className="h-full">
+                      <OverlayCard>
+                        <OverlayCardPanel className="flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4">
+                          <h3 className="text-base font-medium text-foreground sm:text-lg">
+                            {item.problem}
+                          </h3>
+                          <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
+                            {item.impact}
+                          </p>
+                        </OverlayCardPanel>
+                      </OverlayCard>
                     </li>
                   ))}
                 </ul>
@@ -103,18 +111,19 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 <p className="mt-3 text-accent">
                   A clearer workflow from feedback intake to shipped updates.
                 </p>
-                <ul className="mt-10 space-y-5">
+                <ul className="mt-10 grid gap-3 sm:grid-cols-2">
                   {sections.solutions.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-                      <div>
-                        <h3 className="text-base font-medium text-foreground sm:text-lg">
-                          {item.solution}
-                        </h3>
-                        <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
-                          {item.benefit}
-                        </p>
-                      </div>
+                    <li key={i} className="h-full">
+                      <OverlayCard>
+                        <OverlayCardPanel className="flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4">
+                          <h3 className="text-base font-medium text-foreground sm:text-lg">
+                            {item.solution}
+                          </h3>
+                          <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
+                            {item.benefit}
+                          </p>
+                        </OverlayCardPanel>
+                      </OverlayCard>
                     </li>
                   ))}
                 </ul>
@@ -125,10 +134,11 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
           <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
             <section className="py-10 sm:py-14" data-component="UseCaseVerdict">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <div
-                  className="rounded-md bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
-                  style={{ backgroundImage: "url(/image/sky.PNG)" }}
-                >
+                <OverlayCard>
+                  <OverlayCardPanel
+                    className="bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
+                    style={{ backgroundImage: "url(/image/sky.PNG)" }}
+                  >
                   <p className="text-sm text-white/85">{badge}</p>
                   <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-white sm:text-2xl lg:text-3xl">
                     Put this use case into practice with Featul.
@@ -145,7 +155,8 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                     />
                     <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] border-white/60 bg-white text-accent hover:bg-white/95 sm:w-auto" />
                   </div>
-                </div>
+                  </OverlayCardPanel>
+                </OverlayCard>
               </div>
             </section>
           </Container>
@@ -160,22 +171,25 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                   <Accordion
                     type="single"
                     collapsible
-                    className="mt-8 w-full border-y border-border/60"
+                    className="mt-8 w-full space-y-3"
                   >
                     {faqs.map((faq, i) => (
-                      <AccordionItem
-                        key={i}
-                        id={`faq-${useCase.slug}-${i + 1}`}
-                        value={`faq-${useCase.slug}-${i + 1}`}
-                        className="px-0"
-                      >
-                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm leading-relaxed text-accent">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
+                      <OverlayCard key={i}>
+                        <OverlayCardPanel className="px-4 py-1">
+                          <AccordionItem
+                            id={`faq-${useCase.slug}-${i + 1}`}
+                            value={`faq-${useCase.slug}-${i + 1}`}
+                            className="border-none px-0"
+                          >
+                            <AccordionTrigger className="py-3 text-left text-base font-medium !no-underline hover:!no-underline">
+                              {faq.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="text-sm leading-relaxed text-accent">
+                              {faq.answer}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </OverlayCardPanel>
+                      </OverlayCard>
                     ))}
                   </Accordion>
                 </div>
