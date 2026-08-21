@@ -68,18 +68,18 @@ function PricingPlanCard({
 
   return (
     <OverlayCard className="relative">
-      {ribbon ? (
-        <div
-          className={cn(
-            "pointer-events-none absolute inset-0 z-1",
-            getRibbonSpotlightClass(ribbon.tone),
-          )}
-        />
-      ) : null}
-      {ribbon ? <PricingPlanRibbon label={ribbon.label} tone={ribbon.tone} /> : null}
+      <OverlayCardPanel className="relative flex flex-1 flex-col overflow-hidden px-4 py-4">
+        {ribbon ? (
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0 z-0",
+              getRibbonSpotlightClass(ribbon.tone),
+            )}
+          />
+        ) : null}
+        {ribbon ? <PricingPlanRibbon label={ribbon.label} tone={ribbon.tone} /> : null}
 
-      <OverlayCardPanel className="relative z-10 flex flex-1 flex-col px-4 py-4">
-      <div className="mb-3 flex items-start justify-between gap-2">
+        <div className="relative z-10 mb-3 flex items-start justify-between gap-2">
         <div className="relative z-10">
           <div className="text-2xl font-heading font-semibold leading-none text-foreground">
             {plan.name}
@@ -198,7 +198,7 @@ function PricingPlanRibbon({
 }) {
   return (
     <div
-      className={overlayRibbonShellClass}
+      className={cn(overlayRibbonShellClass, "z-20")}
       title={label}
       aria-hidden="true"
     >
