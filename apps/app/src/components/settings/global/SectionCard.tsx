@@ -1,9 +1,6 @@
 import React from "react";
 import { cn } from "@featul/ui/lib/utils";
 
-export const settingsPlanCardShellClass =
-  "relative flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background p-4 dark:border-white/10 dark:bg-black/30";
-
 export const settingsPlanCardCurrentClass =
   "border-primary dark:border-primary/80";
 
