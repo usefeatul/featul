@@ -4,6 +4,7 @@ import type { Alternative } from "@/config/alternatives";
 import { SITE_URL } from "@/config/seo";
 import { StatusIcon } from "./icon";
 import { SquareIcon } from "@featul/ui/icons/square";
+import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 
 export default function Compare({ alt }: { alt: Alternative }) {
   return (
@@ -20,7 +21,9 @@ export default function Compare({ alt }: { alt: Alternative }) {
           </p>
 
           <div className="mt-12 sm:mt-14">
-            <div className="sticky top-2 z-10 grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] items-center gap-x-3 border-b border-border/70 bg-background/95 sm:grid-cols-[1.5fr_1fr_1fr] sm:gap-x-14">
+            <OverlayCard>
+              <OverlayCardPanel className="p-0">
+            <div className="sticky top-2 z-10 grid grid-cols-[minmax(0,1fr)_minmax(56px,auto)_minmax(56px,auto)] items-center gap-x-3 border-b border-border/70 bg-background/95 px-3 sm:grid-cols-[1.5fr_1fr_1fr] sm:gap-x-14 sm:px-4">
               <div className="py-2.5 text-left text-xs font-semibold text-foreground sm:py-3 sm:text-lg">
                 Feature
               </div>
@@ -81,6 +84,8 @@ export default function Compare({ alt }: { alt: Alternative }) {
                 </li>
               ))}
             </ul>
+              </OverlayCardPanel>
+            </OverlayCard>
           </div>
 
           <p className="mt-4 text-balance text-sm leading-6 text-accent/70 sm:max-w-4xl">

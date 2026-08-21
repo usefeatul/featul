@@ -3,6 +3,7 @@ import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
+import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 
 type VerdictProps = {
   alt: Alternative;
@@ -15,10 +16,11 @@ export default function Verdict({ alt }: VerdictProps) {
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section className="py-10 sm:py-14" data-component="AlternativeVerdict">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-          <div
-            className="rounded-md bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
-            style={{ backgroundImage: "url(/image/sky.PNG)" }}
-          >
+          <OverlayCard>
+            <OverlayCardPanel
+              className="bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
+              style={{ backgroundImage: "url(/image/sky.PNG)" }}
+            >
             <p className="text-sm text-white/85">
               The clear {alt.name} alternative
             </p>
@@ -54,7 +56,8 @@ export default function Verdict({ alt }: VerdictProps) {
                 </Link>
               </p>
             ) : null}
-          </div>
+            </OverlayCardPanel>
+          </OverlayCard>
         </div>
       </section>
     </Container>

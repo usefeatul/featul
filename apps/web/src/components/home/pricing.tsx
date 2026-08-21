@@ -6,6 +6,10 @@ import { Button } from "@featul/ui/components/button"
 import { StarIcon } from "@featul/ui/icons/star"
 import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
 import Link from "next/link"
 import Faq from "@/components/home/faq"
@@ -63,11 +67,7 @@ function PricingPlanCard({
   )
 
   return (
-    <div
-      className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-md border border-border/70 bg-card p-4 shadow-lg shadow-zinc-950/15",
-      )}
-    >
+    <OverlayCard className="relative">
       {ribbon ? (
         <div
           className={cn(
@@ -78,7 +78,8 @@ function PricingPlanCard({
       ) : null}
       {ribbon ? <PricingPlanRibbon label={ribbon.label} tone={ribbon.tone} /> : null}
 
-      <div className="relative z-10 mb-3 flex items-start justify-between gap-2">
+      <OverlayCardPanel className="relative z-10 flex flex-1 flex-col px-4 py-4">
+      <div className="mb-3 flex items-start justify-between gap-2">
         <div className="relative z-10">
           <div className="text-2xl font-heading font-semibold leading-none text-foreground">
             {plan.name}
@@ -118,7 +119,8 @@ function PricingPlanCard({
           <Link href={plan.href}>{ctaLabel}</Link>
         </Button>
       </div>
-    </div>
+      </OverlayCardPanel>
+    </OverlayCard>
   )
 }
 

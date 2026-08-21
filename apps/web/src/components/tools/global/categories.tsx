@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { TOOL_CATEGORIES } from '@/types/tools'
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@featul/ui/components/card'
 import { CornerUpRight } from 'lucide-react'
 import { getCategoryIcon } from './icons'
-
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from '@/components/shared/overlay-card'
 
 export default function CategoryList() {
   return (
@@ -11,21 +13,23 @@ export default function CategoryList() {
       {TOOL_CATEGORIES.map((cat) => {
         const Icon = getCategoryIcon(cat.slug)
         return (
-          <Link key={cat.slug} href={`/tools/categories/${cat.slug}`} className="group block">
-            <Card className="h-full overflow-hidden transition group hover:shadow-sm hover:ring-border flex flex-col">
-              <CardHeader className="p-6 sm:p-8 flex-1">
-                <Icon className="size-5 text-black group-hover:text-primary mb-3" />
-                <CardTitle className="font-medium text-lg">{cat.name}</CardTitle>
-                <CardDescription className="mt-1 text-accent">{cat.description}</CardDescription>
-              </CardHeader>
-              <CardFooter className="px-6 sm:px-8 pt-0 justify-between mt-auto items-center">
-                <span className="text-xs text-muted-foreground font-mono tabular-nums">{cat.tools.length} tools</span>
-                <span className="inline-flex items-center text-primary text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  Explore
-                  <CornerUpRight className="ml-1 h-4 w-4" />
-                </span>
-              </CardFooter>
-            </Card>
+          <Link key={cat.slug} href={`/tools/categories/${cat.slug}`} className="group block h-full">
+            <OverlayCard>
+              <OverlayCardPanel className="flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4">
+                <Icon className="mb-3 size-5 text-black group-hover:text-primary" />
+                <h3 className="text-lg font-medium text-foreground">{cat.name}</h3>
+                <p className="mt-1 flex-1 text-sm leading-6 text-accent">{cat.description}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                    {cat.tools.length} tools
+                  </span>
+                  <span className="inline-flex items-center text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                    Explore
+                    <CornerUpRight className="ml-1 h-4 w-4" />
+                  </span>
+                </div>
+              </OverlayCardPanel>
+            </OverlayCard>
           </Link>
         )
       })}

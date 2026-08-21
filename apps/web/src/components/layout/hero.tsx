@@ -3,6 +3,10 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { Container } from "@/components/global/container";
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card";
 
 type SkyMarketingHeroProps = {
   children: ReactNode;
@@ -53,7 +57,8 @@ export function SkyMarketingHero({
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
-            <div className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-background">
+            <OverlayCard>
+              <OverlayCardPanel className="p-0">
               <Image
                 src="/image/dashboard.png"
                 alt={imageAlt}
@@ -65,7 +70,8 @@ export function SkyMarketingHero({
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA40lEQVR4nGNgQAJmVta/bWxs/zMwMDAwMjL+Z2Rk/M/IyPifmZn5PxMT039WVtb/7Ozs/zk4OP5zcnL+5+Li+s/Nzf2fh4fnPy8v739+fv7/AgIC/4WEhP4LCwv/FxER+S8qKvpfTEzsv7i4+H8JCYn/kpKS/6WkpP5LS0v/l5GR+S8rK/tfTk7uv7y8/H8FBYX/ioqK/5WUlP4rKyv/V1FR+a+qqvpfTU3tv7q6+n8NDY3/mpqa/7W0tP5ra2v/19HR+a+rq/tfT0/vv76+/n8DA4P/hoaG/42Mjf4bGxv/BwB2mFqQvpnLTAAAAABJRU5ErkJggg=="
                 className="block h-auto w-full"
               />
-            </div>
+              </OverlayCardPanel>
+            </OverlayCard>
           </div>
         </div>
       </Container>

@@ -1,23 +1,42 @@
 import * as React from "react"
 
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 
 interface CardProps extends React.ComponentProps<"div"> {
   variant?: "default" | "plain"
 }
 
-function Card({ className, variant = "default", ...props }: CardProps) {
-  const baseClass =
-    variant === "plain"
-      ? "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md py-6 outline-none"
-      : "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md border py-6 outline-none ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
+function Card({ className, variant = "default", children, ...props }: CardProps) {
+  if (variant === "plain") {
+    return (
+      <div
+        data-slot="card"
+        className={cn(
+          "bg-card dark:bg-black text-card-foreground flex flex-col gap-6 rounded-md py-6 outline-none",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
 
   return (
     <div
       data-slot="card"
-      className={cn(baseClass, className)}
+      className={cn(
+        overlayDialogClass,
+        "flex flex-col text-card-foreground outline-none",
+        className,
+      )}
       {...props}
-    />
+    >
+      <div className={cn(overlayInnerClass, "flex flex-1 flex-col gap-6 py-6")}>
+        {children}
+      </div>
+    </div>
   )
 }
 

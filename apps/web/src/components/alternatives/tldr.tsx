@@ -10,6 +10,7 @@ import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
+import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 
 export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");
@@ -31,7 +32,8 @@ export default function TLDR({ alt }: { alt: Alternative }) {
           </h2>
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-            <div className="rounded-md border border-foreground/10 bg-white p-5 sm:p-6">
+            <OverlayCard>
+              <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex items-center gap-2.5">
                 <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-muted/40">
                   <AlternativeIcon
@@ -56,9 +58,11 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   ))}
                 </ul>
               ) : null}
-            </div>
+              </OverlayCardPanel>
+            </OverlayCard>
 
-            <div className="rounded-md border border-primary/25 bg-primary/[0.04] p-5 sm:p-6">
+            <OverlayCard>
+              <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-8 items-center justify-center rounded-md bg-white">
@@ -95,7 +99,8 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   ))}
                 </ul>
               ) : null}
-            </div>
+              </OverlayCardPanel>
+            </OverlayCard>
           </div>
         </div>
       </section>

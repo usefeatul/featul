@@ -8,6 +8,7 @@ import { FeatherIcon } from "@featul/ui/icons/feather";
 import { ChartIcon } from "@featul/ui/icons/chart";
 import { UsersIcon } from "@featul/ui/icons/users";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
+import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { opacity?: number }>;
 
@@ -82,7 +83,8 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
 
           {tradeoffs.length > 0 ? (
             <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-              <div className="rounded-md border border-foreground/10 p-5 sm:p-6">
+              <OverlayCard>
+                <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
                 <h3 className="text-base font-medium text-foreground sm:text-lg">
                   When {alt.name} might still fit
                 </h3>
@@ -94,8 +96,10 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
                     </li>
                   ))}
                 </ul>
-              </div>
-              <div className="rounded-md border border-primary/20 bg-primary/[0.04] p-5 sm:p-6">
+                </OverlayCardPanel>
+              </OverlayCard>
+              <OverlayCard>
+                <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
                 <h3 className="text-base font-medium text-foreground sm:text-lg">
                   Choose Featul when you want
                 </h3>
@@ -107,7 +111,8 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
                     </li>
                   ))}
                 </ul>
-              </div>
+                </OverlayCardPanel>
+              </OverlayCard>
             </div>
           ) : null}
         </div>
