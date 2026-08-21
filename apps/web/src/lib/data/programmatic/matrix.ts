@@ -956,7 +956,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Automatic changelog notifications",
         ],
         relatedDefinitions: ["product-feedback", "feature-voting", "changelog"],
-        relatedTools: ["nps-calculator", "churn-rate-calculator"],
+        relatedTools: ["rice-prioritization-calculator", "changelog-generator"],
     },
     {
         slug: "mobile-app-feedback",
@@ -992,7 +992,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Clear contribution guidelines integration",
         ],
         relatedDefinitions: ["open-source", "community-management"],
-        relatedTools: ["github-star-tracker"], // Hypothetical tool relevant to OS
+        relatedTools: ["feature-voting-bias-calculator", "roadmap-status-template"],
     },
 
     // ── Organization Stage ───────────────────────────────────────────────────
@@ -1012,7 +1012,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Build trust with transparent development",
         ],
         relatedDefinitions: ["roadmap", "product-validation"],
-        relatedTools: ["ltv-calculator", "growth-rate-calculator"],
+        relatedTools: ["rice-prioritization-calculator", "roadmap-status-template"],
     },
     {
         slug: "enterprise-changelog",
@@ -1030,7 +1030,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Track engagement and feedback on releases",
         ],
         relatedDefinitions: ["changelog", "product-updates"],
-        relatedTools: ["retention-calculator"],
+        relatedTools: ["changelog-generator"],
     },
 
     // ── Business Model ───────────────────────────────────────────────────────
@@ -1088,7 +1088,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Slack and Discord notifications for updates",
         ],
         relatedDefinitions: ["changelog", "product-updates"],
-        relatedTools: ["retention-calculator"],
+        relatedTools: ["changelog-generator"],
     },
     {
         slug: "feature-voting-board",
@@ -1106,7 +1106,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Priority scoring to guide roadmap",
         ],
         relatedDefinitions: ["feature-voting", "product-feedback"],
-        relatedTools: ["nps-calculator"],
+        relatedTools: ["feature-voting-bias-calculator", "rice-prioritization-calculator"],
     },
     {
         slug: "customer-feedback-portal",
@@ -1124,7 +1124,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Automatic status updates to submitters",
         ],
         relatedDefinitions: ["customer-feedback", "customer-success"],
-        relatedTools: ["nps-calculator", "churn-rate-calculator"],
+        relatedTools: ["public-feedback-board-checklist", "nps-follow-up-planner"],
     },
     {
         slug: "product-team-collaboration",
@@ -1142,7 +1142,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Shared roadmap view for alignment",
         ],
         relatedDefinitions: ["team-collaboration", "roadmap"],
-        relatedTools: ["retention-calculator"],
+        relatedTools: ["rice-prioritization-calculator"],
     },
     {
         slug: "transparent-roadmap",
@@ -1160,7 +1160,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Share progress without commitments",
         ],
         relatedDefinitions: ["roadmap", "product-transparency"],
-        relatedTools: ["growth-rate-calculator"],
+        relatedTools: ["roadmap-status-template"],
     },
     {
         slug: "slack-discord-notifications",

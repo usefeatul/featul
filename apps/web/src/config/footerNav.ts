@@ -43,7 +43,7 @@ export const footerNavigationConfig: FooterNavigationConfig = {
       title: 'Resources',
       items: [
         { name: 'Blog', href: '/blog' },
-        { name: 'Tools', href: '/tools' },
+        { name: 'Free tools', href: '/tools' },
         { name: 'Definitions', href: '/definitions' },
         { name: 'Use cases', href: '/use-cases' },
       ],

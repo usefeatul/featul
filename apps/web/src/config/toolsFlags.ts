@@ -1,4 +1,12 @@
 export const NEW_TOOL_SLUGS = new Set<string>([
+  "rice-prioritization-calculator",
+  "changelog-generator",
+  "feature-voting-bias-calculator",
+  "public-feedback-board-checklist",
+  "roadmap-status-template",
+  "feedback-vote-confidence-calculator",
+  "nps-follow-up-planner",
+  "duplicate-feedback-estimator",
   "stickiness-calculator",
   "ttfv-calculator",
   "feature-usage-frequency",

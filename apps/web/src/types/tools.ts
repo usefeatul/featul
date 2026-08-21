@@ -20,6 +20,189 @@ export type ToolCategory = {
 };
 
 export const TOOL_CATEGORIES: ToolCategory[] = [
+  {
+    slug: "feedback-roadmaps",
+    name: "Feedback, Roadmaps & Changelogs",
+    description: "Prioritize votes, plan public roadmaps, and write changelogs.",
+    tools: [
+      {
+        slug: "rice-prioritization-calculator",
+        name: "RICE Prioritization Calculator",
+        description:
+          "Score feature requests with Reach, Impact, Confidence, and Effort so votes become a ranked backlog.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is RICE?",
+            body: "RICE is a feature prioritization score used by product teams to compare ideas from feedback boards before they hit the roadmap.",
+          },
+          {
+            title: "Basic formula",
+            body: "Multiply reach, impact, and confidence, then divide by effort in person-months.",
+            code: "RICE = (Reach × Impact × Confidence) / Effort",
+          },
+          {
+            title: "When to use",
+            body: "Use RICE when feature votes, customer interviews, and engineering estimates all matter—not votes alone.",
+          },
+        ],
+      },
+      {
+        slug: "changelog-generator",
+        name: "Changelog Generator",
+        description:
+          "Turn shipped work into customer-facing release notes in Keep a Changelog format.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is a changelog generator?",
+            body: "A changelog generator formats shipped features, fixes, and changes into release notes your customers can scan.",
+          },
+          {
+            title: "How to write a changelog",
+            body: "Group items as Added, Changed, or Fixed. Use one line per item and a version plus date.",
+            code: "## [version] - YYYY-MM-DD",
+          },
+          {
+            title: "When to use",
+            body: "Publish notes when you move roadmap items to Released so voters see the loop closed.",
+          },
+        ],
+      },
+      {
+        slug: "feature-voting-bias-calculator",
+        name: "Feature Voting Bias Checker",
+        description:
+          "Compare unique voters to total upvotes and spot power-user skew on a public board.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is voting bias?",
+            body: "Voting bias happens when a few loud users cast many votes, so total upvotes overstate demand.",
+          },
+          {
+            title: "Basic formula",
+            body: "Votes per unique voter and the share of votes from your top cohort show concentration.",
+            code: "votes per voter = total votes / unique voters",
+          },
+          {
+            title: "When to use",
+            body: "Check bias before promoting a highly voted request onto the public roadmap.",
+          },
+        ],
+      },
+      {
+        slug: "public-feedback-board-checklist",
+        name: "Public Feedback Board Checklist",
+        description:
+          "Check anonymous voting, moderation, and GDPR settings before you launch a public board.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is a public feedback board?",
+            body: "A public board lets customers submit and vote on feature requests with optional anonymity and moderation.",
+          },
+          {
+            title: "How to launch safely",
+            body: "Confirm unique votes, PII handling, status updates, and EU/GDPR notices before going live.",
+            code: "checklist score = completed items / total items",
+          },
+          {
+            title: "When to use",
+            body: "Run this before sharing a board URL or embedding a widget on your product site.",
+          },
+        ],
+      },
+      {
+        slug: "roadmap-status-template",
+        name: "Public Roadmap Status Template",
+        description:
+          "Generate Planned, In Progress, and Shipped copy for a customer-facing roadmap.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is a public roadmap template?",
+            body: "A status template gives product teams consistent columns and customer-facing copy for a public roadmap.",
+          },
+          {
+            title: "How to structure statuses",
+            body: "Keep statuses simple: Planned, In Progress, and Shipped. Avoid dates that become promises.",
+            code: "Planned → In Progress → Shipped",
+          },
+          {
+            title: "When to use",
+            body: "Use this when you first publish a roadmap or migrate statuses from a spreadsheet.",
+          },
+        ],
+      },
+      {
+        slug: "feedback-vote-confidence-calculator",
+        name: "Feedback Vote Confidence Calculator",
+        description:
+          "Estimate how many unique votes a feature request needs before you treat demand as reliable.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is vote confidence?",
+            body: "Vote confidence is a sample-size style check: how many unique voters you need from your user base.",
+          },
+          {
+            title: "Basic formula",
+            body: "Use a finite-population sample size with your chosen confidence level and margin of error.",
+            code: "n = (Z² × p × (1 − p)) / E², then finite population correction",
+          },
+          {
+            title: "When to use",
+            body: "Use this when a request has a handful of votes and you need to know whether to wait or ship.",
+          },
+        ],
+      },
+      {
+        slug: "nps-follow-up-planner",
+        name: "NPS Follow-up Planner",
+        description:
+          "Turn promoters, passives, and detractors into interview counts and feedback-board prompts.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is an NPS follow-up planner?",
+            body: "It converts NPS buckets into close-the-loop actions: interviews, board posts, and changelog updates.",
+          },
+          {
+            title: "Basic formula",
+            body: "NPS is promoters minus detractors as a share of responses. Follow-up volume scales with each bucket.",
+            code: "NPS = % promoters − % detractors",
+          },
+          {
+            title: "When to use",
+            body: "Run this after an NPS survey so scores become product feedback instead of a dashboard number.",
+          },
+        ],
+      },
+      {
+        slug: "duplicate-feedback-estimator",
+        name: "Duplicate Feedback Estimator",
+        description:
+          "Estimate unique themes after grouping duplicate feature requests from tickets and boards.",
+        isNew: true,
+        contentSections: [
+          {
+            title: "What is duplicate feedback?",
+            body: "Customers often file the same idea many times. Deduping reveals the real theme count for the roadmap.",
+          },
+          {
+            title: "Basic formula",
+            body: "Unique themes equal raw requests times one minus the duplicate rate, then subtract already merged items.",
+            code: "unique themes = raw requests × (1 − duplicate rate) − already merged",
+          },
+          {
+            title: "When to use",
+            body: "Use this during triage before you score requests with RICE or open a public vote.",
+          },
+        ],
+      },
+    ],
+  },
   // Product & Feature Analytics — 2 tools
   {
     slug: "product-feature-analytics",
@@ -468,8 +651,28 @@ const TOOL_SLUG_ALIASES: Record<string, string> = {
   "nps-calculator": "nps-calculator",
 };
 
+const DEFINITION_TO_TOOL: Record<string, string> = {
+  changelog: "changelog-generator",
+  "product-updates": "changelog-generator",
+  "release-management": "changelog-generator",
+  roadmap: "roadmap-status-template",
+  "product-management": "rice-prioritization-calculator",
+  "open-source": "feature-voting-bias-calculator",
+  "community-management": "feature-voting-bias-calculator",
+  "user-feedback": "public-feedback-board-checklist",
+  "product-feedback": "rice-prioritization-calculator",
+  "feature-voting": "feature-voting-bias-calculator",
+  "product-validation": "rice-prioritization-calculator",
+  "customer-feedback": "public-feedback-board-checklist",
+};
+
 /** Map a definition slug to a related calculator when one exists. */
 export function findToolForDefinition(defSlug: string) {
+  const mapped = DEFINITION_TO_TOOL[defSlug];
+  if (mapped) {
+    const resolved = findToolBySlug(mapped);
+    if (resolved) return resolved;
+  }
   const candidates = [`${defSlug}-calculator`, defSlug];
   for (const candidate of candidates) {
     const match = findToolBySlug(candidate);

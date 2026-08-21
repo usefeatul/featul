@@ -1,7 +1,8 @@
 import type { LucideIcon } from 'lucide-react'
-import { BarChart3, TrendingUp, User, CircleDollarSign, Tag, LineChart, MessageSquare, PenLine, ClipboardList, Users } from 'lucide-react'
+import { BarChart3, TrendingUp, User, CircleDollarSign, Tag, LineChart, MessageSquare, PenLine, ClipboardList, Users, Map } from 'lucide-react'
 
 export const CATEGORY_ICON_MAP: Record<string, LucideIcon> = {
+  'feedback-roadmaps': Map,
   'product-feature-analytics': BarChart3,
   'revenue-growth': TrendingUp,
   'customer-metrics': User,
