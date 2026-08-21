@@ -2,18 +2,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 import { HeroContent } from "./content";
 
 type HeroView = "requests" | "roadmap" | "changelog";
 
-const HERO_TABS: {
-  id: HeroView;
-  label: string;
-  src: string;
-  alt: string;
-}[] = [
+const HERO_TABS = [
   {
     id: "requests",
     label: "Featul",
@@ -32,7 +28,12 @@ const HERO_TABS: {
     src: "/image/changelog.png",
     alt: "Featul changelog",
   },
-];
+] as const satisfies readonly {
+  id: HeroView;
+  label: string;
+  src: string;
+  alt: string;
+}[];
 
 const BLUR_DATA_URL =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA40lEQVR4nGNgQAJmVta/bWxs/zMwMDAwMjL+Z2Rk/M/IyPifmZn5PxMT039WVtb/zOzs/zk4OP5zcnL+5+Li+s/Nzf2fh4fnPy8v739+fv7/AgIC/4WEhP4LCwv/FxER+S8qKvpfTEzsv7i4+H8JCYn/kpKS/6WkpP5LS0v/l5GR+S8rK/tfTk7uv7y8/H8FBYX/ioqK/5WUlP4rKyv/V1FR+a+qqvpfTU3tv7q6+n8NDY3/mpqa/7W0tP5ra2v/19HR+a+rq/tfT0/vv76+/n8DA4P/hoaG/42Mjf4bGxv/BwB2mFqQvpnLTAAAAABJRU5ErkJggg==";
@@ -82,19 +83,21 @@ export function Hero() {
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
-            <div className="relative z-0 w-full max-w-full overflow-hidden rounded-lg border border-white/25 bg-background">
-              <Image
-                key={active.src}
-                src={active.src}
-                alt={active.alt}
-                width={1762}
-                height={1124}
-                priority
-                sizes="(max-width: 1280px) 100vw, 1152px"
-                placeholder="blur"
-                blurDataURL={BLUR_DATA_URL}
-                className="block h-auto w-full"
-              />
+            <div className={overlayDialogClass}>
+              <div className={overlayInnerClass}>
+                <Image
+                  key={active.src}
+                  src={active.src}
+                  alt={active.alt}
+                  width={1762}
+                  height={1124}
+                  priority
+                  sizes="(max-width: 1280px) 100vw, 1152px"
+                  placeholder="blur"
+                  blurDataURL={BLUR_DATA_URL}
+                  className="block h-auto w-full"
+                />
+              </div>
             </div>
 
             <div className="mt-4 flex justify-center sm:mt-5">
