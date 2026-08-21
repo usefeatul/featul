@@ -31,9 +31,9 @@ export default function TLDR({ alt }: { alt: Alternative }) {
             {alt.name} vs Featul: quick summary
           </h2>
 
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+          <div className="mt-8 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-6">
             <OverlayCard>
-              <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
+              <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex items-center gap-2.5">
                 <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-muted/40">
                   <AlternativeIcon
@@ -62,7 +62,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
             </OverlayCard>
 
             <OverlayCard>
-              <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
+              <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-8 items-center justify-center rounded-md bg-white">

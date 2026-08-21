@@ -82,9 +82,9 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
           </div>
 
           {tradeoffs.length > 0 ? (
-            <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+            <div className="mt-16 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-6">
               <OverlayCard>
-                <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
+                <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
                 <h3 className="text-base font-medium text-foreground sm:text-lg">
                   When {alt.name} might still fit
                 </h3>
@@ -99,7 +99,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
                 </OverlayCardPanel>
               </OverlayCard>
               <OverlayCard>
-                <OverlayCardPanel className="px-4 py-3 sm:px-5 sm:py-4">
+                <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
                 <h3 className="text-base font-medium text-foreground sm:text-lg">
                   Choose Featul when you want
                 </h3>
