@@ -8,18 +8,18 @@ import { cn } from "@featul/ui/lib/utils"
 
 export const toolbarShellClass = cn(
   overlayShellClass,
-  "flex items-stretch p-1"
+  "flex items-stretch overflow-visible p-1"
 )
 
 export const toolbarInnerClass = cn(
   overlayInnerClass,
-  "flex min-h-8 flex-1 items-stretch"
+  "flex min-h-8 flex-1 items-stretch overflow-visible"
 )
 
 export const toolbarItemClass =
   "h-full rounded-none border-none bg-transparent shadow-none ring-0 ring-offset-0 before:hidden hover:bg-muted/40 dark:bg-transparent dark:shadow-none dark:hover:bg-muted/30"
 
-const toolbarVariants = cva("flex items-stretch overflow-hidden", {
+const toolbarVariants = cva("flex items-stretch overflow-visible", {
     variants: {
         variant: {
             default: toolbarShellClass,

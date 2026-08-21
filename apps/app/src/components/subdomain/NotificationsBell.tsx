@@ -14,6 +14,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@featul/ui/components/popover";
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
 import { cn } from "@featul/ui/lib/utils";
 import { COMMENT_CREATED_EVENT } from "@/lib/comment/shared";
 import {
@@ -150,15 +151,20 @@ export default function NotificationsBell({
           type="button"
           size={size}
           variant={variant}
-          className={cn("relative", className)}
+          className={cn("overflow-visible", className)}
           aria-label="Notifications"
         >
-          <Bell className="size-4 text-foreground opacity-100 group-hover:text-primary transition-colors" />
-          {unread > 0 ? (
-            <span className="absolute top-0.5 right-0.5 inline-flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-none text-primary-foreground tabular-nums">
-              {unread > 99 ? "99+" : unread}
-            </span>
-          ) : null}
+          <span className="relative inline-flex">
+            <Bell className="size-4 text-foreground opacity-100 group-hover:text-primary transition-colors" />
+            {unread > 0 ? (
+              <OverlayChip
+                className="pointer-events-none absolute top-0 right-0 translate-x-[35%] -translate-y-[35%] p-px"
+                innerClassName="h-3 min-h-3 min-w-3 bg-primary px-0.5 text-[9px] font-semibold leading-none text-primary-foreground dark:bg-primary"
+              >
+                {unread > 99 ? "99+" : unread}
+              </OverlayChip>
+            ) : null}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
