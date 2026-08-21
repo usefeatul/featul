@@ -5,6 +5,7 @@ import { SkyPageShell } from "@/components/layout/shell";
 import { getDefinitionContent } from "@/content/definitions";
 import type { Definition } from "@/types/definitions";
 import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
+import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
 export default function DefinitionDetail({ def }: { def: Definition }) {
   const overview = def.overview ?? `${def.practical} ${def.expert}`;
