@@ -61,10 +61,10 @@ export default function RoleBadge({
             "absolute -bottom-1 -right-1 z-10 rounded-lg p-px pointer-events-auto",
             className,
           )}
-          innerClassName="h-3 min-h-3 min-w-3 rounded-md"
+          innerClassName="h-3.5 min-h-3.5 min-w-3.5 rounded-md"
         >
           <StarIcon
-            className={cn("size-2", getRoleColor(role, isOwner, isFeatul))}
+            className={cn("size-2.5", getRoleColor(role, isOwner, isFeatul))}
             aria-label={getTooltipText(role, isOwner, isFeatul)}
           />
         </OverlayChip>
