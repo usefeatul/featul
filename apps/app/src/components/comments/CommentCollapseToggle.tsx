@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { cn } from "@featul/ui/lib/utils"
 
@@ -21,21 +22,21 @@ export default function CommentCollapseToggle({
 
   return (
     <button
+      type="button"
       onClick={onToggle}
-      className={cn(
-        "inline-flex cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground",
-        className
-      )}
+      className={cn("cursor-pointer", className)}
       aria-label={isCollapsed ? "Expand replies" : "Collapse replies"}
     >
-      <ChevronLeftIcon
-        size={12}
-        className={cn(
-          "transition-transform duration-200",
-          isCollapsed ? "rotate-180" : "-rotate-90"
-        )}
-      />
-      <span className="font-medium">{label}</span>
+      <OverlayChip innerClassName="gap-1 bg-primary/10 px-1.5 font-medium text-primary dark:bg-primary/10">
+        <ChevronLeftIcon
+          size={10}
+          className={cn(
+            "text-primary transition-transform duration-200",
+            isCollapsed ? "rotate-180" : "-rotate-90",
+          )}
+        />
+        {label}
+      </OverlayChip>
     </button>
   )
 }
