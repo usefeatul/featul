@@ -97,10 +97,16 @@ type BaseMetaArgs = {
   absoluteTitle?: boolean
 }
 
-export function createPageMetadata({ title, description, path, image }: BaseMetaArgs): Metadata {
+export function createPageMetadata({
+  title,
+  description,
+  path,
+  image,
+  absoluteTitle,
+}: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonicalPath = normalizePath(path || '/')
-  const normalizedTitle = normalizeTitle(title)
+  const normalizedTitle = absoluteTitle ? normalizeText(title) : normalizeTitle(title)
   const normalizedDescription = normalizeDescription(description)
   const titleProp: Metadata['title'] = { absolute: normalizedTitle }
   return {
@@ -123,10 +129,16 @@ export function createPageMetadata({ title, description, path, image }: BaseMeta
   }
 }
 
-export function createArticleMetadata({ title, description, path, image }: BaseMetaArgs): Metadata {
+export function createArticleMetadata({
+  title,
+  description,
+  path,
+  image,
+  absoluteTitle,
+}: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonicalPath = normalizePath(path || '/')
-  const normalizedTitle = normalizeTitle(title)
+  const normalizedTitle = absoluteTitle ? normalizeText(title) : normalizeTitle(title)
   const normalizedDescription = normalizeDescription(description)
   const titleProp: Metadata['title'] = { absolute: normalizedTitle }
   return {

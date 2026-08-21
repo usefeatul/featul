@@ -3,12 +3,16 @@ import { getAllAlternatives } from "@/config/alternatives";
 import AlternativesList from "@/components/alternatives/list";
 import { AlternativesIndexHero } from "@/components/alternatives/index";
 import { createPageMetadata } from "@/lib/seo";
+import { SITE_URL } from "@/config/seo";
+import { serializeJsonLd } from "@/lib/security";
+import { buildAlternativesItemListSchema } from "@/lib/schema";
 
 export const metadata = createPageMetadata({
-  title: "Featul vs Competitors | Feedback Tool Alternatives",
+  title: "Featurebase alternatives & feedback tool comparisons",
   description:
-    "Compare Featul with Canny, Featurebase, Nolt, Productboard, and other feedback tools. Side-by-side looks at features, privacy, EU hosting, and roadmaps.",
+    "Compare Featul with Featurebase, Canny, Nolt, Productboard, and other feedback tools. Side-by-side looks at features, privacy, EU hosting, and open source.",
   path: "/alternatives",
+  absoluteTitle: true,
 });
 
 export default function AlternativesIndexPage() {
@@ -18,6 +22,21 @@ export default function AlternativesIndexPage() {
 
   return (
     <main className="min-h-screen overflow-x-clip">
+      <script
+        id="alternatives-itemlist-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(
+            buildAlternativesItemListSchema({
+              siteUrl: SITE_URL,
+              items: allAlternatives.map((item) => ({
+                name: item.name,
+                slug: item.slug,
+              })),
+            }),
+          ),
+        }}
+      />
       <AlternativesIndexHero />
       <div className="relative mx-auto max-w-6xl">
         <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14 pb-14 sm:pb-20">

@@ -259,6 +259,28 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
   };
 }
 
+type BuildAlternativesItemListParams = {
+  siteUrl: string;
+  items: Array<{ name: string; slug: string }>;
+};
+
+export function buildAlternativesItemListSchema({
+  siteUrl,
+  items,
+}: BuildAlternativesItemListParams) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Featul alternatives to Featurebase, Canny, and other feedback tools",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: `Best ${item.name} alternative`,
+      url: `${siteUrl}/alternatives/${item.slug}`,
+    })),
+  };
+}
+
 type BuildAlternativesBreadcrumbParams = {
   siteUrl: string;
   slug: string;

@@ -45,6 +45,7 @@ export async function generateMetadata({
     title,
     description,
     path: `/alternatives/${slug}`,
+    absoluteTitle: true,
   });
 }
 
@@ -65,6 +66,14 @@ export default async function AlternativePage({
     currentSlug: slug,
     currentType: "competitor",
   });
+  if (slug === "featurebase") {
+    relatedLinks.unshift({
+      href: "/docs/open-source",
+      label: "Featul is open source",
+      type: "hub",
+    });
+  }
+  const related = relatedLinks.slice(0, 5);
 
   return (
     <main className="min-h-screen overflow-x-clip">
@@ -95,7 +104,7 @@ export default async function AlternativePage({
           <AlternativeFAQs alt={alt} />
           <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
             <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-              <RelatedLinks links={relatedLinks} title="Related comparisons" />
+              <RelatedLinks links={related} title="Related comparisons" />
             </div>
           </Container>
         </SectionStack>

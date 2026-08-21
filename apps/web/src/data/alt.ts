@@ -96,19 +96,19 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
   },
   featurebase: {
     description:
-      'Compare Featurebase and Featul: EU hosting, privacy defaults, unified roadmap and changelog.',
+      'Compare Featurebase and Featul: an open source Featurebase alternative with EU hosting, privacy defaults, and a unified roadmap and changelog.',
     items: [
       {
         id: 'featurebase-1',
-        question: 'How does Featul differ from Featurebase?',
+        question: 'Is Featul a Featurebase alternative?',
         answer:
-          'Both offer strong feedback and voting. Featul adds privacy-first defaults, EU hosting by default, and a unified roadmap–changelog workflow.',
+          'Yes. Featul is an open source Featurebase alternative for collecting feedback, prioritizing a public roadmap, and publishing changelogs. Teams switch when they want EU hosting, self-hosting, and one workflow from vote to release notes.',
       },
       {
         id: 'featurebase-2',
-        question: 'Does Featul focus on EU hosting and privacy?',
+        question: 'Is there an open source Featurebase alternative?',
         answer:
-          'Yes. Featul provides EU hosting and sensible GDPR-aligned controls without heavy configuration, ideal for privacy-conscious teams.',
+          'Featul is MIT-licensed and can be self-hosted. You get boards, voting, roadmap, and changelog without locking feedback data into a closed vendor.',
       },
       {
         id: 'featurebase-3',

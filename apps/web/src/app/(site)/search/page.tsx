@@ -9,12 +9,15 @@ import {
   OverlayCardPanel,
 } from "@/components/shared/overlay-card"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Search Featul",
-  description:
-    "Search Featul definitions, calculators, and resources for SaaS metrics, product feedback, and growth.",
-  path: "/search",
-})
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Search Featul",
+    description:
+      "Search Featul definitions, calculators, and resources for SaaS metrics, product feedback, and growth.",
+    path: "/search",
+  }),
+  robots: { index: false, follow: true },
+}
 
 type Props = {
   searchParams: Promise<{ q?: string }>

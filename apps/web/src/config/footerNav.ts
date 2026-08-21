@@ -31,10 +31,10 @@ export const footerNavigationConfig: FooterNavigationConfig = {
     {
       title: 'Alternatives',
       items: [
-        { name: 'UserJot', href: '/alternatives/userjot' },
-        { name: 'Featurebase', href: '/alternatives/featurebase' },
-        { name: 'Nolt', href: '/alternatives/nolt' },
-        { name: 'Canny', href: '/alternatives/canny' },
+        { name: 'Featurebase alternative', href: '/alternatives/featurebase' },
+        { name: 'Canny alternative', href: '/alternatives/canny' },
+        { name: 'Nolt alternative', href: '/alternatives/nolt' },
+        { name: 'UserJot alternative', href: '/alternatives/userjot' },
         { name: 'Upvoty', href: '/alternatives/upvoty' },
         { name: 'More', href: '/alternatives' },
       ],

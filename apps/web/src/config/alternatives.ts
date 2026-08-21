@@ -251,5 +251,5 @@ export function getAlternativeSlugs(): string[] {
 }
 
 export function getAlternativePageTitle(name: string): string {
-  return `${name} Alternatives | Featul vs ${name}`
+  return `Best ${name} alternative | Featul vs ${name}`
 }
