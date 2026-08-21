@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AUTH_SIGN_IN_URL, AUTH_SIGN_UP_URL } from "@/config/auth";
 import { Button } from "@featul/ui/components/button";
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { useIsDocsMobile } from "@/hooks/docs";
 
@@ -16,7 +17,9 @@ export function DocsMobileHeader() {
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 font-medium text-base">
           <FeatulLogoIcon className="text-muted-foreground" size={20} />
-          <span>Docs</span>
+          <OverlayChip innerClassName="h-auto min-h-5 px-2 text-[11px] font-medium text-foreground">
+            Docs
+          </OverlayChip>
         </div>
       </div>
 

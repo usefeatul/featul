@@ -5,6 +5,7 @@ import { docsSections } from "@/config/docsNav"
 import { readDocsMarkdown, type DocsPageId } from "@/lib/docs"
 import { DocsMarkdown, extractDocsToc } from "@/components/docs/markdown"
 import { DocsToc } from "@/components/docs/toc"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { createPageMetadata } from "@/lib/seo"
 import { SITE_URL } from "@/config/seo"
 import { buildDocsBreadcrumbSchema } from "@/lib/schema"
@@ -107,7 +108,7 @@ export default async function DocsPage(props: DocsPageProps) {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
       {/* Fixed TOC on the right */}
-      <aside className="hidden xl:block pointer-events-none fixed top-10 right-1 z-20">
+      <aside className="pointer-events-none fixed top-12 right-6 z-20 hidden xl:block">
         <div className="w-50 max-w-xs pointer-events-auto">
           <DocsToc items={tocItems} />
         </div>
@@ -116,9 +117,9 @@ export default async function DocsPage(props: DocsPageProps) {
       <section>
         <div className="max-w-2xl lg:max-w-3xl space-y-6">
           <div className="space-y-3">
-            <div className="inline-flex items-center rounded-md bg-card border border-border px-2 py-0.5 text-xs font-medium text-accent">
+            <OverlayChip innerClassName="h-auto min-h-5 px-2 text-[11px] font-medium text-accent">
               {nav.sectionLabel}
-            </div>
+            </OverlayChip>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">
               {docs.frontmatter.title ?? nav.item.label}
             </h1>

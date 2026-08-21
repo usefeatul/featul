@@ -34,5 +34,9 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "highlight.js": "^11.12.0",
+    "rehype-highlight": "^7.0.2"
   }
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
 import { docsSections } from "../../config/docsNav";
 import React, {
   useRef,
@@ -61,9 +62,9 @@ export function DocsSidebar() {
         className="group mb-12 flex items-center gap-3 pl-3"
       >
         <FeatulLogoIcon className="size-5 text-foreground" />
-        <span className="text-sm bg-card border border-border rounded-md px-2 py-0.5 font-medium text-foreground">
+        <OverlayChip innerClassName="h-auto min-h-5 px-2 text-[11px] font-medium text-foreground">
           Docs
-        </span>
+        </OverlayChip>
       </Link>
 
       {/* Navigation sections with gliding indicator */}

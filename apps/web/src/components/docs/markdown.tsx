@@ -1,9 +1,16 @@
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import rehypeHighlight from "rehype-highlight"
 import { Prose } from "@/components/blog/prose"
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { GitHubIcon } from "@featul/ui/icons/github"
 import { cn } from "@featul/ui/lib/utils"
+import "./code.css"
 
 function slugifyHeading(input: string) {
   return input
@@ -34,9 +41,10 @@ function extractTextFromChildren(children: React.ReactNode): string {
 
 export function DocsMarkdown({ markdown }: { markdown: string }) {
   return (
-    <Prose className="prose-h2:font-bold prose-h3:font-bold prose-h2:text-muted-foreground prose-h3:text-muted-foreground">
+    <Prose className="prose-h2:font-bold prose-h3:font-bold prose-h2:text-muted-foreground prose-h3:text-muted-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:content-none prose-code:after:content-none">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeHighlight]}
         components={{
           h2: ({ children }) => {
             const text = extractTextFromChildren(children)
@@ -97,11 +105,13 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             )
           },
           table: ({ children }) => (
-            <div className="my-4 w-full overflow-x-auto rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-              <table className="w-full text-sm border-collapse">
-                {children}
-              </table>
-            </div>
+            <OverlayCard className="my-4 h-auto w-full">
+              <OverlayCardPanel className="overflow-x-auto p-0">
+                <table className="w-full border-collapse text-sm">
+                  {children}
+                </table>
+              </OverlayCardPanel>
+            </OverlayCard>
           ),
           thead: ({ children }) => (
             <thead className="bg-primary/20 border-b border-border ">
@@ -132,27 +142,45 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const isInline = !className
             if (isInline) {
               return (
-                <code className="mr-1 rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary">
+                <OverlayChip
+                  className="mx-0.5 align-middle"
+                  innerClassName="h-auto min-h-5 px-1.5 font-mono text-[12px] font-medium text-primary"
+                >
                   {children}
-                </code>
+                </OverlayChip>
               )
             }
             return (
-              <code className={cn("rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-primary/10 px-1.5 py-0.5 text-sm font-medium font-mono text-primary", className)}>
+              <code className={cn(className)}>
                 {children}
               </code>
             )
           },
           pre: ({ children }) => (
-            <pre className="my-4 overflow-x-auto rounded-lg bg-muted p-4 text-sm">
-              {children}
-            </pre>
+            <OverlayCard className="my-4 h-auto w-full">
+              <OverlayCardPanel className="bg-background p-0">
+                <pre className="docs-code overflow-x-auto p-4">{children}</pre>
+              </OverlayCardPanel>
+            </OverlayCard>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="my-5 rounded-2xl border border-border bg-card/80 px-5 py-4 text-sm shadow-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white backdrop-blur-sm dark:ring-offset-black [&_p]:my-0 [&_p]:text-accent [&_ul]:my-3 [&_ul]:space-y-2 [&_ol]:my-3 [&_ol]:space-y-2 [&_li]:text-accent [&_strong]:text-foreground">
-              {children}
-            </blockquote>
+            <OverlayCard className="my-5 h-auto w-full">
+              <OverlayCardPanel className="px-5 py-4 text-sm [&_li]:text-accent [&_ol]:my-3 [&_ol]:space-y-2 [&_p]:my-0 [&_p]:text-accent [&_strong]:text-foreground [&_ul]:my-3 [&_ul]:space-y-2">
+                {children}
+              </OverlayCardPanel>
+            </OverlayCard>
           ),
+          img: ({ src, alt }) => {
+            const url = typeof src === "string" ? src : ""
+            if (!url) return null
+            return (
+              <OverlayCard className="my-5 h-auto w-full">
+                <OverlayCardPanel className="p-0">
+                  <img src={url} alt={typeof alt === "string" ? alt : ""} className="block h-auto w-full" />
+                </OverlayCardPanel>
+              </OverlayCard>
+            )
+          },
         }}
       >
         {markdown}
