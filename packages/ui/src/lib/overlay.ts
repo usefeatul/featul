@@ -12,12 +12,12 @@ export const overlayChipShellClass =
 export const overlayChipInnerClass =
   "inline-flex h-4 min-h-4 min-w-4 flex-1 items-center justify-center overflow-hidden rounded-[4px] bg-background text-xs font-extralight tabular-nums text-accent"
 
-/** Circular avatar frame — same two-tone chip language, `rounded-full`. */
+/** Circular avatar frame — nested ring on the photo, no inset padding. */
 export const overlayAvatarShellClass =
-  "relative box-border inline-flex shrink-0 overflow-visible rounded-full border border-border bg-card p-0.5 dark:border-white/10 dark:bg-black"
+  "relative inline-flex shrink-0 overflow-visible rounded-full border border-border bg-card after:pointer-events-none after:absolute after:inset-px after:rounded-full after:ring-1 after:ring-border/60 after:ring-inset dark:border-white/10 dark:bg-black"
 
 export const overlayAvatarInnerClass =
-  "size-full overflow-hidden rounded-full bg-muted ring-1 ring-border/60"
+  "size-full overflow-hidden rounded-full bg-muted"
 
 /** Rotated corner ribbon — nested chip on a 45° square. */
 export const overlayRibbonShellClass =
