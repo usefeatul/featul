@@ -81,19 +81,15 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 <p className="mt-3 text-accent">
                   Common friction points this use case is built to solve.
                 </p>
-                <ul className="mt-10 grid gap-3 sm:grid-cols-2">
+                <ul className="mt-10 space-y-5">
                   {sections.painPoints.map((item, i) => (
-                    <li key={i} className="h-full">
-                      <OverlayCard>
-                        <OverlayCardPanel className="flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4">
-                          <h3 className="text-base font-medium text-foreground sm:text-lg">
-                            {item.problem}
-                          </h3>
-                          <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
-                            {item.impact}
-                          </p>
-                        </OverlayCardPanel>
-                      </OverlayCard>
+                    <li key={i} className="border-b border-border/60 pb-5 last:border-0 last:pb-0">
+                      <h3 className="text-base font-medium text-foreground sm:text-lg">
+                        {item.problem}
+                      </h3>
+                      <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
+                        {item.impact}
+                      </p>
                     </li>
                   ))}
                 </ul>
@@ -111,19 +107,18 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 <p className="mt-3 text-accent">
                   A clearer workflow from feedback intake to shipped updates.
                 </p>
-                <ul className="mt-10 grid gap-3 sm:grid-cols-2">
+                <ul className="mt-10 space-y-5">
                   {sections.solutions.map((item, i) => (
-                    <li key={i} className="h-full">
-                      <OverlayCard>
-                        <OverlayCardPanel className="flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4">
-                          <h3 className="text-base font-medium text-foreground sm:text-lg">
-                            {item.solution}
-                          </h3>
-                          <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
-                            {item.benefit}
-                          </p>
-                        </OverlayCardPanel>
-                      </OverlayCard>
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                      <div>
+                        <h3 className="text-base font-medium text-foreground sm:text-lg">
+                          {item.solution}
+                        </h3>
+                        <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
+                          {item.benefit}
+                        </p>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -171,25 +166,22 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                   <Accordion
                     type="single"
                     collapsible
-                    className="mt-8 w-full space-y-3"
+                    className="mt-8 w-full border-y border-border/60"
                   >
                     {faqs.map((faq, i) => (
-                      <OverlayCard key={i}>
-                        <OverlayCardPanel className="px-4 py-1">
-                          <AccordionItem
-                            id={`faq-${useCase.slug}-${i + 1}`}
-                            value={`faq-${useCase.slug}-${i + 1}`}
-                            className="border-none px-0"
-                          >
-                            <AccordionTrigger className="py-3 text-left text-base font-medium !no-underline hover:!no-underline">
-                              {faq.question}
-                            </AccordionTrigger>
-                            <AccordionContent className="text-sm leading-relaxed text-accent">
-                              {faq.answer}
-                            </AccordionContent>
-                          </AccordionItem>
-                        </OverlayCardPanel>
-                      </OverlayCard>
+                      <AccordionItem
+                        key={i}
+                        id={`faq-${useCase.slug}-${i + 1}`}
+                        value={`faq-${useCase.slug}-${i + 1}`}
+                        className="px-0"
+                      >
+                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-sm leading-relaxed text-accent">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
                     ))}
                   </Accordion>
                 </div>

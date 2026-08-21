@@ -198,21 +198,19 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
           {def.faqs && def.faqs.length ? (
             <section>
               <h2 className="text-lg font-semibold text-foreground">FAQs</h2>
-              <div className="mt-4 space-y-3 text-accent">
+              <div className="mt-4 space-y-4 text-accent">
                 {def.essay?.faqsContext ? (
                   <p className="text-sm leading-7 sm:text-base">
                     {def.essay.faqsContext}
                   </p>
                 ) : null}
                 {def.faqs.map((f, i) => (
-                  <OverlayCard key={i}>
-                    <OverlayCardPanel className="px-4 py-3">
-                      <p className="font-medium text-foreground">{f.q}</p>
-                      <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
-                        {f.a}
-                      </p>
-                    </OverlayCardPanel>
-                  </OverlayCard>
+                  <div key={i} className="space-y-2">
+                    <p className="font-medium text-foreground">{f.q}</p>
+                    <p className="text-sm leading-7 text-accent sm:text-base">
+                      {f.a}
+                    </p>
+                  </div>
                 ))}
               </div>
             </section>

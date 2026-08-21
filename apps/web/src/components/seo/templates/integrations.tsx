@@ -192,25 +192,22 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                   <Accordion
                     type="single"
                     collapsible
-                    className="mt-8 w-full space-y-3"
+                    className="mt-8 w-full border-y border-border/60"
                   >
                     {faqs.map((faq, i) => (
-                      <OverlayCard key={i}>
-                        <OverlayCardPanel className="px-4 py-1">
-                          <AccordionItem
-                            id={`faq-${integration.slug}-${i + 1}`}
-                            value={`faq-${integration.slug}-${i + 1}`}
-                            className="border-none px-0"
-                          >
-                            <AccordionTrigger className="py-3 text-left text-base font-medium !no-underline hover:!no-underline">
-                              {faq.question}
-                            </AccordionTrigger>
-                            <AccordionContent className="text-sm leading-relaxed text-accent">
-                              {faq.answer}
-                            </AccordionContent>
-                          </AccordionItem>
-                        </OverlayCardPanel>
-                      </OverlayCard>
+                      <AccordionItem
+                        key={i}
+                        id={`faq-${integration.slug}-${i + 1}`}
+                        value={`faq-${integration.slug}-${i + 1}`}
+                        className="px-0"
+                      >
+                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-sm leading-relaxed text-accent">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
                     ))}
                   </Accordion>
                 </div>
