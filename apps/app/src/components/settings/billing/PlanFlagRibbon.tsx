@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 import { StarIcon } from "@featul/ui/icons/star"
 
@@ -17,24 +18,20 @@ export default function PlanFlagRibbon({
   tone,
   className,
 }: PlanFlagRibbonProps) {
-  const surfaceClassName = cn(
-    "absolute inset-0 rounded-[1px] border border-primary/70 ring-1 ring-primary/40 ring-offset-1 ring-offset-background before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(0,0,0,0.12)] dark:ring-offset-black dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.45)]",
-    tone === "popular" && "bg-primary",
-  )
-
   return (
     <div
-      className={cn(
-        "pointer-events-none absolute -right-[19px] -top-[19px] z-10 flex h-[38px] w-[38px] rotate-45 items-end justify-center pb-1",
-        className,
-      )}
+      className={cn(overlayRibbonShellClass, className)}
       title={label}
       aria-hidden="true"
     >
-      <div className={surfaceClassName} />
-      <div className="relative z-10 mb-px text-white">
+      <span
+        className={cn(
+          overlayRibbonInnerClass,
+          tone === "popular" && "bg-primary",
+        )}
+      >
         <StarIcon width={10} height={10} className="fill-current" />
-      </div>
+      </span>
     </div>
   )
 }

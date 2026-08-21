@@ -1,5 +1,6 @@
 "use client";
 
+import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { LayersIcon } from "@featul/ui/icons/layers";
@@ -58,22 +59,21 @@ function DemoFlagRibbon({
 
   const Icon =
     isPinned && isFeatured ? StarPinIcon : isPinned ? PinIcon : StarIcon;
-  const surface = cn(
-    "absolute inset-0 rounded-[1px] border border-border/80 ring-1 ring-border/60 ring-offset-1 ring-offset-white",
-    isPinned && isFeatured && "bg-linear-to-r from-primary to-amber-500",
-    isPinned && !isFeatured && "bg-primary",
-    !isPinned && isFeatured && "bg-amber-500"
-  );
-
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute -right-[19px] -top-[19px] flex h-[38px] w-[38px] rotate-45 items-end justify-center pb-1"
+      className={overlayRibbonShellClass}
     >
-      <div className={surface} />
-      <div className="relative z-10 mb-px text-white">
+      <span
+        className={cn(
+          overlayRibbonInnerClass,
+          isPinned && isFeatured && "bg-linear-to-r from-primary to-amber-500",
+          isPinned && !isFeatured && "bg-primary",
+          !isPinned && isFeatured && "bg-amber-500"
+        )}
+      >
         <Icon width={10} height={10} className="fill-current" />
-      </div>
+      </span>
     </div>
   );
 }

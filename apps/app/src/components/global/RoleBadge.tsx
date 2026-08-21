@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@featul/ui/components/tooltip";
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
 import { StarIcon } from "@featul/ui/icons/star";
 
 interface RoleBadgeProps {
@@ -53,30 +54,31 @@ export default function RoleBadge({
   if (!role && !isOwner && !isFeatul) return null;
 
   return (
-    <div
-      className={cn(
-        "absolute -bottom-1 -right-1 border border-border rounded-full bg-card dark:bg-black p-0.5 z-10 pointer-events-auto",
-        className
-      )}
-    >
-      <Tooltip>
-        <TooltipTrigger asChild>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <OverlayChip
+          className={cn(
+            "absolute -bottom-1 -right-1 z-10 rounded-lg p-px pointer-events-auto",
+            className,
+          )}
+          innerClassName="h-3 min-h-3 min-w-3 rounded-md"
+        >
           <StarIcon
-            className={cn("size-2.5", getRoleColor(role, isOwner, isFeatul))}
+            className={cn("size-2", getRoleColor(role, isOwner, isFeatul))}
             aria-label={getTooltipText(role, isOwner, isFeatul)}
           />
-        </TooltipTrigger>
-        <TooltipContent
-          side="top"
-          sideOffset={4}
-          className={cn(
-            "w-auto whitespace-nowrap",
-            getTooltipClasses(role, isOwner, isFeatul)
-          )}
-        >
-          {getTooltipText(role, isOwner, isFeatul)}
-        </TooltipContent>
-      </Tooltip>
-    </div>
+        </OverlayChip>
+      </TooltipTrigger>
+      <TooltipContent
+        side="top"
+        sideOffset={4}
+        className={cn(
+          "w-auto whitespace-nowrap",
+          getTooltipClasses(role, isOwner, isFeatul)
+        )}
+      >
+        {getTooltipText(role, isOwner, isFeatul)}
+      </TooltipContent>
+    </Tooltip>
   );
 }

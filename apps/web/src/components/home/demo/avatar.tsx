@@ -1,3 +1,5 @@
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
+import { overlayAvatarInnerClass, overlayAvatarShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { StarIcon } from "@featul/ui/icons/star";
 import type { DemoRole } from "./data";
@@ -58,13 +60,13 @@ export function DemoAvatar({
     <span
       aria-hidden
       className={cn(
-        "relative inline-flex size-6 shrink-0 select-none overflow-visible rounded-full bg-gradient-to-br ring-1 ring-border",
-        palette,
+        overlayAvatarShellClass,
+        "size-6 select-none",
         className
       )}
     >
-      <span className="absolute inset-0 overflow-hidden rounded-full">
-        <span className="absolute inset-0 flex items-center justify-center text-[inherit] font-semibold text-white">
+      <span className={cn(overlayAvatarInnerClass, "relative bg-gradient-to-br", palette)}>
+        <span className="absolute inset-0 flex items-center justify-center font-semibold text-white">
           {initials}
         </span>
         <img
@@ -76,9 +78,12 @@ export function DemoAvatar({
         />
       </span>
       {starColor ? (
-        <span className="absolute -bottom-1 -right-1 z-10 rounded-full border border-border bg-card p-0.5">
-          <StarIcon className={cn("size-2.5", starColor)} />
-        </span>
+        <OverlayChip
+          className="absolute -bottom-1 -right-1 z-10 rounded-lg p-px"
+          innerClassName="h-3 min-h-3 min-w-3 rounded-md"
+        >
+          <StarIcon className={cn("size-2", starColor)} />
+        </OverlayChip>
       ) : null}
     </span>
   );
