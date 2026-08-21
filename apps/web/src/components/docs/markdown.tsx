@@ -157,9 +157,9 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             )
           },
           pre: ({ children }) => (
-            <OverlayCard className="my-4 h-auto w-full">
-              <OverlayCardPanel className="bg-background p-0">
-                <pre className="docs-code overflow-x-auto p-4">{children}</pre>
+            <OverlayCard className="not-prose my-4 h-auto w-full">
+              <OverlayCardPanel className="bg-background px-4 py-3.5">
+                <pre className="docs-code overflow-x-auto">{children}</pre>
               </OverlayCardPanel>
             </OverlayCard>
           ),
