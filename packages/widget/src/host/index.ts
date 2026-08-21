@@ -862,10 +862,10 @@ function boot() {
       button.style.zIndex = "2147483647";
       button.style.transition =
         "bottom 220ms cubic-bezier(0.22, 1, 0.36, 1), left 220ms cubic-bezier(0.22, 1, 0.36, 1), right 220ms cubic-bezier(0.22, 1, 0.36, 1)";
-      applyLauncherChrome();
       button.onclick = () => api.showWidget();
-      document.body.appendChild(button);
       state.button = button;
+      applyLauncherChrome();
+      document.body.appendChild(button);
     }
     applyLauncherPlacement();
     applyPanelRect();
