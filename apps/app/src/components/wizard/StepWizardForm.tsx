@@ -6,7 +6,7 @@ import { Input } from "@featul/ui/components/input"
 import { Label } from "@featul/ui/components/label"
 import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@featul/ui/components/card"
-import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import TimezonePicker from "./TimezonePicker"
 import { CheckIcon } from "@featul/ui/icons/check"
@@ -197,15 +197,9 @@ export default function StepWizardForm({
           <div className="space-y-2">
             <Label htmlFor="domain">Domain</Label>
             <Toolbar size="sm" className="w-full">
-              <span
-                className={cn(
-                  toolbarItemClass,
-                  "inline-flex shrink-0 items-center px-2.5 text-xs text-accent",
-                )}
-              >
-                https://
+              <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-md border-r border-border bg-card px-3 text-xs font-medium tracking-wide text-accent">
+                HTTPS
               </span>
-              <ToolbarSeparator />
               <Input
                 id="domain"
                 variant="plain"
@@ -217,12 +211,14 @@ export default function StepWizardForm({
                 autoFocus
               />
               {!domainValid && domain.length > 0 ? (
-                <>
-                  <ToolbarSeparator />
-                  <span className={cn(toolbarItemClass, "inline-flex items-center px-2")}>
-                    <XMarkIcon className="size-4 text-destructive" />
-                  </span>
-                </>
+                <span
+                  className={cn(
+                    toolbarItemClass,
+                    "inline-flex items-center px-2 hover:bg-transparent",
+                  )}
+                >
+                  <XMarkIcon className="size-4 text-destructive" />
+                </span>
               ) : null}
             </Toolbar>
             {reservedWorkspaceUrl ? (
