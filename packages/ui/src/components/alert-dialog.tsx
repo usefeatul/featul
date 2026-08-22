@@ -5,7 +5,7 @@ import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 
 import { cn } from "@featul/ui/lib/utils"
 import { buttonVariants } from "@featul/ui/components/button"
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay"
+import { overlayDialogClass, overlayDialogInnerClass } from "@featul/ui/lib/overlay"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 
 function AlertDialog({
@@ -50,7 +50,7 @@ function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="alert-dialog-inner"
-      className={cn(overlayInnerClass, "px-4 py-3", className)}
+      className={cn(overlayDialogInnerClass, "px-4 py-3", className)}
       {...props}
     />
   )
@@ -71,7 +71,7 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         className={cn(
           overlayDialogClass,
-          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 duration-200 outline-none sm:max-w-sm",
+          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-3xl duration-200 outline-none sm:max-w-sm",
           className
         )}
         {...props}
@@ -80,7 +80,7 @@ function AlertDialogContent({
         {showCloseButton && (
           <BaseAlertDialog.Close
             data-slot="alert-dialog-close"
-            className="ring-offset-background focus:ring-ring absolute top-3 right-2 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
+            className="ring-offset-background focus:ring-ring absolute top-3 right-3 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
           >
             <XMarkIcon size={14} />
             <span className="sr-only">Close</span>

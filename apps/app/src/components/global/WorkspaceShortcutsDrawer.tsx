@@ -2,7 +2,7 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayDialogInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
@@ -207,7 +207,7 @@ export default function WorkspaceShortcutsDrawer() {
         aria-labelledby="workspace-shortcuts-title"
         className={cn(
           overlayDialogClass,
-          "fixed z-50 flex flex-col",
+          "fixed z-50 flex flex-col rounded-3xl",
           "top-4 right-4 bottom-4 left-4 sm:left-auto sm:w-[340px]",
           "transition-all duration-200 ease-out",
           open
@@ -241,7 +241,7 @@ export default function WorkspaceShortcutsDrawer() {
           </div>
         </div>
 
-        <div className={cn(overlayInnerClass, "flex min-h-0 flex-1 flex-col")}>
+        <div className={cn(overlayDialogInnerClass, "flex min-h-0 flex-1 flex-col")}>
           <div className="px-3 pt-3">
             <div className="relative">
               <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
