@@ -12,7 +12,7 @@ import TimezonePicker from "./TimezonePicker"
 import { CheckIcon } from "@featul/ui/icons/check"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { LoaderIcon } from "@featul/ui/icons/loader"
-import { DomainIcon } from "@featul/ui/icons/domain"
+import { WebsiteFavicon } from "./WebsiteFavicon"
 import {
   isNameValid,
   isDomainValid,
@@ -23,40 +23,6 @@ import {
   isReservedWorkspaceSlug,
 } from "../../lib/validators"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
-
-function hostFromDomain(domain: string) {
-  const raw = domain.trim()
-  if (!raw) return ""
-  try {
-    return new URL(raw.includes("://") ? raw : `https://${raw}`).host
-  } catch {
-    return raw.replace(/^https?:\/\//, "").split("/")[0] || ""
-  }
-}
-
-function WebsiteFavicon({ domain }: { domain: string }) {
-  const host = hostFromDomain(domain)
-  const [failed, setFailed] = React.useState(false)
-
-  React.useEffect(() => {
-    setFailed(false)
-  }, [host])
-
-  if (!host || failed) {
-    return <DomainIcon className="size-4 text-accent" />
-  }
-
-  return (
-    <img
-      src={`https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(host)}&sz=128`}
-      alt=""
-      width={16}
-      height={16}
-      className="size-4 rounded-[3px]"
-      onError={() => setFailed(true)}
-    />
-  )
-}
 
 interface StepWizardFormProps {
   name: string
