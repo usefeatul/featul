@@ -197,7 +197,7 @@ export default function StepWizardForm({
           <div className="space-y-2">
             <Label htmlFor="domain">Domain</Label>
             <Toolbar size="sm" className="w-full">
-              <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-md border-r border-border bg-card px-3 text-xs font-medium tracking-wide text-accent">
+              <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-md border-r border-border bg-black px-3 text-xs font-medium tracking-wide text-accent dark:bg-black">
                 HTTPS
               </span>
               <Input
