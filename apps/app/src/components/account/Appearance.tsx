@@ -45,7 +45,7 @@ export default function Appearance() {
   ]
 
   return (
-    <SectionCard title="Appearance" description="Choose light, dark, or system theme">
+    <SectionCard title="Appearance">
       <div className="grid gap-3 md:grid-cols-3">
         {options.map(({ key, label, description, Preview }) => {
           const isActive = selectedTheme === key
