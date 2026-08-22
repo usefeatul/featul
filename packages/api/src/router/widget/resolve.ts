@@ -15,7 +15,6 @@ import {
 import { toSlug } from "../../shared/slug";
 import {
   buildWidgetOriginAllowlist,
-  isAllowedWidgetEmbedOrigin,
   isVerifiedIdentity as verifySignedIdentity,
 } from "../../shared/identity";
 import type { AuthenticatedRouterContext } from "../../types/router";
@@ -140,7 +139,7 @@ function buildWidgetConfig(input: {
 export async function resolveWidget(
   ctx: WidgetRouterContext,
   projectId: string,
-  parentOrigin?: string,
+  _parentOrigin?: string,
 ): Promise<ResolvedWidget> {
   const [ws] = await ctx.db
     .select({
@@ -202,12 +201,6 @@ export async function resolveWidget(
       : [],
     includeDevOrigins: true,
   });
-  if (
-    parentOrigin &&
-    !isAllowedWidgetEmbedOrigin(parentOrigin, allowedOrigins)
-  ) {
-    throw new HTTPException(403, { message: "Widget origin is not allowed" });
-  }
 
   const roadmapVisible = isPublicSectionVisible(
     systemBoards.find(

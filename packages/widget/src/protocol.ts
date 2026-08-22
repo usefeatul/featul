@@ -9,14 +9,6 @@ export type WidgetMessage = {
   payload?: unknown;
 };
 
-function isLocalWidgetHostname(hostname: string) {
-  return (
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
-    hostname.endsWith(".localhost")
-  );
-}
-
 export function isSafeWidgetParentOrigin(
   value?: string | null,
 ): value is string {
@@ -24,10 +16,10 @@ export function isSafeWidgetParentOrigin(
   if (!origin) return false;
   try {
     const url = new URL(origin);
-    if (origin !== url.origin) return false;
-    if (url.protocol === "https:") return true;
-    if (url.protocol !== "http:") return false;
-    return isLocalWidgetHostname(url.hostname);
+    return (
+      origin === url.origin &&
+      (url.protocol === "https:" || url.protocol === "http:")
+    );
   } catch {
     return false;
   }

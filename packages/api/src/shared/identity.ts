@@ -79,10 +79,7 @@ export function isSafeWidgetParentOrigin(
   if (!origin) return false;
   try {
     const url = new URL(origin);
-    if (origin !== url.origin) return false;
-    if (url.protocol === "https:") return true;
-    if (url.protocol !== "http:") return false;
-    return isLocalWidgetHostname(url.hostname);
+    return origin === url.origin && (url.protocol === "https:" || url.protocol === "http:");
   } catch {
     return false;
   }
@@ -91,9 +88,7 @@ export function isSafeWidgetParentOrigin(
 export function normalizeWidgetOrigin(value: string) {
   const origin = new URL(value.trim()).origin;
   if (!isSafeWidgetParentOrigin(origin)) {
-    throw new Error(
-      "Widget origins must use HTTPS, except localhost development origins",
-    );
+    throw new Error("Widget origins must use HTTP or HTTPS");
   }
   return origin;
 }
@@ -107,25 +102,6 @@ export function isAllowedWidgetMessageOrigin(
     isSafeWidgetParentOrigin(eventOrigin) &&
     eventOrigin === parentOrigin
   );
-}
-
-/** Local http(s) origins are always allowed so the widget can be previewed before deploy. */
-export function isLocalWidgetOrigin(value?: string | null) {
-  if (!isSafeWidgetParentOrigin(value)) return false;
-  try {
-    return isLocalWidgetHostname(new URL(value).hostname);
-  } catch {
-    return false;
-  }
-}
-
-export function isAllowedWidgetEmbedOrigin(
-  parentOrigin: string,
-  allowedOrigins: string[],
-) {
-  if (!isSafeWidgetParentOrigin(parentOrigin)) return false;
-  if (allowedOrigins.includes(parentOrigin)) return true;
-  return isLocalWidgetOrigin(parentOrigin);
 }
 
 export function buildWidgetOriginAllowlist(input: {
