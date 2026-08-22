@@ -4,12 +4,15 @@ import React from "react"
 import { Button } from "@featul/ui/components/button"
 import { Input } from "@featul/ui/components/input"
 import { Label } from "@featul/ui/components/label"
+import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@featul/ui/components/card"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { cn } from "@featul/ui/lib/utils"
 import TimezonePicker from "./TimezonePicker"
-import { ArrowRight, AlertCircle, Link2 } from "lucide-react"
-import CheckIcon from "@featul/ui/icons/check"
-import XMarkIcon from "@featul/ui/icons/xmark"
-import LoaderIcon from "@featul/ui/icons/loader"
+import { CheckIcon } from "@featul/ui/icons/check"
+import { XMarkIcon } from "@featul/ui/icons/xmark"
+import { LoaderIcon } from "@featul/ui/icons/loader"
+import { DomainIcon } from "@featul/ui/icons/domain"
 import {
   isNameValid,
   isDomainValid,
@@ -20,6 +23,40 @@ import {
   isReservedWorkspaceSlug,
 } from "../../lib/validators"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
+
+function hostFromDomain(domain: string) {
+  const raw = domain.trim()
+  if (!raw) return ""
+  try {
+    return new URL(raw.includes("://") ? raw : `https://${raw}`).host
+  } catch {
+    return raw.replace(/^https?:\/\//, "").split("/")[0] || ""
+  }
+}
+
+function WebsiteFavicon({ domain }: { domain: string }) {
+  const host = hostFromDomain(domain)
+  const [failed, setFailed] = React.useState(false)
+
+  React.useEffect(() => {
+    setFailed(false)
+  }, [host])
+
+  if (!host || failed) {
+    return <DomainIcon className="size-4 text-accent" />
+  }
+
+  return (
+    <img
+      src={`https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(host)}&sz=128`}
+      alt=""
+      width={16}
+      height={16}
+      className="size-4 rounded-[3px]"
+      onError={() => setFailed(true)}
+    />
+  )
+}
 
 interface StepWizardFormProps {
   name: string
@@ -167,6 +204,12 @@ export default function StepWizardForm({
     return "All timestamps and charts will align to this timezone."
   }, [step])
 
+  const fieldInputClass = cn(
+    toolbarItemClass,
+    "h-8 min-w-0 flex-1 px-2.5 text-xs font-medium placeholder:text-accent hover:bg-transparent md:text-sm",
+  )
+  const suggestedDomain = suggestDomainFix(domain)
+
   return (
     <Card variant="plain" className="w-full max-w-[520px] mx-auto bg-background dark:bg-background">
       <CardHeader>
@@ -187,75 +230,87 @@ export default function StepWizardForm({
         {step === 0 && (
           <div className="space-y-2">
             <Label htmlFor="domain">Domain</Label>
-            <div className="relative flex items-center">
-              <span className="inline-flex items-center h-10 px-3 bg-muted border rounded-l-md text-muted-foreground/80 select-none text-sm border-r-0">
+            <Toolbar size="sm" className="w-full">
+              <span
+                className={cn(
+                  toolbarItemClass,
+                  "inline-flex shrink-0 items-center px-2.5 text-xs text-accent",
+                )}
+              >
                 https://
               </span>
+              <ToolbarSeparator />
               <Input
                 id="domain"
+                variant="plain"
                 type="text"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
                 placeholder="example.com"
-                className="h-10 flex-1 rounded-l-none bg-muted/50 placeholder:text-accent"
+                className={fieldInputClass}
                 autoFocus
               />
-              {!domainValid && domain.length > 0 && (
-                <AlertCircle className="absolute right-3 size-4 text-destructive" />
-              )}
-            </div>
-            {reservedWorkspaceUrl && (
-              <p className="mt-1.5 text-xs text-accent">
-                Reserved URL <span className="font-medium text-primary">{reservedWorkspaceUrl}</span> will be used.
+              {!domainValid && domain.length > 0 ? (
+                <>
+                  <ToolbarSeparator />
+                  <span className={cn(toolbarItemClass, "inline-flex items-center px-2")}>
+                    <XMarkIcon className="size-4 text-destructive" />
+                  </span>
+                </>
+              ) : null}
+            </Toolbar>
+            {reservedWorkspaceUrl ? (
+              <p className="text-xs text-accent">
+                Reserved URL{" "}
+                <span className="font-medium text-primary">{reservedWorkspaceUrl}</span> will
+                be used.
               </p>
-            )}
-            {!domainValid && domain.length > 0 && (
-              <div className="mt-1.5 flex items-center gap-1 text-xs text-destructive">
+            ) : null}
+            {!domainValid && domain.length > 0 ? (
+              <div className="flex items-center gap-1 text-xs text-destructive">
                 <span>Invalid domain</span>
-                {(() => {
-                  const suggested = suggestDomainFix(domain)
-                  if (!suggested) return null
-                  return (
-                    <>
-                      <span>— did you mean</span>
-                      <button
-                        type="button"
-                        className="cursor-pointer font-heading text-destructive underline underline-offset-2 transition-opacity hover:opacity-80"
-                        onClick={() => setDomain(suggested)}
-                      >
-                        {suggested}
-                      </button>
-                      ?
-                    </>
-                  )
-                })()}
+                {suggestedDomain ? (
+                  <>
+                    <span>— did you mean</span>
+                    <button
+                      type="button"
+                      className="cursor-pointer font-heading text-destructive underline underline-offset-2 transition-opacity hover:opacity-80"
+                      onClick={() => setDomain(suggestedDomain)}
+                    >
+                      {suggestedDomain}
+                    </button>
+                    ?
+                  </>
+                ) : null}
               </div>
-            )}
+            ) : null}
           </div>
         )}
 
         {step === 1 && (
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="My workspace"
-              className="h-10 bg-muted/50 placeholder:text-accent"
-              autoFocus
-              maxLength={15}
-            />
-            {nameReserved && (
-              <p className="text-xs text-destructive">
-                This workspace name is reserved.
+            <Toolbar size="sm" className="w-full">
+              <Input
+                id="name"
+                variant="plain"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="My workspace"
+                className={fieldInputClass}
+                autoFocus
+                maxLength={15}
+              />
+            </Toolbar>
+            {nameReserved ? (
+              <p className="text-xs text-destructive">This workspace name is reserved.</p>
+            ) : null}
+            {reservedWorkspaceUrl ? (
+              <p className="text-xs text-accent">
+                URL is locked to{" "}
+                <span className="font-medium text-primary">{reservedWorkspaceUrl}</span>.
               </p>
-            )}
-            {reservedWorkspaceUrl && (
-              <p className="mt-1.5 text-xs text-accent">
-                URL is locked to <span className="font-medium text-primary">{reservedWorkspaceUrl}</span>.
-              </p>
-            )}
+            ) : null}
           </div>
         )}
 
@@ -263,56 +318,63 @@ export default function StepWizardForm({
           <div className="space-y-2">
             <Label htmlFor="slug" className="flex items-center gap-2">
               Workspace URL
-              {slugLocked && (
-                <span className="text-xs bg-primary px-1 py-0.5 rounded-sm text-primary-foreground font-normal border border-border ">
+              {slugLocked ? (
+                <OverlayChip innerClassName="px-1.5 text-[10px] font-medium">
                   Reserved
-                </span>
-              )}
+                </OverlayChip>
+              ) : null}
             </Label>
-            <div className="relative">
+            <Toolbar size="sm" className="w-full">
+              <span
+                className={cn(
+                  toolbarItemClass,
+                  "inline-flex shrink-0 items-center px-2",
+                )}
+              >
+                <WebsiteFavicon domain={domain} />
+              </span>
               <Input
                 id="slug"
+                variant="plain"
                 value={slug}
                 onChange={(e) => handleSlugChange(e.target.value)}
                 placeholder="project-slug"
-                className="h-auto py-2.5 pl-9 pr-24 bg-muted/50 placeholder:text-accent text-sm leading-5"
+                className={fieldInputClass}
                 disabled={!!slugLocked}
                 autoFocus
               />
-              <div className="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none mt-0.5">
-                <Link2 className="size-4 text-muted-foreground" />
-              </div>
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
-                .featul.com
-              </span>
-              <div className="absolute right-[6rem] top-1/2 -translate-y-1/2">
-                {slugChecking ? (
-                  <LoaderIcon className="size-4 text-muted-foreground animate-spin" />
+              <span
+                className={cn(
+                  toolbarItemClass,
+                  "inline-flex shrink-0 items-center gap-1.5 px-2.5 hover:bg-transparent",
+                )}
+              >
+                {!slugLocked && slugChecking ? (
+                  <LoaderIcon className="size-3.5 animate-spin text-accent" />
                 ) : !slugLocked && slug && slugAvailable === true ? (
-                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500 text-white">
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-emerald-500 text-white">
                     <CheckIcon className="size-2.5" />
                   </span>
                 ) : !slugLocked &&
                   (slugAvailable === false || (slug && !isSlugValid(slug))) ? (
-                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-destructive text-destructive-foreground">
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-destructive text-white">
                     <XMarkIcon className="size-2.5" />
                   </span>
                 ) : null}
-              </div>
-            </div>
-            {slug && !slugReserved && !isSlugValid(slug) && (
+                <span className="text-xs text-accent">.featul.com</span>
+              </span>
+            </Toolbar>
+            {slug && !slugReserved && !isSlugValid(slug) ? (
               <p className="text-xs text-destructive">
                 Use lowercase letters only (min 5 chars).
               </p>
-            )}
-            {!slugLocked && slugReserved && (
+            ) : null}
+            {!slugLocked && slugReserved ? (
               <p className="text-xs text-destructive">This URL is reserved.</p>
-            )}
-            {!slugLocked && !slugReserved && slugAvailable === false && (
-              <p className="text-xs text-destructive">
-                This URL is already taken.
-              </p>
-            )}
+            ) : null}
+            {!slugLocked && !slugReserved && slugAvailable === false ? (
+              <p className="text-xs text-destructive">This URL is already taken.</p>
+            ) : null}
           </div>
         )}
 
@@ -335,15 +397,12 @@ export default function StepWizardForm({
 
         >
           {isCreating ? (
-            <>
-              <LoaderIcon className="mr-2 size-4 animate-spin" />
-            </>
+            <LoaderIcon className="size-4 animate-spin" />
           ) : step === steps.length - 1 ? (
             "Create"
           ) : (
             "Next"
           )}
-          {!isCreating && step !== steps.length - 1 && <ArrowRight className="size-4 opacity-50" />}
         </Button>
       </CardFooter>
     </Card>
