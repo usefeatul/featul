@@ -44,6 +44,8 @@ type SettingsDialogShellProps = {
   /** Shows an expand/collapse toggle that grows the dialog with a framer-motion animation. */
   expandable?: boolean
   onOpenAutoFocus?: (event: Event) => void
+  /** When false, overlay / outside pointer events do not dismiss the dialog (close button and Escape still do). */
+  dismissOnOutside?: boolean
   /** Merged onto DialogContent (e.g. taller max-height for image previews). */
   contentClassName?: string
   /** Rendered inside the dialog shell, outside DialogInner (e.g. side nav). */
@@ -61,6 +63,7 @@ export function SettingsDialogShell({
   icon,
   expandable = false,
   onOpenAutoFocus,
+  dismissOnOutside = true,
   contentClassName,
   aside,
   children,
@@ -127,6 +130,15 @@ export function SettingsDialogShell({
           contentClassName,
         )}
         onOpenAutoFocus={onOpenAutoFocus}
+        onPointerDownOutside={(event) => {
+          if (!dismissOnOutside) event.preventDefault()
+        }}
+        onInteractOutside={(event) => {
+          if (!dismissOnOutside) event.preventDefault()
+        }}
+        onFocusOutside={(event) => {
+          if (!dismissOnOutside) event.preventDefault()
+        }}
       >
         {expandable ? (
           <motion.div

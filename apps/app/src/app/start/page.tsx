@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@featul/auth/session"
-import { CreateWorkspaceDialog } from "@/components/workspaces/CreateWorkspaceDialog"
+import { CreateWorkspaceScreen } from "@/components/workspaces/CreateWorkspaceScreen"
 import { resolveAuthenticatedAppPath } from "@/lib/auth/redirect"
 
 export const revalidate = 30
@@ -23,8 +23,9 @@ export default async function StartPage() {
   const targetPath = await resolveAuthenticatedAppPath(userId, "")
   if (targetPath !== "/start") redirect(targetPath)
   return (
-    <div className="min-h-screen bg-background">
-      <CreateWorkspaceDialog open isFirstWorkspace />
-    </div>
+    <CreateWorkspaceScreen
+      initialUser={session.user}
+      isFirstWorkspace
+    />
   )
 }

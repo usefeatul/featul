@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { CreateWorkspaceDialog } from "@/components/workspaces/CreateWorkspaceDialog"
+import { CreateWorkspaceScreen } from "@/components/workspaces/CreateWorkspaceScreen"
 import { createPageMetadata } from "@/lib/seo"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@featul/auth/session"
@@ -17,9 +17,5 @@ export default async function NewWorkspacePage() {
   if (!session?.user) {
     redirect("/auth/signin?redirect=/workspaces/new")
   }
-  return (
-    <div className="min-h-screen bg-background">
-      <CreateWorkspaceDialog open />
-    </div>
-  )
+  return <CreateWorkspaceScreen initialUser={session.user} />
 }
