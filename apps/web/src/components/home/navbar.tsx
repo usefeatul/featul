@@ -52,7 +52,8 @@ export default function Navbar() {
     : "text-accent hover:text-foreground hover:bg-muted hover:ring-1 hover:ring-border";
 
   return (
-    <header
+    <>
+      <header
       className={cn(
         "fixed top-10 left-0 right-0 z-50 transition-colors",
         scrolled
@@ -166,7 +167,8 @@ export default function Navbar() {
         </div>
       </Container>
 
+      </header>
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
-    </header>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Container } from "../global/container";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { Button } from "@featul/ui/components/button";
@@ -14,20 +15,34 @@ type MobileMenuProps = {
 };
 
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
     return () => {
-      document.body.style.overflow = prev || "";
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      html.style.overscrollBehavior = prevHtmlOverscroll;
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-x-0 bottom-0 top-10 z-60 overflow-y-auto bg-background md:hidden"
+      className="fixed inset-x-0 bottom-0 top-10 z-[70] overflow-y-auto overscroll-contain bg-background md:hidden"
       data-component="MobileMenu"
     >
       {/* Sheet header */}
@@ -88,6 +103,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           </div>
         </nav>
       </Container>
-    </div>
+    </div>,
+    document.body
   );
 }
