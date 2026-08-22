@@ -15,6 +15,7 @@ import {
 import { toSlug } from "../../shared/slug";
 import {
   buildWidgetOriginAllowlist,
+  isAllowedWidgetEmbedOrigin,
   isVerifiedIdentity as verifySignedIdentity,
 } from "../../shared/identity";
 import type { AuthenticatedRouterContext } from "../../types/router";
@@ -154,6 +155,7 @@ export async function resolveWidget(
       hidePoweredBy: brandingConfig.hidePoweredBy,
       layoutStyle: brandingConfig.layoutStyle,
       widgetSecret: workspace.widgetSecret,
+      widgetAllowedOrigins: workspace.widgetAllowedOrigins,
       domain: workspace.domain,
       customDomain: workspace.customDomain,
     })
@@ -195,11 +197,15 @@ export async function resolveWidget(
       .map((row: { host: string; status: string }) => row.host),
     appOrigin:
       process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || null,
-    includeDevOrigins:
-      process.env.NODE_ENV !== "production" ||
-      process.env.WIDGET_ALLOW_LOCALHOST === "true",
+    configuredOrigins: Array.isArray(ws.widgetAllowedOrigins)
+      ? ws.widgetAllowedOrigins
+      : [],
+    includeDevOrigins: true,
   });
-  if (parentOrigin && !allowedOrigins.includes(parentOrigin)) {
+  if (
+    parentOrigin &&
+    !isAllowedWidgetEmbedOrigin(parentOrigin, allowedOrigins)
+  ) {
     throw new HTTPException(403, { message: "Widget origin is not allowed" });
   }
 

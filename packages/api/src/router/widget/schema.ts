@@ -54,11 +54,14 @@ export const parentOriginSchema = z.preprocess(
     .refine(isSafeWidgetParentOrigin, "Invalid widget parent origin"),
 );
 export const projectIdInput = z.object({
-  projectId: z
-    .string()
-    .min(1)
-    .max(128)
-    .regex(/^[a-zA-Z0-9_-]+$/),
+  projectId: z.preprocess(
+    unwrapQueryValue,
+    z
+      .string()
+      .min(1)
+      .max(128)
+      .regex(/^[a-zA-Z0-9_-]+$/),
+  ),
 });
 export const projectInput = projectIdInput.extend({
   parentOrigin: parentOriginSchema,

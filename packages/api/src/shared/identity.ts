@@ -109,6 +109,25 @@ export function isAllowedWidgetMessageOrigin(
   );
 }
 
+/** Local http(s) origins are always allowed so the widget can be previewed before deploy. */
+export function isLocalWidgetOrigin(value?: string | null) {
+  if (!isSafeWidgetParentOrigin(value)) return false;
+  try {
+    return isLocalWidgetHostname(new URL(value).hostname);
+  } catch {
+    return false;
+  }
+}
+
+export function isAllowedWidgetEmbedOrigin(
+  parentOrigin: string,
+  allowedOrigins: string[],
+) {
+  if (!isSafeWidgetParentOrigin(parentOrigin)) return false;
+  if (allowedOrigins.includes(parentOrigin)) return true;
+  return isLocalWidgetOrigin(parentOrigin);
+}
+
 export function buildWidgetOriginAllowlist(input: {
   slug: string;
   workspaceDomain?: string | null;
