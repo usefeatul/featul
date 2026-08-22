@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@featul/ui/components/input";
-import { Check, Search } from "lucide-react";
+import { CheckIcon } from "@featul/ui/icons/check";
+import { SearchIcon } from "@featul/ui/icons/search";
 import { cn } from "@featul/ui/lib/utils";
 import { settingsTableShellClass } from "@/components/settings/global/SectionCard";
-import { formatTimeWithDate } from "@/lib/time";
+import { SidebarBadge } from "@/components/sidebar/badge";
+import { formatTime12h, formatTimeWithDate } from "@/lib/time";
 import {
   filterTimezones,
   friendlyTimezone,
@@ -63,16 +65,20 @@ export function TimezoneSelectPanel({
       )}
     >
       <div className="shrink-0 border-b border-border/60 p-3 dark:border-white/10">
-        <div className="mb-2 w-fit rounded-sm bg-muted/50 px-1.5 py-1 dark:bg-black/40">
-          <span
-            className="text-xs font-light text-accent"
-            suppressHydrationWarning
+        <div className="mb-2 flex w-fit items-center gap-2">
+          <span className="text-xs text-accent">Your local time</span>
+          <SidebarBadge
+            className="shrink-0"
+            fixedWidth={false}
+            innerClassName="px-1.5 tabular-nums"
           >
-            Your local time — {formatTimeWithDate(localTimezone, now)}
-          </span>
+            <span suppressHydrationWarning>
+              {mounted ? formatTime12h(localTimezone, now) : "--:--"}
+            </span>
+          </SidebarBadge>
         </div>
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <SearchIcon className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-accent" />
           <Input
             ref={searchRef}
             placeholder="Search by city or country..."
@@ -117,7 +123,7 @@ export function TimezoneSelectPanel({
                     {friendlyTimezone(tz)}
                   </span>
                   {selected ? (
-                    <Check
+                    <CheckIcon
                       className="ml-auto size-4 shrink-0 text-primary"
                       aria-hidden
                     />
