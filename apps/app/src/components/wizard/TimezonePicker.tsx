@@ -61,13 +61,16 @@ export default function TimezonePicker({
         </PopoverTrigger>
       </Toolbar>
       <PopoverContent
-        className="z-[100] w-[calc(100vw-2rem)] p-0 sm:w-[450px]"
-        align="center"
-        unstyled
+        list
+        side="bottom"
+        align="start"
+        sideOffset={6}
+        avoidCollisions={false}
+        className="z-[70] !w-[var(--radix-popover-trigger-width)] !min-w-[var(--radix-popover-trigger-width)] !max-w-[var(--radix-popover-trigger-width)]"
         onWheel={(event) => event.stopPropagation()}
       >
         <TimezoneSelectPanel
-          className="max-h-[min(70dvh,420px)]"
+          className="max-h-[min(48dvh,360px)]"
           value={value}
           now={now}
           onChange={(tz) => {

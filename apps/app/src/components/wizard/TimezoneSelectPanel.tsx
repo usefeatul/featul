@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@featul/ui/components/input";
+import { PopoverListItem } from "@featul/ui/components/popover";
 import { CheckIcon } from "@featul/ui/icons/check";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { cn } from "@featul/ui/lib/utils";
-import { settingsTableShellClass } from "@/components/settings/global/SectionCard";
 import { SidebarBadge } from "@/components/sidebar/badge";
-import { formatTime12h, formatTimeWithDate } from "@/lib/time";
+import { formatTime12h } from "@/lib/time";
 import {
   filterTimezones,
   friendlyTimezone,
@@ -41,10 +41,7 @@ export function TimezoneSelectPanel({
     return () => window.clearTimeout(timer);
   }, [autoFocus]);
 
-  const timezones = useMemo(
-    () => getTimezoneOptions(mounted),
-    [mounted],
-  );
+  const timezones = useMemo(() => getTimezoneOptions(mounted), [mounted]);
 
   const filtered = useMemo(
     () => filterTimezones(timezones, query),
@@ -57,15 +54,9 @@ export function TimezoneSelectPanel({
       : "UTC";
 
   return (
-    <div
-      className={cn(
-        settingsTableShellClass,
-        "flex min-h-0 flex-col",
-        className,
-      )}
-    >
-      <div className="shrink-0 border-b border-border/60 p-3 dark:border-white/10">
-        <div className="mb-2 flex w-fit items-center gap-2">
+    <div className={cn("flex min-h-0 flex-col", className)}>
+      <div className="shrink-0 space-y-2 border-b border-border/60 px-2 py-2 dark:border-white/10">
+        <div className="flex items-center gap-2 px-1">
           <span className="text-xs text-accent">Your local time</span>
           <SidebarBadge
             className="shrink-0"
@@ -78,24 +69,24 @@ export function TimezoneSelectPanel({
           </SidebarBadge>
         </div>
         <div className="relative">
-          <SearchIcon className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-accent" />
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-accent" />
           <Input
             ref={searchRef}
             placeholder="Search by city or country..."
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="h-9 border-border/60 bg-background pl-9 shadow-none focus-visible:ring-1 dark:border-white/10 dark:bg-black/30"
+            className="h-8 pl-9 placeholder:text-accent"
           />
         </div>
       </div>
 
       <ul
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1 [-webkit-overflow-scrolling:touch] touch-pan-y scrollbar-hide"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-1 [-webkit-overflow-scrolling:touch] touch-pan-y scrollbar-hide"
         role="listbox"
         aria-label="Timezones"
       >
         {filtered.length === 0 ? (
-          <li className="px-4 py-8 text-center text-sm text-accent">
+          <li className="px-3 py-8 text-center text-sm text-accent">
             No timezones match your search.
           </li>
         ) : (
@@ -103,23 +94,25 @@ export function TimezoneSelectPanel({
             const selected = value === tz;
             return (
               <li key={tz} role="option" aria-selected={selected}>
-                <button
+                <PopoverListItem
                   type="button"
+                  aria-checked={selected}
                   onClick={() => onChange(tz)}
                   className={cn(
-                    "flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm transition-colors",
-                    selected
-                      ? "bg-muted/30 text-foreground dark:bg-white/[0.06]"
-                      : "text-foreground hover:bg-muted/20 dark:hover:bg-white/[0.03]",
+                    "gap-2 px-2.5 py-2 text-xs",
+                    selected && "bg-muted/40 dark:bg-muted/30",
                   )}
                 >
-                  <span
-                    className="shrink-0 font-medium tabular-nums"
-                    suppressHydrationWarning
+                  <SidebarBadge
+                    className="shrink-0"
+                    fixedWidth={false}
+                    innerClassName="px-1.5 tabular-nums"
                   >
-                    {mounted ? formatTimeWithDate(tz, now) : "--:--"}
-                  </span>
-                  <span className="min-w-0 truncate text-accent">
+                    <span suppressHydrationWarning>
+                      {mounted ? formatTime12h(tz, now) : "--:--"}
+                    </span>
+                  </SidebarBadge>
+                  <span className="min-w-0 flex-1 truncate text-sm text-foreground">
                     {friendlyTimezone(tz)}
                   </span>
                   {selected ? (
@@ -128,7 +121,7 @@ export function TimezoneSelectPanel({
                       aria-hidden
                     />
                   ) : null}
-                </button>
+                </PopoverListItem>
               </li>
             );
           })
