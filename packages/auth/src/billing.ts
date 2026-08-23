@@ -1,5 +1,9 @@
 import { db, subscription, workspace } from "@featul/db"
 import { desc, eq } from "drizzle-orm"
+import {
+  getComplimentarySubscriptionPlan,
+  getComplimentaryWorkspacePlan,
+} from "./billing/complimentary"
 import { getStripeClient, getStripePlanNameFromSubscription } from "./stripe"
 
 export type BillingSubscriptionStatus =
@@ -87,6 +91,9 @@ async function getVerifiedPaidPlan(row: BillingSubscriptionRow, workspaceId: str
   const localPlan = getLocalDevPaidPlan(row)
   if (localPlan) return localPlan
 
+  const complimentaryPlan = getComplimentarySubscriptionPlan(row)
+  if (complimentaryPlan) return complimentaryPlan
+
   const stripeSubscriptionId = String(row.stripeSubscriptionId || "").trim()
   if (!stripeSubscriptionId) return null
 
@@ -132,6 +139,9 @@ async function setWorkspacePlan(workspaceId: string, nextPlan: BillingPlan, curr
 export async function getEffectiveWorkspacePlan(workspaceId: string): Promise<BillingPlan> {
   const id = String(workspaceId || "").trim()
   if (!id) return "free"
+
+  const complimentaryPlan = getComplimentaryWorkspacePlan(id)
+  if (complimentaryPlan) return complimentaryPlan
 
   const rows = await getWorkspaceSubscriptionRows(id)
   for (const row of rows) {
