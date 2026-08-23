@@ -5,6 +5,7 @@ import type { DomainInfo } from "@/types/domain";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isDomainValid, suggestDomainFix } from "@/lib/validators";
+import { hostFromDomain } from "@/utils/domain";
 import { safeJson } from "@/lib/api/response";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
@@ -48,9 +49,10 @@ export async function createDomain(
   slug: string,
   baseDomain: string
 ): Promise<{ ok: boolean; message?: string; host?: string; records?: CreateDomainApiResponse["records"] }> {
+  const host = hostFromDomain(baseDomain);
   const res = await client.workspace.createDomain.$post({
     slug,
-    domain: `https://feedback.${baseDomain.trim()}`,
+    domain: `https://${host}`,
   });
   const data = await safeJson<CreateDomainApiResponse>(res);
   return {
@@ -240,7 +242,7 @@ export function useDomainActions({ slug, info, canUse, canEditDomain, onCreated 
       toast.error("Enter a domain");
       return;
     }
-    const normalized = v.toLowerCase();
+    const normalized = hostFromDomain(v).toLowerCase();
     if (!isDomainValid(normalized)) {
       const suggestion = suggestDomainFix(normalized);
       toast.error(

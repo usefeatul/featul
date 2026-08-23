@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-//
 import SectionCard from "../global/SectionCard";
 import PlanNotice from "../global/PlanNotice";
 import RecordsTable from "./RecordsTable";
@@ -10,10 +9,13 @@ import type { DomainInfo } from "../../../types/domain";
 import { Label } from "@featul/ui/components/label";
 import DomainActions from "./DomainActions";
 import AddDomainDialog from "./AddDomainDialog";
+import DomainHostField from "./DomainHostField";
 import { ArrowIcon } from "@featul/ui/icons/arrow";
 import { normalizePlan } from "@/lib/plan";
 import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
 import { LoadingButton } from "@/components/global/LoadingButton";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 export default function DomainSection({ slug, initialPlan, initialInfo, initialDefaultDomain }: { slug: string; initialPlan?: string; initialInfo?: DomainInfo; initialDefaultDomain?: string }) {
   const [open, setOpen] = React.useState(false);
   const initialDomainData =
@@ -37,58 +39,63 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
     canEditDomain,
     onCreated: () => setOpen(false),
   });
+  const currentHost = info?.host || `${slug}.featul.com`;
 
   return (
     <div className="space-y-4">
     <SectionCard
       title="Manage Domain"
       description="Create a custom domain for your workspace."
+      action={
+        info?.host ? undefined : (
+          <LoadingButton
+            type="button"
+            onClick={() => setOpen(true)}
+            disabled={isLoading || accessLoading || !canUse || !canEditDomain}
+          >
+            Add domain
+          </LoadingButton>
+        )
+      }
     >
 
         <div className="space-y-2">
-          {info?.host ? (
-            <div className="bg-background flex items-center justify-between rounded-md border p-3">
-              <div className="flex items-center gap-2">
-                <span className="text-sm">{info.host}</span>
-              </div>
-              <div>
-              <DomainActions
-                verifying={verifyMutation.isPending}
-                deleting={deleteMutation.isPending}
-                onVerify={handleVerify}
-                onDelete={handleDelete}
-                disabled={!canEditDomain}
-              />
-              </div>
-            </div>
-          ) : (
-            <div className="bg-background mt-2 mb-3 flex items-center justify-between rounded-md border p-3">
-              <span className="text-sm">{`https://${slug}.featul.com`}</span>
-              <LoadingButton
-                type="button"
-                onClick={() => setOpen(true)}
-                disabled={isLoading || accessLoading || !canUse || !canEditDomain}
-              >
-                Add domain
-              </LoadingButton>
-            </div>
-          )}
-
-          <div className="flex items-center mt-3 mb-3 justify-start ">
-            <a
-              href={
-                info?.host
-                  ? `https://${info.host}`
-                  : `https://${slug}.featul.com`
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-1 py-1 rounded-sm  bg-muted/70 ring-1 ring-border text-xs hover:bg-muted/80"
-            >
-              <span>Visit</span>
-              <ArrowIcon className="size-4" />
-            </a>
-          </div>
+          <DomainHostField
+            value={currentHost}
+            readOnly
+            trailing={
+              <>
+                <a
+                  href={`https://${currentHost}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    toolbarItemClass,
+                    "inline-flex shrink-0 items-center gap-1 border-l border-border px-2.5 text-xs font-medium text-accent hover:bg-transparent",
+                  )}
+                >
+                  Visit
+                  <ArrowIcon className="size-3.5" />
+                </a>
+                {info?.host ? (
+                  <span
+                    className={cn(
+                      toolbarItemClass,
+                      "inline-flex items-center px-1 hover:bg-transparent",
+                    )}
+                  >
+                    <DomainActions
+                      verifying={verifyMutation.isPending}
+                      deleting={deleteMutation.isPending}
+                      onVerify={handleVerify}
+                      onDelete={handleDelete}
+                      disabled={!canEditDomain}
+                    />
+                  </span>
+                ) : null}
+              </>
+            }
+          />
         </div>
 
         {info?.host ? (
