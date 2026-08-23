@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import {
-  workspaceSchema,
+  getWorkspaceSchema,
   isDomainValid,
   cleanSlug,
   slugifyFromName,
@@ -42,6 +42,7 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
 
   const [now, setNow] = useState<Date>(new Date());
   const [isCreating, setIsCreating] = useState(false);
+  const [isAppCreator, setIsAppCreator] = useState(false);
 
   const domainValid = useMemo(() => isDomainValid(domain), [domain]);
 
@@ -93,6 +94,24 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
   }, [searchParams]);
 
   useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const res = await client.workspace.creator.$get();
+        const data = await res.json();
+        if (mounted) setIsAppCreator(Boolean(data?.isCreator));
+      } catch {
+        /* ignore */
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!slug || slug.length < 5) {
       setSlugAvailable(null);
       setSlugChecking(false);
@@ -105,7 +124,7 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
       return;
     }
 
-    if (isReservedWorkspaceSlug(slug)) {
+    if (isReservedWorkspaceSlug(slug) && !isAppCreator) {
       setSlugAvailable(false);
       setSlugChecking(false);
       return;
@@ -127,13 +146,13 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
     }, 500);
 
     return () => clearTimeout(id);
-  }, [slug, slugLocked]);
+  }, [slug, slugLocked, isAppCreator]);
 
   const create = useCallback(async () => {
     setIsCreating(true);
 
     try {
-      const parsed = workspaceSchema.safeParse({
+      const parsed = getWorkspaceSchema({ allowReserved: isAppCreator }).safeParse({
         name: name.trim(),
         domain: domain.trim(),
         slug: slug.trim(),
@@ -191,7 +210,7 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
     } finally {
       setIsCreating(false);
     }
-  }, [name, domain, slug, timezone, queryClient, router, slugLocked]);
+  }, [name, domain, slug, timezone, queryClient, router, slugLocked, isAppCreator]);
 
   const handleNameChange = useCallback((v: string) => {
     setNameDirty(true);
@@ -222,5 +241,6 @@ export function useWizardLogic(options: UseWizardLogicOptions = {}) {
     create,
     handleNameChange,
     handleSlugChange,
+    isAppCreator,
   };
 }

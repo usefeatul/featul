@@ -27,6 +27,7 @@ export default function WorkspaceWizard({
     isCreating,
     domainValid,
     create,
+    isAppCreator,
   } = useWizardLogic({ isFirstWorkspace });
 
   return (
@@ -53,6 +54,7 @@ export default function WorkspaceWizard({
           isCreating={isCreating}
           domainValid={domainValid}
           create={create}
+          isAppCreator={isAppCreator}
         />
       </motion.div>
     </div>

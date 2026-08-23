@@ -5,6 +5,7 @@ import { workspace, workspaceSlugReservation } from "@featul/db"
 import { reserveSlugInputSchema, tokenInputSchema, checkSlugPublicInputSchema } from "../validators/reservation"
 import { sendReservationEmail } from "@featul/auth/email"
 import { isReservedWorkspaceSlug } from "../workspace/slug"
+import { isReservedSlugBlockedForEmail } from "../workspace/creator"
 const MAX_RESERVATIONS_PER_EMAIL = 3
 
 async function sendReservationEmailBestEffort(email: string, slug: string, token: string): Promise<void> {
@@ -46,7 +47,7 @@ export function createReservationRouter() {
       .post(async ({ ctx, input, c }) => {
         const email = input.email.trim().toLowerCase()
         const slug = input.slug.trim().toLowerCase()
-        if (isReservedWorkspaceSlug(slug)) throw new HTTPException(403, { message: "Slug not allowed" })
+        if (isReservedSlugBlockedForEmail(slug, email)) throw new HTTPException(403, { message: "Slug not allowed" })
 
         const [ws] = await ctx.db
           .select({ id: workspace.id })

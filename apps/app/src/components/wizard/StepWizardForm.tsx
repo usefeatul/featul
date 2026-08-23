@@ -40,6 +40,7 @@ interface StepWizardFormProps {
   isCreating: boolean
   domainValid: boolean
   create: () => void | Promise<void>
+  isAppCreator?: boolean
 }
 
 export default function StepWizardForm({
@@ -58,6 +59,7 @@ export default function StepWizardForm({
   isCreating,
   domainValid,
   create,
+  isAppCreator = false,
 }: StepWizardFormProps) {
   const [step, setStep] = React.useState(0)
   const steps = React.useMemo(() => ["domain", "name", "slug", "timezone"], [])
@@ -71,21 +73,22 @@ export default function StepWizardForm({
     step: 0,
   })
   const reservedWorkspaceUrl = slugLocked ? `${slugLocked}.featul.com` : null
-  const nameReserved = isReservedWorkspaceName(name)
-  const slugReserved = isReservedWorkspaceSlug(slug)
+  const nameReserved = !isAppCreator && isReservedWorkspaceName(name)
+  const slugReserved = !isAppCreator && isReservedWorkspaceSlug(slug)
+  const reservedAllowed = { allowReserved: isAppCreator }
 
   const canNext = React.useMemo(() => {
     if (step === 0) return domain.length > 0 && domainValid
-    if (step === 1) return isNameValid(name)
-    if (step === 2) return slugLocked ? true : !!slug && isSlugValid(slug) && slugAvailable === true
+    if (step === 1) return isNameValid(name, reservedAllowed)
+    if (step === 2) return slugLocked ? true : !!slug && isSlugValid(slug, reservedAllowed) && slugAvailable === true
     if (step === 3) return isTimezoneValid(timezone)
     return false
-  }, [step, domain, domainValid, name, slug, slugAvailable, slugLocked, timezone])
+  }, [step, domain, domainValid, name, slug, slugAvailable, slugLocked, timezone, isAppCreator])
 
   const allValid =
-    isNameValid(name) &&
+    isNameValid(name, reservedAllowed) &&
     isDomainValid(domain) &&
-    (slugLocked ? true : isSlugValid(slug) && slugAvailable === true) &&
+    (slugLocked ? true : isSlugValid(slug, reservedAllowed) && slugAvailable === true) &&
     isTimezoneValid(timezone)
 
   React.useEffect(() => {
@@ -318,7 +321,7 @@ export default function StepWizardForm({
                     <CheckIcon className="size-2.5" />
                   </span>
                 ) : !slugLocked &&
-                  (slugAvailable === false || (slug && !isSlugValid(slug))) ? (
+                  (slugAvailable === false || (slug && !isSlugValid(slug, reservedAllowed))) ? (
                   <span className="inline-flex size-4 items-center justify-center rounded-full bg-destructive text-white">
                     <XMarkIcon className="size-2.5" />
                   </span>
@@ -326,7 +329,7 @@ export default function StepWizardForm({
                 <span className="text-xs text-accent">.featul.com</span>
               </span>
             </Toolbar>
-            {slug && !slugReserved && !isSlugValid(slug) ? (
+            {slug && !slugReserved && !isSlugValid(slug, reservedAllowed) ? (
               <p className="text-xs text-destructive">
                 Use lowercase letters only (min 5 chars).
               </p>

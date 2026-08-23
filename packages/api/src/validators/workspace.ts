@@ -1,9 +1,5 @@
 import { z } from "zod";
 import { domainUrlSchema, isDomainHostValid } from "./domain";
-import {
-  isReservedWorkspaceName,
-  isReservedWorkspaceSlug,
-} from "../workspace/slug";
 
 export const slugSchema = z
   .string()
@@ -11,18 +7,7 @@ export const slugSchema = z
   .max(32)
   .regex(/^[a-z]+$/, "Slug must contain only lowercase letters");
 
-const creatableSlugSchema = slugSchema.refine(
-  (slug) => !isReservedWorkspaceSlug(slug),
-  {
-    message: "Slug is reserved",
-  },
-);
-
 const workspaceNameSchema = z.string().trim().min(1).max(15);
-const creatableWorkspaceNameSchema = workspaceNameSchema.refine(
-  (name) => !isReservedWorkspaceName(name),
-  { message: "Workspace name is reserved" },
-);
 
 export const workspaceSlugInputSchema = z.object({
   slug: slugSchema,
@@ -33,9 +18,9 @@ export const checkSlugInputSchema = z.object({
 });
 
 export const createWorkspaceInputSchema = z.object({
-  name: creatableWorkspaceNameSchema,
+  name: workspaceNameSchema,
   domain: domainUrlSchema,
-  slug: creatableSlugSchema,
+  slug: slugSchema,
   timezone: z.string().min(1),
 });
 
@@ -64,7 +49,7 @@ export const verifyDomainInputSchema = z.object({
 
 export const updateWorkspaceNameInputSchema = z.object({
   slug: slugSchema,
-  name: creatableWorkspaceNameSchema,
+  name: workspaceNameSchema,
 });
 
 export const deleteWorkspaceInputSchema = z.object({

@@ -39,17 +39,33 @@ export const suggestDomainFix = (domain: string) => {
   return null
 }
 
-export const isNameValid = (name: string) =>
-  z.string().min(1).max(15).safeParse(name.trim()).success && !isReservedWorkspaceName(name)
+export const isNameValid = (name: string, options?: { allowReserved?: boolean }) =>
+  z.string().min(1).max(15).safeParse(name.trim()).success &&
+  (options?.allowReserved || !isReservedWorkspaceName(name))
 
-export const isSlugValid = (slug: string) =>
-  z.string().min(5).regex(/^[a-z]+$/).safeParse(slug.trim()).success && !isReservedWorkspaceSlug(slug)
+export const isSlugValid = (slug: string, options?: { allowReserved?: boolean }) =>
+  z.string().min(5).regex(/^[a-z]+$/).safeParse(slug.trim()).success &&
+  (options?.allowReserved || !isReservedWorkspaceSlug(slug))
 
 export const isTimezoneValid = (tz: string) => z.string().min(1).safeParse(String(tz)).success
 
-export const workspaceSchema = z.object({
-  name: z.string().min(1).max(15).refine((value) => !isReservedWorkspaceName(value)),
-  domain: z.string().min(1).refine(isDomainValid),
-  slug: z.string().min(5).regex(/^[a-z]+$/).refine((value) => !isReservedWorkspaceSlug(value)),
-  timezone: z.string().min(1),
-})
+export function getWorkspaceSchema(options?: { allowReserved?: boolean }) {
+  const allowReserved = options?.allowReserved === true
+
+  return z.object({
+    name: z
+      .string()
+      .min(1)
+      .max(15)
+      .refine((value) => allowReserved || !isReservedWorkspaceName(value)),
+    domain: z.string().min(1).refine(isDomainValid),
+    slug: z
+      .string()
+      .min(5)
+      .regex(/^[a-z]+$/)
+      .refine((value) => allowReserved || !isReservedWorkspaceSlug(value)),
+    timezone: z.string().min(1),
+  })
+}
+
+export const workspaceSchema = getWorkspaceSchema()

@@ -37,7 +37,11 @@ import {
 import { isDataImportsAllowed } from "../shared/plan";
 import { seedWorkspaceOnboarding } from "../services/onboarding";
 import { runWorkspaceCsvImport } from "../workspace/import";
-import { isReservedWorkspaceSlug } from "../workspace/slug";
+import {
+  isAppCreatorEmail,
+  isReservedNameBlockedForEmail,
+  isReservedSlugBlockedForEmail,
+} from "../workspace/creator";
 import { getWorkspaceAccessPlan } from "../shared/access";
 import { createWidgetSecret } from "../shared/identity";
 
@@ -158,7 +162,7 @@ export function createWorkspaceRouter() {
       .input(checkSlugInputSchema)
       .post(async ({ ctx, input, c }) => {
         const slug = input.slug.toLowerCase();
-        if (isReservedWorkspaceSlug(slug))
+        if (isReservedSlugBlockedForEmail(slug, ctx.session.user.email))
           return c.json({ available: false, reason: "reserved" });
         const existing = await ctx.db
           .select({ id: workspace.id })
@@ -201,6 +205,11 @@ export function createWorkspaceRouter() {
         .where(eq(workspaceMember.userId, userId))
         .limit(1);
       return c.json({ hasWorkspace: owned.length > 0 || member.length > 0 });
+    }),
+
+    creator: privateProcedure.get(async ({ ctx, c }) => {
+      c.header("Cache-Control", "private, no-store");
+      return c.json({ isCreator: isAppCreatorEmail(ctx.session.user.email) });
     }),
 
     listMine: privateProcedure.get(async ({ ctx, c }) => {
@@ -338,8 +347,12 @@ export function createWorkspaceRouter() {
       .input(createWorkspaceInputSchema)
       .post(async ({ ctx, input, c }) => {
         const slug = input.slug.toLowerCase();
-        if (isReservedWorkspaceSlug(slug)) {
+        const email = ctx.session.user.email;
+        if (isReservedSlugBlockedForEmail(slug, email)) {
           throw new HTTPException(403, { message: "Slug is reserved" });
+        }
+        if (isReservedNameBlockedForEmail(input.name, email)) {
+          throw new HTTPException(403, { message: "Workspace name is reserved" });
         }
         const exists = await ctx.db
           .select({ id: workspace.id })
@@ -872,6 +885,9 @@ export function createWorkspaceRouter() {
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" });
 
         const name = input.name.trim();
+        if (isReservedNameBlockedForEmail(name, ctx.session.user.email)) {
+          throw new HTTPException(403, { message: "Workspace name is reserved" });
+        }
         await ctx.db
           .update(workspace)
           .set({ name, updatedAt: new Date() })
