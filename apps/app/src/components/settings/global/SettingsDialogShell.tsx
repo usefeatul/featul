@@ -48,6 +48,8 @@ type SettingsDialogShellProps = {
   dismissOnOutside?: boolean
   /** Merged onto DialogContent (e.g. taller max-height for image previews). */
   contentClassName?: string
+  /** Merged onto DialogInner (e.g. drop default padding so a footer can span the inner surface). */
+  innerClassName?: string
   /** Rendered inside the dialog shell, outside DialogInner (e.g. side nav). */
   aside?: React.ReactNode
   children: React.ReactNode
@@ -65,6 +67,7 @@ export function SettingsDialogShell({
   onOpenAutoFocus,
   dismissOnOutside = true,
   contentClassName,
+  innerClassName,
   aside,
   children,
 }: SettingsDialogShellProps) {
@@ -106,7 +109,7 @@ export function SettingsDialogShell({
   )
 
   const body = (
-    <DialogInner className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <DialogInner className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", innerClassName)}>
       {description ? (
         <DialogDescription className="mb-2 shrink-0 text-sm">
           {description}

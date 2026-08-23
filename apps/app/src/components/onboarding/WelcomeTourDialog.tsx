@@ -151,9 +151,10 @@ export function WelcomeTourDialog({
       width="wide"
       offsetY="50%"
       icon={<Sparkles className="size-3.5" />}
+      innerClassName="px-0 pb-0"
     >
       <div className="flex min-h-[320px] flex-col">
-        <div className="flex items-center justify-center gap-2 px-2 pt-1">
+        <div className="flex items-center justify-center gap-2 px-4 pt-1">
           {steps.map((step, index) => (
             <button
               key={step.id}
@@ -190,7 +191,7 @@ export function WelcomeTourDialog({
           </AnimatePresence>
         </div>
 
-        <div className="-mx-2 mt-auto border-t border-border/60 bg-muted/20 px-2 py-3 dark:bg-black/25">
+        <div className="mt-auto border-t border-border/60 bg-background px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <Button
               type="button"
