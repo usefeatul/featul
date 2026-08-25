@@ -21,7 +21,7 @@ export function BlogCard({ post }: BlogCardProps) {
     >
       <OverlayCard>
         <OverlayCardPanel className="mb-2 aspect-[16/11] p-0">
-          <div className="flex h-full items-center justify-center overflow-hidden bg-primary p-3 sm:p-4">
+          <div className="flex h-full items-center justify-center overflow-hidden bg-primary p-0.5">
             {post.coverImage ? (
               <div className="relative h-full w-full overflow-hidden rounded-md bg-card">
                 <Image
