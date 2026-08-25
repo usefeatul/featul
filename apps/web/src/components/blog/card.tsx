@@ -16,11 +16,11 @@ export function BlogCard({ post }: BlogCardProps) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group block h-full w-full"
+      className="group flex h-full w-full flex-col"
       prefetch={false}
     >
-      <OverlayCard>
-        <OverlayCardPanel className="mb-2 aspect-[16/11] p-0">
+      <OverlayCard className="min-h-full">
+        <OverlayCardPanel className="mb-2 aspect-[16/11] shrink-0 p-0">
           <div className="flex h-full items-center justify-center overflow-hidden bg-primary p-0.5">
             {post.coverImage ? (
               <div className="relative h-full w-full overflow-hidden rounded-md bg-card">
@@ -47,10 +47,10 @@ export function BlogCard({ post }: BlogCardProps) {
         </OverlayCardPanel>
 
         <OverlayCardPanel className="flex flex-1 flex-col px-4 py-3">
-          <h2 className="line-clamp-3 font-heading text-[1.05rem] font-medium leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-foreground/75 sm:text-[1.15rem]">
+          <h2 className="line-clamp-3 min-h-[4.125em] font-heading text-[1.05rem] font-medium leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-foreground/75 sm:text-[1.15rem]">
             {post.title}
           </h2>
-          <p className="mt-2 text-[13px] text-accent">
+          <p className="mt-auto pt-2 text-[13px] text-accent">
             {date
               ? date.toLocaleDateString("en-US", {
                   year: "numeric",
