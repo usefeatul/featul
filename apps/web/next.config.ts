@@ -19,6 +19,11 @@ const nextConfig = {
         hostname: 'images.marblecms.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.marblecms.com',
+        pathname: '/**',
+      },
     ],
   },
 }
