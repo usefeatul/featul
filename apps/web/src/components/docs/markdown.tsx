@@ -10,6 +10,7 @@ import {
 import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import { GitHubIcon } from "@featul/ui/icons/github"
 import { cn } from "@featul/ui/lib/utils"
+import { DocsCodeBlock } from "./code-block"
 import "./code.css"
 
 function slugifyHeading(input: string) {
@@ -156,13 +157,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
               </code>
             )
           },
-          pre: ({ children }) => (
-            <OverlayCard className="not-prose my-4 h-auto w-full">
-              <OverlayCardPanel className="bg-background px-4 py-3.5">
-                <pre className="docs-code overflow-x-auto">{children}</pre>
-              </OverlayCardPanel>
-            </OverlayCard>
-          ),
+          pre: ({ children }) => <DocsCodeBlock>{children}</DocsCodeBlock>,
           blockquote: ({ children }) => (
             <OverlayCard className="my-5 h-auto w-full">
               <OverlayCardPanel className="px-5 py-4 text-sm [&_li]:text-accent [&_ol]:my-3 [&_ol]:space-y-2 [&_p]:my-0 [&_p]:text-accent [&_strong]:text-foreground [&_ul]:my-3 [&_ul]:space-y-2">
