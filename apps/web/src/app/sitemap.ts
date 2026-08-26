@@ -112,8 +112,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   )
 
+  const docsMarkdownEntries: MetadataRoute.Sitemap = docsSections.flatMap((section) =>
+    section.items.map((item) => ({
+      url: absoluteUrl(`${item.href}.md`),
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.4,
+    })),
+  )
+
+  const llmEntries: MetadataRoute.Sitemap = [
+    { url: absoluteUrl("/llms.txt"), lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+    { url: absoluteUrl("/llms-full.txt"), lastModified: now, changeFrequency: "weekly", priority: 0.4 },
+    { url: absoluteUrl("/docs/llms.txt"), lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: absoluteUrl("/index.md"), lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+    { url: absoluteUrl("/pricing.md"), lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+  ]
+
   return [
     ...staticEntries,
+    ...llmEntries,
     ...alternativeEntries,
     ...integrationEntries,
     ...useCaseEntries,
@@ -121,6 +139,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...toolEntries,
     ...definitionEntries,
     ...docsEntries,
+    ...docsMarkdownEntries,
     ...blogEntries,
   ]
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/config/seo'
+import { htmlPathToMarkdownPath } from '@/lib/llms/paths'
 
 const TITLE_MIN_LENGTH = 50
 const TITLE_MAX_LENGTH = 60
@@ -74,14 +75,25 @@ function normalizeDescription(description: string) {
   return trimToWordBoundary(base, DESCRIPTION_MAX_LENGTH)
 }
 
-export function createAlternates(path?: string): Metadata['alternates'] {
+export function createAlternates(
+  path?: string,
+  markdownPath?: string,
+): Metadata['alternates'] {
   const canonical = normalizePath(path)
+  const twin = markdownPath ?? htmlPathToMarkdownPath(canonical)
   return {
     canonical,
     languages: {
       'en-US': canonical,
       'x-default': canonical,
     },
+    ...(twin
+      ? {
+          types: {
+            'text/markdown': twin,
+          },
+        }
+      : {}),
   }
 }
 
@@ -95,6 +107,7 @@ type BaseMetaArgs = {
   path?: string
   image?: string
   absoluteTitle?: boolean
+  markdownPath?: string
 }
 
 export function createPageMetadata({
@@ -103,6 +116,7 @@ export function createPageMetadata({
   path,
   image,
   absoluteTitle,
+  markdownPath,
 }: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonicalPath = normalizePath(path || '/')
@@ -112,7 +126,7 @@ export function createPageMetadata({
   return {
     title: titleProp,
     description: normalizedDescription,
-    alternates: createAlternates(canonicalPath),
+    alternates: createAlternates(canonicalPath, markdownPath),
     openGraph: {
       url: pageUrl(path || '/'),
       type: 'website',
@@ -135,6 +149,7 @@ export function createArticleMetadata({
   path,
   image,
   absoluteTitle,
+  markdownPath,
 }: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonicalPath = normalizePath(path || '/')
@@ -144,7 +159,7 @@ export function createArticleMetadata({
   return {
     title: titleProp,
     description: normalizedDescription,
-    alternates: createAlternates(canonicalPath),
+    alternates: createAlternates(canonicalPath, markdownPath),
     openGraph: {
       url: pageUrl(path || '/'),
       type: 'article',

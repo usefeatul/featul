@@ -1,4 +1,5 @@
 import type { ToolItem } from "@/types/tools";
+import { PRICING_PLAN_ORDER, PRICING_PLANS } from "@/types/plan";
 
 function normalizeJsonLdText(value: unknown): string {
   return String(value ?? "")
@@ -247,15 +248,38 @@ export function buildSiteNavigationSchema(siteUrl: string, items: NavItem[]) {
 }
 
 export function buildSoftwareApplicationSchema(siteUrl: string) {
+  const origin = siteUrl.replace(/\/$/, "");
+  const monthlyPrices = PRICING_PLAN_ORDER.map((key) => PRICING_PLANS[key].monthlyPrice);
+  const lowPrice = Math.min(...monthlyPrices);
+  const highPrice = Math.max(...monthlyPrices);
+  const pricingUrl = `${origin}/pricing`;
+
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "Featul",
     url: siteUrl,
-    applicationCategory: "Product feedback, public roadmap, changelog",
+    applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    image: `${siteUrl}/og.png`,
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice: String(lowPrice),
+      highPrice: String(highPrice),
+      priceCurrency: "USD",
+      offerCount: String(PRICING_PLAN_ORDER.length),
+      url: pricingUrl,
+      offers: PRICING_PLAN_ORDER.map((key) => {
+        const plan = PRICING_PLANS[key];
+        return {
+          "@type": "Offer",
+          name: plan.name,
+          price: String(plan.monthlyPrice),
+          priceCurrency: "USD",
+          url: pricingUrl,
+        };
+      }),
+    },
+    image: `${origin}/og.png`,
   };
 }
 
