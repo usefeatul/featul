@@ -1,7 +1,16 @@
+"use client";
+
 import { Check, Sparkles } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { Switch } from "@featul/ui/components/switch";
+import {
+  overlayChipInnerClass,
+  overlayChipShellClass,
+  overlayDialogClass,
+  overlayInnerClass,
+} from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
 
@@ -14,7 +23,20 @@ const requestTags = [
   { text: "public roadmap", tone: "add" },
 ] as const;
 
+const visualWellClass =
+  "flex min-h-[240px] w-full flex-1 flex-col justify-center p-4 sm:min-h-[300px] sm:p-6";
+
+const captionClass = "flex flex-col px-4 py-3";
+
+const viewport = { once: true, amount: 0.4 } as const;
+
+const springPop = { type: "spring" as const, stiffness: 420, damping: 18 };
+const springIn = { type: "spring" as const, stiffness: 280, damping: 24 };
+
 export default function FeaturesSection() {
+  const shouldReduceMotion = useReducedMotion();
+  const reduceMotion = !!shouldReduceMotion;
+
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section className="my-10 sm:my-14">
@@ -32,116 +54,175 @@ export default function FeaturesSection() {
             </div>
           </div>
 
-        <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
-          <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
-            <div className={cn(overlayInnerClass, "mb-2 p-0")}>
-              <div className="flex min-h-[220px] items-center justify-center bg-[#4f9df6] p-4 sm:min-h-[380px] sm:p-8">
-                <div className="flex min-h-[140px] w-full max-w-[430px] flex-col items-center justify-center px-5 text-center sm:min-h-[168px] sm:px-6">
-                  <span className="flex size-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                    <Check className="size-4" strokeWidth={2.4} />
-                  </span>
-                  <p className="text-foreground mt-4 text-sm font-semibold">
-                    You are all caught up
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className={cn(overlayInnerClass, "flex flex-1 flex-col px-4 py-3")}>
-              <h3 className="text-foreground text-left text-base font-medium">
-                You control what gets prioritized.
-              </h3>
-              <p className="text-accent mt-1 max-w-xl text-left text-sm leading-6">
-                Customers can submit, vote, and explain what matters. Nothing
-                changes on your roadmap until you review it.
-              </p>
-            </div>
-          </article>
-
-          <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
-            <div className={cn(overlayInnerClass, "mb-2 p-0")}>
-              <div className="flex min-h-[260px] items-center justify-center bg-[#ff955d] p-4 sm:min-h-[380px] sm:p-8">
-              <div className="w-full max-w-[430px] space-y-2.5 sm:space-y-3">
-                <div className={cn(overlayDialogClass)}>
-                  <div
-                    className={cn(
-                      overlayInnerClass,
-                      "flex items-center justify-between gap-3 px-3 py-3 sm:gap-5 sm:px-4 sm:py-4",
-                    )}
-                  >
-                  <div className="min-w-0">
-                    <p className="text-foreground text-sm font-semibold">
-                      Require review before roadmap changes
-                    </p>
-                    <p className="text-accent mt-1 text-xs">
-                      Approve suggested updates first.
-                    </p>
-                  </div>
-                  <span className="relative h-6 w-11 shrink-0 rounded-full bg-emerald-600">
-                    <span className="absolute right-1 top-1 size-4 rounded-full bg-white shadow-sm" />
-                  </span>
-                  </div>
-                </div>
-
-                <div className={cn(overlayDialogClass)}>
-                  <div className={cn(overlayInnerClass, "px-3 py-3 sm:px-4 sm:py-4")}>
-                  <div className="flex items-start justify-between gap-3 sm:gap-4">
-                    <div className="min-w-0">
-                      <p className="text-foreground text-sm font-semibold">
-                        Feature requests
-                      </p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-                        <Sparkles className="size-3.5 text-blue-600" />
-                        <span className="text-accent">Featul</span>
-                        <span className="font-medium text-emerald-600">+24</span>
-                        <span className="font-medium text-red-600">-8</span>
-                      </div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <span className="rounded-md bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700">
-                        Pending
-                      </span>
-                      <p className="text-accent mt-2 text-xs">needs review</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 border-t border-foreground/10 pt-3 sm:mt-4 sm:pt-4">
-                    <p className="text-foreground break-words text-sm leading-6 sm:leading-7">
-                      Customers keep asking for{" "}
-                      {requestTags.map((tag) => (
-                        <span
-                          key={tag.text}
-                          className={
-                            tag.tone === "add"
-                              ? "mx-0.5 inline whitespace-normal rounded-sm bg-emerald-100 px-1 text-emerald-800"
-                              : "mx-0.5 inline whitespace-normal rounded-sm bg-red-100 px-1 text-red-700 line-through decoration-red-600"
-                          }
-                        >
-                          {tag.text}
-                        </span>
-                      ))}{" "}
-                      so the most requested work rises to the top.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              </div>
-            </div>
-            </div>
-
-            <div className={cn(overlayInnerClass, "flex flex-1 flex-col px-4 py-3")}>
-              <h3 className="text-foreground text-left text-base font-medium">
-                Let Featul surface what matters.
-              </h3>
-              <p className="text-accent mt-1 max-w-xl text-left text-sm leading-6">
-                Automatically group similar feedback, spot patterns, and keep
-                your team focused on the requests with real momentum.
-              </p>
-            </div>
-          </article>
-        </div>
+          <div className="mt-8 grid items-stretch gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
+            <CaughtUpCard reduceMotion={reduceMotion} />
+            <InsightsCard reduceMotion={reduceMotion} />
+          </div>
         </div>
       </section>
     </Container>
+  );
+}
+
+function CaughtUpCard({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+      <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
+        <div className={cn(visualWellClass, "items-center bg-[#4f9df6]")}>
+          <div className="flex w-full flex-col items-center justify-center text-center">
+            <span className="relative flex size-10 items-center justify-center">
+              {!reduceMotion ? (
+                <motion.span
+                  aria-hidden
+                  className="pointer-events-none absolute rounded-full border-2 border-white/80"
+                  initial={{ opacity: 0.85, scale: 0.7 }}
+                  whileInView={{ opacity: 0, scale: 1.8 }}
+                  viewport={viewport}
+                  transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
+                  style={{ inset: -8 }}
+                />
+              ) : null}
+              <motion.span
+                className="relative flex size-10 items-center justify-center rounded-full bg-white text-emerald-600 shadow-sm"
+                initial={reduceMotion ? false : { scale: 0.55, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={viewport}
+                transition={springPop}
+              >
+                <Check className="size-4" strokeWidth={2.4} />
+              </motion.span>
+            </span>
+            <motion.p
+              className="mt-4 text-sm font-semibold text-white"
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewport}
+              transition={{ ...springIn, delay: 0.12 }}
+            >
+              You are all caught up
+            </motion.p>
+          </div>
+        </div>
+      </div>
+
+      <div className={cn(overlayInnerClass, captionClass)}>
+        <h3 className="text-foreground text-left text-base font-medium">
+          You control what gets prioritized.
+        </h3>
+        <p className="text-accent mt-1 text-left text-sm leading-6">
+          Customers can submit, vote, and explain what matters. Nothing
+          changes on your roadmap until you review it.
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function InsightsCard({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+      <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
+        <div className={cn(visualWellClass, "bg-[#ff955d]")}>
+          <motion.div
+            className="w-full overflow-hidden rounded-lg bg-background"
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+            transition={springIn}
+          >
+            <div className="flex items-center justify-between gap-4 px-4 py-3.5 sm:px-5">
+              <div className="min-w-0">
+                <p className="text-foreground text-sm font-medium">
+                  Require review before roadmap changes
+                </p>
+                <p className="text-accent mt-0.5 text-xs leading-5">
+                  Approve suggested updates first.
+                </p>
+              </div>
+              <motion.span
+                className="pointer-events-none shrink-0"
+                aria-hidden
+                initial={reduceMotion ? false : { scale: 0.85, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={viewport}
+                transition={{ ...springPop, delay: 0.16 }}
+              >
+                <Switch checked onCheckedChange={() => {}} tabIndex={-1} />
+              </motion.span>
+            </div>
+
+            <div className="h-px w-full bg-border" />
+
+            <div className="px-4 py-3.5 sm:px-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-foreground text-sm font-medium">
+                    Feature requests
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+                    <motion.span
+                      className="inline-flex"
+                      initial={reduceMotion ? false : { rotate: -20, scale: 0.6, opacity: 0 }}
+                      whileInView={{ rotate: 0, scale: 1, opacity: 1 }}
+                      viewport={viewport}
+                      transition={{ ...springPop, delay: 0.22 }}
+                    >
+                      <Sparkles className="size-3.5 text-blue-600" />
+                    </motion.span>
+                    <span className="text-accent">Featul</span>
+                    <span className="font-medium text-emerald-600">+24</span>
+                    <span className="font-medium text-red-600">-8</span>
+                  </div>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <span className={overlayChipShellClass}>
+                    <span
+                      className={cn(
+                        overlayChipInnerClass,
+                        "h-5 min-h-5 px-1.5 text-[11px] font-medium text-blue-700",
+                      )}
+                    >
+                      Pending
+                    </span>
+                  </span>
+                  <p className="text-accent text-[11px]">needs review</p>
+                </div>
+              </div>
+
+              <p className="text-foreground mt-3 text-sm leading-6">
+                Customers keep asking for{" "}
+                {requestTags.map((tag, index) => (
+                  <motion.span
+                    key={tag.text}
+                    className={
+                      tag.tone === "add"
+                        ? "mx-0.5 inline rounded-sm bg-emerald-100 px-1 text-emerald-800"
+                        : "mx-0.5 inline rounded-sm bg-red-100 px-1 text-red-700 line-through decoration-red-600"
+                    }
+                    initial={reduceMotion ? false : { opacity: 0, y: 6, scale: 0.94 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={viewport}
+                    transition={{ ...springIn, delay: 0.18 + index * 0.05 }}
+                  >
+                    {tag.text}
+                  </motion.span>
+                ))}{" "}
+                so the most requested work rises to the top.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      <div className={cn(overlayInnerClass, captionClass)}>
+        <h3 className="text-foreground text-left text-base font-medium">
+          Let Featul surface what matters.
+        </h3>
+        <p className="text-accent mt-1 text-left text-sm leading-6">
+          Automatically group similar feedback, spot patterns, and keep
+          your team focused on the requests with real momentum.
+        </p>
+      </div>
+    </article>
   );
 }
