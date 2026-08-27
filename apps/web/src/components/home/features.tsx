@@ -24,7 +24,7 @@ const requestTags = [
 ] as const;
 
 const visualWellClass =
-  "flex min-h-[240px] w-full flex-1 flex-col justify-center p-4 sm:min-h-[300px] sm:p-6";
+  "flex min-h-[240px] w-full flex-1 flex-col justify-center px-4 sm:min-h-[300px] sm:px-6";
 
 const captionClass = "flex flex-col px-4 py-3";
 
@@ -125,12 +125,12 @@ function InsightsCard({ reduceMotion }: { reduceMotion: boolean }) {
         <div className={cn(visualWellClass, "bg-[#ff955d]")}>
           <motion.div
             className="w-full overflow-hidden rounded-lg bg-background"
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewport}
             transition={springIn}
           >
-            <div className="flex items-center justify-between gap-4 px-4 py-3.5 sm:px-5">
+            <div className="flex items-center justify-between gap-3 px-5 py-4 sm:px-6">
               <div className="min-w-0">
                 <p className="text-foreground text-sm font-medium">
                   Require review before roadmap changes
@@ -153,7 +153,7 @@ function InsightsCard({ reduceMotion }: { reduceMotion: boolean }) {
 
             <div className="h-px w-full bg-border" />
 
-            <div className="px-4 py-3.5 sm:px-5">
+            <div className="px-5 py-4 sm:px-6">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-foreground text-sm font-medium">
