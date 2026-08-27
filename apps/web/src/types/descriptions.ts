@@ -7,7 +7,7 @@ export const alternativeDescriptions: Record<string, string[]> = {
     "UserJot's paid tiers focus on branding. Featul emphasizes control through private deployment and roadmap sharing without vendor restrictions.",
   ],
   featurebase: [
-    "Featul is an open source Featurebase alternative with EU hosting, self-hosting, and a unified feedback, roadmap, and changelog workflow. Compare pricing and migrate.",
+    "Featul is an open source Featurebase alternative with EU hosting, self-hosting, and unified boards, roadmap, and changelog. Compare pricing and migrate.",
     "Featurebase specializes in voting and a help-center suite. Featul is a self-hostable Featurebase alternative with planning tools, release tracking, and workspace pricing.",
     "Teams that want a simple hosted suite may stay on Featurebase. Teams that need an open source Featurebase alternative choose Featul for self-hosted feedback through changelog.",
   ],

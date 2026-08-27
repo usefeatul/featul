@@ -269,7 +269,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         slug: "arr-calculator",
         name: "ARR calculator",
         description:
-          "Calculate Annual Recurring Revenue from MRR. ARR = 12 × MRR. Compare ARR vs MRR and use ARR to weight B2B feedback.",
+          "Calculate Annual Recurring Revenue from MRR with ARR = 12 × MRR. See ARR vs MRR, examples, and how B2B teams weight feature requests by ARR.",
         contentSections: [
           {
             title: "What is ARR?",

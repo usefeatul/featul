@@ -104,6 +104,13 @@ Featul is customer feedback, public or private roadmaps, and changelogs in one E
 
 ## Compare
 - [Alternatives](${absoluteUrl("/alternatives")}): Featul vs Canny, Featurebase, and other feedback tools.
+- [Featurebase alternatives](${absoluteUrl("/alternatives/featurebase")}): Open source Featurebase alternative with self-hosting.
+- [Canny alternatives](${absoluteUrl("/alternatives/canny")}): Canny alternative with Canny import and Slack/API integrations.
+
+## Learn
+- [What is ARR?](${absoluteUrl("/definitions/arr")}): Annual Recurring Revenue definition, formula, and ARR vs MRR.
+- [ARR calculator](${absoluteUrl("/tools/categories/revenue-growth/arr-calculator")}): Annualize MRR and use ARR to weight B2B feedback.
+- [Use cases](${absoluteUrl("/use-cases")}): Product feedback, B2B ARR-weighted requests, and public roadmaps.
 
 ## Optional
 - [Blog](${absoluteUrl("/blog")})

@@ -131,7 +131,7 @@ export function generateIntegrationPage(slug: string): IntegrationPageData | nul
 
     const meta: GeneratedPageMeta = {
         title: cannyCopy
-            ? "Canny integrations | Import Canny into Featul"
+            ? "Canny integrations | Import Canny boards into Featul"
             : `Featul + ${integration.name} Integration`,
         description: cannyCopy
             ? "Canny integrations in Featul: import boards, votes, and discussions, then keep Slack, webhooks, and API in one EU-hosted Canny alternative."

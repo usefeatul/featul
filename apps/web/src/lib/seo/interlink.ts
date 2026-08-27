@@ -320,6 +320,14 @@ function addToolRelated(slug: string, links: RelatedLink[]) {
         }
     }
 
+    if (slug === "arr-calculator") {
+        links.push({
+            href: "/use-cases/b2b-customer-feedback",
+            label: "B2B feedback weighted by ARR",
+            type: "use-case",
+        });
+    }
+
     // Add definitions hub
     links.push({
         href: "/definitions",

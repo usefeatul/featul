@@ -68,7 +68,7 @@ export const DEFINITIONS: Definition[] = ([
     publishedAt: "2026-08-27",
     metaTitle: "What is ARR? Annual Recurring Revenue explained",
     short:
-      "ARR is 12×MRR or contracted annual subscription value. Learn the formula, ARR vs MRR, examples, and how product teams prioritize feedback with ARR.",
+      "ARR is 12×MRR or contracted annual subscription value. Learn the formula, ARR vs MRR, examples, and how product teams prioritize feedback using ARR today.",
     content:
       "Annual Recurring Revenue (ARR) is the annualized value of active subscription contracts. SaaS teams use it as the headline run-rate number for boards, fundraising, and hiring plans because it smooths month-to-month noise. Most product-led companies compute ARR as 12 × MRR. Enterprise teams often instead sum contracted annual values so a $120k yearly deal counts as $120k ARR even if it is billed monthly. Keep ARR strict: exclude one-time implementation fees, professional services, usage spikes that are not committed, and pipeline that is not signed. When ARR grows while net revenue retention stays above 100%, the existing customer base is expanding and new logos are compounding on a durable base.",
     eli5: "Your subscription money for a whole year.",

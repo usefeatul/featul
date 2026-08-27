@@ -114,7 +114,7 @@ export default function ArrTool() {
 
         <h4>How to use this ARR calculator</h4>
         <ol>
-          <li>Enter MRR from billing, or compute it first with the <Link href="/tools/categories/revenue-metrics/mrr-calculator">MRR calculator</Link>.</li>
+          <li>Enter MRR from billing, or compute it first with the <Link href="/tools/categories/revenue-growth/mrr-calculator">MRR calculator</Link>.</li>
           <li>Use the ARR result for annual budgets, board decks, and hiring plans.</li>
           <li>Pair ARR with <Link href="/definitions/nrr">net revenue retention</Link> so new logos are not hiding churn.</li>
         </ol>
@@ -143,8 +143,8 @@ export default function ArrTool() {
 
         <h4>Related metrics</h4>
         <ul>
-          <li><Link href="/definitions/mrr">MRR</Link> and the <Link href="/tools/categories/revenue-metrics/mrr-calculator">MRR calculator</Link></li>
-          <li><Link href="/tools/categories/revenue-metrics/growth-rate-calculator">Growth rate</Link></li>
+          <li><Link href="/definitions/mrr">MRR</Link> and the <Link href="/tools/categories/revenue-growth/mrr-calculator">MRR calculator</Link></li>
+          <li><Link href="/tools/categories/revenue-growth/growth-rate-calculator">Growth rate</Link></li>
           <li><Link href="/definitions/nrr">Net revenue retention</Link></li>
         </ul>
       </section>
