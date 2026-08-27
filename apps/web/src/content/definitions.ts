@@ -158,6 +158,32 @@ export const DEFINITIONS: Definition[] = ([
         q: "Should product teams use ARR when prioritizing feedback?",
         a: "Yes for B2B. Votes show popularity; ARR shows whose revenue is attached to a request. Combining both prevents a loud free-tier cohort from outranking an enterprise account.",
       },
+      {
+        q: "Does ARR include churned customers?",
+        a: "Contracted ARR is a snapshot of active subscriptions now. Churned ARR is the annualized value that left in the period. Report both: ending ARR, plus new / expansion / contraction / churned ARR, so growth is not a black box.",
+      },
+      {
+        q: "Should I annualize last month if MRR jumped?",
+        a: "Only if that month is a fair run-rate. After a launch promo, a one-off expansion, or a known churn wave, use a trailing average of clean months or contracted values so you do not present a spike as twelve months of reality.",
+      },
+      {
+        q: "What is the difference between ARR and bookings?",
+        a: "Bookings are signed contract value, often including future years. ARR is the annual run-rate of what is active now. A $300k three-year booking is $100k ARR, not $300k ARR.",
+      },
+    ],
+    sections: [
+      {
+        title: "ARR vs MRR vs recognized revenue",
+        body: "MRR is the monthly operating number. ARR is the same recurring base on a yearly scale. Recognized revenue follows accounting rules and can include one-time services, usage, and timing differences. When someone asks “what is ARR?”, they want run-rate subscriptions, not the P&L line. Keep a written policy: monthly plans use 12 × MRR; annual plans use contracted annual value; never mix the two without normalizing. The ARR calculator applies the monthly method; use the definition example when billing is mixed.",
+      },
+      {
+        title: "The four movements that change ARR",
+        body: "Ending ARR is easier to explain when you split the period into new ARR (first-time logos), expansion ARR (upsell, seats, add-ons), contraction ARR (downgrades), and churned ARR (cancellations). A company can post higher ending ARR while churned ARR is ugly if one large logo signed. Product and success should watch churned ARR next to the public roadmap: if cancelled accounts asked for the same missing feature, that is a prioritization signal, not just a finance footnote.",
+      },
+      {
+        title: "How product teams should use ARR with feedback",
+        body: "A public voting board without revenue context treats a trial user like a $200k account. Attach customer ARR to requests, merge duplicates, and promote work when unique votes and ARR at risk both support it. That is the B2B feedback use case in Featul: private boards for key accounts, a shared roadmap sales can link, and a changelog when the work ships. ARR does not replace discovery interviews; it stops the roadmap from being captured by whoever comments the most.",
+      },
     ],
     related: ["mrr", "nrr", "arpu"],
   },

@@ -25,6 +25,8 @@ export interface Alternative {
   metaTitle?: string
   heroTitle?: string
   heroKicker?: string
+  /** Unique long-form sections for high-intent comparison pages. */
+  guide?: { title: string; body: string }[]
   features: ComparisonFeature[]
 }
 
@@ -92,6 +94,24 @@ export const alternatives: Alternative[] = [
     image: '/image/image.jpeg',
     pros: ['Help center plus AI support suite', 'Large integration catalog'],
     cons: ['Per-seat pricing as the team grows', 'Hosted-only, not self-hostable'],
+    guide: [
+      {
+        title: 'Who looks for Featurebase alternatives',
+        body: 'Most searches for Featurebase alternatives are not “any voting board.” Teams want the same loop Featurebase is known for—boards, votes, a public roadmap, and a changelog—without per-seat pricing, a closed vendor, or US-only hosting defaults. Featul is built as an open source Featurebase alternative: MIT-licensed, self-hostable, EU-hosted by default, and billed per workspace. If you already live in Featurebase’s help-center and AI support suite and do not need self-hosting, staying can still be rational. If the product team, success, and engineering all need seats, the bill is the usual reason people compare.',
+      },
+      {
+        title: 'Open source Featurebase alternative vs hosted-only',
+        body: 'An open source Featurebase alternative matters when feedback is customer data you may need to move, self-host, or show to security reviewers. Featul can run as a hosted EU workspace or on your own infrastructure. Featurebase is a strong hosted product; it is not a self-hosted MIT codebase. That difference shows up in procurement, GDPR questionnaires, and “can we leave later?” conversations—not in whether voting works. Both collect requests. Only one lets you keep the board if the vendor relationship ends.',
+      },
+      {
+        title: 'Pricing: seats vs workspace',
+        body: 'Featurebase’s paid motion scales primarily with seats as more of the company uses the suite. Featul uses flat workspace plans so adding a PM, a CSM, and two engineers does not multiply the invoice the same way. Compare current numbers on each pricing page before you treat this as a quote. The pattern is the decision: if five people need access, per-seat tools get expensive faster than a workspace cap.',
+      },
+      {
+        title: 'How to migrate from Featurebase',
+        body: 'Export or import posts, then recreate categories, tags, and statuses so voters still recognize the board. Point your public URL or widget at Featul, publish the roadmap columns you already use (Planned, In Progress, Shipped), and send a changelog when the first migrated item ships. That close-the-loop moment is what customers notice—not the vendor logo. For messy Featurebase workspaces, map duplicates before you go live so vote counts stay honest.',
+      },
+    ],
     features: withCompetitor({
       eu_hosting: 'partial',
       gdpr: 'partial',
@@ -141,6 +161,24 @@ export const alternatives: Alternative[] = [
     image: '/image/image.jpeg',
     pros: ['Broad third-party integrations', 'Long enterprise track record'],
     cons: ['US-centric hosting', 'Seat-based pricing as teams grow'],
+    guide: [
+      {
+        title: 'Canny alternatives vs Canny integrations',
+        body: 'Google shows two intents on this page. “Canny alternatives” means replace the product. “Canny integrations” means Slack, API, webhooks, and a path to import the board. Featul is a Canny alternative with Canny import plus Slack, webhooks, and API—the jobs most product teams run daily. Canny still wins if you need a long marketplace of native third-party apps. Featul wins if you want EU hosting, workspace pricing, and roadmap plus changelog in the same tool after you import.',
+      },
+      {
+        title: 'What Canny integrations Featul replaces',
+        body: 'Typical Canny setups notify Slack when a post is created, push status through an API or webhook, and maybe sync an issue tracker. Featul covers Slack notifications, webhooks, and API access so triage does not require a new chat app. You do not recreate every Canny marketplace connector. You keep the workflow: request comes in, team is pinged, status is visible on a public roadmap, release notes go out. See the Canny integrations page for import steps.',
+      },
+      {
+        title: 'When to stay on Canny',
+        body: 'Stay if your operating system is already a large set of Canny apps (Linear, Jira, Intercom, and others) and switching would break automations you cannot rebuild with webhooks. Switch when seat cost, data residency, or “we also bought a changelog tool” is the pain. Featul is not trying to out-catalog Canny. It is trying to be the simpler EU-hosted replacement with import so history is not left behind.',
+      },
+      {
+        title: 'Migrating a Canny board',
+        body: 'Create a Featul workspace, import Canny requests and discussions, map statuses and tags, then connect Slack. Share the new board URL, keep voting open, and changelog the first shipped item that came from the old Canny list. Voters care that their post still exists and that something shipped. They do not care which vendor rendered the upvote.',
+      },
+    ],
     features: withCompetitor({
       eu_hosting: false,
       gdpr: 'partial',

@@ -18,10 +18,6 @@ export const navigationConfig: NavigationConfig = {
       href: '/pricing',
     },
     {
-      name: 'Alternatives',
-      href: '/alternatives',
-    },
-    {
       name: 'Blog',
       href: '/blog',
     },

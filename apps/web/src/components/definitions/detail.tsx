@@ -202,6 +202,21 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
             </section>
           ) : null}
 
+          {def.sections && def.sections.length ? (
+            <>
+              {def.sections.map((section) => (
+                <section key={section.title}>
+                  <h2 className="text-lg font-semibold text-foreground">
+                    {section.title}
+                  </h2>
+                  <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
+                    {section.body}
+                  </p>
+                </section>
+              ))}
+            </>
+          ) : null}
+
           {def.related && def.related.length ? (
             <section>
               <h2 className="text-lg font-semibold text-foreground">

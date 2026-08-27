@@ -17,7 +17,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
               title={`FAQs about ${alt.name} alternatives`}
               description={description}
               items={items}
-              limit={6}
+              limit={8}
             />
           </div>
         </div>

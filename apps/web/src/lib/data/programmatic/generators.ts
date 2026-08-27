@@ -39,6 +39,7 @@ export interface IntegrationPageData {
         intro: string;
         benefits: { title: string; description: string }[];
         howItWorks: string[];
+        extra?: { title: string; body: string }[];
     };
     faqs: { question: string; answer: string }[];
 }
@@ -155,6 +156,16 @@ export function generateIntegrationPage(slug: string): IntegrationPageData | nul
                 "Run Canny import so boards, votes, and discussions land as Featul posts",
                 "Connect Slack, webhooks, or the API for the same notification and sync jobs you used in Canny",
             ],
+            extra: [
+                {
+                    title: "Canny integrations people actually search for",
+                    body: "The query “Canny integrations” is usually Slack, Jira or Linear, Intercom, and an API. Featul does not clone Canny’s full marketplace. It covers the daily path: import the Canny board, ping Slack, expose webhooks and API, then keep roadmap and changelog in the same EU-hosted workspace. If your Canny workspace is held together by ten native apps, list those automations before you switch. If you mainly need notifications and a public board, import plus Slack is the replacement.",
+                },
+                {
+                    title: "What you keep after a Canny import",
+                    body: "Requests, discussion context, and the ability to keep voting. You remap statuses and tags so “Under Review” still means something. Then you publish a roadmap URL sales and customers can bookmark. The first changelog entry that points at an imported post is how you prove the new tool is not a dead archive.",
+                },
+            ],
         }
         : {
             intro: `Connect Featul with ${integration.name} to supercharge your product feedback workflow. ${integration.description}`,
@@ -182,6 +193,14 @@ export function generateIntegrationPage(slug: string): IntegrationPageData | nul
             {
                 question: "Is Featul a Canny alternative if we depend on integrations?",
                 answer: "If you need a long marketplace catalog, Canny may still fit. If you need Slack, API, webhooks, EU hosting, and a changelog in one product, Featul is the Canny alternative to evaluate.",
+            },
+            {
+                question: "Does Featul integrate with Slack like Canny?",
+                answer: "Yes. Slack notifications are a first-class Canny integration replacement for triage. Use webhooks or the API when you need a custom destination Canny used to cover.",
+            },
+            {
+                question: "Will voters lose their Canny posts?",
+                answer: "Not if you import before you cut over. Map statuses, keep the public URL or widget pointed at Featul, and changelog the first shipped item from the old board so the loop is visible.",
             },
         ]
         : [

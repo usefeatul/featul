@@ -4,6 +4,7 @@ import { AlternativeHero } from "@/components/alternatives/hero";
 import TLDR from "@/components/alternatives/tldr";
 import Compare from "@/components/alternatives/compare";
 import WhyBetter from "@/components/alternatives/why";
+import AlternativeGuide from "@/components/alternatives/guide";
 import AlternativeFAQs from "@/components/alternatives/faq";
 import Verdict from "@/components/alternatives/verdict";
 import { Container } from "@/components/global/container";
@@ -114,6 +115,7 @@ export default async function AlternativePage({
           <TLDR alt={alt} />
           <Compare alt={alt} />
           <WhyBetter alt={alt} />
+          <AlternativeGuide alt={alt} />
           <Verdict alt={alt} />
           <AlternativeFAQs alt={alt} />
           <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">

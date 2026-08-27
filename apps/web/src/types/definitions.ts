@@ -23,6 +23,8 @@ export type Definition = {
   faqs?: DefinitionFaq[];
   related?: string[];
   useCases?: DefinitionUseCase[];
+  /** Extra H2 sections for depth on high-intent terms. */
+  sections?: { title: string; body: string }[];
   author?: string;
   publishedAt?: string;
   essay?: {

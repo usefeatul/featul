@@ -134,6 +134,18 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         answer:
           'Stay if you already rely on Featurebase’s help-center and AI support suite and do not need self-hosting or EU-first hosting. Choose Featul if you want an open source Featurebase alternative with simpler workspace pricing.',
       },
+      {
+        id: 'featurebase-7',
+        question: 'Does Featul replace Featurebase voting boards?',
+        answer:
+          'Yes. Customers still submit, vote, and comment. Featul adds a public roadmap and changelog in the same workspace, plus the option to self-host so the board is not locked to a vendor.',
+      },
+      {
+        id: 'featurebase-8',
+        question: 'Is Featul cheaper than Featurebase for a product team?',
+        answer:
+          'It often is once several roles need access, because Featul bills the workspace instead of each seat. Always compare live pricing: Featurebase’s value is the broader suite; Featul’s value is the feedback-to-release loop at a predictable workspace rate.',
+      },
     ],
   },
   nolt: {
@@ -217,6 +229,18 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         question: 'When should I stay with Canny?',
         answer:
           'Stay if you already depend on a wide set of Canny marketplace integrations and do not need EU-first hosting. Choose Featul if you want a simpler Canny alternative with import, Slack, and a connected changelog.',
+      },
+      {
+        id: 'canny-7',
+        question: 'Does Featul have a Canny import?',
+        answer:
+          'Yes. Import Canny requests and discussions into Featul, then map statuses and tags. That is the integration most switchers need before Slack or webhooks.',
+      },
+      {
+        id: 'canny-8',
+        question: 'Can Featul replace Canny plus a separate changelog tool?',
+        answer:
+          'That is the usual stack we replace: Canny for votes, something else for release notes. Featul keeps boards, roadmap, and changelog together so you are not paying for two products to close the loop.',
       },
     ],
   },

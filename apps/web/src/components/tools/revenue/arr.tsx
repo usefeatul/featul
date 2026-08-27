@@ -141,6 +141,29 @@ export default function ArrTool() {
           <li>Counting a three-year prepayment as three years of ARR at once. Use annual contracted value.</li>
         </ul>
 
+        <h4>Mixed monthly and annual contracts</h4>
+        <p>
+          This calculator annualizes a single MRR input. If some customers pay monthly and others prepay annually,
+          convert each group first: monthly ARR = monthly MRR × 12; annual ARR = sum of those contracts’ yearly value.
+          Add the two. Do not take a month that includes a large annual invoice and multiply that month by 12.
+          The definition page walks through a numeric mix of $50/month plans and $12,000 annual plans.
+        </p>
+
+        <h4>ARR FAQs</h4>
+        <p>
+          <strong>Is this the same as cash this year?</strong> No. ARR is run-rate of active subscriptions, not cash collected.
+        </p>
+        <p>
+          <strong>Can I enter annual contract value here?</strong> Divide that annual value by 12, enter it as MRR, or skip
+          this tool and sum contracted annual values as described in the{" "}
+          <Link href="/definitions/arr">ARR definition</Link>.
+        </p>
+        <p>
+          <strong>How should product use this number?</strong> Attach customer ARR to feature requests so roadmap scoring
+          reflects revenue at risk. See the{" "}
+          <Link href="/use-cases/b2b-customer-feedback">B2B feedback use case</Link>.
+        </p>
+
         <h4>Related metrics</h4>
         <ul>
           <li><Link href="/definitions/mrr">MRR</Link> and the <Link href="/tools/categories/revenue-growth/mrr-calculator">MRR calculator</Link></li>

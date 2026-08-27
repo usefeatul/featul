@@ -73,6 +73,16 @@ export const USE_CASE_COPY: Record<string, UseCaseCopy> = {
         answer:
           "Give sales a public or shared roadmap URL and a way to file requests into the same board product uses. Promises become posts with status, not slides.",
       },
+      {
+        question: "Where do we get the ARR number to attach to a request?",
+        answer:
+          "Use contracted ARR from billing, or annualize stable MRR with the ARR calculator. Do not invent a number from last month’s spike. The definition of ARR is 12 × MRR or contracted annual value—same policy finance already uses.",
+      },
+      {
+        question: "Should every upvote be weighted by ARR?",
+        answer:
+          "No. Unique votes still show breadth. ARR shows concentration. Use both: a widely voted SMB request can beat a single logo, and a quiet $200k account should still be visible to the PM.",
+      },
     ],
   },
   "open-source-roadmap": {
