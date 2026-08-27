@@ -1,3 +1,5 @@
+/** Continues markdown-style lists in plain textareas. */
+
 export type ContinuePlainListResult = {
   nextValue: string
   nextCaret: number
@@ -15,6 +17,7 @@ function lineBounds(value: string, caret: number) {
   return { lineStart, lineEnd, line: value.slice(lineStart, lineEnd) }
 }
 
+/** Enter: next list item, or drop an empty item prefix. */
 export function continuePlainList(
   value: string,
   selectionStart: number,
@@ -50,6 +53,7 @@ export function continuePlainList(
   return { nextValue, nextCaret: caret + insert.length }
 }
 
+/** Tab/Shift-Tab indent for list lines; null when not in a list. */
 export function indentPlainList(
   value: string,
   selectionStart: number,

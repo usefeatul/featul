@@ -7,6 +7,7 @@ type UploadUrlResponse = {
   message?: string
 }
 
+/** Signed URL for a public post image on a board. */
 export async function getPostImageUploadUrl(
   workspaceSlug: string,
   fileName: string,
@@ -36,6 +37,7 @@ export async function getPostImageUploadUrl(
   }
 }
 
+/** Deletes an uploaded post image; 409 means already gone. */
 export async function deletePostImageUpload(url: string): Promise<void> {
   const res = await client.storage.deleteUpload.$post({ url })
   if (res.ok || res.status === 409) return

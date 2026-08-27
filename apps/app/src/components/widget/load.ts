@@ -45,10 +45,12 @@ function asAuthor(value: unknown): ChangelogAuthor {
   return isRecord(value) ? value : {};
 }
 
+/** Tiptap JSON is a `doc` node. Plain strings pass through elsewhere. */
 function isTiptapContent(value: unknown): value is TiptapContent {
   return isRecord(value) && value.type === "doc";
 }
 
+/** Accept HTML strings or Tiptap docs. Anything else is ignored. */
 function asTiptapContent(value: unknown): TiptapContent | string | null {
   if (typeof value === "string") return value;
   if (isTiptapContent(value)) return value;
@@ -71,6 +73,7 @@ function mapChangelogTag(value: unknown): ChangelogTag | null {
   };
 }
 
+/** Normalize changelog rows. Preview prefers explicit preview, then summary, then Tiptap. */
 export function mapChangelogEntries(
   entries: unknown[],
 ): WidgetChangelogEntry[] {
@@ -132,6 +135,7 @@ export function mapChangelogEntries(
   });
 }
 
+/** Dedup image URLs. Fall back to legacy single `image` when the array is empty. */
 function parseWidgetPostImages(images: unknown, image: unknown): string[] {
   const urls: string[] = [];
   const seen = new Set<string>();
@@ -151,6 +155,7 @@ function parseWidgetPostImages(images: unknown, image: unknown): string[] {
   return urls;
 }
 
+/** Narrow a widget post. Requires id, title, slug, and boardId. */
 export function parseWidgetPost(value: unknown): WidgetPost | null {
   if (!isRecord(value)) return null;
   if (
@@ -199,6 +204,7 @@ export function parseWidgetPosts(value: unknown): WidgetPost[] {
     : [];
 }
 
+/** Drop invalid comment rows. parentId must be null or a string. */
 export function parseWidgetComment(value: unknown): WidgetComment | null {
   if (!isRecord(value)) return null;
   if (
@@ -242,6 +248,7 @@ export function parseWidgetComments(value: unknown): WidgetComment[] {
     : [];
 }
 
+/** Narrow a roadmap card. Title and id are required; the rest is optional. */
 export function parseWidgetRoadmapItem(
   value: unknown,
 ): WidgetRoadmapItem | null {
@@ -282,6 +289,7 @@ export function parseWidgetRoadmapItems(value: unknown): WidgetRoadmapItem[] {
     : [];
 }
 
+/** Similar-post hits for compose. Missing core fields are skipped. */
 export function parseSimilarPosts(value: unknown): SimilarPost[] {
   if (!Array.isArray(value)) return [];
   return value.flatMap((item) => {
@@ -330,6 +338,7 @@ export function parseBoards(value: unknown): Board[] {
   });
 }
 
+/** Config tabs from the host. Feedback is always included first if missing. */
 export function parseConfigTabs(value: unknown): ConfigTab[] {
   if (!Array.isArray(value)) return [];
   const tabs = value.filter(
@@ -351,6 +360,7 @@ export function parseBrandingTheme(value: unknown): WidgetThemeMode {
   return "auto";
 }
 
+/** Accept a section string or `{ section }`. Unknown values return null. */
 export function parseSection(value: unknown): Section | null {
   if (
     value === "home" ||
@@ -364,6 +374,7 @@ export function parseSection(value: unknown): Section | null {
   return null;
 }
 
+/** Read `mode` or `theme` from a host payload. */
 export function parseThemeMode(
   value: unknown,
 ): "light" | "dark" | "auto" | null {
@@ -373,6 +384,7 @@ export function parseThemeMode(
   return null;
 }
 
+/** HMAC-identified visitor. Requires id, email, expiry, and signature. */
 export function parseIdentifiedUser(value: unknown): IdentifiedUser | null {
   if (
     !isRecord(value) ||

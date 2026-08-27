@@ -17,6 +17,7 @@ export type SubdomainLayoutData = {
   roadmapVisible: boolean;
 };
 
+/** Workspace, branding, and public changelog/roadmap flags for the subdomain layout. */
 export async function loadSubdomainLayoutData(
   subdomain: string
 ): Promise<SubdomainLayoutData | null> {
@@ -47,6 +48,7 @@ export async function loadSubdomainLayoutData(
   };
 }
 
+/** True when the system board exists and is both visible and public. */
 async function getSystemBoardVisibility(
   workspaceId: string,
   systemType: "changelog" | "roadmap"

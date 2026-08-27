@@ -1,6 +1,8 @@
+/** Paste and drop handlers for post images. */
 import type { ClipboardEvent, DragEvent } from "react"
 import { toast } from "sonner"
 
+/** Image files from a paste/drop DataTransfer, preferring `files`. */
 export function getImageFilesFromDataTransfer(
   data: DataTransfer | null
 ): File[] {
@@ -27,6 +29,7 @@ export function getImageFilesFromDataTransfer(
   return fromItems
 }
 
+/** Form paste/drop handlers that enforce the image cap. */
 export function createPostImageTransferHandlers({
   onImageFiles,
   uploading,

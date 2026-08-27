@@ -32,6 +32,7 @@ const KEY_SYMBOLS: Record<string, string> = {
   "Right Arrow": "→",
 };
 
+/** True for inputs, textareas, selects, contenteditable, and role=textbox. */
 function isEditableElement(element: HTMLElement | null) {
   if (!element) return false;
   const role = element.getAttribute("role");
@@ -76,6 +77,7 @@ function ShortcutBindingStack({
   );
 }
 
+/** Match shortcuts by title, description, group, or binding keys. */
 function filterShortcut(shortcut: (typeof WORKSPACE_SHORTCUTS)[number], query: string) {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return true;

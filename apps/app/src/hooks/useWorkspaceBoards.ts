@@ -17,6 +17,7 @@ interface UseWorkspaceBoardsResult {
   setSelectedBoard: Dispatch<SetStateAction<BoardSummary | null>>
 }
 
+/** Board list and selection for create/edit dialogs. Loads while `open`; prefers `initialBoardSlug`. */
 export function useWorkspaceBoards({
   open,
   workspaceSlug,

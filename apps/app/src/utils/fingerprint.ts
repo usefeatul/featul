@@ -1,4 +1,6 @@
+/** Anonymous browser session id via cookie. */
 
+/** Write a path=/ SameSite=Lax cookie. Optional `days` sets expiry. */
 function setCookie(name: string, value: string, days?: number) {
   let expires = "";
   if (typeof days === "number" && days > 0) {
@@ -9,6 +11,7 @@ function setCookie(name: string, value: string, days?: number) {
   document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
 }
 
+/** Read a cookie by exact name. */
 function getCookie(name: string) {
   const nameEQ = name + "=";
   const ca = document.cookie.split(";");
@@ -20,6 +23,7 @@ function getCookie(name: string) {
   return null;
 }
 
+/** Return or create `anon_session_id`. Empty on the server. */
 export async function getBrowserFingerprint(): Promise<string> {
   if (typeof window === "undefined") return "";
 

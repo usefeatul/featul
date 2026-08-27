@@ -1,5 +1,6 @@
 import { formatDistanceToNowStrict } from "date-fns"
 
+/** 12-hour clock in a timezone; empty string if the TZ is invalid. */
 export function formatTime12h(tz: string, d: Date = new Date()): string {
   try {
     const parts = new Intl.DateTimeFormat(undefined, {
@@ -17,6 +18,7 @@ export function formatTime12h(tz: string, d: Date = new Date()): string {
   }
 }
 
+/** Time plus short date in a timezone. */
 export function formatTimeWithDate(tz: string, now: Date): string {
   const t = new Intl.DateTimeFormat(undefined, {
     hour: "2-digit",
@@ -32,6 +34,7 @@ export function formatTimeWithDate(tz: string, now: Date): string {
   return `${t}, ${d}`;
 }
 
+/** Compact relative time; calendar date after a week. */
 export function relativeTime(date: string): string {
   const past = new Date(date)
   const ts = past.getTime()
@@ -57,6 +60,7 @@ function parseDate(value: DateLike): Date | null {
   return Number.isNaN(date.getTime()) ? null : date
 }
 
+/** "Expired" or a relative "Expires in ..." from an absolute timestamp. */
 export function formatExpiryLabel(expiresAt: DateLike, now: Date = new Date()): string {
   const expiresOn = parseDate(expiresAt)
   if (!expiresOn) return ""

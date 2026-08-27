@@ -1,5 +1,6 @@
 import { cn } from "@featul/ui/lib/utils"
 
+/** Row hover/selected styles. Selection mode overrides default hover. */
 export function getSelectableRowClassName(
   isSelecting: boolean,
   isSelected: boolean,

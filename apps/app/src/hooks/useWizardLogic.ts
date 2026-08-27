@@ -13,6 +13,7 @@ import {
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import { markPendingWelcomeTour } from "@/lib/welcome/tour";
 
+/** Capitalizes the first DNS label of a domain as a workspace name. */
 function extractNameFromDomain(domain: string): string {
   const part = domain.split(".")[0]?.trim() || "";
   if (!part) return "";
@@ -24,6 +25,7 @@ type UseWizardLogicOptions = {
   isFirstWorkspace?: boolean;
 };
 
+/** Workspace create wizard: name, slug, domain, timezone, and submit. Marks the welcome tour pending on first workspace. */
 export function useWizardLogic(options: UseWizardLogicOptions = {}) {
   const router = useRouter();
   const queryClient = useQueryClient();

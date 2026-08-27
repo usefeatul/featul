@@ -9,6 +9,7 @@ export {
   type UploadedImage,
 } from "./useSignedUpload";
 
+/** Signed image upload for posts. Requires a board slug before upload; tracks analytics on success. */
 export function usePostUpload(workspaceSlug: string, boardSlug?: string) {
   return useSignedUpload({
     maxFiles: POST_MAX_IMAGES,

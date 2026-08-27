@@ -16,11 +16,13 @@ function emit() {
   for (const fn of listeners) fn()
 }
 
+/** Updates keyed filter-popover open state and notifies subscribers. */
 export function setPopoverOpen(key: string, open: boolean) {
   opens.set(key, open)
   emit()
 }
 
+/** Open state for a filter popover, keyed so filters stay independent. */
 export function useFilterPopover(key: string): [boolean, (v: boolean) => void] {
   const getSnapshot = React.useCallback(() => opens.get(key) ?? false, [key])
   const open = useSyncExternalStore(subscribe, getSnapshot, () => false)

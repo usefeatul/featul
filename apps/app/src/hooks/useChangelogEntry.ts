@@ -24,6 +24,7 @@ interface UseChangelogEntryProps {
     };
 }
 
+/** Changelog editor form, signed image upload, save, and 5s dirty autosave unless suspended. */
 export function useChangelogEntry({
     workspaceSlug,
     mode,

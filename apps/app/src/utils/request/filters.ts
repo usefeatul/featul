@@ -21,6 +21,7 @@ export type ParsedRequestFilters = {
   search: string;
 };
 
+/** Normalize query keys into arrays, a sort, and a search string. */
 function parseRequestFilters(params: SearchParamsLike): ParsedRequestFilters {
   return {
     status: parseArrayParam(params.get("status")).map((s) =>
@@ -33,12 +34,14 @@ function parseRequestFilters(params: SearchParamsLike): ParsedRequestFilters {
   };
 }
 
+/** Parse filters from a URLSearchParams-like getter. */
 export function parseRequestFiltersFromSearchParams(
   params: SearchParamsLike
 ): ParsedRequestFilters {
   return parseRequestFilters(params);
 }
 
+/** Parse filters from Next.js searchParams records (string or string[]). */
 export function parseRequestFiltersFromRecord(
   params: RequestFilterQueryShape
 ): ParsedRequestFilters {

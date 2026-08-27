@@ -13,6 +13,7 @@ type Props = {
   slug?: string;
 };
 
+/** Extract `secret` from the widget signing-secret API body. */
 function readSecret(data: unknown) {
   if (!data || typeof data !== "object" || !("secret" in data)) return null;
   const secret = (data as { secret?: unknown }).secret;

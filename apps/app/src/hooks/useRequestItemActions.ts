@@ -7,6 +7,7 @@ import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { deletePostById, dispatchPostDeletedEvent } from "@/lib/post/deletion";
 
+/** Status update and delete for one request. Invalidates the request query; delete dispatches `post:deleted`. */
 export function useRequestItemActions({
   requestId,
   workspaceSlug,

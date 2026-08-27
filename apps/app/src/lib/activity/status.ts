@@ -12,6 +12,7 @@ function toTitleCase(value: string) {
     .join(" ")
 }
 
+/** Prefers the status column, then metadata, for activity rows. */
 export function getActivityStatus(
   item: Pick<ActivityItem, "status" | "metadata">,
 ): string | null {
@@ -21,6 +22,7 @@ export function getActivityStatus(
   return readActivityStatus(item.metadata)
 }
 
+/** Maps canonical status keys to short UI labels. */
 export function formatActivityStatusLabel(status: unknown): string | null {
   const normalized = normalizeActivityStatus(status)
   if (!normalized) return null

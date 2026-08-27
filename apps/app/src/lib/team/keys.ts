@@ -1,5 +1,6 @@
 import type { MemberActivityCategory } from "@/lib/team"
 
+/** React Query keys for team, viewer, and member activity. */
 export const teamQueryKeys = {
   members: (slug: string) => ["members", slug] as const,
   viewer: (slug: string, userId: string | null) =>

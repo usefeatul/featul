@@ -1,3 +1,4 @@
+/** Threaded comment including votes, internal-only flag, and optional edit history. */
 export type CommentData = {
   id: string
   postId: string

@@ -8,6 +8,7 @@ interface UseCloseThenOpenAuthProps {
   openAuth: (mode: AuthMode) => void
 }
 
+/** Closes the current dialog, then opens auth on the next tick so both modals are not open at once. */
 export function useCloseThenOpenAuth({
   closeCurrent,
   openAuth,

@@ -7,6 +7,7 @@ import {
 } from "@/lib/post/draft"
 import type { UploadedImage } from "@/hooks/useSignedUpload"
 
+/** Restores and autosaves the create-post draft to localStorage while the dialog is open. */
 export function useDraft({
   workspaceSlug,
   open,

@@ -17,6 +17,7 @@ export type WorkspaceBySlugRecord = WorkspaceSummaryBySlug & {
   timezone?: string | null;
 };
 
+/** Full workspace row by slug, with effective billing plan. */
 export async function getWorkspaceBySlugRecord(
   slug: string
 ): Promise<WorkspaceBySlugRecord | null> {
@@ -44,6 +45,7 @@ export async function getWorkspaceBySlugRecord(
   };
 }
 
+/** Id, name, and owner only — cheaper lookup for access checks. */
 export async function getWorkspaceSummaryBySlug(
   slug: string
 ): Promise<WorkspaceSummaryBySlug | null> {

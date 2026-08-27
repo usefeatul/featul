@@ -3,6 +3,7 @@ import type { Role } from "@/types/team"
 
 export type MemberActivityCategory = ActivityCategory
 
+/** Current viewer: role is null when not a member. */
 export type WorkspaceViewer = {
   role: Role | null
   isOwner: boolean

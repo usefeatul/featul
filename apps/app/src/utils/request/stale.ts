@@ -12,6 +12,7 @@ export {
 
 const RESOLVED_STATUSES = new Set<string>(STALE_RESOLVED_STATUSES)
 
+/** Prefer last edit, then publish, then create as the stale clock. */
 export function getStaleReferenceDate({
   updatedAt,
   publishedAt,
@@ -25,12 +26,14 @@ export function getStaleReferenceDate({
   return new Date(raw)
 }
 
+/** Whole days since `reference`. Negative or invalid spans count as 0. */
 export function getStaleDays(reference: Date, now = new Date()): number {
   const ms = now.getTime() - reference.getTime()
   if (!Number.isFinite(ms) || ms < 0) return 0
   return Math.floor(ms / (1000 * 60 * 60 * 24))
 }
 
+/** Days over the stale threshold, or null if resolved / still fresh. */
 export function getRequestStaleDays({
   roadmapStatus,
   updatedAt,

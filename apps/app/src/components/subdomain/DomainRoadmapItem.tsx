@@ -13,6 +13,7 @@ export type RoadmapItemData = {
   content?: string | null
 }
 
+/** Strip HTML tags. Collapse whitespace. Empty in → empty out. */
 function toPlain(s?: string | null): string {
   if (!s) return ""
   return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()

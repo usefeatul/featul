@@ -1,3 +1,5 @@
+/** Public board identity; BoardSettings adds default flag and description. */
+
 export interface Board {
     id: string;
     name: string;

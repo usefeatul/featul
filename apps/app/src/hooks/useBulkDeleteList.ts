@@ -27,6 +27,7 @@ type BulkDeleteBaseParams<T> = {
   onComplete?: () => void;
 };
 
+/** Bulk-delete selected requests. Invalidates member queries and dispatches `post:deleted`. */
 export function useBulkDeleteRequests({
   workspaceSlug,
   listKey,
@@ -85,6 +86,7 @@ export function useBulkDeleteRequests({
   });
 }
 
+/** Bulk-delete selected changelog entries. Dispatches `changelog:deleted` after each success. */
 export function useBulkDeleteChangelog({
   workspaceSlug,
   listKey,

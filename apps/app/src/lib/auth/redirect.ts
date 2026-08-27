@@ -1,10 +1,12 @@
 import { normalizeInternalRedirectPath } from "@/utils/path";
 
+/** Returns a same-origin path or null if the redirect is unsafe. */
 export function resolveSafeInternalRedirect(raw: string): string | null {
   const safePath = normalizeInternalRedirectPath(raw);
   return safePath || null;
 }
 
+/** Safe redirect, else first accessible workspace, else /start. */
 export async function resolveAuthenticatedAppPath(
   userId: string,
   rawRedirect: string

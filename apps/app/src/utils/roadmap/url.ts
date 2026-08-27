@@ -21,6 +21,7 @@ export type RoadmapFilterQueryShape = {
   search?: SearchParamValue;
 };
 
+/** Parse roadmap filters from a URLSearchParams-like getter. */
 export function parseRoadmapFiltersFromSearchParams(
   params: SearchParamsLike,
 ): ParsedRoadmapFilters {
@@ -32,6 +33,7 @@ export function parseRoadmapFiltersFromSearchParams(
   };
 }
 
+/** Parse roadmap filters from a Next.js searchParams record. */
 export function parseRoadmapFiltersFromRecord(
   record: RoadmapFilterQueryShape,
 ): ParsedRoadmapFilters {
@@ -43,6 +45,7 @@ export function parseRoadmapFiltersFromRecord(
   return parseRoadmapFiltersFromSearchParams(params);
 }
 
+/** Merge filter overrides into the roadmap URL. Omits empty/default query keys. */
 export function buildRoadmapUrl(
   slug: string,
   prev: SearchParamsLike,

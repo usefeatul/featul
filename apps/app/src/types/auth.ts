@@ -1,3 +1,4 @@
+/** Auth form user snippet and sign-in vs sign-up mode. */
 export type AuthUser = {
   id?: string;
   name?: string;

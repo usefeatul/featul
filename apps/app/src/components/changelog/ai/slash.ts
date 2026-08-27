@@ -17,6 +17,7 @@ type SlashAiHandlers = {
   onQuickAction: (action: AiQuickAction) => void;
 };
 
+/** Clear the slash range, then run the AI panel/action callback. */
 function runSlashCommand(
   editor: Editor,
   range: Range,
@@ -26,6 +27,7 @@ function runSlashCommand(
   callback();
 }
 
+/** Slash menu items that open the changelog AI panel or a refine action. */
 export function getChangelogAiSlashSuggestions(
   handlers: SlashAiHandlers,
 ): SuggestionItem[] {

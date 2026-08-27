@@ -20,6 +20,7 @@ interface ChangelogAuthorCardProps {
     publishedAt?: string | Date | null;
 }
 
+/** Public author label. Owner is Founder; member/viewer both "Team Member". */
 function getRoleLabel(role?: Role | null, isOwner?: boolean): string {
     if (isOwner) return "Founder";
     if (role === "admin") return "Admin";

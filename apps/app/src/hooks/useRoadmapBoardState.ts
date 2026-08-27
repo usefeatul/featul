@@ -19,6 +19,7 @@ type Item = RequestItemData;
 const isRoadmapStatus = (value: string): value is RoadmapStatus =>
   (ROADMAP_STATUSES as readonly string[]).includes(value);
 
+/** Card fields for dnd-kit; drops list-only request metadata. */
 export const toRoadmapCardItem = (item: Item) => ({
   id: item.id,
   title: item.title,
@@ -42,6 +43,7 @@ export const toRoadmapCardItem = (item: Item) => ({
   isFeatured: item.isFeatured,
 });
 
+/** Roadmap columns, collapse bits, and drag-to-status. POSTs status and persists collapse in a cookie. */
 export function useRoadmapBoardState({
   workspaceSlug,
   initialItems,

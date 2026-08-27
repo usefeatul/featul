@@ -1,3 +1,4 @@
+/** Shared loaders for request detail pages. */
 import { db, board, post, user, postMerge, widgetUser } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { client } from "@featul/api/client";
@@ -31,6 +32,7 @@ export async function loadWorkspaceBySlug(
   return getWorkspaceSummaryBySlug(slug);
 }
 
+/** Post select shape; coalesces widget-user over registered user. */
 export function buildPostSelect<T extends Record<string, unknown>>(extra?: T) {
   return {
     id: post.id,
@@ -67,6 +69,7 @@ function getFingerprint(metadata: MetadataWithFingerprint): string | null {
   return typeof value === "string" && value ? value : null;
 }
 
+/** Fills a Guest avatar when the author is missing but a fingerprint exists. */
 export function ensureAuthorAvatar<
   T extends { author: AuthorRecord; metadata?: MetadataWithFingerprint },
 >(postRecord: T, options?: { defaultEmail?: string | null }): T {
@@ -87,6 +90,7 @@ export function ensureAuthorAvatar<
   return postRecord;
 }
 
+/** Comments plus collapsed-thread ids from cookies. */
 export async function loadPostComments(
   postId: string,
   surface: CommentSurface = "workspace",
@@ -130,6 +134,7 @@ export type MergedPostData = {
   mergedSources?: MergedPostSummary[];
 };
 
+/** Merge count, target, and optional recent source posts. */
 export async function loadMergedPostData({
   workspaceId,
   postId,

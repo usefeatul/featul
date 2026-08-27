@@ -51,6 +51,7 @@ type RequestMultiSelectFilterProps = {
   emptyLabel?: string;
 };
 
+/** URL-backed multi-select for status/board/tag. Toggle writes search params. */
 export function useRequestMultiSelectFilter({
   filterKey,
   popoverKey,

@@ -19,6 +19,7 @@ const toFlagsState = (flags: RequestFlags): FlagsState => ({
     isFeatured: !!flags.isFeatured,
 })
 
+/** Optimistic pin/lock/feature toggles. POSTs flags then refreshes the route. */
 export function useRequestFlags({ item }: UseRequestFlagsProps) {
     const router = useRouter()
     const [_, startTransition] = useTransition()

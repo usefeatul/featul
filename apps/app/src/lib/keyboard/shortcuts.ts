@@ -11,6 +11,7 @@ export type WorkspaceShortcut = {
   bindings: ShortcutBinding[];
 };
 
+/** CustomEvent name to open the shortcuts drawer. */
 export const WORKSPACE_SHORTCUTS_OPEN_EVENT = "workspace-shortcuts:open";
 
 export const WORKSPACE_SHORTCUT_GROUP_ORDER = [
@@ -21,6 +22,7 @@ export const WORKSPACE_SHORTCUT_GROUP_ORDER = [
   "Roadmap navigation",
 ] as const;
 
+/** Catalog of workspace keyboard shortcuts for the help drawer. */
 export const WORKSPACE_SHORTCUTS: WorkspaceShortcut[] = [
   {
     id: "open-shortcuts",
@@ -183,6 +185,7 @@ export const WORKSPACE_SHORTCUTS: WorkspaceShortcut[] = [
   },
 ];
 
+/** Dispatches the event that opens the shortcuts drawer. */
 export function openWorkspaceShortcutsDrawer() {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(WORKSPACE_SHORTCUTS_OPEN_EVENT));

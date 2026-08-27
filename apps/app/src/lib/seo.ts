@@ -25,6 +25,7 @@ type BaseMetaArgs = {
   includeBrand?: boolean
 }
 
+/** Builds Next.js Metadata with OG/Twitter and optional noindex. */
 export function createPageMetadata({ title, description, path, image, absoluteTitle, indexable, baseUrl, includeBrand }: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonical = normalizePath(path || '/')
@@ -62,6 +63,7 @@ export function createPageMetadata({ title, description, path, image, absoluteTi
 }
 
 
+/** Workspace homepage metadata; uses custom domain when set. */
 export async function createWorkspaceMetadata(slug: string): Promise<Metadata> {
   const ws = await getWorkspaceBySlug(slug)
   const title = ws?.name || 'Workspace'
@@ -82,6 +84,7 @@ export async function createWorkspaceMetadata(slug: string): Promise<Metadata> {
   }
 }
 
+/** Post page metadata; strips HTML for the description. */
 export async function createPostMetadata(subdomain: string, postSlug: string, pathPrefix: string = '/p'): Promise<Metadata> {
   const ws = await getWorkspaceBySlug(subdomain)
   if (!ws) return {}
@@ -119,6 +122,7 @@ export async function createPostMetadata(subdomain: string, postSlug: string, pa
   }
 }
 
+/** Section metadata; changelog also advertises the RSS feed. */
 export async function createWorkspaceSectionMetadata(slug: string, section: 'feedback' | 'roadmap' | 'changelog', opts?: { boardSlug?: string }): Promise<Metadata> {
   const ws = await getWorkspaceBySlug(slug)
   const name = ws?.name || slug

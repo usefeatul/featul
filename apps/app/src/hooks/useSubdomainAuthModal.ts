@@ -13,6 +13,7 @@ type SubdomainAuthModalState = {
   openAuth: (mode: AuthMode) => void;
 };
 
+/** Public-board auth modal. Redirects back to the current path after sign-in. */
 export function useSubdomainAuthModal(): SubdomainAuthModalState {
   const pathname = usePathname() || "";
   const searchParams = useSearchParams();

@@ -4,6 +4,7 @@ import { db, workspace } from "@featul/db"
 import { eq } from "drizzle-orm"
 import { reroute } from "./reroute"
 
+/** Resolve a `feedback.` host to a workspace slug via customDomain then domain variants. */
 async function findWorkspaceSlugForFeedbackHost(hostNoPort: string) {
   const baseHost = hostNoPort.replace(/^feedback\./, "")
   const protoDomain = `https://${baseHost}`
@@ -40,6 +41,7 @@ async function findWorkspaceSlugForFeedbackHost(hostNoPort: string) {
   return targetSlug || ""
 }
 
+/** `feedback.*` (not featul.com): rewrite public paths onto the matched workspace. Lookup failure continues. */
 export async function rewriteFeedback(req: NextRequest, ctx: { pathname: string; hostNoPort: string; isMainDomain: boolean }) {
   const { pathname, hostNoPort, isMainDomain } = ctx
   if (!isMainDomain && hostNoPort.startsWith("feedback.")) {

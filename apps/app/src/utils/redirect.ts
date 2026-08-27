@@ -2,6 +2,7 @@ import { normalizeInternalRedirectPath } from "@/utils/path";
 
 const FALLBACK_REDIRECT = "/start";
 
+/** True for localhost, the app host, or sibling subdomains of the app base. */
 function isAllowedRedirectHost(hostname: string) {
   if (!hostname) return false;
   if (hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".localhost")) {
@@ -24,6 +25,7 @@ function isAllowedRedirectHost(hostname: string) {
   return false;
 }
 
+/** Safe internal path or allowlisted absolute URL. Open redirects become `""`. */
 export function normalizeRedirectParam(raw: string) {
   if (!raw) return "";
   const internalPath = normalizeInternalRedirectPath(raw);
@@ -37,6 +39,7 @@ export function normalizeRedirectParam(raw: string) {
   }
 }
 
+/** Post-auth destination, or `/start` when the param is unsafe/empty. */
 export function resolveAuthRedirect(raw: string, fallback: string = FALLBACK_REDIRECT) {
   const normalized = normalizeRedirectParam(raw);
   return normalized || fallback;

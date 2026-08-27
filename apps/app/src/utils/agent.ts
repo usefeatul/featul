@@ -1,4 +1,4 @@
-
+/** Parse a User-Agent into `"Browser on OS"`. Unknown both: first 30 chars of the raw string. */
 export function parseUserAgent(userAgent: string | null | undefined): string {
     const ua = String(userAgent || "Unknown Device")
     let browser = "Unknown Browser"

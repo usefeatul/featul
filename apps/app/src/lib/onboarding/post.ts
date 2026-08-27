@@ -7,6 +7,7 @@ export type OnboardingPostMetadata = {
   };
 };
 
+/** True when metadata marks a seeded onboarding post. */
 export function isOnboardingPost(
   metadata: Record<string, unknown> | null | undefined,
 ): boolean {
@@ -15,6 +16,7 @@ export function isOnboardingPost(
   return Boolean(customFields?.onboarding);
 }
 
+/** welcome/ideas/bugs kind, or null if not an onboarding post. */
 export function getOnboardingPostKind(
   metadata: Record<string, unknown> | null | undefined,
 ): OnboardingPostKind | null {
@@ -27,6 +29,7 @@ export type OnboardingContentBlock =
   | { type: "paragraph"; text: string }
   | { type: "section"; title: string; items: string[] };
 
+/** Splits onboarding markdown into paragraphs and titled lists. */
 export function parseOnboardingContent(content: string): OnboardingContentBlock[] {
   const blocks: OnboardingContentBlock[] = [];
   const sections = content.split(/\n\n+/).map((part) => part.trim()).filter(Boolean);
@@ -60,6 +63,7 @@ export function parseOnboardingContent(content: string): OnboardingContentBlock[
   return blocks;
 }
 
+/** Metadata written onto seeded onboarding posts. */
 export function onboardingMetadata(kind: OnboardingPostKind): OnboardingPostMetadata {
   return {
     customFields: {

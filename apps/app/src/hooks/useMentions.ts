@@ -18,6 +18,7 @@ export interface MentionCandidate {
   image: string | null
 }
 
+/** @-mention picker from workspace members. Inserts `@name` at the caret and tracks mention analytics. */
 export function useMentions(
   workspaceSlug: string | undefined,
   content: string,

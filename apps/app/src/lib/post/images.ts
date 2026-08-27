@@ -10,6 +10,7 @@ export type ListedPostImage = {
   type: string
 }
 
+/** Reads image attachments from post metadata, ignoring invalid entries. */
 function attachmentsFromMetadata(metadata: unknown): PostImageAttachment[] {
   if (!metadata || typeof metadata !== "object") {
     return []
@@ -38,6 +39,7 @@ function attachmentsFromMetadata(metadata: unknown): PostImageAttachment[] {
   })
 }
 
+/** Cover image plus image attachments, de-duplicated by URL. */
 export function listPostImages(
   image: string | null | undefined,
   metadata?: unknown

@@ -7,6 +7,7 @@ export interface TagSummary {
     color?: string;
 }
 
+/** Diff-style fields for activity rows (status and tag changes). */
 export interface ActivityMetadata {
     tagSummaries?: TagSummary[];
     tags?: TagSummary[];
@@ -34,6 +35,7 @@ export interface ActivityItem {
     createdAt: string | Date;
 }
 
+/** Activity page plus nextCursor for infinite scroll. */
 export interface PaginatedActivity {
     items: ActivityItem[];
     nextCursor: string | null;

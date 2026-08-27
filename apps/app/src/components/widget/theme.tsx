@@ -14,17 +14,20 @@ export type WidgetThemeMode = "light" | "dark" | "auto";
 export type WidgetResolvedTheme = "light" | "dark";
 export type WidgetLayoutStyle = "compact" | "comfortable" | "spacious";
 
+/** Map layout style to the matching widget CSS class. Comfortable is default. */
 export function widgetLayoutClass(layout: WidgetLayoutStyle) {
   if (layout === "compact") return "widget-layout-compact";
   if (layout === "spacious") return "widget-layout-spacious";
   return "widget-layout-comfortable";
 }
 
+/** Workspace primary color, or the widget accent fallback. */
 export function resolveWidgetAccent(primaryColor?: string | null) {
   const value = (primaryColor || "").trim();
   return value || WIDGET_ACCENT_FALLBACK;
 }
 
+/** Parse 3- or 6-digit hex into RGB. Invalid input returns null. */
 function parseHexRgb(hex: string): [number, number, number] | null {
   const value = hex.trim().replace(/^#/, "");
   const full =
@@ -39,6 +42,7 @@ function parseHexRgb(hex: string): [number, number, number] | null {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
+/** CSS vars for accent/CTA. Light accents get dark CTA text. */
 export function widgetAccentVars(accent: string): Record<string, string> {
   const rgb = parseHexRgb(accent);
   if (!rgb) return { "--widget-accent": accent };
@@ -51,12 +55,14 @@ export function widgetAccentVars(accent: string): Record<string, string> {
   };
 }
 
+/** Resolve light/dark. `auto` follows OS; SSR defaults to dark. */
 export function resolveWidgetTheme(mode: WidgetThemeMode): WidgetResolvedTheme {
   if (mode === "light" || mode === "dark") return mode;
   if (typeof window === "undefined") return "dark";
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+/** Shell/surface/foreground RGB vars for the resolved widget theme. */
 export function widgetThemeVars(theme: WidgetResolvedTheme): Record<string, string> {
   if (theme === "light") {
     return {
@@ -84,6 +90,7 @@ export function widgetShellHex(theme: WidgetResolvedTheme) {
   return theme === "light" ? WIDGET_SHELL_LIGHT : WIDGET_SHELL_DARK;
 }
 
+/** Push resolved theme to the document and parent frame. */
 function ThemeSync({
   mode,
   children,

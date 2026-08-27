@@ -30,6 +30,7 @@ export const CATEGORY_FILTERS: Array<{ id: ActivityCategory; label: string }> = 
 
 const COLLAPSIBLE_REPEAT_THRESHOLD = 3
 
+/** Workspace or public URL for a post/comment/changelog activity item. */
 export function getActivityHref(item: ActivityItem, workspaceSlug: string) {
   const metadata = (item.metadata ?? {}) as Record<string, unknown>
   const slugCandidate =
@@ -55,6 +56,7 @@ export function getActivityHref(item: ActivityItem, workspaceSlug: string) {
   return `/workspaces/${workspaceSlug}/requests`
 }
 
+/** Filter by category, then by derived activity status. */
 export function filterActivityItems(
   items: ActivityItem[],
   categoryFilter: ActivityCategory,
@@ -73,6 +75,7 @@ export function filterActivityItems(
   })
 }
 
+/** Unique statuses present in the list, sorted alphabetically. */
 export function getAvailableStatuses(items: ActivityItem[]) {
   const statuses = new Set<string>()
   for (const item of items) {
@@ -82,6 +85,7 @@ export function getAvailableStatuses(items: ActivityItem[]) {
   return Array.from(statuses.values()).sort((a, b) => a.localeCompare(b))
 }
 
+/** Signature used to collapse consecutive identical actions. */
 function getActivitySignature(item: ActivityItem) {
   return [
     item.type,
@@ -102,6 +106,7 @@ function getDayLabel(date: Date) {
   return format(date, "MMM d, yyyy")
 }
 
+/** Collapse 3+ consecutive identical actions into one group row. */
 function buildRowsForDay(
   items: ActivityItem[],
   dayKey: string,
@@ -146,6 +151,7 @@ function buildRowsForDay(
   return rows
 }
 
+/** Bucket items by calendar day. Newest day first. */
 export function buildDayGroups(
   items: ActivityItem[],
   workspaceSlug: string,

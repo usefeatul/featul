@@ -34,12 +34,14 @@ type SubdomainLayoutShellProps = {
   initialUser?: AuthUser | null;
 };
 
+/** Container max-width token from compact / comfortable / spacious. */
 function layoutMaxWidth(layoutStyle: BrandingInfo["layoutStyle"]) {
   if (layoutStyle === "compact") return "4xl";
   if (layoutStyle === "spacious") return "6xl";
   return "5xl";
 }
 
+/** Inject workspace primary into --primary, --ring, and --sidebar-primary. */
 function buildThemeVars(primary: string) {
   return `:root{--primary:${primary};--ring:${primary};--sidebar-primary:${primary};}`;
 }

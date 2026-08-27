@@ -24,6 +24,7 @@ type UseBulkStatusUpdateResult = {
   handleBulkStatus: (status: string) => void;
 };
 
+/** Sets status on selected requests. Patches status-count cache and drops those ids from selection. */
 export function useBulkStatusUpdate({
   listKey,
   listItems,

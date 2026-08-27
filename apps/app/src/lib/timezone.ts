@@ -1,5 +1,6 @@
 import * as ct from "countries-and-timezones";
 
+/** City and country label for an IANA timezone. */
 export function friendlyTimezone(tz: string) {
   const city = tz.split("/").slice(-1)[0]?.replace(/_/g, " ") ?? tz;
   const country = ct.getCountryForTimezone(tz)?.name;
@@ -10,6 +11,7 @@ export function friendlyTimezoneCity(tz: string) {
   return tz.split("/").slice(-1)[0]?.replace(/_/g, " ") ?? tz;
 }
 
+/** IANA options; until mounted, keeps the list small for hydration. */
 export function getTimezoneOptions(mounted: boolean) {
   const base = [
     "UTC",
@@ -37,6 +39,7 @@ export function getTimezoneOptions(mounted: boolean) {
   return base;
 }
 
+/** Filters by IANA id or friendly city/country label. */
 export function filterTimezones(
   timezones: string[],
   query: string,

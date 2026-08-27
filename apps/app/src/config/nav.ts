@@ -24,33 +24,39 @@ import type { NavItem } from "../types/nav"
 import { SECTIONS } from "./sections"
 import { ACCOUNT_SECTIONS } from "./account/sections"
 
+/** Path under `/workspaces/{slug}`. Empty slug uses `/workspaces{p}`. */
 function w(slug: string, p: string) {
   return slug ? `/workspaces/${slug}${p}` : `/workspaces${p}`
 }
 
+/** Public board origin: custom domain if set, else `{slug}.featul.com`. */
 function publicBoardUrlForWorkspace(slug: string, customDomain?: string | null) {
   const s = (slug || "").trim()
   if (customDomain && customDomain.trim()) return `https://${customDomain.trim()}`
   return `https://${s}.featul.com`
 }
 
+/** Workspace slug from `/workspaces/{slug}/…`. */
 export function getSlugFromPath(pathname: string) {
   const parts = pathname.split("/")
   return parts[2] || ""
 }
 
+/** True when the path is `/workspaces/{slug}/settings…`. */
 export function isWorkspaceSettingsPath(pathname: string) {
   const parts = pathname.split("/").filter(Boolean)
   const idx = parts.indexOf("workspaces")
   return idx >= 0 && parts[idx + 2] === "settings"
 }
 
+/** True when the path is `/workspaces/{slug}/account…`. */
 export function isWorkspaceAccountPath(pathname: string) {
   const parts = pathname.split("/").filter(Boolean)
   const idx = parts.indexOf("workspaces")
   return idx >= 0 && parts[idx + 2] === "account"
 }
 
+/** Status-filtered request links for the top nav. */
 export function buildTopNav(slug: string): NavItem[] {
   const empty = encodeURIComponent(JSON.stringify([]))
   function buildHref(statuses: string[]) {
@@ -67,6 +73,7 @@ export function buildTopNav(slug: string): NavItem[] {
   ]
 }
 
+/** Roadmap, changelog, members, public board, and settings links. */
 export function buildMiddleNav(slug: string, customDomain?: string | null): NavItem[] {
   return [
     { label: "Roadmap", href: w(slug, "/roadmap"), icon: RoadmapIcon },
@@ -77,6 +84,7 @@ export function buildMiddleNav(slug: string, customDomain?: string | null): NavI
   ]
 }
 
+/** Footer docs link (external). */
 export function buildBottomNav(): NavItem[] {
   return [
     { label: "Docs", href: "https://www.featul.com/docs", icon: DocIcon, external: true },
@@ -96,6 +104,7 @@ const SETTINGS_ICONS: Record<string, NavItem["icon"]> = {
   workspace: BoxIcon,
 }
 
+/** Settings sidebar from `SECTIONS`. `replace` avoids stacking history. */
 export function buildSettingsNav(slug: string): NavItem[] {
   return SECTIONS.map((section) => ({
     label: section.label,
@@ -111,6 +120,7 @@ const ACCOUNT_ICONS: Record<string, NavItem["icon"]> = {
   appearance: LayersIcon,
 }
 
+/** Account sidebar from `ACCOUNT_SECTIONS`. `replace` avoids stacking history. */
 export function buildAccountNav(slug: string): NavItem[] {
   return ACCOUNT_SECTIONS.map((section) => ({
     label: section.label,
@@ -120,10 +130,12 @@ export function buildAccountNav(slug: string): NavItem[] {
   }))
 }
 
+/** `/workspaces/{slug}` with no extra path. */
 export function workspaceBase(slug: string) {
   return w(slug, "")
 }
 
+/** `/workspaces/{slug}/requests`. */
 export function requestsBase(slug: string) {
   return w(slug, "/requests")
 }

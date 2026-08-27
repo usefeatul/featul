@@ -2,6 +2,7 @@ type SearchParamsLike = {
   forEach: (callback: (value: string, key: string) => void) => void
 }
 
+/** Copy existing query keys, then set or drop `search`. Path-only if the query is empty. */
 export function buildUrlWithSearchParam(
   pathname: string,
   searchParams: SearchParamsLike,

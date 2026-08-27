@@ -1,3 +1,4 @@
+/** PUTs a file to a pre-signed storage URL. */
 export async function uploadFileToSignedUrl(uploadUrl: string, file: File): Promise<void> {
   const response = await fetch(uploadUrl, {
     method: "PUT",

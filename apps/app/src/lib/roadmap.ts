@@ -1,5 +1,6 @@
 import type { SortOrder } from "@/types/sort";
 
+/** Canonical roadmap columns, in display order. */
 export const ROADMAP_STATUSES = ["planned", "progress", "review", "completed", "pending", "closed"] as const
 
 export type RoadmapStatus = (typeof ROADMAP_STATUSES)[number]
@@ -15,6 +16,7 @@ const ROADMAP_STATUS_ALIASES: Record<string, RoadmapStatus> = {
   closed: "closed",
 }
 
+/** Maps aliases like "in progress" onto a roadmap column. */
 export function normalizeRoadmapStatus(value?: string | null, fallback: RoadmapStatus = "pending"): RoadmapStatus {
   const raw = (value || "").trim().toLowerCase()
   if (!raw) return fallback
@@ -22,6 +24,7 @@ export function normalizeRoadmapStatus(value?: string | null, fallback: RoadmapS
   return ROADMAP_STATUS_ALIASES[normalized] ?? fallback
 }
 
+/** Title-case; Progress/Review stay as product labels. */
 export function statusLabel(s: string) {
   const t = s.toLowerCase()
   if (t === "progress") return "Progress"
@@ -29,10 +32,12 @@ export function statusLabel(s: string) {
   return t.charAt(0).toUpperCase() + t.slice(1)
 }
 
+/** Packs collapse flags into a bitstring matching ROADMAP_STATUSES. */
 export function encodeCollapsed(collapsed: Record<string, boolean>): string {
   return ROADMAP_STATUSES.map((s) => (collapsed[s as string] ? "1" : "0")).join("")
 }
 
+/** Buckets items into every roadmap column, including empty ones. */
 export function groupItemsByStatus<T extends { roadmapStatus?: string | null }>(items: T[]) {
   const acc: Record<string, T[]> = {}
   for (const s of ROADMAP_STATUSES) acc[s as string] = []
@@ -49,6 +54,7 @@ type SortableRoadmapItem = {
   createdAt: string
 }
 
+/** Sorts by likes or published/created date. */
 export function sortRoadmapItems<T extends SortableRoadmapItem>(
   items: T[],
   order: SortOrder,

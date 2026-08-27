@@ -1,3 +1,4 @@
+/** Schema.org WebApplication JSON-LD for the marketing site. */
 export function buildSoftwareApplicationSchema(siteUrl: string) {
   return {
     "@context": "https://schema.org",

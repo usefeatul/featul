@@ -9,6 +9,7 @@ interface UseCommentEditProps {
   onUpdate?: () => void
 }
 
+/** Inline comment edit with debounced save. Invalidates comment queries on success. */
 export function useCommentEdit({ commentId, initialContent, onUpdate }: UseCommentEditProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(initialContent)

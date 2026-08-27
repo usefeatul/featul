@@ -8,6 +8,7 @@ export function createPostDraftKey(workspaceSlug: string) {
   return `featul:create-post-draft:${workspaceSlug}`
 }
 
+/** Reads a create-post draft from localStorage; null on the server. */
 export function readCreatePostDraft(
   workspaceSlug: string
 ): CreatePostDraft | null {
@@ -48,6 +49,7 @@ export function readCreatePostDraft(
   }
 }
 
+/** Writes the draft, or clears storage when the form is empty. */
 export function writeCreatePostDraft(
   workspaceSlug: string,
   draft: CreatePostDraft
@@ -67,6 +69,7 @@ export function writeCreatePostDraft(
   )
 }
 
+/** Removes the create-post draft for this workspace. */
 export function clearCreatePostDraft(workspaceSlug: string) {
   if (typeof window === "undefined") {
     return

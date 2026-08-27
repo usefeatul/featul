@@ -20,6 +20,7 @@ type UseOtpVerificationOptions<TStep extends string> = {
   setIsVerifying: (value: boolean) => void;
 };
 
+/** Send and verify email OTP. Advances wizard steps and surfaces toast errors. */
 export function useOtpVerification<TStep extends string>({
   email,
   code,

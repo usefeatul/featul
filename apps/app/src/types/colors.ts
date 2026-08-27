@@ -1,3 +1,4 @@
+/** Named brand preset; key is what branding config stores. */
 export type ColorOption = {
   key: string
   name: string
@@ -5,6 +6,7 @@ export type ColorOption = {
   accent: string
 }
 
+/** Built-in primary/accent pairs for workspace branding. */
 export const BRANDING_COLORS: ColorOption[] = [
   { key: "orange", name: "Orange", primary: "#f97316", accent: "#fb923c" },
   { key: "blue", name: "Blue", primary: "#3b82f6", accent: "#60a5fa" },
@@ -32,11 +34,13 @@ export const BRANDING_COLORS: ColorOption[] = [
   { key: "sand", name: "Sand", primary: "#c2b280", accent: "#d6c7a5" }
 ]
 
+/** Match a stored hex to a named palette option. */
 export function findColorByPrimary(hex: string): ColorOption | undefined {
   const h = hex.trim().toLowerCase()
   return BRANDING_COLORS.find((c) => c.primary.toLowerCase() === h)
 }
 
+/** Set --primary/--ring/--sidebar-primary; no-op if already applied. */
 export function applyBrandPrimary(hex: string): void {
   const root = document.documentElement
   const p = hex.trim()

@@ -1,3 +1,4 @@
+/** Parse a JSON string array from a query param. Falls back to URI-decoded JSON. */
 export function parseArrayParam(v: string | null): string[] {
   try {
     if (!v) return [];
@@ -16,26 +17,31 @@ export function parseArrayParam(v: string | null): string[] {
   }
 }
 
+/** Serialize a string list for a query param. */
 export function encodeArray(arr: string[]): string {
   return JSON.stringify(arr);
 }
 
+/** Add `value` if missing, otherwise remove it. */
 export function toggleValue(selected: string[], value: string): string[] {
   return selected.includes(value)
     ? selected.filter((s) => s !== value)
     : [...selected, value];
 }
 
+/** True when every item is selected. Empty `items` is never “all”. */
 export function isAllSelected(items: string[], selected: string[]): boolean {
   return items.length > 0 && selected.length === items.length;
 }
 
 type SearchParamsLike = { get: (key: string) => string | null };
 
+/** Override page if given, else keep the previous param, else `"1"`. */
 function resolvePage(prev: SearchParamsLike, page?: number): string {
   return page != null ? String(page) : prev.get("page") || "1";
 }
 
+/** Merge filter overrides into the workspace requests URL. Always emits every query key. */
 export function buildRequestsUrl(
   slug: string,
   prev: SearchParamsLike,
@@ -72,6 +78,7 @@ export function buildRequestsUrl(
   return `/workspaces/${slug}/requests?${params.toString()}`;
 }
 
+/** Workspace home URL with only a page query. */
 export function buildWorkspaceUrl(
   slug: string,
   prev: SearchParamsLike,
@@ -83,6 +90,7 @@ export function buildWorkspaceUrl(
   return `/workspaces/${slug}?${params.toString()}`;
 }
 
+/** Changelog list URL with only a page query. */
 export function buildChangelogUrl(
   slug: string,
   prev: SearchParamsLike,

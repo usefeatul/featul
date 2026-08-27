@@ -26,6 +26,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+/** Narrow session `user` from better-auth payloads. Missing user → null. */
 function toSessionUser(payload: unknown): SessionUser | null {
   if (!isRecord(payload)) return null;
   const userRaw = payload.user;
@@ -43,6 +44,7 @@ function toSessionUser(payload: unknown): SessionUser | null {
   return { id, name, email, image };
 }
 
+/** Session user plus device accounts for the account dropdown. */
 export function useUserDropdownData({
   initialUser,
   initialDeviceAccounts = [],

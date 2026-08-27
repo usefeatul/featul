@@ -8,6 +8,7 @@ type UseFilterIslandControllerOptions = {
   isVisible: boolean;
 };
 
+/** Expand/collapse the filter island. Click-outside and Escape collapse it. */
 export function useFilterIslandController({
   isVisible,
 }: UseFilterIslandControllerOptions) {

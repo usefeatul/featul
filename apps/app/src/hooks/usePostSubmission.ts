@@ -23,6 +23,7 @@ interface UsePostSubmissionProps {
 
 type BoardRef = Pick<BoardSummary, "slug" | "allowAnonymous">
 
+/** Create-post form and submit. Fingerprints anonymous posts; may require auth; invalidates counts/stats. */
 export function usePostSubmission({
   workspaceSlug,
   onSuccess,

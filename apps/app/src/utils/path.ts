@@ -1,5 +1,6 @@
 const INTERNAL_REDIRECT_BASE = "https://app.featul.com";
 
+/** Allow only same-origin relative paths. Reject protocol-relative and `\\` targets. */
 export function normalizeInternalRedirectPath(raw: string): string {
   const value = String(raw || "").trim();
   if (!value) return "";

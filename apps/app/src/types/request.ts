@@ -1,6 +1,7 @@
 import type { TagSummary } from "@/types/post"
 import type { OnboardingPostKind } from "@/lib/onboarding/post"
 
+/** Moderator flags that can be set independently on a request. */
 export const REQUEST_FLAG_OPTIONS = [
   { key: "isPinned", label: "Pinned" },
   { key: "isLocked", label: "Locked" },
@@ -11,7 +12,9 @@ export type RequestFlagOption = (typeof REQUEST_FLAG_OPTIONS)[number]
 export type RequestFlagKey = RequestFlagOption["key"]
 export type RequestFlags = Partial<Record<RequestFlagKey, boolean>>
 
+/** Author membership on the request; null when not a workspace member. */
 export type RequestRole = "admin" | "member" | "viewer" | null
+/** Allowed reasons when reporting a post. */
 export type ReportReason = "spam" | "harassment" | "inappropriate" | "off_topic" | "other"
 export type ReportReasonOption = {
   value: ReportReason
@@ -52,6 +55,7 @@ export const REPORT_REASONS: ReportReasonOption[] = [
   },
 ]
 
+/** Dashboard request list row (flags, onboarding, optional report count). */
 export interface RequestItemData extends RequestFlags {
   id: string
   title: string
@@ -81,6 +85,7 @@ export interface RequestItemData extends RequestFlags {
   reportCount?: number
 }
 
+/** Full request including merge graph, author, and lock/pin flags. */
 export type RequestDetailData = {
   id: string
   title: string

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { getSessionCookie } from "better-auth/cookies"
 import { resolveSafeInternalRedirect } from "@/lib/auth/redirect"
 
+/** Prefer `?redirect=`, then last workspace cookie, then optional `/start`. */
 function resolveSignedInDestination(
   req: NextRequest,
   options?: { includeStartFallback?: boolean }
@@ -25,6 +26,7 @@ function resolveSignedInDestination(
   return null
 }
 
+/** `/auth/signin` and `/auth/signup`: send sessions to a safe destination. Guests continue. */
 export function handleAuthRedirects(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   if (pathname.startsWith("/auth/signin") || pathname.startsWith("/auth/signup")) {
@@ -37,6 +39,7 @@ export function handleAuthRedirects(req: NextRequest) {
   return null
 }
 
+/** `/start`: send sessions to last workspace or `?redirect=`. No cookie → stay. */
 export function handleStartRedirect(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   if (pathname === "/start") {
@@ -49,6 +52,7 @@ export function handleStartRedirect(req: NextRequest) {
   return null
 }
 
+/** `/workspaces*`: require a session cookie. Missing → `/auth/signin` with return URL. */
 export function enforceWorkspaceAuth(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const needsAuth = pathname.startsWith("/workspaces")

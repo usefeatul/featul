@@ -1,3 +1,4 @@
+/** Sidebar/nav entry; match/exact control active state, replace uses history replace. */
 export type NavItem = {
   label: string
   href: string

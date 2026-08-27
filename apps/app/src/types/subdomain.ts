@@ -1,3 +1,4 @@
+/** Public board post; viewerCanEdit is session-derived, not stored. */
 export type SubdomainRequestDetailData = {
   id: string;
   title: string;

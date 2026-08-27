@@ -117,16 +117,19 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
 
 export const PLAN_ORDER: PlanKey[] = ["free", "starter", "professional"];
 
+/** Plan copy and pricing for the given key. */
 export function getPlan(plan: PlanKey) {
   return BILLING_PLANS[plan];
 }
 
+/** Price label for the selected billing cycle. */
 export function formatPrice(plan: PlanOption, cycle: BillingCycle) {
   const amount = cycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
   if (cycle === "yearly") return `$${amount} / year`;
   return `$${amount} / month`;
 }
 
+/** Stripe checkout slug for paid plans. Free returns null. */
 export function getCheckoutSlug(
   plan: PlanKey,
   cycle: BillingCycle,

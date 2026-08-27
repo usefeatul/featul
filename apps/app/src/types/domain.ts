@@ -1,3 +1,4 @@
+/** Custom domain plus CNAME/TXT records used for DNS verification. */
 export type DomainInfo = {
   id: string
   host: string
@@ -10,6 +11,7 @@ export type DomainInfo = {
 
 export type DNSStatus = "pending" | "verified" | "error"
 
+/** Tailwind text color for DNS verification status. */
 export function dnsStatusBadgeClass(status: DNSStatus) {
   if (status === "pending") return "text-orange-500"
   if (status === "verified") return "text-green-500"

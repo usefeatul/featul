@@ -3,6 +3,7 @@ import type { Ws } from "@/hooks/useWorkspaceSwitcher"
 
 export type WorkspacesQueryResult = Ws[] | { workspaces: Ws[] }
 
+/** Patch workspace name in slug and list caches. Supports array or `{ workspaces }`. */
 export function updateWorkspaceNameInCache(queryClient: QueryClient, slug: string, name: string) {
   queryClient.setQueryData<Ws | null>(["workspace", slug], (prev) =>
     prev ? { ...prev, name } : prev,
@@ -14,6 +15,7 @@ export function updateWorkspaceNameInCache(queryClient: QueryClient, slug: strin
   })
 }
 
+/** Patch workspace logo in slug and list caches. Supports array or `{ workspaces }`. */
 export function updateWorkspaceLogoInCache(queryClient: QueryClient, slug: string, logo: string) {
   queryClient.setQueryData<Ws | null>(["workspace", slug], (prev) =>
     prev ? { ...prev, logo } : prev,

@@ -13,6 +13,7 @@ import RoleBadge from "@/components/global/RoleBadge"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import { subdomainListItemClassName } from "./subdomainListItemStyles"
 
+/** Strip HTML tags. Collapse whitespace. Empty in → empty out. */
 function toPlain(s?: string | null): string {
   if (!s) return ""
   return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()

@@ -12,6 +12,7 @@ interface UseChangelogEntryActionsProps {
   onSuccess?: () => void;
 }
 
+/** Publish or delete a changelog entry. Delete dispatches `changelog:deleted` and refreshes. */
 export function useChangelogEntryActions({
   workspaceSlug,
   entryId,

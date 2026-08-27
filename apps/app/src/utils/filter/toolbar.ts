@@ -1,5 +1,6 @@
 import { cn } from "@featul/ui/lib/utils";
 
+/** Active-state classes for filter toolbar buttons. */
 export function filterToolbarButtonClass(isActive: boolean, className?: string) {
   return cn(
     className,

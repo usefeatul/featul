@@ -60,6 +60,7 @@ type RawPostRecord = RequestDetailData & {
   } | null;
 };
 
+/** Dashboard post detail, comments, and prev/next using list filters. */
 export async function loadRequestDetailPageData({
   workspaceSlug,
   postSlug,
@@ -124,6 +125,7 @@ export async function loadRequestDetailPageData({
   };
 }
 
+/** Feedback post with author, merge sources, and board (excludes system boards). */
 async function loadPostWithAuthorAndBoard(
   workspaceId: string,
   postSlug: string,
@@ -161,6 +163,7 @@ async function loadPostWithAuthorAndBoard(
   } as RawPostRecord;
 }
 
+/** Author role in this workspace; owners are treated as admin. */
 async function loadAuthorRoleAndOwnership({
   workspaceId,
   workspaceOwnerId,
@@ -199,6 +202,7 @@ async function loadAuthorRoleAndOwnership({
   return { role, isOwner };
 }
 
+/** Tag rows attached to the post. */
 async function loadPostTags(postId: string) {
   return db
     .select({ id: tag.id, name: tag.name, slug: tag.slug, color: tag.color })
@@ -207,6 +211,7 @@ async function loadPostTags(postId: string) {
     .where(eq(postTag.postId, postId));
 }
 
+/** Prev/next posts using the same filters as the list URL. */
 async function loadNavigation({
   workspaceSlug,
   postId,

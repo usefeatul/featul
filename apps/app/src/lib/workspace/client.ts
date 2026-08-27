@@ -29,6 +29,7 @@ type WorkspaceStatusCountsResponse = {
   counts?: Record<string, number>;
 };
 
+/** React Query keys for workspace fetches. */
 export const workspaceQueryKeys = {
   list: () => ["workspaces"] as const,
   bySlug: (slug: string) => ["workspace", slug] as const,
@@ -36,6 +37,7 @@ export const workspaceQueryKeys = {
   statusCounts: (slug: string) => ["status-counts", slug] as const,
 };
 
+/** Fetches a workspace summary by slug. */
 export async function fetchWorkspaceBySlug(
   slug: string
 ): Promise<WorkspaceSummary | null> {
@@ -45,12 +47,14 @@ export async function fetchWorkspaceBySlug(
   return data?.workspace ?? null;
 }
 
+/** Workspaces the current user owns or belongs to. */
 export async function fetchUserWorkspaces(): Promise<WorkspaceSummary[]> {
   const res = await client.workspace.listMine.$get();
   const data = await safeJson<WorkspaceListResponse>(res);
   return Array.isArray(data?.workspaces) ? data.workspaces : [];
 }
 
+/** Custom-domain info for settings and public host checks. */
 export async function fetchWorkspaceDomainInfo(
   slug: string
 ): Promise<WorkspaceDomainInfo | null> {
@@ -60,6 +64,7 @@ export async function fetchWorkspaceDomainInfo(
   return data ?? null;
 }
 
+/** Roadmap/feedback status counts for sidebar badges. */
 export async function fetchWorkspaceStatusCounts(
   slug: string
 ): Promise<Record<string, number> | null> {
@@ -69,6 +74,7 @@ export async function fetchWorkspaceStatusCounts(
   return data?.counts ?? null;
 }
 
+/** Prefetches status counts with a 5-minute stale time. */
 export async function prefetchWorkspaceStatusCounts(
   queryClient: QueryClient,
   slug: string

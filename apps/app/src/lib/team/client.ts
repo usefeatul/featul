@@ -33,6 +33,7 @@ export {
   type WorkspaceViewer,
 } from "@/lib/team";
 
+/** Members of a workspace, or an empty list. */
 export async function fetchWorkspaceMembers(slug: string): Promise<Member[]> {
   if (!slug) return [];
   const res = await client.team.membersByWorkspaceSlug.$get({ slug });
@@ -40,6 +41,7 @@ export async function fetchWorkspaceMembers(slug: string): Promise<Member[]> {
   return Array.isArray(data?.members) ? data.members : [];
 }
 
+/** Current user's role and owner flag in the workspace. */
 export async function fetchWorkspaceViewer(
   slug: string
 ): Promise<WorkspaceViewer | null> {
@@ -53,6 +55,7 @@ export async function fetchWorkspaceViewer(
   };
 }
 
+/** Member contribution stats and top posts. */
 export async function fetchMemberStats(
   slug: string,
   userId: string
@@ -68,6 +71,7 @@ export async function fetchMemberStats(
   };
 }
 
+/** Paginated member activity, optionally filtered by category/status. */
 export async function fetchMemberActivity(
   slug: string,
   userId: string,

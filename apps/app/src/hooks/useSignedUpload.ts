@@ -34,6 +34,7 @@ type UseSignedUploadOptions = {
   maxFiles?: number;
 };
 
+/** Type/size error for an image, or null if allowed. */
 export function getImageUploadValidationError(file: File): string | null {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     return "Unsupported file type. Please use PNG, JPEG, WebP, or GIF.";
@@ -46,6 +47,7 @@ export function getImageUploadValidationError(file: File): string | null {
   return null;
 }
 
+/** PUT the file to a pre-signed URL. */
 async function uploadFileToSignedUrl(uploadUrl: string, file: File) {
   const response = await fetch(uploadUrl, {
     method: "PUT",
@@ -58,6 +60,7 @@ async function uploadFileToSignedUrl(uploadUrl: string, file: File) {
   }
 }
 
+/** Multi-file signed image upload with validation, progress toasts, and optional remote delete. */
 export function useSignedUpload({
   getUploadTarget,
   getPreUploadError,

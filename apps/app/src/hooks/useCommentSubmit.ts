@@ -49,6 +49,7 @@ function getUnknownErrorMessage(error: unknown): string {
   return ""
 }
 
+/** Creates a comment or reply. Fingerprints anonymous authors; invalidates the comment query and dispatches `comment:created`. */
 export function useCommentSubmit({
   postId,
   parentId,

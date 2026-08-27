@@ -14,6 +14,7 @@ interface UsePostUpdateProps {
   onSuccess: () => void
 }
 
+/** Title/content draft and `updatePost` API. Invalidates member stats/activity and refreshes the route on success. */
 export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
   const [isPending, startTransition] = useTransition()
   const [title, setTitle] = useState("")

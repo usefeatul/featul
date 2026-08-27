@@ -7,6 +7,7 @@ import { teamQueryKeys } from "@/lib/team/keys"
 
 type Role = "admin" | "member" | "viewer"
 
+/** Viewer role and owner flag for a workspace slug. Skips fetch until session user id exists. */
 function useWorkspaceRole(slug: string): { loading: boolean; role: Role | null; isOwner: boolean } {
   const { data: session, isPending } = useSession()
   const userId = session?.user?.id || null
@@ -35,18 +36,21 @@ function useWorkspaceRole(slug: string): { loading: boolean; role: Role | null; 
   }
 }
 
+/** Owner, admin, or member may edit branding. */
 export function useCanEditBranding(slug: string): { loading: boolean; canEditBranding: boolean } {
   const { loading, role, isOwner } = useWorkspaceRole(slug)
   const canEditBranding = Boolean(isOwner || role === "admin" || role === "member")
   return { loading, canEditBranding }
 }
 
+/** Owner or admin may edit custom domain. */
 export function useCanEditDomain(slug: string): { loading: boolean; canEditDomain: boolean } {
   const { loading, role, isOwner } = useWorkspaceRole(slug)
   const canEditDomain = Boolean(isOwner || role === "admin")
   return { loading, canEditDomain }
 }
 
+/** Owner or admin may invite members. */
 export function useCanInvite(slug: string): { loading: boolean; canInvite: boolean } {
   const { loading, role, isOwner } = useWorkspaceRole(slug)
   const canInvite = Boolean(isOwner || role === "admin")

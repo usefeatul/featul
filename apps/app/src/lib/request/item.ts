@@ -1,5 +1,7 @@
+/** Normalizes request list rows for the UI. */
 import type { RequestItemData } from "@/types/request"
 
+/** DB row shape: dates may be Date objects and counts may be null. */
 export type RequestItemRow = Omit<
   RequestItemData,
   | "createdAt"
@@ -31,6 +33,7 @@ function toIso(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : String(value)
 }
 
+/** Converts a DB row into ISO dates and numeric counts for the UI. */
 export function toRequestItemData(row: RequestItemRow): RequestItemData {
   return {
     ...row,

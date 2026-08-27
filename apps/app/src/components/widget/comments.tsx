@@ -44,6 +44,7 @@ function formatShortDate(value: string | Date | null | undefined): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+/** Nest comments under parentId. Orphans with missing parents become roots. */
 function buildCommentTree(comments: WidgetComment[]): CommentNode[] {
   const byId = new Map<string, CommentNode>();
   for (const item of comments) {

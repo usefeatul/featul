@@ -11,6 +11,7 @@ interface UseCreatePostDataProps {
   boardSlug: string
 }
 
+/** Session user plus workspace boards for the create-post dialog. Fetches the user when the dialog opens. */
 export function useCreatePostData({ open, workspaceSlug, boardSlug }: UseCreatePostDataProps) {
   const [user, setUser] = useState<PostUser | null>(null)
   const { boards, selectedBoard, setSelectedBoard } = useWorkspaceBoards({

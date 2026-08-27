@@ -6,6 +6,7 @@ export const ACCOUNT_SECTIONS: AccountSection[] = [
   { value: "appearance", label: "Appearance", desc: "Choose light, dark, or system" },
 ]
 
+/** Account settings nav metadata. Unknown keys fall back to profile. */
 export function getAccountSectionMeta(v: string) {
   const found = ACCOUNT_SECTIONS.find((s) => s.value === v)
   return found || { value: "profile", label: "Account", desc: "Manage your account" }

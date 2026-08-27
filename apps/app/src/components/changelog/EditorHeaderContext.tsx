@@ -52,6 +52,7 @@ export function EditorHeaderProvider({ children }: { children: ReactNode }) {
     )
 }
 
+/** Header actions from changelog editor. Throws outside the provider. */
 export function useEditorHeaderActions() {
     const context = useContext(EditorHeaderContext)
     if (!context) {
@@ -60,6 +61,7 @@ export function useEditorHeaderActions() {
     return context
 }
 
+/** Same as useEditorHeaderActions, but null outside the provider. */
 export function useEditorHeaderActionsOptional() {
     return useContext(EditorHeaderContext)
 }

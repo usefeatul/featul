@@ -6,6 +6,7 @@ import { groupItemsByStatus, sortRoadmapItems } from "@/lib/roadmap";
 import { parseRoadmapFiltersFromSearchParams } from "@/utils/roadmap/url";
 import type { RequestItemData } from "@/types/request";
 
+/** Groups and sorts roadmap items from URL board/tag/order params. */
 export function useRoadmapFilters(items: RequestItemData[]) {
   const searchParams = useSearchParams();
   const filters = React.useMemo(

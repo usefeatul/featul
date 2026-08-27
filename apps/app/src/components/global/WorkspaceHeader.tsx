@@ -17,6 +17,7 @@ import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
 
+/** Title from the last path segment via WORKSPACE_TITLES, then SECTIONS. */
 function resolveTitle(segment: string): string {
   const s = segment.toLowerCase();
   if (WORKSPACE_TITLES[s]) return WORKSPACE_TITLES[s];

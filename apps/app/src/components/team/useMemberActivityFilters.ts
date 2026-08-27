@@ -16,6 +16,7 @@ interface UseMemberActivityFiltersInput {
   statusFilter: string
 }
 
+/** Category/status filtering plus collapsible day groups for member activity. */
 export function useMemberActivityFilters({
   items,
   workspaceSlug,

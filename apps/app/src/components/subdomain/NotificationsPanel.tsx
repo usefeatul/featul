@@ -27,6 +27,7 @@ export interface NotificationItem {
 
 export type NotificationLinkMode = "public" | "workspace"
 
+/** Workspace vs public notification URL. `path` wins when present. */
 export function resolveNotificationHref(
   notification: NotificationItem,
   linkMode: NotificationLinkMode = "public",

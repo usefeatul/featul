@@ -51,6 +51,7 @@ import {
 
 export { getBrandingBySlug, getBrandingColorsBySlug, getSidebarPositionBySlug };
 
+/** First owned workspace slug, else first active membership. */
 export async function findFirstAccessibleWorkspaceSlug(
   userId: string,
 ): Promise<string | null> {
@@ -77,6 +78,7 @@ export async function findFirstAccessibleWorkspaceSlug(
   return memberWs?.slug || null;
 }
 
+/** Canonical roadmap status, including stale and snoozed filter keys. */
 export function normalizeStatus(s: string): string {
   const raw = (s || "").trim().toLowerCase();
   const t = raw.replace(/-/g, "");
@@ -93,6 +95,7 @@ export function normalizeStatus(s: string): string {
   return map[t] || raw;
 }
 
+/** Open, non-completed posts older than the stale threshold. */
 function buildStalePostCondition(): SQL {
   return and(
     sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
@@ -100,6 +103,7 @@ function buildStalePostCondition(): SQL {
   ) as SQL;
 }
 
+/** Posts whose snooze is still in the future. */
 function buildActiveSnoozeCondition(): SQL {
   return sql`(${post.snoozedUntil} IS NOT NULL AND ${post.snoozedUntil} > NOW())`;
 }
@@ -171,6 +175,7 @@ async function resolveTagPostIds(
   return Array.from(new Set(rows.map((r) => r.postId)));
 }
 
+/** Combines board, status, snooze, tag, and search filters. */
 function buildPostFilters({
   workspaceId,
   matchStatuses,
@@ -219,6 +224,7 @@ function buildPostFilters({
   return filters;
 }
 
+/** Workspace by slug without timezone; plan is the effective plan. */
 export async function getWorkspaceBySlug(slug: string): Promise<{
   id: string;
   name: string;
@@ -243,6 +249,7 @@ export async function getWorkspaceBySlug(slug: string): Promise<{
   };
 }
 
+/** Custom-domain status/host, or domain null when unset. */
 export async function getWorkspaceDomainInfoBySlug(
   slug: string,
 ): Promise<{ domain: { status: string; host?: string } | null } | null> {
@@ -264,6 +271,7 @@ export async function getWorkspaceTimezoneBySlug(
   return ws?.timezone || null;
 }
 
+/** Owned and active-member workspaces, de-duplicated, with effective plans. */
 export async function listUserWorkspaces(
   userId: string,
 ): Promise<
@@ -323,6 +331,7 @@ export async function listUserWorkspaces(
   );
 }
 
+/** Filtered feedback posts; publicOnly hides private-board items. */
 export async function getWorkspacePosts(
   slug: string,
   opts?: {
@@ -477,6 +486,7 @@ export async function getWorkspacePosts(
   return withAvatars;
 }
 
+/** Count matching getWorkspacePosts filters. */
 export async function getWorkspacePostsCount(
   slug: string,
   opts?: {
@@ -522,6 +532,7 @@ export async function getWorkspacePostsCount(
 
   return Number(row?.count || 0);
 }
+/** Per-status counts plus stale and snoozed, excluding the other bucket. */
 export async function getWorkspaceStatusCounts(
   slug: string,
 ): Promise<Record<string, number>> {
@@ -589,6 +600,7 @@ export async function getWorkspaceStatusCounts(
   return counts;
 }
 
+/** Public non-system boards for the workspace sidebar. */
 export async function getWorkspaceBoards(
   slug: string,
 ): Promise<
@@ -633,6 +645,7 @@ export async function getWorkspaceBoards(
   }));
 }
 
+/** Planned public posts when the roadmap board is visible. */
 export async function getPlannedRoadmapPosts(
   slug: string,
   opts?: {
@@ -669,6 +682,7 @@ export async function getPlannedRoadmapPosts(
     publicOnly: true,
   });
 }
+/** Non-system board by workspace and board slug. */
 export async function getBoardByWorkspaceSlug(
   slug: string,
   boardSlug: string,
@@ -689,6 +703,7 @@ export async function getBoardByWorkspaceSlug(
   return b || null;
 }
 
+/** Aggregates settings-page initial data in one round of queries. */
 export async function getSettingsInitialData(
   slug: string,
   meId?: string,
@@ -968,6 +983,7 @@ export async function getSettingsInitialData(
   };
 }
 
+/** Prev/next post in the current filtered list order. */
 export async function getPostNavigation(
   slug: string,
   currentPostId: string,

@@ -69,6 +69,7 @@ type WidgetFrameProps = {
   initialConfig?: WidgetBootstrap | null;
 };
 
+/** Normalize bootstrap config into workspace, tabs, boards, and theme. */
 function readBootstrap(
   data: WidgetBootstrap,
   projectId: string,

@@ -15,6 +15,7 @@ import {
 
 type RoadmapFilterKey = "board" | "tag";
 
+/** URL-backed multi-select for roadmap board/tag filters. */
 export function useRoadmapMultiSelectFilter({
   filterKey,
   popoverKey,

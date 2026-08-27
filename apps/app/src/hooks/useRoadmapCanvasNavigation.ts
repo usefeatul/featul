@@ -9,6 +9,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(value, max));
 }
 
+/** Horizontal jump/scroll between roadmap columns. Clamps the board scroller to the target column. */
 export function useRoadmapCanvasNavigation(statuses: readonly string[]) {
   const boardScrollRef = React.useRef<HTMLDivElement | null>(null);
   const columnRefs = React.useRef<ColumnRefMap>({});

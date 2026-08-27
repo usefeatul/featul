@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import type { NavItem } from "../types/nav"
 
+/** Letter keys R/C/B/M navigate matching sidebar items. Ignores typing in inputs and modifier combos. */
 export function useSidebarHotkeys(active: boolean, middleNav: NavItem[], router: AppRouterInstance) {
   useEffect(() => {
     if (!active) return
@@ -39,6 +40,7 @@ export function useSidebarHotkeys(active: boolean, middleNav: NavItem[], router:
   }, [active, middleNav, router])
 }
 
+/** Shortcut letter shown for a sidebar label, or empty if none. */
 export function getShortcutForLabel(label: string) {
   const l = label.toLowerCase()
   if (l === "roadmap") return "R"

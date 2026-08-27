@@ -13,6 +13,7 @@ export const SECTIONS: SettingsSection[] = [
   { value: "workspace", label: "Workspace", desc: "Manage workspace settings" },
 ]
 
+/** Workspace settings nav metadata. Unknown keys fall back to branding. */
 export function getSectionMeta(v: string) {
   const found = SECTIONS.find((s) => s.value === v)
   return found || { value: "branding", label: "Settings", desc: "View and manage your workspace settings." }

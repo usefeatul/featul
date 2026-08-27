@@ -43,6 +43,7 @@ export type FilterIslandTransitions = {
   visibility: Transition;
 };
 
+/** Instant transitions when reduced-motion is on. Else the island ease curve. */
 export function getFilterIslandTransitions(
   reduceMotion: boolean | null,
 ): FilterIslandTransitions {

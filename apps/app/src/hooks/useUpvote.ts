@@ -19,6 +19,7 @@ interface UseUpvoteReturn {
   handleVote: (e: React.MouseEvent) => void;
 }
 
+/** Optimistic vote toggle. Fingerprints anonymous votes; skips query sync while in flight. */
 export function useUpvote({
   postId,
   initialUpvotes,

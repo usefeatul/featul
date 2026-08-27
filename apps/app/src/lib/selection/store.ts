@@ -122,6 +122,7 @@ function getSnapshotCached(key: string): SelectionSnapshot {
   return current
 }
 
+/** Turns selecting mode on/off and persists cookie + localStorage. */
 export function setSelecting(key: string, selecting: boolean) {
   const s = ensure(key)
   s.isSelecting = selecting
@@ -140,6 +141,7 @@ export function setSelecting(key: string, selecting: boolean) {
   notify()
 }
 
+/** Adds or removes an id; omit checked to toggle. */
 export function toggleSelectionId(key: string, id: string, checked?: boolean) {
   const s = ensure(key)
   const isChecked = typeof checked === "boolean" ? checked : !s.selected.has(id)
@@ -149,6 +151,7 @@ export function toggleSelectionId(key: string, id: string, checked?: boolean) {
   notify()
 }
 
+/** Adds every id to the current selection. */
 export function selectAllForKey(key: string, ids: string[]) {
   const s = ensure(key)
   ids.forEach((id) => s.selected.add(id))
@@ -156,6 +159,7 @@ export function selectAllForKey(key: string, ids: string[]) {
   notify()
 }
 
+/** Clears selected ids for this key. */
 export function clearSelection(key: string) {
   const s = ensure(key)
   s.selected.clear()
@@ -163,6 +167,7 @@ export function clearSelection(key: string) {
   notify()
 }
 
+/** Drops specific ids after bulk delete or similar. */
 export function removeSelectedIds(key: string, ids: string[]) {
   const s = ensure(key)
   ids.forEach((id) => s.selected.delete(id))
@@ -174,6 +179,7 @@ export function getSelectedIds(key: string): string[] {
   return Array.from(ensure(key).selected)
 }
 
+/** Subscribes to selection for a list key. */
 export function useSelection(key: string): SelectionSnapshot {
   const get = React.useCallback(() => getSnapshotCached(key), [key])
   const getServer = React.useCallback(() => getSnapshotCached(key), [key])

@@ -4,6 +4,7 @@ import type {
   UserDropdownAccount,
 } from "../types";
 
+/** Normalize device-account list payloads. Drop rows without a userId. */
 export function normalizeDeviceAccountsPayload(
   payload: unknown,
 ): DeviceAccount[] {
@@ -39,6 +40,7 @@ export function normalizeDeviceAccountsPayload(
     .filter((value): value is DeviceAccount => Boolean(value));
 }
 
+/** Deduped account list. Inject current session if missing. Current first. */
 export function buildAccountsList({
   deviceAccounts,
   currentSession,

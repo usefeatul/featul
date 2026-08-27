@@ -1,6 +1,7 @@
 import { and, desc, eq } from "drizzle-orm"
 import { board, changelogEntry, db, workspace } from "@featul/db"
 
+/** Escapes text for RSS XML. */
 export function escapeXml(value: string) {
   return value
     .replace(/&/g, "&amp;")
@@ -10,6 +11,7 @@ export function escapeXml(value: string) {
     .replace(/'/g, "&apos;")
 }
 
+/** Public origin: custom domain wins over the featul subdomain. */
 export function publicChangelogBaseUrl(opts: {
   slug: string
   customDomain?: string | null
@@ -27,6 +29,7 @@ export type ChangelogRssEntry = {
   updatedAt: Date
 }
 
+/** Published changelog items; empty when the board is hidden or private. */
 export async function getPublishedChangelogEntriesForRss(
   slug: string,
   limit = 50,
@@ -96,6 +99,7 @@ export async function getPublishedChangelogEntriesForRss(
   }
 }
 
+/** Builds an RSS 2.0 feed string for published changelog entries. */
 export function buildChangelogRssXml(opts: {
   workspaceName: string
   channelLink: string

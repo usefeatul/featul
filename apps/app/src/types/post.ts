@@ -1,3 +1,5 @@
+/** Lightweight post helpers for compose and similar-post UI. */
+
 export interface BoardSummary {
     id: string;
     name: string;

@@ -4,6 +4,7 @@ import { runStorageOrphanGc } from "@featul/api/storage/delete";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+/** Bearer CRON_SECRET required; missing secret always fails. */
 function isAuthorizedCron(request: Request): boolean {
   const secret = String(process.env.CRON_SECRET || "").trim();
   if (!secret) return false;
@@ -11,6 +12,7 @@ function isAuthorizedCron(request: Request): boolean {
   return header === `Bearer ${secret}`;
 }
 
+/** Deletes orphaned storage objects. Requires CRON_SECRET Bearer token. */
 export async function GET(request: Request) {
   if (!isAuthorizedCron(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

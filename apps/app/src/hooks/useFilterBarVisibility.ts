@@ -13,6 +13,7 @@ interface UseFilterBarVisibilityResult {
   handleClearAll: () => void
 }
 
+/** Shows the filter bar when any filter is active. Clear-all replaces the URL without scrolling. */
 export function useFilterBarVisibility(
   options: UseFilterBarVisibilityOptions
 ): UseFilterBarVisibilityResult {

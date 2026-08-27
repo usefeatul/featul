@@ -18,6 +18,7 @@ export type ToggleKey = keyof Pick<
 >;
 export type ToggleSuccessMessage = string | ((enabled: boolean) => string);
 
+/** Workspace-wide boolean board setting. Optimistically patches cache, then POSTs global settings. */
 export function useGlobalBoardToggle(
   slug: string,
   key: ToggleKey,

@@ -14,6 +14,7 @@ import {
 
 export type Ws = WorkspaceSummary
 
+/** Current workspace, list, and switch/create handlers. Prefetches the target route. */
 export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null, initialWorkspaces?: Ws[]) {
   const router = useRouter()
   const pathname = usePathname()

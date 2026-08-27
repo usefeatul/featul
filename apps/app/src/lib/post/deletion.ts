@@ -11,6 +11,7 @@ type DeletePostErrorResponse = {
 
 export type DeletePostResult = { ok: true } | { ok: false; message: string };
 
+/** Deletes a post and captures analytics; never throws. */
 export async function deletePostById(
   postId: string,
 ): Promise<DeletePostResult> {
@@ -39,6 +40,7 @@ export async function deletePostById(
   }
 }
 
+/** Broadcasts post:deleted so lists can drop the item. */
 export function dispatchPostDeletedEvent(
   detail: PostDeletedEventDetail,
 ): boolean {
@@ -56,6 +58,7 @@ export function dispatchPostDeletedEvent(
   }
 }
 
+/** Refreshes member stats and activity after a post change. */
 export async function invalidateMemberActivityQueries(
   queryClient: QueryClient,
 ): Promise<boolean> {

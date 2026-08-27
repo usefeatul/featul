@@ -19,6 +19,7 @@ interface UseRequestSnoozeProps {
   onSuccess?: () => void
 }
 
+/** Optimistic snooze/unsnooze for a request. Patches post meta and status-count cache. */
 export function useRequestSnooze({
   postId,
   workspaceSlug,

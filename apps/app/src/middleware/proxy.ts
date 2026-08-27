@@ -4,6 +4,10 @@ import { rewriteSubdomain, getHostInfo } from "./host"
 import { handleAuthRedirects, handleStartRedirect, enforceWorkspaceAuth } from "./auth"
 import { rewriteFeedback } from "./feedback"
 
+/**
+ * First matching rewrite/redirect wins: subdomain, signed-in auth, /start, feedback host, then /workspaces auth.
+ * Unmatched requests continue.
+ */
 export async function middleware(req: NextRequest) {
   const ctx = getHostInfo(req)
   const r0 = rewriteSubdomain(req, ctx); if (r0) return r0

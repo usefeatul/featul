@@ -13,6 +13,7 @@ interface UseMemberActivityQueryInput {
   initialActivity: PaginatedActivity
 }
 
+/** Infinite member activity. Seeded from SSR data only on all/all filters. */
 export function useMemberActivityQuery({
   slug,
   userId,

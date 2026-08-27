@@ -22,6 +22,7 @@ type Feature =
   | "integrations"
   | "data_imports";
 
+/** Plan-limit copy for a settings feature, including remaining quota. */
 function buildMessage(
   feature: Feature,
   plan: PlanKey,

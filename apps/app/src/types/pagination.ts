@@ -1,3 +1,4 @@
+/** Shared pager props; variant switches copy and URL shape. */
 export type RequestPaginationProps = {
   workspaceSlug: string;
   page: number;

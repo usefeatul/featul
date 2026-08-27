@@ -17,6 +17,7 @@ type Props = {
   onPreview?: () => void;
 };
 
+/** True when running inside a host iframe. Cross-origin access counts as iframe. */
 function isInIframe() {
   try {
     return window.self !== window.top;
@@ -25,6 +26,7 @@ function isInIframe() {
   }
 }
 
+/** Ask the host to open the image overlay. No-ops when not iframed. */
 function requestHostImagePreview(parentOrigin: string, url: string, alt: string) {
   if (!isInIframe()) return false;
   postToParent(parentOrigin, "open-image", { url, alt });

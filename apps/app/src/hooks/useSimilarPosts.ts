@@ -19,6 +19,7 @@ interface UseSimilarPostsResult {
   isSearching: boolean
 }
 
+/** Debounced similar-post search for a board title. Skips until title meets `minTitleLength`; cancels in-flight fetches. */
 export function useSimilarPosts({
   title,
   boardSlug,

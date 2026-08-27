@@ -18,6 +18,7 @@ export type LightboxImage = {
   alt: string;
 };
 
+/** Circular index wrap for lightbox prev/next. Empty lists stay at 0. */
 function wrapIndex(index: number, length: number, delta: number) {
   if (length <= 0) return 0;
   return (index + delta + length) % length;

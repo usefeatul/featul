@@ -2,6 +2,7 @@ export const PLANS = ["free", "starter", "professional"] as const;
 
 export type PlanKey = (typeof PLANS)[number];
 
+/** Feature caps and entitlements for a billing plan. */
 export type PlanLimits = {
   maxMembers: number | null;
   maxNonSystemBoards: number | null;
@@ -54,6 +55,7 @@ const LIMITS: Record<PlanKey, PlanLimits> = {
   },
 };
 
+/** Unknown plan names fall back to free. */
 export function normalizePlan(raw: string): PlanKey {
   const s = String(raw || "free")
     .trim()
@@ -61,6 +63,7 @@ export function normalizePlan(raw: string): PlanKey {
   return (PLANS as ReadonlyArray<string>).includes(s) ? (s as PlanKey) : "free";
 }
 
+/** Limits for a plan key or raw plan string. */
 export function getPlanLimits(plan: PlanKey | string): PlanLimits {
   return LIMITS[normalizePlan(String(plan))];
 }
@@ -79,6 +82,7 @@ const PLAN_LABELS: Record<PlanKey, string> = {
   professional: "Professional",
 };
 
+/** Copy for the member-cap upgrade prompt. */
 export function getMemberLimitMessage(
   plan: PlanKey | string,
   maxMembers: number,

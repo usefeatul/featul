@@ -22,6 +22,7 @@ const HOST_SOURCE = "featul-widget";
 
 export { isSafeImageUrl, isSafeParentOrigin };
 
+/** postMessage to the host. No-ops on unsafe origins or SSR. */
 export function postToParent(
   parentOrigin: string,
   type: WidgetMessageType,
@@ -39,10 +40,12 @@ export function postToParent(
   );
 }
 
+/** True when the event is a valid host→frame widget message. */
 export function isHostMessage(event: MessageEvent, parentOrigin: string) {
   return readHostMessage(event, parentOrigin) !== null;
 }
 
+/** Validate origin, source, and `featul-widget` envelope. Else null. */
 export function readHostMessage(
   event: MessageEvent,
   parentOrigin: string,
@@ -82,6 +85,7 @@ export function MessagingProvider({
   );
 }
 
+/** Safe parent origin from MessagingProvider, or empty if rejected. */
 export function useParentOrigin() {
   return React.useContext(MessagingContext);
 }

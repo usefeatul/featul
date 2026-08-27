@@ -14,6 +14,7 @@ type Props = {
   removeDisabled?: boolean;
 };
 
+/** True when running inside a host iframe. Cross-origin access counts as iframe. */
 function isInIframe() {
   try {
     return window.self !== window.top;

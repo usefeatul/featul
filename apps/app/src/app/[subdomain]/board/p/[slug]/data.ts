@@ -61,6 +61,7 @@ export type PublicBoardRequestDetailPageData = {
   backLink: string;
 };
 
+/** Public post detail plus comments; viewerCanEdit from session membership. */
 export async function loadPublicBoardRequestDetailPageData({
   subdomain,
   postSlug,
@@ -162,6 +163,7 @@ export async function loadPublicBoardRequestDetailPageData({
   };
 }
 
+/** Published feedback post with author, board, and merge metadata. */
 async function loadPostWithAuthorAndBoard(
   workspaceId: string,
   postSlug: string,
@@ -210,6 +212,7 @@ async function loadPostWithAuthorAndBoard(
   };
 }
 
+/** Tag rows attached to the post. */
 async function loadPostTags(postId: string) {
   return db
     .select({ id: tag.id, name: tag.name, slug: tag.slug, color: tag.color })

@@ -10,9 +10,11 @@ const validTlds = new Set([
   "com","net","org","io","co","ai","app","dev","gg","xyz","me","us","uk","ca","de","fr","it","es","nl","br","in","jp","ru","ch","se","no","fi","pl","cz","sk","id","au","nz","be","dk","pt","gr","mx","za","ar","tw","kr","hk","sg","ie","il","at","tr","sa","ua","vn","ph","th","my","cl","pe","uy","lu","li","ro","bg","hu","lt","lv","ee","rs","ba","md","ge","am","az","by","kz","uz","tm","tj","kg","pa","do","cr","gt","hn","ni","jm","tt","pr","ae","qa","kw","om","bh","eg","ma","tn","dz","cc","biz","info","tech"
 ])
 
+/** Keeps only letters so workspace slugs stay DNS-safe. */
 export const cleanSlug = (v: string) => v.toLowerCase().replace(/[^a-z]/g, "")
 export const slugifyFromName = (name: string) => cleanSlug(name.toLowerCase().trim())
 
+/** Checks host labels and a known TLD allowlist. */
 export const isDomainValid = (domain: string) => {
   const v = domain.trim().toLowerCase()
   if (!/^[a-z0-9.-]+$/.test(v)) return false
@@ -28,6 +30,7 @@ export const isDomainValid = (domain: string) => {
   return true
 }
 
+/** Suggests .com/.net for common TLD typos. */
 export const suggestDomainFix = (domain: string) => {
   const v = domain.trim().toLowerCase()
   const m = v.match(/^(.*)\.([a-z0-9]{2,})$/i)
@@ -39,16 +42,19 @@ export const suggestDomainFix = (domain: string) => {
   return null
 }
 
+/** 1–15 chars; reserved names blocked unless opted in. */
 export const isNameValid = (name: string, options?: { allowReserved?: boolean }) =>
   z.string().min(1).max(15).safeParse(name.trim()).success &&
   (options?.allowReserved || !isReservedWorkspaceName(name))
 
+/** Letters only, min 5; reserved slugs blocked unless opted in. */
 export const isSlugValid = (slug: string, options?: { allowReserved?: boolean }) =>
   z.string().min(5).regex(/^[a-z]+$/).safeParse(slug.trim()).success &&
   (options?.allowReserved || !isReservedWorkspaceSlug(slug))
 
 export const isTimezoneValid = (tz: string) => z.string().min(1).safeParse(String(tz)).success
 
+/** Zod workspace form shape, including reserved-name policy. */
 export function getWorkspaceSchema(options?: { allowReserved?: boolean }) {
   const allowReserved = options?.allowReserved === true
 
@@ -68,4 +74,5 @@ export function getWorkspaceSchema(options?: { allowReserved?: boolean }) {
   })
 }
 
+/** Default workspace schema with reserved names and slugs blocked. */
 export const workspaceSchema = getWorkspaceSchema()

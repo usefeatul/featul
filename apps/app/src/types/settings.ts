@@ -1,3 +1,4 @@
+/** Per-board public/anonymous/comment rules and visibility. */
 export interface FeedbackBoardSettings {
   id: string;
   name: string;
@@ -24,6 +25,7 @@ export interface ChangelogTag {
   name: string;
 }
 
+/** Slack/Discord webhook integration. */
 export type IntegrationType = "discord" | "slack";
 
 export interface Integration {

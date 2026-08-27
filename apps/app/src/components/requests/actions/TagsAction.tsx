@@ -29,6 +29,7 @@ type TagsResponse = {
   }>;
 };
 
+/** Keep tags with id, name, and slug. Color/count are optional. */
 function parseTagsResponse(payload: TagsResponse | null): TagItem[] {
   const tags = Array.isArray(payload?.tags) ? payload.tags : [];
   return tags

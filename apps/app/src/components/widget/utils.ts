@@ -1,6 +1,7 @@
 import { client } from "@featul/api/client";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
 
+/** Strip HTML tags. Collapse whitespace. Empty in → empty out. */
 export function toPlain(value?: string | null): string {
   if (!value) return "";
   return value
@@ -9,6 +10,7 @@ export function toPlain(value?: string | null): string {
     .trim();
 }
 
+/** First N sentences after HTML strip. Hard-cap at 180 chars with ellipsis. */
 export function toShortPreview(
   value?: string | null,
   maxSentences = 2,
@@ -28,6 +30,7 @@ export function toShortPreview(
   return clipped.length > 180 ? `${clipped.slice(0, 177).trimEnd()}…` : clipped;
 }
 
+/** Public post URL for the workspace subdomain. Localhost keeps protocol/port. */
 export function publicBoardPostUrl(
   workspaceSlug: string,
   postSlug: string,
@@ -48,6 +51,7 @@ export function publicBoardPostUrl(
   return `https://${slug}.featul.com/board/p/${postSlug}`;
 }
 
+/** Workspace board origin. SSR and prod use featul.com; local uses *.localhost. */
 export function publicBoardUrl(workspaceSlug: string): string {
   const slug = workspaceSlug.trim();
   if (typeof window === "undefined") return `https://${slug}.featul.com`;
@@ -63,6 +67,7 @@ export function publicBoardUrl(workspaceSlug: string): string {
   return `https://${slug}.featul.com`;
 }
 
+/** Merge API base with signed identity or fingerprint. Unsigned identity is omitted. */
 export function viewerPayload(
   apiBase: WidgetApiBase,
   opts: {
@@ -88,6 +93,7 @@ export function viewerPayload(
   };
 }
 
+/** Compact relative time (m/h/d). Falls back to locale date after 30 days. */
 export function formatRelativeDate(
   value: string | Date | null | undefined,
 ): string {
@@ -112,6 +118,7 @@ export function isAllowedImageType(
   return allowed.some((item) => item === type);
 }
 
+/** Read a non-empty `message` string from unknown errors. Else the fallback. */
 export function readErrorMessage(value: unknown, fallback: string): string {
   if (
     value &&
@@ -125,6 +132,7 @@ export function readErrorMessage(value: unknown, fallback: string): string {
   return fallback;
 }
 
+/** Require both signed PUT URL and public URL. Incomplete payloads return null. */
 export function readSignedUpload(
   value: unknown,
 ): { uploadUrl: string; publicUrl: string } | null {
@@ -141,6 +149,7 @@ export function readSignedUpload(
   return { uploadUrl, publicUrl };
 }
 
+/** Best-effort remote delete after the UI already dropped the image. */
 export async function deleteWidgetUploadedImage(opts: {
   apiBase: WidgetApiBase;
   url: string;
@@ -162,6 +171,7 @@ export async function deleteWidgetUploadedImage(opts: {
   }
 }
 
+/** Pull `user.id` from identify payloads. Missing or non-string id → null. */
 export function readIdentifiedUserId(value: unknown): string | null {
   if (!value || typeof value !== "object" || !("user" in value)) return null;
   const user = value.user;
@@ -176,6 +186,7 @@ export function readIdentifiedUserId(value: unknown): string | null {
   return user.id;
 }
 
+/** Accept png/jpeg/webp data URLs only. Reject empty, tiny, or oversized payloads. */
 export function isWidgetScreenshotDataUrl(value?: string | null): value is string {
   const url = String(value || "");
   return (
@@ -185,6 +196,7 @@ export function isWidgetScreenshotDataUrl(value?: string | null): value is strin
   );
 }
 
+/** Parse host screenshot replies. Invalid data URLs become cancelled vs capture-failed. */
 export function readScreenshotPayload(
   value: unknown,
 ): { dataUrl: string | null; error: "cancelled" | "capture-failed" | null } {
@@ -205,6 +217,7 @@ export function readScreenshotPayload(
   return { dataUrl: null, error: code };
 }
 
+/** Convert a data URL to a File. Non-image blobs default to image/jpeg. */
 export async function dataUrlToImageFile(
   dataUrl: string,
   fileName: string,
@@ -216,6 +229,7 @@ export async function dataUrlToImageFile(
   return new File([blob], fileName, { type });
 }
 
+/** Prefer a board named/slug `bugs`. Otherwise the first board. */
 export function resolveBugsBoard<
   T extends { id: string; name?: string | null; slug?: string | null },
 >(boards: T[]): T | null {

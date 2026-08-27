@@ -32,16 +32,19 @@ const ROADMAP_STATUS_TONES: Record<RoadmapStatus, RoadmapStatusTone> = {
   },
 };
 
+/** Strip HTML to a single-line preview. */
 function toPlainText(value?: string | null): string {
   if (!value) return "";
   return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+/** Footer/icon tone for a normalized roadmap status. */
 export function getRoadmapStatusTone(status?: string | null): RoadmapStatusTone {
   const normalizedStatus = normalizeRoadmapStatus(status);
   return ROADMAP_STATUS_TONES[normalizedStatus];
 }
 
+/** Card preview from content, or `In {board} board` when empty. */
 export function buildRoadmapPreview(
   content?: string | null,
   boardName?: string | null,
@@ -52,6 +55,7 @@ export function buildRoadmapPreview(
   return `In ${boardLabel} board`;
 }
 
+/** Month + day for roadmap cards. Invalid dates return null. */
 export function formatRoadmapCardDate(value?: string | null): string | null {
   if (!value) return null;
   const parsed = new Date(value);

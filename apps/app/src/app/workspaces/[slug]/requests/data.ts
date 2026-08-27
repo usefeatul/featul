@@ -36,6 +36,7 @@ export type RequestsPageData = {
   isWorkspaceOwner: boolean
 }
 
+/** Paginated dashboard requests; defaults statuses when none are selected. */
 export async function loadRequestsPageData({
   slug,
   searchParams,
