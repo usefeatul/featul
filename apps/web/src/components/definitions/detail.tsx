@@ -2,8 +2,9 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { SkyPageShell } from "@/components/layout/shell";
-import { getDefinitionContent } from "@/content/definitions";
+import { getDefinitionBySlug, getDefinitionContent } from "@/content/definitions";
 import type { Definition } from "@/types/definitions";
+import { findToolForDefinition } from "@/types/tools";
 import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
@@ -38,6 +39,10 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
   const publishedLabel = formatPublishedLabel(def.publishedAt);
   const author = def.author ?? "Jean Daly";
   const isMobile = useIsMobile();
+  const relatedTool = findToolForDefinition(def.slug);
+  const relatedToolHref = relatedTool
+    ? `/tools/categories/${relatedTool.categorySlug}/${relatedTool.tool.slug}`
+    : null;
   return (
     <SkyPageShell
       dataComponent="DefinitionDetail"
@@ -105,6 +110,15 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
                   </OverlayCardPanel>
                 </OverlayCard>
               ) : null}
+              {relatedToolHref ? (
+                <p className="mt-4 text-sm leading-7 text-accent sm:text-base">
+                  Use the{" "}
+                  <Link href={relatedToolHref} className="font-medium text-primary hover:underline">
+                    {relatedTool?.tool.name}
+                  </Link>{" "}
+                  to run this formula with your own numbers.
+                </p>
+              ) : null}
             </section>
           ) : null}
 
@@ -170,6 +184,24 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
             </section>
           ) : null}
 
+          {def.useCases && def.useCases.length ? (
+            <section>
+              <h2 className="text-lg font-semibold text-foreground">
+                Use cases
+              </h2>
+              <div className="mt-4 space-y-5">
+                {def.useCases.map((item) => (
+                  <div key={item.title} className="space-y-2">
+                    <h3 className="font-medium text-foreground">{item.title}</h3>
+                    <p className="text-sm leading-7 text-accent sm:text-base">
+                      {item.body}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           {def.related && def.related.length ? (
             <section>
               <h2 className="text-lg font-semibold text-foreground">
@@ -181,17 +213,20 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
                 ) : null}
               </div>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                {def.related.map((r) => (
-                  <Link key={r} href={`/definitions/${r}`} className="group block">
-                    <OverlayCard>
-                      <OverlayCardPanel className="px-4 py-3">
-                        <span className="text-sm font-medium text-foreground group-hover:text-primary">
-                          {r}
-                        </span>
-                      </OverlayCardPanel>
-                    </OverlayCard>
-                  </Link>
-                ))}
+                {def.related.map((r) => {
+                  const related = getDefinitionBySlug(r);
+                  return (
+                    <Link key={r} href={`/definitions/${r}`} className="group block">
+                      <OverlayCard>
+                        <OverlayCardPanel className="px-4 py-3">
+                          <span className="text-sm font-medium text-foreground group-hover:text-primary">
+                            {related?.name ?? r}
+                          </span>
+                        </OverlayCardPanel>
+                      </OverlayCard>
+                    </Link>
+                  );
+                })}
               </div>
             </section>
           ) : null}

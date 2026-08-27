@@ -21,12 +21,16 @@ export interface Alternative {
   victoryPoints?: string[]
   tradeoffs?: string[]
   image?: string
+  /** Optional SERP title used as-is on comparison pages. */
+  metaTitle?: string
+  heroTitle?: string
+  heroKicker?: string
   features: ComparisonFeature[]
 }
 
 /** Displayed on comparison pages for freshness signals. */
 export const ALTERNATIVES_UPDATED_LABEL = 'August 2026'
-export const ALTERNATIVES_UPDATED_ISO = '2026-08-01'
+export const ALTERNATIVES_UPDATED_ISO = '2026-08-27'
 
 // Base features we commonly compare across tools
 const baseFeatures: Omit<ComparisonFeature, 'competitor'>[] = [
@@ -79,12 +83,15 @@ export const alternatives: Alternative[] = [
     slug: 'featurebase',
     name: 'Featurebase',
     website: 'https://featurebase.app',
+    metaTitle: 'Featurebase alternatives | Open source vs Featurebase',
+    heroTitle: 'Featurebase alternatives',
+    heroKicker: 'Open source vs Featurebase',
     summary:
-      'Featurebase is a strong feedback tool. Featul emphasizes EU hosting and privacy with a unified suite.',
-    tags: ['feedback', 'voting'],
+      'Featurebase is a hosted feedback suite with voting, roadmap, and changelog. Featul is an open source Featurebase alternative: MIT-licensed, self-hostable, EU-hosted, and priced per workspace instead of per seat.',
+    tags: ['feedback', 'voting', 'open-source'],
     image: '/image/image.jpeg',
-    pros: ['Active community', 'Rich voting'],
-    cons: ['Less EU focus'],
+    pros: ['Help center plus AI support suite', 'Large integration catalog'],
+    cons: ['Per-seat pricing as the team grows', 'Hosted-only, not self-hostable'],
     features: withCompetitor({
       eu_hosting: 'partial',
       gdpr: 'partial',
@@ -125,12 +132,15 @@ export const alternatives: Alternative[] = [
     slug: 'canny',
     name: 'Canny',
     website: 'https://canny.io',
+    metaTitle: 'Canny alternatives & integrations | Featul vs Canny',
+    heroTitle: 'Canny alternatives',
+    heroKicker: 'Featul vs Canny integrations',
     summary:
-      'Canny is a robust feedback platform. Featul differentiates with EU hosting and streamlined privacy.',
-    tags: ['feedback', 'roadmap', 'voting'],
+      'Canny is known for feature request tracking and a large integration catalog. Featul is a Canny alternative with EU hosting, Canny import, Slack/webhooks/API, and a simpler boards-to-changelog workflow.',
+    tags: ['feedback', 'roadmap', 'voting', 'integrations'],
     image: '/image/image.jpeg',
-    pros: ['Enterprise features'],
-    cons: ['US‑centric hosting'],
+    pros: ['Broad third-party integrations', 'Long enterprise track record'],
+    cons: ['US-centric hosting', 'Seat-based pricing as teams grow'],
     features: withCompetitor({
       eu_hosting: false,
       gdpr: 'partial',
@@ -250,6 +260,7 @@ export function getAlternativeSlugs(): string[] {
   return getAllAlternatives().map((alternative) => alternative.slug)
 }
 
-export function getAlternativePageTitle(name: string): string {
-  return `Best ${name} alternative | Featul vs ${name}`
+export function getAlternativePageTitle(alt: Alternative): string {
+  if (alt.metaTitle) return alt.metaTitle
+  return `Best ${alt.name} alternative | Featul vs ${alt.name}`
 }

@@ -63,44 +63,103 @@ export const DEFINITIONS: Definition[] = ([
   {
     slug: "arr",
     name: "Annual Recurring Revenue (ARR)",
-    synonyms: ["annualized recurring revenue"],
-    author:"Jean daly",
-    publishedAt:"2026-01-01",
-    short: "Annualized subscription revenue based on current contracts.",
-    content: "Annual Recurring Revenue is the annualized value of all active subscriptions. Most teams compute ARR as 12×MRR, but enterprise contracts may be summed by their contracted annual values. ARR smooths short‑term monthly swings and communicates scale to investors and leadership. Keep ARR strict by excluding non‑recurring revenue and pipeline. When ARR grows consistently, your run‑rate business is scaling in a durable way.",
+    synonyms: ["annualized recurring revenue", "annual-recurring-revenue"],
+    author: "Jean Daly",
+    publishedAt: "2026-08-27",
+    metaTitle: "What is ARR? Annual Recurring Revenue explained",
+    short:
+      "ARR is 12×MRR or contracted annual subscription value. Learn the formula, ARR vs MRR, examples, and how product teams prioritize feedback with ARR.",
+    content:
+      "Annual Recurring Revenue (ARR) is the annualized value of active subscription contracts. SaaS teams use it as the headline run-rate number for boards, fundraising, and hiring plans because it smooths month-to-month noise. Most product-led companies compute ARR as 12 × MRR. Enterprise teams often instead sum contracted annual values so a $120k yearly deal counts as $120k ARR even if it is billed monthly. Keep ARR strict: exclude one-time implementation fees, professional services, usage spikes that are not committed, and pipeline that is not signed. When ARR grows while net revenue retention stays above 100%, the existing customer base is expanding and new logos are compounding on a durable base.",
     eli5: "Your subscription money for a whole year.",
-    practical: "Multiply stable MRR by 12 or sum annual contracts.",
-    expert: "Use contract terms to avoid overstating volatile monthly changes.",
-    overview: "Annual Recurring Revenue is the annualized value of active subscription contracts. Calculated as 12×MRR or by summing contracted annual values.",
-    why: "ARR communicates run‑rate scale for board reporting and long‑range planning, smoothing monthly volatility.",
+    practical: "Multiply stable MRR by 12, or sum each contract’s annual value.",
+    expert: "Prefer contracted ARR over annualizing a single volatile month, and never mix bookings with recognized recurring value.",
+    overview:
+      "Annual Recurring Revenue is the yearly run-rate of active subscriptions. Calculate it as 12×MRR for monthly plans, or by summing contracted annual values for mixed billing.",
+    why: "ARR is the language investors and leadership use for scale. Product teams also use it to weight feature requests so a $200k account is not treated like a $20 trial.",
     essay: {
-      intro: "ARR offers a long‑view snapshot of recurring scale by annualizing contract value. It helps leaders compare momentum across quarters without the noise of monthly fluctuations.",
-      analysis: "Treat ARR as a contracted, durable figure. Avoid annualizing a spiky month and keep non‑recurring revenue separate so the signal remains clean and comparable.",
-      formulaContext: "Use 12×MRR for monthly contracts and contracted annual values for enterprise deals. Keep definitions consistent across reporting periods.",
-      exampleContext: "When mixing monthly and annual plans, normalize each to an annual value before presenting ARR so the figure reflects true run‑rate.",
-      pitfallsContext: "Annualizing an atypical month, including one‑time items, or double‑counting multi‑year prepayments will distort ARR.",
-      benchmarksContext: "ARR varies widely by stage and market. Track composition and growth rate over time rather than chasing absolute targets.",
-      notesContext: "Report contracted ARR, reconcile to billing systems, and separate pipeline or uncontracted deals for clarity.",
-      relatedContext: "ARR pairs with MRR (monthly view) and NRR (cohort durability) to show scale and health together.",
-      faqsContext: "FAQs often cover how to treat prepayments, multi‑year deals, and the difference between contracted ARR and annualized MRR."
+      intro:
+        "ARR answers a simple question with a careful definition: if every current subscription continued for the next twelve months, how much recurring revenue is already under contract? That long-view number is why boards compare ARR across quarters instead of staring at a noisy MRR chart.",
+      analysis:
+        "Treat ARR as a contracted, durable figure. Annualizing last month’s MRR is fine when the base is stable. It is misleading after a one-off promotion, a large expansion that has not started, or a churn event that has not yet hit billing. Split new ARR, expansion ARR, contraction ARR, and churned ARR so you can see whether growth is logos, upsell, or a mask over cancellations. Product and customer-success teams should use the same ARR source of truth when they prioritize a public roadmap—otherwise the loudest voter looks like the most valuable customer.",
+      formulaContext:
+        "Use ARR = 12 × MRR when almost every contract is monthly. For annual and multi-year deals, convert each contract to a twelve-month value first, then add them. Do not multiply a mix of monthly and prepaid invoices by 12 without normalizing, or you will double-count prepaid years.",
+      exampleContext:
+        "If 80 customers pay $50 per month and 10 customers are on $12,000 annual plans, ARR is (80 × $50 × 12) + (10 × $12,000) = $48,000 + $120,000 = $168,000. Mixing those two billing styles without normalizing is the most common reporting error.",
+      pitfallsContext:
+        "The figure falls apart when you annualize an atypical month, include setup fees, count a three-year prepayment as three years of ARR at once, or add unsigned pipeline. Finance, sales, and product need one written policy.",
+      benchmarksContext:
+        "Stage benchmarks are directional, not targets. Seed companies often sit near $1–3M ARR, Series A nearer $3–10M, but market, ACV, and sales motion matter more than the headline. Track ARR growth rate and NRR beside the absolute number.",
+      notesContext:
+        "Publish contracted ARR, reconcile it to the billing system monthly, and keep a separate bookings or pipeline view. Product teams can then attach customer ARR to feedback so roadmap scoring reflects revenue at risk, not just vote count.",
+      relatedContext:
+        "ARR is the annual view of MRR. Net revenue retention (NRR) tells you whether that ARR is durable inside the existing base. Together they describe scale and health.",
+      faqsContext:
+        "These FAQs cover ARR meaning, ARR vs MRR, one-time revenue, multi-year deals, and how product teams use ARR when they prioritize customer feedback.",
     },
     pitfalls: [
-      "Annualizing a spiky month",
-      "Including non‑recurring revenue",
-      "Double‑counting multi‑year prepayments",
-      "Mixing pipeline with contracted ARR"
+      "Annualizing a spiky or promotional month",
+      "Including non-recurring setup, services, or usage spikes",
+      "Double-counting multi-year prepayments",
+      "Mixing unsigned pipeline with contracted ARR",
+      "Using vote count alone and ignoring customer ARR when prioritizing a roadmap",
     ],
-    benchmarks: "Seed: ~$1–3M ARR; Series A: ~$3–10M; varies widely by market.",
+    benchmarks: "Seed: ~$1–3M ARR; Series A: ~$3–10M; growth-stage often $10M+ (varies widely by market and ACV).",
     notes: [
-      "Use contracted ARR, not forecast",
-      "Exclude usage or one‑time fees that are not recurring"
+      "Report contracted ARR, not forecast ARR",
+      "Exclude one-time and non-committed usage fees",
+      "Weight B2B feature requests by customer ARR so roadmap decisions match revenue, not volume",
     ],
-    formula: { title: "Basic formula", body: "ARR is annualized MRR.", code: "ARR = 12 × MRR" },
-    example: { title: "Example", body: "$10k MRR → $120k ARR." },
+    formula: {
+      title: "How to calculate ARR",
+      body: "For monthly subscriptions, annualize MRR. For annual or mixed contracts, convert each active contract to a twelve-month value, then sum. Keep the method identical every reporting period.",
+      code: "ARR = 12 × MRR\n# or, for mixed billing\nARR = sum(contracted annual value of active subscriptions)",
+    },
+    example: {
+      title: "Worked example",
+      body: "$10,000 MRR on monthly plans is $120,000 ARR. Add a $36,000 annual contract and ARR becomes $156,000. Do not also multiply the annual contract by 12.",
+    },
+    useCases: [
+      {
+        title: "Board and fundraising reporting",
+        body: "Leadership uses ARR to describe run-rate scale without monthly volatility. Pair it with ARR growth rate so a flat $2M base is not confused with a $2M base growing 15% quarter over quarter.",
+      },
+      {
+        title: "Revenue-weighted product feedback",
+        body: "B2B teams attach customer ARR to feature requests so a churn-risk account is visible beside raw votes. Featul’s B2B feedback workflow is built for that: private boards for key accounts, then prioritize with ARR in mind instead of treating every upvote equally.",
+      },
+      {
+        title: "Retention and expansion planning",
+        body: "New ARR from logos can hide churn. Review expansion ARR and churned ARR with NRR so customer success knows which accounts to save and which features protect the base.",
+      },
+    ],
     faqs: [
-      { q: "ARR vs revenue?", a: "ARR excludes one‑time and non‑recurring items." },
+      {
+        q: "What does ARR mean?",
+        a: "ARR means Annual Recurring Revenue: the yearly value of active subscriptions if they continue for the next twelve months. It is a run-rate metric, not cash collected this year.",
+      },
+      {
+        q: "How do you calculate ARR?",
+        a: "The basic formula is ARR = 12 × MRR. If you sell annual or multi-year contracts, sum each contract’s annual value instead of blindly multiplying last month’s invoices by 12.",
+      },
+      {
+        q: "What is the difference between ARR and MRR?",
+        a: "MRR is the monthly view; ARR is the annual view of the same recurring base. ARR = 12 × MRR when billing is monthly. Use ARR for boards and planning, MRR for month-to-month operations.",
+      },
+      {
+        q: "Is ARR the same as revenue?",
+        a: "No. ARR excludes one-time fees, professional services, and non-recurring usage. GAAP revenue can include those items and follows recognition rules that ARR does not.",
+      },
+      {
+        q: "How should multi-year deals be counted?",
+        a: "Count the annual contracted value, not the full multi-year total. A three-year $300k deal is $100k ARR, not $300k ARR.",
+      },
+      {
+        q: "Should product teams use ARR when prioritizing feedback?",
+        a: "Yes for B2B. Votes show popularity; ARR shows whose revenue is attached to a request. Combining both prevents a loud free-tier cohort from outranking an enterprise account.",
+      },
     ],
-    related: ["mrr", "nrr"],
+    related: ["mrr", "nrr", "arpu"],
   },
   {
     slug: "arpu",

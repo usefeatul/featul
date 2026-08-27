@@ -131,8 +131,14 @@ export function ProductFeedbackUseCase() {
             <Link href="/docs" className="text-accent underline-offset-4 hover:underline">
               Read the docs
             </Link>
-            <Link href="/tools" className="text-accent underline-offset-4 hover:underline">
-              Explore free product tools
+            <Link href="/alternatives/featurebase" className="text-accent underline-offset-4 hover:underline">
+              Featurebase alternatives
+            </Link>
+            <Link href="/alternatives/canny" className="text-accent underline-offset-4 hover:underline">
+              Canny alternatives
+            </Link>
+            <Link href="/definitions/arr" className="text-accent underline-offset-4 hover:underline">
+              What is ARR?
             </Link>
           </div>
         </section>

@@ -35,7 +35,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const alt = getAlternativeBySlug(slug);
   if (!alt) return {};
-  const title = getAlternativePageTitle(alt.name);
+  const title = getAlternativePageTitle(alt);
   const rawDescription = getAltDescription(slug, "first");
   const description =
     rawDescription.length > 160
@@ -67,10 +67,24 @@ export default async function AlternativePage({
     currentType: "competitor",
   });
   if (slug === "featurebase") {
+    relatedLinks.unshift(
+      {
+        href: "/use-cases/open-source-roadmap",
+        label: "Open source roadmap use case",
+        type: "use-case",
+      },
+      {
+        href: "/docs/open-source",
+        label: "Featul is open source",
+        type: "hub",
+      },
+    );
+  }
+  if (slug === "canny") {
     relatedLinks.unshift({
-      href: "/docs/open-source",
-      label: "Featul is open source",
-      type: "hub",
+      href: "/integrations/canny",
+      label: "Canny integrations and import",
+      type: "integration",
     });
   }
   const related = relatedLinks.slice(0, 5);

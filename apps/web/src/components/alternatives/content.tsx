@@ -17,17 +17,21 @@ export function AlternativeHeroContent({
   description,
   slug,
   website,
+  heroTitle,
+  heroKicker,
 }: {
   name: string;
   description?: string;
   slug: string;
   website?: string;
+  heroTitle?: string;
+  heroKicker?: string;
 }) {
   return (
     <div className="text-left" data-component="AlternativeHeroContent">
       <h1 className="max-w-3xl font-heading font-semibold tracking-tight text-white">
         <span className="block text-[2rem] leading-[1.15] text-balance sm:text-5xl sm:leading-tight md:text-6xl">
-          Best {name} alternative
+          {heroTitle ?? `Best ${name} alternative`}
         </span>
 
         <span className="mt-4 flex items-stretch gap-3 sm:mt-5 sm:gap-4">
@@ -58,7 +62,7 @@ export function AlternativeHeroContent({
           )}
 
           <span className="inline-flex h-14 items-center rounded-xl bg-white/20 px-3 text-2xl leading-none text-white backdrop-blur-sm sm:h-16 sm:rounded-2xl sm:px-4 sm:text-3xl md:h-[4.5rem] md:text-4xl">
-            Featul vs {name}
+            {heroKicker ?? `Featul vs ${name}`}
           </span>
         </span>
       </h1>

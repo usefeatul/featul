@@ -7,9 +7,9 @@ export const alternativeDescriptions: Record<string, string[]> = {
     "UserJot's paid tiers focus on branding. Featul emphasizes control through private deployment and roadmap sharing without vendor restrictions.",
   ],
   featurebase: [
-    "Featurebase offers a limited free plan for one team, with paid plans starting at $49 monthly. Featul provides open source architecture with self hosting and integrates feedback, roadmap, and changelog management.",
-    "Featurebase specializes in voting functionality. Featul enhances this with planning tools and release tracking for transparent product development.",
-    "Organizations wanting simple hosted solutions may prefer Featurebase. Teams needing complete control choose Featul for self hosted feedback to release management.",
+    "Featul is an open source Featurebase alternative with EU hosting, self-hosting, and a unified feedback, roadmap, and changelog workflow. Compare pricing and migrate.",
+    "Featurebase specializes in voting and a help-center suite. Featul is a self-hostable Featurebase alternative with planning tools, release tracking, and workspace pricing.",
+    "Teams that want a simple hosted suite may stay on Featurebase. Teams that need an open source Featurebase alternative choose Featul for self-hosted feedback through changelog.",
   ],
   nolt: [
     "Nolt provides a ten day trial followed by $29 monthly plans with hosting included. Featul offers open source architecture with self hosting and connects feedback, roadmap, and changelog.",
@@ -17,9 +17,9 @@ export const alternativeDescriptions: Record<string, string[]> = {
     "Teams prioritizing ownership benefit from Featul's open source model which eliminates seat limits while maintaining data privacy.",
   ],
   canny: [
-    "Canny's free tier supports about twenty five users with paid plans scaling by seats. Featul provides open source architecture with self hosting and unified feedback, roadmap, and changelog management.",
-    "Canny excels at discovery features. Featul complements this with transparency through open source architecture and public planning through structured release notes.",
-    "Avoid user limitations with Featul through self hosting, roadmap publication, and clean changelog creation while maintaining platform control.",
+    "Looking for Canny alternatives? Featul is an EU-hosted Canny alternative with Slack, webhooks, API, and Canny import for boards, votes, and discussions.",
+    "Canny is known for discovery and a large integration catalog. Featul is a Canny alternative that keeps Slack, webhooks, and API integrations, then adds a public roadmap and changelog.",
+    "Skip seat limits with Featul: self-host or use EU hosting, import from Canny, and keep boards, roadmap, and changelog in one workspace.",
   ],
   upvoty: [
     "Upvoty offers trials without permanent free plans, with subscriptions starting around $15 monthly. Featul delivers open source architecture with self hosting and comprehensive feedback, roadmap, and changelog integration.",

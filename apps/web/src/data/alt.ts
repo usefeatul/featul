@@ -96,43 +96,43 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
   },
   featurebase: {
     description:
-      'Compare Featurebase and Featul: an open source Featurebase alternative with EU hosting, privacy defaults, and a unified roadmap and changelog.',
+      'Compare Featul as an open source Featurebase alternative: EU hosting, self-hosting, workspace pricing, and a unified roadmap and changelog.',
     items: [
       {
         id: 'featurebase-1',
-        question: 'Is Featul a Featurebase alternative?',
+        question: 'What are the best Featurebase alternatives in 2026?',
         answer:
-          'Yes. Featul is an open source Featurebase alternative for collecting feedback, prioritizing a public roadmap, and publishing changelogs. Teams switch when they want EU hosting, self-hosting, and one workflow from vote to release notes.',
+          'Teams comparing Featurebase alternatives usually want voting boards, a public roadmap, and a changelog without per-seat pricing. Featul is an open source Featurebase alternative with EU hosting, self-hosting, and one workflow from votes to release notes.',
       },
       {
         id: 'featurebase-2',
-        question: 'Is there an open source Featurebase alternative?',
+        question: 'Is Featul an open source Featurebase alternative?',
         answer:
-          'Featul is MIT-licensed and can be self-hosted. You get boards, voting, roadmap, and changelog without locking feedback data into a closed vendor.',
+          'Yes. Featul is MIT-licensed and can be self-hosted. You get boards, voting, roadmap, and changelog without locking feedback data into a closed vendor. Hosted EU workspaces are available if you do not want to run infrastructure.',
       },
       {
         id: 'featurebase-3',
-        question: 'Can I migrate from Featurebase?',
+        question: 'How does Featul pricing compare to Featurebase?',
         answer:
-          'You can import feedback and recreate categories, tags, and statuses. For complex migrations, we offer guidance to keep structure intact.',
+          'Featurebase scales primarily on seats. Featul uses flat workspace plans, so adding product, success, and engineering people does not multiply the bill the same way. Compare current numbers on the Featul pricing page.',
       },
       {
         id: 'featurebase-4',
-        question: 'Does Featul include roadmap and changelog?',
+        question: 'Can I migrate from Featurebase to Featul?',
         answer:
-          'Yes. Link feedback to roadmap items and publish release notes so customers understand what shipped and why.',
+          'You can import feedback and recreate categories, tags, and statuses. For complex Featurebase workspaces, we offer guidance so board structure stays intact.',
       },
       {
         id: 'featurebase-5',
-        question: 'Is SSO available?',
+        question: 'Does Featul include roadmap and changelog like Featurebase?',
         answer:
-          'SSO is available depending on plan and provider. Featul supports common identity setups for streamlined authentication.',
+          'Yes. Link feedback to roadmap items and publish release notes so customers see what shipped and why. Featul keeps those surfaces in one product instead of a bolted-on suite.',
       },
       {
         id: 'featurebase-6',
-        question: 'What integrations can I use?',
+        question: 'When should I stay on Featurebase?',
         answer:
-          'Slack notifications are built-in. Use webhooks and the API to sync issues, statuses, or trigger automations in your stack.',
+          'Stay if you already rely on Featurebase’s help-center and AI support suite and do not need self-hosting or EU-first hosting. Choose Featul if you want an open source Featurebase alternative with simpler workspace pricing.',
       },
     ],
   },
@@ -180,43 +180,43 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
   },
   canny: {
     description:
-      'Compare Canny and Featul: EU hosting by default and a streamlined workflow.',
+      'Compare Canny alternatives and Canny integrations: EU hosting, Canny import, Slack, webhooks, and API, plus a unified roadmap and changelog.',
     items: [
       {
         id: 'canny-1',
-        question: 'What’s the biggest difference from Canny?',
+        question: 'What are the best Canny alternatives?',
         answer:
-          'Featul emphasizes EU hosting and privacy-first defaults while keeping the workflow simple—boards, roadmap, and changelog linked together.',
+          'Featul is a Canny alternative for teams that want EU hosting, workspace pricing, and one tool for boards, public roadmap, and changelog. You can import existing Canny requests instead of starting from a blank board.',
       },
       {
         id: 'canny-2',
-        question: 'Is EU hosting supported?',
+        question: 'What Canny integrations does Featul replace?',
         answer:
-          'Yes. Featul provides EU hosting by default to help meet regional privacy and residency requirements.',
+          'Most teams looking at Canny integrations need Slack alerts, an API, and webhooks into the rest of the stack. Featul includes Slack notifications, webhooks, and API access, plus a dedicated Canny import so you are not stuck rebuilding history.',
       },
       {
         id: 'canny-3',
-        question: 'Can I migrate from Canny?',
+        question: 'Can I migrate from Canny to Featul?',
         answer:
-          'We support importing feedback and reconstructing categories and statuses. Larger migrations can be guided to preserve data fidelity.',
+          'Yes. Import Canny requests and discussions, then recreate categories and statuses. Larger workspaces can be guided so votes and comment history stay attached to the right posts.',
       },
       {
         id: 'canny-4',
-        question: 'Do you include roadmap and changelog?',
+        question: 'Does Featul include roadmap and changelog like Canny?',
         answer:
-          'Yes. Featul links feedback to roadmap items and makes publishing release notes effortless to close the loop.',
+          'Yes. Featul links feedback to roadmap items and publishes release notes so requesters see progress from planned work through to shipped updates.',
       },
       {
         id: 'canny-5',
-        question: 'Is SSO available?',
+        question: 'How do Featul integrations compare to Canny’s catalog?',
         answer:
-          'SSO is supported depending on plan and provider. Featul integrates cleanly with common identity systems.',
+          'Canny has a longer list of native third-party apps. Featul covers the integrations most product teams actually use daily—Slack, webhooks, and API—and keeps the workflow in one EU-hosted workspace.',
       },
       {
         id: 'canny-6',
-        question: 'What about integrations?',
+        question: 'When should I stay with Canny?',
         answer:
-          'Slack, webhooks, and API are available for notification, sync, and automation across your tooling.',
+          'Stay if you already depend on a wide set of Canny marketplace integrations and do not need EU-first hosting. Choose Featul if you want a simpler Canny alternative with import, Slack, and a connected changelog.',
       },
     ],
   },

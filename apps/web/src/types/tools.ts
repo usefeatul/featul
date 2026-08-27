@@ -269,7 +269,22 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         slug: "arr-calculator",
         name: "ARR calculator",
         description:
-          "Annualize recurring revenue and assess year-over-year growth.",
+          "Calculate Annual Recurring Revenue from MRR. ARR = 12 × MRR. Compare ARR vs MRR and use ARR to weight B2B feedback.",
+        contentSections: [
+          {
+            title: "What is ARR?",
+            body: "Annual Recurring Revenue (ARR) is the yearly run-rate of active subscriptions. Most teams compute ARR as 12 × monthly recurring revenue.",
+          },
+          {
+            title: "How to calculate ARR",
+            body: "Multiply current MRR by 12. For annual contracts, sum each contract’s annual value instead of annualizing a mixed invoice total.",
+            code: "ARR = 12 × MRR",
+          },
+          {
+            title: "When to use",
+            body: "Use ARR for board reporting, fundraising, and revenue-weighted product feedback so high-value accounts are not ranked like free-tier votes.",
+          },
+        ],
       },
       {
         slug: "growth-rate-calculator",

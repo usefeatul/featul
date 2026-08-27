@@ -176,8 +176,11 @@ function addIntegrationRelated(slug: string, links: RelatedLink[]) {
         });
     }
 
-    // Add a top competitor (cross-hub connection)
-    const topCompetitor = COMPETITORS[0];
+    const matchingCompetitor = COMPETITORS.find((c) => c.slug === slug);
+    const topCompetitor =
+        matchingCompetitor ||
+        COMPETITORS.find((c) => c.slug === "featurebase") ||
+        COMPETITORS[0];
     if (topCompetitor) {
         links.push({
             href: `/alternatives/${topCompetitor.slug}`,
@@ -223,17 +226,23 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
     }
 
     // Add integrations (cross-hub connection)
-    const integrations = INTEGRATIONS.slice(0, 1);
-    for (const int of integrations) {
+    const integrationSlug = slug === "b2b-customer-feedback" ? "canny" : INTEGRATIONS[0]?.slug;
+    const integration = INTEGRATIONS.find((i) => i.slug === integrationSlug) ?? INTEGRATIONS[0];
+    if (integration) {
         links.push({
-            href: `/integrations/${int.slug}`,
-            label: `${int.name} Integration`,
+            href: `/integrations/${integration.slug}`,
+            label: `${integration.name} Integration`,
             type: "integration",
         });
     }
 
-    // Add a top competitor (cross-hub connection)
-    const topCompetitor = COMPETITORS[0];
+    const competitorSlug =
+        slug === "open-source-roadmap" || slug === "saas-product-feedback"
+            ? "featurebase"
+            : slug === "b2b-customer-feedback"
+              ? "canny"
+              : "featurebase";
+    const topCompetitor = COMPETITORS.find((c) => c.slug === competitorSlug) || COMPETITORS[0];
     if (topCompetitor) {
         links.push({
             href: `/alternatives/${topCompetitor.slug}`,
@@ -253,9 +262,10 @@ function addUseCaseRelated(slug: string, links: RelatedLink[]) {
 function addDefinitionRelated(slug: string, links: RelatedLink[]) {
     const relatedTool = findToolForDefinition(slug);
     if (relatedTool) {
+        const alreadyNamed = /calculator$/i.test(relatedTool.tool.name);
         links.push({
             href: `/tools/categories/${relatedTool.categorySlug}/${relatedTool.tool.slug}`,
-            label: `${relatedTool.tool.name} calculator`,
+            label: alreadyNamed ? relatedTool.tool.name : `${relatedTool.tool.name} calculator`,
             type: "tool",
         });
     }
@@ -278,6 +288,14 @@ function addDefinitionRelated(slug: string, links: RelatedLink[]) {
                 type: "definition",
             });
         }
+    }
+
+    if (slug === "arr") {
+        links.push({
+            href: "/use-cases/b2b-customer-feedback",
+            label: "B2B feedback weighted by ARR",
+            type: "use-case",
+        });
     }
 
     // Add alternatives

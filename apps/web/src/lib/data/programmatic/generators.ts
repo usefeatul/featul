@@ -7,6 +7,7 @@
 
 import type { CompetitorEntry, IntegrationEntry, UseCaseEntry } from "./matrix";
 import { COMPETITORS, INTEGRATIONS, USE_CASES } from "./matrix";
+import { USE_CASE_COPY, fallbackUseCaseCopy } from "./use-case-copy";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -126,36 +127,73 @@ export function generateIntegrationPage(slug: string): IntegrationPageData | nul
     const integration = INTEGRATIONS.find((i) => i.slug === slug);
     if (!integration) return null;
 
+    const cannyCopy = slug === "canny";
+
     const meta: GeneratedPageMeta = {
-        title: `Featul + ${integration.name} Integration`,
-        description: `Connect Featul with ${integration.name} to ${integration.description.toLowerCase()}. Streamline your product feedback workflow.`,
-        h1: `${integration.name} Integration for Product Feedback`,
+        title: cannyCopy
+            ? "Canny integrations | Import Canny into Featul"
+            : `Featul + ${integration.name} Integration`,
+        description: cannyCopy
+            ? "Canny integrations in Featul: import boards, votes, and discussions, then keep Slack, webhooks, and API in one EU-hosted Canny alternative."
+            : `Connect Featul with ${integration.name} to ${integration.description.toLowerCase()}. Streamline your product feedback workflow.`,
+        h1: cannyCopy
+            ? "Canny integrations: import Canny into Featul"
+            : `${integration.name} Integration for Product Feedback`,
         canonical: `/integrations/${slug}`,
     };
 
-    const sections = {
-        intro: `Connect Featul with ${integration.name} to supercharge your product feedback workflow. ${integration.description}`,
-        benefits: integration.benefits.map((benefit, i) => ({
-            title: `Benefit ${i + 1}`,
-            description: benefit,
-        })),
-        howItWorks: [
-            `Connect your ${integration.name} account to Featul in Settings > Integrations`,
-            "Configure notification preferences and sync settings",
-            "Start receiving feedback updates and managing requests seamlessly",
-        ],
-    };
+    const sections = cannyCopy
+        ? {
+            intro: "Teams searching for Canny integrations usually need two things: a way to leave Canny without losing history, and replacements for Slack, API, and webhook automations. Featul is a Canny alternative with Canny import, Slack notifications, webhooks, and API access, plus a public roadmap and changelog so you are not stitching three tools together.",
+            benefits: [
+                { title: "Import Canny history", description: "Bring Canny requests, comments, and discussion context into Featul instead of exporting a dead CSV nobody opens." },
+                { title: "Replace day-to-day Canny integrations", description: "Slack alerts, webhooks, and the API cover the Canny integration jobs most product teams actually run: triage, sync, and automations." },
+                { title: "Keep roadmap and changelog in the same workspace", description: "Canny users often add extra tools for roadmaps and release notes. Featul includes both, linked back to the imported posts." },
+            ],
+            howItWorks: [
+                "Create a Featul workspace and open Settings > Integrations",
+                "Run Canny import so boards, votes, and discussions land as Featul posts",
+                "Connect Slack, webhooks, or the API for the same notification and sync jobs you used in Canny",
+            ],
+        }
+        : {
+            intro: `Connect Featul with ${integration.name} to supercharge your product feedback workflow. ${integration.description}`,
+            benefits: integration.benefits.map((benefit, i) => ({
+                title: `Benefit ${i + 1}`,
+                description: benefit,
+            })),
+            howItWorks: [
+                `Connect your ${integration.name} account to Featul in Settings > Integrations`,
+                "Configure notification preferences and sync settings",
+                "Start receiving feedback updates and managing requests seamlessly",
+            ],
+        };
 
-    const faqs = [
-        {
-            question: `How do I connect ${integration.name} to Featul?`,
-            answer: `Go to Settings > Integrations in your Featul dashboard, find ${integration.name}, and click Connect. Follow the OAuth prompts to authorize the connection.`,
-        },
-        {
-            question: `What can I do with the ${integration.name} integration?`,
-            answer: integration.description,
-        },
-    ];
+    const faqs = cannyCopy
+        ? [
+            {
+                question: "Does Featul have Canny integrations?",
+                answer: "Featul includes Canny import plus Slack, webhooks, and API—the Canny integrations teams need when they switch. You do not reconnect every Canny marketplace app; you replace the daily workflow.",
+            },
+            {
+                question: "Can I import my Canny board into Featul?",
+                answer: "Yes. Import Canny requests and discussions, then map statuses and tags so the board still looks familiar to voters.",
+            },
+            {
+                question: "Is Featul a Canny alternative if we depend on integrations?",
+                answer: "If you need a long marketplace catalog, Canny may still fit. If you need Slack, API, webhooks, EU hosting, and a changelog in one product, Featul is the Canny alternative to evaluate.",
+            },
+        ]
+        : [
+            {
+                question: `How do I connect ${integration.name} to Featul?`,
+                answer: `Go to Settings > Integrations in your Featul dashboard, find ${integration.name}, and click Connect. Follow the OAuth prompts to authorize the connection.`,
+            },
+            {
+                question: `What can I do with the ${integration.name} integration?`,
+                answer: integration.description,
+            },
+        ];
 
     return { meta, integration, sections, faqs };
 }
@@ -168,37 +206,28 @@ export function generateUseCasePage(slug: string): UseCasePageData | null {
     const useCase = USE_CASES.find((u) => u.slug === slug);
     if (!useCase) return null;
 
+    const copy = USE_CASE_COPY[slug] ?? fallbackUseCaseCopy(useCase);
+
     const meta: GeneratedPageMeta = {
         title: useCase.title,
-        description: `Learn how ${useCase.persona || "teams"} use Featul for ${useCase.title.toLowerCase()}. See solutions to common challenges and get started free.`,
+        description: copy.description,
         h1: useCase.title,
         canonical: `/use-cases/${slug}`,
     };
 
     const sections = {
-        intro: `Discover how Featul helps ${useCase.industry || "modern"} teams solve real product feedback challenges.`,
-        painPoints: useCase.painPoints.map((problem) => ({
+        intro: copy.intro,
+        painPoints: useCase.painPoints.map((problem, i) => ({
             problem,
-            impact: `This leads to misaligned priorities and wasted development effort.`,
+            impact: copy.painDetails[i] ?? fallbackUseCaseCopy(useCase).painDetails[i] ?? problem,
         })),
-        solutions: useCase.solutions.map((solution) => ({
+        solutions: useCase.solutions.map((solution, i) => ({
             solution,
-            benefit: `Save time and build what customers actually want.`,
+            benefit: copy.solutionDetails[i] ?? fallbackUseCaseCopy(useCase).solutionDetails[i] ?? solution,
         })),
     };
 
-    const faqs = [
-        {
-            question: `Is Featul right for ${useCase.industry || "my"} teams?`,
-            answer: `Yes, Featul is designed for ${useCase.persona || "product"} teams who need to centralize feedback, share roadmaps, and publish changelogs in one privacy-first platform.`,
-        },
-        {
-            question: `How quickly can I get started?`,
-            answer: `Most teams are up and running within 10 minutes. Sign up free and import your existing feedback or start fresh.`,
-        },
-    ];
-
-    return { meta, useCase, sections, faqs };
+    return { meta, useCase, sections, faqs: copy.faqs };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
