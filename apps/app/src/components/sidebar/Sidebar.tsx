@@ -19,12 +19,12 @@ import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
-import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { LayoutGroup } from "framer-motion";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 
 const secondaryNav: NavItem[] = buildBottomNav();
 export default function Sidebar({
@@ -101,18 +101,20 @@ export default function Sidebar({
         className,
       )}
     >
-      <div className="p-2">
-        <div className="group flex items-center gap-2 px-4 py-1">
-          <FeatulLogoIcon className="size-6"  />
-          <div className="text-md font-semibold ">Featul</div>
+      <div className="p-3">
+        <div className={cn(sidebarRowClassName, "py-1")}>
+          <span className={sidebarLeadSlotClassName}>
+            <FeatulLogoIcon className="size-6" />
+          </span>
+          <div className="text-md font-semibold">Featul</div>
         </div>
         <WorkspaceSwitcher
-          className="mt-5.5 px-1"
+          className="mt-5.5"
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
         />
         <Timezone
-          className="mt-2 px-1"
+          className="mt-2"
           initialTimezone={initialTimezone}
           initialServerNow={initialServerNow}
         />
@@ -170,16 +172,22 @@ export default function Sidebar({
         </LayoutGroup>
       </div>
 
-      <SidebarSection className="pb-4 py-2">
-        <Button
-          className="w-full mb-1 group dark:bg-background flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
-          variant="ghost"
-          size="md"
+      <SidebarSection className="px-3 pb-4 pt-2">
+        <button
+          type="button"
+          className={cn(
+            sidebarRowClassName,
+            "text-accent hover:bg-muted dark:hover:bg-black/40",
+          )}
           onClick={openCreatePost}
         >
-          <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
-          <span className="transition-colors text-accent">Create Posts</span>
-        </Button>
+          <span className={sidebarLeadSlotClassName}>
+            <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
+          </span>
+          <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
+            Create Posts
+          </span>
+        </button>
         <CreatePostModal
           open={createPostOpen}
           onOpenChange={setCreatePostOpen}

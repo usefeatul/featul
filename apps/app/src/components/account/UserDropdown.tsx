@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "@/components/sidebar/styles";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -294,10 +295,13 @@ export default function UserDropdown({
               <button
                 suppressHydrationWarning
                 type="button"
-                className="group flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40"
+                className={cn(
+                  sidebarRowClassName,
+                  "text-accent hover:bg-muted dark:hover:bg-black/40",
+                )}
               >
-                <div className="overflow-hidden">
-                  <Avatar className="size-5.5">
+                <span className={sidebarLeadSlotClassName}>
+                  <Avatar className="size-5">
                     {displayUser.image ? (
                       <AvatarImage
                         src={displayUser.image}
@@ -306,7 +310,7 @@ export default function UserDropdown({
                     ) : null}
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
-                </div>
+                </span>
                 <span className="truncate transition-colors">
                   {displayUser.name || "Account"}
                 </span>

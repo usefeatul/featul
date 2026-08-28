@@ -16,6 +16,7 @@ import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 
 const SIDEBAR_HOVER_ITEM_CLASS =
   "hover:bg-muted dark:hover:bg-black/40 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40"
@@ -55,8 +56,8 @@ export default function WorkspaceSwitcher({
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className="w-full cursor-pointer rounded-md">
-          <div className="group flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer transition-colors hover:bg-muted dark:hover:bg-black/40">
-            <div className={cn("relative size-7 rounded-md border border-border ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black overflow-hidden", currentLogo ? "bg-transparent" : "bg-card")}>
+          <div className={cn(sidebarRowClassName, "cursor-pointer transition-colors hover:bg-muted dark:hover:bg-black/40")}>
+            <div className={cn(sidebarLeadSlotClassName, "overflow-hidden rounded-md border border-border", currentLogo ? "bg-transparent" : "bg-card")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}

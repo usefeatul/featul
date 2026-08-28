@@ -11,15 +11,16 @@ import SidebarSection from "./SidebarSection";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
-import { Button } from "@featul/ui/components/button";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import AccountNav from "@/components/account/AccountNav";
 import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 import { CreatePostModal } from "../post/CreatePostModal";
 import { LayoutGroup } from "framer-motion";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
+import { cn } from "@featul/ui/lib/utils";
 
 export default function MobileDrawerContent({
   pathname,
@@ -76,17 +77,19 @@ export default function MobileDrawerContent({
       </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-md px-3 py-2">
-            <FeatulLogoIcon className="size-6" size={24} />
+          <div className={cn(sidebarRowClassName, "py-1")}>
+            <span className={sidebarLeadSlotClassName}>
+              <FeatulLogoIcon className="size-6" size={24} />
+            </span>
             <div className="text-lg font-semibold">Featul</div>
           </div>
           <WorkspaceSwitcher
-            className="mt-5.5 px-1"
+            className="mt-5.5"
             initialWorkspace={initialWorkspace}
             initialWorkspaces={initialWorkspaces}
           />
           <Timezone
-            className="mt-2 px-1"
+            className="mt-2"
             initialTimezone={initialTimezone}
             initialServerNow={initialServerNow}
           />
@@ -136,14 +139,21 @@ export default function MobileDrawerContent({
         )}
 
         <SidebarSection className="pb-8">
-          <Button
-            className="w-full mb-1 group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
-            variant="plain"
+          <button
+            type="button"
+            className={cn(
+              sidebarRowClassName,
+              "text-accent hover:bg-muted dark:hover:bg-black/40",
+            )}
             onClick={() => setCreatePostOpen(true)}
           >
-            <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
-            <span className="transition-colors">Create Post</span>
-          </Button>
+            <span className={sidebarLeadSlotClassName}>
+              <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
+            </span>
+            <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
+              Create Posts
+            </span>
+          </button>
           <CreatePostModal
             open={createPostOpen}
             onOpenChange={setCreatePostOpen}

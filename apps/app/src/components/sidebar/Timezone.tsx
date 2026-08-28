@@ -8,6 +8,7 @@ import { formatTime12h } from "@/lib/time";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@featul/ui/components/tooltip";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";
 import { SidebarBadge } from "./badge";
+import { sidebarSectionLabelClassName } from "./styles";
 
 interface TimezoneProps {
   className?: string;
@@ -54,8 +55,8 @@ export default function Timezone({
 
   return (
     <div className={cn(className)}>
-      <div className="flex items-center justify-between rounded-md px-3 py-2">
-        <span className="text-xs text-accent">TIME</span>
+      <div className={sidebarSectionLabelClassName}>
+        <span className="min-w-0 flex-1 truncate">TIME</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
