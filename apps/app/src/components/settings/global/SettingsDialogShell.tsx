@@ -115,7 +115,7 @@ export function SettingsDialogShell({
           {description}
         </DialogDescription>
       ) : null}
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <DialogExpandedContext.Provider value={expanded}>
           {children}
         </DialogExpandedContext.Provider>
@@ -145,7 +145,7 @@ export function SettingsDialogShell({
       >
         {expandable ? (
           <motion.div
-            className="flex min-w-0 flex-col gap-2"
+            className="flex min-h-0 min-w-0 flex-1 flex-col gap-2"
             initial={false}
             animate={{
               width: expanded ? EXPANDED_WIDTH_PX[width] : BASE_WIDTH_PX[width],

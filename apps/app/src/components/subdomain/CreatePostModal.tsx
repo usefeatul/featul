@@ -156,6 +156,11 @@ export default function CreatePostModal({
             handleRemoveImage={handleRemoveImage}
           />
 
+          <SimilarPosts
+            posts={similarPosts}
+            onLinkClick={() => onOpenChange(false)}
+          />
+
           <PostFooter
             isPending={isPending}
             disabled={!canSubmit}
@@ -165,11 +170,6 @@ export default function CreatePostModal({
             handleFileSelect={handleFileSelect}
             ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
             maxImages={maxFiles}
-          />
-
-          <SimilarPosts
-            posts={similarPosts}
-            onLinkClick={() => onOpenChange(false)}
           />
         </form>
       </SettingsDialogShell>
