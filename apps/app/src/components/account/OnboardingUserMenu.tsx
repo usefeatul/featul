@@ -82,7 +82,7 @@ export default function OnboardingUserMenu({
           <button
             suppressHydrationWarning
             type="button"
-            className="inline-flex cursor-pointer items-center rounded-md p-1.5 text-accent"
+            className="inline-flex cursor-pointer items-center rounded-md p-0 text-accent"
             aria-label="Account menu"
           >
             <Avatar className="relative size-6 overflow-visible bg-muted ring-1 ring-border">
