@@ -22,7 +22,7 @@ export const FILTER_ISLAND_CHIP_CLASS =
   "inline-flex h-full min-w-fit cursor-pointer items-center gap-1.5 whitespace-nowrap px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_SHELL_CLASS =
-  "flex w-fit min-w-fit shrink-0 items-stretch rounded-lg border border-border bg-card p-0.5 text-foreground dark:border-white/10 dark:bg-black";
+  "flex w-fit min-w-fit shrink-0 items-stretch rounded-xl border border-border bg-card p-0.5 text-foreground dark:border-white/10 dark:bg-black";
 
 export const FILTER_ISLAND_CHIP_INNER_CLASS =
   "flex h-6 min-h-6 min-w-fit items-stretch overflow-hidden rounded-md bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";

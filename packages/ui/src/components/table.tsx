@@ -26,9 +26,9 @@ function Table({
         className={cn(
           "relative w-full overflow-x-auto",
           variant === "default" &&
-            "rounded-md border border-border/60 bg-background",
+            "rounded-xl border border-border/60 bg-background",
           variant === "settings" &&
-            "overflow-hidden rounded-lg border border-border/60 bg-background dark:border-white/10 dark:bg-black/30",
+            "overflow-hidden rounded-xl border border-border/60 bg-background dark:border-white/10 dark:bg-black/30",
           containerClassName,
         )}
       >

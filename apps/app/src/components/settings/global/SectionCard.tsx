@@ -5,7 +5,7 @@ export const settingsPlanCardCurrentClass =
   "border-primary dark:border-primary/80";
 
 export const settingsTableShellClass =
-  "overflow-hidden rounded-lg border border-border/60 bg-background dark:border-white/10 dark:bg-black/30";
+  "overflow-hidden rounded-xl border border-border/60 bg-background dark:border-white/10 dark:bg-black/30";
 
 export const settingsCardShellClass =
   "flex flex-col overflow-hidden rounded-xl border border-border bg-card px-2 pt-2 pb-2 text-foreground dark:border-white/10 dark:bg-black";

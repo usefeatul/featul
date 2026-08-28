@@ -32,7 +32,7 @@ function StepContent({ step }: { step: WelcomeTourStep }) {
     <div className="flex flex-col items-center px-2 py-5 text-center sm:px-4 sm:py-6">
       <div
         className={cn(
-          "mb-5 flex size-16 items-center justify-center rounded-2xl border border-border/60",
+          "mb-5 flex size-16 items-center justify-center rounded-xl border border-border/60",
           step.accentClassName,
         )}
       >

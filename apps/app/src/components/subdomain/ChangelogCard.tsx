@@ -31,7 +31,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
 
             {/* Cover image at top if available */}
             {item.coverImage ? (
-                <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted mb-4">
+                <div className="aspect-video w-full overflow-hidden rounded-xl bg-muted mb-4">
                     <img
                         src={item.coverImage}
                         alt={item.title}

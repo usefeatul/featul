@@ -4,9 +4,9 @@ export const overlayShellClass =
 export const overlayInnerClass =
   "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
 
-/** Inner dialog surface — `rounded-2xl` to sit inside the `rounded-3xl` shell. */
+/** Inner dialog surface — `rounded-lg` to sit inside the `rounded-xl` shell. */
 export const overlayDialogInnerClass =
-  "overflow-hidden rounded-2xl bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
+  "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
 
 /** Outer chip shell — same two-tone frame as integration cards, `rounded-md`. */
 export const overlayChipShellClass =

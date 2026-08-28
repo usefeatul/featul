@@ -17,7 +17,7 @@ export function NotraCredentialsSection({
   apiKeyInputRef,
 }: NotraCredentialsSectionProps) {
   return (
-    <section className="overflow-hidden rounded-md border border-border/70 bg-background">
+    <section className="overflow-hidden rounded-xl border border-border/70 bg-background">
       <div className="space-y-2 px-3 py-3">
         <label
           htmlFor="notra-org-id"

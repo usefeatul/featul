@@ -8,12 +8,12 @@ import { cn } from "@featul/ui/lib/utils"
 
 export const toolbarShellClass = cn(
   overlayShellClass,
-  "flex items-stretch overflow-visible rounded-lg p-1"
+  "flex items-stretch overflow-visible rounded-xl p-1"
 )
 
 export const toolbarInnerClass = cn(
   overlayInnerClass,
-  "flex min-h-8 flex-1 items-stretch overflow-visible rounded-md"
+  "flex min-h-8 flex-1 items-stretch overflow-visible rounded-lg"
 )
 
 export const toolbarItemClass =
@@ -23,7 +23,7 @@ const toolbarVariants = cva("flex items-stretch overflow-visible", {
     variants: {
         variant: {
             default: toolbarShellClass,
-            plain: "rounded-sm border border-border",
+            plain: "rounded-xl border border-border",
         },
         size: {
             default: "",

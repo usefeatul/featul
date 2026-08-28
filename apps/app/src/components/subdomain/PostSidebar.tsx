@@ -243,7 +243,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                   </div>
                 </div>
                 {post.duplicateOfId ? (
-                  <div className="rounded-lg border border-border bg-background">
+                  <div className="rounded-xl border border-border bg-background">
                     <Link
                       href={post.mergedInto ? publicRequestHref(post.mergedInto.slug) : "#"}
                       className="block space-y-2 p-3"
@@ -265,7 +265,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                   </div>
                 ) : null}
                 {post.mergedSources && post.mergedSources.length > 0 ? (
-                  <div className="rounded-lg border border-border bg-background p-3">
+                  <div className="rounded-xl border border-border bg-background p-3">
                     <div className="space-y-2.5">
                       {post.mergedSources.map((src) => (
                         <Link

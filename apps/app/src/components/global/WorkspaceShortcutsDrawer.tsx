@@ -209,7 +209,7 @@ export default function WorkspaceShortcutsDrawer() {
         aria-labelledby="workspace-shortcuts-title"
         className={cn(
           overlayDialogClass,
-          "fixed z-50 flex flex-col rounded-3xl",
+          "fixed z-50 flex flex-col rounded-xl",
           "top-4 right-4 bottom-4 left-4 sm:left-auto sm:w-[340px]",
           "transition-all duration-200 ease-out",
           open

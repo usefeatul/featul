@@ -369,7 +369,7 @@ export function DebugTools() {
       </Toolbar>
 
       {showAnalysis && !isCollapsed && (
-        <div className="mt-1 w-[300px] rounded-lg border bg-background/95 p-3 shadow-md backdrop-blur">
+        <div className="mt-1 w-[300px] rounded-xl border bg-background/95 p-3 shadow-md backdrop-blur">
           <div className="mb-2 flex items-center justify-between border-b pb-2">
             <h4 className="text-sm font-semibold">Analysis Results</h4>
             <div className="flex items-center gap-2">

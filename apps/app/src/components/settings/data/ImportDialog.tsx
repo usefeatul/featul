@@ -144,7 +144,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
+                className="border-2 border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
               >
                 <input
                   ref={fileInputRef}
@@ -167,7 +167,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2"
+                  className="flex items-center justify-between bg-muted/40 rounded-xl px-3 py-2"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <CsvIcon className="size-4 flex-shrink-0" />
@@ -253,7 +253,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
                   className="w-full text-left space-y-2"
                 >
                   {result.errors.length > 0 ? (
-                    <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2">
+                    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-2">
                       <p className="text-xs font-medium text-destructive mb-1">Top errors</p>
                       <ul className="space-y-1">
                         {result.errors.slice(0, 5).map((issue, idx) => (
@@ -267,7 +267,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
                   ) : null}
 
                   {result.warnings.length > 0 ? (
-                    <div className="rounded-md border border-border bg-muted/30 p-2">
+                    <div className="rounded-xl border border-border bg-muted/30 p-2">
                       <p className="text-xs font-medium text-foreground mb-1">Top warnings</p>
                       <ul className="space-y-1">
                         {result.warnings.slice(0, 5).map((issue, idx) => (
