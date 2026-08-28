@@ -178,10 +178,10 @@ export default function StepWizardForm({
   const suggestedDomain = suggestDomainFix(domain)
 
   return (
-    <div className="grid h-full min-h-0 w-full grid-cols-1 overflow-hidden lg:grid-cols-2">
+    <div className="grid h-full min-h-0 w-full grid-cols-1 overflow-hidden lg:grid-cols-2 lg:gap-3">
       <WizardPreview />
 
-      <div className="flex min-h-0 items-center justify-center overflow-hidden bg-card px-4 py-6 sm:px-8 dark:bg-card">
+      <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-card px-4 py-6 sm:px-8">
         <Card variant="plain" className="w-full max-w-[520px] bg-transparent dark:bg-transparent">
           <CardHeader>
             <div className="mb-2 flex items-center gap-1">
