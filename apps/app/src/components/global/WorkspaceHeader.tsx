@@ -146,7 +146,7 @@ export default function WorkspaceHeader() {
 
   return (
     <div className="mt-4 mb-6.5">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex min-h-10 items-center justify-between gap-3">
         {title ? (
           <div className="flex min-w-0 items-center gap-3">
             <div className="min-w-0">
