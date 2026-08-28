@@ -13,8 +13,8 @@ export function CreateWorkspaceScreen({
   isFirstWorkspace?: boolean;
 }) {
   return (
-    <div className="fixed inset-0 overflow-hidden overscroll-none bg-card p-3 sm:p-4">
-      <header className="pointer-events-auto absolute top-6 right-6 z-20 sm:top-7 sm:right-7">
+    <div className="fixed inset-0 overflow-hidden overscroll-none bg-card p-4">
+      <header className="pointer-events-auto absolute top-5 right-5 z-20">
         <OnboardingUserMenu initialUser={initialUser} />
       </header>
 
