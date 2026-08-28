@@ -72,7 +72,7 @@ export default function StepWizardForm({
 }: StepWizardFormProps) {
   const [step, setStep] = React.useState(0)
   const steps = WIZARD_STEPS
-  const current = steps[step]
+  const current = steps[step] ?? steps[0]
   const viewedStepsRef = React.useRef<Set<string>>(new Set())
   const submittedRef = React.useRef(false)
   const formStateRef = React.useRef({
@@ -85,7 +85,10 @@ export default function StepWizardForm({
   const reservedWorkspaceUrl = slugLocked ? `${slugLocked}.featul.com` : null
   const nameReserved = !isAppCreator && isReservedWorkspaceName(name)
   const slugReserved = !isAppCreator && isReservedWorkspaceSlug(slug)
-  const reservedAllowed = { allowReserved: isAppCreator }
+  const reservedAllowed = React.useMemo(
+    () => ({ allowReserved: isAppCreator }),
+    [isAppCreator],
+  )
 
   const canNext = React.useMemo(() => {
     const id = steps[step]?.id
@@ -94,7 +97,7 @@ export default function StepWizardForm({
     if (id === "slug") return slugLocked ? true : !!slug && isSlugValid(slug, reservedAllowed) && slugAvailable === true
     if (id === "timezone") return isTimezoneValid(timezone)
     return false
-  }, [step, steps, domain, domainValid, name, slug, slugAvailable, slugLocked, timezone, isAppCreator])
+  }, [step, steps, domain, domainValid, name, slug, slugAvailable, slugLocked, timezone, reservedAllowed])
 
   const allValid =
     isNameValid(name, reservedAllowed) &&
