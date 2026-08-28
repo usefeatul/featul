@@ -55,20 +55,27 @@ export default function WorkspaceSwitcher({
   return (
     <div className={cn(className)}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger className="w-full cursor-pointer rounded-md">
-          <div className={cn(sidebarRowClassName, "cursor-pointer transition-colors hover:bg-muted dark:hover:bg-black/40")}>
-            <div className={cn(sidebarLeadSlotClassName, "overflow-hidden rounded-md border border-border", currentLogo ? "bg-transparent" : "bg-card")}>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              sidebarRowClassName,
+              "cursor-pointer text-left transition-colors hover:bg-muted dark:hover:bg-black/40",
+            )}
+          >
+            <span className={cn(sidebarLeadSlotClassName, "overflow-hidden rounded-md")}>
               {currentLogo ? (
                 <Image
                   src={currentLogo}
-                  alt={currentName}
-                  fill
+                  alt=""
+                  width={24}
+                  height={24}
                   sizes="24px"
-                  className="object-cover"
+                  className="size-6 object-contain"
                   priority
                 />
               ) : null}
-            </div>
+            </span>
             <div className="flex min-w-0 flex-col items-start gap-1 overflow-hidden">
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
               <span className="text-xs text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
@@ -76,7 +83,7 @@ export default function WorkspaceSwitcher({
             <SidebarBadge className="ml-auto shrink-0">
               <ChevronIcon className="size-3 text-accent" />
             </SidebarBadge>
-          </div>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="w-46 max-w-[95vw]"
