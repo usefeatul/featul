@@ -17,10 +17,12 @@ import {
 } from "@featul/ui/components/avatar";
 import { cn } from "@featul/ui/lib/utils";
 import { LogoutIcon } from "@featul/ui/icons/logout";
+import { BoardIcon } from "@featul/ui/icons/board";
 import { authClient } from "@featul/auth/client";
 import { toast } from "sonner";
 import { getDisplayUser, getInitials } from "@/utils/user";
 import { randomAvatarUrl } from "@/utils/avatar";
+import { fetchUserWorkspaces } from "@/lib/workspace/client";
 import type { UserIdentity } from "./types";
 
 const MENU_HOVER_ITEM_CLASS =
@@ -36,6 +38,22 @@ export default function OnboardingUserMenu({
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [workspaceSlug, setWorkspaceSlug] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    fetchUserWorkspaces()
+      .then((workspaces) => {
+        if (!mounted) return;
+        setWorkspaceSlug(workspaces[0]?.slug || null);
+      })
+      .catch(() => {});
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const displayUser = getDisplayUser(initialUser);
   const initials = getInitials(displayUser.name || "U");
@@ -64,7 +82,7 @@ export default function OnboardingUserMenu({
           <button
             suppressHydrationWarning
             type="button"
-            className="inline-flex cursor-pointer items-center rounded-md p-1.5 text-accent hover:bg-muted dark:hover:bg-black/40"
+            className="inline-flex cursor-pointer items-center rounded-md p-1.5 text-accent"
             aria-label="Account menu"
           >
             <Avatar className="relative size-6 overflow-visible bg-muted ring-1 ring-border">
@@ -90,6 +108,18 @@ export default function OnboardingUserMenu({
             ) : null}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {workspaceSlug ? (
+            <DropdownMenuItem
+              onSelect={() => router.push(`/workspaces/${workspaceSlug}`)}
+              className={cn(
+                "group flex h-9 items-center gap-2 rounded-md px-2.5",
+                MENU_HOVER_ITEM_CLASS,
+              )}
+            >
+              <BoardIcon className="size-4 text-foreground" />
+              <span>Workspace</span>
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuItem
             onSelect={onSignOut}
             className={cn(
