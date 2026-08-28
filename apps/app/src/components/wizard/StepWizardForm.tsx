@@ -188,7 +188,7 @@ export default function StepWizardForm({
               {steps.map((item, i) => (
                 <div
                   key={item.id}
-                  className={`h-1 rounded-full ${i <= step ? "bg-foreground" : "bg-foreground/20"}`}
+                  className={`h-1 rounded-full ${i <= step ? "bg-primary" : "bg-primary/20"}`}
                   style={{ width: i === step ? 32 : 18 }}
                 />
               ))}
