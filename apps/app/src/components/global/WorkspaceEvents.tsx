@@ -3,13 +3,11 @@
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import type { PostDeletedEventDetail } from "@/types/events";
 
 export function WorkspaceEvents({ slug }: { slug: string }) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { resolvedTheme, setTheme } = useTheme();
 
   const normalizeStatus = React.useCallback(
     (value: string | null | undefined): string | null => {
@@ -105,12 +103,6 @@ export function WorkspaceEvents({ slug }: { slug: string }) {
       if (usesPlatformModifier && !event.shiftKey && key === "g") {
         event.preventDefault();
         router.push(`/workspaces/${slug}`);
-        return;
-      }
-
-      if (usesPlatformModifier && !event.shiftKey && key === "m") {
-        event.preventDefault();
-        setTheme(resolvedTheme === "dark" ? "light" : "dark");
       }
     };
 
@@ -118,6 +110,6 @@ export function WorkspaceEvents({ slug }: { slug: string }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [resolvedTheme, router, setTheme, slug]);
+  }, [router, slug]);
   return null;
 }
