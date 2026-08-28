@@ -50,7 +50,7 @@ function DialogInner({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-inner"
-      className={cn(overlayDialogInnerClass, "px-4 py-3", className)}
+      className={cn(overlayDialogInnerClass, "rounded-lg px-4 py-3", className)}
       {...props}
     />
   )
@@ -75,7 +75,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           overlayDialogClass,
-          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-2 rounded-3xl duration-200 outline-none",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none",
           fluid
             ? "w-auto max-w-none sm:max-w-none"
             : "w-full max-w-[calc(100%-2rem)] sm:max-w-md",

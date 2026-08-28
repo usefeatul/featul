@@ -50,7 +50,7 @@ function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="alert-dialog-inner"
-      className={cn(overlayDialogInnerClass, "px-4 py-3", className)}
+      className={cn(overlayDialogInnerClass, "rounded-lg px-4 py-3", className)}
       {...props}
     />
   )
@@ -71,7 +71,7 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         className={cn(
           overlayDialogClass,
-          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-3xl duration-200 outline-none sm:max-w-sm",
+          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none sm:max-w-sm",
           className
         )}
         {...props}
