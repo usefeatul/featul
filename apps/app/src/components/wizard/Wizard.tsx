@@ -1,7 +1,6 @@
 "use client";
 
 import { useWizardLogic } from "../../hooks/useWizardLogic";
-import { motion } from "framer-motion";
 import StepWizardForm from "./StepWizardForm";
 
 export default function WorkspaceWizard({
@@ -31,32 +30,25 @@ export default function WorkspaceWizard({
   } = useWizardLogic({ isFirstWorkspace });
 
   return (
-    <div className={`w-full max-w-[640px] mx-auto ${className}`}>
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="flex items-start"
-      >
-        <StepWizardForm
-          name={name}
-          setName={handleNameChange}
-          domain={domain}
-          setDomain={setDomain}
-          slug={slug}
-          handleSlugChange={handleSlugChange}
-          slugChecking={slugChecking}
-          slugAvailable={slugAvailable}
-          slugLocked={slugLocked}
-          timezone={timezone}
-          setTimezone={setTimezone}
-          now={now}
-          isCreating={isCreating}
-          domainValid={domainValid}
-          create={create}
-          isAppCreator={isAppCreator}
-        />
-      </motion.div>
+    <div className={`h-full min-h-0 w-full ${className}`}>
+      <StepWizardForm
+        name={name}
+        setName={handleNameChange}
+        domain={domain}
+        setDomain={setDomain}
+        slug={slug}
+        handleSlugChange={handleSlugChange}
+        slugChecking={slugChecking}
+        slugAvailable={slugAvailable}
+        slugLocked={slugLocked}
+        timezone={timezone}
+        setTimezone={setTimezone}
+        now={now}
+        isCreating={isCreating}
+        domainValid={domainValid}
+        create={create}
+        isAppCreator={isAppCreator}
+      />
     </div>
   );
 }
