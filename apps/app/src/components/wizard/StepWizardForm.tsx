@@ -322,8 +322,8 @@ export default function StepWizardForm({
                     {!slugLocked && slugChecking ? (
                       <LoaderIcon className="size-3.5 animate-spin text-accent" />
                     ) : !slugLocked && slug && slugAvailable === true ? (
-                      <span className="inline-flex size-4 items-center justify-center rounded-full bg-emerald-500 text-white">
-                        <CheckIcon className="size-2.5" />
+                      <span className="inline-flex size-3.5 items-center justify-center rounded-full bg-emerald-500 text-white">
+                        <CheckIcon className="size-2" />
                       </span>
                     ) : !slugLocked &&
                       (slugAvailable === false || (slug && !isSlugValid(slug, reservedAllowed))) ? (
