@@ -5,7 +5,7 @@ import { WIZARD_PREVIEW_BACKGROUND, WIZARD_PREVIEW_IMAGE } from "./steps"
 
 export default function WizardPreview() {
   return (
-    <div className="relative h-44 min-h-0 overflow-hidden bg-card sm:h-52 lg:h-full">
+    <div className="relative hidden min-h-0 overflow-hidden bg-card lg:block lg:h-full">
       <Image
         src={WIZARD_PREVIEW_BACKGROUND}
         alt=""

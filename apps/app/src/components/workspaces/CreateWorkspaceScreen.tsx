@@ -18,7 +18,7 @@ export function CreateWorkspaceScreen({
   const router = useRouter();
 
   return (
-    <div className="relative min-h-dvh bg-background">
+    <div className="fixed inset-0 overflow-hidden overscroll-none bg-background">
       <header className="pointer-events-auto absolute top-3 right-3 z-20 sm:top-4 sm:right-4">
         <div className="flex items-center gap-2">
           {!isFirstWorkspace ? (
@@ -43,7 +43,7 @@ export function CreateWorkspaceScreen({
         </div>
       </header>
 
-      <div className="h-dvh">
+      <div className="h-full min-h-0">
         <WorkspaceWizard isFirstWorkspace={isFirstWorkspace} />
       </div>
     </div>
