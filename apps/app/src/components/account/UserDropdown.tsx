@@ -294,9 +294,9 @@ export default function UserDropdown({
               <button
                 suppressHydrationWarning
                 type="button"
-                className="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40"
+                className="group flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40"
               >
-                <div className="ml-1 overflow-hidden">
+                <div className="overflow-hidden">
                   <Avatar className="size-5.5">
                     {displayUser.image ? (
                       <AvatarImage

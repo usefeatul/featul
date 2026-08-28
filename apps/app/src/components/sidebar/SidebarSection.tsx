@@ -14,7 +14,9 @@ export default function SidebarSection({
 }) {
   return (
     <div className={cn("p-3", className)}>
-      {title ? <div className="mb-2 text-xs text-accent">{title}</div> : null}
+      {title ? (
+        <div className="mb-2 px-3 text-xs text-accent">{title}</div>
+      ) : null}
       <div className="space-y-1">{children}</div>
     </div>
   );

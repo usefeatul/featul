@@ -76,7 +76,7 @@ export default function MobileDrawerContent({
       </VisuallyHidden>
       <ScrollArea className="h-full">
         <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-md px-2 py-2">
+          <div className="group flex items-center gap-2 rounded-md px-3 py-2">
             <FeatulLogoIcon className="size-6" size={24} />
             <div className="text-lg font-semibold">Featul</div>
           </div>
