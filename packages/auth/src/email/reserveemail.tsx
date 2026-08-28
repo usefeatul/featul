@@ -10,26 +10,14 @@ type ReserveSlugEmailProps = {
 }
 
 export function ReserveSlugEmail({ slug, confirmUrl, recipientName, brand }: ReserveSlugEmailProps) {
-  const eyebrow = "RESERVE"
-  const title = `Reserve ${slug}.featul.com`
-  const intro = `Hello ${recipientName || "there"},`
-  const body = `You requested to reserve the subdomain ${slug}.featul.com.`
-  const paragraphs = ["Click the button below to confirm your reservation."]
-  const ctaText = "Confirm Reservation"
-  const ctaUrl = confirmUrl
-  const psText = "If you did not request this, you may safely ignore this email."
-  const signatureName = (brand?.name || "featul") + " Team"
   return (
     <BrandedEmail
-      eyebrow={eyebrow}
-      title={title}
-      intro={intro}
-      body={body}
-      paragraphs={paragraphs}
-      ctaText={ctaText}
-      ctaUrl={ctaUrl}
-      psText={psText}
-      signatureName={signatureName}
+      title={`Reserve ${slug}.featul.com`}
+      intro={`Hi ${recipientName || "there"},`}
+      body={`Confirm to reserve ${slug}.featul.com for your workspace.`}
+      ctaText="Confirm reservation"
+      ctaUrl={confirmUrl}
+      psText="If you did not request this, you can ignore this email."
       brand={brand}
     />
   )

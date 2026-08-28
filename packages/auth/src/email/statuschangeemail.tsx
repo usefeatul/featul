@@ -21,21 +21,15 @@ export function StatusChangeEmail({
   toStatusLabel,
   brand,
 }: StatusChangeEmailProps) {
-  const eyebrow = "Status update"
-  const title = `"${postTitle}" is now ${toStatusLabel}`
-  const intro = `Hello ${recipientName || "there"},`
-  const paragraphs = [
-    `A feedback item you follow in ${workspaceName} changed status.`,
-    `Previously: ${fromStatusLabel}`,
-    `Now: ${toStatusLabel}`,
-  ]
-
   return (
     <BrandedEmail
-      eyebrow={eyebrow}
-      title={title}
-      intro={intro}
-      paragraphs={paragraphs}
+      title={`${postTitle} is now ${toStatusLabel}`}
+      intro={`Hi ${recipientName || "there"},`}
+      body={`A feedback item you follow in ${workspaceName} changed status.`}
+      details={[
+        { label: "From", value: fromStatusLabel },
+        { label: "To", value: toStatusLabel },
+      ]}
       ctaText="View feedback"
       ctaUrl={postUrl}
       brand={brand}

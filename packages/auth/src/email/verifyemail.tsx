@@ -11,40 +11,35 @@ type VerifyEmailOptions = {
   brand?: Brand
 }
 
+function copyFor(type: VerifyType) {
+  if (type === "email-verification") {
+    return {
+      title: "Verify your email",
+      body: "Enter this code to verify your email address.",
+    }
+  }
+  if (type === "forget-password") {
+    return {
+      title: "Reset your password",
+      body: "Enter this code to reset your password.",
+    }
+  }
+  return {
+    title: "Your sign-in code",
+    body: "Enter this code to finish signing in.",
+  }
+}
+
 export function VerifyEmail({ otp, type, recipientName, brand }: VerifyEmailOptions) {
-  const eyebrow = "SECURITY"
-  const title = type === "email-verification" ? "Verify your email" : type === "forget-password" ? "Reset your password" : "Sign in code"
-  const intro = `Hello ${recipientName || "there"},`
-  const body = type === "email-verification"
-    ? "Please use the verification code below."
-    : type === "forget-password"
-    ? "Please use the reset code below."
-    : "Please use the sign-in code below."
-  const paragraphs = [
-    type === "email-verification"
-      ? "To ensure the security of your account, we require email verification."
-      : type === "forget-password"
-      ? "To protect your account, we require confirmation of this password reset request."
-      : "To complete your sign-in, please enter the code provided below.",
-  ]
-  const outro = "This code will expire in five minutes."
-  const ctaText = type === "forget-password" ? "Reset Password" : "Open Dashboard"
-  const ctaUrl = type === "forget-password" ? "https://featul.com/reset" : "https://featul.com/dashboard"
-  const psText = "If you require assistance, please reply to this message and our support team will respond promptly."
-  const signatureName = "featul Support"
+  const copy = copyFor(type)
   return (
     <BrandedEmail
-      eyebrow={eyebrow}
-      title={title}
-      intro={intro}
-      body={body}
-      paragraphs={paragraphs}
-      outro={outro}
+      title={copy.title}
+      intro={`Hi ${recipientName || "there"},`}
+      body={copy.body}
       highlight={otp}
-      ctaText={ctaText}
-      ctaUrl={ctaUrl}
-      psText={psText}
-      signatureName={signatureName}
+      highlightHint="Expires in 5 minutes"
+      psText="If you did not request this, you can ignore this email."
       brand={brand}
     />
   )
