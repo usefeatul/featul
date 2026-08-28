@@ -1,6 +1,6 @@
 import React from "react"
 import { render, toPlainText } from "@react-email/render"
-import { BrandedEmail, Brand } from "./brandemail"
+import { BrandedEmail, Brand, emailAppUrl } from "./brandemail"
 
 export function WelcomeEmail({ name, brand }: { name?: string; brand?: Brand }) {
   const product = brand?.name || "featul"
@@ -10,7 +10,7 @@ export function WelcomeEmail({ name, brand }: { name?: string; brand?: Brand }) 
       intro={`Hi ${name?.trim() || "there"},`}
       body="Your account is ready. You can sign in and start collecting feedback whenever you are."
       ctaText="Open dashboard"
-      ctaUrl="https://featul.com/dashboard"
+      ctaUrl={emailAppUrl("/start")}
       psText="Reply to this email if you need a hand getting started."
       brand={brand}
     />

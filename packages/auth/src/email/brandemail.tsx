@@ -32,12 +32,23 @@ type Props = {
 }
 
 const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
-const DEFAULT_EMAIL_LOGO_URL = "https://featul.com/email-logo.png"
+const PRODUCTION_APP_ORIGIN = "https://app.featul.com"
+
+export function getEmailAppOrigin() {
+  const fromEnv = String(process.env.NEXT_PUBLIC_APP_URL || "").trim().replace(/\/+$/, "")
+  if (!fromEnv || /localhost|127\.0\.0\.1/i.test(fromEnv)) return PRODUCTION_APP_ORIGIN
+  return fromEnv
+}
+
+export function emailAppUrl(path: string) {
+  const normalized = path.startsWith("/") ? path : `/${path}`
+  return `${getEmailAppOrigin()}${normalized}`
+}
 
 function resolveBrand(brand?: Brand): Required<Brand> {
   return {
     name: brand?.name || "featul",
-    logoUrl: brand?.logoUrl || DEFAULT_EMAIL_LOGO_URL,
+    logoUrl: brand?.logoUrl || emailAppUrl("/email-logo.png"),
     primaryColor: brand?.primaryColor || "#111111",
     backgroundColor: brand?.backgroundColor || "#ffffff",
     textColor: brand?.textColor || "#111111",
@@ -215,8 +226,8 @@ export function BrandedEmail(props: Props) {
           <Text style={{ color: muted, fontSize: 12, lineHeight: "18px", margin: 0 }}>
             {b.name}
             {" · "}
-            <Link href="https://featul.com" style={{ color: muted, textDecoration: "none" }}>
-              featul.com
+            <Link href={getEmailAppOrigin()} style={{ color: muted, textDecoration: "none" }}>
+              app.featul.com
             </Link>
           </Text>
           {props.addressLines?.map((line, index) => (
