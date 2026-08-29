@@ -6,6 +6,8 @@ import { Check, Globe, Users } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { AccentBar } from "@featul/ui/components/cardElements";
+import { ChangelogIcon } from "@featul/ui/icons/changelog";
+import { RoadmapIcon } from "@featul/ui/icons/roadmap";
 import {
   overlayChipInnerClass,
   overlayChipShellClass,
@@ -25,6 +27,12 @@ const viewport = { once: true, amount: 0.4 } as const;
 const springPop = { type: "spring" as const, stiffness: 420, damping: 18 };
 const springIn = { type: "spring" as const, stiffness: 280, damping: 24 };
 
+const roadmapItems = [
+  { title: "CSV import", detail: "42 votes", status: "Planned", tone: "info" },
+  { title: "Custom statuses", detail: "In review", status: "Now", tone: "now" },
+  { title: "Public roadmap", detail: "Shipped last week", status: "Shipped", tone: "success" },
+] as const;
+
 export default function Create() {
   const shouldReduceMotion = useReducedMotion();
   const reduceMotion = !!shouldReduceMotion;
@@ -35,13 +43,13 @@ export default function Create() {
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="max-w-3xl text-left">
             <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
-              Up and running in 30 seconds
+              From a workspace to a shipped update.
             </h2>
             <div className="mt-3 flex items-start gap-2">
               <AccentBar width={8} />
               <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
-                Create a workspace, invite your team, and share a branded
-                feedback board without adding setup work to your roadmap.
+                Create a workspace, share a board, put work on a public
+                roadmap, and close the loop with a changelog.
               </p>
             </div>
           </div>
@@ -163,6 +171,107 @@ export default function Create() {
                 </div>
               </article>
             </Link>
+
+            <Link
+              href="/docs/getting-started/plan-roadmap"
+              className="block h-full min-w-0"
+              aria-label="Learn more about the public roadmap"
+            >
+              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+                <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
+                  <VisualCardWell color="purple" step="03" label="Share a public roadmap">
+                    <MockPanel reduceMotion={reduceMotion} delay={0.08}>
+                      {roadmapItems.map((item, index) => (
+                        <div key={item.title}>
+                          {index > 0 ? <div className="h-px w-full bg-border" /> : null}
+                          <div className={rowClass}>
+                            <MockIcon
+                              reduceMotion={reduceMotion}
+                              delay={0.08 + index * 0.06}
+                              className="rounded-md bg-foreground/5 text-violet-500 ring-1 ring-foreground/10"
+                            >
+                              <RoadmapIcon className="size-4" opacity={1} />
+                            </MockIcon>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-foreground text-sm font-medium">
+                                {item.title}
+                              </p>
+                              <p className="text-accent mt-0.5 text-xs">
+                                {item.detail}
+                              </p>
+                            </div>
+                            <StatusChip tone={item.tone}>{item.status}</StatusChip>
+                          </div>
+                        </div>
+                      ))}
+                    </MockPanel>
+                  </VisualCardWell>
+                </div>
+                <div className={cn(overlayInnerClass, captionClass)}>
+                  <h3 className="text-foreground text-left text-base font-medium">
+                    Share a public roadmap
+                  </h3>
+                  <p className="text-accent mt-1 text-left text-sm leading-6">
+                    Move approved requests into Planned, Now, and Shipped so
+                    customers can follow the work they voted on.
+                  </p>
+                </div>
+              </article>
+            </Link>
+
+            <Link
+              href="/docs/getting-started/publish-updates"
+              className="block h-full min-w-0"
+              aria-label="Learn more about publishing changelogs"
+            >
+              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+                <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
+                  <VisualCardWell color="orange" step="04" label="Publish a changelog">
+                    <MockPanel reduceMotion={reduceMotion} delay={0.1}>
+                      <div className={rowClass}>
+                        <MockIcon
+                          reduceMotion={reduceMotion}
+                          className="rounded-md bg-foreground/5 text-orange-500 ring-1 ring-foreground/10"
+                        >
+                          <ChangelogIcon className="size-4" opacity={1} />
+                        </MockIcon>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-foreground text-sm font-medium">
+                            CSV import is live
+                          </p>
+                          <p className="text-accent mt-0.5 text-xs">
+                            Posted to people who voted
+                          </p>
+                        </div>
+                        <StatusChip tone="success">New</StatusChip>
+                      </div>
+                      <div className="h-px w-full bg-border" />
+                      <div className="flex items-start justify-between gap-3 px-5 py-4 sm:px-6">
+                        <div className="min-w-0">
+                          <p className="text-foreground text-sm font-medium">
+                            Close the loop
+                          </p>
+                          <p className="text-accent mt-1 text-xs leading-5">
+                            Tell the 42 voters this shipped, without a separate
+                            email tool or status page.
+                          </p>
+                        </div>
+                        <StatusChip tone="info">24 notified</StatusChip>
+                      </div>
+                    </MockPanel>
+                  </VisualCardWell>
+                </div>
+                <div className={cn(overlayInnerClass, captionClass)}>
+                  <h3 className="text-foreground text-left text-base font-medium">
+                    Publish a changelog
+                  </h3>
+                  <p className="text-accent mt-1 text-left text-sm leading-6">
+                    When a request ships, publish the note in the same
+                    workspace so customers see the outcome, not just the vote.
+                  </p>
+                </div>
+              </article>
+            </Link>
           </div>
         </div>
       </section>
@@ -224,7 +333,7 @@ function StatusChip({
   tone,
 }: {
   children: ReactNode;
-  tone: "success" | "info";
+  tone: "success" | "info" | "now";
 }) {
   return (
     <span className={overlayChipShellClass}>
@@ -232,7 +341,11 @@ function StatusChip({
         className={cn(
           overlayChipInnerClass,
           "h-5 min-h-5 px-1.5 text-[11px] font-medium",
-          tone === "success" ? "text-emerald-700" : "text-blue-700",
+          tone === "success"
+            ? "text-emerald-700"
+            : tone === "now"
+              ? "text-violet-700"
+              : "text-blue-700",
         )}
       >
         {children}
