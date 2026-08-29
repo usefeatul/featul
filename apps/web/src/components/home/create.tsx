@@ -14,30 +14,6 @@ import {
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
-import { DomainIcon } from "@featul/ui/icons/domain";
-import { CsvIcon } from "@featul/ui/icons/csv";
-import { MemberIcon } from "@featul/ui/icons/member";
-
-const essentials = [
-  {
-    title: "Custom domain and branding",
-    description: "Use your domain, logo, colors, and theme.",
-    icon: DomainIcon,
-    iconClassName: "bg-foreground/5 text-sky-400 ring-1 ring-foreground/10",
-  },
-  {
-    title: "Team roles and invites",
-    description: "Invite teammates and collaborate in one workspace.",
-    icon: MemberIcon,
-    iconClassName: "bg-foreground/5 text-emerald-400 ring-1 ring-foreground/10",
-  },
-  {
-    title: "CSV import and export",
-    description: "Move feedback data in or out whenever you need.",
-    icon: CsvIcon,
-    iconClassName: "bg-foreground/5 text-amber-400 ring-1 ring-foreground/10",
-  },
-] as const;
 
 const visualWellClass =
   "flex min-h-[240px] w-full flex-1 flex-col justify-center px-4 sm:min-h-[300px] sm:px-6";
@@ -189,55 +165,6 @@ export default function Create() {
                 </div>
               </article>
             </Link>
-          </div>
-
-          <div className="mt-8 sm:mt-10">
-            <p className="text-primary text-sm font-medium">
-              Included from day one
-            </p>
-            <h3 className="text-foreground mt-1 text-lg font-semibold tracking-[-0.02em]">
-              The basics are already handled.
-            </h3>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-              {essentials.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <div
-                    key={item.title}
-                    className={cn(overlayDialogClass, "h-full")}
-                  >
-                    <div
-                      className={cn(
-                        overlayInnerClass,
-                        "flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4",
-                      )}
-                    >
-                      <span
-                        className={`inline-flex size-8 items-center justify-center rounded-md p-1.5 ${item.iconClassName}`}
-                      >
-                        <Icon className="size-4" />
-                      </span>
-                      <h4 className="text-foreground mt-3 text-sm font-medium">
-                        {item.title}
-                      </h4>
-                      <p className="text-accent mt-1.5 text-sm leading-6">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mt-8 flex items-start gap-2">
-            <AccentBar width={6} />
-            <p className="text-accent text-sm leading-6">
-              Seriously, it&apos;s that simple. Most teams collect feedback
-              within minutes of signup.
-            </p>
           </div>
         </div>
       </section>
