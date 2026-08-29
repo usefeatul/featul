@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { DitherGradient } from "@/components/dither-kit/gradient";
 import type { PixelColor } from "@/components/dither-kit/pixel";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 export function VisualCardWell({
@@ -59,6 +60,22 @@ export function VisualCardWell({
   );
 }
 
+export function NestedOverlayCard({
+  children,
+  className,
+  innerClassName,
+}: {
+  children: ReactNode;
+  className?: string;
+  innerClassName?: string;
+}) {
+  return (
+    <div className={cn(overlayDialogClass, className)}>
+      <div className={cn(overlayInnerClass, innerClassName)}>{children}</div>
+    </div>
+  );
+}
+
 export function VisualCardIconTile({
   children,
   className,
@@ -67,13 +84,14 @@ export function VisualCardIconTile({
   className?: string;
 }) {
   return (
-    <div
+    <NestedOverlayCard
       className={cn(
-        "flex size-[88px] items-center justify-center overflow-hidden rounded-lg bg-background shadow-md ring-1 ring-black/10 transition-transform duration-200 group-hover:scale-[1.03] sm:size-[96px] dark:ring-white/10",
+        "size-[88px] shrink-0 transition-transform duration-200 group-hover:scale-[1.03] sm:size-[96px]",
         className,
       )}
+      innerClassName="flex size-full items-center justify-center"
     >
       {children}
-    </div>
+    </NestedOverlayCard>
   );
 }

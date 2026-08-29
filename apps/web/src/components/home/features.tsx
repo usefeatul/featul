@@ -13,7 +13,7 @@ import {
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
-import { VisualCardIconTile, VisualCardWell } from "./visual-well";
+import { NestedOverlayCard, VisualCardIconTile, VisualCardWell } from "./visual-well";
 
 const requestTags = [
   { text: "import CSV", tone: "remove" },
@@ -111,12 +111,13 @@ function InsightsCard({ reduceMotion }: { reduceMotion: boolean }) {
       <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
         <VisualCardWell color="orange" step="02" label="Surface what matters">
           <motion.div
-            className="w-full overflow-hidden rounded-lg bg-background shadow-md ring-1 ring-black/10 dark:ring-white/10"
+            className="w-full"
             initial={reduceMotion ? false : { opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewport}
             transition={springIn}
           >
+            <NestedOverlayCard className="w-full">
             <div className="flex items-center justify-between gap-3 px-5 py-4 sm:px-6">
               <div className="min-w-0">
                 <p className="text-foreground text-sm font-medium">
@@ -197,6 +198,7 @@ function InsightsCard({ reduceMotion }: { reduceMotion: boolean }) {
                 so the most requested work rises to the top.
               </p>
             </div>
+            </NestedOverlayCard>
           </motion.div>
         </VisualCardWell>
       </div>

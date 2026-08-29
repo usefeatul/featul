@@ -14,7 +14,7 @@ import {
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
-import { VisualCardWell } from "./visual-well";
+import { NestedOverlayCard, VisualCardWell } from "./visual-well";
 
 const rowClass = "flex items-center gap-3 px-5 py-4 sm:px-6";
 
@@ -181,13 +181,13 @@ function MockPanel({
 }) {
   return (
     <motion.div
-      className="w-full overflow-hidden rounded-lg bg-background shadow-md ring-1 ring-black/10 dark:ring-white/10"
+      className="w-full"
       initial={reduceMotion ? false : { opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={viewport}
       transition={{ ...springIn, delay }}
     >
-      {children}
+      <NestedOverlayCard className="w-full">{children}</NestedOverlayCard>
     </motion.div>
   );
 }
