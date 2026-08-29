@@ -86,7 +86,7 @@ export function VisualCardIconTile({
   return (
     <NestedOverlayCard
       className={cn(
-        "size-[88px] shrink-0 transition-transform duration-200 group-hover:scale-[1.03] sm:size-[96px]",
+        "size-16 shrink-0 p-1.5 transition-transform duration-200 group-hover:scale-[1.03] sm:size-[4.5rem]",
         className,
       )}
       innerClassName="flex size-full items-center justify-center"

@@ -179,7 +179,7 @@ export default function Integrations() {
                           }
                         >
                           <VisualCardIconTile>
-                            <Icon className="size-11 sm:size-12" />
+                            <Icon className="size-8 sm:size-9" />
                           </VisualCardIconTile>
                         </VisualCardWell>
                       </div>
