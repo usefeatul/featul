@@ -11,6 +11,8 @@ import {
   OverlayCardPanel,
 } from "@/components/shared/overlay-card"
 import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
+import type { PixelColor } from "@/components/dither-kit/pixel"
+import { SubtleDitherWash } from "@/components/home/visual-well"
 import Link from "next/link"
 import Faq from "@/components/home/faq"
 import { SkyPageShell } from "@/components/layout/shell"
@@ -20,6 +22,12 @@ import {
   PRICING_PLAN_ORDER,
   getPricingPlan,
 } from "../../types/plan"
+
+const PLAN_WASH: Record<PricingPlanKey, PixelColor> = {
+  free: "grey",
+  starter: "blue",
+  professional: "orange",
+}
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
@@ -69,14 +77,7 @@ function PricingPlanCard({
   return (
     <OverlayCard className="relative">
       <OverlayCardPanel className="relative flex flex-1 flex-col overflow-hidden px-4 py-4">
-        {ribbon ? (
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-0",
-              getRibbonSpotlightClass(ribbon.tone),
-            )}
-          />
-        ) : null}
+        <SubtleDitherWash color={PLAN_WASH[planKey]} direction="down" opacity={0.52} />
         {ribbon ? <PricingPlanRibbon label={ribbon.label} tone={ribbon.tone} /> : null}
 
         <div className="relative z-10 mb-3 flex items-start justify-between gap-2">
@@ -223,11 +224,4 @@ function getPlanCtaLabel(planKey: PricingPlanKey): string {
   if (planKey === "free") return "Get Free"
   if (planKey === "starter") return "Get Starter"
   return "Get Professional"
-}
-
-function getRibbonSpotlightClass(tone: "popular" | "value") {
-  if (tone === "popular") {
-    return "bg-[radial-gradient(340px_240px_at_100%_0%,var(--primary),transparent_58%)] opacity-30 dark:opacity-35"
-  }
-  return "bg-[radial-gradient(340px_240px_at_100%_0%,#f59e0b,transparent_58%)] opacity-30 dark:opacity-35"
 }

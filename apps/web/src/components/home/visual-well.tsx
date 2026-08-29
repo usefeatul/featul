@@ -2,7 +2,10 @@
 
 import type { ReactNode } from "react";
 
-import { DitherGradient } from "@/components/dither-kit/gradient";
+import {
+  DitherGradient,
+  type GradientDirection,
+} from "@/components/dither-kit/gradient";
 import type { PixelColor } from "@/components/dither-kit/pixel";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
@@ -57,6 +60,37 @@ export function VisualCardWell({
         {children}
       </div>
     </div>
+  );
+}
+
+export function SubtleDitherWash({
+  color,
+  className,
+  direction = "right",
+  opacity = 0.18,
+}: {
+  color: PixelColor;
+  className?: string;
+  direction?: GradientDirection;
+  opacity?: number;
+}) {
+  const fromTop = direction === "down" || direction === "up";
+
+  return (
+    <DitherGradient
+      from={color}
+      to="transparent"
+      direction={direction}
+      cell={4}
+      bloom="off"
+      opacity={opacity}
+      className={cn(
+        fromTop
+          ? "[mask-image:linear-gradient(to_bottom,black_0%,transparent_62%)]"
+          : "[mask-image:linear-gradient(to_right,black_0%,transparent_62%)]",
+        className,
+      )}
+    />
   );
 }
 
