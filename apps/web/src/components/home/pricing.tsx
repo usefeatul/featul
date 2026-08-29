@@ -131,24 +131,24 @@ function PricingPlanCard({
           </div>
         </div>
 
-        <dl className="relative z-10 -mx-5 space-y-2.5 border-t border-foreground/10 bg-background px-5 pt-4 text-sm">
+        <dl className="relative z-10 -mx-5 space-y-2.5 border-t border-foreground/10 bg-background px-5 pt-4 text-sm font-extralight">
           {plan.highlights.map((item) => (
             <div key={item.label} className="flex items-baseline justify-between gap-3">
               <dt className="text-foreground">{item.label}</dt>
-              <dd className={cn("shrink-0 font-medium tabular-nums", highlightValueClass)}>
+              <dd className={cn("shrink-0 tabular-nums", highlightValueClass)}>
                 {item.value}
               </dd>
             </div>
           ))}
           <div className="flex items-baseline justify-between gap-3">
             <dt className="text-foreground">Charged</dt>
-            <dd className={cn("shrink-0 font-medium tabular-nums", highlightValueClass)}>
+            <dd className={cn("shrink-0 tabular-nums", highlightValueClass)}>
               {chargedLabel}
             </dd>
           </div>
         </dl>
 
-        <ul className="relative z-10 mt-4 -mx-5 flex-1 space-y-2 border-t border-foreground/10 bg-background px-5 pt-4 text-sm text-foreground">
+        <ul className="relative z-10 mt-4 -mx-5 flex-1 space-y-2 border-t border-foreground/10 bg-background px-5 pt-4 text-sm font-normal text-foreground">
           {plan.features.map((feature) => (
             <li key={feature.title} className="flex items-start gap-2 leading-relaxed">
               <span className="mt-px select-none text-foreground/50" aria-hidden>
@@ -163,7 +163,7 @@ function PricingPlanCard({
           <Button asChild variant={buttonVariant} className={buttonClassName}>
             <Link href={plan.href}>{ctaLabel}</Link>
           </Button>
-          <p className="mt-2 text-center text-xs font-light text-foreground/65">{plan.finePrint}</p>
+          <p className="mt-2 text-center text-xs font-extralight text-foreground/65">{plan.finePrint}</p>
         </div>
       </OverlayCardPanel>
     </OverlayCard>
