@@ -10,12 +10,14 @@ export function VisualCardWell({
   color,
   step,
   label,
+  badge,
   children,
   className,
 }: {
   color: PixelColor;
   step?: string;
   label?: string;
+  badge?: ReactNode;
   children: ReactNode;
   className?: string;
 }) {
@@ -35,6 +37,9 @@ export function VisualCardWell({
         opacity={0.9}
         className="[mask-image:radial-gradient(130%_120%_at_50%_0%,black_35%,transparent_88%)]"
       />
+      {badge ? (
+        <div className="absolute left-3 top-3 z-10">{badge}</div>
+      ) : null}
       {step || label ? (
         <div className="relative z-10 flex items-baseline gap-2 px-4 pt-4 sm:px-5">
           {step ? (
@@ -50,6 +55,25 @@ export function VisualCardWell({
       <div className="relative z-10 flex flex-1 items-center justify-center px-5 pb-6 pt-2 sm:px-8 sm:pb-8">
         {children}
       </div>
+    </div>
+  );
+}
+
+export function VisualCardIconTile({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex size-[88px] items-center justify-center overflow-hidden rounded-lg bg-background shadow-md ring-1 ring-black/10 transition-transform duration-200 group-hover:scale-[1.03] sm:size-[96px] dark:ring-white/10",
+        className,
+      )}
+    >
+      {children}
     </div>
   );
 }

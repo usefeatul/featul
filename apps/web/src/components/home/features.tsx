@@ -13,7 +13,7 @@ import {
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
-import { VisualCardWell } from "./visual-well";
+import { VisualCardIconTile, VisualCardWell } from "./visual-well";
 
 const requestTags = [
   { text: "import CSV", tone: "remove" },
@@ -64,51 +64,31 @@ export default function FeaturesSection() {
 
 function CaughtUpCard({ reduceMotion }: { reduceMotion: boolean }) {
   return (
-    <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
+    <article className={cn(overlayDialogClass, "group flex h-full flex-col")}>
       <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
         <VisualCardWell color="blue" step="01" label="Review before it ships">
-          <motion.div
-            className="w-full overflow-hidden rounded-lg bg-background px-5 py-8 text-center shadow-md ring-1 ring-black/10 sm:px-6 dark:ring-white/10"
-            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewport}
-            transition={springIn}
-          >
-            <span className="relative mx-auto flex size-10 items-center justify-center">
-              {!reduceMotion ? (
-                <motion.span
-                  aria-hidden
-                  className="pointer-events-none absolute rounded-full border-2 border-emerald-400/70"
-                  initial={{ opacity: 0.85, scale: 0.7 }}
-                  whileInView={{ opacity: 0, scale: 1.8 }}
-                  viewport={viewport}
-                  transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
-                  style={{ inset: -8 }}
-                />
-              ) : null}
+          <VisualCardIconTile className="relative">
+            {!reduceMotion ? (
               <motion.span
-                className="relative flex size-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 shadow-sm"
-                initial={reduceMotion ? false : { scale: 0.55, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
+                aria-hidden
+                className="pointer-events-none absolute rounded-full border-2 border-emerald-400/70"
+                initial={{ opacity: 0.85, scale: 0.7 }}
+                whileInView={{ opacity: 0, scale: 1.8 }}
                 viewport={viewport}
-                transition={springPop}
-              >
-                <Check className="size-4" strokeWidth={2.4} />
-              </motion.span>
-            </span>
-            <motion.p
-              className="text-foreground mt-4 text-sm font-semibold"
-              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
+                style={{ inset: 10 }}
+              />
+            ) : null}
+            <motion.span
+              className="relative flex size-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"
+              initial={reduceMotion ? false : { scale: 0.55, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
               viewport={viewport}
-              transition={{ ...springIn, delay: 0.12 }}
+              transition={springPop}
             >
-              You are all caught up
-            </motion.p>
-            <p className="text-accent mt-1 text-xs">
-              Taking you to your board.
-            </p>
-          </motion.div>
+              <Check className="size-4" strokeWidth={2.4} />
+            </motion.span>
+          </VisualCardIconTile>
         </VisualCardWell>
       </div>
 
