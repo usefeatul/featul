@@ -7,6 +7,11 @@ export type PricingPlanFeature = {
   title: string;
 };
 
+export type PricingPlanHighlight = {
+  label: string;
+  value: string;
+};
+
 export type PricingPlan = {
   key: PricingPlanKey;
   name: string;
@@ -14,6 +19,8 @@ export type PricingPlan = {
   monthlyPrice: number;
   yearlyPrice: number;
   href: string;
+  finePrint: string;
+  highlights: PricingPlanHighlight[];
   features: PricingPlanFeature[];
 };
 
@@ -25,11 +32,20 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     monthlyPrice: 0,
     yearlyPrice: 0,
     href: AUTH_SIGN_UP_URL,
+    finePrint: "No credit card required.",
+    highlights: [
+      { label: "Team members", value: "3" },
+      { label: "Boards", value: "5" },
+      { label: "Changelog entries", value: "10" },
+      { label: "Tags", value: "5" },
+    ],
     features: [
-      { title: "Up to 3 team members" },
+      { title: "Public feedback portal" },
+      { title: "Roadmap and changelog" },
+      { title: "In-app widget" },
+      { title: "Voting and comments" },
       { title: "File attachments" },
-      { title: "Essential tagging and changelog tools" },
-      { title: "No integrations or imports" },
+      { title: "Guest and anonymous feedback" },
     ],
   },
   starter: {
@@ -39,12 +55,20 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     monthlyPrice: 24,
     yearlyPrice: 240,
     href: AUTH_SIGN_UP_URL,
+    finePrint: "Flat workspace pricing. Cancel anytime.",
+    highlights: [
+      { label: "Team members", value: "5" },
+      { label: "Boards", value: "10" },
+      { label: "Changelog entries", value: "50" },
+      { label: "Tags", value: "10" },
+    ],
     features: [
-      { title: "Up to 5 team members" },
-      { title: "Up to 10 boards" },
+      { title: "Everything in Free" },
+      { title: "Custom domain" },
       { title: "Branding controls" },
-      { title: "Integrations and imports" },
-      { title: "Advanced organization and publishing" },
+      { title: "Hide Powered by Featul" },
+      { title: "Slack and Discord alerts" },
+      { title: "Canny, Nolt, and ProductBoard import" },
     ],
   },
   professional: {
@@ -54,13 +78,20 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     monthlyPrice: 47,
     yearlyPrice: 470,
     href: AUTH_SIGN_UP_URL,
+    finePrint: "Flat workspace pricing. Cancel anytime.",
+    highlights: [
+      { label: "Team members", value: "10" },
+      { label: "Boards", value: "Unlimited" },
+      { label: "Changelog entries", value: "Unlimited" },
+      { label: "Tags", value: "20" },
+    ],
     features: [
-      { title: "Everything in Starter" },
-      { title: "Up to 10 team members" },
-      { title: "Unlimited boards" },
-      { title: "Comprehensive tagging controls" },
-      { title: "Unlimited changelog entries" },
-      { title: "Best for scale" },
+      { title: "Everything in Free" },
+      { title: "Custom domain" },
+      { title: "Branding controls" },
+      { title: "Hide Powered by Featul" },
+      { title: "Slack and Discord alerts" },
+      { title: "Canny, Nolt, and ProductBoard import" },
     ],
   },
 };

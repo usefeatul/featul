@@ -36,7 +36,12 @@ export default function Pricing() {
     <SkyPageShell
       dataComponent="Pricing"
       title="Pricing that grows with your team"
-      description="Start free, then move into simple flat-workspace plans for early and growing product teams."
+      description={
+        <p className="text-foreground/70">
+          Start free, then move into simple flat-workspace plans for early and growing
+          product teams.
+        </p>
+      }
       headerClassName="mx-auto max-w-4xl text-center"
       below={<Faq />}
     >
@@ -73,53 +78,93 @@ function PricingPlanCard({
     planKey === "starter" && "bg-primary text-primary-foreground hover:bg-primary/90",
     planKey === "professional" && "bg-orange-500 text-white hover:bg-orange-500/90",
   )
+  const highlightValueClass =
+    planKey === "professional"
+      ? "text-orange-600"
+      : planKey === "starter"
+        ? "text-primary"
+        : "text-foreground"
+  const chargedLabel =
+    planKey === "free"
+      ? "Free"
+      : billingCycle === "yearly"
+        ? `$${plan.yearlyPrice} / yr`
+        : `$${plan.monthlyPrice} / mo`
 
   return (
     <OverlayCard className="relative">
-      <OverlayCardPanel className="relative flex flex-1 flex-col overflow-hidden px-4 py-4">
-        <SubtleDitherWash color={PLAN_WASH[planKey]} direction="down" opacity={0.52} />
+      <OverlayCardPanel className="relative flex flex-1 flex-col overflow-hidden px-5 py-5">
         {ribbon ? <PricingPlanRibbon label={ribbon.label} tone={ribbon.tone} /> : null}
 
-        <div className="relative z-10 mb-3 flex items-start justify-between gap-2">
-        <div className="relative z-10">
-          <div className="text-2xl font-heading font-semibold leading-none text-foreground">
-            {plan.name}
+        <div className="relative -mx-5 -mt-5 overflow-hidden px-5 pb-5 pt-5">
+          <SubtleDitherWash
+            color={PLAN_WASH[planKey]}
+            direction="down"
+            opacity={0.52}
+            className="[mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_100%)]"
+          />
+          <div className="relative z-10 flex items-center justify-between gap-3">
+            <div className="font-heading text-2xl font-light leading-none text-foreground">
+              {plan.name}
+            </div>
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/70">
+              {billingCycle === "yearly" ? "Yearly" : "Monthly"}
+            </span>
           </div>
-          <div className="mt-1.5 text-sm leading-snug text-accent">{plan.note}</div>
+
+          <div className="relative z-10 mt-4 flex items-baseline text-4xl font-light tracking-tight text-foreground">
+            <AnimatedPrice
+              value={billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice}
+            />
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={billingCycle}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="ml-1 text-sm font-normal text-foreground/80"
+              >
+                /{billingCycle === "yearly" ? "year" : "mo"}
+              </motion.span>
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
 
-      <div className="relative z-10 mb-4 flex items-baseline text-4xl font-semibold tracking-tight text-foreground">
-        <AnimatedPrice
-          value={billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice}
-        />
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.span
-            key={billingCycle}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="ml-1 text-sm font-normal text-accent"
-          >
-            /{billingCycle === "yearly" ? "year" : "mo"}
-          </motion.span>
-        </AnimatePresence>
-      </div>
+        <dl className="relative z-10 -mx-5 space-y-2.5 border-t border-foreground/10 bg-background px-5 pt-4 text-sm">
+          {plan.highlights.map((item) => (
+            <div key={item.label} className="flex items-baseline justify-between gap-3">
+              <dt className="text-foreground">{item.label}</dt>
+              <dd className={cn("shrink-0 font-medium tabular-nums", highlightValueClass)}>
+                {item.value}
+              </dd>
+            </div>
+          ))}
+          <div className="flex items-baseline justify-between gap-3">
+            <dt className="text-foreground">Charged</dt>
+            <dd className={cn("shrink-0 font-medium tabular-nums", highlightValueClass)}>
+              {chargedLabel}
+            </dd>
+          </div>
+        </dl>
 
-      <ul className="relative z-10 mb-4 flex-1 space-y-1.5 text-sm text-accent">
-        {plan.features.map((feature) => (
-          <li key={feature.title} className="leading-relaxed">
-            {feature.title}
-          </li>
-        ))}
-      </ul>
+        <ul className="relative z-10 mt-4 -mx-5 flex-1 space-y-2 border-t border-foreground/10 bg-background px-5 pt-4 text-sm text-foreground">
+          {plan.features.map((feature) => (
+            <li key={feature.title} className="flex items-start gap-2 leading-relaxed">
+              <span className="mt-px select-none text-foreground/50" aria-hidden>
+                +
+              </span>
+              <span>{feature.title}</span>
+            </li>
+          ))}
+        </ul>
 
-      <div className="relative z-10">
-        <Button asChild variant={buttonVariant} className={buttonClassName}>
-          <Link href={plan.href}>{ctaLabel}</Link>
-        </Button>
-      </div>
+        <div className="relative z-10 mt-5 bg-background">
+          <Button asChild variant={buttonVariant} className={buttonClassName}>
+            <Link href={plan.href}>{ctaLabel}</Link>
+          </Button>
+          <p className="mt-2 text-center text-xs font-light text-foreground/65">{plan.finePrint}</p>
+        </div>
       </OverlayCardPanel>
     </OverlayCard>
   )

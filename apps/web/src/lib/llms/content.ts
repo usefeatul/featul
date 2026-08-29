@@ -63,10 +63,15 @@ export function renderPricingMarkdown() {
 
   const sections = PRICING_PLAN_ORDER.map((key) => {
     const plan = PRICING_PLANS[key]
+    const highlights = plan.highlights
+      .map((item) => `- ${item.label}: ${item.value}`)
+      .join("\n")
     const features = plan.features.map((feature) => `- ${feature.title}`).join("\n")
     return `## ${plan.name}
 
 ${plan.note}. ${formatPricingPrice(plan, "monthly")}, or ${formatPricingPrice(plan, "yearly")}.
+
+${highlights}
 
 ${features}
 
