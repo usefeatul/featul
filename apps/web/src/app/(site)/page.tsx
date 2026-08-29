@@ -13,6 +13,7 @@ import Integrations from "@/components/home/integrations";
 import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/features";
 import { ConversionHero } from "@/components/home/conversion";
+import { PricingSection } from "@/components/home/pricing";
 import { SectionStack } from "@/components/layout/stack";
 
 export const metadata: Metadata = createPageMetadata({
@@ -43,6 +44,7 @@ export default function Home() {
           <Integrations />
           <Setup />
           <Create />
+          <PricingSection />
           <Faq />
           <StatsSection />
         </SectionStack>

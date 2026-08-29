@@ -4,6 +4,7 @@ import React from "react"
 import { AnimatePresence, animate, motion } from "framer-motion"
 import { Button } from "@featul/ui/components/button"
 import { StarIcon } from "@featul/ui/icons/star"
+import { AccentBar } from "@featul/ui/components/cardElements"
 import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 import {
@@ -16,6 +17,7 @@ import { SubtleDitherWash } from "@/components/home/visual-well"
 import Link from "next/link"
 import Faq from "@/components/home/faq"
 import { SkyPageShell } from "@/components/layout/shell"
+import { Container } from "@/components/global/container"
 import {
   type BillingCycle,
   type PricingPlanKey,
@@ -29,9 +31,55 @@ const PLAN_WASH: Record<PricingPlanKey, PixelColor> = {
   professional: "orange",
 }
 
-export default function Pricing() {
+export function PricingPlans() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
 
+  return (
+    <>
+      <div className="flex justify-center">
+        <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
+      </div>
+
+      <div className="mt-8 mb-2 -mx-1 grid gap-3 md:grid-cols-2 lg:grid-cols-3 sm:-mx-4 lg:-mx-8">
+        {PRICING_PLAN_ORDER.map((planKey) => (
+          <PricingPlanCard
+            key={planKey}
+            planKey={planKey}
+            billingCycle={billingCycle}
+          />
+        ))}
+      </div>
+    </>
+  )
+}
+
+export function PricingSection() {
+  return (
+    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+      <section className="my-16 sm:my-20" data-component="HomePricing">
+        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+          <div className="max-w-3xl text-left">
+            <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
+              Pricing that grows with your team
+            </h2>
+            <div className="mt-3 flex items-start gap-2">
+              <AccentBar width={8} />
+              <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
+                Start free, then move into simple flat-workspace plans for early
+                and growing product teams.
+              </p>
+            </div>
+          </div>
+          <div className="mt-8">
+            <PricingPlans />
+          </div>
+        </div>
+      </section>
+    </Container>
+  )
+}
+
+export default function Pricing() {
   return (
     <SkyPageShell
       dataComponent="Pricing"
@@ -45,19 +93,7 @@ export default function Pricing() {
       headerClassName="mx-auto max-w-4xl text-center"
       below={<Faq />}
     >
-      <div className="flex justify-center">
-        <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
-      </div>
-
-      <div className="mt-8 mb-10 -mx-1 grid gap-3 md:grid-cols-2 lg:grid-cols-3 sm:-mx-4 sm:mb-12 lg:-mx-8">
-        {PRICING_PLAN_ORDER.map((planKey) => (
-          <PricingPlanCard
-            key={planKey}
-            planKey={planKey}
-            billingCycle={billingCycle}
-          />
-        ))}
-      </div>
+      <PricingPlans />
     </SkyPageShell>
   )
 }
