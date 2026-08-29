@@ -14,9 +14,7 @@ import {
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
-
-const visualWellClass =
-  "flex min-h-[240px] w-full flex-1 flex-col justify-center px-4 sm:min-h-[300px] sm:px-6";
+import { VisualCardWell } from "./visual-well";
 
 const rowClass = "flex items-center gap-3 px-5 py-4 sm:px-6";
 
@@ -56,7 +54,7 @@ export default function Create() {
             >
               <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
                 <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-                  <div className={cn(visualWellClass, "bg-[#4f9df6]")}>
+                  <VisualCardWell color="blue" step="01" label="Create your workspace">
                     <MockPanel reduceMotion={reduceMotion}>
                       <div className={rowClass}>
                         <MockIcon
@@ -94,7 +92,7 @@ export default function Create() {
                         </div>
                       </div>
                     </MockPanel>
-                  </div>
+                  </VisualCardWell>
                 </div>
 
                 <div className={cn(overlayInnerClass, captionClass)}>
@@ -116,7 +114,7 @@ export default function Create() {
             >
               <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
                 <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-                  <div className={cn(visualWellClass, "bg-[#5ec4a0]")}>
+                  <VisualCardWell color="green" step="02" label="Share your board">
                     <MockPanel reduceMotion={reduceMotion} delay={0.06}>
                       <div className={rowClass}>
                         <MockIcon
@@ -151,7 +149,7 @@ export default function Create() {
                         </div>
                       </div>
                     </MockPanel>
-                  </div>
+                  </VisualCardWell>
                 </div>
 
                 <div className={cn(overlayInnerClass, captionClass)}>
@@ -183,7 +181,7 @@ function MockPanel({
 }) {
   return (
     <motion.div
-      className="w-full overflow-hidden rounded-lg bg-background"
+      className="w-full overflow-hidden rounded-lg bg-background shadow-md ring-1 ring-black/10 dark:ring-white/10"
       initial={reduceMotion ? false : { opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={viewport}

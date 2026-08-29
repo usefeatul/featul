@@ -13,6 +13,7 @@ import {
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Container } from "../global/container";
+import { VisualCardWell } from "./visual-well";
 
 const requestTags = [
   { text: "import CSV", tone: "remove" },
@@ -22,9 +23,6 @@ const requestTags = [
   { text: "Slack alerts", tone: "add" },
   { text: "public roadmap", tone: "add" },
 ] as const;
-
-const visualWellClass =
-  "flex min-h-[240px] w-full flex-1 flex-col justify-center px-4 sm:min-h-[300px] sm:px-6";
 
 const captionClass = "flex flex-col px-4 py-3";
 
@@ -68,13 +66,19 @@ function CaughtUpCard({ reduceMotion }: { reduceMotion: boolean }) {
   return (
     <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
       <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-        <div className={cn(visualWellClass, "items-center bg-[#4f9df6]")}>
-          <div className="flex w-full flex-col items-center justify-center text-center">
-            <span className="relative flex size-10 items-center justify-center">
+        <VisualCardWell color="blue" step="01" label="Review before it ships">
+          <motion.div
+            className="w-full overflow-hidden rounded-lg bg-background px-5 py-8 text-center shadow-md ring-1 ring-black/10 sm:px-6 dark:ring-white/10"
+            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+            transition={springIn}
+          >
+            <span className="relative mx-auto flex size-10 items-center justify-center">
               {!reduceMotion ? (
                 <motion.span
                   aria-hidden
-                  className="pointer-events-none absolute rounded-full border-2 border-white/80"
+                  className="pointer-events-none absolute rounded-full border-2 border-emerald-400/70"
                   initial={{ opacity: 0.85, scale: 0.7 }}
                   whileInView={{ opacity: 0, scale: 1.8 }}
                   viewport={viewport}
@@ -83,7 +87,7 @@ function CaughtUpCard({ reduceMotion }: { reduceMotion: boolean }) {
                 />
               ) : null}
               <motion.span
-                className="relative flex size-10 items-center justify-center rounded-full bg-white text-emerald-600 shadow-sm"
+                className="relative flex size-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 shadow-sm"
                 initial={reduceMotion ? false : { scale: 0.55, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
                 viewport={viewport}
@@ -93,7 +97,7 @@ function CaughtUpCard({ reduceMotion }: { reduceMotion: boolean }) {
               </motion.span>
             </span>
             <motion.p
-              className="mt-4 text-sm font-semibold text-white"
+              className="text-foreground mt-4 text-sm font-semibold"
               initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={viewport}
@@ -101,8 +105,11 @@ function CaughtUpCard({ reduceMotion }: { reduceMotion: boolean }) {
             >
               You are all caught up
             </motion.p>
-          </div>
-        </div>
+            <p className="text-accent mt-1 text-xs">
+              Taking you to your board.
+            </p>
+          </motion.div>
+        </VisualCardWell>
       </div>
 
       <div className={cn(overlayInnerClass, captionClass)}>
@@ -122,9 +129,9 @@ function InsightsCard({ reduceMotion }: { reduceMotion: boolean }) {
   return (
     <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
       <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-        <div className={cn(visualWellClass, "bg-[#ff955d]")}>
+        <VisualCardWell color="orange" step="02" label="Surface what matters">
           <motion.div
-            className="w-full overflow-hidden rounded-lg bg-background"
+            className="w-full overflow-hidden rounded-lg bg-background shadow-md ring-1 ring-black/10 dark:ring-white/10"
             initial={reduceMotion ? false : { opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewport}
@@ -211,7 +218,7 @@ function InsightsCard({ reduceMotion }: { reduceMotion: boolean }) {
               </p>
             </div>
           </motion.div>
-        </div>
+        </VisualCardWell>
       </div>
 
       <div className={cn(overlayInnerClass, captionClass)}>
