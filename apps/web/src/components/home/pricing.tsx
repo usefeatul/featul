@@ -49,7 +49,7 @@ export default function Pricing() {
         <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
       </div>
 
-      <div className="mt-8 mb-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3 sm:mb-12">
+      <div className="mt-8 mb-10 -mx-1 grid gap-3 md:grid-cols-2 lg:grid-cols-3 sm:-mx-4 sm:mb-12 lg:-mx-8">
         {PRICING_PLAN_ORDER.map((planKey) => (
           <PricingPlanCard
             key={planKey}
