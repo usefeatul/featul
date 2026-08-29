@@ -11,7 +11,7 @@ type FAQsFourProps = {
 
 export default function FAQsFour({ contained = true }: FAQsFourProps) {
     const content = (
-        <section className="my-6 sm:my-8 py-4 sm:py-4 md:py-6" data-component="FAQ">
+        <section className="my-12 sm:my-16 py-4 sm:py-4 md:py-6" data-component="FAQ">
             <div className={contained ? 'w-full max-w-6xl px-0 sm:px-6' : 'w-full'}>
                 <FaqAccordion
                     title="Questions &amp; Answers"

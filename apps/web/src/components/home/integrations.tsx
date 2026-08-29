@@ -89,7 +89,7 @@ export default function Integrations() {
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section
         data-component="Integrations"
-        className="my-10 max-w-full overflow-x-clip sm:my-14"
+        className="my-16 max-w-full overflow-x-clip sm:my-20"
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">

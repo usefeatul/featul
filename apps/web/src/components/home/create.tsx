@@ -31,7 +31,7 @@ export default function Create() {
 
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-      <section className="my-10 sm:my-14" data-component="Create">
+      <section className="my-16 sm:my-20" data-component="Create">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="max-w-3xl text-left">
             <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">

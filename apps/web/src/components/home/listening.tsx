@@ -30,7 +30,7 @@ const cards = [
 export default function Listening() {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-      <section className="my-6 sm:my-8" data-component="Listening">
+      <section className="my-12 sm:my-16" data-component="Listening">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <h2 className="font-heading text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-bold">
             Build what your users actually need.

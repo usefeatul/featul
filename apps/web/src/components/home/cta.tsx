@@ -6,7 +6,7 @@ import { LiveDemo } from "../global/demo";
 
 export default function CTA() {
   return (
-    <section className="relative mb-0 mt-6 bg-background pb-10 pt-4 sm:mt-8 sm:pb-12 sm:pt-6" data-component="CTA">
+    <section className="relative mb-0 mt-12 bg-background pb-10 pt-4 sm:mt-16 sm:pb-12 sm:pt-6" data-component="CTA">
       <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className={overlayDialogClass}>

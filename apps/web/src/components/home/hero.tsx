@@ -45,7 +45,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative left-1/2 mb-6 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden sm:mb-8"
+      className="relative left-1/2 mb-12 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden sm:mb-16"
       data-component="Hero"
     >
       <div
