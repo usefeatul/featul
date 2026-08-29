@@ -9,6 +9,7 @@ import Faq from "@/components/home/faq";
 import StatsSection from "@/components/home/cta";
 import Setup from "@/components/home/setup";
 import Create from "@/components/home/create";
+import Access from "@/components/home/access";
 import Integrations from "@/components/home/integrations";
 import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/features";
@@ -44,6 +45,7 @@ export default function Home() {
           <Integrations />
           <Setup />
           <Create />
+          <Access />
           <PricingSection />
           <Faq />
           <StatsSection />
