@@ -18,11 +18,13 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import { LogoutIcon } from "@featul/ui/icons/logout";
 import { BoardIcon } from "@featul/ui/icons/board";
+import { TrashIcon } from "@featul/ui/icons/trash";
 import { authClient } from "@featul/auth/client";
 import { toast } from "sonner";
 import { getDisplayUser, getInitials } from "@/utils/user";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { fetchUserWorkspaces } from "@/lib/workspace/client";
+import { DeleteAccountDialog } from "@/components/account/DeleteAccountDialog";
 import type { UserIdentity } from "./types";
 
 const MENU_HOVER_ITEM_CLASS =
@@ -38,6 +40,7 @@ export default function OnboardingUserMenu({
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [workspaceSlug, setWorkspaceSlug] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -92,7 +95,7 @@ export default function OnboardingUserMenu({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="pointer-events-auto z-[70] w-44 max-w-[85vw]"
+          className="pointer-events-auto z-[70] w-48 max-w-[85vw]"
           side="bottom"
           align="end"
           sideOffset={8}
@@ -133,8 +136,25 @@ export default function OnboardingUserMenu({
               Sign out
             </span>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={() => setDeleteDialogOpen(true)}
+            className={cn(
+              "group flex h-9 items-center gap-2 rounded-md px-2.5",
+              MENU_HOVER_ITEM_CLASS,
+            )}
+          >
+            <TrashIcon className="size-4 text-foreground transition-colors group-hover:text-red-500 group-hover:opacity-100" />
+            <span className="transition-colors group-hover:text-foreground">
+              Delete account
+            </span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <DeleteAccountDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+      />
     </div>
   );
 }
