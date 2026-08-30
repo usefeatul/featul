@@ -105,17 +105,8 @@ export default function RootLayout({
   const selineToken = process.env.NEXT_PUBLIC_SELINE_TOKEN?.trim();
 
   return (
-    <html
-      lang="en"
-      className={`${manrope.variable} ${sora.variable}`}
-    >
+    <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <head>
-        <script
-          id="home-scroll-memory"
-          dangerouslySetInnerHTML={{
-            __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v2")||"0",10)||0}catch(e){}var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0)h.setAttribute("data-scrolled","");if(y>=80)h.style.opacity="0";function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)})();`,
-          }}
-        />
         {selineToken ? (
           <Script
             src="https://cdn.seline.com/seline.js"

@@ -84,7 +84,7 @@ export function Hero() {
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
             <div className={overlayDialogClass}>
-              <div className={cn(overlayInnerClass, "aspect-[1762/1124]")}>
+              <div className={overlayInnerClass}>
                 <Image
                   key={active.src}
                   src={active.src}

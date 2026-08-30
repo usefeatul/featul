@@ -5,20 +5,10 @@
 @plugin "@tailwindcss/typography";
 
 html {
-  overflow-anchor: none;
+  scroll-behavior: smooth;
 }
-html[data-scrolled] [data-component="Navbar"] {
-  background-color: color-mix(in oklab, var(--background) 70%, transparent);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-}
-html[data-scrolled] [data-component="Navbar"] [data-nav-brand],
-html[data-scrolled] [data-component="Navbar"] [data-nav-brand] * {
-  color: var(--foreground);
-}
-html[data-scrolled] [data-component="Navbar"] a:not([data-slot="button"]):not([data-nav-brand]) {
-  color: var(--accent);
-}
-body {
-  overflow-x: clip;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

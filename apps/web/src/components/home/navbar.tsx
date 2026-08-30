@@ -7,7 +7,7 @@ import { Container } from "../global/container";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
 import { Separator } from "@featul/ui/components/separator";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./menu";
@@ -20,16 +20,10 @@ export default function Navbar() {
 
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [navReady, setNavReady] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  useLayoutEffect(() => {
-    const onScroll = () => {
-      const next = window.scrollY > 0;
-      setScrolled(next);
-      document.documentElement.toggleAttribute("data-scrolled", next);
-    };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0);
     onScroll();
-    setNavReady(true);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -61,8 +55,7 @@ export default function Navbar() {
     <>
       <header
       className={cn(
-        "fixed top-10 left-0 right-0 z-50",
-        navReady && "transition-colors",
+        "fixed top-10 left-0 right-0 z-50 transition-colors",
         scrolled
           ? "backdrop-blur-lg bg-background/70"
           : overSky
@@ -74,15 +67,14 @@ export default function Navbar() {
 
       <Container maxWidth="6xl" className="relative px-4 sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6">
-            <Link
+          <Link
             href="/"
             aria-label="Go home"
             className="inline-flex items-center gap-2"
-            data-nav-brand=""
           >
             <FeatulLogoIcon
               size={26}
-              className={overSky ? "text-white" : "text-foreground"}
+              className={overSky ? "text-white" : undefined}
             />
             <span
               className={cn(
