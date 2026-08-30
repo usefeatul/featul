@@ -31,7 +31,7 @@ const integrations: IntegrationItem[] = [
     description: "Get instant Slack alerts when new requests are submitted.",
     status: "Available",
     icon: SlackIcon,
-    color: "green",
+    color: [224, 30, 90],
   },
   {
     slug: "discord",
@@ -40,7 +40,7 @@ const integrations: IntegrationItem[] = [
       "Send feedback notifications directly into your Discord channels.",
     status: "Available",
     icon: DiscordIcon,
-    color: "purple",
+    color: [125, 185, 255],
   },
   {
     slug: "notra",
@@ -49,7 +49,7 @@ const integrations: IntegrationItem[] = [
       "Import Notra changelog entries to keep product updates synced.",
     status: "Available",
     icon: NotraIcon,
-    color: "pink",
+    color: [200, 178, 238],
   },
   {
     slug: "nolt",
@@ -57,7 +57,7 @@ const integrations: IntegrationItem[] = [
     description: "Import requests and comments from Nolt into Featul.",
     status: "Coming soon",
     icon: NoltIcon,
-    color: "grey",
+    color: [251, 115, 111],
   },
   {
     slug: "canny",
@@ -65,7 +65,7 @@ const integrations: IntegrationItem[] = [
     description: "Bring feature requests and comments over from Canny.",
     status: "Coming soon",
     icon: CannyIcon,
-    color: "blue",
+    color: [82, 93, 249],
   },
   {
     slug: "productboard",
@@ -73,7 +73,7 @@ const integrations: IntegrationItem[] = [
     description: "Migrate posts, boards, and comments from ProductBoard.",
     status: "Coming soon",
     icon: ProductBoardIcon,
-    color: "orange",
+    color: [0, 113, 225],
   },
 ];
 
@@ -122,7 +122,7 @@ export default function Integrations() {
                           direction="right"
                           cell={3}
                           bloom="low"
-                          opacity={isAvailable ? 0.88 : 0.45}
+                          opacity={isAvailable ? 0.9 : 0.72}
                           className="[mask-image:linear-gradient(to_right,black_15%,transparent_92%)]"
                         />
                         <Icon className="relative z-10 size-6" />

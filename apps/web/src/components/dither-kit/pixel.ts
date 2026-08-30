@@ -7,7 +7,7 @@ export const BAYER4 = [
   [15, 7, 13, 5],
 ].map((row) => row.map((v) => (v + 0.5) / 16));
 
-export type PixelColor = DitherColor | number;
+export type PixelColor = DitherColor | number | Rgb;
 
 export function hueFill(hue: number): Rgb {
   const h = ((hue % 360) + 360) % 360;
@@ -36,7 +36,9 @@ export function hueFill(hue: number): Rgb {
 }
 
 export function fillOf(color: PixelColor): Rgb {
-  return typeof color === "number" ? hueFill(color) : PALETTE[color].fill;
+  if (typeof color === "number") return hueFill(color);
+  if (Array.isArray(color)) return color;
+  return PALETTE[color].fill;
 }
 
 export type PixelBloom = "off" | "low" | "high" | "aura";
