@@ -79,7 +79,7 @@ export function getAuthLayoutStyles(embedded: boolean = false): AuthLayoutStyles
     secondaryActionCls:
       "text-sm font-medium text-foreground/80 hover:text-foreground flex items-center gap-2 transition-colors cursor-pointer",
     errorTextCls: "text-destructive text-xs text-center",
-    socialButtonVariant: "card",
+    socialButtonVariant: "nav",
   };
 }
 
