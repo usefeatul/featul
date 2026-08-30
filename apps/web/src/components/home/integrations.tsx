@@ -40,7 +40,7 @@ const integrations: IntegrationItem[] = [
       "Send feedback notifications directly into your Discord channels.",
     status: "Available",
     icon: DiscordIcon,
-    color: [125, 185, 255],
+    color: [70, 135, 225],
   },
   {
     slug: "notra",
@@ -49,7 +49,7 @@ const integrations: IntegrationItem[] = [
       "Import Notra changelog entries to keep product updates synced.",
     status: "Available",
     icon: NotraIcon,
-    color: [200, 178, 238],
+    color: [145, 95, 230],
   },
   {
     slug: "nolt",
