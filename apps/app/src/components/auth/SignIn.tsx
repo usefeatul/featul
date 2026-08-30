@@ -126,7 +126,8 @@ export default function SignIn({
   return (
     <AuthLayout
       embedded={embedded}
-      title="Sign in to featul"
+      title="Welcome back."
+      description="Sign in to continue to Featul."
       onSubmit={(e) => {
         e.preventDefault();
         handleEmailSignIn();

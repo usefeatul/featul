@@ -89,7 +89,8 @@ export default function SignUp({
   return (
     <AuthLayout
       embedded={embedded}
-      title="Sign up to featul"
+      title="Create your account."
+      description="Start collecting feedback in a few minutes."
       onSubmit={(e) => {
         e.preventDefault();
         handleSubmit();
