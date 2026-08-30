@@ -39,7 +39,10 @@ export default function Create() {
 
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
-      <section className="my-16 sm:my-20" data-component="Create">
+      <section
+        className="my-16 sm:my-20 [overflow-anchor:none]"
+        data-component="Create"
+      >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="max-w-3xl text-left">
             <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
@@ -55,227 +58,216 @@ export default function Create() {
           </div>
 
           <div className="mt-8 grid items-stretch gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
-            <Link
+            <CreateStep
               href="/docs/getting-started/index"
-              className="block h-full min-w-0"
-              aria-label="Learn more about creating your workspace"
+              label="Learn more about creating your workspace"
+              title="Create your workspace"
+              body="Sign up with email, choose your workspace, and get your feedback portal live without touching your codebase."
             >
-              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
-                <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-                  <VisualCardWell color="blue" step="01" label="Create your workspace">
-                    <MockPanel reduceMotion={reduceMotion}>
-                      <div className={rowClass}>
-                        <MockIcon
-                          reduceMotion={reduceMotion}
-                          className="rounded-full bg-emerald-50 text-emerald-600"
-                        >
-                          <Check className="size-4" strokeWidth={2.4} />
-                        </MockIcon>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-foreground text-sm font-medium">
-                            Workspace ready
-                          </p>
-                          <p className="text-accent mt-0.5 text-xs">
-                            Boards and roles included
-                          </p>
-                        </div>
-                        <StatusChip tone="success">Ready</StatusChip>
-                      </div>
-                      <div className="h-px w-full bg-border" />
-                      <div className={rowClass}>
-                        <MockIcon
-                          reduceMotion={reduceMotion}
-                          delay={0.1}
-                          className="rounded-md bg-foreground/5 text-blue-500 ring-1 ring-foreground/10"
-                        >
-                          <Users className="size-4" />
-                        </MockIcon>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-foreground text-sm font-medium">
-                            Invite your team
-                          </p>
-                          <p className="text-accent mt-0.5 text-xs">
-                            Owners, admins, and members
-                          </p>
-                        </div>
-                      </div>
-                    </MockPanel>
-                  </VisualCardWell>
-                </div>
+              <VisualCardWell color="blue" step="01" label="Create your workspace">
+                <MockPanel reduceMotion={reduceMotion}>
+                  <div className={rowClass}>
+                    <MockIcon
+                      reduceMotion={reduceMotion}
+                      className="rounded-full bg-emerald-50 text-emerald-600"
+                    >
+                      <Check className="size-4" strokeWidth={2.4} />
+                    </MockIcon>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground text-sm font-medium">
+                        Workspace ready
+                      </p>
+                      <p className="text-accent mt-0.5 text-xs">
+                        Boards and roles included
+                      </p>
+                    </div>
+                    <StatusChip tone="success">Ready</StatusChip>
+                  </div>
+                  <div className="h-px w-full bg-border" />
+                  <div className={rowClass}>
+                    <MockIcon
+                      reduceMotion={reduceMotion}
+                      delay={0.1}
+                      className="rounded-md bg-foreground/5 text-blue-500 ring-1 ring-foreground/10"
+                    >
+                      <Users className="size-4" />
+                    </MockIcon>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground text-sm font-medium">
+                        Invite your team
+                      </p>
+                      <p className="text-accent mt-0.5 text-xs">
+                        Owners, admins, and members
+                      </p>
+                    </div>
+                  </div>
+                </MockPanel>
+              </VisualCardWell>
+            </CreateStep>
 
-                <div className={cn(overlayInnerClass, captionClass)}>
-                  <h3 className="text-foreground text-left text-base font-medium">
-                    Create your workspace
-                  </h3>
-                  <p className="text-accent mt-1 text-left text-sm leading-6">
-                    Sign up with email, choose your workspace, and get your
-                    feedback portal live without touching your codebase.
-                  </p>
-                </div>
-              </article>
-            </Link>
-
-            <Link
+            <CreateStep
               href="/docs/branding-setup/domain"
-              className="block h-full min-w-0"
-              aria-label="Learn more about sharing your board"
+              label="Learn more about sharing your board"
+              title="Share your board"
+              body="Use your workspace subdomain or custom domain to collect votes, comments, and new requests in one place."
             >
-              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
-                <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-                  <VisualCardWell color="green" step="02" label="Share your board">
-                    <MockPanel reduceMotion={reduceMotion} delay={0.06}>
-                      <div className={rowClass}>
-                        <MockIcon
-                          reduceMotion={reduceMotion}
-                          className="rounded-md bg-foreground/5 text-emerald-500 ring-1 ring-foreground/10"
-                        >
-                          <Globe className="size-4" />
-                        </MockIcon>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-foreground truncate text-sm font-medium">
-                            feedback.yourbrand.com
-                          </p>
-                          <p className="text-accent mt-0.5 text-xs">
-                            Custom domain connected
-                          </p>
-                        </div>
-                      </div>
-                      <div className="h-px w-full bg-border" />
-                      <div className="flex items-start justify-between gap-3 px-5 py-4 sm:px-6">
-                        <div className="min-w-0">
-                          <p className="text-foreground text-sm font-medium">
-                            Public feedback board
-                          </p>
-                          <p className="text-accent mt-1 text-xs leading-5">
-                            Collect votes, comments, and new requests in one
-                            place your customers already recognize.
-                          </p>
-                        </div>
-                        <div className="flex shrink-0 flex-col items-end gap-1.5">
-                          <StatusChip tone="success">Live</StatusChip>
-                          <StatusChip tone="info">Branded</StatusChip>
-                        </div>
-                      </div>
-                    </MockPanel>
-                  </VisualCardWell>
-                </div>
+              <VisualCardWell color="green" step="02" label="Share your board">
+                <MockPanel reduceMotion={reduceMotion} delay={0.06}>
+                  <div className={rowClass}>
+                    <MockIcon
+                      reduceMotion={reduceMotion}
+                      className="rounded-md bg-foreground/5 text-emerald-500 ring-1 ring-foreground/10"
+                    >
+                      <Globe className="size-4" />
+                    </MockIcon>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground truncate text-sm font-medium">
+                        feedback.yourbrand.com
+                      </p>
+                      <p className="text-accent mt-0.5 text-xs">
+                        Custom domain connected
+                      </p>
+                    </div>
+                  </div>
+                  <div className="h-px w-full bg-border" />
+                  <div className="flex items-start justify-between gap-3 px-5 py-4 sm:px-6">
+                    <div className="min-w-0">
+                      <p className="text-foreground text-sm font-medium">
+                        Public feedback board
+                      </p>
+                      <p className="text-accent mt-1 text-xs leading-5">
+                        Collect votes, comments, and new requests in one
+                        place your customers already recognize.
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end gap-1.5">
+                      <StatusChip tone="success">Live</StatusChip>
+                      <StatusChip tone="info">Branded</StatusChip>
+                    </div>
+                  </div>
+                </MockPanel>
+              </VisualCardWell>
+            </CreateStep>
 
-                <div className={cn(overlayInnerClass, captionClass)}>
-                  <h3 className="text-foreground text-left text-base font-medium">
-                    Share your board
-                  </h3>
-                  <p className="text-accent mt-1 text-left text-sm leading-6">
-                    Use your workspace subdomain or custom domain to collect
-                    votes, comments, and new requests in one place.
-                  </p>
-                </div>
-              </article>
-            </Link>
-
-            <Link
+            <CreateStep
               href="/docs/getting-started/plan-roadmap"
-              className="block h-full min-w-0"
-              aria-label="Learn more about the public roadmap"
+              label="Learn more about the public roadmap"
+              title="Share a public roadmap"
+              body="Move approved requests into Planned, Now, and Shipped so customers can follow the work they voted on."
             >
-              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
-                <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-                  <VisualCardWell color="purple" step="03" label="Share a public roadmap">
-                    <MockPanel reduceMotion={reduceMotion} delay={0.08}>
-                      {roadmapItems.map((item, index) => (
-                        <div key={item.title}>
-                          {index > 0 ? <div className="h-px w-full bg-border" /> : null}
-                          <div className={rowClass}>
-                            <MockIcon
-                              reduceMotion={reduceMotion}
-                              delay={0.08 + index * 0.06}
-                              className="rounded-md bg-foreground/5 text-violet-500 ring-1 ring-foreground/10"
-                            >
-                              <RoadmapIcon className="size-4" opacity={1} />
-                            </MockIcon>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-foreground text-sm font-medium">
-                                {item.title}
-                              </p>
-                              <p className="text-accent mt-0.5 text-xs">
-                                {item.detail}
-                              </p>
-                            </div>
-                            <StatusChip tone={item.tone}>{item.status}</StatusChip>
-                          </div>
-                        </div>
-                      ))}
-                    </MockPanel>
-                  </VisualCardWell>
-                </div>
-                <div className={cn(overlayInnerClass, captionClass)}>
-                  <h3 className="text-foreground text-left text-base font-medium">
-                    Share a public roadmap
-                  </h3>
-                  <p className="text-accent mt-1 text-left text-sm leading-6">
-                    Move approved requests into Planned, Now, and Shipped so
-                    customers can follow the work they voted on.
-                  </p>
-                </div>
-              </article>
-            </Link>
-
-            <Link
-              href="/docs/getting-started/publish-updates"
-              className="block h-full min-w-0"
-              aria-label="Learn more about publishing changelogs"
-            >
-              <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
-                <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-                  <VisualCardWell color="orange" step="04" label="Publish a changelog">
-                    <MockPanel reduceMotion={reduceMotion} delay={0.1}>
+              <VisualCardWell color="purple" step="03" label="Share a public roadmap">
+                <MockPanel reduceMotion={reduceMotion} delay={0.08}>
+                  {roadmapItems.map((item, index) => (
+                    <div key={item.title}>
+                      {index > 0 ? <div className="h-px w-full bg-border" /> : null}
                       <div className={rowClass}>
                         <MockIcon
                           reduceMotion={reduceMotion}
-                          className="rounded-md bg-foreground/5 text-orange-500 ring-1 ring-foreground/10"
+                          delay={0.08 + index * 0.06}
+                          className="rounded-md bg-foreground/5 text-violet-500 ring-1 ring-foreground/10"
                         >
-                          <ChangelogIcon className="size-4" opacity={1} />
+                          <RoadmapIcon className="size-4" opacity={1} />
                         </MockIcon>
                         <div className="min-w-0 flex-1">
                           <p className="text-foreground text-sm font-medium">
-                            CSV import is live
+                            {item.title}
                           </p>
                           <p className="text-accent mt-0.5 text-xs">
-                            Posted to people who voted
+                            {item.detail}
                           </p>
                         </div>
-                        <StatusChip tone="success">New</StatusChip>
+                        <StatusChip tone={item.tone}>{item.status}</StatusChip>
                       </div>
-                      <div className="h-px w-full bg-border" />
-                      <div className="flex items-start justify-between gap-3 px-5 py-4 sm:px-6">
-                        <div className="min-w-0">
-                          <p className="text-foreground text-sm font-medium">
-                            Close the loop
-                          </p>
-                          <p className="text-accent mt-1 text-xs leading-5">
-                            Tell the 42 voters this shipped, without a separate
-                            email tool or status page.
-                          </p>
-                        </div>
-                        <StatusChip tone="info">24 notified</StatusChip>
-                      </div>
-                    </MockPanel>
-                  </VisualCardWell>
-                </div>
-                <div className={cn(overlayInnerClass, captionClass)}>
-                  <h3 className="text-foreground text-left text-base font-medium">
-                    Publish a changelog
-                  </h3>
-                  <p className="text-accent mt-1 text-left text-sm leading-6">
-                    When a request ships, publish the note in the same
-                    workspace so customers see the outcome, not just the vote.
-                  </p>
-                </div>
-              </article>
-            </Link>
+                    </div>
+                  ))}
+                </MockPanel>
+              </VisualCardWell>
+            </CreateStep>
+
+            <CreateStep
+              href="/docs/getting-started/publish-updates"
+              label="Learn more about publishing changelogs"
+              title="Publish a changelog"
+              body="When a request ships, publish the note in the same workspace so customers see the outcome, not just the vote."
+            >
+              <VisualCardWell color="orange" step="04" label="Publish a changelog">
+                <MockPanel reduceMotion={reduceMotion} delay={0.1}>
+                  <div className={rowClass}>
+                    <MockIcon
+                      reduceMotion={reduceMotion}
+                      className="rounded-md bg-foreground/5 text-orange-500 ring-1 ring-foreground/10"
+                    >
+                      <ChangelogIcon className="size-4" opacity={1} />
+                    </MockIcon>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground text-sm font-medium">
+                        CSV import is live
+                      </p>
+                      <p className="text-accent mt-0.5 text-xs">
+                        Posted to people who voted
+                      </p>
+                    </div>
+                    <StatusChip tone="success">New</StatusChip>
+                  </div>
+                  <div className="h-px w-full bg-border" />
+                  <div className="flex items-start justify-between gap-3 px-5 py-4 sm:px-6">
+                    <div className="min-w-0">
+                      <p className="text-foreground text-sm font-medium">
+                        Close the loop
+                      </p>
+                      <p className="text-accent mt-1 text-xs leading-5">
+                        Tell the 42 voters this shipped, without a separate
+                        email tool or status page.
+                      </p>
+                    </div>
+                    <StatusChip tone="info">24 notified</StatusChip>
+                  </div>
+                </MockPanel>
+              </VisualCardWell>
+            </CreateStep>
           </div>
         </div>
       </section>
     </Container>
+  );
+}
+
+function CreateStep({
+  href,
+  label,
+  title,
+  body,
+  children,
+}: {
+  href: string;
+  label: string;
+  title: string;
+  body: string;
+  children: ReactNode;
+}) {
+  return (
+    <article
+      className={cn(
+        overlayDialogClass,
+        "relative flex h-full min-w-0 flex-col [overflow-anchor:none]",
+      )}
+    >
+      <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
+        {children}
+      </div>
+      <div className={cn(overlayInnerClass, captionClass)}>
+        <h3 className="text-foreground text-left text-base font-medium">
+          <Link
+            href={href}
+            className="after:absolute after:inset-0"
+            aria-label={label}
+          >
+            {title}
+          </Link>
+        </h3>
+        <p className="text-accent mt-1 text-left text-sm leading-6">{body}</p>
+      </div>
+    </article>
   );
 }
 

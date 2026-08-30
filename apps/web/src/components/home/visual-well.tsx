@@ -30,7 +30,7 @@ export function VisualCardWell({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-1 flex-col overflow-hidden bg-background",
+        "relative flex w-full flex-1 flex-col overflow-hidden bg-background [overflow-anchor:none]",
         compact
           ? "min-h-[92px] sm:min-h-[104px]"
           : "min-h-[240px] sm:min-h-[300px]",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 
 import { cn } from "@featul/ui/lib/utils";
 import { rgb } from "./palette";
@@ -46,8 +46,8 @@ function paintGradient(
   if (!ctx || width <= 0 || height <= 0) return;
   const cols = Math.min(MAX_COLS, Math.max(4, Math.round(width / spec.cell)));
   const rows = Math.min(MAX_ROWS, Math.max(4, Math.round(height / spec.cell)));
-  canvas.width = cols;
-  canvas.height = rows;
+  if (canvas.width !== cols) canvas.width = cols;
+  if (canvas.height !== rows) canvas.height = rows;
 
   const fromFill = fillOf(spec.from);
   const toFill = spec.to === "transparent" ? null : fillOf(spec.to);
@@ -80,11 +80,23 @@ function paintGradient(
 
   const bloomCtx = bloomCanvas?.getContext("2d") ?? null;
   if (bloomCanvas && bloomCtx) {
-    bloomCanvas.width = cols;
-    bloomCanvas.height = rows;
+    if (bloomCanvas.width !== cols) bloomCanvas.width = cols;
+    if (bloomCanvas.height !== rows) bloomCanvas.height = rows;
+    bloomCtx.clearRect(0, 0, cols, rows);
     bloomCtx.drawImage(canvas, 0, 0);
   }
 }
+
+const canvasLayout: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  display: "block",
+  width: "100%",
+  height: "100%",
+  maxWidth: "100%",
+  maxHeight: "100%",
+  imageRendering: "pixelated",
+};
 
 export function DitherGradient({
   from,
@@ -103,8 +115,14 @@ export function DitherGradient({
     const wrap = wrapRef.current;
     const canvas = canvasRef.current;
     if (!wrap || !canvas) return;
+
+    let visible = false;
+    let frame = 0;
+
     const paint = () => {
+      if (!visible) return;
       const box = wrap.getBoundingClientRect();
+      if (box.width < 1 || box.height < 1) return;
       paintGradient(canvas, bloomRef.current, box.width, box.height, {
         from,
         to,
@@ -113,11 +131,37 @@ export function DitherGradient({
         opacity,
       });
     };
-    paint();
-    if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(paint);
-    observer.observe(wrap);
-    return () => observer.disconnect();
+
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        paint();
+      });
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries.some((entry) => entry.isIntersecting);
+        if (visible) schedule();
+      },
+      { rootMargin: "120px" },
+    );
+    io.observe(wrap);
+
+    const ro =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => {
+            if (visible) schedule();
+          });
+    ro?.observe(wrap);
+
+    return () => {
+      io.disconnect();
+      ro?.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [from, to, direction, cell, opacity, bloom]);
 
   const bloomStyle = pixelBloomStyle(bloom);
@@ -127,21 +171,13 @@ export function DitherGradient({
       ref={wrapRef}
       aria-hidden
       className={cn(
-        "pointer-events-none absolute inset-0 overflow-hidden",
+        "pointer-events-none absolute inset-0 overflow-hidden [contain:layout_paint] [overflow-anchor:none]",
         className,
       )}
     >
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 h-full w-full"
-        style={{ imageRendering: "pixelated" }}
-      />
+      <canvas ref={canvasRef} style={canvasLayout} />
       {bloomStyle ? (
-        <canvas
-          ref={bloomRef}
-          className="absolute inset-0 h-full w-full"
-          style={bloomStyle}
-        />
+        <canvas ref={bloomRef} style={{ ...canvasLayout, ...bloomStyle }} />
       ) : null}
     </div>
   );

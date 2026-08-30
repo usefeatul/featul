@@ -16,6 +16,7 @@ import FeaturesSection from "@/components/home/features";
 import { ConversionHero } from "@/components/home/conversion";
 import { PricingSection } from "@/components/home/pricing";
 import { SectionStack } from "@/components/layout/stack";
+import { HomeScrollMemory } from "@/components/home/scroll-restoration";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Customer Feedback, Roadmaps & Changelogs | Featul",
@@ -30,7 +31,8 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen overflow-x-clip">
+    <main className="min-h-screen">
+      <HomeScrollMemory />
       <script
         id="home-faq-jsonld"
         type="application/ld+json"
