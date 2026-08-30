@@ -15,7 +15,7 @@ export default function WizardPreview() {
         sizes="50vw"
         className="object-cover"
       />
-      <div className="absolute bottom-0 left-0 right-[12%] top-[8%] overflow-hidden rounded-tr-xl">
+      <div className="absolute right-0 bottom-0 left-[12%] top-[8%] overflow-hidden rounded-tl-xl">
         <Image
           src={WIZARD_PREVIEW_IMAGE}
           alt="Featul dashboard"
