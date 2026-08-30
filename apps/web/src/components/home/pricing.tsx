@@ -26,7 +26,7 @@ import {
 } from "../../types/plan"
 
 const PLAN_WASH: Record<PricingPlanKey, PixelColor> = {
-  free: "grey",
+  free: [168, 172, 180],
   starter: "blue",
   professional: "orange",
 }
@@ -136,7 +136,8 @@ function PricingPlanCard({
           <SubtleDitherWash
             color={PLAN_WASH[planKey]}
             direction="down"
-            opacity={0.52}
+            bloom="low"
+            opacity={0.9}
             className="[mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_100%)]"
           />
           <div className="relative z-10 flex items-center justify-between gap-3">

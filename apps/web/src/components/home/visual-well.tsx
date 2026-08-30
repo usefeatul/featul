@@ -6,7 +6,7 @@ import {
   DitherGradient,
   type GradientDirection,
 } from "@/components/dither-kit/gradient";
-import type { PixelColor } from "@/components/dither-kit/pixel";
+import type { PixelBloom, PixelColor } from "@/components/dither-kit/pixel";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
@@ -82,11 +82,13 @@ export function SubtleDitherWash({
   className,
   direction = "right",
   opacity = 0.18,
+  bloom = "off",
 }: {
   color: PixelColor;
   className?: string;
   direction?: GradientDirection;
   opacity?: number;
+  bloom?: PixelBloom;
 }) {
   const fromTop = direction === "down" || direction === "up";
 
@@ -95,8 +97,8 @@ export function SubtleDitherWash({
       from={color}
       to="transparent"
       direction={direction}
-      cell={4}
-      bloom="off"
+      cell={3}
+      bloom={bloom}
       opacity={opacity}
       className={cn(
         fromTop
