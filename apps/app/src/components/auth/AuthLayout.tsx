@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@featul/ui/components/card";
-import { AuthFooter } from "@/components/auth/AuthFooter";
 
 export type AuthLayoutStyles = {
   sectionCls: string;
@@ -61,7 +60,7 @@ export function getAuthLayoutStyles(embedded: boolean = false): AuthLayoutStyles
 
   return {
     sectionCls: "w-full",
-    formCls: "m-auto h-fit w-full max-w-[520px]",
+    formCls: "m-auto h-fit w-full max-w-sm",
     bodyPaddingCls: "",
     footerPaddingCls: "",
     headingCls: "font-heading text-xl",
@@ -130,10 +129,9 @@ export function AuthLayout({
 
           <CardContent className={styles.sectionSpacingCls}>{children}</CardContent>
 
-          <CardFooter className="flex-col items-stretch gap-4">
-            {footer}
-            <AuthFooter />
-          </CardFooter>
+          {footer ? (
+            <CardFooter className="flex-col items-stretch">{footer}</CardFooter>
+          ) : null}
         </Card>
       </form>
     </section>
