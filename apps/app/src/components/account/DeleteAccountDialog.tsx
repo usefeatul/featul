@@ -14,7 +14,7 @@ import { authClient } from "@featul/auth/client"
 import { client } from "@featul/api/client"
 import { TrashIcon } from "@featul/ui/icons/trash"
 
-const CONFIRMATION_WORD = "delete"
+const CONFIRMATION_WORD = "DELETE"
 
 export function DeleteAccountDialog({
   open,
@@ -28,7 +28,7 @@ export function DeleteAccountDialog({
   const router = useRouter()
   const [confirmation, setConfirmation] = React.useState("")
   const [deleting, setDeleting] = React.useState(false)
-  const canDelete = confirmation.trim().toLowerCase() === CONFIRMATION_WORD
+  const canDelete = confirmation.trim() === CONFIRMATION_WORD
 
   const onDeleteAccount = React.useCallback(async () => {
     if (deleting || !canDelete) return
@@ -74,7 +74,7 @@ export function DeleteAccountDialog({
           value={confirmation}
           onChange={(e) => setConfirmation(e.target.value)}
           placeholder={`Type ${CONFIRMATION_WORD}`}
-          className="font-mono"
+          className="font-mono text-accent placeholder:text-accent"
           autoComplete="off"
         />
       </div>
