@@ -32,6 +32,7 @@ export default function CTA() {
               <HotkeyLink
                 variant="nav"
                 className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                label="Start for free"
               />
               <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-white/70 bg-white/95 text-accent shadow-sm hover:bg-white" />
             </div>

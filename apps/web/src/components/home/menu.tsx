@@ -6,7 +6,7 @@ import { Container } from "../global/container";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { Button } from "@featul/ui/components/button";
 import { MenuIcon } from "@featul/ui/icons/menu";
-import { AUTH_SIGN_UP_URL } from "@/config/auth";
+import { APP_URL } from "@/config/auth";
 import { navigationConfig } from "@/config/homeNav";
 
 type MobileMenuProps = {
@@ -93,7 +93,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               className="w-full font-semibold border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
             >
               <Link
-                href={AUTH_SIGN_UP_URL}
+                href={APP_URL}
                 data-sln-event="cta: start for free clicked"
                 onClick={onClose}
               >

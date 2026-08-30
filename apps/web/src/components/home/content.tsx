@@ -19,7 +19,7 @@ export function HeroContent() {
         lightweight workspace.
       </p>
 
-      <HeroCta hotkeyLabel="Add to your website" />
+      <HeroCta />
       <HeroHighlights />
     </div>
   );

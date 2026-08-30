@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AUTH_SIGN_UP_URL } from "@/config/auth";
+import { APP_URL } from "@/config/auth";
 import { navigationConfig } from "@/config/homeNav";
 import { Container } from "../global/container";
 import { MenuIcon } from "@featul/ui/icons/menu";
@@ -140,7 +140,7 @@ export default function Navbar() {
               className="font-heading border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
             >
               <Link
-                href={AUTH_SIGN_UP_URL}
+                href={APP_URL}
                 data-sln-event="cta: start for free clicked"
               >
                 Start for free

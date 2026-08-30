@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { AUTH_SIGN_UP_URL } from "@/config/auth"
+import { APP_URL } from "@/config/auth"
 import { Button } from "@featul/ui/components/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@featul/ui/components/card"
 
@@ -22,7 +22,7 @@ export default function ToolProductCta({
       </CardHeader>
       <CardContent>
         <Button asChild>
-          <Link href={AUTH_SIGN_UP_URL} data-sln-event="cta: tool signup clicked">
+          <Link href={APP_URL} data-sln-event="cta: tool signup clicked">
             Start for free
           </Link>
         </Button>

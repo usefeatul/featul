@@ -1,4 +1,4 @@
-import { AUTH_SIGN_UP_URL } from "@/config/auth";
+import { APP_URL } from "@/config/auth";
 
 export type PricingPlanKey = "free" | "starter" | "professional";
 export type BillingCycle = "monthly" | "yearly";
@@ -31,7 +31,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "Ideal for getting started",
     monthlyPrice: 0,
     yearlyPrice: 0,
-    href: AUTH_SIGN_UP_URL,
+    href: APP_URL,
     finePrint: "No credit card required.",
     highlights: [
       { label: "Team members", value: "3" },
@@ -54,7 +54,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "For early teams",
     monthlyPrice: 24,
     yearlyPrice: 240,
-    href: AUTH_SIGN_UP_URL,
+    href: APP_URL,
     finePrint: "Flat workspace pricing. Cancel anytime.",
     highlights: [
       { label: "Team members", value: "5" },
@@ -77,7 +77,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "For growing product teams",
     monthlyPrice: 47,
     yearlyPrice: 470,
-    href: AUTH_SIGN_UP_URL,
+    href: APP_URL,
     finePrint: "Flat workspace pricing. Cancel anytime.",
     highlights: [
       { label: "Team members", value: "10" },
