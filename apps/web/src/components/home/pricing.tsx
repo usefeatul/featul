@@ -26,7 +26,7 @@ import {
 } from "../../types/plan"
 
 const PLAN_WASH: Record<PricingPlanKey, PixelColor> = {
-  free: [168, 172, 180],
+  free: [110, 114, 122],
   starter: "blue",
   professional: "orange",
 }
