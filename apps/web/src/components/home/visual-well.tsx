@@ -17,6 +17,7 @@ export function VisualCardWell({
   badge,
   children,
   className,
+  compact = false,
 }: {
   color: PixelColor;
   step?: string;
@@ -24,11 +25,15 @@ export function VisualCardWell({
   badge?: ReactNode;
   children: ReactNode;
   className?: string;
+  compact?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "relative flex min-h-[240px] w-full flex-1 flex-col overflow-hidden bg-background sm:min-h-[300px]",
+        "relative flex w-full flex-1 flex-col overflow-hidden bg-background",
+        compact
+          ? "min-h-[92px] sm:min-h-[104px]"
+          : "min-h-[240px] sm:min-h-[300px]",
         className,
       )}
     >
@@ -42,7 +47,9 @@ export function VisualCardWell({
         className="[mask-image:radial-gradient(130%_120%_at_50%_0%,black_35%,transparent_88%)]"
       />
       {badge ? (
-        <div className="absolute left-3 top-3 z-10">{badge}</div>
+        <div className={cn("absolute z-10", compact ? "left-2.5 top-2.5" : "left-3 top-3")}>
+          {badge}
+        </div>
       ) : null}
       {step || label ? (
         <div className="relative z-10 flex items-baseline gap-2 px-4 pt-4 sm:px-5">
@@ -56,7 +63,14 @@ export function VisualCardWell({
           ) : null}
         </div>
       ) : null}
-      <div className="relative z-10 flex flex-1 items-center justify-center px-5 pb-6 pt-2 sm:px-8 sm:pb-8">
+      <div
+        className={cn(
+          "relative z-10 flex flex-1 items-center justify-center",
+          compact
+            ? "px-3 pb-3 pt-7"
+            : "px-5 pb-6 pt-2 sm:px-8 sm:pb-8",
+        )}
+      >
         {children}
       </div>
     </div>

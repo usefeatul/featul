@@ -3,7 +3,6 @@
 import { Container } from "../global/container";
 import type { ComponentType } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { SlackIcon } from "@featul/ui/icons/slack";
 import { DiscordIcon } from "@featul/ui/icons/discord";
 import { NotraIcon } from "@featul/ui/icons/notra";
@@ -11,16 +10,10 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
-import {
-  overlayChipInnerClass,
-  overlayChipShellClass,
-  overlayDialogClass,
-  overlayInnerClass,
-} from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { PixelColor } from "@/components/dither-kit/pixel";
-import { HorizontalScrollControls } from "./scroll";
-import { VisualCardIconTile, VisualCardWell } from "./visual-well";
+import { DitherGradient } from "@/components/dither-kit/gradient";
 
 type IntegrationItem = {
   slug: string;
@@ -64,7 +57,7 @@ const integrations: IntegrationItem[] = [
     description: "Import requests and comments from Nolt into Featul.",
     status: "Coming soon",
     icon: NoltIcon,
-    color: "red",
+    color: "grey",
   },
   {
     slug: "canny",
@@ -89,123 +82,81 @@ export default function Integrations() {
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section
         data-component="Integrations"
-        className="my-16 max-w-full overflow-x-clip sm:my-20"
+        className="my-12 max-w-full sm:my-16"
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-3xl text-left">
-              <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
-                Integrate with your favorite tools
-              </h2>
-              <div className="mt-3 flex items-start gap-2">
-                <AccentBar width={8} />
-                <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
-                  Connect notifications, imports, and migration paths so
-                  feedback stays close to the tools your team already uses.
-                </p>
-              </div>
-            </div>
-
-            <HorizontalScrollControls
-              targetId="home-integrations-slider"
-              className="flex shrink-0 items-center gap-2 self-end"
-              backwardLabel="Show previous integrations"
-              forwardLabel="Show next integrations"
-            />
+          <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+            Integrate with your favorite tools
+          </h2>
+          <div className="mt-3 flex items-start gap-2">
+            <AccentBar width={8} />
+            <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
+              Connect notifications, imports, and migration paths so feedback
+              stays close to the tools your team already uses.
+            </p>
           </div>
 
-          <div className="relative mt-10">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-background to-transparent sm:w-12"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-background to-transparent sm:w-12"
-            />
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {integrations.map((item) => {
+              const Icon = item.icon;
+              const isAvailable = item.status === "Available";
 
-            <div
-              id="home-integrations-slider"
-              className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 [-webkit-overflow-scrolling:touch] lg:gap-4"
-              role="region"
-              aria-label="Integrations carousel"
-              tabIndex={0}
-            >
-              {integrations.map((item) => {
-                const Icon = item.icon;
-                const isAvailable = item.status === "Available";
-
-                return (
-                  <Link
-                    key={item.name}
-                    href={`/integrations/${item.slug}`}
-                    className="group block w-[min(82vw,280px)] shrink-0 snap-start sm:w-[min(46vw,300px)] lg:w-[min(32vw,310px)]"
-                    aria-label={`Learn more about ${item.name}`}
-                  >
-                    <article
-                      className={cn(overlayDialogClass, "flex h-full flex-col")}
+              return (
+                <Link
+                  key={item.name}
+                  href={`/integrations/${item.slug}`}
+                  className="group block h-full"
+                  aria-label={`Learn more about ${item.name}`}
+                >
+                  <article className={cn(overlayDialogClass, "h-full")}>
+                    <div
+                      className={cn(
+                        overlayInnerClass,
+                        "flex h-full min-h-[4.5rem] items-stretch",
+                      )}
                     >
-                      <div
-                        className={cn(
-                          overlayInnerClass,
-                          "mb-2 flex min-h-[168px] flex-1 flex-col p-0 sm:min-h-[188px]",
-                        )}
-                      >
-                        <VisualCardWell
-                          color={item.color}
-                          className="min-h-[168px] sm:min-h-[188px]"
-                          badge={
-                            <span className={overlayChipShellClass}>
-                              <span
-                                className={cn(
-                                  overlayChipInnerClass,
-                                  "h-5 min-h-5 gap-1.5 px-1.5 text-[11px] font-medium",
-                                  isAvailable
-                                    ? "text-emerald-700"
-                                    : "text-accent",
-                                )}
-                              >
-                                <span
-                                  className={cn(
-                                    "size-1.5 rounded-full",
-                                    isAvailable
-                                      ? "bg-emerald-500"
-                                      : "bg-amber-400",
-                                  )}
-                                />
-                                {item.status}
-                              </span>
-                            </span>
-                          }
-                        >
-                          <VisualCardIconTile>
-                            <Icon className="size-8 sm:size-9" />
-                          </VisualCardIconTile>
-                        </VisualCardWell>
+                      <div className="relative flex w-[3.75rem] shrink-0 items-center justify-center overflow-hidden sm:w-16">
+                        <DitherGradient
+                          from={item.color}
+                          to="transparent"
+                          direction="right"
+                          cell={3}
+                          bloom="low"
+                          opacity={isAvailable ? 0.88 : 0.45}
+                          className="[mask-image:linear-gradient(to_right,black_15%,transparent_92%)]"
+                        />
+                        <Icon className="relative z-10 size-6" />
                       </div>
 
-                      <div
-                        className={cn(
-                          overlayInnerClass,
-                          "flex flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4",
-                        )}
-                      >
-                        <h3 className="text-foreground text-lg font-semibold tracking-[-0.02em]">
-                          {item.name}
-                        </h3>
-                        <p className="text-accent mt-2 flex-1 text-sm leading-6">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-2.5 pr-3.5">
+                        <div className="flex items-center gap-2">
+                          <h3 className="truncate text-sm font-medium text-foreground sm:text-base">
+                            {item.name}
+                          </h3>
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 text-[11px] font-medium",
+                              isAvailable ? "text-emerald-700" : "text-accent",
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "size-1.5 rounded-full",
+                                isAvailable ? "bg-emerald-500" : "bg-amber-400",
+                              )}
+                            />
+                            {item.status}
+                          </span>
+                        </div>
+                        <p className="text-accent mt-0.5 line-clamp-2 text-xs leading-5 sm:text-sm sm:leading-5">
                           {item.description}
                         </p>
-                        <span className="text-primary mt-4 inline-flex items-center gap-1.5 text-sm font-medium transition-colors group-hover:text-primary/80">
-                          Learn more
-                          <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-                        </span>
                       </div>
-                    </article>
-                  </Link>
-                );
-              })}
-            </div>
+                    </div>
+                  </article>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
