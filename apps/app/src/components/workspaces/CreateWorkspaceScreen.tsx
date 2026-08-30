@@ -14,7 +14,7 @@ export function CreateWorkspaceScreen({
 }) {
   return (
     <div className="fixed inset-0 overflow-hidden overscroll-none bg-card p-4">
-      <header className="pointer-events-auto absolute top-4 right-4 z-20">
+      <header className="pointer-events-auto absolute top-4 left-4 z-20">
         <OnboardingUserMenu initialUser={initialUser} />
       </header>
 

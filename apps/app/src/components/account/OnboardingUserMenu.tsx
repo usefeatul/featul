@@ -97,7 +97,7 @@ export default function OnboardingUserMenu({
         <DropdownMenuContent
           className="pointer-events-auto z-[70] w-48 max-w-[85vw]"
           side="bottom"
-          align="end"
+          align="start"
           sideOffset={8}
         >
           <DropdownMenuLabel className="px-2.5 py-1.5 font-normal">

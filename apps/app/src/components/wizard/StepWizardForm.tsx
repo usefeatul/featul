@@ -182,8 +182,6 @@ export default function StepWizardForm({
 
   return (
     <div className="grid h-full min-h-0 w-full grid-cols-1 overflow-hidden lg:grid-cols-2 lg:gap-4">
-      <WizardPreview />
-
       <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-card px-4 py-6 sm:px-8">
         <Card variant="plain" className="w-full max-w-[520px] bg-transparent dark:bg-transparent">
           <CardHeader>
@@ -372,6 +370,8 @@ export default function StepWizardForm({
           </CardFooter>
         </Card>
       </div>
+
+      <WizardPreview />
     </div>
   )
 }
