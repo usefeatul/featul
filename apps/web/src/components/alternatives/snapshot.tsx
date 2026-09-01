@@ -4,6 +4,8 @@ import {
   type Alternative,
 } from "@/config/alternatives"
 import { SquareIcon } from "@featul/ui/icons/square"
+import type { FeatureSupport } from "@/config/alternatives"
+import { StatusIcon } from "./icon"
 import {
   ComparisonStatusHeader,
   ComparisonTable,
@@ -14,6 +16,28 @@ import {
 } from "./table"
 
 const VALUE_COLUMN_CLASS = "w-[34%] min-w-[10rem] align-top"
+
+function leadingStatus(text: string): FeatureSupport | null {
+  const value = text.trim()
+  if (/^yes\b/i.test(value)) return true
+  if (/^partial\b/i.test(value)) return "partial"
+  if (/^no\b/i.test(value)) return false
+  return null
+}
+
+function SnapshotValue({ text }: { text: string }) {
+  const status = leadingStatus(text)
+  if (status == null) return text
+
+  return (
+    <span className="inline-flex items-start gap-2">
+      <span className="mt-0.5 shrink-0">
+        <StatusIcon value={status} />
+      </span>
+      <span>{text}</span>
+    </span>
+  )
+}
 
 export default function Snapshot({ alt }: { alt: Alternative }) {
   if (!alt.snapshot?.length) return null
@@ -66,10 +90,10 @@ export default function Snapshot({ alt }: { alt: Alternative }) {
                       {row.label}
                     </ComparisonTh>
                     <ComparisonTd className={VALUE_COLUMN_CLASS}>
-                      {row.competitor}
+                      <SnapshotValue text={row.competitor} />
                     </ComparisonTd>
                     <ComparisonTd className={`${VALUE_COLUMN_CLASS} text-foreground`}>
-                      {row.featul}
+                      <SnapshotValue text={row.featul} />
                     </ComparisonTd>
                   </ComparisonTr>
                 ))}
