@@ -6,10 +6,6 @@ import { HeroHighlights } from "@/components/shared/highlights";
 export function HeroContent() {
   return (
     <div className="text-left" data-component="HeroContent">
-      <p className="mb-3 text-xs font-medium tracking-wide text-white/85 [text-shadow:0_1px_4px_rgba(0,0,0,0.3)] sm:mb-4 sm:text-sm">
-        Open source · EU hosted · No per-seat pricing
-      </p>
-
       <h1 className="max-w-3xl font-heading text-[2rem] font-semibold leading-[1.15] tracking-tight text-white text-balance sm:text-5xl sm:leading-tight md:text-6xl">
         From upvote to shipped.{" "}
         <span className="inline-flex items-center rounded-md bg-white/20 px-1.5 py-[2px] align-baseline text-white backdrop-blur-sm sm:px-2">
