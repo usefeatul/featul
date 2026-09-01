@@ -89,7 +89,7 @@ export function Hero() {
         className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14"
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="pt-24 sm:pt-28">
+          <div className="pt-28 sm:pt-32">
             <HeroContent />
           </div>
         </div>
