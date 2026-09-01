@@ -117,7 +117,11 @@ export default function UserDropdownMenu({
                       }
                     >
                       {account.image ? (
-                        <AvatarImage src={account.image} alt={account.name} />
+                        <AvatarImage
+                          key={account.image}
+                          src={account.image}
+                          alt={account.name}
+                        />
                       ) : null}
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>

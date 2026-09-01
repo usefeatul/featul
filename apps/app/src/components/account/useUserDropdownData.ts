@@ -101,7 +101,51 @@ export function useUserDropdownData({
     refetchOnReconnect: false,
   });
 
-  const user = currentSession?.user || null;
+  const { data: meData } = useQuery<{ user: SessionUser | null }>({
+    queryKey: accountQueryKeys.me,
+    queryFn: async () => {
+      const session = await authClient.getSession();
+      const payload =
+        isRecord(session) && "data" in session
+          ? (session as { data?: unknown }).data
+          : session;
+      return { user: toSessionUser(payload) };
+    },
+    initialData: () => ({
+      user: initialUser ? ({ ...initialUser } as SessionUser) : null,
+    }),
+    placeholderData: (prev) => prev,
+    staleTime: 300_000,
+    gcTime: 900_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: false,
+  });
+
+  const user = React.useMemo(() => {
+    const sidebarUser = currentSession?.user || null;
+    const meUser = meData?.user || null;
+    if (sidebarUser && meUser) {
+      const sameId =
+        Boolean(sidebarUser.id) &&
+        Boolean(meUser.id) &&
+        sidebarUser.id === meUser.id;
+      const sameEmail =
+        Boolean(sidebarUser.email) &&
+        Boolean(meUser.email) &&
+        sidebarUser.email === meUser.email;
+      if (sameId || sameEmail || (!sidebarUser.id && !meUser.id)) {
+        return {
+          ...sidebarUser,
+          ...meUser,
+          id: meUser.id || sidebarUser.id,
+          email: meUser.email || sidebarUser.email,
+        };
+      }
+    }
+    return sidebarUser || meUser;
+  }, [currentSession?.user, meData?.user]);
   const displayUser = getDisplayUser(user || undefined);
   const initials = getInitials(displayUser.name || "U");
   const currentUserId = String(currentSession?.userId || "").trim();

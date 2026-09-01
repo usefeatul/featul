@@ -18,6 +18,8 @@ import {
 } from "@/hooks/useSignedUpload";
 import { Button } from "@featul/ui/components/button";
 import { AvatarIcon } from "@featul/ui/icons/avatar";
+import { updateAccountUserInCache } from "./cache";
+import { accountQueryKeys } from "./keys";
 
 type AvatarUploadProps = {
   initialUser?: { name?: string; email?: string; image?: string | null } | null;
@@ -42,6 +44,7 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
         return;
       }
 
+      const previousImage = image;
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === "string") {
@@ -83,6 +86,13 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
         if (error) {
           throw new Error(error.message || "Failed to save avatar");
         }
+        const cachedUser = queryClient.getQueryData<{
+          user: {
+            name?: string;
+            email?: string;
+            image?: string | null;
+          } | null;
+        }>(accountQueryKeys.me)?.user;
         const updatedUser =
           updated && typeof updated === "object" && "user" in updated
             ? (updated.user as {
@@ -90,10 +100,13 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
                 email?: string;
                 image?: string | null;
               })
-            : { ...(initialUser || {}), image: publicUrl };
+            : { ...(cachedUser || initialUser || {}), image: publicUrl };
         setImage(publicUrl);
         try {
-          queryClient.setQueryData(["me"], { user: updatedUser });
+          updateAccountUserInCache(queryClient, {
+            ...updatedUser,
+            image: publicUrl,
+          });
         } catch (e: unknown) {
           console.error(e);
         }
@@ -101,14 +114,12 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : "Failed to upload avatar";
         toast.error(msg, { id: toastId });
-        if (initialUser?.image) {
-          setImage(String(initialUser.image));
-        }
+        setImage(previousImage);
       } finally {
         setUploadingImage(false);
       }
     },
-    [initialUser, queryClient],
+    [image, initialUser, queryClient],
   );
 
   const pickImage = React.useCallback(() => {

@@ -9,6 +9,8 @@ import { Input } from "@featul/ui/components/input"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { UserFocusIcon } from "@featul/ui/icons/userfocus"
+import { updateAccountUserInCache } from "./cache"
+import { accountQueryKeys } from "./keys"
 
 type AccountDetailsProps = {
     initialUser?: { name?: string; email?: string; image?: string | null } | null
@@ -20,8 +22,17 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
     const [name, setName] = React.useState(() => String(initialUser?.name || "").trim())
     const [saving, setSaving] = React.useState(false)
 
+    const syncUser = React.useCallback((nextUser: { name?: string; email?: string; image?: string | null } | null) => {
+        if (!nextUser) return
+        try {
+            updateAccountUserInCache(queryClient, nextUser)
+        } catch (e: unknown) {
+            console.error(e)
+        }
+    }, [queryClient])
+
     const { data } = useQuery<{ user: { name?: string; email?: string; image?: string | null } | null }>({
-        queryKey: ["me"],
+        queryKey: accountQueryKeys.me,
         queryFn: async () => {
             const s = await authClient.getSession()
             const sessionData = s && typeof s === "object" && "data" in s ? s.data : s
@@ -43,11 +54,8 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
     React.useEffect(() => {
         if (user) {
             setName((user?.name || "").trim())
-            try { queryClient.setQueryData(["me"], { user }) } catch (e: unknown) {
-                console.error(e)
-            }
         }
-    }, [user, queryClient])
+    }, [user])
 
     const d = getDisplayUser(user || undefined)
 
@@ -68,18 +76,14 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
 
         // Optimistic update - instant UI feedback
         const optimisticUser = { ...(user || {}), name: nextName || previousName }
-        try { queryClient.setQueryData(["me"], { user: optimisticUser }) } catch (e: unknown) {
-            console.error(e)
-        }
+        syncUser(optimisticUser)
         toast.success("Saved")
 
         try {
             const { error, data: saveData } = await authClient.updateUser({ name: nextName || undefined })
             if (error) {
                 // Revert on error
-                try { queryClient.setQueryData(["me"], { user }) } catch (e: unknown) {
-                    console.error(e)
-                }
+                if (user) syncUser(user)
                 setName(previousName)
                 toast.error(error.message || "Failed to save")
                 return
@@ -88,21 +92,17 @@ export default function AccountDetails({ initialUser, initialPasskeys }: Account
             const updatedUser = (saveData && typeof saveData === "object" && "user" in saveData)
                 ? saveData.user as { name?: string; email?: string; image?: string | null }
                 : optimisticUser
-            try { queryClient.setQueryData(["me"], { user: updatedUser }) } catch (e: unknown) {
-                console.error(e)
-            }
+            syncUser(updatedUser)
         } catch (err: unknown) {
             // Revert on error
-            try { queryClient.setQueryData(["me"], { user }) } catch (e: unknown) {
-                console.error(e)
-            }
+            if (user) syncUser(user)
             setName(previousName)
             const msg = err instanceof Error ? err.message : "Failed to save"
             toast.error(msg)
         } finally {
             setSaving(false)
         }
-    }, [saving, name, user, queryClient])
+    }, [saving, name, user, syncUser])
 
     return (
         <>

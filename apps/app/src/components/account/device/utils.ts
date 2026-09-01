@@ -60,11 +60,15 @@ export function buildAccountsList({
   for (const account of deviceAccounts) {
     if (!account.userId || seenUserIds.has(account.userId)) continue;
     seenUserIds.add(account.userId);
+    const isCurrent =
+      account.isCurrent ||
+      (Boolean(currentUserId) && account.userId === currentUserId);
+    const useLiveIdentity = Boolean(isCurrent && currentSession?.user);
     accounts.push({
       userId: account.userId,
-      name: account.name,
-      image: account.image,
-      isCurrent: account.isCurrent,
+      name: useLiveIdentity ? fallbackName || account.name : account.name,
+      image: useLiveIdentity ? fallbackImage : account.image,
+      isCurrent,
     });
   }
 

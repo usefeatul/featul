@@ -304,6 +304,7 @@ export default function UserDropdown({
                   <Avatar className="size-5">
                     {displayUser.image ? (
                       <AvatarImage
+                        key={displayUser.image}
                         src={displayUser.image}
                         alt={displayUser.name}
                       />
