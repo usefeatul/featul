@@ -105,8 +105,18 @@ export default function RootLayout({
   const selineToken = process.env.NEXT_PUBLIC_SELINE_TOKEN?.trim();
 
   return (
-    <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
+    <html
+      lang="en"
+      className={`${manrope.variable} ${sora.variable}`}
+      suppressHydrationWarning
+    >
       <head>
+        <script
+          id="home-scroll-memory"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var nav=performance.getEntriesByType("navigation")[0];var reload=nav&&(nav.type==="reload"||nav.type==="back_forward");var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v4")||"0",10)||0}catch(e){}if(!reload)y=0;var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0){if(y>=80)h.style.opacity="0";function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)}})();`,
+          }}
+        />
         {selineToken ? (
           <Script
             src="https://cdn.seline.com/seline.js"
