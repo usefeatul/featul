@@ -83,7 +83,7 @@ export function ComparisonTr({ children }: { children: ReactNode }) {
   return <tr className="border-b border-border last:border-b-0">{children}</tr>
 }
 
-const STATUS_COLUMN_CLASS = "w-[7.75rem] min-w-[7.75rem] sm:w-36 sm:min-w-36"
+const STATUS_COLUMN_CLASS = "w-24 min-w-24 sm:w-28 sm:min-w-28"
 
 export function ComparisonStatusHeader({
   name,
@@ -140,12 +140,11 @@ export function ComparisonStatusHeader({
 }
 
 export function ComparisonStatusCell({ value }: { value: FeatureSupport }) {
+  const label = featureSupportLabel(value)
   return (
-    <span className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
+    <span className="inline-flex items-center justify-center" title={label}>
       <StatusIcon value={value} />
-      <span className="text-xs font-medium text-foreground">
-        {featureSupportLabel(value)}
-      </span>
+      <span className="sr-only">{label}</span>
     </span>
   )
 }
