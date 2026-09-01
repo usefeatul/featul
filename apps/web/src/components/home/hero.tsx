@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
@@ -9,10 +9,12 @@ import { HeroContent } from "./content";
 
 type HeroView = "requests" | "roadmap" | "changelog";
 
+const HERO_TAB_INTERVAL_MS = 4500;
+
 const HERO_TABS = [
   {
     id: "requests",
-    label: "Featul",
+    label: "Feedback",
     src: "/image/dashboard.png",
     alt: "Featul feedback dashboard",
   },
@@ -40,8 +42,24 @@ const BLUR_DATA_URL =
 
 export function Hero() {
   const [view, setView] = useState<HeroView>("requests");
+  const [userPaused, setUserPaused] = useState(false);
+  const [hoverPaused, setHoverPaused] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const active = HERO_TABS.find((tab) => tab.id === view) ?? HERO_TABS[0];
+
+  useEffect(() => {
+    if (shouldReduceMotion || userPaused || hoverPaused) return;
+
+    const id = window.setInterval(() => {
+      setView((current) => {
+        const index = HERO_TABS.findIndex((tab) => tab.id === current);
+        const next = (index + 1) % HERO_TABS.length;
+        return HERO_TABS[next]!.id;
+      });
+    }, HERO_TAB_INTERVAL_MS);
+
+    return () => window.clearInterval(id);
+  }, [shouldReduceMotion, userPaused, hoverPaused]);
 
   return (
     <section
@@ -82,7 +100,11 @@ export function Hero() {
         className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14"
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="relative mt-8 pb-8 sm:mt-12 sm:pb-10">
+          <div
+            className="relative mt-8 pb-8 sm:mt-12 sm:pb-10"
+            onMouseEnter={() => setHoverPaused(true)}
+            onMouseLeave={() => setHoverPaused(false)}
+          >
             <div className={overlayDialogClass}>
               <div className={overlayInnerClass}>
                 <Image
@@ -104,7 +126,9 @@ export function Hero() {
               <div
                 className="relative inline-flex flex-wrap items-center justify-center gap-1 rounded-md border border-white/55 bg-white/20 p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_8px_32px_rgba(0,99,210,0.14)] backdrop-blur-3xl supports-[backdrop-filter]:bg-white/28"
                 role="tablist"
-                aria-label="Explore product views"
+                aria-label="Feedback, roadmap, and changelog"
+                onFocus={() => setHoverPaused(true)}
+                onBlur={() => setHoverPaused(false)}
               >
                 {HERO_TABS.map((tab) => {
                   const isActive = tab.id === view;
@@ -113,7 +137,10 @@ export function Hero() {
                       key={tab.id}
                       type="button"
                       role="tab"
-                      onClick={() => setView(tab.id)}
+                      onClick={() => {
+                        setUserPaused(true);
+                        setView(tab.id);
+                      }}
                       whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                       className={cn(
                         "relative cursor-pointer rounded-md px-3.5 py-1.5 font-heading text-xs transition-colors duration-200",
