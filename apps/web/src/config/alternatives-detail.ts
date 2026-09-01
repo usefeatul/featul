@@ -40,7 +40,7 @@ export type CompetitorDetail = {
 }
 
 function extraBody(name: string, d: CompetitorDetail): string {
-  return `${name}: ${d.extra.competitor}. Featul: ${d.extra.featul}. That split is what people mean by a ${name} alternative that is still a product feedback platform—feature voting, a public roadmap, a changelog, EU hosting, or open source.`
+  return `On ${d.extra.label}, ${name}: ${d.extra.competitor}. Featul: ${d.extra.featul}. Teams searching for a ${name} alternative that is still a product feedback platform usually care about feature voting, a public roadmap, a changelog, EU hosting, or open source.`
 }
 
 function snapshot(name: string, d: CompetitorDetail): Alternative["snapshot"] {
@@ -52,7 +52,22 @@ function snapshot(name: string, d: CompetitorDetail): Alternative["snapshot"] {
     d.extra,
     {
       label: "Product feedback loop",
-      competitor: d.kind === "changelog" ? "Changelog first; feedback often extra" : "Varies by plan",
+      competitor:
+        d.kind === "changelog"
+          ? "Changelog first; feedback often extra"
+          : d.kind === "open-source"
+            ? "Voting board; roadmap and changelog limited"
+            : d.kind === "product-management"
+              ? "Internal PM workflows first"
+              : d.kind === "visual-feedback"
+                ? "Visual bugs first"
+                : d.kind === "b2b-feedback"
+                  ? "CRM-weighted requests first"
+                  : d.kind === "linear"
+                    ? "Linear-native inbox first"
+                    : d.kind === "feedback-suite"
+                      ? "Full suite; portal is one slice"
+                      : "Voting board; roadmap and changelog vary",
       featul: FEATUL.loop,
     },
     { label: "Best for", competitor: d.bestForThem, featul: d.bestForFeatul },
@@ -105,7 +120,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `When is Featul the better ${name} alternative for customer-facing feedback?`,
           answer: `When the pain is a public portal customers will actually use, not a private research database. Featul is EU-hosted, open source, and billed per workspace from $24/month so a five-person product team does not buy seats they will not fill.`,
-          body: `Featul is built for ${d.bestForFeatul.toLowerCase()}. ${name} is built for ${d.bestForThem.toLowerCase()}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
+          body: `Featul is built for ${d.bestForFeatul}. ${name} is built for ${d.bestForThem}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
         },
         {
           title: `Does Featul include a public roadmap and changelog?`,
@@ -237,7 +252,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Does Featul include a public roadmap and changelog?`,
           answer: `Yes. Featul is built as a product feedback platform for SaaS teams: boards, votes, public roadmap, changelog, EU hosting, workspace pricing from $24/month.`,
-          body: `Featul is built for ${d.bestForFeatul.toLowerCase()}. ${name} is built for ${d.bestForThem.toLowerCase()}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
+          body: `Featul is built for ${d.bestForFeatul}. ${name} is built for ${d.bestForThem}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
@@ -303,7 +318,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Does Featul add a public roadmap and changelog ${name} teams often buy separately?`,
           answer: `Often yes. Featul keeps feature voting, the public roadmap, and release notes in one privacy-first workspace so you are not stitching a board to a changelog tool.`,
-          body: `Featul is built for ${d.bestForFeatul.toLowerCase()}. ${name} is built for ${d.bestForThem.toLowerCase()}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
+          body: `Featul is built for ${d.bestForFeatul}. ${name} is built for ${d.bestForThem}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
@@ -387,7 +402,7 @@ function faqs(name: string, slug: string, d: CompetitorDetail): { description: s
       {
         id: `${slug}-8`,
         question: `Does Featul replace ${name} for feature voting?`,
-        answer: `For customer-facing feature voting, yes: boards, votes, comments, then a public roadmap and changelog. ${kindExtra} Stay on ${name} if ${d.bestForThem.toLowerCase()} is the actual job.`,
+        answer: `For customer-facing feature voting, yes: boards, votes, comments, then a public roadmap and changelog. ${kindExtra} Stay on ${name} if the job is ${d.bestForThem}.`,
       },
     ],
   }
