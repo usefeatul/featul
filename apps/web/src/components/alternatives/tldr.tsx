@@ -28,7 +28,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
             </p>
           </div>
           <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl lg:text-3xl">
-            {alt.name} vs Featul: quick summary
+            {alt.name} vs Featul: what is the short answer?
           </h2>
 
           <div className="mt-8 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-6">

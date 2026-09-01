@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AlternativeHero } from "@/components/alternatives/hero";
 import TLDR from "@/components/alternatives/tldr";
+import Snapshot from "@/components/alternatives/snapshot";
 import Compare from "@/components/alternatives/compare";
 import WhyBetter from "@/components/alternatives/why";
 import AlternativeGuide from "@/components/alternatives/guide";
@@ -113,6 +114,7 @@ export default async function AlternativePage({
       <div className="relative mx-auto max-w-6xl">
         <SectionStack>
           <TLDR alt={alt} />
+          <Snapshot alt={alt} />
           <Compare alt={alt} />
           <WhyBetter alt={alt} />
           <AlternativeGuide alt={alt} />

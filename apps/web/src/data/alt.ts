@@ -114,7 +114,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'featurebase-3',
         question: 'How does Featul pricing compare to Featurebase?',
         answer:
-          'Featurebase scales primarily on seats. Featul uses flat workspace plans, so adding product, success, and engineering people does not multiply the bill the same way. Compare current numbers on the Featul pricing page.',
+          'Featurebase scales primarily on seats. Featul uses flat workspace plans: Starter is $24 per month for five members, Professional is $47 per month. Adding a PM, CSM, and engineers does not multiply the bill the same way. Confirm Featurebase’s current seat price on their site.',
       },
       {
         id: 'featurebase-4',
@@ -144,7 +144,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'featurebase-8',
         question: 'Is Featul cheaper than Featurebase for a product team?',
         answer:
-          'It often is once several roles need access, because Featul bills the workspace instead of each seat. Always compare live pricing: Featurebase’s value is the broader suite; Featul’s value is the feedback-to-release loop at a predictable workspace rate.',
+          'It often is once several roles need access, because Featul bills the workspace instead of each seat. Featul Starter is $24 per month; Professional is $47. Featurebase’s value is the broader suite; Featul’s value is the feedback-to-release loop at a predictable workspace rate.',
       },
     ],
   },

@@ -295,7 +295,7 @@ export function buildAlternativesItemListSchema({
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Featul alternatives to Featurebase, Canny, and other feedback tools",
+    name: "Best Featurebase and Canny alternatives 2026",
     itemListElement: items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,

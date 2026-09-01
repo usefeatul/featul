@@ -108,7 +108,7 @@ Featul is customer feedback, public or private roadmaps, and changelogs in one E
 - [Docs index](${absoluteUrl("/docs/llms.txt")}): Curated documentation for coding agents.
 
 ## Compare
-- [Alternatives](${absoluteUrl("/alternatives")}): Featul vs Canny, Featurebase, and other feedback tools.
+- [Alternatives](${absoluteUrl("/alternatives")}): Best Featurebase and Canny alternatives in 2026, with pricing, open source, and EU hosting compared.
 - [Featurebase alternatives](${absoluteUrl("/alternatives/featurebase")}): Open source Featurebase alternative with self-hosting.
 - [Canny alternatives](${absoluteUrl("/alternatives/canny")}): Canny alternative with Canny import and Slack/API integrations.
 

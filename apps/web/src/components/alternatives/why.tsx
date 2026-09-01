@@ -47,15 +47,14 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
-            Why teams choose Featul over {alt.name}
+            Why do teams choose Featul over {alt.name}?
           </h2>
 
           <div className="mt-10 flex items-start gap-2">
             <AccentBar width={8} />
             <p className="text-accent text-sm sm:text-base">
-              {alt.name} is known for {tagline}. Featul is a strong {alt.name}{" "}
-              alternative when you want privacy-first defaults, a connected
-              feedback-to-changelog workflow, and less setup overhead.
+              {alt.snapshotLead ??
+                `${alt.name} is known for ${tagline}. Featul is a strong ${alt.name} alternative when you want privacy-first defaults, a connected feedback-to-changelog workflow, and less setup overhead.`}
             </p>
           </div>
 
