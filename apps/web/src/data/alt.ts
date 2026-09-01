@@ -61,7 +61,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'userjot-1',
         question: 'What’s the key difference between UserJot and Featul?',
         answer:
-          'UserJot focuses on lightweight feedback capture. Featul adds a complete workflow—feedback boards, public roadmap, and changelog—plus privacy-first defaults.',
+          'UserJot focuses on lightweight feedback capture. Featul adds a complete workflow with feedback boards, a public roadmap, and a changelog, plus privacy-first defaults.',
       },
       {
         id: 'userjot-2',
@@ -133,7 +133,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'featurebase-6',
         question: 'When should I stay on Featurebase?',
         answer:
-          'Stay if you already rely on Featurebase’s help-center and AI support suite and do not need self-hosting or EU-first hosting. Choose Featul if you want an open source Featurebase alternative with simpler workspace pricing.',
+          'Stay if you already rely on Featurebase’s help center and AI support suite and do not need self-hosting or EU-first hosting. Choose Featul if you want an open source Featurebase alternative with simpler workspace pricing.',
       },
       {
         id: 'featurebase-7',
@@ -145,7 +145,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'featurebase-8',
         question: 'Is Featul cheaper than Featurebase for a product team?',
         answer:
-          'It often is once several roles need access, because Featul bills the workspace instead of each seat. Featul Starter is $24 per month; Professional is $47. Featurebase’s value is the broader suite; Featul’s value is the feedback-to-release loop at a predictable workspace rate.',
+          'It often is once several roles need access, because Featul bills the workspace instead of each seat. Featul Starter is $24 per month. Professional is $47. Featurebase’s value is the broader suite. Featul’s value is the feedback-to-release loop at a predictable workspace rate.',
       },
     ],
   },
@@ -223,7 +223,7 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
         id: 'canny-5',
         question: 'How do Featul integrations compare to Canny’s catalog?',
         answer:
-          'Canny has a longer list of native third-party apps. Featul covers the integrations most product teams actually use daily—Slack, webhooks, and API—and keeps the workflow in one EU-hosted workspace.',
+          'Canny has a longer list of native third-party apps. Featul covers the integrations most product teams actually use daily (Slack, webhooks, and API) and keeps the workflow in one EU-hosted workspace.',
       },
       {
         id: 'canny-6',
@@ -315,7 +315,7 @@ export function getAlternativeFaq(slug: string): AlternativeFaqs {
         id: 'generic-1',
         question: 'What makes Featul different?',
         answer:
-          'Privacy-first EU hosting, simple setup, and an end-to-end workflow—feedback boards, public roadmap, and changelog—kept in sync.',
+          'Privacy-first EU hosting, simple setup, and an end-to-end workflow with feedback boards, a public roadmap, and a changelog kept in sync.',
       },
       {
         id: 'generic-2',
@@ -345,7 +345,7 @@ export function getAlternativeFaq(slug: string): AlternativeFaqs {
         id: 'generic-6',
         question: 'How quickly can I set up Featul?',
         answer:
-          'You can start in minutes—enable a board, share a link, or embed our widget to collect feedback in-context.',
+          'You can start in minutes. Enable a board, share a link, or embed our widget to collect feedback in context.',
       },
     ],
   }

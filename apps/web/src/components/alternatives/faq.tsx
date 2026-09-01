@@ -11,15 +11,13 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
   return (
     <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
       <section className="py-16 md:py-24">
-        <div className="max-w-5xl px-0 sm:px-6">
-          <div className="max-w-xl">
-            <FaqAccordion
-              title={`FAQs about ${alt.name} alternatives`}
-              description={description}
-              items={items}
-              limit={8}
-            />
-          </div>
+        <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+          <FaqAccordion
+            title={`FAQs about ${alt.name} alternatives`}
+            description={description}
+            items={items}
+            limit={8}
+          />
         </div>
       </section>
     </Container>

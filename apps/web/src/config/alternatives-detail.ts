@@ -40,7 +40,7 @@ export type CompetitorDetail = {
 }
 
 function extraBody(name: string, d: CompetitorDetail): string {
-  return `On ${d.extra.label}, ${name}: ${d.extra.competitor}. Featul: ${d.extra.featul}. Teams searching for a ${name} alternative that is still a product feedback platform usually care about feature voting, a public roadmap, a changelog, EU hosting, or open source.`
+  return `On ${d.extra.label}, ${name} is ${d.extra.competitor}. Featul is ${d.extra.featul}. That is usually the real split, not a feature-for-feature clone.`
 }
 
 function snapshot(name: string, d: CompetitorDetail): Alternative["snapshot"] {
@@ -102,7 +102,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Is Featul an EU-hosted, open source product feedback platform?`,
           answer: `Yes. Featul is a privacy-first product feedback platform with EU hosting by default, MIT-licensed source, and optional self-hosting. Boards, voting, public roadmap, and changelog share one workspace.`,
-          body: `That combination is what people searching “${alt}” plus “GDPR” or “self-host changelog” are usually trying to buy.`,
+          body: `If GDPR or self-hosting is on your checklist, that is the combination you are buying: a changelog next to the board, in the EU, with source you can take with you.`,
         },
         {
           title: `Who should stay on ${name}?`,
@@ -120,7 +120,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `When is Featul the better ${name} alternative for customer-facing feedback?`,
           answer: `When the pain is a public portal customers will actually use, not a private research database. Featul is EU-hosted, open source, and billed per workspace from $24/month so a five-person product team does not buy seats they will not fill.`,
-          body: `Featul is built for ${d.bestForFeatul}. ${name} is built for ${d.bestForThem}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
+          body: `Featul is a better fit for ${d.bestForFeatul}. ${name} is a better fit for ${d.bestForThem}. Match the tool to the job, not the other way around.`,
         },
         {
           title: `Does Featul include a public roadmap and changelog?`,
@@ -168,7 +168,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Is Featul an open source product feedback platform with EU hosting?`,
           answer: `Yes. Featul is MIT-licensed, self-hostable, and EU-hosted by default. You get boards, votes, a public roadmap, and a changelog without locking feedback into a closed vendor.`,
-          body: `That is the search intent behind “${alt}” plus “GDPR” or “self-host.”`,
+          body: `If GDPR or self-hosting is on the list, that is what you are buying, not a screenshot widget.`,
         },
         {
           title: `Who should stay on ${name}?`,
@@ -191,7 +191,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Is Featul cheaper than running ${name} yourself?`,
           answer: `Hosted Featul Starter is $24/month. Self-hosting either tool trades vendor cost for engineering time. If you already run ${name} happily, do not switch for novelty. Switch when you want roadmap, changelog, and a supported EU workspace.`,
-          body: `${name} pricing: ${d.pricing}. Featul Starter is $24 per workspace per month; Professional is $47. Workspace pricing is the Featul keyword: a PM, CSM, and engineers share one bill.`,
+          body: `${name} pricing: ${d.pricing}. Featul Starter is $24 per workspace per month. Professional is $47. A PM, a CSM, and engineers share one bill.`,
         },
         {
           title: `How do I migrate from ${name} to Featul?`,
@@ -201,7 +201,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Does Featul include a public roadmap and changelog?`,
           answer: `Yes. That is the usual gap teams hit after a pure voting board. Featul keeps feature requests, the public roadmap, and release notes in one privacy-first workspace.`,
-          body: `Searchers for a “${alt}” who also type “changelog” or “public roadmap” are looking for this loop.`,
+          body: `If you also need a changelog or a public roadmap, that is the usual reason teams outgrow a voting-only board.`,
         },
         {
           title: `Who should stay on ${name}?`,
@@ -234,7 +234,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Is Featul an EU-hosted product feedback platform?`,
           answer: `Yes. EU hosting by default, GDPR-friendly defaults, open source, optional self-host. Public roadmap and changelog included.`,
-          body: `That is what “${alt}” plus “GDPR” usually means.`,
+          body: `If GDPR is on the security form, that is usually what “${alt}” is standing in for.`,
         },
         {
           title: `Who should stay on ${name}?`,
@@ -252,7 +252,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Does Featul include a public roadmap and changelog?`,
           answer: `Yes. Featul is built as a product feedback platform for SaaS teams: boards, votes, public roadmap, changelog, EU hosting, workspace pricing from $24/month.`,
-          body: `Featul is built for ${d.bestForFeatul}. ${name} is built for ${d.bestForThem}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
+          body: `Featul is a better fit for ${d.bestForFeatul}. ${name} is a better fit for ${d.bestForThem}. Match the tool to the job, not the other way around.`,
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
@@ -300,7 +300,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Does Featul include EU hosting and a public roadmap?`,
           answer: `Yes. EU by default, GDPR-friendly defaults, MIT-licensed self-hosting optional. Public roadmap and changelog are in the same workspace as the board.`,
-          body: `Those are the keywords behind most “${alt}” searches: product feedback, public roadmap, changelog, EU hosting.`,
+          body: `You get product feedback, a public roadmap, a changelog, and EU hosting in one workspace. That is the usual reason people look at a ${alt}.`,
         },
         {
           title: `Who should stay on ${name}?`,
@@ -318,7 +318,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Does Featul add a public roadmap and changelog ${name} teams often buy separately?`,
           answer: `Often yes. Featul keeps feature voting, the public roadmap, and release notes in one privacy-first workspace so you are not stitching a board to a changelog tool.`,
-          body: `Featul is built for ${d.bestForFeatul}. ${name} is built for ${d.bestForThem}. Pick the product whose job matches the search: product feedback, feature voting, public roadmap, or changelog.`,
+          body: `Featul is a better fit for ${d.bestForFeatul}. ${name} is a better fit for ${d.bestForThem}. Match the tool to the job, not the other way around.`,
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
@@ -333,7 +333,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Is Featul an EU-hosted, open source feedback tool?`,
           answer: `Yes. Featul is a privacy-first product feedback platform: EU hosting by default, MIT License, optional self-host, Slack/Discord, webhooks, and API.`,
-          body: `People searching “${alt}” together with “open source,” “GDPR,” or “public roadmap” are looking for that combination.`,
+          body: `If you also care about open source, GDPR, or a public roadmap, that is the combination Featul is selling.`,
         },
         {
           title: `Who should stay on ${name}?`,
@@ -345,18 +345,17 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
 }
 
 function faqs(name: string, slug: string, d: CompetitorDetail): { description: string; items: FaqItem[] } {
-  const alt = `${name} alternative`
   const kindExtra =
     d.kind === "changelog"
       ? `Featul also includes feature voting and a public roadmap, so you are not buying a board next to ${name}.`
       : d.kind === "product-management"
-        ? `Featul is not a full ${name} suite. It is the customer-facing product feedback slice: votes, public roadmap, changelog.`
+        ? `Featul is not a full ${name} suite. It covers the customer-facing slice: votes, a public roadmap, and a changelog.`
         : d.kind === "visual-feedback"
-          ? `Featul does not replace screenshot markup. It replaces a missing public product feedback portal.`
+          ? `Featul does not replace screenshot markup. It replaces a missing public feedback portal.`
           : d.kind === "open-source"
             ? `Both can be self-hosted. Featul adds a hosted EU workspace, a public roadmap, and a changelog.`
             : d.kind === "linear"
-              ? `Featul is tracker-agnostic: Slack, webhooks, and API instead of a native Linear inbox.`
+              ? `Featul talks to any tracker through Slack, webhooks, and API. It is not a native Linear inbox.`
               : d.kind === "b2b-feedback"
                 ? `Featul is the public portal. It is not a CRM-weighted request inbox.`
                 : `Featul keeps feature voting, a public roadmap, and a changelog in one EU-hosted workspace.`
@@ -367,27 +366,27 @@ function faqs(name: string, slug: string, d: CompetitorDetail): { description: s
       {
         id: `${slug}-1`,
         question: `What are the best ${name} alternatives in 2026?`,
-        answer: `Teams comparing ${name} alternatives usually want a product feedback platform: feature voting, a public roadmap, and a changelog. Featul is an EU-hosted, open source ${alt} with workspace pricing from $24/month. ${kindExtra}`,
+        answer: `Most teams comparing ${name} alternatives want votes, a public roadmap, and a changelog in one place. Featul does that in an EU-hosted, open source workspace from $24/month. ${kindExtra}`,
       },
       {
         id: `${slug}-2`,
         question: `Is Featul a good ${name} alternative?`,
-        answer: `Yes when you want a product feedback platform: feature voting, a public roadmap, and a changelog, with EU hosting and workspace pricing from $24/month. Featul is MIT-licensed and self-hostable. ${d.unique}`,
+        answer: `Yes if you want boards, a public roadmap, and a changelog, with EU hosting and workspace pricing from $24/month. Featul is MIT licensed and you can self-host it.`,
       },
       {
         id: `${slug}-3`,
         question: `How does Featul vs ${name} pricing compare?`,
-        answer: `${name}: ${d.pricing}. Featul bills the workspace: Starter $24/month, Professional $47/month. Adding a PM, CSM, and engineers does not multiply the invoice the same way as per-seat tools.`,
+        answer: `${name}: ${d.pricing}. Featul bills the workspace. Starter is $24/month and Professional is $47/month. Adding a PM, a CSM, and engineers does not multiply the invoice the same way as per-seat tools.`,
       },
       {
         id: `${slug}-4`,
         question: `Does Featul include a public roadmap and changelog?`,
-        answer: `Yes. Featul is a product feedback platform: customers vote on a board, see Planned / In Progress / Shipped on a public roadmap, and read a changelog when work ships. ${d.extra.label}: ${d.extra.featul}.`,
+        answer: `Yes. Customers vote on a board, see Planned, In Progress, and Shipped on a public roadmap, and read a changelog when work ships.`,
       },
       {
         id: `${slug}-5`,
         question: `Is Featul an EU-hosted, open source product feedback platform?`,
-        answer: `Yes. EU hosting by default, GDPR-friendly defaults, MIT License, optional self-host. That is the privacy-first ${alt} for teams that also type “GDPR,” “self-host,” or “open source.”`,
+        answer: `Yes. Hosting is in the EU by default, with GDPR-friendly defaults, an MIT license, and optional self-hosting.`,
       },
       {
         id: `${slug}-6`,
@@ -402,7 +401,7 @@ function faqs(name: string, slug: string, d: CompetitorDetail): { description: s
       {
         id: `${slug}-8`,
         question: `Does Featul replace ${name} for feature voting?`,
-        answer: `For customer-facing feature voting, yes: boards, votes, comments, then a public roadmap and changelog. ${kindExtra} Stay on ${name} if the job is ${d.bestForThem}.`,
+        answer: `For customer-facing feature voting, yes. You still get boards, votes, and comments, then a public roadmap and changelog. ${kindExtra} Stay on ${name} if the job is ${d.bestForThem}.`,
       },
     ],
   }
@@ -746,7 +745,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     extra: {
       label: "Linear",
       competitor: "Deep native Linear workflow",
-      featul: "API, webhooks, Slack — tracker-agnostic",
+      featul: "API, webhooks, Slack. Tracker-agnostic",
     },
     bestForThem: "Product teams whose backlog is Linear",
     bestForFeatul: "Teams that want an EU-hosted customer portal",
@@ -784,7 +783,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Recreate boards, import posts, map statuses, connect Slack, changelog the first ship.",
     unique:
-      "HelloNext and Featul both sell the public board. Featul’s keywords are EU hosting, open source, public roadmap, changelog, $24 workspace.",
+      "HelloNext and Featul both sell the public board. Featul’s difference is EU hosting, open source, a public roadmap, a changelog, and a $24 workspace.",
   },
   feedbear: {
     kind: "voting-board",
@@ -958,7 +957,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Move posts, keep titles, connect Slack and Discord, changelog the first ship.",
     unique:
-      "SuggestKit wins on time-to-board. Featul wins on product feedback platform keywords: public roadmap, changelog, EU hosting, open source.",
+      "SuggestKit wins on time-to-board. Featul wins when you also want a public roadmap, a changelog, EU hosting, and open source.",
   },
   savio: {
     kind: "b2b-feedback",
@@ -1161,7 +1160,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Move customer-facing notes to Featul, attach them to roadmap items, keep internal launch docs where they are.",
     unique:
-      "LaunchNotes is ops. Featul is a product feedback platform. Searchers typing “LaunchNotes alternative” from a ten-person SaaS usually want Featul’s job.",
+      "LaunchNotes is ops. Featul is a product feedback platform. A ten-person SaaS looking at LaunchNotes alternatives usually wants Featul’s job.",
   },
   fider: {
     kind: "open-source",
@@ -1306,7 +1305,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Use exports or API dump, recreate in Featul, reconnect automations to webhooks.",
     unique:
-      "ProductLift speaks developer. Featul does too — and publishes the source. That is the ProductLift alternative for teams who ask for open source on the security form.",
+      "ProductLift speaks developer. Featul does too, and publishes the source. That is the ProductLift alternative for teams who ask for open source on the security form.",
   },
   releasenotes: {
     kind: "changelog",
@@ -1335,7 +1334,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Copy recent notes into Featul, open the board, link the next note to voted items.",
     unique:
-      "ReleaseNotes.io is a publisher. Featul is a product feedback platform that also publishes. Searchers adding “roadmap” want Featul.",
+      "ReleaseNotes.io is a publisher. Featul is a product feedback platform that also publishes. If you also need a roadmap, that is Featul.",
   },
   usersnap: {
     kind: "visual-feedback",

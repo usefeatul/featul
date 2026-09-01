@@ -150,38 +150,38 @@ export const alternatives: Alternative[] = [
       {
         title: 'Is Featul a good Featurebase alternative?',
         answer:
-          'Yes, if you want the Featurebase loop—boards, votes, a public roadmap, and a changelog—without per-seat pricing or a closed vendor. Featul is MIT-licensed, self-hostable, EU-hosted by default, and billed per workspace. Stay on Featurebase if the help-center and AI support suite are already load-bearing.',
-        body: 'Most searches for Featurebase alternatives are not “any voting board.” Teams want that same customer-facing loop with a different bill, a different host, or the option to keep the data if the vendor relationship ends. Featul is built for that job. It is a weaker Featurebase alternative if you expected a drop-in help center.',
+          'Yes, if you want boards, votes, a public roadmap, and a changelog without paying per seat or locking the data in a closed vendor. Featul is MIT licensed. You can self-host it or use a hosted EU workspace, and you pay per workspace. Stay on Featurebase if the help center and AI support suite are already how your team works.',
+        body: 'Most people looking at Featurebase alternatives are not hunting for any voting board. They want that same customer-facing loop with a different bill, a different host, or a way to keep the data if they leave. Featul is built for that. It is a weaker fit if you expected a drop-in help center.',
       },
       {
         title: 'How much does a Featurebase alternative cost for a five-person team?',
         answer:
-          'Featul Starter is $24 per month for the workspace, with a five-member cap on that plan. Professional is $47 per month. Featurebase scales primarily on seats, so a PM, CSM, and two engineers can multiply the invoice. Compare live pricing pages before you treat either number as a quote.',
-        body: 'The decision is the pattern, not a screenshot of today’s list price. If five people need access, per-seat tools get expensive faster than a workspace cap. If one person will run the portal forever, seat cost may not be the reason to switch.',
+          'Featul Starter is $24 per month for the workspace, with a five-member cap on that plan. Professional is $47 per month. Featurebase mostly charges per seat, so a PM, a CSM, and two engineers can push the invoice up fast. Check both live pricing pages before you treat either number as a quote.',
+        body: 'The useful comparison is the pattern, not a screenshot of today’s list price. If five people need access, per-seat tools get expensive faster than a workspace cap. If one person will run the portal forever, seat cost may not be why you switch.',
       },
       {
         title: 'Is Featul an open source Featurebase alternative I can self-host?',
         answer:
-          'Yes. Featul is MIT-licensed and can run on your infrastructure or as a hosted EU workspace. Featurebase is a strong hosted product; it is not a self-hosted MIT codebase. That difference shows up in procurement and “can we leave later?” conversations, not in whether voting works.',
-        body: 'An open source Featurebase alternative matters when feedback is customer data you may need to move, show to security reviewers, or keep if you stop paying a vendor. Both products collect requests. Only one lets you keep the board when the contract ends.',
+          'Yes. Featul is MIT licensed and can run on your own infrastructure or as a hosted EU workspace. Featurebase is a strong hosted product. It is not a self-hosted MIT codebase. That difference shows up in procurement and “can we leave later?” conversations, not in whether voting works.',
+        body: 'Open source matters when feedback is customer data you may need to move, show to security reviewers, or keep if you stop paying a vendor. Both products collect requests. Only one lets you keep the board when the contract ends.',
       },
       {
         title: 'Does Featul replace a changelog tool as well as Featurebase?',
         answer:
-          'Yes for the feedback-to-release loop. Featul includes a public or private roadmap and a changelog in the same workspace as the voting board, so you do not buy a second announcement product for shipping notes. It does not replace Featurebase’s broader help-center suite.',
-        body: 'Point the public URL or widget at Featul, keep columns such as Planned, In Progress, and Shipped, and publish a changelog when the first migrated item ships. That close-the-loop moment is what customers notice—not the vendor logo.',
+          'Yes for the path from feedback to release notes. Featul includes a public or private roadmap and a changelog in the same workspace as the voting board, so you do not buy a second product just to say what shipped. It does not replace Featurebase’s broader help center suite.',
+        body: 'Point the public URL or widget at Featul, keep columns such as Planned, In Progress, and Shipped, and publish a changelog when the first migrated item ships. Customers notice that something actually shipped, not which vendor rendered the upvote.',
       },
       {
         title: 'How do I migrate from Featurebase to Featul?',
         answer:
           'Export or import posts, then recreate categories, tags, and statuses so voters still recognize the board. Map duplicates before you go live so vote counts stay honest. Share the new URL, keep voting open, and changelog the first shipped item from the old list.',
-        body: 'Customers care that their post still exists and that something shipped. They do not care which vendor rendered the upvote. For messy Featurebase workspaces, spend the extra hour on duplicate mapping; that is the migration step people skip and then regret.',
+        body: 'Customers care that their post still exists and that something shipped. They do not care which vendor rendered the upvote. For messy Featurebase workspaces, spend the extra hour on duplicate mapping. That is the step people skip and then regret.',
       },
       {
         title: 'Who should stay on Featurebase?',
         answer:
-          'Stay if you already live in Featurebase’s help-center and AI support suite and do not need self-hosting or EU-first defaults. Switch when seat cost, data residency, or “we also bought a changelog tool” is the pain. Switching only because a new brand exists is a bad trade.',
-        body: 'Featul is not trying to out-catalog Featurebase. It is trying to be the simpler open source Featurebase alternative: one workflow from vote to release note, at a predictable workspace rate, with the option to host it yourself.',
+          'Stay if you already live in Featurebase’s help center and AI support suite and do not need self-hosting or EU-first defaults. Switch when seat cost, data residency, or “we also bought a changelog tool” is the actual pain. Switching only because a new brand exists is a bad trade.',
+        body: 'Featul is not trying to out-catalog Featurebase. It is trying to be the simpler open source option: one workflow from vote to release note, at a predictable workspace rate, with the option to host it yourself.',
       },
     ],
     features: withCompetitor({
@@ -276,7 +276,7 @@ export const alternatives: Alternative[] = [
       {
         title: 'What is the difference between Canny alternatives and Canny integrations?',
         answer:
-          '“Canny alternatives” means replace the product. “Canny integrations” means Slack, API, webhooks, and a path to import the board. Featul is a Canny alternative with Canny import plus Slack, webhooks, and API—the jobs most product teams run daily.',
+          '“Canny alternatives” means replace the product. “Canny integrations” means Slack, API, webhooks, and a path to import the board. Featul is a Canny alternative with Canny import plus Slack, webhooks, and API, which is what most product teams actually use day to day.',
         body: 'Canny still wins if you need a long marketplace of native third-party apps. Featul wins if you want EU hosting, workspace pricing, and roadmap plus changelog in the same tool after you import.',
       },
       {
