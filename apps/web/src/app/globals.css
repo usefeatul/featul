@@ -12,3 +12,24 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* Applied before React hydrates so a mid-page refresh does not flash the sky navbar. */
+html[data-scrolled] [data-component="Navbar"] {
+  background-color: color-mix(in oklab, var(--background) 70%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+html[data-scrolled] [data-component="Navbar"] [data-nav-brand],
+html[data-scrolled] [data-component="Navbar"] [data-nav-brand] * {
+  color: var(--foreground);
+}
+html[data-scrolled] [data-component="Navbar"] a:not([data-slot="button"]):not([data-nav-brand]) {
+  color: var(--accent);
+}
+html[data-scrolled] [data-component="Navbar"] [data-slot="separator"] {
+  background-color: color-mix(in oklab, var(--accent) 50%, transparent);
+}
+html[data-scrolled] [data-component="Navbar"] [data-nav-menu] {
+  background-color: var(--muted);
+  color: var(--accent);
+}

@@ -53,8 +53,13 @@ export function HomeScrollMemory() {
     let locked = !remount && target > 0;
     let pinning = false;
 
+    const syncScrolled = (y: number) => {
+      html.toggleAttribute("data-scrolled", y > 0);
+    };
+
     const apply = () => {
       if (!locked) return;
+      syncScrolled(target);
       if (Math.abs(window.scrollY - target) < 2) return;
       pinning = true;
       window.scrollTo({ top: target, left: 0, behavior: "auto" });
@@ -74,7 +79,12 @@ export function HomeScrollMemory() {
       html.style.scrollBehavior = previousBehavior;
     }, 400);
 
-    const persist = () => writeSavedY(window.scrollY);
+    const persist = () => {
+      writeSavedY(window.scrollY);
+      syncScrolled(window.scrollY);
+    };
+
+    syncScrolled(target);
 
     const onScroll = () => {
       if (pinning) return;

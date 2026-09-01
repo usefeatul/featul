@@ -7,7 +7,7 @@ import { Container } from "../global/container";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
 import { Separator } from "@featul/ui/components/separator";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./menu";
@@ -20,12 +20,21 @@ export default function Navbar() {
 
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [canTransition, setCanTransition] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 0);
+  useLayoutEffect(() => {
+    const onScroll = () => {
+      const next = window.scrollY > 0;
+      setScrolled(next);
+      document.documentElement.toggleAttribute("data-scrolled", next);
+    };
     onScroll();
+    const frame = window.requestAnimationFrame(() => setCanTransition(true));
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -55,7 +64,8 @@ export default function Navbar() {
     <>
       <header
       className={cn(
-        "fixed top-10 left-0 right-0 z-50 transition-colors",
+        "fixed top-10 left-0 right-0 z-50",
+        canTransition && "transition-colors",
         scrolled
           ? "backdrop-blur-lg bg-background/70"
           : overSky
@@ -70,6 +80,7 @@ export default function Navbar() {
           <Link
             href="/"
             aria-label="Go home"
+            data-nav-brand
             className="inline-flex items-center gap-2"
           >
             <FeatulLogoIcon
@@ -152,6 +163,7 @@ export default function Navbar() {
             type="button"
             variant="nav"
             aria-label="Toggle menu"
+            data-nav-menu
             className={cn(
               "md:hidden inline-flex items-center justify-center rounded-md",
               overSky
