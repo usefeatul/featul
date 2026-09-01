@@ -17,6 +17,10 @@ import {
   getAlternativePageTitle,
   getAlternativeSlugs,
 } from "@/config/alternatives";
+import {
+  getCompetitorDetail,
+  KIND_RELATED_LINKS,
+} from "@/config/alternatives-detail";
 import { getRelatedPages } from "@/lib/seo/interlink";
 import { RelatedLinks } from "@/components/seo/links";
 import { getAlternativeFaq } from "@/data/alt";
@@ -68,6 +72,20 @@ export default async function AlternativePage({
     currentSlug: slug,
     currentType: "competitor",
   });
+  relatedLinks.unshift({
+    href: "/alternatives",
+    label: "Best Featurebase alternatives 2026",
+    type: "hub",
+  });
+  const kind = getCompetitorDetail(slug)?.kind;
+  if (kind) {
+    const useCase = KIND_RELATED_LINKS[kind];
+    relatedLinks.unshift({
+      href: useCase.href,
+      label: useCase.label,
+      type: "use-case",
+    });
+  }
   if (slug === "featurebase") {
     relatedLinks.unshift(
       {

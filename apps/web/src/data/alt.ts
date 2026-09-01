@@ -1,4 +1,5 @@
 import type { FaqItem } from '@/data/faqs'
+import { getDetailFaqs } from '@/config/alternatives-detail'
 import { COMPETITORS } from '@/lib/data/programmatic/matrix'
 
 export type AlternativeFaqs = {
@@ -289,6 +290,17 @@ export const altFaqs: Record<string, AlternativeFaqs> = {
 }
 
 export function getAlternativeFaq(slug: string): AlternativeFaqs {
+  if (slug === 'featurebase' || slug === 'canny') {
+    const handWritten = altFaqs[slug]
+    if (handWritten) return handWritten
+  }
+
+  const name =
+    COMPETITORS.find((competitor) => competitor.slug === slug)?.name ??
+    slug.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+  const fromDetail = getDetailFaqs(slug, name)
+  if (fromDetail) return fromDetail
+
   const entry = altFaqs[slug]
   if (entry) return entry
 

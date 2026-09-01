@@ -111,6 +111,10 @@ Featul is customer feedback, public or private roadmaps, and changelogs in one E
 - [Alternatives](${absoluteUrl("/alternatives")}): Best Featurebase and Canny alternatives in 2026, with pricing, open source, and EU hosting compared.
 - [Featurebase alternatives](${absoluteUrl("/alternatives/featurebase")}): Open source Featurebase alternative with self-hosting.
 - [Canny alternatives](${absoluteUrl("/alternatives/canny")}): Canny alternative with Canny import and Slack/API integrations.
+- [UserJot alternatives](${absoluteUrl("/alternatives/userjot")}): Product feedback platform with public roadmap and changelog.
+- [Productboard alternatives](${absoluteUrl("/alternatives/productboard")}): Customer-facing feedback without a full PM suite.
+- [Beamer alternatives](${absoluteUrl("/alternatives/beamer")}): Changelog plus feature voting in one workspace.
+- [Fider alternatives](${absoluteUrl("/alternatives/fider")}): Open source product feedback with a hosted EU option.
 
 ## Learn
 - [What is ARR?](${absoluteUrl("/definitions/arr")}): Annual Recurring Revenue definition, formula, and ARR vs MRR.

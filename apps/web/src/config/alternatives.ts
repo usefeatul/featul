@@ -338,13 +338,135 @@ export const alternatives: Alternative[] = [
 
 // Import from content-matrix for programmatic competitors
 import { COMPETITORS, type CompetitorEntry } from '@/lib/data/programmatic/matrix'
+import {
+  applyCompetitorDetail,
+  getCompetitorDetail,
+  type CompetitorKind,
+} from '@/config/alternatives-detail'
+
+const KIND_FEATURE_DEFAULTS: Record<CompetitorKind, Record<string, FeatureSupport>> = {
+  'voting-board': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: 'partial',
+    changelog: 'partial',
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: 'partial',
+  },
+  'feedback-suite': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: true,
+    changelog: true,
+    embeddable_widget: true,
+    api: true,
+    sso: 'partial',
+    slack: true,
+  },
+  changelog: {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: 'partial',
+    feature_voting: 'partial',
+    public_roadmap: 'partial',
+    changelog: true,
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: 'partial',
+  },
+  'product-management': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: 'partial',
+    feature_voting: 'partial',
+    public_roadmap: true,
+    changelog: 'partial',
+    embeddable_widget: 'partial',
+    api: true,
+    sso: true,
+    slack: 'partial',
+  },
+  'visual-feedback': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: 'partial',
+    feature_voting: false,
+    public_roadmap: false,
+    changelog: false,
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: 'partial',
+  },
+  'open-source': {
+    eu_hosting: false,
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: 'partial',
+    changelog: false,
+    embeddable_widget: 'partial',
+    api: 'partial',
+    sso: false,
+    slack: false,
+  },
+  'b2b-feedback': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: 'partial',
+    public_roadmap: 'partial',
+    changelog: 'partial',
+    embeddable_widget: 'partial',
+    api: true,
+    sso: true,
+    slack: true,
+  },
+  linear: {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: true,
+    changelog: 'partial',
+    embeddable_widget: true,
+    api: true,
+    sso: 'partial',
+    slack: true,
+  },
+}
+
+function featuresFromVictoryPoints(competitor: CompetitorEntry): Record<string, FeatureSupport> {
+  return {
+    eu_hosting: competitor.victoryPoints.some((v) => v.toLowerCase().includes('eu')) ? 'partial' : false,
+    gdpr: competitor.victoryPoints.some((v) => v.toLowerCase().includes('gdpr')) ? 'partial' : false,
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: competitor.victoryPoints.some((v) => v.toLowerCase().includes('roadmap')) ? true : 'partial',
+    changelog: competitor.victoryPoints.some((v) => v.toLowerCase().includes('changelog')) ? true : 'partial',
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: competitor.victoryPoints.some((v) => v.toLowerCase().includes('slack')) ? true : 'partial',
+  }
+}
 
 /**
  * Convert a CompetitorEntry from content-matrix to Alternative format
  * This allows new competitors to work with existing custom components
  */
 function competitorToAlternative(competitor: CompetitorEntry): Alternative {
-  return {
+  const kind = getCompetitorDetail(competitor.slug)?.kind
+  const featureDefaults = kind ? KIND_FEATURE_DEFAULTS[kind] : featuresFromVictoryPoints(competitor)
+
+  return applyCompetitorDetail({
     slug: competitor.slug,
     name: competitor.name,
     website: competitor.website,
@@ -356,35 +478,26 @@ function competitorToAlternative(competitor: CompetitorEntry): Alternative {
     victoryPoints: competitor.victoryPoints,
     tradeoffs: competitor.tradeoffs,
     image: '/image/image.jpeg',
-    features: withCompetitor({
-      eu_hosting: competitor.victoryPoints.some(v => v.toLowerCase().includes('eu')) ? 'partial' : false,
-      gdpr: competitor.victoryPoints.some(v => v.toLowerCase().includes('gdpr')) ? 'partial' : false,
-      feedback_boards: true,
-      feature_voting: true,
-      public_roadmap: competitor.victoryPoints.some(v => v.toLowerCase().includes('roadmap')) ? true : 'partial',
-      changelog: competitor.victoryPoints.some(v => v.toLowerCase().includes('changelog')) ? true : 'partial',
-      embeddable_widget: true,
-      api: 'partial',
-      sso: 'partial',
-      slack: competitor.victoryPoints.some(v => v.toLowerCase().includes('slack')) ? true : 'partial',
-    }),
-  }
+    features: withCompetitor(featureDefaults),
+  })
 }
 
 function enrichAlternative(alt: Alternative): Alternative {
   const competitor = COMPETITORS.find((c) => c.slug === alt.slug)
-  if (!competitor) return alt
+  const merged: Alternative = competitor
+    ? {
+        ...alt,
+        website: alt.website ?? competitor.website,
+        tagline: alt.tagline ?? competitor.tagline,
+        victoryPoints: alt.victoryPoints?.length ? alt.victoryPoints : competitor.victoryPoints,
+        tradeoffs: alt.tradeoffs?.length ? alt.tradeoffs : competitor.tradeoffs,
+        summary:
+          alt.summary ??
+          `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul offers ${competitor.victoryPoints[0]?.toLowerCase() || 'a privacy-first alternative'}.`,
+      }
+    : alt
 
-  return {
-    ...alt,
-    website: alt.website ?? competitor.website,
-    tagline: alt.tagline ?? competitor.tagline,
-    victoryPoints: alt.victoryPoints?.length ? alt.victoryPoints : competitor.victoryPoints,
-    tradeoffs: alt.tradeoffs?.length ? alt.tradeoffs : competitor.tradeoffs,
-    summary:
-      alt.summary ??
-      `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul offers ${competitor.victoryPoints[0]?.toLowerCase() || 'a privacy-first alternative'}.`,
-  }
+  return applyCompetitorDetail(merged)
 }
 
 export function getAlternativeBySlug(slug: string): Alternative | undefined {

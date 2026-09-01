@@ -1,3 +1,4 @@
+import { getDetailDescription } from '@/config/alternatives-detail'
 import { COMPETITORS } from '@/lib/data/programmatic/matrix'
 
 export const alternativeDescriptions: Record<string, string[]> = {
@@ -47,6 +48,9 @@ export function getAltDescription(
   slug: string,
   strategy: 'slug-hash' | 'first' = 'first',
 ): string {
+  const fromDetail = getDetailDescription(slug)
+  if (fromDetail) return fromDetail
+
   const list = alternativeDescriptions[slug] ?? []
   const competitorFallback = competitorFallbackDescription(slug)
   const fallback =
