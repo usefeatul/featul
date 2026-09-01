@@ -266,7 +266,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `Is Featul EU-hosted and open source?`,
-          answer: `Yes. MIT License, EU hosting by default, optional self-host. That is the privacy-first ${alt} for teams that still want a customer-facing loop.`,
+          answer: `Yes. MIT License, EU hosting by default, optional self-host. That is the privacy-first ${name} alternative for teams that still want a customer-facing loop.`,
           body: extraBody(name, d),
         },
         {
@@ -284,7 +284,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `How does Featul compare to ${name} as a product feedback platform?`,
-          answer: `${name} is known as a fuller customer-feedback suite. Featul is the focused ${alt}: votes, public roadmap, changelog, widget, Slack, API. Stay on ${name} when the extra suite is already load-bearing.`,
+          answer: `${name} is known as a fuller customer-feedback suite. Featul is the focused option: votes, a public roadmap, a changelog, a widget, Slack, and API. Stay on ${name} when the extra suite is already how you work.`,
           body: extraBody(name, d),
         },
         {
@@ -300,7 +300,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Does Featul include EU hosting and a public roadmap?`,
           answer: `Yes. EU by default, GDPR-friendly defaults, MIT-licensed self-hosting optional. Public roadmap and changelog are in the same workspace as the board.`,
-          body: `You get product feedback, a public roadmap, a changelog, and EU hosting in one workspace. That is the usual reason people look at a ${alt}.`,
+          body: `You get product feedback, a public roadmap, a changelog, and EU hosting in one workspace. That is usually why people compare Featul to ${name}.`,
         },
         {
           title: `Who should stay on ${name}?`,
