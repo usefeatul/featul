@@ -161,6 +161,7 @@ export function useMentions(
     mentionOpen,
     mentionIndex,
     filteredCandidates,
+    members,
     setMentionOpen,
     checkForMention,
     handleKeyDown,

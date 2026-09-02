@@ -1,5 +1,5 @@
 import React from "react"
-import { Textarea } from "@featul/ui/components/textarea"
+import { MentionTextarea } from "./MentionTextarea"
 
 interface CommentEditorProps {
   value: string
@@ -7,6 +7,7 @@ interface CommentEditorProps {
   onKeyDown: (e: React.KeyboardEvent) => void
   onBlur: () => void
   isPending: boolean
+  mentionNames?: string[]
 }
 
 export default function CommentEditor({
@@ -15,20 +16,21 @@ export default function CommentEditor({
   onKeyDown,
   onBlur,
   isPending,
+  mentionNames,
 }: CommentEditorProps) {
   return (
     <div>
-      <Textarea
+      <MentionTextarea
         value={value}
+        mentionNames={mentionNames}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         onBlur={onBlur}
-        variant="plain"
-        className="min-h-[80px] resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-accent"
         disabled={isPending}
         autoFocus
         aria-label="Edit comment"
         aria-describedby="edit-instructions"
+        className="min-h-[80px]"
       />
       <div id="edit-instructions" className="text-xs text-accent mt-1">
         Press Enter/Tab to save, Press Esc to cancel

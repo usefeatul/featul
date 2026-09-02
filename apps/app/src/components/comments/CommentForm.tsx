@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react"
 import MentionList from "./MentionList"
-import { Textarea } from "@featul/ui/components/textarea"
+import { MentionTextarea } from "./MentionTextarea"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import { ImageIcon } from "@featul/ui/icons/image"
@@ -67,7 +67,12 @@ export default function CommentForm({
     checkForMention,
     handleKeyDown,
     insertMention,
+    members,
   } = useMentions(workspaceSlug, content, setContent, textareaRef)
+  const mentionNames = React.useMemo(
+    () => members.map((member) => member.name).filter(Boolean),
+    [members],
+  )
 
   const resetForm = () => {
     setContent("")
@@ -91,9 +96,10 @@ export default function CommentForm({
       className="space-y-2.5"
     >
       <div className="relative">
-        <Textarea
+        <MentionTextarea
           ref={textareaRef}
           value={content}
+          mentionNames={mentionNames}
           onChange={(e) => {
             const next = e.target.value
             setContent(next)
@@ -101,11 +107,7 @@ export default function CommentForm({
             checkForMention(next, caret)
           }}
           placeholder={placeholder}
-          variant="plain"
-          className={cn(
-            "min-h-[60px] resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-accent",
-            compact && "min-h-[44px] py-1.5",
-          )}
+          compact={compact}
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}

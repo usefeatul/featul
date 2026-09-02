@@ -4,6 +4,7 @@ import React from "react"
 import ContentImage from "@/components/global/ContentImage"
 import { ImageLightbox } from "@/components/global/ImageLightbox"
 import type { CommentData } from "../../types/comment"
+import { renderCommentMentions } from "./mentionText"
 
 interface CommentContentProps {
   content: string
@@ -21,30 +22,8 @@ export default function CommentContent({ content, metadata }: CommentContentProp
   }))
   const renderText = () => {
     const text = content || ""
-    const mentions = (metadata?.mentions || [])
-      .map((m) => (m || "").toLowerCase())
-      .sort((a, b) => b.length - a.length)
-
-    if (!text || mentions.length === 0) return text
-
-    const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const pattern = new RegExp(`@(${mentions.map(esc).join("|")})\\b`, "gi")
-    const parts: React.ReactNode[] = []
-    let lastIndex = 0
-    let m: RegExpExecArray | null
-
-    while ((m = pattern.exec(text))) {
-      if (m.index > lastIndex) parts.push(text.slice(lastIndex, m.index))
-      const matched = m[0]
-      parts.push(
-        <span key={`m-${m.index}`} className="text-primary font-medium">
-          {matched}
-        </span>
-      )
-      lastIndex = m.index + matched.length
-    }
-    if (lastIndex < text.length) parts.push(text.slice(lastIndex))
-    return parts
+    const mentions = (metadata?.mentions || []).map((mention) => mention || "")
+    return renderCommentMentions(text, mentions)
   }
 
   return (

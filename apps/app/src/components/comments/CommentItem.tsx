@@ -127,6 +127,7 @@ export default function CommentItem({
                   onKeyDown={handleKeyDown}
                   onBlur={handleBlur}
                   isPending={isPending}
+                  mentionNames={comment.metadata?.mentions}
                 />
               ) : (
                 <CommentContent
