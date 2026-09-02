@@ -1,10 +1,10 @@
-import { useState, useMemo, useRef } from "react"
+import { useState, useMemo, useRef, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 import { client } from "@featul/api/client"
 import { useSession } from "@featul/auth/client"
 
 interface Member {
-  id: string
+  id?: string
   userId?: string
   name: string
   image?: string | null
@@ -46,6 +46,61 @@ function isCommittedMentionQuery(after: string, names: string[]): boolean {
   return false
 }
 
+function notifyMentionAuthError(status?: number) {
+  if (status === 403) {
+    toast.error("You must be a member of this workspace to mention users")
+    return true
+  }
+  if (status === 401) {
+    toast.error("Please sign in to mention users")
+    return true
+  }
+  return false
+}
+
+/** Workspace members (and owner) that can be mentioned. Preloads so typed `@Name` can match without opening the picker. */
+export function useMentionableMembers(workspaceSlug: string | undefined) {
+  const [members, setMembers] = useState<Member[]>([])
+  const { data: session } = useSession()
+  const requestRef = useRef<Promise<void> | null>(null)
+
+  const loadMembers = useCallback(
+    (notifyAuthErrors: boolean) => {
+      if (!workspaceSlug || members.length > 0 || requestRef.current) return
+
+      requestRef.current = client.team.membersByWorkspaceSlug
+        .$get({ slug: workspaceSlug })
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json()
+            setMembers((data as { members: Member[] })?.members || [])
+            return
+          }
+          if (notifyAuthErrors && notifyMentionAuthError(res.status)) return
+        })
+        .catch((err) => {
+          if (
+            notifyAuthErrors &&
+            notifyMentionAuthError(err?.status || err?.response?.status)
+          ) {
+            return
+          }
+        })
+        .finally(() => {
+          requestRef.current = null
+        })
+    },
+    [workspaceSlug, members.length],
+  )
+
+  useEffect(() => {
+    if (!workspaceSlug || !session?.user) return
+    loadMembers(false)
+  }, [workspaceSlug, session?.user, loadMembers])
+
+  return { members, loadMembers }
+}
+
 /** @-mention picker from workspace members. Inserts `@name` at the caret and tracks mention analytics. */
 export function useMentions(
   workspaceSlug: string | undefined,
@@ -56,7 +111,7 @@ export function useMentions(
   const [mentionOpen, setMentionOpen] = useState(false)
   const [mentionQuery, setMentionQuery] = useState("")
   const [mentionIndex, setMentionIndex] = useState(0)
-  const [members, setMembers] = useState<Member[]>([])
+  const { members, loadMembers } = useMentionableMembers(workspaceSlug)
   const { data: session } = useSession()
   const skipMentionCheckRef = useRef(false)
   const names = useMemo(() => memberNames(members), [members]) 
@@ -150,31 +205,8 @@ export function useMentions(
         setMentionOpen(true)
         setMentionIndex(0)
 
-        // Fetch members if not loaded
         if (members.length === 0) {
-          client.team.membersByWorkspaceSlug
-            .$get({ slug: workspaceSlug })
-            .then(async (res) => {
-              if (res.ok) {
-                const data = await res.json()
-                setMembers((data as { members: Member[] })?.members || [])
-              } else if (res.status === 403) {
-                toast.error("You must be a member of this workspace to mention users")
-                setMentionOpen(false)
-              } else if (res.status === 401) {
-                toast.error("Please sign in to mention users")
-                setMentionOpen(false)
-              }
-            })
-            .catch((err) => {
-              if (err?.status === 403 || err?.response?.status === 403) {
-                toast.error("You must be a member of this workspace to mention users")
-                setMentionOpen(false)
-              } else if (err?.status === 401 || err?.response?.status === 401) {
-                toast.error("Please sign in to mention users")
-                setMentionOpen(false)
-              }
-            })
+          loadMembers(true)
         }
       } else {
         setMentionOpen(false)

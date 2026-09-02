@@ -32,6 +32,10 @@ import { enforceTrustedBrowserOrigin } from "../request/origin";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
 import { deleteUnreferencedImageUrls } from "../storage/delete";
 import { droppedImageUrls, listCommentImageUrls } from "../storage/images";
+import {
+  parseMentionsFromText,
+  type MentionableUser,
+} from "../shared/mentions";
 
 async function getSessionUserId(rawHeaders: Headers): Promise<string | null> {
   try {
@@ -54,6 +58,104 @@ async function hasInternalCommentAccess({
   if (!userId) return false;
   if (userId === workspaceOwnerId) return true;
   return hasActiveMembership(userId);
+}
+
+type CommentMetadata = {
+  attachments?: { name: string; url: string; type: string }[];
+  mentions?: string[];
+  editHistory?: { content: string; editedAt: string }[];
+  fingerprint?: string;
+};
+
+async function loadMentionableUsers(
+  db: any,
+  workspaceId: string,
+  ownerId: string,
+): Promise<MentionableUser[]> {
+  const members = await db
+    .select({ userId: workspaceMember.userId, name: user.name })
+    .from(workspaceMember)
+    .innerJoin(user, eq(workspaceMember.userId, user.id))
+    .where(
+      and(
+        eq(workspaceMember.workspaceId, workspaceId),
+        eq(workspaceMember.isActive, true),
+      ),
+    );
+
+  const people: MentionableUser[] = [];
+  const seen = new Set<string>();
+
+  for (const member of members) {
+    const name = (member.name || "").trim();
+    const userId = String(member.userId || "").trim();
+    if (!name || !userId || seen.has(userId)) continue;
+    seen.add(userId);
+    people.push({ userId, name });
+  }
+
+  if (ownerId && !seen.has(ownerId)) {
+    const [owner] = await db
+      .select({ id: user.id, name: user.name })
+      .from(user)
+      .where(eq(user.id, ownerId))
+      .limit(1);
+    const ownerName = (owner?.name || "").trim();
+    if (owner?.id && ownerName) {
+      people.push({ userId: owner.id, name: ownerName });
+    }
+  }
+
+  return people;
+}
+
+async function persistCommentMentions({
+  db,
+  commentId,
+  content,
+  mentionedBy,
+  workspaceId,
+  ownerId,
+  existingMetadata,
+  replaceExisting,
+}: {
+  db: any;
+  commentId: string;
+  content: string;
+  mentionedBy: string;
+  workspaceId: string;
+  ownerId: string;
+  existingMetadata?: CommentMetadata | null;
+  replaceExisting?: boolean;
+}): Promise<CommentMetadata> {
+  const mentionable = await loadMentionableUsers(db, workspaceId, ownerId);
+  const parsed = parseMentionsFromText(content, mentionable);
+
+  if (replaceExisting) {
+    await db.delete(commentMention).where(eq(commentMention.commentId, commentId));
+  }
+
+  if (parsed.length > 0) {
+    await db.insert(commentMention).values(
+      parsed.map((mention) => ({
+        commentId,
+        mentionedUserId: mention.userId,
+        mentionedBy,
+      })),
+    );
+  }
+
+  const nextMeta: CommentMetadata = {
+    ...(existingMetadata || {}),
+    mentions: parsed.map((mention) => mention.name),
+  };
+
+  await db
+    .update(comment)
+    .set({ metadata: nextMeta })
+    .where(eq(comment.id, commentId));
+
+  return nextMeta;
 }
 
 function getFingerprintFromMetadata(metadata: unknown): string | null {
@@ -422,78 +524,18 @@ export function createCommentRouter() {
           });
         }
 
-        // Parse mentions and persist (only if authenticated)
+        // Parse typed or inserted @mentions against workspace members only
         try {
           if (userId && content.includes("@")) {
-            const members = await ctx.db
-              .select({ userId: workspaceMember.userId, name: user.name })
-              .from(workspaceMember)
-              .innerJoin(user, eq(workspaceMember.userId, user.id))
-              .where(
-                and(
-                  eq(workspaceMember.workspaceId, targetPost.workspaceId),
-                  eq(workspaceMember.isActive, true),
-                ),
-              );
-
-            const nameToUserId = new Map<string, string>();
-            const allNames: string[] = [];
-
-            for (const m of members) {
-              const nm = (m.name || "").trim().toLowerCase();
-              if (nm) {
-                nameToUserId.set(nm, m.userId);
-                allNames.push(nm);
-              }
-            }
-
-            // Sort by length descending to match longest names first
-            allNames.sort((a, b) => b.length - a.length);
-
-            const validUserIds: string[] = [];
-            const validNames: string[] = [];
-            const uniqueFoundNames = new Set<string>();
-
-            if (allNames.length > 0) {
-              const esc = (s: string) =>
-                s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-              const pattern = new RegExp(
-                `@(${allNames.map(esc).join("|")})\\b`,
-                "gi",
-              );
-
-              let m: RegExpExecArray | null;
-              while ((m = pattern.exec(content))) {
-                const matchedName = m[1]?.toLowerCase();
-                if (matchedName && !uniqueFoundNames.has(matchedName)) {
-                  uniqueFoundNames.add(matchedName);
-                  const uid = nameToUserId.get(matchedName);
-                  if (uid) {
-                    validUserIds.push(uid);
-                    validNames.push(matchedName);
-                  }
-                }
-              }
-            }
-
-            if (validUserIds.length > 0) {
-              await ctx.db.insert(commentMention).values(
-                validUserIds.map((uid) => ({
-                  commentId: newComment.id,
-                  mentionedUserId: uid,
-                  mentionedBy: userId!,
-                })),
-              );
-
-              const nextMeta = {
-                ...(newComment.metadata || {}),
-                mentions: validNames,
-              };
-              await ctx.db
-                .update(comment)
-                .set({ metadata: nextMeta })
-                .where(eq(comment.id, newComment.id));
-            }
+            await persistCommentMentions({
+              db: ctx.db,
+              commentId: newComment.id,
+              content,
+              mentionedBy: userId,
+              workspaceId: targetPost.workspaceId,
+              ownerId: targetPost.workspaceOwnerId,
+              existingMetadata: (newComment.metadata as CommentMetadata | null) || undefined,
+            });
           }
         } catch {}
 
@@ -575,6 +617,7 @@ export function createCommentRouter() {
         const [postInfo] = await ctx.db
           .select({
             workspaceId: workspace.id,
+            workspaceOwnerId: workspace.ownerId,
             postTitle: post.title,
             roadmapStatus: post.roadmapStatus,
           })
@@ -584,7 +627,22 @@ export function createCommentRouter() {
           .where(eq(post.id, existingComment.postId))
           .limit(1);
 
+        let nextMetadata = updatedComment?.metadata;
         if (postInfo) {
+          try {
+            nextMetadata = await persistCommentMentions({
+              db: ctx.db,
+              commentId,
+              content,
+              mentionedBy: userId,
+              workspaceId: postInfo.workspaceId,
+              ownerId: postInfo.workspaceOwnerId,
+              existingMetadata:
+                (updatedComment?.metadata as CommentMetadata | null) || undefined,
+              replaceExisting: true,
+            });
+          } catch {}
+
           await ctx.db.insert(activityLog).values({
             workspaceId: postInfo.workspaceId,
             userId,
@@ -601,7 +659,9 @@ export function createCommentRouter() {
           });
         }
 
-        return c.superjson({ comment: updatedComment });
+        return c.superjson({
+          comment: { ...updatedComment, metadata: nextMetadata },
+        });
       }),
 
     // Set comment visibility (internal/external)

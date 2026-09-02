@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import {
   Avatar,
   AvatarImage,
@@ -17,6 +17,7 @@ import CommentVote from "./CommentVote"
 import CommentReplyButton from "./actions/CommentReplyAction"
 import CommentActions from "./actions/CommentActions"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
+import { useMentionableMembers } from "../../hooks/useMentions"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
 import { settingsCardInnerClass } from "@/components/settings/global/SectionCard"
@@ -71,6 +72,21 @@ export default function CommentItem({
     initialContent: comment.content,
     onUpdate,
   })
+  const { members: mentionableMembers } = useMentionableMembers(
+    isEditing ? workspaceSlug : undefined,
+  )
+  const mentionNames = useMemo(() => {
+    const names = new Set<string>()
+    for (const member of mentionableMembers) {
+      const name = (member.name || "").trim()
+      if (name) names.add(name)
+    }
+    for (const name of comment.metadata?.mentions || []) {
+      const trimmed = (name || "").trim()
+      if (trimmed) names.add(trimmed)
+    }
+    return [...names]
+  }, [mentionableMembers, comment.metadata?.mentions])
 
   const displayUser = getPrivacySafeDisplayUser(
     {
@@ -127,7 +143,7 @@ export default function CommentItem({
                   onKeyDown={handleKeyDown}
                   onBlur={handleBlur}
                   isPending={isPending}
-                  mentionNames={comment.metadata?.mentions}
+                  mentionNames={mentionNames}
                 />
               ) : (
                 <CommentContent
