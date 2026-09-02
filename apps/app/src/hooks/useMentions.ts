@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef } from "react"
 import { toast } from "sonner"
 import { client } from "@featul/api/client"
 import { useSession } from "@featul/auth/client"
@@ -18,6 +18,34 @@ export interface MentionCandidate {
   image: string | null
 }
 
+function memberNames(members: Member[]): string[] {
+  return members.map((member) => (member.name || "").trim()).filter(Boolean)
+}
+
+/** True when `@Name ` is already inserted and no longer an in-progress query. */
+function isCommittedMentionQuery(after: string, names: string[]): boolean {
+  if (!after) return false
+
+  const afterLower = after.toLowerCase()
+  const sorted = [...names].sort((left, right) => right.length - left.length)
+
+  for (const name of sorted) {
+    const nameLower = name.toLowerCase()
+    const committed =
+      afterLower.startsWith(`${nameLower} `) ||
+      afterLower.startsWith(`${nameLower}\n`)
+    if (!committed) continue
+
+    const stillTypingLongerName = names.some((other) => {
+      if (other.length <= name.length) return false
+      return other.toLowerCase().startsWith(afterLower)
+    })
+    if (!stillTypingLongerName) return true
+  }
+
+  return false
+}
+
 /** @-mention picker from workspace members. Inserts `@name` at the caret and tracks mention analytics. */
 export function useMentions(
   workspaceSlug: string | undefined,
@@ -29,7 +57,9 @@ export function useMentions(
   const [mentionQuery, setMentionQuery] = useState("")
   const [mentionIndex, setMentionIndex] = useState(0)
   const [members, setMembers] = useState<Member[]>([])
-  const { data: session } = useSession() 
+  const { data: session } = useSession()
+  const skipMentionCheckRef = useRef(false)
+  const names = useMemo(() => memberNames(members), [members]) 
 
   // Filter members based on query
   const filteredCandidates = useMemo(() => {
@@ -46,22 +76,30 @@ export function useMentions(
 
   // Insert selected mention into text
   const insertMention = (name: string) => {
+    skipMentionCheckRef.current = true
+    setMentionOpen(false)
+    setMentionQuery("")
+    setMentionIndex(0)
+
     const el = textareaRef.current
-    if (!el) return
-    
+    if (!el) {
+      skipMentionCheckRef.current = false
+      return
+    }
+
     const caret = el.selectionStart || content.length
     const upto = content.slice(0, caret)
     const at = upto.lastIndexOf("@")
-    if (at < 0) return
+    if (at < 0) {
+      skipMentionCheckRef.current = false
+      return
+    }
 
     const before = content.slice(0, at)
     const afterCaret = content.slice(caret)
     const nextContent = `${before}@${name} ${afterCaret}`
-    
+
     setContent(nextContent)
-    setMentionOpen(false)
-    setMentionQuery("")
-    setMentionIndex(0)
 
     // Reset caret to after inserted mention
     setTimeout(() => {
@@ -72,11 +110,13 @@ export function useMentions(
       } catch {
         el.focus()
       }
+      skipMentionCheckRef.current = false
     }, 0)
   }
 
   // Check for mention trigger in text
   const checkForMention = (text: string, selectionStart: number) => {
+    if (skipMentionCheckRef.current) return
     if (!workspaceSlug) return
 
     const upto = text.slice(0, selectionStart)
@@ -94,6 +134,12 @@ export function useMentions(
       }
 
       const after = text.slice(at + 1, selectionStart)
+      if (isCommittedMentionQuery(after, names)) {
+        setMentionOpen(false)
+        setMentionQuery("")
+        return
+      }
+
       const valid = /^[A-Za-z0-9._\-\s]*$/.test(after)
       const beforeChar = upto[at - 1]
       const boundaryChars = "().,;:!?[]{}"
