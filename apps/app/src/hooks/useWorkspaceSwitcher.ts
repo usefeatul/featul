@@ -3,7 +3,7 @@
 import React from "react"
 import { useRouter, usePathname, useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query"
-import { useWorkspaceLogo } from "@/lib/branding/store"
+import { useLiveWorkspaceName, useWorkspaceLogo } from "@/lib/branding/store"
 import {
   fetchUserWorkspaces,
   fetchWorkspaceBySlug,
@@ -21,7 +21,7 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
 
-  const { data: workspaces = [] } = useQuery<Ws[]>({
+  const { data: workspacesData = [] } = useQuery<Ws[]>({
     queryKey: workspaceQueryKeys.list(),
     queryFn: fetchUserWorkspaces,
     initialData: initialWorkspaces || [],
@@ -43,13 +43,27 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
   })
 
   const liveLogo = useWorkspaceLogo(slug || "")
+  const liveName = useLiveWorkspaceName(slug || "")
+
+  const workspaces = React.useMemo(() => {
+    const list = Array.isArray(workspacesData) ? workspacesData : []
+    if (!slug || (!liveName && !liveLogo)) return list
+    return list.map((workspace) => {
+      if (workspace.slug !== slug) return workspace
+      return {
+        ...workspace,
+        name: liveName ?? workspace.name,
+        logo: liveLogo ?? workspace.logo,
+      }
+    })
+  }, [workspacesData, slug, liveName, liveLogo])
 
   const current = React.useMemo(() => {
     return workspaces.find((w) => w.slug === slug) || null
   }, [workspaces, slug])
 
   const currentLogo: string | null = liveLogo ?? wsInfo?.logo ?? current?.logo ?? null
-  const currentName: string = wsInfo?.name ?? current?.name ?? (slug || "Current")
+  const currentName: string = liveName ?? wsInfo?.name ?? current?.name ?? (slug || "Current")
 
   const handleSelectWorkspace = React.useCallback(
     (targetSlug: string) => {

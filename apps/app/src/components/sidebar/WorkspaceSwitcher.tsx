@@ -66,6 +66,7 @@ export default function WorkspaceSwitcher({
             <span className={cn(sidebarLeadSlotClassName, "overflow-hidden rounded-md")}>
               {currentLogo ? (
                 <Image
+                  key={currentLogo}
                   src={currentLogo}
                   alt=""
                   width={24}
@@ -73,6 +74,7 @@ export default function WorkspaceSwitcher({
                   sizes="24px"
                   className="size-6 object-contain"
                   priority
+                  unoptimized={currentLogo.startsWith("data:")}
                 />
               ) : null}
             </span>
@@ -99,8 +101,11 @@ export default function WorkspaceSwitcher({
               <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-hide">
                 <div className="flex flex-col gap-1 pb-1">
                   {all.map((w) => {
-                    const logoUrl: string | null = w.logo ?? null;
                     const isCurrent = w.slug === slug;
+                    const logoUrl: string | null = isCurrent
+                      ? currentLogo
+                      : w.logo ?? null;
+                    const name = isCurrent ? currentName : w.name;
                     return (
                       <DropdownMenuItem
                         key={w.slug}
@@ -114,18 +119,20 @@ export default function WorkspaceSwitcher({
                         {logoUrl ? (
                           <div className="relative w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border overflow-hidden">
                             <Image
+                              key={logoUrl}
                               src={logoUrl}
-                              alt={w.name}
+                              alt={name}
                               fill
                               sizes="32px"
                               className="object-cover"
+                              unoptimized={logoUrl.startsWith("data:")}
                             />
                           </div>
                         ) : (
                           <div className="w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border" />
                         )}
                         <div className="flex flex-col overflow-hidden">
-                          <span className="truncate text-sm font-medium">{w.name}</span>
+                          <span className="truncate text-sm font-medium">{name}</span>
                           <span className="text-xs text-muted-foreground capitalize">
                             {w.plan || "Free"}
                           </span>

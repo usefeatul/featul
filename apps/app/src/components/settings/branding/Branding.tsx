@@ -19,7 +19,7 @@ import ThemePicker from "./ThemePicker";
 import LogoUploader from "./LogoUploader";
 import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
-import { setWorkspaceLogo } from "@/lib/branding/store";
+import { setLiveWorkspaceName, setWorkspaceLogo } from "@/lib/branding/store";
 import { Input } from "@featul/ui/components/input";
 import { cn } from "@featul/ui/lib/utils";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
@@ -170,6 +170,44 @@ export default function BrandingSection({
     };
   }, [slug, initialConfig, initialHidePoweredBy, initialPlan, initialWorkspaceName]);
 
+  const persistWorkspaceName = React.useCallback(
+    async (nextName: string) => {
+      const previousName = originalNameRef.current;
+      if (!nextName) {
+        setWorkspaceName(previousName);
+        return false;
+      }
+      if (nextName === previousName) return true;
+      if (!canEditBranding) {
+        toast.error("You don’t have permission to update branding");
+        return false;
+      }
+
+      originalNameRef.current = nextName;
+      try {
+        setLiveWorkspaceName(slug, nextName);
+        updateWorkspaceNameInCache(queryClient, slug, nextName);
+      } catch {
+        // ignore cache errors
+      }
+
+      const result = await updateWorkspaceName(slug, nextName);
+      if (!result.ok) {
+        originalNameRef.current = previousName;
+        setWorkspaceName(previousName);
+        try {
+          setLiveWorkspaceName(slug, previousName);
+          updateWorkspaceNameInCache(queryClient, slug, previousName);
+        } catch {
+          // ignore cache errors
+        }
+        throw new Error(result.message || "Update failed");
+      }
+      return true;
+    },
+    [canEditBranding, queryClient, slug],
+  );
+
   const handleSave = async () => {
     if (saving) return;
     if (!canEditBranding) {
@@ -185,20 +223,7 @@ export default function BrandingSection({
     const canHidePoweredBy = limits.allowHidePoweredBy === true;
     if (canBranding) applyBrandPrimary(p);
     try {
-      const nameChanged =
-        workspaceName.trim() &&
-        workspaceName.trim() !== originalNameRef.current;
-        if (nameChanged) {
-          const nextName = workspaceName.trim();
-          const r = await updateWorkspaceName(slug, nextName);
-          if (!r.ok) throw new Error(r.message || "Update failed");
-          originalNameRef.current = nextName;
-          try {
-            updateWorkspaceNameInCache(queryClient, slug, nextName);
-          } catch {
-            //ignore
-          }
-        }
+      await persistWorkspaceName(workspaceName.trim());
       const brandingInput: BrandingConfig & { logoUrl?: string } = {};
       if (canBranding) {
         if (logoUrl.trim()) brandingInput.logoUrl = logoUrl.trim();
@@ -251,6 +276,24 @@ export default function BrandingSection({
                 variant="plain"
                 value={workspaceName}
                 onChange={(e) => setWorkspaceName(e.target.value)}
+                onBlur={() => {
+                  const nextName = workspaceName.trim();
+                  if (nextName === originalNameRef.current) return;
+                  void persistWorkspaceName(nextName)
+                    .then((updated) => {
+                      if (updated) toast.success("Saved");
+                    })
+                    .catch((error: unknown) => {
+                      const message =
+                        error instanceof Error && error.message
+                          ? error.message
+                          : "Failed to update name";
+                      toast.error(message);
+                    });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.currentTarget.blur();
+                }}
                 className={cn(toolbarItemClass, "h-8 w-auto min-w-[4ch] px-2.5 text-right text-xs font-medium")}
                 size={workspaceNameInputSize}
                 maxLength={15}
