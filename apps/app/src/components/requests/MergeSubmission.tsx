@@ -91,7 +91,7 @@ function MergePostChip({
       <HoverCardTrigger asChild>
         <Link
           href={href}
-          className="inline-flex h-6 w-fit max-w-[22rem] shrink-0 items-center outline-hidden"
+          className="inline-flex h-6 max-w-[20rem] items-center outline-hidden"
           aria-label={title}
         >
           <OverlayChip
@@ -130,25 +130,23 @@ function MergeChipRow({
   if (posts.length === 0 && extraCount <= 0) return null
 
   return (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <span className="inline-flex h-6 shrink-0 items-center text-sm font-medium leading-none text-muted-foreground">
         {label}
       </span>
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-        {posts.map((post) => (
-          <MergePostChip
-            key={post.slug}
-            href={hrefFor(post.slug)}
-            post={post}
-            hidePublicMemberIdentity={hidePublicMemberIdentity}
-          />
-        ))}
-        {extraCount > 0 ? (
-          <span className="inline-flex h-6 items-center text-[11px] text-muted-foreground">
-            +{extraCount} more
-          </span>
-        ) : null}
-      </div>
+      {posts.map((post) => (
+        <MergePostChip
+          key={post.slug}
+          href={hrefFor(post.slug)}
+          post={post}
+          hidePublicMemberIdentity={hidePublicMemberIdentity}
+        />
+      ))}
+      {extraCount > 0 ? (
+        <span className="inline-flex h-6 items-center text-[11px] text-muted-foreground">
+          +{extraCount} more
+        </span>
+      ) : null}
     </div>
   )
 }
