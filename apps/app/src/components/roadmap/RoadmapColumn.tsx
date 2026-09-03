@@ -24,7 +24,7 @@ export const ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS =
 
 export function roadmapColumnWidthClass(collapsed: boolean) {
   return collapsed
-    ? "md:min-w-20 md:flex-[0_0_80px]"
+    ? "md:min-w-14 md:flex-[0_0_56px]"
     : "md:min-w-[300px] md:flex-[1_1_0px] lg:min-w-[320px]";
 }
 
@@ -104,7 +104,7 @@ export default function RoadmapColumn({
                 className="block size-4.5 shrink-0"
               />
               <span
-                className="text-xs font-medium leading-none tracking-wide [writing-mode:vertical-rl] rotate-180"
+                className="text-xs font-medium leading-none tracking-wide [writing-mode:vertical-rl]"
                 style={{ color: tone.color }}
               >
                 {label}
