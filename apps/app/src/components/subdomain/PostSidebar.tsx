@@ -21,6 +21,7 @@ import {
 } from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { RequestFlagReadout } from "@/components/global/flag-visuals"
 import type { SubdomainRequestDetailData } from "@/types/subdomain"
 
 export type PostSidebarProps = {
@@ -157,13 +158,10 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                 ) : (
                   <Toolbar size="sm" className="w-fit">
                     <div className={cn(toolbarItemClass, "flex h-8 items-center gap-1.5 px-2.5 text-xs font-medium")}>
-                      {[
-                        meta.isPinned ? "Pinned" : null,
-                        meta.isLocked ? "Locked" : null,
-                        meta.isFeatured ? "Featured" : null,
-                      ]
-                        .filter(Boolean)
-                        .join(", ")}
+                      <RequestFlagReadout
+                        className="inline-flex items-center gap-2"
+                        flags={meta}
+                      />
                     </div>
                   </Toolbar>
                 )}

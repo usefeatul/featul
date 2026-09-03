@@ -2,16 +2,18 @@
 
 import React from "react"
 import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay"
-import { StarIcon } from "@featul/ui/icons/star"
-import { PinIcon } from "@featul/ui/icons/pin"
-import { StarPinIcon } from "@featul/ui/icons/star-pin"
-import { LockIcon } from "@featul/ui/icons/lock"
 import { cn } from "@featul/ui/lib/utils"
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@featul/ui/components/tooltip"
+import {
+  getActiveRequestFlags,
+  getFlagRibbonIcon,
+  getFlagRibbonToneClass,
+  getRequestFlagTitle,
+} from "./flag-visuals"
 
 interface FlagRibbonProps {
     isPinned?: boolean
@@ -22,53 +24,26 @@ interface FlagRibbonProps {
 
 /**
  * Corner ribbon for post flags.
- * - Pinned: Primary ribbon
- * - Featured: Amber/gold ribbon
- * - Both: Gradient ribbon
- * - Locked (when not pinned/featured): Red ribbon
+ * Combinations use one merged glyph (star-pin, pin-lock, star-lock, or all three).
  */
 export function FlagRibbon({ isPinned, isFeatured, isLocked, className = "" }: FlagRibbonProps) {
-    const showPinOrFeature = Boolean(isPinned || isFeatured)
-    if (!showPinOrFeature && !isLocked) return null
+    const flags = { isPinned, isFeatured, isLocked }
+    const active = getActiveRequestFlags(flags)
+    if (active.length === 0) return null
 
-    const Icon = showPinOrFeature
-        ? isPinned && isFeatured
-            ? StarPinIcon
-            : isPinned
-                ? PinIcon
-                : StarIcon
-        : LockIcon
-
-    const title = showPinOrFeature
-        ? [
-            isPinned && isFeatured ? "Pinned & Featured" : isPinned ? "Pinned" : "Featured",
-            isLocked ? "Locked" : null,
-          ].filter(Boolean).join(" · ")
-        : "This post is locked"
+    const title = getRequestFlagTitle(flags)
+    const Icon = getFlagRibbonIcon(active)
 
     const ribbon = (
         <div
-            className={cn(
-                overlayRibbonShellClass,
-                !showPinOrFeature && "pointer-events-auto",
-                className,
-            )}
-            title={showPinOrFeature ? title : undefined}
+            className={cn(overlayRibbonShellClass, "pointer-events-auto", className)}
+            aria-label={title}
         >
-            <span
-                className={cn(overlayRibbonInnerClass, {
-                    "bg-linear-to-r from-primary to-amber-500": isPinned && isFeatured,
-                    "bg-primary": isPinned && !isFeatured,
-                    "bg-amber-500": !isPinned && isFeatured,
-                    "bg-red-500": !showPinOrFeature && isLocked,
-                })}
-            >
+            <span className={cn(overlayRibbonInnerClass, getFlagRibbonToneClass(active))}>
                 <Icon width={10} height={10} className="fill-current" />
             </span>
         </div>
     )
-
-    if (showPinOrFeature) return ribbon
 
     return (
         <Tooltip>

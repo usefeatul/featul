@@ -49,7 +49,7 @@ function PostCardBase({
 
   return (
     <div className={`${subdomainListItemClassName} relative group overflow-hidden`}>
-      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
+      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} isLocked={item.isLocked} />
       <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
         <span className="sr-only">View post</span>
       </Link>

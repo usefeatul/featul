@@ -41,6 +41,7 @@ export const toRoadmapCardItem = (item: Item) => ({
   isFeatul: item.isFeatul,
   isPinned: item.isPinned,
   isFeatured: item.isFeatured,
+  isLocked: item.isLocked,
 });
 
 /** Roadmap columns, collapse bits, and drag-to-status. POSTs status and persists collapse in a cookie. */

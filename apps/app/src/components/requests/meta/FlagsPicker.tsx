@@ -14,10 +14,13 @@ import { client } from "@featul/api/client";
 import { cn } from "@featul/ui/lib/utils";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import {
-  REQUEST_FLAG_OPTIONS,
   type RequestFlagKey,
   type RequestFlags,
 } from "@/types/request";
+import {
+  REQUEST_FLAG_VISUALS,
+  getActiveRequestFlags,
+} from "@/components/global/flag-visuals";
 
 export default function FlagsPicker({
   postId,
@@ -45,15 +48,13 @@ export default function FlagsPicker({
     }
   };
 
-  const activeOptions = REQUEST_FLAG_OPTIONS.filter(
-    (option) => value[option.key],
-  );
+  const activeFlags = getActiveRequestFlags(value);
   const label =
-    activeOptions.length === 0
+    activeFlags.length === 0
       ? "Flags"
-      : activeOptions.length === 1
-        ? (activeOptions.at(0)?.label ?? "Flags")
-        : `${activeOptions.length} flags`;
+      : activeFlags.length === 1
+        ? (activeFlags.at(0)?.label ?? "Flags")
+        : `${activeFlags.length} flags`;
 
   return (
     <Toolbar size="sm" className="w-fit">
@@ -72,22 +73,41 @@ export default function FlagsPicker({
             aria-label="Manage flags"
             disabled={saving}
           >
-            <span className="max-w-[140px] truncate">{label}</span>
+            <span className="inline-flex items-center gap-1.5">
+              {activeFlags.length > 0 ? (
+                <span className="inline-flex items-center gap-1" aria-hidden>
+                  {activeFlags.map((flag) => (
+                    <flag.Icon
+                      key={flag.key}
+                      width={12}
+                      height={12}
+                      className={`size-3 shrink-0 fill-current ${flag.iconClass}`}
+                    />
+                  ))}
+                </span>
+              ) : null}
+              <span className="max-w-[140px] truncate">{label}</span>
+            </span>
             <DropdownIcon className="size-3" />
           </Button>
         </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
-          {REQUEST_FLAG_OPTIONS.map((option) => {
-            const isChecked = !!value[option.key];
+          {REQUEST_FLAG_VISUALS.map((flag) => {
+            const isChecked = !!value[flag.key];
             return (
               <PopoverListItem
-                key={option.key}
+                key={flag.key}
                 role="menuitemcheckbox"
                 aria-checked={isChecked}
-                onClick={() => toggle(option.key)}
+                onClick={() => toggle(flag.key)}
               >
-                <span className="text-sm">{option.label}</span>
+                <flag.Icon
+                  width={14}
+                  height={14}
+                  className={`size-3.5 shrink-0 fill-current ${flag.iconClass}`}
+                />
+                <span className="text-sm">{flag.label}</span>
                 {isChecked ? <span className="ml-auto text-xs">✓</span> : null}
               </PopoverListItem>
             );

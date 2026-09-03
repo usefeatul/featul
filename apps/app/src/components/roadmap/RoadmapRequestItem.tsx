@@ -31,6 +31,7 @@ export type RoadmapItemData = {
   isFeatul?: boolean;
   isPinned?: boolean;
   isFeatured?: boolean;
+  isLocked?: boolean;
 };
 
 export default function RoadmapRequestItem({
@@ -54,7 +55,7 @@ export default function RoadmapRequestItem({
 
   return (
     <div className="relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
-      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
+      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} isLocked={item.isLocked} />
       <div className="min-h-0 flex-1 px-3.5 pb-3 pt-3.5">
         <Link
           href={href}
