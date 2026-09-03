@@ -73,7 +73,7 @@ export function RequestListGroup({
           )}
         />
         <StatusIcon status={status} className="size-3.5 shrink-0" />
-        <span className="text-sm font-medium text-foreground">{label}</span>
+        <span className="font-heading text-sm font-medium text-foreground">{label}</span>
         <span className="text-xs tabular-nums">{count}</span>
       </button>
       {collapsed ? null : children}
