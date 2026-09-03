@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import {
   Avatar,
   AvatarImage,
@@ -25,6 +24,7 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { RequestFlagReadout } from "@/components/global/flag-visuals";
+import { MergeSubmissionSection } from "./MergeSubmission";
 
 export type RequestDetailSidebarProps = {
   post: RequestDetailData;
@@ -226,75 +226,17 @@ export default function RequestDetailSidebar({
           ) : null}
 
           {showMerge ? (
-            <div className="space-y-3">
-              <div className="h-px w-full bg-border/50" />
-              <div>
-                <div className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-                  <span>Merge submission</span>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        aria-label="About merges"
-                        className="inline-flex items-center rounded-sm text-accent hover:text-foreground"
-                      >
-                        <CircleQuestionMarkIcon className="size-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={6}>
-                      Shows when requests are merged to consolidate duplicates.
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </div>
-              {post.duplicateOfId ? (
-                <div className="rounded-xl border border-border bg-background">
-                  <Link
-                    href={post.mergedInto ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}` : "#"}
-                    className="block space-y-2 p-3"
-                  >
-                    <div className="text-sm font-medium leading-snug text-foreground">
-                      {post.mergedInto?.title || "Merged request"}
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <StatusIcon status={post.mergedInto?.roadmapStatus || "pending"} className="size-4" />
-                      <span className="capitalize">{post.mergedInto?.roadmapStatus || "Open"}</span>
-                      {post.mergedInto?.boardName ? (
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground">
-                          {post.mergedInto.boardName}
-                        </span>
-                      ) : null}
-                      <span>{relativeTime(post.mergedInto?.mergedAt || post.createdAt)}</span>
-                    </div>
-                  </Link>
-                </div>
-              ) : null}
-              {post.mergedSources && post.mergedSources.length > 0 ? (
-                <div className="rounded-xl border border-border bg-background p-3">
-                  <div className="space-y-2.5">
-                    {post.mergedSources.map((src) => (
-                      <Link
-                        key={src.id}
-                        href={`/workspaces/${workspaceSlug}/requests/${src.slug}`}
-                        className="block space-y-2"
-                      >
-                        <div className="text-sm font-medium leading-snug text-foreground">{src.title}</div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <StatusIcon status={src.roadmapStatus || "pending"} className="size-4" />
-                          <span className="capitalize">{src.roadmapStatus || "Open"}</span>
-                          {src.boardName ? (
-                            <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground">
-                              {src.boardName}
-                            </span>
-                          ) : null}
-                          <span>{relativeTime(src.mergedAt || post.createdAt)}</span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </div>
+            <MergeSubmissionSection
+              mergedInto={post.mergedInto}
+              mergedIntoHref={
+                post.mergedInto
+                  ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}`
+                  : undefined
+              }
+              mergedSources={post.mergedSources}
+              sourceHref={(slug) => `/workspaces/${workspaceSlug}/requests/${slug}`}
+              fallbackDate={post.createdAt}
+            />
           ) : null}
         </div>
       </div>
