@@ -16,10 +16,10 @@ import {
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard";
 
-const COLUMN_MOTION_MS = 320;
+const COLUMN_MOTION_MS = 550;
 
 export const ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS =
-  "md:transition-[flex-grow,flex-shrink,flex-basis,min-width] md:duration-[320ms] md:ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none";
+  "md:transition-[flex-grow,flex-shrink,flex-basis,min-width] md:duration-[550ms] md:ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none";
 
 export function roadmapColumnWidthClass(collapsed: boolean) {
   return collapsed
@@ -92,7 +92,7 @@ export default function RoadmapColumn({
           <>
             <MoveVerticalIcon
               className={cn(
-                "mx-auto block size-4 rotate-90 text-accent transition-transform duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                "mx-auto block size-4 rotate-90 text-accent transition-transform duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
                 instant && "transition-none",
               )}
             />
@@ -136,7 +136,7 @@ export default function RoadmapColumn({
               </OverlayChip>
               <MoveVerticalIcon
                 className={cn(
-                  "size-4 text-accent transition-transform duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                  "size-4 text-accent transition-transform duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
                   instant && "transition-none",
                 )}
               />
@@ -149,17 +149,17 @@ export default function RoadmapColumn({
           "grid min-h-0 flex-1",
           instant
             ? "transition-none"
-            : "transition-[grid-template-rows,opacity] duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+            : "transition-[grid-template-rows,opacity] duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none",
           collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100",
         )}
         aria-hidden={collapsed}
         inert={!!collapsed}
       >
-        <div className="min-h-0 overflow-hidden">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden">
           <ul
             className={cn(
               settingsCardInnerClass,
-              "min-h-[260px] space-y-2 overflow-y-auto p-2",
+              "min-h-[260px] min-h-0 flex-1 space-y-2 overflow-y-auto p-2",
             )}
           >
             {showContent ? children : null}
