@@ -21,16 +21,11 @@ import {
 import { cn } from "@featul/ui/lib/utils"
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { RequestFlagReadout } from "@/components/global/flag-visuals"
-import { MergeSubmissionSection } from "@/components/requests/MergeSubmission"
 import type { SubdomainRequestDetailData } from "@/types/subdomain"
 
 export type PostSidebarProps = {
   post: SubdomainRequestDetailData
   workspaceSlug: string
-}
-
-function publicRequestHref(slug: string) {
-  return `/board/p/${slug}`
 }
 
 export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
@@ -62,8 +57,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const authorInitials = getInitials(displayUser.name)
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
   const showTags = tags.length > 0 || canEdit
-  const showMerge = Boolean(post.duplicateOfId || (post.mergedSources && post.mergedSources.length > 0))
-  const showFlagsDivider = showTags || showMerge
+  const showFlagsDivider = showTags
 
   return (
     <aside className="hidden min-w-0 flex-col gap-4 md:flex">
@@ -218,19 +212,6 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
               </div>
             ) : null}
 
-            {showMerge ? (
-              <MergeSubmissionSection
-                mergedInto={post.mergedInto}
-                mergedIntoHref={
-                  post.mergedInto
-                    ? publicRequestHref(post.mergedInto.slug)
-                    : undefined
-                }
-                mergedSources={post.mergedSources}
-                sourceHref={publicRequestHref}
-                fallbackDate={post.createdAt}
-              />
-            ) : null}
           </div>
         </div>
       </section>

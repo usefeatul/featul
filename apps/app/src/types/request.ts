@@ -85,6 +85,25 @@ export interface RequestItemData extends RequestFlags {
   reportCount?: number
 }
 
+/** Merged request shown in detail hover cards. */
+export type MergedRequestSummary = {
+  id: string
+  slug: string
+  title: string
+  content?: string | null
+  upvotes?: number
+  commentCount?: number
+  roadmapStatus?: string | null
+  mergedAt?: string | null
+  publishedAt?: string | null
+  createdAt?: string | null
+  boardName?: string
+  boardSlug?: string
+  authorId?: string | null
+  authorName?: string | null
+  authorImage?: string | null
+}
+
 /** Full request including merge graph, author, and lock/pin flags. */
 export type RequestDetailData = {
   id: string
@@ -108,25 +127,9 @@ export type RequestDetailData = {
   isFeatul?: boolean
   isOnboarding?: boolean
   duplicateOfId?: string | null
-  mergedInto?: {
-    id: string
-    slug: string
-    title: string
-    roadmapStatus?: string | null
-    mergedAt?: string | null
-    boardName?: string
-    boardSlug?: string
-  } | null
+  mergedInto?: MergedRequestSummary | null
   mergedCount?: number
-  mergedSources?: Array<{
-    id: string
-    slug: string
-    title: string
-    roadmapStatus?: string | null
-    mergedAt?: string | null
-    boardName?: string
-    boardSlug?: string
-  }>
+  mergedSources?: MergedRequestSummary[]
   tags?: TagSummary[]
   author?: {
     name: string | null

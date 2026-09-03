@@ -143,6 +143,7 @@ export async function loadPublicBoardRequestDetailPageData({
     duplicateOfId: postWithAuthor.duplicateOfId ?? null,
     mergedCount: postWithAuthor.mergedCount ?? 0,
     mergedInto: postWithAuthor.mergedInto ?? null,
+    mergedSources: postWithAuthor.mergedSources,
     author: postWithAuthor.author,
     metadata: postWithAuthor.metadata ?? null,
     createdAt: toIsoString(postWithAuthor.createdAt),
@@ -197,11 +198,11 @@ async function loadPostWithAuthorAndBoard(
 
   if (!p) return null;
 
-  const { mergedCount, mergedInto } = await loadMergedPostData({
+  const { mergedCount, mergedInto, mergedSources } = await loadMergedPostData({
     workspaceId,
     postId: p.id,
     duplicateOfId: p.duplicateOfId,
-    includeSources: false,
+    includeSources: true,
   });
 
   return {
@@ -209,6 +210,7 @@ async function loadPostWithAuthorAndBoard(
     metadata: (p.metadata ?? null) as Record<string, unknown> | null,
     mergedCount,
     mergedInto,
+    mergedSources,
   };
 }
 

@@ -28,6 +28,7 @@ import {
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
+import { MergeSubmissionSection } from "./MergeSubmission"
 
 type RequestDetailProps = {
   post: RequestDetailData
@@ -133,6 +134,18 @@ export default function RequestDetail({
               className="mt-3"
             />
           </div>
+          <MergeSubmissionSection
+            className="-mx-4 border-t border-border/50 px-4 pt-3"
+            mergedInto={post.mergedInto}
+            mergedIntoHref={
+              post.mergedInto
+                ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}`
+                : undefined
+            }
+            mergedSources={post.mergedSources}
+            mergedCount={post.mergedCount}
+            sourceHref={(slug) => `/workspaces/${workspaceSlug}/requests/${slug}`}
+          />
           {isMobile ? (
             <div className="flex items-center justify-between gap-3 text-sm text-accent">
               <div className="inline-flex items-center gap-3">

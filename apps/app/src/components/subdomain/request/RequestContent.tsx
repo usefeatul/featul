@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { UpvoteButton } from "../../upvote/UpvoteButton";
 import CommentList from "../../comments/CommentList";
 import CommentCounter from "../../comments/CommentCounter";
@@ -17,6 +16,7 @@ import {
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard";
 import { cn } from "@featul/ui/lib/utils";
+import { MergeSubmissionSection } from "@/components/requests/MergeSubmission";
 
 
 
@@ -94,23 +94,17 @@ export function RequestContent({
         alt={post.title}
         className="mb-4"
       />
-      {post.duplicateOfId && post.mergedInto ? (
-        <div className="mt-2 flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs">
-            <StatusIcon status={post.mergedInto.roadmapStatus || "pending"} className="size-4" />
-            <span className="text-accent">Merged into</span>
-            <Link
-              href={`/board/p/${post.mergedInto.slug}`}
-              className="font-medium text-foreground hover:underline"
-            >
-              {post.mergedInto.title}
-            </Link>
-            {post.mergedInto.boardName ? (
-              <span className="text-accent">({post.mergedInto.boardName})</span>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+      <MergeSubmissionSection
+        className="-mx-4 border-t border-border/50 px-4 pt-3 mb-4"
+        mergedInto={post.mergedInto}
+        mergedIntoHref={
+          post.mergedInto ? `/board/p/${post.mergedInto.slug}` : undefined
+        }
+        mergedSources={post.mergedSources}
+        mergedCount={post.mergedCount}
+        sourceHref={(slug) => `/board/p/${slug}`}
+        hidePublicMemberIdentity={post.hidePublicMemberIdentity}
+      />
       {/* Footer: Author & Upvotes */}
       <div className="flex items-center justify-end pt-2">
         <div className="flex items-center gap-3 text-xs text-accent">

@@ -1,3 +1,5 @@
+import type { MergedRequestSummary } from "@/types/request";
+
 /** Public board post; viewerCanEdit is session-derived, not stored. */
 export type SubdomainRequestDetailData = {
   id: string;
@@ -22,27 +24,9 @@ export type SubdomainRequestDetailData = {
   isFeatul?: boolean;
   viewerCanEdit?: boolean;
   duplicateOfId?: string | null;
-  mergedInto?:
-  | {
-    id: string;
-    slug: string;
-    title: string;
-    roadmapStatus?: string | null;
-    mergedAt?: string | null;
-    boardName?: string;
-    boardSlug?: string;
-  }
-  | null;
+  mergedInto?: MergedRequestSummary | null;
   mergedCount?: number;
-  mergedSources?: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    roadmapStatus?: string | null;
-    mergedAt?: string | null;
-    boardName?: string;
-    boardSlug?: string;
-  }>;
+  mergedSources?: MergedRequestSummary[];
   author?: {
     name: string | null;
     image: string | null;

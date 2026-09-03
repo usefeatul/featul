@@ -24,7 +24,6 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { RequestFlagReadout } from "@/components/global/flag-visuals";
-import { MergeSubmissionSection } from "./MergeSubmission";
 
 export type RequestDetailSidebarProps = {
   post: RequestDetailData;
@@ -64,8 +63,7 @@ export default function RequestDetailSidebar({
 
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
   const showTags = (tags && tags.length > 0) || canEdit;
-  const showMerge = Boolean(post.duplicateOfId || (post.mergedSources && post.mergedSources.length > 0));
-  const showFlagsDivider = showTags || showMerge;
+  const showFlagsDivider = showTags;
 
   return (
     <aside className={cn(settingsCardShellClass, "hidden md:flex")}>
@@ -225,19 +223,6 @@ export default function RequestDetailSidebar({
             </div>
           ) : null}
 
-          {showMerge ? (
-            <MergeSubmissionSection
-              mergedInto={post.mergedInto}
-              mergedIntoHref={
-                post.mergedInto
-                  ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}`
-                  : undefined
-              }
-              mergedSources={post.mergedSources}
-              sourceHref={(slug) => `/workspaces/${workspaceSlug}/requests/${slug}`}
-              fallbackDate={post.createdAt}
-            />
-          ) : null}
         </div>
       </div>
     </aside>

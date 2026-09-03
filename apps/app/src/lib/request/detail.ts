@@ -122,11 +122,80 @@ export type MergedPostSummary = {
   id: string;
   slug: string;
   title: string;
+  content?: string | null;
+  upvotes?: number;
+  commentCount?: number;
   roadmapStatus?: string | null;
   mergedAt?: string | null;
+  publishedAt?: string | null;
+  createdAt?: string | null;
   boardName?: string;
   boardSlug?: string;
+  authorId?: string | null;
+  authorName?: string | null;
+  authorImage?: string | null;
 };
+
+const mergedPostSelect = {
+  id: post.id,
+  slug: post.slug,
+  title: post.title,
+  content: post.content,
+  upvotes: post.upvotes,
+  commentCount: post.commentCount,
+  roadmapStatus: post.roadmapStatus,
+  publishedAt: post.publishedAt,
+  createdAt: post.createdAt,
+  authorId: post.authorId,
+  boardName: board.name,
+  boardSlug: board.slug,
+  authorName: sql<string | null>`coalesce(${widgetUser.name}, ${user.name})`,
+  authorImage: sql<string | null>`coalesce(${widgetUser.image}, ${user.image})`,
+};
+
+function toIsoOrNull(value?: Date | string | null): string | null {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function toMergedPostSummary(
+  row: {
+    id: string;
+    slug: string;
+    title: string;
+    content: string | null;
+    upvotes: number | null;
+    commentCount: number | null;
+    roadmapStatus: string | null;
+    publishedAt: Date | string | null;
+    createdAt: Date | string;
+    authorId: string | null;
+    boardName: string;
+    boardSlug: string;
+    authorName: string | null;
+    authorImage: string | null;
+  },
+  mergedAt?: Date | string | null,
+): MergedPostSummary {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    content: row.content,
+    upvotes: Number(row.upvotes || 0),
+    commentCount: Number(row.commentCount || 0),
+    roadmapStatus: row.roadmapStatus,
+    mergedAt: toIsoOrNull(mergedAt),
+    publishedAt: toIsoOrNull(row.publishedAt),
+    createdAt: toIsoOrNull(row.createdAt),
+    boardName: row.boardName,
+    boardSlug: row.boardSlug,
+    authorId: row.authorId,
+    authorName: row.authorName,
+    authorImage: row.authorImage,
+  };
+}
 
 export type MergedPostData = {
   mergedCount: number;
@@ -157,16 +226,11 @@ export async function loadMergedPostData({
 
   if (duplicateOfId) {
     const [target] = await db
-      .select({
-        id: post.id,
-        slug: post.slug,
-        title: post.title,
-        roadmapStatus: post.roadmapStatus,
-        boardName: board.name,
-        boardSlug: board.slug,
-      })
+      .select(mergedPostSelect)
       .from(post)
       .innerJoin(board, eq(post.boardId, board.id))
+      .leftJoin(user, eq(post.authorId, user.id))
+      .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
       .where(
         and(eq(board.workspaceId, workspaceId), eq(post.id, duplicateOfId)),
       )
@@ -182,17 +246,7 @@ export async function loadMergedPostData({
       )
       .limit(1);
     if (target) {
-      mergedInto = {
-        id: target.id,
-        slug: target.slug,
-        title: target.title,
-        roadmapStatus: target.roadmapStatus,
-        mergedAt: mergeRow?.createdAt
-          ? new Date(mergeRow.createdAt).toISOString()
-          : null,
-        boardName: target.boardName,
-        boardSlug: target.boardSlug,
-      };
+      mergedInto = toMergedPostSummary(target, mergeRow?.createdAt);
     }
   }
 
@@ -200,30 +254,21 @@ export async function loadMergedPostData({
   if (includeSources) {
     const mergedSourcesRows = await db
       .select({
-        id: post.id,
-        slug: post.slug,
-        title: post.title,
-        roadmapStatus: post.roadmapStatus,
+        ...mergedPostSelect,
         mergedAt: postMerge.createdAt,
-        boardName: board.name,
-        boardSlug: board.slug,
       })
       .from(postMerge)
       .innerJoin(post, eq(post.id, postMerge.sourcePostId))
       .innerJoin(board, eq(post.boardId, board.id))
+      .leftJoin(user, eq(post.authorId, user.id))
+      .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
       .where(eq(postMerge.targetPostId, postId))
       .orderBy(sql`${postMerge.createdAt} desc`)
       .limit(3);
 
-    mergedSources = mergedSourcesRows.map((r) => ({
-      id: r.id,
-      slug: r.slug,
-      title: r.title,
-      roadmapStatus: r.roadmapStatus ?? null,
-      mergedAt: r.mergedAt ? new Date(r.mergedAt).toISOString() : null,
-      boardName: r.boardName,
-      boardSlug: r.boardSlug,
-    }));
+    mergedSources = mergedSourcesRows.map((r) =>
+      toMergedPostSummary(r, r.mergedAt),
+    );
   }
 
   return { mergedCount, mergedInto, mergedSources };
