@@ -19,9 +19,10 @@ import { TagIcon } from "@featul/ui/icons/tag";
 import { CalendarIcon } from "@featul/ui/icons/calendar";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
 import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
-import { Clock } from "lucide-react";
+import { Clock, MessageCircleOff } from "lucide-react";
 import { client } from "@featul/api/client";
 import { STALE_STATUS_KEY } from "@featul/api/shared/stale";
+import { LOW_INTERACTION_STATUS_KEY } from "@featul/api/shared/low-interaction";
 import { SNOOZED_STATUS_KEY } from "@featul/api/shared/snooze";
 import { getSlugFromPath } from "@/config/nav";
 import { buildRequestsUrl } from "@/utils/request";
@@ -194,14 +195,23 @@ export default function FiltersAction({
   });
 
   const staleCount = Number(statusCounts?.[STALE_STATUS_KEY] ?? 0);
+  const lowInteractionCount = Number(
+    statusCounts?.[LOW_INTERACTION_STATUS_KEY] ?? 0,
+  );
   const snoozedCount = Number(statusCounts?.[SNOOZED_STATUS_KEY] ?? 0);
   const isStaleActive =
     filters.status.length === 1 && filters.status[0] === STALE_STATUS_KEY;
+  const isLowInteractionActive =
+    filters.status.length === 1 &&
+    filters.status[0] === LOW_INTERACTION_STATUS_KEY;
   const isSnoozedActive =
     filters.status.length === 1 && filters.status[0] === SNOOZED_STATUS_KEY;
 
   const statusSelectionCount = filters.status.filter(
-    (value) => value !== STALE_STATUS_KEY && value !== SNOOZED_STATUS_KEY,
+    (value) =>
+      value !== STALE_STATUS_KEY &&
+      value !== LOW_INTERACTION_STATUS_KEY &&
+      value !== SNOOZED_STATUS_KEY,
   ).length;
 
   const isActive =
@@ -209,9 +219,11 @@ export default function FiltersAction({
     filters.tag.length > 0 ||
     statusSelectionCount > 0 ||
     isStaleActive ||
+    isLowInteractionActive ||
     isSnoozedActive;
 
   const showStale = isStaleActive || staleCount > 0;
+  const showLowInteraction = isLowInteractionActive || lowInteractionCount > 0;
   const showSnoozed = isSnoozedActive || snoozedCount > 0;
 
   const handleOpenChange = React.useCallback(
@@ -242,7 +254,9 @@ export default function FiltersAction({
     () =>
       statusFilter.selected.filter(
         (value) =>
-          value !== STALE_STATUS_KEY && value !== SNOOZED_STATUS_KEY,
+          value !== STALE_STATUS_KEY &&
+          value !== LOW_INTERACTION_STATUS_KEY &&
+          value !== SNOOZED_STATUS_KEY,
       ),
     [statusFilter.selected],
   );
@@ -276,7 +290,10 @@ export default function FiltersAction({
 
   const toggleSpecialStatus = React.useCallback(
     (
-      key: typeof STALE_STATUS_KEY | typeof SNOOZED_STATUS_KEY,
+      key:
+        | typeof STALE_STATUS_KEY
+        | typeof LOW_INTERACTION_STATUS_KEY
+        | typeof SNOOZED_STATUS_KEY,
       active: boolean,
     ) => {
       updateStatus(active ? [] : [key]);
@@ -317,7 +334,9 @@ export default function FiltersAction({
               <MenuTrailing count={filters.tag.length} />
             </PopoverListItem>
 
-            {showStale || showSnoozed ? <PopoverSeparator /> : null}
+            {showStale || showLowInteraction || showSnoozed ? (
+              <PopoverSeparator />
+            ) : null}
 
             {showStale ? (
               <PopoverListItem
@@ -333,6 +352,31 @@ export default function FiltersAction({
                   {staleCount}
                 </span>
                 {isStaleActive ? <span className="text-xs">✓</span> : null}
+              </PopoverListItem>
+            ) : null}
+
+            {showLowInteraction ? (
+              <PopoverListItem
+                role="menuitemcheckbox"
+                aria-checked={isLowInteractionActive}
+                onClick={() =>
+                  toggleSpecialStatus(
+                    LOW_INTERACTION_STATUS_KEY,
+                    isLowInteractionActive,
+                  )
+                }
+              >
+                <MessageCircleOff
+                  className="size-4 shrink-0"
+                  strokeWidth={2.25}
+                />
+                <span className="text-sm">Low interaction</span>
+                <span className="ml-auto text-xs tabular-nums text-accent">
+                  {lowInteractionCount}
+                </span>
+                {isLowInteractionActive ? (
+                  <span className="text-xs">✓</span>
+                ) : null}
               </PopoverListItem>
             ) : null}
 

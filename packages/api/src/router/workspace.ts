@@ -29,6 +29,11 @@ import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain";
 import { Resolver } from "node:dns/promises";
 import { normalizeStatus } from "../shared/status";
 import { STALE_STATUS_KEY, STALE_THRESHOLD_DAYS } from "../shared/stale";
+import {
+  LOW_INTERACTION_MAX_UPVOTES,
+  LOW_INTERACTION_STATUS_KEY,
+  LOW_INTERACTION_THRESHOLD_DAYS,
+} from "../shared/low-interaction";
 import { SNOOZED_STATUS_KEY } from "../shared/snooze";
 import {
   addDomainToProject,
@@ -286,6 +291,7 @@ export function createWorkspaceRouter() {
           "pending",
           "closed",
           STALE_STATUS_KEY,
+          LOW_INTERACTION_STATUS_KEY,
           SNOOZED_STATUS_KEY,
         ]) {
           if (typeof counts[key] !== "number") counts[key] = 0;
@@ -306,6 +312,26 @@ export function createWorkspaceRouter() {
             ),
           );
         counts[STALE_STATUS_KEY] = Number(staleRow?.count || 0);
+
+        const [lowInteractionRow] = await ctx.db
+          .select({ count: sql<number>`count(*)` })
+          .from(post)
+          .innerJoin(board, eq(post.boardId, board.id))
+          .where(
+            and(
+              eq(board.workspaceId, ws.id),
+              eq(board.isSystem, false),
+              eq(board.isPublic, true),
+              notSnoozed,
+              sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
+              sql`COALESCE(${post.publishedAt}, ${post.createdAt}) < NOW() - (${LOW_INTERACTION_THRESHOLD_DAYS} * INTERVAL '1 day')`,
+              sql`COALESCE(${post.upvotes}, 0) <= ${LOW_INTERACTION_MAX_UPVOTES}`,
+              sql`COALESCE(${post.commentCount}, 0) = 0`,
+            ),
+          );
+        counts[LOW_INTERACTION_STATUS_KEY] = Number(
+          lowInteractionRow?.count || 0,
+        );
 
         const [snoozedRow] = await ctx.db
           .select({ count: sql<number>`count(*)` })

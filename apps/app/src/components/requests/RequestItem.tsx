@@ -14,6 +14,7 @@ import { UpvoteButton } from "@/components/upvote/UpvoteButton"
 import { RequestItemContextMenu } from "./RequestItemContextMenu"
 import { ReportIndicator } from "./ReportIndicator"
 import { StaleMark } from "./StaleIndicator"
+import { LowInteractionMark } from "./LowInteractionIndicator"
 import { SnoozeIndicator } from "./SnoozeIndicator"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import { OverlayChip } from "@featul/ui/components/overlay-chip"
@@ -25,6 +26,7 @@ import {
   type SelectionToggleMeta,
 } from "@/components/selection/Row"
 import { getRequestStaleDays } from "@/utils/request/stale"
+import { getRequestLowInteractionDays } from "@/utils/request/low-interaction"
 import { isActivelySnoozed } from "@featul/api/shared/snooze"
 import { relativeTime } from "@/lib/time"
 import { normalizeRoadmapStatus } from "@/lib/roadmap"
@@ -147,6 +149,13 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     updatedAt: item.updatedAt,
     roadmapStatus: item.roadmapStatus,
   })
+  const lowInteractionDays = getRequestLowInteractionDays({
+    createdAt: item.createdAt,
+    publishedAt: item.publishedAt,
+    roadmapStatus: item.roadmapStatus,
+    upvotes: item.upvotes,
+    commentCount: item.commentCount,
+  })
   const isStale = staleDays != null
   const isSnoozed = isActivelySnoozed(item.snoozedUntil)
   const status = normalizeRoadmapStatus(item.roadmapStatus)
@@ -207,15 +216,26 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           />
         ) : null}
         <StatusIcon status={status} className="size-5 shrink-0 text-foreground/80" />
-        <span
-          className={cn(
-            "min-w-0 flex-1 truncate text-sm font-medium leading-5",
-            isLinkDisabled || isSnoozed || isSettled
-              ? "text-muted-foreground"
-              : "text-foreground",
-          )}
-        >
-          {displayTitle}
+        <span className="flex min-w-0 flex-1 items-center gap-2">
+          <span
+            className={cn(
+              "min-w-0 truncate text-sm font-medium leading-5",
+              isLinkDisabled || isSnoozed || isSettled
+                ? "text-muted-foreground"
+                : "text-foreground",
+            )}
+          >
+            {displayTitle}
+          </span>
+          {lowInteractionDays != null ? (
+            <LowInteractionMark
+              days={lowInteractionDays}
+              className={cn(
+                "relative z-10 inline-flex shrink-0 appearance-none border-0 bg-transparent p-0",
+                isSelectingMode && "pointer-events-none",
+              )}
+            />
+          ) : null}
         </span>
         <div className={actionsClassName}>
           <RequestTagPills tags={item.tags} boardName={item.boardName} />

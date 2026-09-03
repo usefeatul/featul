@@ -35,6 +35,12 @@ import {
   isStaleStatusFilter,
 } from "@featul/api/shared/stale";
 import {
+  LOW_INTERACTION_MAX_UPVOTES,
+  LOW_INTERACTION_STATUS_KEY,
+  LOW_INTERACTION_THRESHOLD_DAYS,
+  isLowInteractionStatusFilter,
+} from "@featul/api/shared/low-interaction";
+import {
   SNOOZED_STATUS_KEY,
   isSnoozedStatusFilter,
 } from "@featul/api/shared/snooze";
@@ -78,7 +84,7 @@ export async function findFirstAccessibleWorkspaceSlug(
   return memberWs?.slug || null;
 }
 
-/** Canonical roadmap status, including stale and snoozed filter keys. */
+/** Canonical roadmap status, including stale, low-interaction, and snoozed filter keys. */
 export function normalizeStatus(s: string): string {
   const raw = (s || "").trim().toLowerCase();
   const t = raw.replace(/-/g, "");
@@ -90,6 +96,7 @@ export function normalizeStatus(s: string): string {
     completed: "completed",
     closed: "closed",
     stale: STALE_STATUS_KEY,
+    lowinteraction: LOW_INTERACTION_STATUS_KEY,
     snoozed: SNOOZED_STATUS_KEY,
   };
   return map[t] || raw;
@@ -100,6 +107,16 @@ function buildStalePostCondition(): SQL {
   return and(
     sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
     sql`COALESCE(${post.updatedAt}, ${post.publishedAt}, ${post.createdAt}) < NOW() - (${STALE_THRESHOLD_DAYS} * INTERVAL '1 day')`,
+  ) as SQL;
+}
+
+/** Open posts submitted 5+ days ago with no extra likes and no comments. */
+function buildLowInteractionPostCondition(): SQL {
+  return and(
+    sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
+    sql`COALESCE(${post.publishedAt}, ${post.createdAt}) < NOW() - (${LOW_INTERACTION_THRESHOLD_DAYS} * INTERVAL '1 day')`,
+    sql`COALESCE(${post.upvotes}, 0) <= ${LOW_INTERACTION_MAX_UPVOTES}`,
+    sql`COALESCE(${post.commentCount}, 0) = 0`,
   ) as SQL;
 }
 
@@ -197,9 +214,13 @@ function buildPostFilters({
   ];
   if (publicOnly) filters.push(eq(board.isPublic, true));
   const wantsStale = matchStatuses.some(isStaleStatusFilter);
+  const wantsLowInteraction = matchStatuses.some(isLowInteractionStatusFilter);
   const wantsSnoozed = matchStatuses.some(isSnoozedStatusFilter);
   const roadmapStatuses = matchStatuses.filter(
-    (s) => !isStaleStatusFilter(s) && !isSnoozedStatusFilter(s),
+    (s) =>
+      !isStaleStatusFilter(s) &&
+      !isLowInteractionStatusFilter(s) &&
+      !isSnoozedStatusFilter(s),
   );
 
   if (wantsSnoozed) {
@@ -215,6 +236,9 @@ function buildPostFilters({
     }
   } else if (roadmapStatuses.length > 0) {
     filters.push(inArray(post.roadmapStatus, roadmapStatuses));
+  }
+  if (wantsLowInteraction) {
+    filters.push(buildLowInteractionPostCondition());
   }
   if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
   if (tagPostIds && tagPostIds.length > 0)
@@ -532,7 +556,7 @@ export async function getWorkspacePostsCount(
 
   return Number(row?.count || 0);
 }
-/** Per-status counts plus stale and snoozed, excluding the other bucket. */
+/** Per-status counts plus stale, low-interaction, and snoozed, excluding the other bucket. */
 export async function getWorkspaceStatusCounts(
   slug: string,
 ): Promise<Record<string, number>> {
@@ -565,6 +589,7 @@ export async function getWorkspaceStatusCounts(
     "pending",
     "closed",
     STALE_STATUS_KEY,
+    LOW_INTERACTION_STATUS_KEY,
     SNOOZED_STATUS_KEY,
   ]) {
     if (typeof counts[key] !== "number") counts[key] = 0;
@@ -583,6 +608,20 @@ export async function getWorkspaceStatusCounts(
       ),
     );
   counts[STALE_STATUS_KEY] = Number(staleRow?.count || 0);
+
+  const [lowInteractionRow] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildNotActivelySnoozedCondition(),
+        buildLowInteractionPostCondition(),
+      ),
+    );
+  counts[LOW_INTERACTION_STATUS_KEY] = Number(lowInteractionRow?.count || 0);
 
   const [snoozedRow] = await db
     .select({ count: sql<number>`count(*)` })
