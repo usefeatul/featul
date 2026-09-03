@@ -107,12 +107,14 @@ function RequestListBase(props: RequestListProps) {
       <div className="min-w-0 py-1">
         {groups.map((group, index) => {
           const isCollapsed = Boolean(collapsed[group.status]);
+          const isLast = index === groups.length - 1;
           return (
             <RequestListGroup
               key={group.status}
               status={group.status}
               count={group.items.length}
               collapsed={isCollapsed}
+              last={isLast}
               className={index > 0 ? "mt-0.5" : undefined}
               onToggle={() =>
                 setCollapsed((current) => ({

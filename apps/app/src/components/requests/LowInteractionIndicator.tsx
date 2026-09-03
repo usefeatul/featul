@@ -26,8 +26,8 @@ export function LowInteractionMark({ days, className }: LowInteractionMarkProps)
           onClick={(e) => e.stopPropagation()}
           className={className}
         >
-          <OverlayChip innerClassName="h-6 min-h-6 px-2 text-xs font-medium text-violet-600 dark:text-violet-400">
-            Low
+          <OverlayChip innerClassName="h-6 min-h-6 whitespace-nowrap px-2 text-xs font-medium text-violet-600 dark:text-violet-400">
+            Low traction
           </OverlayChip>
         </button>
       </TooltipTrigger>

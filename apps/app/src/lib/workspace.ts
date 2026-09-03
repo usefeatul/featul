@@ -84,7 +84,7 @@ export async function findFirstAccessibleWorkspaceSlug(
   return memberWs?.slug || null;
 }
 
-/** Canonical roadmap status, including stale, low-interaction, and snoozed filter keys. */
+/** Canonical roadmap status, including stale, low-traction, and snoozed filter keys. */
 export function normalizeStatus(s: string): string {
   const raw = (s || "").trim().toLowerCase();
   const t = raw.replace(/-/g, "");
@@ -96,6 +96,7 @@ export function normalizeStatus(s: string): string {
     completed: "completed",
     closed: "closed",
     stale: STALE_STATUS_KEY,
+    lowtraction: LOW_INTERACTION_STATUS_KEY,
     lowinteraction: LOW_INTERACTION_STATUS_KEY,
     snoozed: SNOOZED_STATUS_KEY,
   };
@@ -556,7 +557,7 @@ export async function getWorkspacePostsCount(
 
   return Number(row?.count || 0);
 }
-/** Per-status counts plus stale, low-interaction, and snoozed, excluding the other bucket. */
+/** Per-status counts plus stale, low-traction, and snoozed, excluding the other bucket. */
 export async function getWorkspaceStatusCounts(
   slug: string,
 ): Promise<Record<string, number>> {

@@ -40,6 +40,7 @@ export function RequestListGroup({
   count,
   collapsed,
   sticky,
+  last,
   className,
   onToggle,
   children,
@@ -48,6 +49,7 @@ export function RequestListGroup({
   count: number;
   collapsed: boolean;
   sticky?: boolean;
+  last?: boolean;
   className?: string;
   onToggle: () => void;
   children: React.ReactNode;
@@ -58,7 +60,7 @@ export function RequestListGroup({
     <section
       className={cn(
         "min-w-0",
-        !collapsed && "border-b border-border/40 dark:border-white/10",
+        !collapsed && !last && "border-b border-border/40 dark:border-white/10",
         className,
       )}
     >
