@@ -171,7 +171,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
   )
   const actionsClassName = cn(
-    "ml-auto flex shrink-0 items-center gap-3 text-xs text-muted-foreground",
+    "relative z-10 flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground",
     isSelectingMode && "pointer-events-none",
   )
   const publishedLabel = relativeTime(item.publishedAt ?? item.createdAt)
@@ -207,24 +207,20 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           />
         ) : null}
         <StatusIcon status={status} className="size-5 shrink-0 text-foreground/80" />
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <span
-            className={cn(
-              "min-w-0 flex-1 truncate text-sm font-medium leading-5",
-              isLinkDisabled || isSnoozed || isSettled
-                ? "text-muted-foreground"
-                : "text-foreground",
-            )}
-          >
-            {displayTitle}
-          </span>
-          <RequestTagPills tags={item.tags} boardName={item.boardName} />
-        </div>
+        <span
+          className={cn(
+            "min-w-0 flex-1 truncate text-sm font-medium leading-5",
+            isLinkDisabled || isSnoozed || isSettled
+              ? "text-muted-foreground"
+              : "text-foreground",
+          )}
+        >
+          {displayTitle}
+        </span>
         <div className={actionsClassName}>
-          <div className="relative z-10 inline-flex items-center gap-3">
-            <ReportIndicator count={item.reportCount || 0} />
-            <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
-          </div>
+          <RequestTagPills tags={item.tags} boardName={item.boardName} />
+          <ReportIndicator count={item.reportCount || 0} />
+          <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
           <RequestEngagementChip
             postId={item.id}
             upvotes={item.upvotes}
