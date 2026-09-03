@@ -45,7 +45,7 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
   );
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-3">
       <RequestList
         items={items}
         workspaceSlug={slug}

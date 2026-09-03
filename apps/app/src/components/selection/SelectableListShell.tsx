@@ -31,7 +31,8 @@ type SelectableListShellProps = {
   children: ReactNode;
   className?: string;
   toolbarClassName?: string;
-  variant?: "default" | "nested";
+  variant?: "default" | "nested" | "plain";
+  wrapList?: boolean;
   title?: string;
   headerAction?: ReactNode;
 };
@@ -51,6 +52,7 @@ export function SelectableListShell({
   className,
   toolbarClassName,
   variant = "default",
+  wrapList = true,
   title,
   headerAction,
 }: SelectableListShellProps) {
@@ -60,6 +62,7 @@ export function SelectableListShell({
     itemLabelPlural,
   );
   const isNested = variant === "nested";
+  const isPlain = variant === "plain";
   const toolbar = selection.isSelectingForRender ? (
     <SelectionToolbar
       allSelected={selection.allSelected}
@@ -81,11 +84,20 @@ export function SelectableListShell({
       }
     />
   ) : null;
+  const list = wrapList ? (
+    <ul className="m-0 list-none p-0">{children}</ul>
+  ) : (
+    children
+  );
 
   return (
     <div
       className={cn(
-        isNested ? settingsCardShellClass : SELECTABLE_LIST_SHELL_CLASS,
+        isPlain
+          ? "min-w-0"
+          : isNested
+            ? settingsCardShellClass
+            : SELECTABLE_LIST_SHELL_CLASS,
         className,
       )}
     >
@@ -113,15 +125,13 @@ export function SelectableListShell({
       ) : (
         toolbar
       )}
-      <div
-        className={
-          isNested
-            ? cn(settingsCardInnerClass, "overflow-hidden p-0")
-            : undefined
-        }
-      >
-        <ul className="m-0 list-none p-0">{children}</ul>
-      </div>
+      {isNested ? (
+        <div className={cn(settingsCardInnerClass, "overflow-hidden p-0")}>
+          {list}
+        </div>
+      ) : (
+        list
+      )}
       <DestructiveConfirmDialog
         open={confirmOpen}
         isPending={isPending}

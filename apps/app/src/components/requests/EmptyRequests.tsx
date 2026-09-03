@@ -16,7 +16,7 @@ export default function EmptyRequests({ workspaceSlug, className = "" }: { works
       <div className={settingsCardInnerClass}>
         <div className="flex flex-col items-center py-8 text-center">
           <div className="text-sm font-medium text-foreground">No requests yet</div>
-          <p className="mt-1 max-w-sm text-sm text-accent">
+          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             Your feedback board is live. Share it with users to start collecting ideas.
           </p>
           <Button variant="quiet" asChild className="mt-4 px-5">
