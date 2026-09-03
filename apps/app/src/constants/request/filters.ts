@@ -6,7 +6,7 @@ export const REQUEST_STATUS_OPTIONS = [
   { label: "Complete", value: "completed" },
   { label: "Closed", value: "closed" },
   { label: "Stale", value: "stale" },
-  { label: "Low traction", value: "low-traction" },
+  { label: "Low Traction", value: "low-traction" },
   { label: "Snoozed", value: "snoozed" },
 ] as const;
 

@@ -370,7 +370,7 @@ export default function FiltersAction({
                   className="size-4 shrink-0"
                   strokeWidth={2.25}
                 />
-                <span className="text-sm">Low traction</span>
+                <span className="text-sm">Low Traction</span>
                 <span className="ml-auto text-xs tabular-nums text-accent">
                   {lowInteractionCount}
                 </span>

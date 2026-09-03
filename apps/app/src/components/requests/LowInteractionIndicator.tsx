@@ -27,7 +27,7 @@ export function LowInteractionMark({ days, className }: LowInteractionMarkProps)
           className={className}
         >
           <OverlayChip innerClassName="h-6 min-h-6 whitespace-nowrap px-2 text-xs font-medium text-violet-600 dark:text-violet-400">
-            Low traction
+            Low Traction
           </OverlayChip>
         </button>
       </TooltipTrigger>
