@@ -67,7 +67,7 @@ export default function RoadmapColumn({
       ref={setNodeRef}
       className={cn(
         settingsCardShellClass,
-        "h-full transition-colors duration-200",
+        "h-full min-h-0 w-full transition-colors duration-200",
         isOver && "border-green-500/70 dark:border-green-500/70",
       )}
     >

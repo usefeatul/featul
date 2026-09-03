@@ -78,7 +78,7 @@ export default function RoadmapBoard({
   );
 
   return (
-    <section className="min-h-[72vh] min-w-0 space-y-3">
+    <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
       {hasActiveFilters ? (
         <p className="text-xs text-accent">
           Showing {totalVisible} of {totalItems} items
@@ -96,9 +96,9 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="h-full min-h-[72vh] w-full min-w-0 overflow-x-auto bg-background pb-2 [scrollbar-width:thin] snap-x snap-mandatory md:snap-none"
+          className="min-h-0 w-full min-w-0 flex-1 overflow-x-auto bg-background pb-2 [scrollbar-width:thin] snap-x snap-mandatory md:snap-none"
         >
-          <div className="flex min-h-[72vh] min-w-max gap-4 md:min-w-full md:flex-row md:items-stretch">
+          <div className="flex h-full min-h-0 min-w-max items-stretch gap-4 md:min-w-full md:flex-row">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
               const itemsForStatus = grouped[s];
               return (
@@ -106,7 +106,7 @@ export default function RoadmapBoard({
                   key={s}
                   ref={(node) => setColumnRef(s, node)}
                   className={cn(
-                    "w-[85vw] shrink-0 snap-center overflow-hidden sm:w-[320px] md:h-full md:w-auto",
+                    "flex h-full min-h-0 w-[85vw] shrink-0 snap-center overflow-hidden sm:w-[320px] md:w-auto",
                     ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
                     roadmapColumnWidthClass(!!collapsedByStatus[s]),
                   )}

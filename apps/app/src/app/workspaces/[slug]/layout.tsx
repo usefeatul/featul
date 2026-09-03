@@ -81,7 +81,7 @@ export default async function WorkspaceLayout({
         initialUser={session?.user}
         initialDeviceAccounts={deviceAccounts}
       />
-      <main className="w-full min-w-0 lg:flex-1 px-2 sm:px-3 md:px-4 lg:px-0 pb-10 lg:pb-0">
+      <main className="flex min-h-screen w-full min-w-0 flex-col px-2 pb-10 sm:px-3 md:px-4 lg:min-h-0 lg:flex-1 lg:px-0 lg:pb-0">
         <EditorHeaderProvider>
           <WorkspaceHeader />
           {children}
