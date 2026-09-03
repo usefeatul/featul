@@ -55,7 +55,13 @@ export function RequestListGroup({
   const label = statusLabel(status);
 
   return (
-    <section className={cn("min-w-0", className)}>
+    <section
+      className={cn(
+        "min-w-0",
+        !collapsed && "border-b border-border/40 dark:border-white/10",
+        className,
+      )}
+    >
       <button
         type="button"
         onClick={onToggle}
