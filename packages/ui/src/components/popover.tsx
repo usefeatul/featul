@@ -42,9 +42,9 @@ function PopoverContent({
         className={cn(
           !unstyled && overlayShellClass,
           list && "overflow-visible",
-          "z-50 flex w-80 flex-col text-popover-foreground outline-hidden",
+          "z-50 flex flex-col text-popover-foreground outline-hidden",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-          list && "w-fit min-w-0",
+          list ? "w-max min-w-0" : "w-80",
           className,
         )}
         {...props}
@@ -52,12 +52,12 @@ function PopoverContent({
         {unstyled ? (
           children
         ) : (
-          <div className="p-1">
+          <div className={cn("p-1", list && "w-max")}>
             <div
               data-slot="popover-content-inner"
               className={cn(
                 overlayInnerClass,
-                list ? "overflow-visible p-0" : "p-2",
+                list ? "overflow-visible p-0 w-max" : "p-2",
               )}
             >
               {children}
@@ -73,7 +73,10 @@ function PopoverList({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="popover-list"
-      className={cn("max-h-[50vh] overflow-y-auto sm:max-h-64", className)}
+      className={cn(
+        "inline-flex w-max max-h-[50vh] flex-col overflow-y-auto sm:max-h-64",
+        className,
+      )}
       {...props}
     />
   );
@@ -96,7 +99,7 @@ function PopoverListItem({
     <Component
       data-slot="popover-list-item"
       className={cn(
-        "relative group flex w-full cursor-pointer items-center gap-3 rounded-none px-3 py-2 text-left hover:bg-muted/40 dark:hover:bg-muted/30",
+        "relative group flex cursor-pointer items-center gap-2 rounded-none px-3 py-2 text-left whitespace-nowrap hover:bg-muted/40 dark:hover:bg-muted/30",
         className,
       )}
       {...(props as any)}

@@ -3,7 +3,6 @@ import { PopoverList, PopoverListItem, PopoverSeparator } from "@featul/ui/compo
 import { CheckIcon } from "@featul/ui/icons/check";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ArrowLeftIcon } from "@featul/ui/icons/arrow-left";
-import { ContextMenuCheckSlot } from "@/components/global/ContextMenuItem";
 import StatusIcon from "./StatusIcon";
 import type { TagSummary } from "@/types/post";
 import { REQUEST_FLAG_VISUALS } from "@/components/global/flag-visuals";
@@ -49,11 +48,13 @@ function ChecklistSubmenuItem({
         onToggle();
       }}
     >
-      <ContextMenuCheckSlot checked={checked}>
-        <CheckIcon className="size-3.5" />
-      </ContextMenuCheckSlot>
-      {icon}
+      {icon ? (
+        <span className="inline-flex size-4 shrink-0 items-center justify-center">
+          {icon}
+        </span>
+      ) : null}
       <span className="text-sm">{label}</span>
+      {checked ? <CheckIcon className="size-3.5 shrink-0" /> : null}
     </PopoverListItem>
   );
 }

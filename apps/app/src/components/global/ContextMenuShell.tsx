@@ -48,8 +48,9 @@ export function ContextMenuShell({
         align="start"
         side="bottom"
         sideOffset={4}
-        className="fit"
+        className="min-w-0 w-max"
         list
+        style={{ width: "max-content" }}
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
         {menu}

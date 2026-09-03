@@ -44,7 +44,7 @@ export function ContextMenuSubmenuItem({
     <PopoverListItem onClick={onClick}>
       <ContextMenuIcon>{icon}</ContextMenuIcon>
       <span className="text-sm">{label}</span>
-      <ChevronRightIcon className="size-3.5 text-muted-foreground" />
+      <ChevronRightIcon className="ml-auto size-3.5 text-muted-foreground" />
     </PopoverListItem>
   );
 }
