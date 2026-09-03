@@ -3,32 +3,39 @@ import { normalizeRoadmapStatus, type RoadmapStatus } from "@/lib/roadmap";
 export type RoadmapStatusTone = {
   footer: string;
   icon: string;
+  color: string;
 };
 
 const ROADMAP_STATUS_TONES: Record<RoadmapStatus, RoadmapStatusTone> = {
   pending: {
     footer: "bg-zinc-100/80 dark:bg-zinc-500/10",
     icon: "text-zinc-500 dark:text-zinc-300",
+    color: "#8A8A8A",
   },
   review: {
     footer: "bg-violet-50/80 dark:bg-violet-500/10",
     icon: "text-violet-500 dark:text-violet-300",
+    color: "#a855f7",
   },
   planned: {
     footer: "bg-amber-50/80 dark:bg-amber-500/10",
     icon: "text-amber-500 dark:text-amber-300",
+    color: "#f59e0b",
   },
   progress: {
     footer: "bg-blue-50/80 dark:bg-blue-500/10",
     icon: "text-blue-500 dark:text-blue-300",
+    color: "#3b82f6",
   },
   completed: {
     footer: "bg-emerald-50/80 dark:bg-emerald-500/10",
     icon: "text-emerald-500 dark:text-emerald-300",
+    color: "#15CF59",
   },
   closed: {
     footer: "bg-red-50/80 dark:bg-red-500/10",
     icon: "text-red-500 dark:text-red-300",
+    color: "#FA3434",
   },
 };
 

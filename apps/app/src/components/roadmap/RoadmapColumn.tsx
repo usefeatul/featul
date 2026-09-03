@@ -11,6 +11,7 @@ import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
 import RoadmapEmptyColumn from "@/components/roadmap/RoadmapEmptyColumn";
+import { getRoadmapStatusTone } from "@/components/roadmap/card";
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
@@ -49,6 +50,7 @@ export default function RoadmapColumn({
   const { setNodeRef, isOver } = useDroppable({ id });
   const reduceMotion = useReducedMotion() ?? false;
   const instant = Boolean(disableMotion || reduceMotion);
+  const tone = getRoadmapStatusTone(id);
   const [contentMounted, setContentMounted] = React.useState(!collapsed);
   const showContent = !collapsed || contentMounted;
 
@@ -75,14 +77,14 @@ export default function RoadmapColumn({
         className={cn(
           "cursor-pointer",
           collapsed
-            ? "relative flex flex-col items-center gap-2 px-2 py-3"
+            ? "relative flex min-h-0 flex-1 flex-col items-center gap-2 px-2 py-3"
             : "flex items-center justify-between px-2 py-2",
         )}
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
-        aria-label={collapsed ? `${label} column, ${count} posts` : undefined}
-        title={collapsed ? label : undefined}
+        aria-label={`${label} column, ${count} posts`}
+        title={label}
         onClick={() => onToggle?.(!collapsed)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") onToggle?.(!collapsed);
@@ -96,10 +98,19 @@ export default function RoadmapColumn({
                 instant && "transition-none",
               )}
             />
-            <StatusIcon
-              status={id}
-              className="mx-auto block size-4.5 text-foreground/80"
-            />
+            <div className="flex flex-col items-center gap-2">
+              <StatusIcon
+                status={id}
+                className="block size-4.5 shrink-0"
+              />
+              <span
+                className="text-xs font-medium leading-none tracking-wide [writing-mode:vertical-rl] rotate-180"
+                style={{ color: tone.color }}
+              >
+                {label}
+              </span>
+            </div>
+            <div className="min-h-2 flex-1" />
             <OverlayChip className="mx-auto" innerClassName="min-w-5 px-1.5">
               {count}
             </OverlayChip>
@@ -109,9 +120,14 @@ export default function RoadmapColumn({
             <div className="flex min-w-0 items-center gap-2">
               <StatusIcon
                 status={id}
-                className="size-4 text-foreground/80 shrink-0"
+                className="size-4 shrink-0 text-foreground/80"
               />
-              <div className="truncate text-sm font-medium">{label}</div>
+              <div
+                className="truncate text-sm font-medium"
+                style={{ color: tone.color }}
+              >
+                {label}
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {onCreate ? (
@@ -146,7 +162,8 @@ export default function RoadmapColumn({
       </div>
       <div
         className={cn(
-          "grid min-h-0 flex-1",
+          "grid min-h-0",
+          !collapsed && "flex-1",
           instant
             ? "transition-none"
             : "transition-[grid-template-rows,opacity] duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none",
