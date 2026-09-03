@@ -73,21 +73,7 @@ export default function FlagsPicker({
             aria-label="Manage flags"
             disabled={saving}
           >
-            <span className="inline-flex items-center gap-1.5">
-              {activeFlags.length > 0 ? (
-                <span className="inline-flex items-center gap-1" aria-hidden>
-                  {activeFlags.map((flag) => (
-                    <flag.Icon
-                      key={flag.key}
-                      width={12}
-                      height={12}
-                      className={`size-3 shrink-0 fill-current ${flag.iconClass}`}
-                    />
-                  ))}
-                </span>
-              ) : null}
-              <span className="max-w-[140px] truncate">{label}</span>
-            </span>
+            <span className="max-w-[140px] truncate">{label}</span>
             <DropdownIcon className="size-3" />
           </Button>
         </PopoverTrigger>
