@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { FormEventHandler } from "react";
 import { useEffect, useRef, useState } from "react";
+import { getSafeHttpUrlFromString } from "../../lib/safe-url";
 
 export type EditorLinkSelectorProps = {
 	open?: boolean;
@@ -50,29 +51,8 @@ export const EditorLinkSelector = ({
 	const [openInNewTab, setOpenInNewTab] = useState(true);
 	const inputReference = useRef<HTMLInputElement>(null);
 
-	const isValidUrl = (text: string): boolean => {
-		try {
-			new URL(text);
-			return true;
-		} catch {
-			return false;
-		}
-	};
-
-	const getUrlFromString = (text: string): string | null => {
-		if (isValidUrl(text)) {
-			return text;
-		}
-		try {
-			if (text.includes(".") && !text.includes(" ")) {
-				return new URL(`https://${text}`).toString();
-			}
-
-			return null;
-		} catch {
-			return null;
-		}
-	};
+	const getUrlFromString = (text: string): string | null =>
+		getSafeHttpUrlFromString(text);
 
 	useEffect(() => {
 		if (open) {

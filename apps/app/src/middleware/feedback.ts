@@ -1,44 +1,24 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
-import { db, workspace } from "@featul/db"
-import { eq } from "drizzle-orm"
+import { db, workspace, workspaceDomain } from "@featul/db"
+import { and, eq } from "drizzle-orm"
 import { reroute } from "./reroute"
 
-/** Resolve a `feedback.` host to a workspace slug via customDomain then domain variants. */
+/** Resolve a `feedback.` host only via a DNS-verified workspaceDomain row. */
 async function findWorkspaceSlugForFeedbackHost(hostNoPort: string) {
-  const baseHost = hostNoPort.replace(/^feedback\./, "")
-  const protoDomain = `https://${baseHost}`
-  const [wsByCustom] = await db
+  const host = hostNoPort.toLowerCase()
+  const [row] = await db
     .select({ slug: workspace.slug })
-    .from(workspace)
-    .where(eq(workspace.customDomain, hostNoPort.toLowerCase()))
+    .from(workspaceDomain)
+    .innerJoin(workspace, eq(workspaceDomain.workspaceId, workspace.id))
+    .where(
+      and(
+        eq(workspaceDomain.host, host),
+        eq(workspaceDomain.status, "verified"),
+      ),
+    )
     .limit(1)
-  let targetSlug = wsByCustom?.slug
-  if (!targetSlug) {
-    const [wsByDomain] = await db
-      .select({ slug: workspace.slug })
-      .from(workspace)
-      .where(eq(workspace.domain, protoDomain))
-      .limit(1)
-    targetSlug = wsByDomain?.slug
-  }
-  if (!targetSlug) {
-    const [wsByDomainNoProto] = await db
-      .select({ slug: workspace.slug })
-      .from(workspace)
-      .where(eq(workspace.domain, baseHost))
-      .limit(1)
-    targetSlug = wsByDomainNoProto?.slug
-  }
-  if (!targetSlug) {
-    const [wsByDomainTrailing] = await db
-      .select({ slug: workspace.slug })
-      .from(workspace)
-      .where(eq(workspace.domain, `${protoDomain}/`))
-      .limit(1)
-    targetSlug = wsByDomainTrailing?.slug
-  }
-  return targetSlug || ""
+  return row?.slug || ""
 }
 
 /** `feedback.*` (not featul.com): rewrite public paths onto the matched workspace. Lookup failure continues. */

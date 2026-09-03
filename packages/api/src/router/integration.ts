@@ -37,7 +37,8 @@ async function checkIntegrationPermission(
     .where(
       and(
         eq(workspaceMember.workspaceId, workspaceId),
-        eq(workspaceMember.userId, userId)
+        eq(workspaceMember.userId, userId),
+        eq(workspaceMember.isActive, true)
       )
     )
     .limit(1)

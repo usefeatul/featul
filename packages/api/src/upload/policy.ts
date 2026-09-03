@@ -1,5 +1,5 @@
 export const IMAGE_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"] as const
-export const BRANDING_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"] as const
+export const BRANDING_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg", "image/webp"] as const
 
 export const AVATAR_UPLOAD_MAX_BYTES = 5 * 1024 * 1024
 export const POST_IMAGE_UPLOAD_MAX_BYTES = 5 * 1024 * 1024

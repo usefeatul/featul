@@ -28,6 +28,7 @@ import { toSlug } from "../shared/slug";
 import {
   getWorkspaceAccessPlan,
   requireBoardManagerBySlug,
+  requireActiveWorkspaceMemberBySlug,
 } from "../shared/access";
 import { createHash } from "crypto";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
@@ -42,12 +43,7 @@ export function createBoardRouter() {
     settingsByWorkspaceSlug: privateProcedure
       .input(checkSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.superjson({ boards: [] });
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
 
         const rows = await ctx.db
           .select({
@@ -1074,6 +1070,7 @@ export function createBoardRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, ctx.session.user.id),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);

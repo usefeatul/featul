@@ -152,12 +152,8 @@ export function enforceTrustedBrowserOrigin(req: Request): void {
   }
 
   const secFetchSite = (req.headers.get("sec-fetch-site") || "").toLowerCase();
+  if (secFetchSite === "same-origin") return;
   if (secFetchSite === "same-site" && isLocalDevOrigin(requestOrigin)) return;
-  if (
-    secFetchSite &&
-    secFetchSite !== "same-origin" &&
-    secFetchSite !== "none"
-  ) {
-    throw new HTTPException(403, { message: "Missing trusted request origin" });
-  }
+
+  throw new HTTPException(403, { message: "Missing trusted request origin" });
 }

@@ -9,7 +9,6 @@ import {
   limitStoragePublicPostAnon,
   limitStoragePublicPostUser,
   limitStorageComment,
-  limitStorageDeleteAnon,
   limitStorageDeleteUser,
   applyRateLimitHeaders,
 } from "../services/ratelimiter"
@@ -23,7 +22,9 @@ import {
   resolveWorkspaceUploadFolder,
   validateUploadInput,
 } from "../storage/upload"
-import { getSessionUserId, hasWorkspaceContentAccess, canUploadWorkspaceAsset } from "../storage/access"
+import { getSessionUserId, hasWorkspaceContentAccess, canUploadWorkspaceAsset, assertCallerCanDeleteUploadKey } from "../storage/access"
+import { objectKeyFromPublicUrl } from "../storage/object"
+import { enforceTrustedBrowserOrigin } from "../request/origin"
 
 function isAnonymousPublicPostImageUploadEnabled(): boolean {
   const raw = String(process.env.ALLOW_ANONYMOUS_PUBLIC_POST_IMAGE_UPLOADS || "").trim().toLowerCase()
@@ -113,6 +114,7 @@ export function createStorageRouter() {
     getPublicPostImageUploadUrl: publicProcedure
       .input(getPostImageUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw)
         const userId = await getSessionUserId(c.req.raw.headers)
         const publicPostRateLimit = userId
           ? await limitStoragePublicPostUser(userId)
@@ -233,14 +235,20 @@ export function createStorageRouter() {
         return c.json(payload)
       }),
 
-    deleteUpload: publicProcedure
+    deleteUpload: privateProcedure
       .input(deleteUploadInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const userId = await getSessionUserId(c.req.raw.headers)
-        const deleteRateLimit = userId
-          ? await limitStorageDeleteUser(userId)
-          : await limitStorageDeleteAnon(c.req.raw)
+        const userId = String(ctx.session.user.id || "")
+        if (!userId) throw new HTTPException(401, { message: "Unauthorized" })
+        const deleteRateLimit = await limitStorageDeleteUser(userId)
         applyRateLimitHeaders(c, deleteRateLimit, "Too many delete requests. Please try again shortly.")
+
+        const publicBase = String(process.env.R2_PUBLIC_BASE_URL || "")
+        const key = objectKeyFromPublicUrl(input.url, publicBase)
+        if (!key) {
+          throw new HTTPException(400, { message: "Invalid image URL" })
+        }
+        await assertCallerCanDeleteUploadKey({ ctx, userId, key })
 
         const payload = await deleteUploadByPublicUrl({
           db: ctx.db,

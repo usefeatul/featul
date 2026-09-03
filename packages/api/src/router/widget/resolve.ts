@@ -20,6 +20,10 @@ import {
 import type { AuthenticatedRouterContext } from "../../types/router";
 import type { WidgetIdentity } from "./schema";
 import { listPostImageUrls } from "../../storage/images";
+import {
+  assertWorkspaceAssetUrl,
+  WORKSPACE_POST_FOLDERS,
+} from "../../storage/urls";
 
 export type WidgetRouterContext = Pick<AuthenticatedRouterContext, "db">;
 
@@ -69,29 +73,7 @@ export function assertWidgetPostImageUrl(
   imageUrl: string,
   workspaceSlug: string,
 ) {
-  let parsed: URL;
-  try {
-    parsed = new URL(imageUrl);
-  } catch {
-    throw new HTTPException(400, { message: "Invalid image URL" });
-  }
-  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    throw new HTTPException(400, { message: "Invalid image URL" });
-  }
-
-  const publicBase = String(process.env.R2_PUBLIC_BASE_URL || "").replace(
-    /\/$/,
-    "",
-  );
-  if (!publicBase) {
-    throw new HTTPException(500, {
-      message: "Image storage is not configured",
-    });
-  }
-  const expectedPrefix = `${publicBase}/workspaces/${workspaceSlug}/posts/`;
-  if (!imageUrl.startsWith(expectedPrefix)) {
-    throw new HTTPException(400, { message: "Invalid image URL" });
-  }
+  assertWorkspaceAssetUrl(imageUrl, workspaceSlug, WORKSPACE_POST_FOLDERS);
 }
 
 function mapWidgetTheme(
@@ -199,7 +181,7 @@ export async function resolveWidget(
     configuredOrigins: Array.isArray(ws.widgetAllowedOrigins)
       ? ws.widgetAllowedOrigins
       : [],
-    includeDevOrigins: true,
+    includeDevOrigins: process.env.NODE_ENV !== "production",
   });
 
   const roadmapVisible = isPublicSectionVisible(

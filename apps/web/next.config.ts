@@ -68,6 +68,26 @@ const nextConfig = {
   },
   async headers() {
     const varyAccept = { key: 'Vary', value: 'Accept' }
+    const securityHeaders = [
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+      {
+        key: 'Content-Security-Policy',
+        value: [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.marblecms.com",
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data: blob: https:",
+          "font-src 'self' data:",
+          "connect-src 'self' https:",
+          "frame-ancestors 'self'",
+          "base-uri 'self'",
+          "form-action 'self'",
+          "object-src 'none'",
+        ].join('; '),
+      },
+    ]
     return [
       {
         source: '/',
@@ -78,6 +98,7 @@ const nextConfig = {
             value:
               '</index.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"',
           },
+          ...securityHeaders,
         ],
       },
       {
@@ -89,6 +110,7 @@ const nextConfig = {
             value:
               '</pricing.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"',
           },
+          ...securityHeaders,
         ],
       },
       {
@@ -99,7 +121,12 @@ const nextConfig = {
             key: 'Link',
             value: '</docs/llms.txt>; rel="describedby"',
           },
+          ...securityHeaders,
         ],
+      },
+      {
+        source: '/:path*',
+        headers: securityHeaders,
       },
     ]
   },

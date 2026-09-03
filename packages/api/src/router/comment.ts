@@ -29,9 +29,11 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
 import { enforceTrustedBrowserOrigin } from "../request/origin";
+import { getRequestFingerprint } from "../request/fingerprint";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
 import { deleteUnreferencedImageUrls } from "../storage/delete";
 import { droppedImageUrls, listCommentImageUrls } from "../storage/images";
+import { assertCommentAttachmentUrls } from "../storage/urls";
 import {
   parseMentionsFromText,
   type MentionableUser,
@@ -195,6 +197,9 @@ export function createCommentRouter() {
         }
 
         const userId = await getSessionUserId(c.req.raw.headers);
+        const anonymousFingerprint = !userId
+          ? getRequestFingerprint(c.req.raw, fingerprint)
+          : null;
         const canViewInternal = await hasInternalCommentAccess({
           userId,
           workspaceOwnerId: targetPost.workspaceOwnerId,
@@ -293,7 +298,7 @@ export function createCommentRouter() {
             userVotes.set(v.commentId, v.type as "upvote" | "downvote"),
           );
         }
-        if (!userId && fingerprint) {
+        if (!userId && anonymousFingerprint) {
           const anonymousVotes = await ctx.db
             .select({
               commentId: commentReaction.commentId,
@@ -303,7 +308,7 @@ export function createCommentRouter() {
             .where(
               and(
                 isNull(commentReaction.userId),
-                eq(commentReaction.fingerprint, fingerprint),
+                eq(commentReaction.fingerprint, anonymousFingerprint),
               ),
             );
 
@@ -362,8 +367,10 @@ export function createCommentRouter() {
             boardId: board.id,
             boardIsPublic: board.isPublic,
             allowComments: board.allowComments,
+            allowAnonymous: board.allowAnonymous,
             workspaceId: workspace.id,
             workspaceOwnerId: workspace.ownerId,
+            workspaceSlug: workspace.slug,
           })
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
@@ -415,7 +422,22 @@ export function createCommentRouter() {
               message: "Only workspace members can comment in this board",
             });
           }
+        } else if (!userId) {
+          if (!targetPost.allowAnonymous) {
+            throw new HTTPException(401, {
+              message: "Please sign in to comment on this board",
+            });
+          }
         }
+
+        const anonymousFingerprint = !userId
+          ? getRequestFingerprint(c.req.raw, fingerprint)
+          : undefined;
+
+        assertCommentAttachmentUrls(
+          metadata?.attachments,
+          targetPost.workspaceSlug,
+        );
 
         let resolvedIsInternal = Boolean(isInternal);
 
@@ -483,7 +505,7 @@ export function createCommentRouter() {
 
         const commentMetadata = {
           ...(metadata || {}),
-          fingerprint: fingerprint || undefined,
+          fingerprint: anonymousFingerprint || undefined,
         };
 
         const [newComment] = await ctx.db
@@ -543,7 +565,7 @@ export function createCommentRouter() {
         await ctx.db.insert(commentReaction).values({
           commentId: newComment.id,
           userId: userId || null,
-          fingerprint: userId ? null : fingerprint || null,
+          fingerprint: userId ? null : anonymousFingerprint || null,
           type: "upvote",
         });
 
@@ -914,6 +936,9 @@ export function createCommentRouter() {
         const { commentId, voteType, fingerprint } = input;
 
         const userId = await getSessionUserId(c.req.raw.headers);
+        const anonymousFingerprint = !userId
+          ? getRequestFingerprint(c.req.raw, fingerprint)
+          : null;
 
         const [targetComment] = await ctx.db
           .select({
@@ -958,7 +983,7 @@ export function createCommentRouter() {
               ),
             )
             .limit(1);
-        } else if (fingerprint) {
+        } else if (anonymousFingerprint) {
           // Check by fingerprint for anonymous users
           [existingReaction] = await ctx.db
             .select()
@@ -967,7 +992,7 @@ export function createCommentRouter() {
               and(
                 eq(commentReaction.commentId, commentId),
                 isNull(commentReaction.userId),
-                eq(commentReaction.fingerprint, fingerprint),
+                eq(commentReaction.fingerprint, anonymousFingerprint),
               ),
             )
             .limit(1);
@@ -1008,7 +1033,7 @@ export function createCommentRouter() {
                   postTitle: postInfo.postTitle,
                   roadmapStatus: postInfo.roadmapStatus,
                   voteType,
-                  fingerprint: userId ? null : fingerprint || null,
+                  fingerprint: userId ? null : anonymousFingerprint || null,
                 },
               });
             }
@@ -1059,7 +1084,7 @@ export function createCommentRouter() {
                   roadmapStatus: postInfo.roadmapStatus,
                   from: existingReaction.type,
                   to: voteType,
-                  fingerprint: userId ? null : fingerprint || null,
+                  fingerprint: userId ? null : anonymousFingerprint || null,
                 },
               });
             }
@@ -1075,7 +1100,7 @@ export function createCommentRouter() {
           await ctx.db.insert(commentReaction).values({
             commentId,
             userId: userId || null,
-            fingerprint: userId ? null : fingerprint || null,
+            fingerprint: userId ? null : anonymousFingerprint || null,
             type: voteType,
           });
 
@@ -1106,7 +1131,7 @@ export function createCommentRouter() {
                 postTitle: postInfo.postTitle,
                 roadmapStatus: postInfo.roadmapStatus,
                 voteType,
-                fingerprint: userId ? null : fingerprint || null,
+                fingerprint: userId ? null : anonymousFingerprint || null,
               },
             });
           }

@@ -1,5 +1,5 @@
 import { HTTPException } from "hono/http-exception";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, ne } from "drizzle-orm";
 import { j, privateProcedure, publicProcedure } from "../jstack";
 import {
   workspace,
@@ -42,7 +42,7 @@ import {
   isReservedNameBlockedForEmail,
   isReservedSlugBlockedForEmail,
 } from "../workspace/creator";
-import { getWorkspaceAccessPlan } from "../shared/access";
+import { getWorkspaceAccessPlan, requireActiveWorkspaceMemberBySlug, requireWorkspaceManagerBySlug } from "../shared/access";
 import { createWidgetSecret } from "../shared/identity";
 
 const dnsResolver = new Resolver();
@@ -59,42 +59,24 @@ async function hasResolvableTopLevelDomain(host: string) {
 }
 
 async function requireWorkspaceManagerWithPlan(ctx: any, slug: string) {
-  const [ws] = await ctx.db
-    .select({
-      id: workspace.id,
-      ownerId: workspace.ownerId,
-      plan: workspace.plan,
-    })
-    .from(workspace)
-    .where(eq(workspace.slug, slug))
-    .limit(1);
-
-  if (!ws) throw new HTTPException(404, { message: "Workspace not found" });
-
-  const meId = ctx.session.user.id;
-  let allowed = ws.ownerId === meId;
-  if (!allowed) {
-    const [me] = await ctx.db
-      .select({
-        role: workspaceMember.role,
-        permissions: workspaceMember.permissions,
-      })
-      .from(workspaceMember)
-      .where(
-        and(
-          eq(workspaceMember.workspaceId, ws.id),
-          eq(workspaceMember.userId, meId),
-        ),
-      )
-      .limit(1);
-    const perms = (me?.permissions || {}) as Record<string, boolean>;
-    if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true;
-  }
-  if (!allowed) throw new HTTPException(403, { message: "Forbidden" });
-
+  const ws = await requireWorkspaceManagerBySlug(ctx, slug);
   const plan = await getWorkspaceAccessPlan(ws.id);
-
   return { ...ws, plan };
+}
+
+async function assertCustomDomainAvailable(
+  db: any,
+  host: string,
+  workspaceId: string,
+) {
+  const [taken] = await db
+    .select({ id: workspace.id })
+    .from(workspace)
+    .where(and(eq(workspace.customDomain, host), ne(workspace.id, workspaceId)))
+    .limit(1);
+  if (taken) {
+    throw new HTTPException(409, { message: "This domain is already in use" });
+  }
 }
 
 export function createWorkspaceRouter() {
@@ -202,7 +184,7 @@ export function createWorkspaceRouter() {
       const member = await ctx.db
         .select({ id: workspaceMember.id })
         .from(workspaceMember)
-        .where(eq(workspaceMember.userId, userId))
+        .where(and(eq(workspaceMember.userId, userId), eq(workspaceMember.isActive, true)))
         .limit(1);
       return c.json({ hasWorkspace: owned.length > 0 || member.length > 0 });
     }),
@@ -532,36 +514,7 @@ export function createWorkspaceRouter() {
     updateCustomDomain: privateProcedure
       .input(updateCustomDomainInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({
-            id: workspace.id,
-            plan: workspace.plan,
-            domain: workspace.domain,
-            ownerId: workspace.ownerId,
-          })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.json({ ok: false });
-        let allowed = ws.ownerId === ctx.session.user.id;
-        if (!allowed) {
-          const [me] = await ctx.db
-            .select({
-              role: workspaceMember.role,
-              permissions: workspaceMember.permissions,
-            })
-            .from(workspaceMember)
-            .where(
-              and(
-                eq(workspaceMember.workspaceId, ws.id),
-                eq(workspaceMember.userId, ctx.session.user.id),
-              ),
-            )
-            .limit(1);
-          const perms = (me?.permissions || {}) as Record<string, boolean>;
-          if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true;
-        }
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" });
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
 
         const planKey = await getWorkspaceAccessPlan(ws.id);
         if (!(planKey === "starter" || planKey === "professional")) {
@@ -570,28 +523,45 @@ export function createWorkspaceRouter() {
           });
         }
 
-        const host = (() => {
-          try {
-            return normalizeDomainHost(new URL(String(ws.domain)).hostname);
-          } catch {
-            return normalizeDomainHost(
-              String(ws.domain).replace(/^https?:\/\//, ""),
-            );
-          }
-        })();
-
-        const desired = input.enabled
-          ? normalizeDomainHost(
-              String(input.customDomain || `feedback.${host}`),
-            )
-          : null;
-        if (desired && !(await hasResolvableTopLevelDomain(desired))) {
-          throw new HTTPException(400, { message: "Invalid domain TLD" });
+        if (!input.enabled) {
+          await ctx.db
+            .update(workspace)
+            .set({ customDomain: null, updatedAt: new Date() })
+            .where(eq(workspace.id, ws.id));
+          return c.superjson({ ok: true, customDomain: null });
         }
+
+        const [verified] = await ctx.db
+          .select({ host: workspaceDomain.host })
+          .from(workspaceDomain)
+          .where(
+            and(
+              eq(workspaceDomain.workspaceId, ws.id),
+              eq(workspaceDomain.status, "verified"),
+            ),
+          )
+          .limit(1);
+
+        if (!verified) {
+          throw new HTTPException(400, {
+            message: "Verify a custom domain before enabling it",
+          });
+        }
+
+        const desired = normalizeDomainHost(
+          String(input.customDomain || verified.host),
+        );
+        if (desired !== verified.host) {
+          throw new HTTPException(400, {
+            message: "Custom domain must match a verified host",
+          });
+        }
+
+        await assertCustomDomainAvailable(ctx.db, desired, ws.id);
 
         await ctx.db
           .update(workspace)
-          .set({ customDomain: desired || null, updatedAt: new Date() })
+          .set({ customDomain: desired, updatedAt: new Date() })
           .where(eq(workspace.id, ws.id));
 
         return c.superjson({ ok: true, customDomain: desired });
@@ -600,16 +570,7 @@ export function createWorkspaceRouter() {
     domainInfo: privateProcedure
       .input(checkSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({
-            id: workspace.id,
-            domain: workspace.domain,
-            plan: workspace.plan,
-          })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.superjson({ domain: null });
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
 
         const [d] = await ctx.db
           .select({
@@ -635,35 +596,7 @@ export function createWorkspaceRouter() {
     createDomain: privateProcedure
       .input(createDomainInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({
-            id: workspace.id,
-            plan: workspace.plan,
-            ownerId: workspace.ownerId,
-          })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.json({ ok: false });
-        let allowed = ws.ownerId === ctx.session.user.id;
-        if (!allowed) {
-          const [me] = await ctx.db
-            .select({
-              role: workspaceMember.role,
-              permissions: workspaceMember.permissions,
-            })
-            .from(workspaceMember)
-            .where(
-              and(
-                eq(workspaceMember.workspaceId, ws.id),
-                eq(workspaceMember.userId, ctx.session.user.id),
-              ),
-            )
-            .limit(1);
-          const perms = (me?.permissions || {}) as Record<string, boolean>;
-          if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true;
-        }
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" });
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
         const planKey = await getWorkspaceAccessPlan(ws.id);
         if (!(planKey === "starter" || planKey === "professional")) {
           throw new HTTPException(403, {
@@ -720,31 +653,7 @@ export function createWorkspaceRouter() {
     verifyDomain: privateProcedure
       .input(verifyDomainInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.json({ ok: false });
-        let allowed = ws.ownerId === ctx.session.user.id;
-        if (!allowed) {
-          const [me] = await ctx.db
-            .select({
-              role: workspaceMember.role,
-              permissions: workspaceMember.permissions,
-            })
-            .from(workspaceMember)
-            .where(
-              and(
-                eq(workspaceMember.workspaceId, ws.id),
-                eq(workspaceMember.userId, ctx.session.user.id),
-              ),
-            )
-            .limit(1);
-          const perms = (me?.permissions || {}) as Record<string, boolean>;
-          if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true;
-        }
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" });
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
 
         const [d] = await ctx.db
           .select({
@@ -781,12 +690,11 @@ export function createWorkspaceRouter() {
           .where(eq(workspaceDomain.id, d.id));
 
         if (status === "verified") {
-          try {
-            await ctx.db
-              .update(workspace)
-              .set({ customDomain: d.host, updatedAt: new Date() })
-              .where(eq(workspace.id, ws.id));
-          } catch {}
+          await assertCustomDomainAvailable(ctx.db, d.host, ws.id);
+          await ctx.db
+            .update(workspace)
+            .set({ customDomain: d.host, updatedAt: new Date() })
+            .where(eq(workspace.id, ws.id));
           try {
             await addDomainToProject(d.host);
           } catch {}
@@ -798,31 +706,7 @@ export function createWorkspaceRouter() {
     deleteDomain: privateProcedure
       .input(checkSlugInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.json({ ok: false });
-        let allowed = ws.ownerId === ctx.session.user.id;
-        if (!allowed) {
-          const [me] = await ctx.db
-            .select({
-              role: workspaceMember.role,
-              permissions: workspaceMember.permissions,
-            })
-            .from(workspaceMember)
-            .where(
-              and(
-                eq(workspaceMember.workspaceId, ws.id),
-                eq(workspaceMember.userId, ctx.session.user.id),
-              ),
-            )
-            .limit(1);
-          const perms = (me?.permissions || {}) as Record<string, boolean>;
-          if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true;
-        }
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" });
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
 
         const [d] = await ctx.db
           .select({ host: workspaceDomain.host, id: workspaceDomain.id })
@@ -875,6 +759,7 @@ export function createWorkspaceRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, meId),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);
@@ -918,6 +803,7 @@ export function createWorkspaceRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, meId),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);
@@ -963,6 +849,7 @@ export function createWorkspaceRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, meId),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);
@@ -1016,6 +903,7 @@ export function createWorkspaceRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, meId),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);
@@ -1150,6 +1038,7 @@ export function createWorkspaceRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, meId),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);

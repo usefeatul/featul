@@ -1,6 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { HTTPException } from "hono/http-exception";
+import { getClientIp } from "../request/ip";
 
 export type RateLimitResult = {
   enabled: boolean;
@@ -106,12 +107,7 @@ const ratelimitPrivate = redis
   : null;
 
 function getIp(req: Request): string {
-  const xff = req.headers.get("x-forwarded-for") || "";
-  const cf = req.headers.get("cf-connecting-ip") || "";
-  const fly = req.headers.get("fly-client-ip") || "";
-  const real = req.headers.get("x-real-ip") || "";
-  const first = String(xff.split(",")[0] || "").trim();
-  return first || cf || fly || real || "unknown";
+  return getClientIp(req) || "unknown";
 }
 
 export async function limitPublic(req: Request): Promise<RateLimitResult> {

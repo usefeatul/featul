@@ -12,7 +12,9 @@ import {
 import { createId } from "@paralleldrive/cuid2";
 import { user } from "./auth";
 
-export const workspace = pgTable("workspace", {
+export const workspace = pgTable(
+  "workspace",
+  {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => `fl${createId()}`),
@@ -45,7 +47,14 @@ export const workspace = pgTable("workspace", {
     .default([]),
   customDomain: text("custom_domain"), // for custom domains
   timezone: text("timezone").notNull().default("UTC"),
-});
+},
+  (table) =>
+    ({
+      workspaceCustomDomainUnique: uniqueIndex(
+        "workspace_custom_domain_unique",
+      ).on(table.customDomain),
+    }) as const,
+);
 
 export const workspaceDomain = pgTable(
   "workspace_domain",

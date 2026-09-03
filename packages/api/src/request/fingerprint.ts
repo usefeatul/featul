@@ -1,19 +1,17 @@
 import { createHash } from "crypto"
+import { getClientIp } from "./ip"
 
-export function getRequestFingerprint(req: Request, provided?: string): string {
-  const normalized = String(provided || "").trim()
-  if (normalized) return normalized
-
-  const forwardedFor = String(req.headers.get("x-forwarded-for") || "")
-    .split(",")[0]
-    ?.trim() || ""
+/**
+ * Server-derived anonymous identity. Client-supplied fingerprints are ignored
+ * so visitors cannot mint unlimited votes. NEXT-DOS-001.
+ */
+export function getRequestFingerprint(req: Request, _provided?: string): string {
+  const ip = getClientIp(req)
   const userAgent = String(req.headers.get("user-agent") || "").trim()
-  const acceptLanguage = String(req.headers.get("accept-language") || "").trim()
-  const basis = `${forwardedFor}|${userAgent}|${acceptLanguage}`
+  const basis = `${ip}|${userAgent}`
 
   if (!basis.replace(/\|/g, "")) {
-    const randomPart = Math.random().toString(16).slice(2)
-    return `${Date.now()}-${randomPart}`
+    return createHash("sha256").update("unknown").digest("hex")
   }
 
   return createHash("sha256").update(basis).digest("hex")

@@ -141,6 +141,13 @@
       "when": 1786801800000,
       "tag": "0019_widget_security",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1786805400000,
+      "tag": "0020_custom_domain_unique",
+      "breakpoints": true
     }
   ]
 }

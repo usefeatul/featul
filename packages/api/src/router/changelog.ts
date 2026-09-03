@@ -14,6 +14,7 @@ import { HTTPException } from "hono/http-exception";
 import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug } from "../shared/slug";
 import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
+import { assertOptionalWorkspaceAssetUrl, WORKSPACE_CHANGELOG_FOLDERS } from "../storage/urls";
 import { createChangelogAutomationProcedures } from "./automation";
 import {
   getChangelogTags,
@@ -361,6 +362,12 @@ export function createChangelogRouter() {
         const entrySlug = toSlug(input.title) + "-" + Date.now().toString(36);
         const isPublished = input.status === "published";
 
+        assertOptionalWorkspaceAssetUrl(
+          input.coverImage,
+          ws.slug,
+          WORKSPACE_CHANGELOG_FOLDERS,
+        );
+
         const [entry] = await ctx.db
           .insert(changelogEntry)
           .values({
@@ -455,8 +462,14 @@ export function createChangelogRouter() {
           updates.content = input.content as Record<string, unknown>;
         if (input.summary !== undefined)
           updates.summary = input.summary?.trim() || null;
-        if (input.coverImage !== undefined)
+        if (input.coverImage !== undefined) {
+          assertOptionalWorkspaceAssetUrl(
+            input.coverImage,
+            ws.slug,
+            WORKSPACE_CHANGELOG_FOLDERS,
+          );
           updates.coverImage = input.coverImage || null;
+        }
         if (input.tags !== undefined) updates.tags = input.tags;
         if (input.status !== undefined) {
           updates.status = input.status;

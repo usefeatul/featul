@@ -117,10 +117,14 @@ export const widgetDeleteImage = publicProcedure
       resolved.widgetSecret,
     );
 
+    if (!uploaderId) {
+      throw new HTTPException(401, {
+        message: "Please identify before deleting an image",
+      });
+    }
+
     const request = getWidgetRequest(c);
-    const rateLimit = uploaderId
-      ? await limitStoragePublicPostUser(uploaderId)
-      : await limitStoragePublicPostAnon(request);
+    const rateLimit = await limitStoragePublicPostUser(uploaderId);
     applyRateLimitHeaders(
       c,
       rateLimit,
