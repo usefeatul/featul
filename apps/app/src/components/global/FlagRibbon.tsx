@@ -5,41 +5,82 @@ import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib
 import { StarIcon } from "@featul/ui/icons/star"
 import { PinIcon } from "@featul/ui/icons/pin"
 import { StarPinIcon } from "@featul/ui/icons/star-pin"
+import { LockIcon } from "@featul/ui/icons/lock"
 import { cn } from "@featul/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@featul/ui/components/tooltip"
 
 interface FlagRibbonProps {
     isPinned?: boolean
     isFeatured?: boolean
+    isLocked?: boolean
     className?: string
 }
 
 /**
- * Corner ribbon component to indicate pinned/featured status on cards.
+ * Corner ribbon for post flags.
  * - Pinned: Primary ribbon
  * - Featured: Amber/gold ribbon
- * - Both: Gradient ribbon with star
+ * - Both: Gradient ribbon
+ * - Locked (when not pinned/featured): Red ribbon
  */
-export function FlagRibbon({ isPinned, isFeatured, className = "" }: FlagRibbonProps) {
-    if (!isPinned && !isFeatured) return null
+export function FlagRibbon({ isPinned, isFeatured, isLocked, className = "" }: FlagRibbonProps) {
+    const showPinOrFeature = Boolean(isPinned || isFeatured)
+    if (!showPinOrFeature && !isLocked) return null
 
-    const Icon = isPinned && isFeatured ? StarPinIcon : isPinned ? PinIcon : StarIcon
-    const title = isPinned && isFeatured ? "Pinned & Featured" : isPinned ? "Pinned" : "Featured"
+    const Icon = showPinOrFeature
+        ? isPinned && isFeatured
+            ? StarPinIcon
+            : isPinned
+                ? PinIcon
+                : StarIcon
+        : LockIcon
 
-    return (
+    const title = showPinOrFeature
+        ? [
+            isPinned && isFeatured ? "Pinned & Featured" : isPinned ? "Pinned" : "Featured",
+            isLocked ? "Locked" : null,
+          ].filter(Boolean).join(" · ")
+        : "This post is locked"
+
+    const ribbon = (
         <div
-            className={cn(overlayRibbonShellClass, className)}
-            title={title}
+            className={cn(
+                overlayRibbonShellClass,
+                !showPinOrFeature && "pointer-events-auto",
+                className,
+            )}
+            title={showPinOrFeature ? title : undefined}
         >
             <span
                 className={cn(overlayRibbonInnerClass, {
                     "bg-linear-to-r from-primary to-amber-500": isPinned && isFeatured,
                     "bg-primary": isPinned && !isFeatured,
                     "bg-amber-500": !isPinned && isFeatured,
+                    "bg-red-500": !showPinOrFeature && isLocked,
                 })}
             >
                 <Icon width={10} height={10} className="fill-current" />
             </span>
         </div>
+    )
+
+    if (showPinOrFeature) return ribbon
+
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>{ribbon}</TooltipTrigger>
+            <TooltipContent
+                side="left"
+                sideOffset={6}
+                className="w-auto whitespace-nowrap px-2 py-1 text-xs"
+            >
+                {title}
+            </TooltipContent>
+        </Tooltip>
     )
 }
 

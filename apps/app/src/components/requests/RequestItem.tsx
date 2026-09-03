@@ -5,7 +5,6 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import StatusIcon from "./StatusIcon"
 import { CommentsIcon } from "@featul/ui/icons/comments"
-import { LockIcon } from "@featul/ui/icons/lock"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
@@ -102,6 +101,35 @@ function RequestTagPills({
   )
 }
 
+function RequestEngagementChip({
+  postId,
+  upvotes,
+  hasVoted,
+  commentCount,
+}: {
+  postId: string
+  upvotes: number
+  hasVoted?: boolean
+  commentCount: number
+}) {
+  return (
+    <OverlayChip
+      innerClassName="h-6 min-h-6 divide-x divide-border p-0 text-xs font-medium tabular-nums text-accent dark:divide-white/10"
+    >
+      <UpvoteButton
+        postId={postId}
+        upvotes={upvotes}
+        hasVoted={hasVoted}
+        className="relative z-10 h-full px-2 text-xs hover:text-red-500/80"
+      />
+      <span className="inline-flex h-full items-center gap-1.5 px-2">
+        <CommentsIcon aria-hidden className="size-3.5" />
+        <span>{commentCount}</span>
+      </span>
+    </OverlayChip>
+  )
+}
+
 function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelected, onToggle, disableLink }: RequestItemProps) {
   const searchParams = useSearchParams()
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : ""
@@ -168,7 +196,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
             aria-label={displayTitle}
           />
         )}
-        <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
+        <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} isLocked={item.isLocked} />
         {staleDays != null ? <StaleMark days={staleDays} /> : null}
         {isSelectingMode ? (
           <SelectionControl
@@ -180,14 +208,6 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
         ) : null}
         <StatusIcon status={status} className="size-5 shrink-0 text-foreground/80" />
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          {item.isLocked ? (
-            <LockIcon
-              width={14}
-              height={14}
-              className="size-3.5 shrink-0 text-muted-foreground"
-              aria-label="Locked"
-            />
-          ) : null}
           <span
             className={cn(
               "min-w-0 flex-1 truncate text-sm font-medium leading-5",
@@ -204,14 +224,13 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           <div className="relative z-10 inline-flex items-center gap-3">
             <ReportIndicator count={item.reportCount || 0} />
             <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
-            <UpvoteButton postId={item.id} upvotes={item.upvotes} hasVoted={item.hasVoted} className="text-xs hover:text-red-500/80" />
           </div>
-          {item.commentCount > 0 ? (
-            <div className="inline-flex items-center gap-1">
-              <CommentsIcon aria-hidden className="size-3.5" />
-              <span className="tabular-nums">{item.commentCount}</span>
-            </div>
-          ) : null}
+          <RequestEngagementChip
+            postId={item.id}
+            upvotes={item.upvotes}
+            hasVoted={item.hasVoted}
+            commentCount={item.commentCount}
+          />
           <span className="hidden min-w-[2.5rem] text-right tabular-nums sm:inline">
             {publishedLabel}
           </span>
