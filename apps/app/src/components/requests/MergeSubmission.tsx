@@ -174,7 +174,12 @@ export function MergeSubmissionSection({
   if (!hasTarget && sources.length === 0 && extraCount <= 0) return null
 
   return (
-    <section className={cn("flex flex-col gap-2", className)}>
+    <section
+      className={cn(
+        "-mx-4 flex flex-col gap-2 border-t border-border/50 px-4 pt-3",
+        className,
+      )}
+    >
       {hasTarget && mergedInto && mergedIntoHref ? (
         <MergeChipRow
           label="Merged into"

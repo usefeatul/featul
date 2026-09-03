@@ -2,8 +2,8 @@
 
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
+import { useReducedMotion } from "framer-motion";
 import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
-import { MoveHorizontalIcon } from "@featul/ui/icons/horizontal";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
 import { OverlayChip } from "@featul/ui/components/overlay-chip";
@@ -15,7 +15,17 @@ import {
   settingsCardInnerClass,
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard";
-import { motion, AnimatePresence } from "framer-motion";
+
+const COLUMN_MOTION_MS = 320;
+
+export const ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS =
+  "md:transition-[flex-grow,flex-shrink,flex-basis,min-width] md:duration-[320ms] md:ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none";
+
+export function roadmapColumnWidthClass(collapsed: boolean) {
+  return collapsed
+    ? "md:min-w-20 md:flex-[0_0_80px]"
+    : "md:min-w-[300px] md:flex-[1_1_0px] lg:min-w-[320px]";
+}
 
 export default function RoadmapColumn({
   id,
@@ -37,25 +47,37 @@ export default function RoadmapColumn({
   disableMotion?: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const reduceMotion = useReducedMotion() ?? false;
+  const instant = Boolean(disableMotion || reduceMotion);
+  const [contentMounted, setContentMounted] = React.useState(!collapsed);
+  const showContent = !collapsed || contentMounted;
+
+  React.useEffect(() => {
+    if (!collapsed) {
+      setContentMounted(true);
+      return;
+    }
+    const delay = instant ? 0 : COLUMN_MOTION_MS;
+    const timeoutId = window.setTimeout(() => setContentMounted(false), delay);
+    return () => window.clearTimeout(timeoutId);
+  }, [collapsed, instant]);
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
       className={cn(
         settingsCardShellClass,
         "h-full transition-colors duration-200",
         isOver && "border-green-500/70 dark:border-green-500/70",
       )}
-      layout
-      initial={false}
-      transition={{
-        type: "tween",
-        ease: "easeOut",
-        duration: disableMotion ? 0 : 0.28,
-      }}
     >
       <div
-        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between px-2 py-2"} cursor-pointer`}
+        className={cn(
+          "cursor-pointer",
+          collapsed
+            ? "relative flex flex-col items-center gap-2 px-2 py-3"
+            : "flex items-center justify-between px-2 py-2",
+        )}
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
@@ -68,7 +90,12 @@ export default function RoadmapColumn({
       >
         {collapsed ? (
           <>
-            <MoveHorizontalIcon className="mx-auto block size-4 text-accent" />
+            <MoveVerticalIcon
+              className={cn(
+                "mx-auto block size-4 rotate-90 text-accent transition-transform duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                instant && "transition-none",
+              )}
+            />
             <StatusIcon
               status={id}
               className="mx-auto block size-4.5 text-foreground/80"
@@ -107,49 +134,57 @@ export default function RoadmapColumn({
               <OverlayChip innerClassName="min-w-5 px-1.5">
                 {count}
               </OverlayChip>
-              <MoveVerticalIcon className="size-4 text-accent" />
+              <MoveVerticalIcon
+                className={cn(
+                  "size-4 text-accent transition-transform duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                  instant && "transition-none",
+                )}
+              />
             </div>
           </>
         )}
       </div>
-      <AnimatePresence initial={false}>
-        {!collapsed ? (
-          <motion.ul
+      <div
+        className={cn(
+          "grid min-h-0 flex-1",
+          instant
+            ? "transition-none"
+            : "transition-[grid-template-rows,opacity] duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+          collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100",
+        )}
+        aria-hidden={collapsed}
+        inert={!!collapsed}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <ul
             className={cn(
               settingsCardInnerClass,
               "min-h-[260px] space-y-2 overflow-y-auto p-2",
             )}
-            initial={false}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
-              type: "tween",
-              ease: [0.22, 1, 0.36, 1],
-              duration: disableMotion ? 0 : 0.32,
-            }}
           >
-            {children}
-            {count === 0 && !isOver ? (
+            {showContent ? children : null}
+            {showContent && count === 0 && !isOver ? (
               <RoadmapEmptyColumn
                 label={label}
                 onCreate={onCreate ? () => onCreate(id) : undefined}
               />
             ) : null}
             {isOver ? (
-              <motion.li
-                className={cn(overlayShellClass, "mt-2 h-16 border-dashed border-green-500/70 p-1")}
+              <li
+                className={cn(
+                  overlayShellClass,
+                  "mt-2 h-16 border-dashed border-green-500/70 p-1",
+                )}
                 aria-hidden
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: disableMotion ? 0 : 0.08 }}
               >
-                <div className={cn(overlayInnerClass, "h-full bg-green-500/[0.04]")} />
-              </motion.li>
+                <div
+                  className={cn(overlayInnerClass, "h-full bg-green-500/[0.04]")}
+                />
+              </li>
             ) : null}
-          </motion.ul>
-        ) : null}
-      </AnimatePresence>
-    </motion.div>
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }

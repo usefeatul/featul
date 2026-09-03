@@ -4,7 +4,10 @@ import React from "react";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem";
-import RoadmapColumn from "@/components/roadmap/RoadmapColumn";
+import RoadmapColumn, {
+  ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
+  roadmapColumnWidthClass,
+} from "@/components/roadmap/RoadmapColumn";
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable";
 import RoadmapKeyboardShortcuts from "@/components/roadmap/RoadmapKeyboardShortcuts";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
@@ -102,7 +105,11 @@ export default function RoadmapBoard({
                 <div
                   key={s}
                   ref={(node) => setColumnRef(s, node)}
-                  className={`w-[85vw] shrink-0 snap-center sm:w-[320px] md:h-full md:w-auto ${collapsedByStatus[s] ? "md:w-20 md:flex-none" : "md:min-w-[300px] md:flex-1 lg:min-w-[320px]"}`}
+                  className={cn(
+                    "w-[85vw] shrink-0 snap-center overflow-hidden sm:w-[320px] md:h-full md:w-auto",
+                    ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
+                    roadmapColumnWidthClass(!!collapsedByStatus[s]),
+                  )}
                 >
                   <RoadmapColumn
                     id={s}

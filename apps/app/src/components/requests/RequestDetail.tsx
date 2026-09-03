@@ -135,7 +135,6 @@ export default function RequestDetail({
             />
           </div>
           <MergeSubmissionSection
-            className="border-t border-border/50 pt-3"
             mergedInto={post.mergedInto}
             mergedIntoHref={
               post.mergedInto

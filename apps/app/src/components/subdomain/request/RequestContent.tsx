@@ -95,7 +95,7 @@ export function RequestContent({
         className="mb-4"
       />
       <MergeSubmissionSection
-        className="border-t border-border/50 pt-3 mb-4"
+        className="mb-4"
         mergedInto={post.mergedInto}
         mergedIntoHref={
           post.mergedInto ? `/board/p/${post.mergedInto.slug}` : undefined

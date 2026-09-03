@@ -3,7 +3,6 @@
 import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { motion } from "framer-motion";
 import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
@@ -28,7 +27,7 @@ export default function RoadmapDraggable({
   }, [attributes]);
 
   return (
-    <motion.li
+    <li
       ref={setNodeRef}
       {...listeners}
       {...sanitizedAttributes}
@@ -42,12 +41,10 @@ export default function RoadmapDraggable({
         isDragging && "opacity-0",
         className,
       )}
-      layout
-      transition={{ type: "spring", stiffness: 180, damping: 36 }}
     >
       <div className={cn(overlayInnerClass, "flex h-full min-w-0 flex-col")}>
         {children}
       </div>
-    </motion.li>
+    </li>
   );
 }
