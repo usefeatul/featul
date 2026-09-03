@@ -115,7 +115,12 @@ export default function CommentForm({
 
         {mentionOpen && filteredCandidates.length > 0 && textareaRef.current && (
           <MentionList
-            candidates={filteredCandidates.map(u => ({ id: u.userId, ...u }))}
+            candidates={filteredCandidates.map((u) => ({
+              id: u.userId,
+              name: u.name,
+              email: u.email,
+              image: u.image,
+            }))}
             selectedIndex={mentionIndex}
             onSelect={(user) => insertMention(user.name)}
             className="left-2 top-full mt-1"

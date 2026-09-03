@@ -117,16 +117,20 @@ export function useMentions(
   const names = useMemo(() => memberNames(members), [members]) 
 
   // Filter members based on query
-  const filteredCandidates = useMemo(() => {
+  const filteredCandidates = useMemo((): MentionCandidate[] => {
     const q = (mentionQuery || "").trim().toLowerCase()
-    return members
-      .map((m) => ({
-        userId: m.userId || m.id,
+    return members.flatMap((m) => {
+      const userId = m.userId || m.id
+      if (!userId) return []
+      const candidate: MentionCandidate = {
+        userId,
         name: m.name || "",
         email: m.email || null,
         image: m.image || null,
-      }))
-      .filter((m) => (m.name || "").toLowerCase().includes(q))
+      }
+      if (!(candidate.name || "").toLowerCase().includes(q)) return []
+      return [candidate]
+    })
   }, [members, mentionQuery])
 
   // Insert selected mention into text
