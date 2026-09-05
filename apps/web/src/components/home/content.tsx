@@ -8,7 +8,7 @@ export function HeroContent() {
     <div className="text-left" data-component="HeroContent">
       <h1 className="font-heading text-[2rem] font-semibold leading-[1.15] tracking-tight text-white text-balance sm:text-4xl sm:leading-tight lg:text-[2.75rem] xl:text-5xl">
         From upvote to shipped.{" "}
-        <span className="inline-flex items-center rounded-md bg-white/20 px-1.5 py-[2px] align-baseline text-white backdrop-blur-sm sm:px-2">
+        <span className="inline-flex items-center rounded-md border border-white/55 bg-white/20 px-1.5 py-[2px] align-baseline text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_4px_12px_rgba(0,99,210,0.18)] backdrop-blur-md supports-[backdrop-filter]:bg-white/28 sm:px-2">
           In one workspace.
         </span>
       </h1>

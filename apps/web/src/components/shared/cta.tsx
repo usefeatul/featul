@@ -10,7 +10,7 @@ export const skyPrimaryCtaClass =
 export const skySecondaryCtaClass =
   "border-white/70 bg-white/15 text-white ring-white/45 ring-offset-[#0063d2] hover:bg-white/25 hover:text-white";
 
-export const skyKbdClassName = "bg-primary/15 text-primary";
+export const skyKbdClassName = "bg-accent/15 text-accent";
 
 type HeroCtaProps = {
   hotkeyLabel?: string;
