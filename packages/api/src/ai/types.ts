@@ -7,6 +7,8 @@ export type AiAction =
   | "summary"
   | "generateFromPosts";
 
+export type AiChatIntent = "ask" | "rewrite" | "patch";
+
 export type AiChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -21,6 +23,9 @@ export type AiSourcePost = {
   content: string;
   upvotes: number | null;
   roadmapStatus: string | null;
+  slug?: string | null;
+  githubUrl?: string | null;
+  publishedAt?: Date | null;
   updatedAt: Date | null;
   latestUpdate: {
     title: string;
@@ -38,6 +43,8 @@ export type ChangelogAiStreamEvent =
       contentMarkdown?: string;
       summary?: string;
       title?: string;
+      reply?: string;
+      suggestedTags?: string[];
     }
   | { type: "error"; message: string };
 

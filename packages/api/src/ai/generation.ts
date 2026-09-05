@@ -84,6 +84,9 @@ export async function streamStructuredChangelog(input: {
   detailLevel?: "standard" | "detailed";
   workspaceName?: string;
   sourcePosts?: AiSourcePost[];
+  brandVoice?: string;
+  githubUrls?: string[];
+  availableTagNames?: string[];
   send: (event: ChangelogAiStreamEvent) => void;
 }) {
   const finalTitle = await generateChangelogTitle(input);
@@ -107,6 +110,9 @@ export async function streamStructuredChangelog(input: {
             detailLevel: input.detailLevel,
             workspaceName: input.workspaceName,
             sourcePosts: input.sourcePosts,
+            brandVoice: input.brandVoice,
+            githubUrls: input.githubUrls,
+            availableTagNames: input.availableTagNames,
           }),
         },
       ],

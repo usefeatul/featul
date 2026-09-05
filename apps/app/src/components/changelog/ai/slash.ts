@@ -7,11 +7,21 @@ import {
   Maximize2,
   Wand2,
   AlignLeft,
+  CalendarDays,
+  ClipboardCheck,
+  Code2,
 } from "lucide-react";
 
 type SlashAiHandlers = {
   onOpenPanel: () => void;
-  onStartPrompt: (prompt: string, attachFeedback?: boolean) => void;
+  onStartPrompt: (
+    prompt: string,
+    options?: {
+      attachFeedback?: boolean;
+      attachThisWeek?: boolean;
+      publishCheck?: boolean;
+    },
+  ) => void;
 };
 
 function runSlashCommand(
@@ -44,7 +54,20 @@ export function getChangelogAiSlashSuggestions(
         runSlashCommand(editor, range, () =>
           handlers.onStartPrompt(
             "Write a changelog from the attached shipped feedback.",
-            true,
+            { attachFeedback: true },
+          ),
+        ),
+    },
+    {
+      title: "Draft this week",
+      description: "Use completed posts from the last 7 days.",
+      searchTerms: ["ai", "week", "completed", "release"],
+      icon: CalendarDays,
+      command: ({ editor, range }) =>
+        runSlashCommand(editor, range, () =>
+          handlers.onStartPrompt(
+            "Draft this week's changelog from the attached completed posts.",
+            { attachThisWeek: true },
           ),
         ),
     },
@@ -73,6 +96,18 @@ export function getChangelogAiSlashSuggestions(
         ),
     },
     {
+      title: "Make it technical",
+      description: "Rewrite for a more technical audience.",
+      searchTerms: ["ai", "technical", "api", "engineer"],
+      icon: Code2,
+      command: ({ editor, range }) =>
+        runSlashCommand(editor, range, () =>
+          handlers.onStartPrompt(
+            "Rewrite this for a more technical audience. Keep it concrete.",
+          ),
+        ),
+    },
+    {
       title: "Fix formatting",
       description: "Ask AI to clean up headings and lists.",
       searchTerms: ["ai", "format", "markdown", "structure"],
@@ -81,6 +116,19 @@ export function getChangelogAiSlashSuggestions(
         runSlashCommand(editor, range, () =>
           handlers.onStartPrompt(
             "Fix formatting and structure. Keep the meaning the same.",
+          ),
+        ),
+    },
+    {
+      title: "Publish check",
+      description: "Review the draft before publishing.",
+      searchTerms: ["ai", "publish", "review", "check"],
+      icon: ClipboardCheck,
+      command: ({ editor, range }) =>
+        runSlashCommand(editor, range, () =>
+          handlers.onStartPrompt(
+            "Review this changelog for publish readiness. What should we fix?",
+            { publishCheck: true },
           ),
         ),
     },

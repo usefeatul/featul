@@ -21,6 +21,19 @@ export const AI_STREAM_REFINE_SYSTEM_PROMPT = [
   "Return ONLY the requested markdown output. No JSON, fences, or commentary.",
 ].join(" ");
 
+export const AI_STREAM_ASK_SYSTEM_PROMPT = [
+  "You are an expert product changelog editor sitting next to the author.",
+  "Answer their question about the current draft. Do not rewrite the entry unless they ask.",
+  "Be concrete and brief. Use short paragraphs or bullets.",
+  "Never return TITLE/TAGS labels or a full markdown replacement.",
+].join(" ");
+
+export const AI_STREAM_PATCH_SYSTEM_PROMPT = [
+  "You are an expert product changelog writer.",
+  "Rewrite ONLY the selected excerpt. Return replacement GitHub-flavored Markdown.",
+  "Do not repeat the rest of the entry. No TITLE label, commentary, or fences.",
+].join(" ");
+
 export const AI_STREAM_SUMMARY_SYSTEM_PROMPT = [
   "You are an expert product changelog writer.",
   "Return ONLY a 2-3 sentence summary (<= 512 characters) with no quotes or labels.",

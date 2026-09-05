@@ -1,5 +1,6 @@
 export type {
   AiAction,
+  AiChatIntent,
   AiChatMessage,
   AiDetailLevel,
   AiSourcePost,
@@ -15,6 +16,8 @@ export {
 
 export {
   buildBodyStreamPrompt,
+  buildChatAskOpenRouterMessages,
+  buildChatPatchOpenRouterMessages,
   buildChatRefineOpenRouterMessages,
   buildJsonAiUserPrompt,
   buildStreamRefineUserPrompt,
@@ -24,13 +27,16 @@ export {
 export { buildJsonAiUserPrompt as buildAiUserPrompt } from "./prompts";
 
 export {
+  fetchAiBrandContext,
   fetchAiSourcePostsByIds,
   fetchAiSourcePostsList,
   formatSourcePostsBlock,
+  ensureFeedbackSection,
   getWorkspaceNameForAi,
 } from "./sources";
 
 export {
+  extractAiOutputMeta,
   extractTitleFromMarkdown,
   extractTitleLine,
   isValidChangelogTitle,

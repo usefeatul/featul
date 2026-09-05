@@ -1,5 +1,6 @@
 export type {
   AiAction,
+  AiChatIntent,
   AiChatMessage,
   AiDetailLevel,
   AiTone,
@@ -9,4 +10,7 @@ export type AiChatStarter = {
   label: string;
   prompt: string;
   attachFeedback?: boolean;
+  attachThisWeek?: boolean;
+  publishCheck?: boolean;
+  primary?: boolean;
 };

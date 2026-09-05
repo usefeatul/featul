@@ -92,3 +92,27 @@ export function extractSummaryFromMarkdown(markdown: string) {
 
   return paragraph.replace(/\s+/g, " ").trim().slice(0, 512);
 }
+
+export function extractAiOutputMeta(markdown: string) {
+  let body = markdown.replace(/^\uFEFF/, "").trim();
+  let title: string | undefined;
+  let suggestedTags: string[] | undefined;
+
+  const titleMatch = body.match(/^TITLE:\s*(.+)$/im);
+  if (titleMatch?.[1]?.trim()) {
+    title = titleMatch[1].trim().slice(0, 256);
+    body = body.replace(/^TITLE:\s*.+$/im, "").trim();
+  }
+
+  const tagsMatch = body.match(/\nTAGS:\s*(.+)\s*$/im);
+  if (tagsMatch?.[1]?.trim()) {
+    suggestedTags = tagsMatch[1]
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+      .slice(0, 8);
+    body = body.replace(/\nTAGS:\s*.+\s*$/im, "").trim();
+  }
+
+  return { body, title, suggestedTags };
+}

@@ -105,6 +105,9 @@ export interface FeedEditorRef {
 	setStreamingMarkdown: (markdown: string) => void;
 	beginAiStream: () => void;
 	updateStreamingMarkdown: (markdown: string) => void;
+	hasTextSelection: () => boolean;
+	getSelectedText: () => string;
+	replaceSelectionWithMarkdown: (markdown: string) => void;
 }
 
 export interface FeedEditorProps {
@@ -238,6 +241,32 @@ export const FeedEditor = forwardRef(
 
 					state.lastAppliedLength = markdown.length;
 					state.lastGoodMarkdown = markdown;
+				},
+				hasTextSelection: () => {
+					if (!editor) return false;
+					const { empty } = editor.state.selection;
+					return !empty;
+				},
+				getSelectedText: () => {
+					if (!editor) return "";
+					const { from, to, empty } = editor.state.selection;
+					if (empty) return "";
+					return editor.state.doc.textBetween(from, to, "\n");
+				},
+				replaceSelectionWithMarkdown: (markdown: string) => {
+					if (!editor) return;
+					const { empty } = editor.state.selection;
+					if (empty) {
+						editor.commands.setContent(markdown, { contentType: "markdown" });
+						return;
+					}
+
+					editor
+						.chain()
+						.focus()
+						.deleteSelection()
+						.insertContent(markdown, { contentType: "markdown" })
+						.run();
 				},
 			}),
 			[editor],

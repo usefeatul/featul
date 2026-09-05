@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FeedEditor } from "@/components/editor/editor";
 import type { JSONContent, MentionSuggestionItem } from "@featul/editor";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import { useEditorHeaderActions } from "./EditorHeaderContext";
 import { CoverImageUploader } from "./CoverImageUploader";
 import { InfoIcon } from "@featul/ui/icons/info";
@@ -17,6 +18,8 @@ import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import { fetchWorkspaceMembers } from "@/lib/team/client";
 import ChangelogAiPanel from "./ChangelogAiPanel";
 import { getChangelogAiSlashSuggestions } from "./ai/slash";
+import { getPublishCheckIssues } from "./ai/publishCheck";
+import { clearChangelogAiChat } from "./ai/persist";
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
@@ -55,6 +58,8 @@ export function ChangelogEditor({
     const [pendingPrompt, setPendingPrompt] = useState<{
         text: string;
         attachFeedback?: boolean;
+        attachThisWeek?: boolean;
+        publishCheck?: boolean;
     } | null>(null);
 
     const [isAiGenerating, setIsAiGenerating] = useState(false);
@@ -63,6 +68,7 @@ export function ChangelogEditor({
         editorRef,
         title,
         setTitle,
+        setSummary,
         coverImage,
         setCoverImage,
         selectedTags,
@@ -86,6 +92,32 @@ export function ChangelogEditor({
         setIsAiOpen(true);
     }, []);
 
+    const saveWithCheck = useCallback(async () => {
+        if (!isDraft) {
+            const issues = getPublishCheckIssues({
+                title,
+                contentMarkdown: editorRef.current?.getMarkdown(),
+                coverImage,
+                attachedPostTitles: [],
+            });
+            if (issues.length > 0) {
+                toast.message("Publish check", {
+                    description: issues.join(" · "),
+                });
+            }
+            clearChangelogAiChat(workspaceSlug, entryId);
+        }
+        await handleSave();
+    }, [
+        isDraft,
+        title,
+        coverImage,
+        editorRef,
+        workspaceSlug,
+        entryId,
+        handleSave,
+    ]);
+
     const additionalSlashSuggestions = useCallback(
         ({ query }: { query: string }) => {
             if (query && !query.startsWith("ai")) {
@@ -94,8 +126,8 @@ export function ChangelogEditor({
 
             return getChangelogAiSlashSuggestions({
                 onOpenPanel: openAiPanel,
-                onStartPrompt: (text, attachFeedback) => {
-                    setPendingPrompt({ text, attachFeedback });
+                onStartPrompt: (text, options) => {
+                    setPendingPrompt({ text, ...options });
                     openAiPanel();
                 },
             });
@@ -174,7 +206,7 @@ export function ChangelogEditor({
                 type: "button",
                 variant: "plain",
                 icon: isSaving ? <LoaderIcon className="size-4 animate-spin" /> : isDirty ? <InfoIcon className="size-4" /> : <TickIcon className="size-4" />,
-                onClick: handleSave,
+                onClick: saveWithCheck,
                 disabled: isSaving,
             },
             {
@@ -188,7 +220,7 @@ export function ChangelogEditor({
         ]);
 
         return () => clearActions();
-    }, [setActions, clearActions, handleSave, isSaving, isDraft, isDirty, isAiOpen, router, workspaceSlug, setIsDraft, setIsDirty]);
+    }, [setActions, clearActions, saveWithCheck, isSaving, isDraft, isDirty, isAiOpen, router, workspaceSlug, setIsDraft, setIsDirty]);
 
     return (
         <div className="relative">
@@ -266,9 +298,15 @@ export function ChangelogEditor({
                     open={isAiOpen}
                     onOpenChange={setIsAiOpen}
                     workspaceSlug={workspaceSlug}
+                    entryId={entryId}
                     editorRef={editorRef}
                     title={title}
                     setTitle={setTitle}
+                    setSummary={setSummary}
+                    selectedTags={selectedTags}
+                    setSelectedTags={setSelectedTags}
+                    availableTags={availableTags}
+                    coverImage={coverImage}
                     setIsDirty={setIsDirty}
                     onGeneratingChange={setIsAiGenerating}
                     pendingPrompt={pendingPrompt}

@@ -1,4 +1,6 @@
 import {
+  AI_STREAM_ASK_SYSTEM_PROMPT,
+  AI_STREAM_PATCH_SYSTEM_PROMPT,
   AI_STREAM_REFINE_SYSTEM_PROMPT,
   CHANGELOG_BODY_STRUCTURE,
   DETAIL_GUIDANCE,
@@ -23,7 +25,32 @@ type PromptInput = {
   detailLevel?: AiDetailLevel;
   workspaceName?: string;
   sourcePosts?: AiSourcePost[];
+  brandVoice?: string;
+  githubUrls?: string[];
+  availableTagNames?: string[];
 };
+
+function extraContext(input: {
+  brandVoice?: string;
+  githubUrls?: string[];
+  availableTagNames?: string[];
+  sourcePosts?: AiSourcePost[];
+}) {
+  const brandVoice = input.brandVoice?.trim()
+    ? `Match this product's published changelog voice:\n${input.brandVoice.trim()}`
+    : "";
+  const githubUrls = input.githubUrls?.length
+    ? `GitHub sources:\n${input.githubUrls.join("\n")}`
+    : "";
+  const tags = input.availableTagNames?.length
+    ? `If tags fit, end the markdown with a final line: TAGS: ${input.availableTagNames.slice(0, 12).join(", ")}`
+    : "";
+  const feedbackLinks = input.sourcePosts?.some((post) => post.slug)
+    ? "If covering attached feedback, end with a ## Feedback section listing markdown links using /board/p/{slug} for each item."
+    : "";
+
+  return { brandVoice, githubUrls, tags, feedbackLinks };
+}
 
 function sharedContext(input: PromptInput) {
   const titleLine = input.title?.trim() ? `Title: ${input.title.trim()}` : "";
@@ -148,6 +175,9 @@ export function buildBodyStreamPrompt(input: {
   detailLevel?: AiDetailLevel;
   workspaceName?: string;
   sourcePosts?: AiSourcePost[];
+  brandVoice?: string;
+  githubUrls?: string[];
+  availableTagNames?: string[];
 }) {
   const workspaceLine = input.workspaceName
     ? `Product: ${input.workspaceName}`
@@ -156,6 +186,7 @@ export function buildBodyStreamPrompt(input: {
     ? formatSourcePostsBlock(input.sourcePosts)
     : "";
   const detailLevel = input.detailLevel ?? "detailed";
+  const extra = extraContext(input);
 
   return [
     "Write the full changelog body in GitHub-flavored Markdown.",
@@ -163,6 +194,10 @@ export function buildBodyStreamPrompt(input: {
     TONE_GUIDANCE[input.tone ?? "user-friendly"],
     DETAIL_GUIDANCE[detailLevel],
     CHANGELOG_BODY_STRUCTURE,
+    extra.brandVoice,
+    extra.feedbackLinks,
+    extra.tags,
+    extra.githubUrls,
     workspaceLine,
     `Title: ${input.title}`,
     sourcePostsBlock,
@@ -180,11 +215,21 @@ export function buildChatRefineOpenRouterMessages(input: {
   workspaceName?: string;
   sourcePosts?: AiSourcePost[];
   history?: AiChatMessage[];
+  brandVoice?: string;
+  githubUrls?: string[];
+  availableTagNames?: string[];
 }) {
+  const extra = extraContext(input);
   const context = [
     "Apply the user's latest request to this changelog entry.",
     "Return ONLY the full updated GitHub-flavored Markdown body.",
-    "Do not include a chat reply, TITLE label, or commentary.",
+    "If they only asked to change the title or tags, keep the body the same.",
+    "You may start with TITLE: a new title, and end with TAGS: matching available tags.",
+    "Do not include a chat reply or commentary.",
+    extra.brandVoice,
+    extra.feedbackLinks,
+    extra.tags,
+    extra.githubUrls,
     input.workspaceName ? `Product: ${input.workspaceName}` : "",
     input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
     input.contentMarkdown?.trim()
@@ -204,6 +249,84 @@ export function buildChatRefineOpenRouterMessages(input: {
 
   return [
     { role: "system" as const, content: AI_STREAM_REFINE_SYSTEM_PROMPT },
+    { role: "user" as const, content: context },
+    ...history,
+    { role: "user" as const, content: input.prompt.trim() },
+  ];
+}
+
+export function buildChatAskOpenRouterMessages(input: {
+  prompt: string;
+  title?: string;
+  contentMarkdown?: string;
+  workspaceName?: string;
+  sourcePosts?: AiSourcePost[];
+  history?: AiChatMessage[];
+  githubUrls?: string[];
+}) {
+  const extra = extraContext(input);
+  const context = [
+    "The author is asking a question about this draft. Answer in chat. Do not rewrite the entry.",
+    extra.githubUrls,
+    input.workspaceName ? `Product: ${input.workspaceName}` : "",
+    input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
+    input.contentMarkdown?.trim()
+      ? `Current entry:\n${input.contentMarkdown.trim()}`
+      : "The entry is currently empty.",
+    input.sourcePosts?.length
+      ? `Attached feedback:\n${formatSourcePostsBlock(input.sourcePosts)}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const history = (input.history ?? []).slice(-12).map((message) => ({
+    role: message.role,
+    content: message.content.slice(0, 1500),
+  }));
+
+  return [
+    { role: "system" as const, content: AI_STREAM_ASK_SYSTEM_PROMPT },
+    { role: "user" as const, content: context },
+    ...history,
+    { role: "user" as const, content: input.prompt.trim() },
+  ];
+}
+
+export function buildChatPatchOpenRouterMessages(input: {
+  prompt: string;
+  title?: string;
+  contentMarkdown?: string;
+  selectionMarkdown: string;
+  workspaceName?: string;
+  sourcePosts?: AiSourcePost[];
+  history?: AiChatMessage[];
+  brandVoice?: string;
+}) {
+  const extra = extraContext(input);
+  const context = [
+    "Rewrite only the selected excerpt. Return replacement markdown for that excerpt.",
+    extra.brandVoice,
+    input.workspaceName ? `Product: ${input.workspaceName}` : "",
+    input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
+    input.contentMarkdown?.trim()
+      ? `Full entry (for context only):\n${input.contentMarkdown.trim()}`
+      : "",
+    `Selected excerpt to replace:\n${input.selectionMarkdown.trim()}`,
+    input.sourcePosts?.length
+      ? `Attached feedback:\n${formatSourcePostsBlock(input.sourcePosts)}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const history = (input.history ?? []).slice(-8).map((message) => ({
+    role: message.role,
+    content: message.content.slice(0, 800),
+  }));
+
+  return [
+    { role: "system" as const, content: AI_STREAM_PATCH_SYSTEM_PROMPT },
     { role: "user" as const, content: context },
     ...history,
     { role: "user" as const, content: input.prompt.trim() },

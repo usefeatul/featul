@@ -13,6 +13,9 @@ export type AiSourcePost = {
   content: string;
   upvotes: number;
   roadmapStatus: string | null;
+  slug?: string | null;
+  githubUrl?: string | null;
+  publishedAt?: string | Date | null;
   updatedAt: string | Date | null;
 };
 

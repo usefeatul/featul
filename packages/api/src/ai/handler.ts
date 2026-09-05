@@ -17,22 +17,41 @@ import {
   getMaxTokensByAction,
 } from "./constants";
 import {
+  buildChatAskOpenRouterMessages,
+  buildChatPatchOpenRouterMessages,
   buildChatRefineOpenRouterMessages,
   buildStreamRefineUserPrompt,
 } from "./prompts";
 import { sanitizeChangelogAiError } from "./security";
 import { createSseStreamHeaders, encodeChangelogAiSseEvent } from "./sse";
 import {
+  ensureFeedbackSection,
+  fetchAiBrandContext,
   fetchAiSourcePostsByIds,
   getWorkspaceNameForAi,
 } from "./sources";
 import { streamStructuredChangelog } from "./generation";
 import {
+  extractAiOutputMeta,
   extractSummaryFromMarkdown,
   extractTitleFromMarkdown,
   usesStructuredChangelogStream,
 } from "./title";
-import type { AiAction, ChangelogAiStreamEvent, StructuredGenerationAction } from "./types";
+import type {
+  AiAction,
+  AiChatIntent,
+  ChangelogAiStreamEvent,
+  StructuredGenerationAction,
+} from "./types";
+
+function resolveIntent(input: {
+  intent?: AiChatIntent;
+  selectionMarkdown?: string;
+}): AiChatIntent {
+  if (input.intent) return input.intent;
+  if (input.selectionMarkdown?.trim()) return "patch";
+  return "rewrite";
+}
 
 export async function createChangelogAiStreamResponse(req: Request) {
   const authResult = await authorizePrivateChangelogAiRequest(req);
@@ -65,10 +84,10 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
   const model = resolveOpenRouterStreamModel(parsedInput.action);
   const hasExistingContent = Boolean(parsedInput.contentMarkdown?.trim());
-  const structured = usesStructuredChangelogStream(
-    parsedInput.action,
-    hasExistingContent,
-  );
+  const intent = resolveIntent(parsedInput);
+  const structured =
+    intent === "rewrite" &&
+    usesStructuredChangelogStream(parsedInput.action, hasExistingContent);
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -82,7 +101,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
         const needsSourcePosts = Boolean(parsedInput.sourcePostIds?.length);
 
-        const [sourcePosts, workspaceName] = await Promise.all([
+        const [sourcePosts, workspaceName, brandContext] = await Promise.all([
           needsSourcePosts
             ? fetchAiSourcePostsByIds({
                 db,
@@ -91,6 +110,10 @@ export async function createChangelogAiStreamResponse(req: Request) {
               })
             : Promise.resolve(undefined),
           getWorkspaceNameForAi({
+            db,
+            workspaceId: workspace.id,
+          }),
+          fetchAiBrandContext({
             db,
             workspaceId: workspace.id,
           }),
@@ -107,6 +130,12 @@ export async function createChangelogAiStreamResponse(req: Request) {
           controller.close();
           return;
         }
+
+        const availableTagNames =
+          parsedInput.availableTagNames?.length
+            ? parsedInput.availableTagNames
+            : brandContext.tagNames;
+        const githubUrls = parsedInput.githubUrls;
 
         send({ type: "status", phase: "generating" });
 
@@ -131,6 +160,9 @@ export async function createChangelogAiStreamResponse(req: Request) {
             detailLevel: parsedInput.detailLevel,
             workspaceName,
             sourcePosts,
+            brandVoice: brandContext.brandVoice,
+            githubUrls,
+            availableTagNames,
             send,
           });
 
@@ -140,59 +172,97 @@ export async function createChangelogAiStreamResponse(req: Request) {
             return;
           }
 
+          const meta = extractAiOutputMeta(result.contentMarkdown);
+          const contentMarkdown = ensureFeedbackSection(
+            meta.body,
+            sourcePosts ?? [],
+          );
+
           send({
             type: "done",
             title: result.title,
-            contentMarkdown: result.contentMarkdown,
+            contentMarkdown,
+            suggestedTags: meta.suggestedTags,
+            summary: extractSummaryFromMarkdown(contentMarkdown),
           });
           controller.close();
           return;
         }
 
         const chatMessages =
-          parsedInput.action === "chat"
-            ? buildChatRefineOpenRouterMessages({
+          parsedInput.action === "chat" && intent === "ask"
+            ? buildChatAskOpenRouterMessages({
                 prompt: parsedInput.prompt ?? "",
                 title: parsedInput.title,
                 contentMarkdown: parsedInput.contentMarkdown,
                 workspaceName,
                 sourcePosts,
                 history: parsedInput.messages,
+                githubUrls,
               })
-            : [
-                {
-                  role: "system" as const,
-                  content:
-                    parsedInput.action === "summary"
-                      ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
-                      : AI_STREAM_REFINE_SYSTEM_PROMPT,
-                },
-                {
-                  role: "user" as const,
-                  content: buildStreamRefineUserPrompt({
-                    action: parsedInput.action,
-                    prompt: parsedInput.prompt,
+            : parsedInput.action === "chat" && intent === "patch"
+              ? buildChatPatchOpenRouterMessages({
+                  prompt: parsedInput.prompt ?? "",
+                  title: parsedInput.title,
+                  contentMarkdown: parsedInput.contentMarkdown,
+                  selectionMarkdown: parsedInput.selectionMarkdown ?? "",
+                  workspaceName,
+                  sourcePosts,
+                  history: parsedInput.messages,
+                  brandVoice: brandContext.brandVoice,
+                })
+              : parsedInput.action === "chat"
+                ? buildChatRefineOpenRouterMessages({
+                    prompt: parsedInput.prompt ?? "",
                     title: parsedInput.title,
                     contentMarkdown: parsedInput.contentMarkdown,
-                    tone: parsedInput.tone,
-                    detailLevel: parsedInput.detailLevel,
                     workspaceName,
                     sourcePosts,
-                  }),
-                },
-              ];
+                    history: parsedInput.messages,
+                    brandVoice: brandContext.brandVoice,
+                    githubUrls,
+                    availableTagNames,
+                  })
+                : [
+                    {
+                      role: "system" as const,
+                      content:
+                        parsedInput.action === "summary"
+                          ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
+                          : AI_STREAM_REFINE_SYSTEM_PROMPT,
+                    },
+                    {
+                      role: "user" as const,
+                      content: buildStreamRefineUserPrompt({
+                        action: parsedInput.action,
+                        prompt: parsedInput.prompt,
+                        title: parsedInput.title,
+                        contentMarkdown: parsedInput.contentMarkdown,
+                        tone: parsedInput.tone,
+                        detailLevel: parsedInput.detailLevel,
+                        workspaceName,
+                        sourcePosts,
+                      }),
+                    },
+                  ];
 
         let accumulated = "";
+        const maxTokens =
+          intent === "ask"
+            ? 700
+            : intent === "patch"
+              ? 1400
+              : getMaxTokensByAction(
+                  parsedInput.action,
+                  parsedInput.detailLevel,
+                );
 
         await streamOpenRouterChat(
           {
             model,
             messages: chatMessages,
             temperature: AI_TEMPERATURE_BY_ACTION[parsedInput.action as AiAction],
-            max_tokens: getMaxTokensByAction(
-              parsedInput.action,
-              parsedInput.detailLevel,
-            ),
+            max_tokens: maxTokens,
           },
           (text) => {
             accumulated += text;
@@ -216,11 +286,29 @@ export async function createChangelogAiStreamResponse(req: Request) {
           return;
         }
 
+        if (intent === "ask") {
+          send({
+            type: "done",
+            reply: trimmed.slice(0, 4000),
+          });
+          controller.close();
+          return;
+        }
+
+        const meta = extractAiOutputMeta(trimmed);
+        const contentMarkdown =
+          intent === "patch"
+            ? meta.body
+            : ensureFeedbackSection(meta.body, sourcePosts ?? []);
+
         send({
           type: "done",
-          contentMarkdown: trimmed,
-          title: extractTitleFromMarkdown(trimmed, parsedInput.title),
-          summary: extractSummaryFromMarkdown(trimmed),
+          contentMarkdown,
+          title:
+            meta.title ||
+            extractTitleFromMarkdown(contentMarkdown, parsedInput.title),
+          summary: extractSummaryFromMarkdown(contentMarkdown),
+          suggestedTags: meta.suggestedTags,
         });
         controller.close();
       } catch (err) {

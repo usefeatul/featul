@@ -38,6 +38,8 @@ export const aiChatMessageSchema = z.object({
   content: z.string().min(1).max(4000),
 });
 
+export const aiChatIntentSchema = z.enum(["ask", "rewrite", "patch"]);
+
 export const aiAssistSchema = z
   .object({
     slug: bySlugSchema.shape.slug,
@@ -57,6 +59,10 @@ export const aiAssistSchema = z
     tone: aiToneSchema.optional(),
     detailLevel: aiDetailLevelSchema.optional(),
     messages: z.array(aiChatMessageSchema).max(20).optional(),
+    intent: aiChatIntentSchema.optional(),
+    selectionMarkdown: z.string().min(1).max(8000).optional(),
+    githubUrls: z.array(z.string().url().max(500)).max(10).optional(),
+    availableTagNames: z.array(z.string().min(1).max(40)).max(30).optional(),
   })
   .superRefine((val, ctx) => {
     if ((val.action === "prompt" || val.action === "chat") && !val.prompt) {
@@ -85,6 +91,13 @@ export const aiAssistSchema = z
         code: z.ZodIssueCode.custom,
         message: "contentMarkdown is required for this action",
         path: ["contentMarkdown"],
+      });
+    }
+    if (val.intent === "patch" && !val.selectionMarkdown?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "selectionMarkdown is required for intent=patch",
+        path: ["selectionMarkdown"],
       });
     }
   });
