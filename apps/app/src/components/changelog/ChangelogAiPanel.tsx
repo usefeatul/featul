@@ -700,133 +700,102 @@ export function ChangelogAiPanel({
     );
   };
 
+  const runStarter = (starter: AiChatStarter) => {
+    if (starter.attachThisWeek) {
+      attachWeekPosts();
+      setPrompt(starter.prompt);
+      return;
+    }
+    if (starter.publishCheck) {
+      runPublishCheck(starter.prompt);
+      return;
+    }
+    if (starter.attachFeedback) {
+      setPrompt(`${starter.prompt} @`);
+      setMention({
+        start: `${starter.prompt} @`.lastIndexOf("@"),
+        query: "",
+      });
+      inputRef.current?.focus();
+      return;
+    }
+    void sendMessage(starter.prompt);
+  };
+
   if (!open) return null;
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex justify-center px-3 lg:bottom-5 lg:left-60">
       <div className="pointer-events-auto w-full max-w-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-        {showStarters ? (
-          <div className="mb-2 flex flex-wrap justify-center gap-1.5">
-            {STARTERS.map((starter) => (
-              <button
-                key={starter.label}
-                type="button"
-                disabled={isLoading}
-                onClick={() => {
-                  if (starter.attachThisWeek) {
-                    attachWeekPosts();
-                    setPrompt(starter.prompt);
-                    return;
-                  }
-                  if (starter.publishCheck) {
-                    runPublishCheck(starter.prompt);
-                    return;
-                  }
-                  if (starter.attachFeedback) {
-                    setPrompt(`${starter.prompt} @`);
-                    setMention({
-                      start: `${starter.prompt} @`.lastIndexOf("@"),
-                      query: "",
-                    });
-                    inputRef.current?.focus();
-                    return;
-                  }
-                  void sendMessage(starter.prompt);
-                }}
-                className={cn(
-                  "cursor-pointer rounded-lg px-2.5 py-1 text-[11px] font-medium shadow-sm disabled:cursor-not-allowed disabled:opacity-50",
-                  starter.primary
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "border border-border bg-card text-foreground hover:bg-muted/40 dark:bg-black",
-                )}
-              >
-                {starter.label}
-              </button>
-            ))}
-          </div>
-        ) : null}
-
-        {messages.length > 0 ? (
-          <div
-            className={cn(
-              overlayDialogClass,
-              "mb-2 max-h-[min(28rem,50vh)] overflow-hidden shadow-lg",
-            )}
-          >
-            <div
-              className={cn(
-                overlayDialogInnerClass,
-                "max-h-[min(28rem,50vh)] space-y-2 overflow-y-auto p-3 scrollbar-hide",
-              )}
-            >
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn(
-                    "flex",
-                    message.role === "user" ? "justify-end" : "justify-start",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "max-w-[85%] rounded-2xl px-3 py-2 text-xs leading-relaxed",
-                      message.role === "user"
-                        ? "rounded-br-md bg-foreground text-background"
-                        : "rounded-bl-md bg-muted/50 text-foreground",
-                      message.status === "error" && "text-destructive",
-                    )}
-                  >
-                    {message.status === "pending" ? (
-                      <span className="inline-flex items-center gap-1.5">
-                        <LoaderIcon className="size-3 animate-spin" />
-                        {message.content}
-                      </span>
-                    ) : (
-                      <span className="whitespace-pre-wrap">{message.content}</span>
-                    )}
-                    {message.attachedTitles?.length ? (
-                      <div className="mt-1.5 flex flex-wrap gap-1">
-                        {message.attachedTitles.map((attachedTitle) => (
-                          <span
-                            key={attachedTitle}
-                            className={cn(
-                              "inline-flex max-w-[10rem] truncate rounded-lg px-1.5 py-0.5 text-[10px]",
-                              message.role === "user"
-                                ? "bg-background/15 text-background"
-                                : "bg-primary/10 text-primary",
-                            )}
-                          >
-                            @{attachedTitle}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-                    {message.status === "error" ? (
-                      <button
-                        type="button"
-                        className="mt-1.5 text-[10px] font-medium underline"
-                        onClick={() => {
-                          const lastUser = [...messages]
-                            .reverse()
-                            .find((entry) => entry.role === "user");
-                          if (lastUser) void sendMessage(lastUser.content);
-                        }}
-                      >
-                        Retry
-                      </button>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-              <div ref={bottomRef} />
-            </div>
-          </div>
-        ) : null}
-
         <div className={cn(overlayDialogClass, "shadow-lg")}>
           <div className={cn(overlayDialogInnerClass, "overflow-hidden p-0")}>
+            {messages.length > 0 ? (
+              <div className="max-h-[min(28rem,50vh)] space-y-2 overflow-y-auto p-3 scrollbar-hide">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={cn(
+                      "flex",
+                      message.role === "user" ? "justify-end" : "justify-start",
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "max-w-[85%] rounded-2xl px-3 py-2 text-xs leading-relaxed",
+                        message.role === "user"
+                          ? "rounded-br-md bg-foreground text-background"
+                          : "rounded-bl-md bg-muted/50 text-foreground",
+                        message.status === "error" && "text-destructive",
+                      )}
+                    >
+                      {message.status === "pending" ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <LoaderIcon className="size-3 animate-spin" />
+                          {message.content}
+                        </span>
+                      ) : (
+                        <span className="whitespace-pre-wrap">{message.content}</span>
+                      )}
+                      {message.attachedTitles?.length ? (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          {message.attachedTitles.map((attachedTitle) => (
+                            <span
+                              key={attachedTitle}
+                              className={cn(
+                                "inline-flex max-w-[10rem] truncate rounded-lg px-1.5 py-0.5 text-[10px]",
+                                message.role === "user"
+                                  ? "bg-background/15 text-background"
+                                  : "bg-primary/10 text-primary",
+                              )}
+                            >
+                              @{attachedTitle}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+                      {message.status === "error" ? (
+                        <button
+                          type="button"
+                          className="mt-1.5 text-[10px] font-medium underline"
+                          onClick={() => {
+                            const lastUser = [...messages]
+                              .reverse()
+                              .find((entry) => entry.role === "user");
+                            if (lastUser) void sendMessage(lastUser.content);
+                          }}
+                        >
+                          Retry
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+                <div ref={bottomRef} />
+              </div>
+            ) : null}
+
             {mention ? (
-              <div className="border-b border-border/70">
+              <div className="border-t border-border/70">
                 <p className="px-3 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                   Posts
                 </p>
@@ -863,7 +832,7 @@ export function ChangelogAiPanel({
             ) : null}
 
             {selectedPosts.length > 0 ? (
-              <div className="flex flex-wrap gap-1 border-b border-border/70 px-2 py-1.5">
+              <div className="flex flex-wrap gap-1 border-t border-border/70 px-2 py-1.5">
                 {selectedPosts.map((post) => (
                   <button
                     key={post.id}
@@ -884,6 +853,32 @@ export function ChangelogAiPanel({
                     ) : null}
                     <span className="truncate">@{post.title}</span>
                     <XMarkIcon className="size-2.5 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            {showStarters ? (
+              <div
+                className={cn(
+                  "flex gap-1 overflow-x-auto px-2 pt-2 scrollbar-hide",
+                  messages.length > 0 && "border-t border-border/70",
+                )}
+              >
+                {STARTERS.map((starter) => (
+                  <button
+                    key={starter.label}
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() => runStarter(starter)}
+                    className={cn(
+                      "shrink-0 cursor-pointer rounded-lg px-2 py-1 text-[11px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+                      starter.primary
+                        ? "bg-primary/15 text-primary hover:bg-primary/20"
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                    )}
+                  >
+                    {starter.label}
                   </button>
                 ))}
               </div>
