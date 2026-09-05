@@ -750,13 +750,13 @@ export function ChangelogAiPanel({
           <div
             className={cn(
               overlayDialogClass,
-              "mb-2 max-h-44 overflow-hidden shadow-lg",
+              "mb-2 max-h-[min(28rem,50vh)] overflow-hidden shadow-lg",
             )}
           >
             <div
               className={cn(
                 overlayDialogInnerClass,
-                "max-h-40 space-y-2 overflow-y-auto p-3",
+                "max-h-[min(28rem,50vh)] space-y-2 overflow-y-auto p-3",
               )}
             >
               {messages.map((message) => (
