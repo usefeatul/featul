@@ -179,9 +179,9 @@ export default function FooterSection() {
             </nav>
           </div>
 
-          <div className="mt-16 border-t border-border/60 pt-6">
-            <p className="text-accent text-sm">© {year} Featul</p>
-          </div>
+          <p className="text-accent mt-16 text-center text-sm sm:mt-20">
+            © {year} Featul
+          </p>
         </div>
       </Container>
     </footer>
