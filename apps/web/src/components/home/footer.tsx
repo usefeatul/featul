@@ -1,29 +1,5 @@
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-import {
-  Activity,
-  AppWindow,
-  ArrowUp,
-  Blocks,
-  BookMarked,
-  BookOpen,
-  Code2,
-  CreditCard,
-  FileText,
-  Hash,
-  LayoutDashboard,
-  Lightbulb,
-  Mail,
-  Map,
-  MessageSquare,
-  Newspaper,
-  Rocket,
-  Scale,
-  ScrollText,
-  Shield,
-  Target,
-  Wrench,
-} from "lucide-react";
+import type { ComponentType } from "react";
 
 import { Container } from "../global/container";
 import {
@@ -31,35 +7,61 @@ import {
   type FooterIconName,
   type FooterNavItem,
 } from "@/config/footerNav";
-import { StatusIndicator } from "@/components/home/indicator";
+import { StatusButton } from "@/components/home/status";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
+import { FeedbackIcon } from "@featul/ui/icons/feedback";
+import { BoardIcon } from "@featul/ui/icons/board";
+import { VoteIcon } from "@featul/ui/icons/vote";
+import { RoadmapIcon } from "@featul/ui/icons/roadmap";
+import { ChangelogIcon } from "@featul/ui/icons/changelog";
+import { WidgetIcon } from "@featul/ui/icons/widget";
+import { DashboardIcon } from "@featul/ui/icons/dashboard";
+import { DocIcon } from "@featul/ui/icons/doc";
+import { BookIcon } from "@featul/ui/icons/book";
+import { WrenchIcon } from "@featul/ui/icons/wrench";
+import { MemberIcon } from "@featul/ui/icons/member";
+import { CodeIcon } from "@featul/ui/icons/code";
+import { BoxIcon } from "@featul/ui/icons/box";
+import { CreditCardIcon } from "@featul/ui/icons/credit-card";
+import { IntegrationIcon } from "@featul/ui/icons/integration";
+import { ArticleIcon } from "@featul/ui/icons/article";
+import { EnvelopeIcon } from "@featul/ui/icons/envelope";
+import { ShieldStrokeIcon } from "@featul/ui/icons/shield-stroke";
+import { getIntegrationIcon } from "@/components/integrations/icons";
 
-const footerIcons: Record<FooterIconName, LucideIcon> = {
-  feedback: MessageSquare,
-  requests: Lightbulb,
-  voting: ArrowUp,
-  roadmap: Map,
-  changelog: Newspaper,
-  widget: AppWindow,
-  dashboard: LayoutDashboard,
-  slack: Hash,
-  docs: BookOpen,
-  definitions: BookMarked,
-  tools: Wrench,
-  "use-cases": Target,
-  "open-source": Code2,
-  start: Rocket,
-  pricing: CreditCard,
-  integrations: Blocks,
-  blog: FileText,
-  demo: MessageSquare,
-  contact: Mail,
-  status: Activity,
-  privacy: Shield,
-  terms: ScrollText,
-  gdpr: Scale,
+type FeatulIcon = ComponentType<{
+  className?: string;
+  size?: number;
+  opacity?: number;
+}>;
+
+const footerIcons: Record<FooterIconName, FeatulIcon> = {
+  feedback: FeedbackIcon,
+  requests: BoardIcon,
+  voting: VoteIcon,
+  roadmap: RoadmapIcon,
+  changelog: ChangelogIcon,
+  widget: WidgetIcon,
+  dashboard: DashboardIcon,
+  docs: DocIcon,
+  definitions: BookIcon,
+  tools: WrenchIcon,
+  "use-cases": MemberIcon,
+  "open-source": CodeIcon,
+  start: BoxIcon,
+  pricing: CreditCardIcon,
+  integrations: IntegrationIcon,
+  blog: ArticleIcon,
+  demo: BoardIcon,
+  contact: EnvelopeIcon,
+  privacy: ShieldStrokeIcon,
+  terms: ArticleIcon,
+  gdpr: ShieldStrokeIcon,
 };
+
+const iconClassName =
+  "size-4 shrink-0 text-accent transition-colors group-hover:text-primary";
 
 function isExternalHref(item: FooterNavItem) {
   return (
@@ -70,6 +72,9 @@ function isExternalHref(item: FooterNavItem) {
 }
 
 function FooterLink({ item }: { item: FooterNavItem }) {
+  const BrandIcon = item.integrationSlug
+    ? getIntegrationIcon(item.integrationSlug)
+    : null;
   const Icon = item.icon ? footerIcons[item.icon] : null;
   const external = isExternalHref(item);
 
@@ -81,16 +86,12 @@ function FooterLink({ item }: { item: FooterNavItem }) {
         : undefined)}
       className="group text-accent flex items-center gap-2.5 text-sm leading-5 transition-colors hover:text-primary"
     >
-      {Icon ? (
-        item.icon === "status" ? (
-          <StatusIndicator className="size-2.5 shrink-0" srLabel="" />
-        ) : (
-          <Icon
-            aria-hidden
-            className="size-4 shrink-0 text-accent/70 transition-colors group-hover:text-primary"
-            strokeWidth={1.75}
-          />
-        )
+      {BrandIcon ? (
+        <span className="inline-flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-[3px]">
+          <BrandIcon size={16} />
+        </span>
+      ) : Icon ? (
+        <Icon aria-hidden className={iconClassName} size={16} />
       ) : null}
       <span>{item.name}</span>
     </Link>
@@ -132,21 +133,25 @@ export default function FooterSection() {
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : undefined)}
                     aria-label={social.name}
-                    className="text-accent transition-colors hover:text-primary"
+                    className="group text-accent transition-colors hover:text-primary"
                   >
                     {social.icon === "github" ? (
                       <GitHubIcon size={18} />
                     ) : (
-                      <Mail className="size-[18px]" strokeWidth={1.75} />
+                      <EnvelopeIcon size={18} />
                     )}
                   </Link>
                 ))}
+                <StatusButton
+                  label="Operational"
+                  className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
+                />
               </div>
             </div>
 
             <nav
               aria-label="Footer"
-              className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:gap-x-12 xl:gap-x-16"
+              className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-10 xl:gap-x-14"
             >
               {footerNavigationConfig.columns.map((column, columnIndex) => (
                 <div key={columnIndex} className="flex flex-col gap-12">
@@ -157,7 +162,10 @@ export default function FooterSection() {
                       </span>
                       <div className="mt-5 space-y-3">
                         {group.items.map((item) => (
-                          <FooterLink key={`${group.title}-${item.href}`} item={item} />
+                          <FooterLink
+                            key={`${group.title}-${item.href}`}
+                            item={item}
+                          />
                         ))}
                       </div>
                     </div>

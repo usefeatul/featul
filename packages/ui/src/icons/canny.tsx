@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 
 interface CannyIconProps {
   className?: string
@@ -6,6 +6,8 @@ interface CannyIconProps {
 }
 
 export const CannyIcon: React.FC<CannyIconProps> = ({ className = '', size = 24 }) => {
+  const clipId = `canny-rounded-${useId().replace(/:/g, "")}`
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -16,12 +18,12 @@ export const CannyIcon: React.FC<CannyIconProps> = ({ className = '', size = 24 
       fill="none"
     >
       <defs>
-        <clipPath id="canny-rounded">
+        <clipPath id={clipId}>
           <rect width="128" height="128" rx="24" ry="24" />
         </clipPath>
       </defs>
 
-      <g clipPath="url(#canny-rounded)">
+      <g clipPath={`url(#${clipId})`}>
         {/* Background */}
         <path
           d="M0 0h128v128H0V0Z"
