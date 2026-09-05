@@ -1,5 +1,4 @@
 import { LIVE_DEMO_URL } from "@/config/auth";
-import { INTEGRATIONS } from "@/lib/data/programmatic/matrix";
 import type { NavigationItem } from "./homeNav";
 
 export type FooterIconName =
@@ -10,6 +9,7 @@ export type FooterIconName =
   | "changelog"
   | "widget"
   | "dashboard"
+  | "slack"
   | "docs"
   | "definitions"
   | "tools"
@@ -27,7 +27,6 @@ export type FooterIconName =
 
 export interface FooterNavItem extends NavigationItem {
   icon?: FooterIconName;
-  integrationSlug?: string;
 }
 
 export interface FooterNavGroup {
@@ -92,6 +91,7 @@ const columns: FooterNavColumn[] = [
             href: "/docs/getting-started/overview",
             icon: "dashboard",
           },
+          { name: "Slack", href: "/integrations/slack", icon: "slack" },
         ],
       },
       {
@@ -113,6 +113,7 @@ const columns: FooterNavColumn[] = [
         items: [
           { name: "Get started", href: "/docs/getting-started", icon: "start" },
           { name: "Pricing", href: "/pricing", icon: "pricing" },
+          { name: "Integrations", href: "/integrations", icon: "integrations" },
           { name: "Blog", href: "/blog", icon: "blog" },
           {
             name: "Live demo",
@@ -133,25 +134,6 @@ const columns: FooterNavColumn[] = [
           { name: "Privacy", href: "/privacy", icon: "privacy" },
           { name: "Terms", href: "/terms", icon: "terms" },
           { name: "GDPR", href: "/gdpr", icon: "gdpr" },
-        ],
-      },
-    ],
-  },
-  {
-    groups: [
-      {
-        title: "Integrations",
-        items: [
-          ...INTEGRATIONS.map((item) => ({
-            name: item.name,
-            href: `/integrations/${item.slug}`,
-            integrationSlug: item.slug,
-          })),
-          {
-            name: "All integrations",
-            href: "/integrations",
-            icon: "integrations" as const,
-          },
         ],
       },
     ],

@@ -17,6 +17,7 @@ import { RoadmapIcon } from "@featul/ui/icons/roadmap";
 import { ChangelogIcon } from "@featul/ui/icons/changelog";
 import { WidgetIcon } from "@featul/ui/icons/widget";
 import { DashboardIcon } from "@featul/ui/icons/dashboard";
+import { SlackIcon } from "@featul/ui/icons/slack";
 import { DocIcon } from "@featul/ui/icons/doc";
 import { BookIcon } from "@featul/ui/icons/book";
 import { WrenchIcon } from "@featul/ui/icons/wrench";
@@ -28,7 +29,6 @@ import { IntegrationIcon } from "@featul/ui/icons/integration";
 import { ArticleIcon } from "@featul/ui/icons/article";
 import { EnvelopeIcon } from "@featul/ui/icons/envelope";
 import { ShieldStrokeIcon } from "@featul/ui/icons/shield-stroke";
-import { getIntegrationIcon } from "@/components/integrations/icons";
 
 type FeatulIcon = ComponentType<{
   className?: string;
@@ -44,6 +44,7 @@ const footerIcons: Record<FooterIconName, FeatulIcon> = {
   changelog: ChangelogIcon,
   widget: WidgetIcon,
   dashboard: DashboardIcon,
+  slack: SlackIcon,
   docs: DocIcon,
   definitions: BookIcon,
   tools: WrenchIcon,
@@ -72,11 +73,9 @@ function isExternalHref(item: FooterNavItem) {
 }
 
 function FooterLink({ item }: { item: FooterNavItem }) {
-  const BrandIcon = item.integrationSlug
-    ? getIntegrationIcon(item.integrationSlug)
-    : null;
   const Icon = item.icon ? footerIcons[item.icon] : null;
   const external = isExternalHref(item);
+  const isBrandIcon = item.icon === "slack";
 
   return (
     <Link
@@ -86,12 +85,14 @@ function FooterLink({ item }: { item: FooterNavItem }) {
         : undefined)}
       className="group text-accent flex items-center gap-2.5 text-sm leading-5 transition-colors hover:text-primary"
     >
-      {BrandIcon ? (
-        <span className="inline-flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-[3px]">
-          <BrandIcon size={16} />
-        </span>
-      ) : Icon ? (
-        <Icon aria-hidden className={iconClassName} size={16} />
+      {Icon ? (
+        isBrandIcon ? (
+          <span className="inline-flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-[3px]">
+            <Icon size={16} />
+          </span>
+        ) : (
+          <Icon aria-hidden className={iconClassName} size={16} />
+        )
       ) : null}
       <span>{item.name}</span>
     </Link>
@@ -121,8 +122,7 @@ export default function FooterSection() {
                 </span>
               </Link>
               <p className="text-accent mt-4 text-sm leading-6">
-                Customer feedback, roadmaps, and changelogs in one simple
-                workspace. Built and hosted in the EU.
+                Feedback, roadmaps, and changelogs. Hosted in the EU.
               </p>
               <div className="mt-5 flex items-center gap-4">
                 {footerNavigationConfig.socials.map((social) => (
@@ -151,7 +151,7 @@ export default function FooterSection() {
 
             <nav
               aria-label="Footer"
-              className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-10 xl:gap-x-14"
+              className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:gap-x-12 xl:gap-x-16"
             >
               {footerNavigationConfig.columns.map((column, columnIndex) => (
                 <div key={columnIndex} className="flex flex-col gap-12">
