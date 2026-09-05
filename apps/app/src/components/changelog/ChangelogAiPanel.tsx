@@ -412,7 +412,7 @@ export function ChangelogAiPanel({
                   }
                   void sendMessage(starter.prompt);
                 }}
-                className="cursor-pointer rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-medium text-foreground shadow-sm hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-black"
+                className="cursor-pointer rounded-lg bg-primary px-2.5 py-1 text-[11px] font-medium text-primary-foreground shadow-sm hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {starter.label}
               </button>
