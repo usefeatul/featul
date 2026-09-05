@@ -17,7 +17,6 @@ import { RoadmapIcon } from "@featul/ui/icons/roadmap";
 import { ChangelogIcon } from "@featul/ui/icons/changelog";
 import { WidgetIcon } from "@featul/ui/icons/widget";
 import { DashboardIcon } from "@featul/ui/icons/dashboard";
-import { SlackIcon } from "@featul/ui/icons/slack";
 import { DocIcon } from "@featul/ui/icons/doc";
 import { BookIcon } from "@featul/ui/icons/book";
 import { WrenchIcon } from "@featul/ui/icons/wrench";
@@ -45,7 +44,6 @@ const footerIcons: Record<FooterIconName, FeatulIcon> = {
   changelog: ChangelogIcon,
   widget: WidgetIcon,
   dashboard: DashboardIcon,
-  slack: SlackIcon,
   docs: DocIcon,
   definitions: BookIcon,
   tools: WrenchIcon,
@@ -76,7 +74,6 @@ function isExternalHref(item: FooterNavItem) {
 function FooterLink({ item }: { item: FooterNavItem }) {
   const Icon = item.icon ? footerIcons[item.icon] : null;
   const external = isExternalHref(item);
-  const isBrandIcon = item.icon === "slack";
 
   return (
     <Link
@@ -87,13 +84,7 @@ function FooterLink({ item }: { item: FooterNavItem }) {
       className="group text-accent flex items-center gap-2.5 text-sm leading-5 transition-colors hover:text-primary"
     >
       {Icon ? (
-        isBrandIcon ? (
-          <span className="inline-flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-[3px]">
-            <Icon size={16} />
-          </span>
-        ) : (
-          <Icon aria-hidden className={iconClassName} size={16} />
-        )
+        <Icon aria-hidden className={iconClassName} size={16} />
       ) : null}
       <span>{item.name}</span>
     </Link>

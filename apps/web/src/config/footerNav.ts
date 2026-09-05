@@ -9,7 +9,6 @@ export type FooterIconName =
   | "changelog"
   | "widget"
   | "dashboard"
-  | "slack"
   | "docs"
   | "definitions"
   | "tools"
@@ -91,7 +90,6 @@ const columns: FooterNavColumn[] = [
             href: "/docs/getting-started/overview",
             icon: "dashboard",
           },
-          { name: "Slack", href: "/integrations/slack", icon: "slack" },
         ],
       },
       {
