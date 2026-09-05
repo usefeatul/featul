@@ -3,6 +3,7 @@ import { Container } from "../global/container";
 import { SetupIcon } from "@featul/ui/icons/setup";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
+import { visualIconTileClass } from "./visual-well";
 
 const cards = [
   {
@@ -10,7 +11,7 @@ const cards = [
     body: (
       <>
         Launch a public feedback portal on your own subdomain
-        <span className="ml-1 inline rounded-md bg-primary/50 px-2 py-0 tracking-widest text-black">
+        <span className="ml-1 inline rounded-md bg-primary/20 px-2 py-0 tracking-widest text-primary">
           feedback.yourbrand.com
         </span>{" "}
         or use Featul&apos;s hosted space. Customers can browse ideas, vote on
@@ -24,7 +25,7 @@ const cards = [
     body: (
       <>
         Add our in‑app widget with a light snippet
-        <span className="ml-1 inline rounded-md bg-primary/50 px-2 py-0 tracking-widest text-black">
+        <span className="ml-1 inline rounded-md bg-primary/20 px-2 py-0 tracking-widest text-primary">
           {'<script src="..."></script>'}
         </span>{" "}
         so users can submit ideas without leaving. They see your roadmap and
@@ -54,7 +55,7 @@ export default function Setup() {
                   )}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="inline-flex size-7 sm:size-8 items-center justify-center rounded-md bg-foreground/5 p-1 text-primary ring-1 ring-foreground/10 sm:p-1.5">
+                    <span className={visualIconTileClass}>
                       <SetupIcon aria-hidden className="size-4" opacity={1} />
                     </span>
                     <div>

@@ -23,6 +23,12 @@ import { SITE_URL } from "@/config/seo";
 import { IntegrationHero } from "@/components/integrations/hero";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
+import {
+  skyKbdClassName,
+  skyPrimaryCtaClass,
+  skySecondaryCtaClass,
+} from "@/components/shared/cta";
+import { cn } from "@featul/ui/lib/utils";
 import { RelatedLinks } from "@/components/seo/links";
 import {
   OverlayCard,
@@ -193,9 +199,18 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                     <HotkeyLink
                       variant="nav"
                       label={`Connect ${integration.name}`}
-                      className="h-10 min-h-[40px] w-full min-w-[40px] border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground sm:w-auto"
+                      className={cn(
+                        "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
+                        skyPrimaryCtaClass,
+                      )}
+                      kbdClassName={skyKbdClassName}
                     />
-                    <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] border-white/60 bg-white text-accent hover:bg-white/95 sm:w-auto" />
+                    <LiveDemo
+                      className={cn(
+                        "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
+                        skySecondaryCtaClass,
+                      )}
+                    />
                   </div>
                   </OverlayCardPanel>
                 </OverlayCard>

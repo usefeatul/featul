@@ -4,6 +4,7 @@ import { ShieldIcon } from "@featul/ui/icons/shield";
 import { UserFocusIcon } from "@featul/ui/icons/userfocus";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
+import { visualIconTileClass } from "./visual-well";
 
 const cards = [
   {
@@ -40,7 +41,7 @@ export default function Access() {
                     )}
                   >
                     <div className="flex items-start gap-3">
-                      <span className="inline-flex size-7 items-center justify-center rounded-md bg-foreground/5 p-1 text-primary ring-1 ring-foreground/10 sm:size-8 sm:p-1.5">
+                      <span className={visualIconTileClass}>
                         <Icon aria-hidden className="size-4" />
                       </span>
                       <div>

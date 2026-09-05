@@ -6,14 +6,14 @@ import { HeroHighlights } from "@/components/shared/highlights";
 export function HeroContent() {
   return (
     <div className="text-left" data-component="HeroContent">
-      <h1 className="max-w-3xl font-heading text-[2rem] font-semibold leading-[1.15] tracking-tight text-white text-balance sm:text-5xl sm:leading-tight md:text-6xl">
+      <h1 className="font-heading text-[2rem] font-semibold leading-[1.15] tracking-tight text-white text-balance sm:text-4xl sm:leading-tight lg:text-[2.75rem] xl:text-5xl">
         From upvote to shipped.{" "}
         <span className="inline-flex items-center rounded-md bg-white/20 px-1.5 py-[2px] align-baseline text-white backdrop-blur-sm sm:px-2">
           In one workspace.
         </span>
       </h1>
 
-      <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance [text-shadow:0_1px_6px_rgba(0,0,0,0.25)] sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
+      <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance [text-shadow:0_1px_6px_rgba(0,0,0,0.25)] sm:mt-6 sm:text-base">
         Collect votes, share a public roadmap, and publish a changelog. MIT
         licensed, self-host or hosted in the EU, billed per workspace not per
         seat.

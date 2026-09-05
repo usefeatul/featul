@@ -12,6 +12,7 @@ import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./menu";
 import { isSkyPath } from "@/lib/sky";
+import { skyPrimaryCtaClass } from "@/components/shared/cta";
 
 export default function Navbar() {
   const main = navigationConfig.main;
@@ -148,7 +149,12 @@ export default function Navbar() {
               asChild
               size="sm"
               variant="nav"
-              className="font-heading border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              className={cn(
+                "font-heading",
+                overSky
+                  ? skyPrimaryCtaClass
+                  : "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+              )}
             >
               <Link
                 href={APP_URL}

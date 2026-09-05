@@ -38,14 +38,25 @@ export function VisualCardWell({
       )}
     >
       <DitherGradient
-        from={color}
+        from="blue"
         to="transparent"
         direction="down"
         cell={3}
         bloom="low"
-        opacity={0.9}
+        opacity={color === "blue" ? 0.95 : 0.48}
         className="[mask-image:radial-gradient(130%_120%_at_50%_0%,black_35%,transparent_88%)]"
       />
+      {color !== "blue" ? (
+        <DitherGradient
+          from={color}
+          to="transparent"
+          direction="down"
+          cell={3}
+          bloom="low"
+          opacity={0.62}
+          className="[mask-image:radial-gradient(120%_110%_at_50%_0%,black_28%,transparent_80%)]"
+        />
+      ) : null}
       {badge ? (
         <div className={cn("absolute z-10", compact ? "left-2.5 top-2.5" : "left-3 top-3")}>
           {badge}
@@ -54,7 +65,7 @@ export function VisualCardWell({
       {step || label ? (
         <div className="relative z-10 flex items-baseline gap-2 px-4 pt-4 sm:px-5">
           {step ? (
-            <span className="text-accent text-xs font-medium tabular-nums">
+            <span className="text-primary text-xs font-medium tabular-nums">
               {step}
             </span>
           ) : null}
@@ -125,6 +136,9 @@ export function NestedOverlayCard({
     </div>
   );
 }
+
+export const visualIconTileClass =
+  "inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/15 p-1 text-primary ring-1 ring-primary/25 sm:size-8 sm:p-1.5";
 
 export function VisualCardIconTile({
   children,

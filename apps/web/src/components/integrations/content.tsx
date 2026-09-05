@@ -6,6 +6,7 @@ import { HeroHighlights } from "@/components/shared/highlights";
 import { Button } from "@featul/ui/components/button";
 import { LinkIcon } from "@featul/ui/icons/link";
 import { cn } from "@featul/ui/lib/utils";
+import { skyPrimaryCtaClass, skySecondaryCtaClass } from "@/components/shared/cta";
 
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
 
@@ -67,7 +68,7 @@ export function IntegrationHeroContent({
           variant="nav"
           className={cn(
             heroButtonClassName,
-            "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+            skyPrimaryCtaClass,
           )}
         >
           <Link
@@ -84,7 +85,7 @@ export function IntegrationHeroContent({
             asChild
             size="lg"
             variant="nav"
-            className={cn(heroButtonClassName, "text-accent")}
+            className={cn(heroButtonClassName, skySecondaryCtaClass)}
           >
             <Link
               href={website}

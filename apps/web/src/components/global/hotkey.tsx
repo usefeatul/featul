@@ -4,11 +4,13 @@ import Link from "next/link";
 import React, { useCallback, useEffect } from "react";
 import { Button, type buttonVariants } from "@featul/ui/components/button";
 import type { VariantProps } from "class-variance-authority";
+import { cn } from "@featul/ui/lib/utils";
 import { APP_URL } from "@/config/auth";
 
 type HotkeyLinkProps = {
   hotkey?: string;
   className?: string;
+  kbdClassName?: string;
   children?: React.ReactNode;
   label?: string;
   variant?: VariantProps<typeof buttonVariants>["variant"];
@@ -17,6 +19,7 @@ type HotkeyLinkProps = {
 export function HotkeyLink({
   hotkey = "A",
   className,
+  kbdClassName,
   children,
   label,
   variant = "default",
@@ -72,7 +75,10 @@ export function HotkeyLink({
         </span>
         <kbd
           aria-hidden
-          className=" rounded-sm font-heading text-heading bg-white/20 px-1.5 py-0.5 text-xs"
+          className={cn(
+            "rounded-sm bg-white/20 px-1.5 py-0.5 font-heading text-xs text-heading",
+            kbdClassName,
+          )}
         >
           {hotkey.toUpperCase()}
         </kbd>

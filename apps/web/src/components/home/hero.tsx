@@ -73,15 +73,15 @@ export function Hero() {
       />
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0063d2] from-[64px] to-transparent"
+        className="absolute inset-0 bg-[linear-gradient(180deg,#0063d2_0%,rgba(0,99,210,0.68)_24%,rgba(53,143,243,0.32)_52%,transparent_76%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -bottom-8 z-[1] h-24 bg-background blur-2xl sm:h-32"
+        className="pointer-events-none absolute inset-x-0 -bottom-8 z-[1] h-28 bg-background blur-2xl sm:h-36"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-12 bg-gradient-to-b from-transparent to-background sm:h-16"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-16 bg-gradient-to-b from-transparent to-background sm:h-20"
       />
 
       <Container

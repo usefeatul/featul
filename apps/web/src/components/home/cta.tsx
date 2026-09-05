@@ -1,5 +1,10 @@
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
+import {
+  skyKbdClassName,
+  skyPrimaryCtaClass,
+  skySecondaryCtaClass,
+} from "@/components/shared/cta";
 import { Container } from "../global/container";
 import { HotkeyLink } from "../global/hotkey";
 import { LiveDemo } from "../global/demo";
@@ -31,10 +36,19 @@ export default function CTA() {
             <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <HotkeyLink
                 variant="nav"
-                className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                className={cn(
+                  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
+                  skyPrimaryCtaClass,
+                )}
+                kbdClassName={skyKbdClassName}
                 label="Start for free"
               />
-              <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto border-white/70 bg-white/95 text-accent shadow-sm hover:bg-white" />
+              <LiveDemo
+                className={cn(
+                  "h-10 min-h-[40px] w-full min-w-[40px] shadow-sm sm:w-auto",
+                  skySecondaryCtaClass,
+                )}
+              />
             </div>
             </div>
           </div>

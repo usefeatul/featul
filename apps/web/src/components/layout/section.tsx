@@ -35,7 +35,7 @@ export function SkySection({
       {/* Blend the sky's top edge into the solid navbar color above it */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#0063d2] from-[48px] to-transparent"
+        className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0063d2] from-[56px] via-[#0063d2]/40 to-transparent"
       />
       {/* Soft white fog into the page background */}
       <div

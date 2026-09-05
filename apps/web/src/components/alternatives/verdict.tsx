@@ -4,6 +4,12 @@ import type { Alternative } from "@/config/alternatives";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
 import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
+import {
+  skyKbdClassName,
+  skyPrimaryCtaClass,
+  skySecondaryCtaClass,
+} from "@/components/shared/cta";
+import { cn } from "@featul/ui/lib/utils";
 
 type VerdictProps = {
   alt: Alternative;
@@ -38,9 +44,18 @@ export default function Verdict({ alt }: VerdictProps) {
               <HotkeyLink
                 variant="nav"
                 label="Try Featul free"
-                className="h-10 min-h-[40px] w-full min-w-[40px] border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground sm:w-auto"
+                className={cn(
+                  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
+                  skyPrimaryCtaClass,
+                )}
+                kbdClassName={skyKbdClassName}
               />
-              <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] border-white/60 bg-white text-accent hover:bg-white/95 sm:w-auto" />
+              <LiveDemo
+                className={cn(
+                  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
+                  skySecondaryCtaClass,
+                )}
+              />
             </div>
 
             {alt.website ? (

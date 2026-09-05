@@ -21,8 +21,8 @@ export function ConversionHero() {
               Build better products with customer feedback.
               <span className="text-accent/80 mt-2 block text-[0.95em] leading-relaxed sm:mt-1">
                 Collect, prioritize, and ship what matters with{" "}
-                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-sky-200 bg-sky-50 px-1.5 py-0.5 align-baseline text-[0.9em] text-sky-700 shadow-sm ring-1 ring-sky-100 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
-                  <BoardIcon className="size-4 shrink-0 text-sky-600 sm:size-8" />
+                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-primary/30 bg-primary/12 px-1.5 py-0.5 align-baseline text-[0.9em] text-primary shadow-sm ring-1 ring-primary/20 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
+                  <BoardIcon className="size-4 shrink-0 text-primary sm:size-8" />
                   boards
                 </span>
                 ,{" "}

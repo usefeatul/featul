@@ -4,6 +4,14 @@ import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
 import { cn } from "@featul/ui/lib/utils";
 
+export const skyPrimaryCtaClass =
+  "border-white/85 bg-white text-foreground ring-white/70 ring-offset-[#0063d2] hover:bg-white/92 hover:text-foreground";
+
+export const skySecondaryCtaClass =
+  "border-white/70 bg-white/15 text-white ring-white/45 ring-offset-[#0063d2] hover:bg-white/25 hover:text-white";
+
+export const skyKbdClassName = "bg-primary/15 text-primary";
+
 type HeroCtaProps = {
   hotkeyLabel?: string;
   liveDemoClassName?: string;
@@ -27,14 +35,16 @@ export function HeroCta({
     >
       <HotkeyLink
         variant="nav"
-        className={cn(
-          heroButtonClassName,
-          "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
-        )}
+        className={cn(heroButtonClassName, skyPrimaryCtaClass)}
+        kbdClassName={skyKbdClassName}
         label={hotkeyLabel}
       />
       <LiveDemo
-        className={cn(heroButtonClassName, "text-accent", liveDemoClassName)}
+        className={cn(
+          heroButtonClassName,
+          skySecondaryCtaClass,
+          liveDemoClassName,
+        )}
       />
     </div>
   );
