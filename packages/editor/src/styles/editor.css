@@ -240,7 +240,7 @@ mark[style] > strong {
 .prose .mention {
 	color: var(--primary);
 	background-color: color-mix(in oklab, var(--primary) 8%, transparent);
-	border-radius: 0.25rem;
+	border-radius: 0.5rem;
 	padding: 0.125rem 0.25rem;
 	font-weight: 600;
 	text-decoration: none;

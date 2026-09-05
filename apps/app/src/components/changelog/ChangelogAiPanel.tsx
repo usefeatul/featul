@@ -531,8 +531,12 @@ export function ChangelogAiPanel({
                         current.filter((id) => id !== post.id),
                       )
                     }
-                    className="inline-flex max-w-[12rem] cursor-pointer items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-foreground hover:bg-muted/40"
+                    className="inline-flex max-w-[12rem] cursor-pointer items-center gap-1 rounded-lg border border-primary/20 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary hover:bg-primary/15"
                   >
+                    <StatusIcon
+                      status={post.roadmapStatus || undefined}
+                      className="size-3 shrink-0"
+                    />
                     <span className="truncate">@{post.title}</span>
                     <XMarkIcon className="size-2.5 shrink-0" />
                   </button>
