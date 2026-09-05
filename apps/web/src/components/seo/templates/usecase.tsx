@@ -159,32 +159,30 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
           <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
             <section className="py-16 md:py-24" data-component="UseCaseFaqs">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <div className="max-w-xl">
-                  <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
-                    Frequently asked questions
-                  </h2>
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="mt-8 w-full border-y border-border/60"
-                  >
-                    {faqs.map((faq, i) => (
-                      <AccordionItem
-                        key={i}
-                        id={`faq-${useCase.slug}-${i + 1}`}
-                        value={`faq-${useCase.slug}-${i + 1}`}
-                        className="px-0"
-                      >
-                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm leading-relaxed text-accent">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </div>
+                <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                  Frequently asked questions
+                </h2>
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="mt-8 w-full border-y border-border/60"
+                >
+                  {faqs.map((faq, i) => (
+                    <AccordionItem
+                      key={i}
+                      id={`faq-${useCase.slug}-${i + 1}`}
+                      value={`faq-${useCase.slug}-${i + 1}`}
+                      className="px-0"
+                    >
+                      <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm leading-relaxed text-accent">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </div>
             </section>
           </Container>

@@ -1,19 +1,113 @@
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import {
+  Activity,
+  AppWindow,
+  ArrowUp,
+  Blocks,
+  BookMarked,
+  BookOpen,
+  Code2,
+  CreditCard,
+  FileText,
+  Hash,
+  LayoutDashboard,
+  Lightbulb,
+  Mail,
+  Map,
+  MessageSquare,
+  Newspaper,
+  Rocket,
+  Scale,
+  ScrollText,
+  Shield,
+  Target,
+  Wrench,
+} from "lucide-react";
+
 import { Container } from "../global/container";
-import { footerNavigationConfig } from "@/config/footerNav";
-import { StatusButton } from "@/components/home/status";
+import {
+  footerNavigationConfig,
+  type FooterIconName,
+  type FooterNavItem,
+} from "@/config/footerNav";
+import { StatusIndicator } from "@/components/home/indicator";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
-import { TwitterIcon } from "@featul/ui/icons/twitter";
+
+const footerIcons: Record<FooterIconName, LucideIcon> = {
+  feedback: MessageSquare,
+  requests: Lightbulb,
+  voting: ArrowUp,
+  roadmap: Map,
+  changelog: Newspaper,
+  widget: AppWindow,
+  dashboard: LayoutDashboard,
+  slack: Hash,
+  docs: BookOpen,
+  definitions: BookMarked,
+  tools: Wrench,
+  "use-cases": Target,
+  "open-source": Code2,
+  start: Rocket,
+  pricing: CreditCard,
+  integrations: Blocks,
+  blog: FileText,
+  demo: MessageSquare,
+  contact: Mail,
+  status: Activity,
+  privacy: Shield,
+  terms: ScrollText,
+  gdpr: Scale,
+};
+
+function isExternalHref(item: FooterNavItem) {
+  return (
+    item.external === true ||
+    item.href.startsWith("http://") ||
+    item.href.startsWith("https://")
+  );
+}
+
+function FooterLink({ item }: { item: FooterNavItem }) {
+  const Icon = item.icon ? footerIcons[item.icon] : null;
+  const external = isExternalHref(item);
+
+  return (
+    <Link
+      href={item.href}
+      {...(external
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : undefined)}
+      className="group text-accent flex items-center gap-2.5 text-sm leading-5 transition-colors hover:text-primary"
+    >
+      {Icon ? (
+        item.icon === "status" ? (
+          <StatusIndicator className="size-2.5 shrink-0" srLabel="" />
+        ) : (
+          <Icon
+            aria-hidden
+            className="size-4 shrink-0 text-accent/70 transition-colors group-hover:text-primary"
+            strokeWidth={1.75}
+          />
+        )
+      ) : null}
+      <span>{item.name}</span>
+    </Link>
+  );
+}
 
 export default function FooterSection() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="relative overflow-hidden bg-background">
-      <Container maxWidth="6xl" className="relative z-30 px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
+      <Container
+        maxWidth="6xl"
+        className="relative z-30 px-4 pb-10 pt-16 sm:px-10 md:pb-12 md:pt-20 lg:px-12 lg:pt-24 xl:px-14"
+      >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="grid items-start gap-12 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+          <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,3.1fr)] lg:items-start lg:gap-x-16 xl:gap-x-20">
             <div className="max-w-sm">
               <Link
                 href="/"
@@ -21,65 +115,60 @@ export default function FooterSection() {
                 className="inline-flex items-center gap-2 text-foreground hover:text-primary"
               >
                 <FeatulLogoIcon />
-                <span className="font-heading text-sm font-medium">Featul</span>
+                <span className="font-heading text-base font-semibold tracking-tight">
+                  Featul
+                </span>
               </Link>
               <p className="text-accent mt-4 text-sm leading-6">
                 Customer feedback, roadmaps, and changelogs in one simple
                 workspace. Built and hosted in the EU.
               </p>
-            </div>
-
-            <nav aria-label="Footer">
-              <div className="grid grid-cols-2 gap-x-10 gap-y-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-10">
-                {footerNavigationConfig.groups.map((group, index) => (
-                  <div key={index} className="text-sm">
-                    <span className="font-heading text-foreground block font-medium">
-                      {group.title}
-                    </span>
-                    <div className="mt-3 space-y-2.5">
-                      {group.items.map((item, idx) => (
-                        <Link
-                          key={idx}
-                          href={item.href}
-                          className="text-accent block leading-5 transition-colors hover:text-primary"
-                        >
-                          <span>{item.name}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
+              <div className="mt-5 flex items-center gap-4">
+                {footerNavigationConfig.socials.map((social) => (
+                  <Link
+                    key={social.name}
+                    href={social.href}
+                    {...(social.href.startsWith("http")
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : undefined)}
+                    aria-label={social.name}
+                    className="text-accent transition-colors hover:text-primary"
+                  >
+                    {social.icon === "github" ? (
+                      <GitHubIcon size={18} />
+                    ) : (
+                      <Mail className="size-[18px]" strokeWidth={1.75} />
+                    )}
+                  </Link>
                 ))}
               </div>
+            </div>
+
+            <nav
+              aria-label="Footer"
+              className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:gap-x-12 xl:gap-x-16"
+            >
+              {footerNavigationConfig.columns.map((column, columnIndex) => (
+                <div key={columnIndex} className="flex flex-col gap-12">
+                  {column.groups.map((group) => (
+                    <div key={group.title} className="text-sm">
+                      <span className="font-heading text-foreground block text-xs font-semibold uppercase tracking-wider">
+                        {group.title}
+                      </span>
+                      <div className="mt-5 space-y-3">
+                        {group.items.map((item) => (
+                          <FooterLink key={`${group.title}-${item.href}`} item={item} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </nav>
           </div>
 
-          <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-16 border-t border-border/60 pt-6">
             <p className="text-accent text-sm">© {year} Featul</p>
-
-            <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="text-accent transition-colors hover:text-primary"
-              >
-                <GitHubIcon size={18} />
-              </Link>
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="text-accent transition-colors hover:text-primary"
-              >
-                <TwitterIcon size={14} />
-              </Link>
-              <StatusButton
-                label="Operational"
-                className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
-              />
-            </div>
           </div>
         </div>
       </Container>
