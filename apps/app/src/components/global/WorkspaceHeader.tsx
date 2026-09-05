@@ -16,6 +16,7 @@ import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificat
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
+import { cn } from "@featul/ui/lib/utils";
 
 /** Title from the last path segment via WORKSPACE_TITLES, then SECTIONS. */
 function resolveTitle(segment: string): string {
@@ -127,7 +128,12 @@ export default function WorkspaceHeader() {
             size="xs"
             onClick={action.onClick}
             disabled={action.disabled}
-            className={`${toolbarItemClass} gap-2 px-3`}
+            aria-pressed={action.active || undefined}
+            className={cn(
+              toolbarItemClass,
+              "gap-2 px-3",
+              action.active && "bg-muted/40 text-foreground",
+            )}
           >
             {action.label}
             {action.icon}

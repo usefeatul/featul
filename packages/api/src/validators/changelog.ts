@@ -33,11 +33,17 @@ export const updateEntrySchema = z.object({
 export const aiToneSchema = z.enum(["user-friendly", "technical", "brief"]);
 export const aiDetailLevelSchema = z.enum(["standard", "detailed"]);
 
+export const aiChatMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1).max(4000),
+});
+
 export const aiAssistSchema = z
   .object({
     slug: bySlugSchema.shape.slug,
     action: z.enum([
       "prompt",
+      "chat",
       "format",
       "improve",
       "expand",
@@ -50,12 +56,13 @@ export const aiAssistSchema = z
     sourcePostIds: z.array(z.string().min(1)).min(1).max(20).optional(),
     tone: aiToneSchema.optional(),
     detailLevel: aiDetailLevelSchema.optional(),
+    messages: z.array(aiChatMessageSchema).max(20).optional(),
   })
   .superRefine((val, ctx) => {
-    if (val.action === "prompt" && !val.prompt) {
+    if ((val.action === "prompt" || val.action === "chat") && !val.prompt) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Prompt is required for action=prompt",
+        message: "Prompt is required for this action",
         path: ["prompt"],
       });
     }
@@ -70,6 +77,7 @@ export const aiAssistSchema = z
     }
     if (
       val.action !== "prompt" &&
+      val.action !== "chat" &&
       val.action !== "generateFromPosts" &&
       !val.contentMarkdown
     ) {

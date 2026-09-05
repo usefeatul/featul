@@ -1,10 +1,16 @@
 export type AiAction =
   | "prompt"
+  | "chat"
   | "format"
   | "improve"
   | "expand"
   | "summary"
   | "generateFromPosts";
+
+export type AiChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
 
 export type AiTone = "user-friendly" | "technical" | "brief";
 export type AiDetailLevel = "standard" | "detailed";
@@ -37,5 +43,5 @@ export type ChangelogAiStreamEvent =
 
 export type StructuredGenerationAction = Extract<
   AiAction,
-  "prompt" | "generateFromPosts"
+  "prompt" | "generateFromPosts" | "chat"
 >;

@@ -4,20 +4,16 @@ import type { SuggestionItem } from "@featul/editor";
 import { AiIcon } from "@featul/ui/icons/ai";
 import {
   Sparkles,
-  FileText,
   Maximize2,
   Wand2,
   AlignLeft,
 } from "lucide-react";
 
-import type { AiPanelTab, AiQuickAction } from "@/features/changelog/types";
-
 type SlashAiHandlers = {
-  onOpenPanel: (tab: AiPanelTab) => void;
-  onQuickAction: (action: AiQuickAction) => void;
+  onOpenPanel: () => void;
+  onStartPrompt: (prompt: string, attachFeedback?: boolean) => void;
 };
 
-/** Clear the slash range, then run the AI panel/action callback. */
 function runSlashCommand(
   editor: Editor,
   range: Range,
@@ -27,67 +23,66 @@ function runSlashCommand(
   callback();
 }
 
-/** Slash menu items that open the changelog AI panel or a refine action. */
 export function getChangelogAiSlashSuggestions(
   handlers: SlashAiHandlers,
 ): SuggestionItem[] {
   return [
     {
       title: "AI Assistant",
-      description: "Open the AI writing sidebar.",
-      searchTerms: ["ai", "assistant", "write", "help"],
+      description: "Open the changelog chat.",
+      searchTerms: ["ai", "assistant", "write", "help", "chat"],
       icon: AiIcon,
       command: ({ editor, range }) =>
-        runSlashCommand(editor, range, () => handlers.onOpenPanel("shipped")),
+        runSlashCommand(editor, range, () => handlers.onOpenPanel()),
     },
     {
-      title: "Generate from feedback",
-      description: "Draft a changelog from shipped roadmap items.",
+      title: "Draft from feedback",
+      description: "Chat a changelog from shipped roadmap items.",
       searchTerms: ["ai", "generate", "feedback", "shipped", "roadmap"],
       icon: Sparkles,
       command: ({ editor, range }) =>
-        runSlashCommand(editor, range, () => handlers.onOpenPanel("shipped")),
+        runSlashCommand(editor, range, () =>
+          handlers.onStartPrompt(
+            "Write a changelog from the attached shipped feedback.",
+            true,
+          ),
+        ),
     },
     {
       title: "Expand detail",
-      description: "Add depth and examples to the current entry.",
+      description: "Ask AI to add depth and examples.",
       searchTerms: ["ai", "expand", "detail", "longer"],
       icon: Maximize2,
       command: ({ editor, range }) =>
-        runSlashCommand(editor, range, () => {
-          handlers.onOpenPanel("refine");
-          handlers.onQuickAction("expand");
-        }),
+        runSlashCommand(editor, range, () =>
+          handlers.onStartPrompt(
+            "Expand this changelog with more useful detail, examples, and user benefits.",
+          ),
+        ),
     },
     {
       title: "Improve writing",
-      description: "Polish clarity and flow.",
+      description: "Ask AI to polish clarity and flow.",
       searchTerms: ["ai", "improve", "polish", "rewrite"],
       icon: Wand2,
       command: ({ editor, range }) =>
-        runSlashCommand(editor, range, () => {
-          handlers.onOpenPanel("refine");
-          handlers.onQuickAction("improve");
-        }),
+        runSlashCommand(editor, range, () =>
+          handlers.onStartPrompt(
+            "Improve the writing: clearer, tighter, and more user-friendly.",
+          ),
+        ),
     },
     {
       title: "Fix formatting",
-      description: "Clean up headings, lists, and structure.",
+      description: "Ask AI to clean up headings and lists.",
       searchTerms: ["ai", "format", "markdown", "structure"],
       icon: AlignLeft,
       command: ({ editor, range }) =>
-        runSlashCommand(editor, range, () => {
-          handlers.onOpenPanel("refine");
-          handlers.onQuickAction("format");
-        }),
-    },
-    {
-      title: "Custom AI prompt",
-      description: "Describe exactly what you want changed.",
-      searchTerms: ["ai", "prompt", "custom", "ask"],
-      icon: FileText,
-      command: ({ editor, range }) =>
-        runSlashCommand(editor, range, () => handlers.onOpenPanel("refine")),
+        runSlashCommand(editor, range, () =>
+          handlers.onStartPrompt(
+            "Fix formatting and structure. Keep the meaning the same.",
+          ),
+        ),
     },
   ];
 }

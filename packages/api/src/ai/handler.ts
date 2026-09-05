@@ -16,7 +16,10 @@ import {
   AI_TEMPERATURE_BY_ACTION,
   getMaxTokensByAction,
 } from "./constants";
-import { buildStreamRefineUserPrompt } from "./prompts";
+import {
+  buildChatRefineOpenRouterMessages,
+  buildStreamRefineUserPrompt,
+} from "./prompts";
 import { sanitizeChangelogAiError } from "./security";
 import { createSseStreamHeaders, encodeChangelogAiSseEvent } from "./sse";
 import {
@@ -61,7 +64,11 @@ export async function createChangelogAiStreamResponse(req: Request) {
   }
 
   const model = resolveOpenRouterStreamModel(parsedInput.action);
-  const structured = usesStructuredChangelogStream(parsedInput.action);
+  const hasExistingContent = Boolean(parsedInput.contentMarkdown?.trim());
+  const structured = usesStructuredChangelogStream(
+    parsedInput.action,
+    hasExistingContent,
+  );
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -73,9 +80,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
       try {
         send({ type: "status", phase: "preparing" });
 
-        const needsSourcePosts =
-          parsedInput.action === "generateFromPosts" &&
-          Boolean(parsedInput.sourcePostIds?.length);
+        const needsSourcePosts = Boolean(parsedInput.sourcePostIds?.length);
 
         const [sourcePosts, workspaceName] = await Promise.all([
           needsSourcePosts
@@ -91,7 +96,10 @@ export async function createChangelogAiStreamResponse(req: Request) {
           }),
         ]);
 
-        if (needsSourcePosts && (!sourcePosts || sourcePosts.length === 0)) {
+        if (
+          parsedInput.action === "generateFromPosts" &&
+          (!sourcePosts || sourcePosts.length === 0)
+        ) {
           send({
             type: "error",
             message: "No valid shipped feedback items were found for generation",
@@ -103,9 +111,16 @@ export async function createChangelogAiStreamResponse(req: Request) {
         send({ type: "status", phase: "generating" });
 
         if (structured) {
+          const structuredAction: StructuredGenerationAction =
+            parsedInput.action === "chat"
+              ? sourcePosts?.length
+                ? "generateFromPosts"
+                : "prompt"
+              : (parsedInput.action as StructuredGenerationAction);
+
           const result = await streamStructuredChangelog({
             model,
-            action: parsedInput.action as StructuredGenerationAction,
+            action: structuredAction,
             temperature: AI_TEMPERATURE_BY_ACTION[parsedInput.action],
             maxBodyTokens: getMaxTokensByAction(
               parsedInput.action,
@@ -134,31 +149,45 @@ export async function createChangelogAiStreamResponse(req: Request) {
           return;
         }
 
-        const userPrompt = buildStreamRefineUserPrompt({
-          action: parsedInput.action,
-          prompt: parsedInput.prompt,
-          title: parsedInput.title,
-          contentMarkdown: parsedInput.contentMarkdown,
-          tone: parsedInput.tone,
-          detailLevel: parsedInput.detailLevel,
-          workspaceName,
-          sourcePosts,
-        });
-
-        const systemPrompt =
-          parsedInput.action === "summary"
-            ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
-            : AI_STREAM_REFINE_SYSTEM_PROMPT;
+        const chatMessages =
+          parsedInput.action === "chat"
+            ? buildChatRefineOpenRouterMessages({
+                prompt: parsedInput.prompt ?? "",
+                title: parsedInput.title,
+                contentMarkdown: parsedInput.contentMarkdown,
+                workspaceName,
+                sourcePosts,
+                history: parsedInput.messages,
+              })
+            : [
+                {
+                  role: "system" as const,
+                  content:
+                    parsedInput.action === "summary"
+                      ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
+                      : AI_STREAM_REFINE_SYSTEM_PROMPT,
+                },
+                {
+                  role: "user" as const,
+                  content: buildStreamRefineUserPrompt({
+                    action: parsedInput.action,
+                    prompt: parsedInput.prompt,
+                    title: parsedInput.title,
+                    contentMarkdown: parsedInput.contentMarkdown,
+                    tone: parsedInput.tone,
+                    detailLevel: parsedInput.detailLevel,
+                    workspaceName,
+                    sourcePosts,
+                  }),
+                },
+              ];
 
         let accumulated = "";
 
         await streamOpenRouterChat(
           {
             model,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt },
-            ],
+            messages: chatMessages,
             temperature: AI_TEMPERATURE_BY_ACTION[parsedInput.action as AiAction],
             max_tokens: getMaxTokensByAction(
               parsedInput.action,

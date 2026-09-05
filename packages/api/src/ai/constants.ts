@@ -55,6 +55,7 @@ export const TONE_GUIDANCE: Record<AiTone, string> = {
 
 export const AI_TEMPERATURE_BY_ACTION: Record<AiAction, number> = {
   prompt: 0.55,
+  chat: 0.5,
   generateFromPosts: 0.55,
   format: 0.2,
   improve: 0.35,
@@ -68,6 +69,7 @@ export function getMaxTokensByAction(
 ): number {
   const limits: Partial<Record<AiAction, number>> = {
     prompt: 2200,
+    chat: 2800,
     generateFromPosts: detailLevel === "standard" ? 1800 : 3200,
     improve: 1600,
     expand: 2800,

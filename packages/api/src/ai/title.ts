@@ -1,4 +1,8 @@
-export function usesStructuredChangelogStream(action: string) {
+export function usesStructuredChangelogStream(
+  action: string,
+  hasExistingContent = false,
+) {
+  if (action === "chat") return !hasExistingContent;
   return action === "generateFromPosts" || action === "prompt";
 }
 

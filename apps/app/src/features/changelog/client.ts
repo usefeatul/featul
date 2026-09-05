@@ -1,5 +1,6 @@
 import type {
   AiAction,
+  AiChatMessage,
   AiDetailLevel,
   AiTone,
   ChangelogAiStreamEvent,
@@ -14,6 +15,7 @@ export type ChangelogAiStreamInput = {
   sourcePostIds?: string[];
   tone?: AiTone;
   detailLevel?: AiDetailLevel;
+  messages?: AiChatMessage[];
 };
 
 type StreamHandlers = {

@@ -1,4 +1,5 @@
 import {
+  AI_STREAM_REFINE_SYSTEM_PROMPT,
   CHANGELOG_BODY_STRUCTURE,
   DETAIL_GUIDANCE,
   TONE_GUIDANCE,
@@ -6,6 +7,7 @@ import {
 import { formatSourcePostsBlock } from "./sources";
 import type {
   AiAction,
+  AiChatMessage,
   AiDetailLevel,
   AiSourcePost,
   AiTone,
@@ -171,6 +173,43 @@ export function buildBodyStreamPrompt(input: {
     .join("\n\n");
 }
 
+export function buildChatRefineOpenRouterMessages(input: {
+  prompt: string;
+  title?: string;
+  contentMarkdown?: string;
+  workspaceName?: string;
+  sourcePosts?: AiSourcePost[];
+  history?: AiChatMessage[];
+}) {
+  const context = [
+    "Apply the user's latest request to this changelog entry.",
+    "Return ONLY the full updated GitHub-flavored Markdown body.",
+    "Do not include a chat reply, TITLE label, or commentary.",
+    input.workspaceName ? `Product: ${input.workspaceName}` : "",
+    input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
+    input.contentMarkdown?.trim()
+      ? `Current entry:\n${input.contentMarkdown.trim()}`
+      : "The entry is currently empty.",
+    input.sourcePosts?.length
+      ? `Attached feedback:\n${formatSourcePostsBlock(input.sourcePosts)}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const history = (input.history ?? []).slice(-12).map((message) => ({
+    role: message.role,
+    content: message.content.slice(0, 1500),
+  }));
+
+  return [
+    { role: "system" as const, content: AI_STREAM_REFINE_SYSTEM_PROMPT },
+    { role: "user" as const, content: context },
+    ...history,
+    { role: "user" as const, content: input.prompt.trim() },
+  ];
+}
+
 /** Legacy JSON-oriented prompts used by the deprecated aiAssist RPC. */
 export function buildJsonAiUserPrompt(input: PromptInput) {
   const { titleLine, contentBlock, workspaceLine, sourcePostsBlock } =
@@ -180,6 +219,7 @@ export function buildJsonAiUserPrompt(input: PromptInput) {
 
   switch (input.action) {
     case "prompt":
+    case "chat":
       return [
         "Write a polished changelog entry based on the prompt below.",
         "Return JSON with title, contentMarkdown, and summary keys.",

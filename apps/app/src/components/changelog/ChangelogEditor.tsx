@@ -16,7 +16,6 @@ import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import { fetchWorkspaceMembers } from "@/lib/team/client";
 import ChangelogAiPanel from "./ChangelogAiPanel";
-import type { AiPanelTab, AiQuickAction } from "@/features/changelog/types";
 import { getChangelogAiSlashSuggestions } from "./ai/slash";
 import {
   settingsCardInnerClass,
@@ -52,9 +51,11 @@ export function ChangelogEditor({
     const router = useRouter();
     const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
-    const [isAiOpen, setIsAiOpen] = useState(false);
-    const [aiPanelTab, setAiPanelTab] = useState<AiPanelTab>("shipped");
-    const [autoRunAction, setAutoRunAction] = useState<AiQuickAction | null>(null);
+    const [isAiOpen, setIsAiOpen] = useState(mode === "create");
+    const [pendingPrompt, setPendingPrompt] = useState<{
+        text: string;
+        attachFeedback?: boolean;
+    } | null>(null);
 
     const [isAiGenerating, setIsAiGenerating] = useState(false);
 
@@ -81,8 +82,7 @@ export function ChangelogEditor({
         autoSaveSuspended: isAiGenerating,
     });
 
-    const openAiPanel = useCallback((tab: AiPanelTab) => {
-        setAiPanelTab(tab);
+    const openAiPanel = useCallback(() => {
         setIsAiOpen(true);
     }, []);
 
@@ -94,9 +94,9 @@ export function ChangelogEditor({
 
             return getChangelogAiSlashSuggestions({
                 onOpenPanel: openAiPanel,
-                onQuickAction: (action) => {
-                    setAutoRunAction(action);
-                    openAiPanel("refine");
+                onStartPrompt: (text, attachFeedback) => {
+                    setPendingPrompt({ text, attachFeedback });
+                    openAiPanel();
                 },
             });
         },
@@ -151,9 +151,9 @@ export function ChangelogEditor({
                           type: "button" as const,
                           variant: "plain" as const,
                           icon: <AiIcon className="size-4" />,
+                          active: isAiOpen,
                           onClick: () => {
-                              setAiPanelTab("shipped");
-                              setIsAiOpen(true);
+                              setIsAiOpen((open) => !open);
                           },
                       },
                   ]
@@ -188,12 +188,17 @@ export function ChangelogEditor({
         ]);
 
         return () => clearActions();
-    }, [setActions, clearActions, handleSave, isSaving, isDraft, isDirty, router, workspaceSlug, setIsDraft, setIsDirty]);
+    }, [setActions, clearActions, handleSave, isSaving, isDraft, isDirty, isAiOpen, router, workspaceSlug, setIsDraft, setIsDirty]);
 
     return (
-        <div className="pb-10">
-            <article className={cn(settingsCardShellClass, "w-full")}>
-                <div className={cn(settingsCardInnerClass, "mb-2 w-full overflow-hidden p-0")}>
+        <div className="relative">
+            <article
+                className={cn(
+                    settingsCardShellClass,
+                    "min-h-[calc(100vh-6.125rem)] w-full min-w-0 max-lg:min-h-[calc(100dvh-12.5rem)]",
+                )}
+            >
+                <div className={cn(settingsCardInnerClass, "mb-2 w-full shrink-0 overflow-hidden p-0")}>
                     <CoverImageUploader
                         variant="image"
                         workspaceSlug={workspaceSlug}
@@ -205,8 +210,8 @@ export function ChangelogEditor({
                     />
                 </div>
 
-                <div className={cn(settingsCardInnerClass, "min-h-[400px] w-full p-0")}>
-                    <header className="flex justify-center px-2 py-2">
+                <div className={cn(settingsCardInnerClass, "w-full flex-1 p-0")}>
+                    <header className="flex shrink-0 justify-center px-2 py-2">
                         <Toolbar size="sm" className="w-fit max-w-full">
                             <TagSelector
                                 availableTags={availableTags}
@@ -228,7 +233,7 @@ export function ChangelogEditor({
                         </Toolbar>
                     </header>
 
-                    <div className="px-4 py-3">
+                    <div className="flex-1 px-4 py-3 pb-28">
                         <TextareaAutosize
                             value={title}
                             onChange={(e) => {
@@ -240,12 +245,12 @@ export function ChangelogEditor({
                             minRows={1}
                             autoFocus={mode === "create"}
                         />
-                        <div className="[&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
+                        <div className="min-h-[calc(100%-4rem)] [&_.ProseMirror]:border-none [&_.ProseMirror]:outline-none [&_.ProseMirror:focus]:outline-none [&_.ProseMirror:focus]:ring-0">
                             <FeedEditor
                                 ref={editorRef}
                                 initialContent={initialData?.content}
                                 placeholder="Start typing or type /ai for AI commands"
-                                className="min-h-[400px]"
+                                className="min-h-full"
                                 mentionSuggestions={mentionSuggestions}
                                 onImageUpload={handleImageUpload}
                                 additionalSlashSuggestions={additionalSlashSuggestions}
@@ -266,9 +271,8 @@ export function ChangelogEditor({
                     setTitle={setTitle}
                     setIsDirty={setIsDirty}
                     onGeneratingChange={setIsAiGenerating}
-                    initialTab={aiPanelTab}
-                    autoRunAction={autoRunAction}
-                    onAutoRunActionHandled={() => setAutoRunAction(null)}
+                    pendingPrompt={pendingPrompt}
+                    onPendingPromptHandled={() => setPendingPrompt(null)}
                 />
             ) : null}
         </div>

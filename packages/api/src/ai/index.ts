@@ -1,5 +1,6 @@
 export type {
   AiAction,
+  AiChatMessage,
   AiDetailLevel,
   AiSourcePost,
   AiTone,
@@ -14,6 +15,7 @@ export {
 
 export {
   buildBodyStreamPrompt,
+  buildChatRefineOpenRouterMessages,
   buildJsonAiUserPrompt,
   buildStreamRefineUserPrompt,
   buildTitleStreamPrompt,

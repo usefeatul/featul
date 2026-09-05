@@ -109,7 +109,7 @@ export function resolveOpenRouterStreamModel(action: string) {
     return configuredModel
   }
 
-  if (action === "generateFromPosts" || action === "prompt") {
+  if (action === "generateFromPosts" || action === "prompt" || action === "chat") {
     return "google/gemini-2.0-flash-001"
   }
 

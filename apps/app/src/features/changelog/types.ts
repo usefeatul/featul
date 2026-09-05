@@ -1,9 +1,12 @@
 export type {
   AiAction,
+  AiChatMessage,
   AiDetailLevel,
   AiTone,
 } from "@featul/api/ai/types";
 
-export type AiPanelTab = "shipped" | "refine";
-
-export type AiQuickAction = "format" | "improve" | "expand";
+export type AiChatStarter = {
+  label: string;
+  prompt: string;
+  attachFeedback?: boolean;
+};
