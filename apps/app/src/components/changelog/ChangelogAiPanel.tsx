@@ -756,7 +756,7 @@ export function ChangelogAiPanel({
             <div
               className={cn(
                 overlayDialogInnerClass,
-                "max-h-[min(28rem,50vh)] space-y-2 overflow-y-auto p-3",
+                "max-h-[min(28rem,50vh)] space-y-2 overflow-y-auto p-3 scrollbar-hide",
               )}
             >
               {messages.map((message) => (
@@ -840,7 +840,7 @@ export function ChangelogAiPanel({
                     No posts match “{mention.query}”.
                   </p>
                 ) : (
-                  <PopoverList className="flex w-full max-h-56 flex-col overflow-y-auto">
+                  <PopoverList className="flex w-full max-h-56 flex-col overflow-y-auto scrollbar-hide">
                     {mentionItems[0]?.kind === "week" ? (
                       <PopoverListItem
                         type="button"
