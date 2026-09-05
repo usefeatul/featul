@@ -3,6 +3,7 @@ import { Prose } from "@/components/blog/prose";
 import { generateToc } from "@/lib/toc";
 import { TableOfContents } from "@/components/blog/toc";
 import { PromoCard } from "@/components/blog/promo";
+import { PreferredSourceCard } from "@/components/preferred-source/card";
 import {
   OverlayCard,
   OverlayCardPanel,
@@ -142,6 +143,7 @@ export function SinglePost({ post, showHeader = true }: SinglePostProps) {
           </div>
 
           <Prose html={html ?? undefined} />
+          <PreferredSourceCard />
         </div>
 
         {/* Right column (ToC + Promo) aligned to top */}

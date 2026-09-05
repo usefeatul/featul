@@ -29,6 +29,7 @@ import { IntegrationIcon } from "@featul/ui/icons/integration";
 import { ArticleIcon } from "@featul/ui/icons/article";
 import { EnvelopeIcon } from "@featul/ui/icons/envelope";
 import { ShieldStrokeIcon } from "@featul/ui/icons/shield-stroke";
+import { PreferredSourceButton } from "@/components/preferred-source/button";
 
 type FeatulIcon = ComponentType<{
   className?: string;
@@ -146,6 +147,9 @@ export default function FooterSection() {
                   label="Operational"
                   className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
                 />
+              </div>
+              <div className="mt-4">
+                <PreferredSourceButton />
               </div>
             </div>
 
