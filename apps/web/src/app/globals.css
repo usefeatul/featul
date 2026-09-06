@@ -13,10 +13,6 @@ html {
   }
 }
 
-html[data-scrolled] [data-nav-bar] {
-  background-color: var(--background);
-  border-bottom-color: color-mix(in oklab, var(--border) 60%, transparent);
-}
 html[data-scrolled] [data-component="Navbar"] [data-nav-brand],
 html[data-scrolled] [data-component="Navbar"] [data-nav-brand] * {
   color: var(--foreground);

@@ -63,13 +63,16 @@ export default function Navbar() {
         )}
         data-component="Navbar"
       >
+        {scrolled ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 border-b border-border/60"
+          />
+        ) : null}
         <Container maxWidth="6xl" className="relative px-4 sm:px-10 lg:px-12 xl:px-14">
           <div
             data-nav-bar
-            className={cn(
-              "mx-auto flex h-16 w-full max-w-6xl items-center justify-between bg-background px-1 sm:px-6",
-              scrolled && "border-b border-border/60",
-            )}
+            className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between bg-background px-1 sm:px-6"
           >
             <Link
               href="/"
