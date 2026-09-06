@@ -2,12 +2,39 @@ import { cn } from "@featul/ui/lib/utils";
 
 const STRIP_WIDTH = "w-[clamp(3.5rem,8vw,7rem)]";
 
-const edgeStripClassName = cn(
-  STRIP_WIDTH,
-  "h-full",
-  "bg-[color-mix(in_oklab,var(--muted)_35%,var(--background))]",
-  "[background-image:repeating-linear-gradient(to_bottom,transparent_0,transparent_10px,color-mix(in_oklab,var(--border)_55%,transparent)_10px,color-mix(in_oklab,var(--border)_55%,transparent)_11px)]",
-);
+/** px — 1px line repeated every 12px */
+const LINE_PERIOD = 12;
+
+type EdgeStripProps = {
+  side: "left" | "right";
+};
+
+function EdgeStrip({ side }: EdgeStripProps) {
+  return (
+    <div
+      className={cn(
+        STRIP_WIDTH,
+        "relative h-full bg-[color-mix(in_oklab,var(--muted)_35%,var(--background))]",
+      )}
+    >
+      <svg
+        aria-hidden
+        className="absolute inset-0 size-full"
+        preserveAspectRatio="none"
+        shapeRendering="crispEdges"
+      >
+        <rect width="100%" height="100%" fill="url(#featul-marketing-edge-lines)" />
+      </svg>
+      <div
+        aria-hidden
+        className={cn(
+          "absolute inset-y-0 w-px bg-border",
+          side === "left" ? "right-0" : "left-0",
+        )}
+      />
+    </div>
+  );
+}
 
 type MarketingEdgePatternProps = {
   className?: string;
@@ -16,6 +43,26 @@ type MarketingEdgePatternProps = {
 export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
   return (
     <>
+      <svg aria-hidden className="absolute h-0 w-0" focusable="false">
+        <defs>
+          <pattern
+            id="featul-marketing-edge-lines"
+            width="1"
+            height={LINE_PERIOD}
+            patternUnits="userSpaceOnUse"
+          >
+            <rect
+              x="0"
+              y={LINE_PERIOD - 1}
+              width="1"
+              height="1"
+              fill="var(--border)"
+              opacity="0.55"
+            />
+          </pattern>
+        </defs>
+      </svg>
+
       <div
         aria-hidden
         className={cn(
@@ -24,7 +71,7 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
         )}
         data-component="MarketingEdgePatternLeft"
       >
-        <div className={cn(edgeStripClassName, "border-r border-border")} />
+        <EdgeStrip side="left" />
       </div>
       <div
         aria-hidden
@@ -34,7 +81,7 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
         )}
         data-component="MarketingEdgePatternRight"
       >
-        <div className={cn(edgeStripClassName, "border-l border-border")} />
+        <EdgeStrip side="right" />
       </div>
     </>
   );
