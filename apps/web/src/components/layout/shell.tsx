@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react"
 import { Container } from "@/components/global/container"
-import { SkySection } from "@/components/layout/section"
 import { cn } from "@featul/ui/lib/utils"
 
 type SkyPageShellProps = {
@@ -34,14 +33,11 @@ export function SkyPageShell({
       className="flex min-h-full flex-1 flex-col overflow-x-clip bg-background"
       data-component={dataComponent}
     >
-      {/* Decorative sky only — copy starts below the blur */}
-      <SkySection data-component={dataComponent ? `${dataComponent}Sky` : undefined} />
-
       <div className="relative mx-auto w-full max-w-6xl flex-1">
         <Container
           maxWidth="6xl"
           className={cn(
-            "relative z-10 px-4 pt-10 sm:px-10 sm:pt-14 lg:px-12 xl:px-14",
+            "relative z-10 px-4 pt-24 sm:px-10 sm:pt-28 lg:px-12 xl:px-14",
             below ? "pb-0" : "pb-10 sm:pb-12",
           )}
         >
@@ -50,7 +46,6 @@ export function SkyPageShell({
               <header
                 className={cn(
                   "mb-8 max-w-3xl text-left",
-                  // Allow callers to override alignment (e.g. pricing centers the header).
                   headerClassName,
                 )}
               >

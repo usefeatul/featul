@@ -6,7 +6,10 @@ import { HeroHighlights } from "@/components/shared/highlights";
 import { Button } from "@featul/ui/components/button";
 import { LinkIcon } from "@featul/ui/icons/link";
 import { cn } from "@featul/ui/lib/utils";
-import { skyPrimaryCtaClass, skySecondaryCtaClass } from "@/components/shared/cta";
+import {
+  heroPrimaryCtaClass,
+  heroSecondaryCtaClass,
+} from "@/components/shared/cta";
 
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
 
@@ -28,7 +31,7 @@ export function IntegrationHeroContent({
 }) {
   return (
     <div className="text-left" data-component="IntegrationHeroContent">
-      <h1 className="max-w-3xl font-heading font-semibold tracking-tight text-white">
+      <h1 className="max-w-3xl font-heading font-semibold tracking-tight text-foreground">
         <span className="block text-[2rem] leading-[1.15] text-balance sm:text-5xl sm:leading-tight md:text-6xl">
           Featul + {name}
         </span>
@@ -39,24 +42,24 @@ export function IntegrationHeroContent({
               href={website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-white p-2 ring-1 ring-white/70 transition-opacity hover:opacity-90 sm:size-16 sm:rounded-2xl sm:p-2.5 md:size-[4.5rem]"
+              className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-muted p-2 ring-1 ring-border transition-opacity hover:opacity-90 sm:size-16 sm:rounded-2xl sm:p-2.5 md:size-[4.5rem]"
               aria-label={`Visit ${name} website`}
             >
               <Icon className="size-8 text-foreground sm:size-9 md:size-10" />
             </Link>
           ) : (
-            <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-white p-2 ring-1 ring-white/70 sm:size-16 sm:rounded-2xl sm:p-2.5 md:size-[4.5rem]">
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-muted p-2 ring-1 ring-border sm:size-16 sm:rounded-2xl sm:p-2.5 md:size-[4.5rem]">
               <Icon className="size-8 text-foreground sm:size-9 md:size-10" />
             </span>
           )}
 
-          <span className="inline-flex h-14 items-center rounded-xl bg-white/20 px-3 text-2xl leading-none text-white backdrop-blur-sm sm:h-16 sm:rounded-2xl sm:px-4 sm:text-3xl md:h-[4.5rem] md:text-4xl">
+          <span className="inline-flex h-14 items-center rounded-xl bg-primary/10 px-3 text-2xl leading-none text-primary sm:h-16 sm:rounded-2xl sm:px-4 sm:text-3xl md:h-[4.5rem] md:text-4xl">
             {name} integration
           </span>
         </span>
       </h1>
 
-      <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
+      <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-accent text-balance sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
         {description ??
           `Connect Featul with ${name} to keep feedback, roadmaps, and updates in sync.`}
       </p>
@@ -66,10 +69,7 @@ export function IntegrationHeroContent({
           asChild
           size="lg"
           variant="nav"
-          className={cn(
-            heroButtonClassName,
-            skyPrimaryCtaClass,
-          )}
+          className={cn(heroButtonClassName, heroPrimaryCtaClass)}
         >
           <Link
             href={AUTH_SIGN_IN_URL}
@@ -85,7 +85,7 @@ export function IntegrationHeroContent({
             asChild
             size="lg"
             variant="nav"
-            className={cn(heroButtonClassName, skySecondaryCtaClass)}
+            className={cn(heroButtonClassName, heroSecondaryCtaClass)}
           >
             <Link
               href={website}

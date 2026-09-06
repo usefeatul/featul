@@ -16,9 +16,9 @@ import { SectionStack } from "@/components/layout/stack";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
 import {
-  skyKbdClassName,
-  skyPrimaryCtaClass,
-  skySecondaryCtaClass,
+  skyCardKbdClassName,
+  skyCardPrimaryCtaClass,
+  skyCardSecondaryCtaClass,
 } from "@/components/shared/cta";
 import { cn } from "@featul/ui/lib/utils";
 import type { UseCasePageData } from "@/lib/data/programmatic/generators";
@@ -154,14 +154,14 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                       label="Try Featul free"
                       className={cn(
                         "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                        skyPrimaryCtaClass,
+                        skyCardPrimaryCtaClass,
                       )}
-                      kbdClassName={skyKbdClassName}
+                      kbdClassName={skyCardKbdClassName}
                     />
                     <LiveDemo
                       className={cn(
                         "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                        skySecondaryCtaClass,
+                        skyCardSecondaryCtaClass,
                       )}
                     />
                   </div>

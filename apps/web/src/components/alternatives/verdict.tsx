@@ -5,9 +5,9 @@ import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
 import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 import {
-  skyKbdClassName,
-  skyPrimaryCtaClass,
-  skySecondaryCtaClass,
+  skyCardKbdClassName,
+  skyCardPrimaryCtaClass,
+  skyCardSecondaryCtaClass,
 } from "@/components/shared/cta";
 import { cn } from "@featul/ui/lib/utils";
 
@@ -46,14 +46,14 @@ export default function Verdict({ alt }: VerdictProps) {
                 label="Try Featul free"
                 className={cn(
                   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  skyPrimaryCtaClass,
+                  skyCardPrimaryCtaClass,
                 )}
-                kbdClassName={skyKbdClassName}
+                kbdClassName={skyCardKbdClassName}
               />
               <LiveDemo
                 className={cn(
                   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  skySecondaryCtaClass,
+                  skyCardSecondaryCtaClass,
                 )}
               />
             </div>

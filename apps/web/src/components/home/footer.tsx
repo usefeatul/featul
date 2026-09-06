@@ -95,12 +95,12 @@ export default function FooterSection() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-background">
+    <footer className="relative overflow-hidden">
       <Container
         maxWidth="6xl"
         className="relative z-30 px-4 pb-10 pt-16 sm:px-10 md:pb-12 md:pt-20 lg:px-12 lg:pt-24 xl:px-14"
       >
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+        <div className="mx-auto w-full max-w-6xl bg-background px-1 sm:px-6">
           <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,3.1fr)] lg:items-start lg:gap-x-16 xl:gap-x-20">
             <div className="max-w-sm">
               <Link
