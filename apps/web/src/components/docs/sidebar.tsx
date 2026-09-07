@@ -8,6 +8,12 @@ import { cn } from "@featul/ui/lib/utils";
 import { X } from "lucide-react";
 import { docsSections } from "../../config/docsNav";
 
+const docsNavSectionClass =
+  "flex w-full items-center py-1.5 text-left text-xs font-medium uppercase tracking-[0.08em] transition-colors";
+
+const docsNavSubitemClass =
+  "flex w-full items-center py-1.5 pl-3 text-left text-sm leading-5 transition-colors";
+
 export function DocsSidebar() {
   const pathname = usePathname();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -123,7 +129,7 @@ export function DocsSidebar() {
           <Link
             href="/docs"
             className={cn(
-              "flex w-full items-center py-1.5 text-left text-xs font-medium uppercase tracking-[0.08em] transition-colors",
+              docsNavSectionClass,
               pathname === "/docs"
                 ? "text-foreground"
                 : "text-foreground/45 hover:text-foreground",
@@ -139,38 +145,40 @@ export function DocsSidebar() {
               <button
                 type="button"
                 onClick={() => toggleSection(section.label)}
-                className="flex w-full items-center py-1.5 text-left text-xs font-medium uppercase tracking-[0.08em] text-foreground/45 hover:text-foreground"
+                className={cn(
+                  docsNavSectionClass,
+                  "text-foreground/45 hover:text-foreground",
+                )}
                 aria-expanded={isOpen}
               >
                 {section.label}
               </button>
               {isOpen ? (
-                <ul className="mb-3 space-y-0.5">
+                <div className="mb-3 space-y-0.5">
                   {section.items.map((item) => {
                     const isActive = pathname === item.href;
                     return (
-                      <li key={item.href}>
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            "block rounded-md py-1.5 text-sm leading-5 transition-colors",
-                            isActive
-                              ? "font-medium text-foreground"
-                              : "text-foreground/70 hover:text-foreground",
-                          )}
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          docsNavSubitemClass,
+                          isActive
+                            ? "font-medium text-foreground"
+                            : "text-foreground/70 hover:text-foreground",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
                     );
                   })}
-                </ul>
+                </div>
               ) : null}
             </div>
           );
         })}
         {filteredSections.length === 0 ? (
-          <p className="px-2 py-3 text-sm text-accent">No matching pages.</p>
+          <p className="py-3 text-sm text-accent">No matching pages.</p>
         ) : null}
       </div>
     </nav>
