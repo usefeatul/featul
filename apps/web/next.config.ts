@@ -66,10 +66,6 @@ const nextConfig = {
       ],
       afterFiles: [
         {
-          source: '/sln.js',
-          destination: 'https://cdn.seline.com/seline.js',
-        },
-        {
           source: '/_sln/:path*',
           destination: 'https://api.seline.com/:path*',
         },
@@ -138,6 +134,15 @@ const nextConfig = {
       {
         source: '/:path*',
         headers: securityHeaders,
+      },
+      {
+        source: '/sln.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/javascript; charset=utf-8',
+          },
+        ],
       },
     ]
   },
