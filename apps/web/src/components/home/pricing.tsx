@@ -4,7 +4,6 @@ import React from "react"
 import { AnimatePresence, animate, motion } from "framer-motion"
 import { Button } from "@featul/ui/components/button"
 import { StarIcon } from "@featul/ui/icons/star"
-import { AccentBar } from "@featul/ui/components/cardElements"
 import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 import {
@@ -36,7 +35,7 @@ export function PricingPlans() {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div className="flex justify-start">
         <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
       </div>
 
@@ -58,17 +57,17 @@ export function PricingSection() {
     <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
       <section className="my-16 sm:my-20" data-component="HomePricing">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="max-w-3xl text-left">
-            <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
-              Pricing that grows with your team
+          <div className="max-w-2xl text-left">
+            <h2 className="font-heading text-balance text-[2rem] font-semibold leading-[1.15] tracking-tight text-foreground sm:text-4xl sm:leading-tight lg:text-[2.75rem]">
+              Pricing that grows{" "}
+              <span className="inline-flex items-center rounded-md border border-border bg-muted/60 px-1.5 py-[2px] align-baseline text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(0,0,0,0.06)] sm:px-2">
+                with your team.
+              </span>
             </h2>
-            <div className="mt-3 flex items-start gap-2">
-              <AccentBar width={8} />
-              <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
-                Start free, then move into simple flat-workspace plans for early
-                and growing product teams.
-              </p>
-            </div>
+            <p className="mt-4 max-w-xl text-base font-light leading-relaxed text-accent sm:mt-6 sm:text-lg">
+              Start free, then move into simple flat-workspace plans for early
+              and growing product teams.
+            </p>
           </div>
           <div className="mt-8">
             <PricingPlans />
@@ -83,14 +82,20 @@ export default function Pricing() {
   return (
     <SkyPageShell
       dataComponent="Pricing"
-      title="Pricing that grows with your team"
+      title={
+        <>
+          Pricing that grows{" "}
+          <span className="inline-flex items-center rounded-md border border-border bg-muted/60 px-1.5 py-[2px] align-baseline text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(0,0,0,0.06)] sm:px-2">
+            with your team.
+          </span>
+        </>
+      }
       description={
-        <p className="text-foreground/70">
+        <p className="max-w-xl text-base font-light leading-relaxed text-accent sm:text-lg">
           Start free, then move into simple flat-workspace plans for early and growing
           product teams.
         </p>
       }
-      headerClassName="mx-auto max-w-4xl text-center"
       below={<Faq />}
     >
       <PricingPlans />
