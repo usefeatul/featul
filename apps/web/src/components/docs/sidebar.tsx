@@ -113,7 +113,7 @@ export function DocsSidebar() {
             className="absolute top-1/2 left-auto flex -translate-y-1/2 items-center justify-center text-primary hover:text-primary/80"
             style={{ right: 8 }}
           >
-            <X className="size-3.5 text-primary" strokeWidth={2.75} />
+            <X className="size-4 text-primary" strokeWidth={3} />
           </button>
         ) : null}
       </label>
