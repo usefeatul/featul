@@ -61,7 +61,7 @@ const footerIcons: Record<FooterIconName, FeatulIcon> = {
 };
 
 const iconClassName =
-  "size-4 shrink-0 text-accent transition-colors group-hover:text-primary";
+  "size-4 shrink-0 text-neutral-500 transition-colors group-hover:text-primary";
 
 function isExternalHref(item: FooterNavItem) {
   return (
@@ -125,7 +125,7 @@ export default function FooterSection() {
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : undefined)}
                     aria-label={social.name}
-                    className="group text-accent transition-colors hover:text-primary"
+                    className="group text-neutral-500 transition-colors hover:text-primary"
                   >
                     {social.icon === "github" ? (
                       <GitHubIcon size={18} />
