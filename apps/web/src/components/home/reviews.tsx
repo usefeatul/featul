@@ -56,7 +56,7 @@ export function HeroReviews() {
 
   return (
     <div
-      className="mt-4 flex items-center justify-start gap-2 sm:mt-5"
+      className="mt-8 flex items-center justify-start gap-2 sm:mt-10"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >

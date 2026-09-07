@@ -11,7 +11,7 @@ export function HeroHighlights({ centered = false }: HeroHighlightsProps) {
   return (
     <div
       className={cn(
-        "mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-light text-accent sm:mt-8 sm:gap-6",
+        "mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-light text-accent sm:mt-3.5 sm:gap-6",
         centered && "justify-center",
       )}
       aria-label="Key highlights"
