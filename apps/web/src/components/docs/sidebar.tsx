@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchIcon } from "@featul/ui/icons/search";
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
 import { cn } from "@featul/ui/lib/utils";
 import { docsSections } from "../../config/docsNav";
 
@@ -105,10 +104,10 @@ export function DocsSidebar() {
           <Link
             href="/docs"
             className={cn(
-              "mb-2 block rounded-md px-2 py-1.5 text-sm leading-5 transition-colors",
+              "flex w-full items-center py-1.5 text-left text-xs font-medium uppercase tracking-[0.08em] transition-colors",
               pathname === "/docs"
-                ? "bg-muted font-medium text-foreground"
-                : "text-foreground/70 hover:text-foreground",
+                ? "text-foreground"
+                : "text-foreground/45 hover:text-foreground",
             )}
           >
             Overview
@@ -121,17 +120,10 @@ export function DocsSidebar() {
               <button
                 type="button"
                 onClick={() => toggleSection(section.label)}
-                className="flex w-full items-center justify-between gap-2 py-1.5 text-left text-xs font-medium uppercase tracking-[0.08em] text-foreground/45"
+                className="flex w-full items-center py-1.5 text-left text-xs font-medium uppercase tracking-[0.08em] text-foreground/45 hover:text-foreground"
                 aria-expanded={isOpen}
               >
                 {section.label}
-                <ChevronRightIcon
-                  size={12}
-                  className={cn(
-                    "shrink-0 text-foreground/35 transition-transform",
-                    isOpen && "rotate-90",
-                  )}
-                />
               </button>
               {isOpen ? (
                 <ul className="mb-3 space-y-0.5">
@@ -142,7 +134,7 @@ export function DocsSidebar() {
                         <Link
                           href={item.href}
                           className={cn(
-                            "block rounded-md px-2 py-1.5 text-sm leading-5 transition-colors",
+                            "block rounded-md py-1.5 text-sm leading-5 transition-colors",
                             isActive
                               ? "bg-muted font-medium text-foreground"
                               : "text-foreground/70 hover:text-foreground",
