@@ -58,17 +58,11 @@ export default function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-10 left-0 right-0 z-50 bg-transparent",
+          "fixed top-0 left-0 right-0 z-50 bg-transparent",
           canTransition && "transition-colors",
         )}
         data-component="Navbar"
       >
-        {scrolled ? (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 border-b border-border/60"
-          />
-        ) : null}
         <Container maxWidth="6xl" className="relative px-4 sm:px-10 lg:px-12 xl:px-14">
           <div
             data-nav-bar
@@ -156,6 +150,12 @@ export default function Navbar() {
             </Button>
           </div>
         </Container>
+        {scrolled ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 z-10 h-px bg-border inset-x-0 lg:inset-x-[clamp(2.25rem,5vw,4.5rem)]"
+          />
+        ) : null}
       </header>
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>

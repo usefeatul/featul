@@ -1,6 +1,6 @@
 import { cn } from "@featul/ui/lib/utils";
 
-const STRIP_WIDTH = "w-[clamp(3.5rem,8vw,7rem)]";
+const STRIP_WIDTH = "w-[clamp(2.25rem,5vw,4.5rem)]";
 
 /** px — 1px line repeated every 12px */
 const LINE_PERIOD = 12;

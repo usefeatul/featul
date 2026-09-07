@@ -42,7 +42,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
   return createPortal(
     <div
-      className="fixed inset-x-0 bottom-0 top-10 z-[70] overflow-y-auto overscroll-contain bg-background md:hidden"
+      className="fixed inset-x-0 bottom-0 top-16 z-[70] overflow-y-auto overscroll-contain bg-background md:hidden"
       data-component="MobileMenu"
     >
       {/* Sheet header */}
