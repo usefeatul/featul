@@ -13,10 +13,29 @@ export function HeroContent() {
         </span>
       </h1>
 
-      <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-accent text-balance sm:mt-6 sm:text-base">
-        Collect votes, share a public roadmap, and publish a changelog in one
-        MIT-licensed workspace, self-hosted or in the EU, billed per workspace
-        not per seat.
+      <p className="mt-4 max-w-xl text-base font-light leading-relaxed text-accent sm:mt-6 sm:text-lg">
+        MIT licensed. Billed per workspace, not per seat.
+        <br />
+        Start in minutes. Built and hosted in the{" "}
+        <span className="inline-flex items-center gap-1.5 align-baseline">
+          <svg
+            aria-hidden
+            viewBox="0 0 18 12"
+            className="h-3.5 w-[1.3rem] shrink-0 overflow-hidden rounded-[1px] ring-1 ring-border/60"
+          >
+            <rect width="18" height="12" fill="#003399" />
+            <g fill="#FFCC00">
+              {Array.from({ length: 12 }, (_, i) => {
+                const angle = (i * 30 * Math.PI) / 180;
+                const cx = 9 + Math.cos(angle - Math.PI / 2) * 3.1;
+                const cy = 6 + Math.sin(angle - Math.PI / 2) * 3.1;
+                return <circle key={i} cx={cx} cy={cy} r="0.45" />;
+              })}
+            </g>
+          </svg>
+          EU
+        </span>
+        .
       </p>
 
       <HeroCta />
