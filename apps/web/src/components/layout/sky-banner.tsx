@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@featul/ui/lib/utils";
 
 const dashboardGlassShellClass =
-  "overflow-hidden rounded-lg border border-white/55 bg-white/45 p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_32px_96px_-24px_rgba(15,23,42,0.28)] backdrop-blur-[24px] supports-[backdrop-filter]:bg-white/35 sm:p-1.5";
+  "overflow-hidden rounded-lg border border-white/30 bg-white/35 p-1 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.18)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/25 sm:p-1.5";
 
 const dashboardGlassInnerClass = "overflow-hidden rounded-lg";
 
