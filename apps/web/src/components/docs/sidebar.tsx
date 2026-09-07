@@ -92,11 +92,8 @@ export function DocsSidebar() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search docs"
-          className="h-8 w-full rounded-md border border-border bg-background pl-8 pr-10 text-sm text-foreground outline-none placeholder:text-foreground/40 focus-visible:ring-2 focus-visible:ring-primary/20"
+          className="h-8 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-foreground/40 focus-visible:ring-2 focus-visible:ring-primary/20"
         />
-        <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-border px-1 text-[10px] font-medium text-accent">
-          /
-        </kbd>
       </label>
 
       <div className="space-y-1">
