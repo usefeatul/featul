@@ -3,10 +3,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Container } from "../global/container";
-import { edgeChromeInsetClass, edgeGutterXClass } from "@/components/layout/edge-pattern";
-import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
+import {
+  edgeChromeInsetClass,
+  edgeGutterXClass,
+} from "@/components/layout/edge-pattern";
 import { Button } from "@featul/ui/components/button";
-import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
 import { APP_URL } from "@/config/auth";
 import { navigationConfig } from "@/config/homeNav";
@@ -45,41 +46,18 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   return createPortal(
     <div
       className={cn(
-        "fixed bottom-0 top-16 z-[70] overflow-y-auto overscroll-contain bg-background md:hidden",
+        "fixed bottom-0 top-16 z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
         edgeChromeInsetClass,
       )}
       data-component="MobileMenu"
     >
-      {/* Sheet header */}
-      <div
-        className={cn(
-          "flex h-16 items-center justify-between border-b border-border",
-          edgeGutterXClass,
-        )}
-      >
-        <span className="inline-flex items-center gap-2">
-          <FeatulLogoIcon />
-          <span className="text-base font-semibold tracking-tight text-foreground">
-            Featul
-          </span>
-        </span>
-        <Button
-          type="button"
-          variant="nav"
-          aria-label="Close menu"
-          className="inline-flex items-center justify-center rounded-md  bg-muted"
-          onClick={onClose}
-        >
-          <MenuIcon className="text-accent size-5" />
-        </Button>
-      </div>
       <Container maxWidth="6xl" className={edgeGutterXClass}>
         <nav className="py-4 grid gap-2">
           {navigationConfig.main.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="block rounded-md  px-2 py-2 text-lg text-accent hover:text-foreground hover:bg-muted"
+              className="block rounded-md px-2 py-2 text-lg text-accent hover:text-foreground hover:bg-muted"
               onClick={onClose}
             >
               {item.name}
@@ -91,7 +69,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="block rounded-md  px-3 py-2.5 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted min-h-[36px]"
+                className="block rounded-md px-3 py-2.5 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted min-h-[36px]"
                 onClick={onClose}
               >
                 {item.name}
