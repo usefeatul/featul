@@ -110,10 +110,10 @@ export function DocsSidebar() {
               inputRef.current?.focus();
             }}
             aria-label="Clear search"
-            className="absolute top-1/2 left-auto flex -translate-y-1/2 items-center justify-center text-primary hover:text-primary/80"
+            className="absolute top-1/2 left-auto flex -translate-y-1/2 cursor-pointer items-center justify-center text-primary hover:text-primary/80"
             style={{ right: 8 }}
           >
-            <X className="size-4 text-primary" strokeWidth={3} />
+            <X className="size-3.5 text-primary" strokeWidth={2} />
           </button>
         ) : null}
       </label>
@@ -155,7 +155,7 @@ export function DocsSidebar() {
                           className={cn(
                             "block rounded-md py-1.5 text-sm leading-5 transition-colors",
                             isActive
-                              ? "bg-muted font-medium text-foreground"
+                              ? "font-medium text-foreground"
                               : "text-foreground/70 hover:text-foreground",
                           )}
                         >

@@ -157,8 +157,8 @@ export function DocsMobileFloatingNav() {
                               className={cn(
                                 "mx-2 block rounded-lg px-3 py-2 text-sm transition-all duration-150",
                                 isActive
-                                  ? "bg-primary/10 font-medium text-foreground"
-                                  : "text-muted-foreground hover:bg-primary/5 hover:text-foreground active:bg-primary/10",
+                                  ? "font-medium text-foreground"
+                                  : "text-muted-foreground hover:text-foreground",
                               )}
                             >
                               {item.label}
