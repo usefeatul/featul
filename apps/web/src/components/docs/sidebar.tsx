@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchIcon } from "@featul/ui/icons/search";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
 import { cn } from "@featul/ui/lib/utils";
+import { X } from "lucide-react";
 import { docsSections } from "../../config/docsNav";
 
 export function DocsSidebar() {
@@ -113,7 +113,7 @@ export function DocsSidebar() {
             className="absolute top-1/2 left-auto flex -translate-y-1/2 items-center justify-center text-primary hover:text-primary/80"
             style={{ right: 8 }}
           >
-            <XMarkIcon size={14} className="text-primary" />
+            <X className="size-3.5 text-primary" strokeWidth={2.75} />
           </button>
         ) : null}
       </label>
