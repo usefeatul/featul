@@ -1,8 +1,8 @@
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
+  heroPrimaryCtaClass,
   skyCardPrimaryCtaClass,
-  skyCardSecondaryCtaClass,
   skyCardKbdClassName,
 } from "@/components/shared/cta";
 import { Container } from "../global/container";
@@ -22,18 +22,18 @@ export default function CTA() {
               )}
               style={{ backgroundImage: "url(/image/sky.PNG)" }}
             >
-            <h2 className="font-heading max-w-lg sm:max-w-2xl text-balance text-xl sm:text-2xl lg:text-3xl font-medium text-white">
-              <span className="text-white">
+            <h2 className="font-heading max-w-lg text-balance text-xl font-medium text-foreground sm:max-w-2xl sm:text-2xl lg:text-3xl">
+              <span>
                 Collect and prioritize feedback.
               </span>{" "}
-              <span className="text-white/85">Ship what customers want</span>
+              <span className="text-foreground/80">Ship what customers want</span>
             </h2>
-            <p className="mt-4 max-w-2xl text-base sm:text-lg text-white/80">
+            <p className="mt-4 max-w-2xl text-base text-foreground/75 sm:text-lg">
               Centralize customer input in boards, prioritize with votes, keep
               roadmaps in sync, and publish changelogs automatically. Built for
               SaaS teams.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
               <HotkeyLink
                 variant="nav"
                 className={cn(
@@ -44,9 +44,10 @@ export default function CTA() {
                 label="Start for free"
               />
               <LiveDemo
+                variant="default"
                 className={cn(
                   "h-10 min-h-[40px] w-full min-w-[40px] shadow-sm sm:w-auto",
-                  skyCardSecondaryCtaClass,
+                  heroPrimaryCtaClass,
                 )}
               />
             </div>
