@@ -52,7 +52,7 @@ export function HeroReviews() {
     return () => window.clearInterval(id);
   }, [paused, reduceMotion]);
 
-  const quote = REVIEWS[index];
+  const quote = REVIEWS[index] ?? REVIEWS[0];
 
   return (
     <div
