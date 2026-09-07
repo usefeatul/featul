@@ -1,6 +1,6 @@
 'use client'
 
-import { Container } from '../global/container'
+import { MarketingContainer } from '@/components/layout/container'
 import { FaqAccordion } from '@/components/shared/accordion'
 import { faqItems } from '@/data/faqs'
 
@@ -25,8 +25,8 @@ export default function FAQsFour({ contained = true }: FAQsFourProps) {
     if (!contained) return content
 
     return (
-        <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+        <MarketingContainer>
             {content}
-        </Container>
+        </MarketingContainer>
     )
 }

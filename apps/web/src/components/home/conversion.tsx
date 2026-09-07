@@ -1,8 +1,8 @@
 "use client";
 
+import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
-import { Container } from "../global/container";
 import { HotkeyLink } from "../global/hotkey";
 import { BoardIcon } from "@featul/ui/icons/board";
 import { RoadmapIcon } from "@featul/ui/icons/roadmap";
@@ -14,7 +14,7 @@ const BOOK_A_CALL_HREF = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("
 export function ConversionHero() {
   return (
     <section className="relative mb-12 mt-0 sm:mb-16" data-component="ConversionHero">
-      <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+      <MarketingContainer>
         <div className="mx-auto w-full px-1 sm:px-6">
           <div className="pb-4 pt-2 sm:pb-8 sm:pt-4">
             <h2 className="font-heading text-foreground max-w-5xl text-balance text-xl font-semibold leading-snug sm:max-w-6xl sm:text-2xl sm:leading-snug md:text-3xl">
@@ -64,7 +64,7 @@ export function ConversionHero() {
             </div>
           </div>
         </div>
-      </Container>
+      </MarketingContainer>
     </section>
   );
 }

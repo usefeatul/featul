@@ -1,5 +1,5 @@
+import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link"
-import { Container } from "@/components/global/container"
 import { AUTH_SIGN_IN_URL } from "@/config/auth"
 import {
   ROUNDUP_CRITERIA,
@@ -21,7 +21,7 @@ import {
 
 export function AlternativesRoundup() {
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="py-10 sm:py-14" data-component="AlternativesRoundup">
         <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
           <SquareIcon aria-hidden className="size-5 text-primary" />
@@ -157,6 +157,6 @@ export function AlternativesRoundup() {
           </p>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   )
 }

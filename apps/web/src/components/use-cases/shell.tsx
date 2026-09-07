@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
-import { Container } from "@/components/global/container";
-import { edgeGutterXClass } from "@/components/layout/edge-pattern";
-import { cn } from "@featul/ui/lib/utils";
+import { MarketingContainer, MarketingRail } from "@/components/layout/container";
 import { UseCaseHero } from "./hero";
 
 type UseCaseDetailShellProps = {
@@ -21,15 +19,11 @@ export function UseCaseDetailShell({
   return (
     <main className="min-h-screen overflow-x-clip">
       <UseCaseHero title={title} description={description} badge={badge} />
-      {/* Match SkyMarketingHero dashboard image gutter */}
-      <Container
-        maxWidth="6xl"
-        className={cn("relative z-10 pb-14 text-left sm:pb-20", edgeGutterXClass)}
-      >
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+      <MarketingContainer className="relative z-10 pb-14 text-left sm:pb-20">
+        <MarketingRail>
           <div className="w-full max-w-3xl">{children}</div>
-        </div>
-      </Container>
+        </MarketingRail>
+      </MarketingContainer>
     </main>
   );
 }

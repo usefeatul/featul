@@ -1,8 +1,7 @@
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import Link from "next/link";
 import type { ComponentType } from "react";
 
-import { Container } from "../global/container";
-import { edgeGutterXClass } from "@/components/layout/edge-pattern";
 import { cn } from "@featul/ui/lib/utils";
 import {
   footerNavigationConfig,
@@ -98,14 +97,8 @@ export default function FooterSection() {
 
   return (
     <footer className="relative overflow-hidden">
-      <Container
-        maxWidth="6xl"
-        className={cn(
-          "relative z-30 pb-10 pt-16 md:pb-12 md:pt-20 lg:pt-24",
-          edgeGutterXClass,
-        )}
-      >
-        <div className="mx-auto w-full max-w-6xl bg-background px-1 sm:px-6">
+      <MarketingContainer className="relative z-30 pb-10 pt-16 md:pb-12 md:pt-20 lg:pt-24">
+        <div className={cn(marketingRailClass, "bg-background")}>
           <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,3.1fr)] lg:items-start lg:gap-x-16 xl:gap-x-20">
             <div className="max-w-sm">
               <Link
@@ -179,7 +172,7 @@ export default function FooterSection() {
             © {year} Featul
           </p>
         </div>
-      </Container>
+      </MarketingContainer>
     </footer>
   );
 }

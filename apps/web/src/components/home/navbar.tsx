@@ -2,14 +2,14 @@
 import Link from "next/link";
 import { APP_URL } from "@/config/auth";
 import { navigationConfig } from "@/config/homeNav";
-import { Container } from "../global/container";
+import { MarketingContainer } from "@/components/layout/container";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
 import { Separator } from "@featul/ui/components/separator";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
-import { edgeChromeInsetClass, edgeGutterXClass } from "@/components/layout/edge-pattern";
+import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { MobileMenu } from "./menu";
 
 export default function Navbar() {
@@ -73,7 +73,7 @@ export default function Navbar() {
             )}
           />
         ) : null}
-        <Container maxWidth="6xl" className={cn("relative", edgeGutterXClass)}>
+        <MarketingContainer className="relative">
           <div
             data-nav-bar
             className={cn(
@@ -162,7 +162,7 @@ export default function Navbar() {
               <MenuIcon className="size-5 text-accent" />
             </Button>
           </div>
-        </Container>
+        </MarketingContainer>
         {scrolled ? (
           <div
             aria-hidden

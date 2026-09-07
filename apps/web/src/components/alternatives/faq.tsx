@@ -1,6 +1,6 @@
 "use client";
 
-import { Container } from "@/components/global/container";
+import { MarketingContainer } from "@/components/layout/container";
 import { FaqAccordion } from "@/components/shared/accordion";
 import type { Alternative } from "@/config/alternatives";
 import { getAlternativeFaq } from "@/data/alt";
@@ -9,7 +9,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
   const { description, items } = getAlternativeFaq(alt.slug);
 
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="py-16 md:py-24">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <FaqAccordion
@@ -20,6 +20,6 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
           />
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   );
 }

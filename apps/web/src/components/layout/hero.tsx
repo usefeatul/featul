@@ -2,45 +2,45 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { Container } from "@/components/global/container";
-import { edgeGutterXClass } from "@/components/layout/edge-pattern";
+import { MarketingContainer, MarketingRail } from "@/components/layout/container";
 import { cn } from "@featul/ui/lib/utils";
 import {
+  DASHBOARD_BLUR_DATA_URL,
   SkyDashboardBanner,
   SkyDashboardFrame,
 } from "@/components/layout/sky-banner";
 
-const BLUR_DATA_URL =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA40lEQVR4nGNgQAJmVta/bWxs/zMwMDAwMjL+Z2Rk/M/IyPifmZn5PxMT039WVtb/7Ozs/zk4OP5zcnL+5+Li+s/Nzf2fh4fnPy8v739+fv7/AgIC/4WEhP4LCwv/FxER+S8qKvpfTEzsv7i4+H8JCYn/kpKS/6WkpP5LS0v/l5GR+S8rK/tfTk7uv7y8/H8FBYX/ioqK/5WUlP4rKyv/V1FR+a+qqvpfTU3tv7q6+n8NDY3/mpqa/7W0tP5ra2v/19HR+a+rq/tfT0/vv76+/n8DA4P/hoaG/42Mjf4bGxv/BwB2mFqQvpnLTAAAAABJRU5ErkJggg==";
-
 type SkyMarketingHeroProps = {
   children: ReactNode;
+  beforeBanner?: ReactNode;
   dataComponent?: string;
   imageAlt?: string;
+  className?: string;
+  bannerClassName?: string;
 };
 
 export function SkyMarketingHero({
   children,
+  beforeBanner,
   dataComponent = "SkyMarketingHero",
   imageAlt = "Featul dashboard preview",
+  className,
+  bannerClassName = "mt-10 sm:mt-14",
 }: SkyMarketingHeroProps) {
   return (
     <section
-      className="relative pb-8 sm:pb-10"
+      className={cn("relative pb-8 sm:pb-10", className)}
       data-component={dataComponent}
     >
-      <Container
-        maxWidth="6xl"
-        className={cn("relative z-10", edgeGutterXClass)}
-      >
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+      <MarketingContainer className="relative z-10">
+        <MarketingRail>
           <div className="pt-32 sm:pt-36">{children}</div>
-
+          {beforeBanner}
           <SkyDashboardBanner
             data-component={
               dataComponent ? `${dataComponent}Banner` : undefined
             }
-            className="mt-10 sm:mt-14"
+            className={bannerClassName}
           >
             <SkyDashboardFrame>
               <Image
@@ -51,13 +51,13 @@ export function SkyMarketingHero({
                 priority
                 sizes="(max-width: 1280px) 90vw, 896px"
                 placeholder="blur"
-                blurDataURL={BLUR_DATA_URL}
+                blurDataURL={DASHBOARD_BLUR_DATA_URL}
                 className="block h-auto w-full"
               />
             </SkyDashboardFrame>
           </SkyDashboardBanner>
-        </div>
-      </Container>
+        </MarketingRail>
+      </MarketingContainer>
     </section>
   );
 }

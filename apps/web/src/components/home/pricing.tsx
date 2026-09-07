@@ -16,7 +16,15 @@ import { SubtleDitherWash } from "@/components/home/visual-well"
 import Link from "next/link"
 import Faq from "@/components/home/faq"
 import { SkyPageShell } from "@/components/layout/shell"
-import { Container } from "@/components/global/container"
+import {
+  MarketingContainer,
+  MarketingRail,
+} from "@/components/layout/container"
+import {
+  HeadingHighlight,
+  marketingDisplayHeadingClass,
+  marketingLeadClass,
+} from "@/components/shared/heading-highlight"
 import {
   type BillingCycle,
   type PricingPlanKey,
@@ -52,19 +60,24 @@ export function PricingPlans() {
   )
 }
 
+function PricingTitle() {
+  return (
+    <>
+      Pricing that grows <HeadingHighlight>with your team.</HeadingHighlight>
+    </>
+  )
+}
+
 export function PricingSection() {
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="my-16 sm:my-20" data-component="HomePricing">
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+        <MarketingRail>
           <div className="max-w-2xl text-left">
-            <h2 className="font-heading text-balance text-[2rem] font-semibold leading-[1.15] tracking-tight text-foreground sm:text-4xl sm:leading-tight lg:text-[2.75rem]">
-              Pricing that grows{" "}
-              <span className="inline-flex items-center rounded-md border border-border bg-muted/60 px-1.5 py-[2px] align-baseline text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(0,0,0,0.06)] sm:px-2">
-                with your team.
-              </span>
+            <h2 className={marketingDisplayHeadingClass}>
+              <PricingTitle />
             </h2>
-            <p className="mt-4 max-w-xl text-base font-light leading-relaxed text-accent sm:mt-6 sm:text-lg">
+            <p className={marketingLeadClass}>
               Start free, then move into simple flat-workspace plans for early
               and growing product teams.
             </p>
@@ -72,9 +85,9 @@ export function PricingSection() {
           <div className="mt-8">
             <PricingPlans />
           </div>
-        </div>
+        </MarketingRail>
       </section>
-    </Container>
+    </MarketingContainer>
   )
 }
 
@@ -82,16 +95,9 @@ export default function Pricing() {
   return (
     <SkyPageShell
       dataComponent="Pricing"
-      title={
-        <>
-          Pricing that grows{" "}
-          <span className="inline-flex items-center rounded-md border border-border bg-muted/60 px-1.5 py-[2px] align-baseline text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(0,0,0,0.06)] sm:px-2">
-            with your team.
-          </span>
-        </>
-      }
+      title={<PricingTitle />}
       description={
-        <p className="max-w-xl text-base font-light leading-relaxed text-accent sm:text-lg">
+        <p className={cn(marketingLeadClass, "mt-0 sm:mt-0")}>
           Start free, then move into simple flat-workspace plans for early and growing
           product teams.
         </p>

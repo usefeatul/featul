@@ -1,5 +1,5 @@
+import { MarketingContainer } from "@/components/layout/container";
 import type { ComponentType, SVGProps } from "react";
-import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
 import { AccentBar } from "@featul/ui/components/cardElements";
 import { ShieldIcon } from "@featul/ui/icons/shield";
@@ -31,7 +31,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
   const tagline = alt.tagline?.toLowerCase() || "product feedback";
 
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
@@ -71,6 +71,6 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
           </div>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   );
 }

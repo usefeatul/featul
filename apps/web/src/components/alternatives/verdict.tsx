@@ -1,5 +1,5 @@
+import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
-import { Container } from "@/components/global/container";
 import type { Alternative } from "@/config/alternatives";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
@@ -19,7 +19,7 @@ export default function Verdict({ alt }: VerdictProps) {
   const topWin = alt.victoryPoints?.[0]?.toLowerCase() || "privacy-first EU hosting";
 
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="py-10 sm:py-14" data-component="AlternativeVerdict">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <OverlayCard>
@@ -75,6 +75,6 @@ export default function Verdict({ alt }: VerdictProps) {
           </OverlayCard>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   );
 }

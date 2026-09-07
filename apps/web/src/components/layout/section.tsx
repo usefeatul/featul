@@ -1,6 +1,6 @@
+import { MarketingContainer } from "@/components/layout/container";
 import type { ReactNode } from "react"
 import { cn } from "@featul/ui/lib/utils"
-import { Container } from "@/components/global/container"
 
 type SkySectionProps = {
   children?: ReactNode
@@ -27,11 +27,11 @@ export function SkySection({
       data-component={dataComponent}
     >
       {hasContent ? (
-        <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+        <MarketingContainer className="relative z-10">
           <div className={cn("pb-6 pt-14 sm:pb-8 sm:pt-16 md:pb-10", contentClassName)}>
             {children}
           </div>
-        </Container>
+        </MarketingContainer>
       ) : null}
     </section>
   )

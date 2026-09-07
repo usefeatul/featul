@@ -1,5 +1,5 @@
+import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
-import { Container } from "@/components/global/container";
 import {
   ALTERNATIVES_UPDATED_LABEL,
   type Alternative,
@@ -18,7 +18,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
   const tradeoffs = alt.tradeoffs?.slice(0, 2) ?? alt.pros?.slice(0, 2) ?? [];
 
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="py-16" data-component="TLDR">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -104,6 +104,6 @@ export default function TLDR({ alt }: { alt: Alternative }) {
           </div>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   );
 }

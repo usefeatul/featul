@@ -1,4 +1,4 @@
-import { Container } from "../global/container";
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import { LockIcon } from "@featul/ui/icons/lock";
 import { ShieldIcon } from "@featul/ui/icons/shield";
 import { UserFocusIcon } from "@featul/ui/icons/userfocus";
@@ -22,8 +22,8 @@ const cards = [
 export default function Access() {
   return (
     <section className="relative my-12 sm:my-16" data-component="Access">
-      <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+      <MarketingContainer className="relative z-10">
+        <div className={marketingRailClass}>
           <ShieldIcon aria-hidden className="mb-2 size-5 text-primary sm:mb-3" opacity={1} />
           <h2 className="font-heading mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
             Control who sees what
@@ -59,7 +59,7 @@ export default function Access() {
             })}
           </div>
         </div>
-      </Container>
+      </MarketingContainer>
     </section>
   );
 }

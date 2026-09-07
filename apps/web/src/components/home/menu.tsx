@@ -1,12 +1,9 @@
 "use client";
+import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Container } from "../global/container";
-import {
-  edgeChromeInsetClass,
-  edgeGutterXClass,
-} from "@/components/layout/edge-pattern";
+import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import { APP_URL } from "@/config/auth";
@@ -51,7 +48,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
       )}
       data-component="MobileMenu"
     >
-      <Container maxWidth="6xl" className={edgeGutterXClass}>
+      <MarketingContainer>
         <nav className="py-4 grid gap-2">
           {navigationConfig.main.map((item) => (
             <Link
@@ -90,7 +87,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             </Button>
           </div>
         </nav>
-      </Container>
+      </MarketingContainer>
     </div>,
     document.body
   );

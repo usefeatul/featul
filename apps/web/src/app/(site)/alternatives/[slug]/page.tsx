@@ -1,3 +1,4 @@
+import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AlternativeHero } from "@/components/alternatives/hero";
@@ -8,7 +9,6 @@ import WhyBetter from "@/components/alternatives/why";
 import AlternativeGuide from "@/components/alternatives/guide";
 import AlternativeFAQs from "@/components/alternatives/faq";
 import Verdict from "@/components/alternatives/verdict";
-import { Container } from "@/components/global/container";
 import { getAltDescription } from "@/types/descriptions";
 import { createArticleMetadata } from "@/lib/seo";
 import {
@@ -129,7 +129,7 @@ export default async function AlternativePage({
         Updated {ALTERNATIVES_UPDATED_ISO}
       </time>
       <AlternativeHero alt={alt} />
-      <div className="relative mx-auto max-w-6xl">
+      <div className={marketingStackClass}>
         <SectionStack>
           <TLDR alt={alt} />
           <Snapshot alt={alt} />
@@ -138,11 +138,11 @@ export default async function AlternativePage({
           <AlternativeGuide alt={alt} />
           <Verdict alt={alt} />
           <AlternativeFAQs alt={alt} />
-          <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+          <MarketingContainer>
             <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
               <RelatedLinks links={related} title="Related comparisons" />
             </div>
-          </Container>
+          </MarketingContainer>
         </SectionStack>
       </div>
     </main>

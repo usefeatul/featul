@@ -1,3 +1,4 @@
+import { marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { DEFAULT_DESCRIPTION } from "@/config/seo";
@@ -39,7 +40,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <Hero />
-      <div className="relative mx-auto max-w-6xl">
+      <div className={marketingStackClass}>
         <SectionStack>
           <ConversionHero />
           <FeaturesSection />

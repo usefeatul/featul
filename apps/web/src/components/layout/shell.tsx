@@ -1,8 +1,10 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { Container } from "@/components/global/container"
-import { edgeGutterXClass } from "@/components/layout/edge-pattern"
+import {
+  MarketingContainer,
+  MarketingStack,
+} from "@/components/layout/container"
 import { cn } from "@featul/ui/lib/utils"
 
 type SkyPageShellProps = {
@@ -34,12 +36,10 @@ export function SkyPageShell({
       className="flex min-h-full flex-1 flex-col overflow-x-clip"
       data-component={dataComponent}
     >
-      <div className="relative mx-auto w-full max-w-6xl flex-1">
-        <Container
-          maxWidth="6xl"
+      <MarketingStack className="w-full flex-1">
+        <MarketingContainer
           className={cn(
             "relative z-10 pt-32 sm:pt-36",
-            edgeGutterXClass,
             below ? "pb-0" : "pb-10 sm:pb-12",
           )}
         >
@@ -79,9 +79,9 @@ export function SkyPageShell({
             ) : null}
             {children}
           </div>
-        </Container>
+        </MarketingContainer>
         {below ? <div className="relative z-10 pb-10 sm:pb-12">{below}</div> : null}
-      </div>
+      </MarketingStack>
     </main>
   )
 }

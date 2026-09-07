@@ -1,4 +1,4 @@
-import { Container } from "@/components/global/container";
+import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
 import { getAllAlternatives } from "@/config/alternatives";
 import { ROUNDUP_FAQS } from "@/config/alternatives-roundup";
 import AlternativesList from "@/components/alternatives/list";
@@ -55,9 +55,9 @@ export default function AlternativesIndexPage() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <AlternativesIndexHero />
-      <div className="relative mx-auto max-w-6xl">
+      <div className={marketingStackClass}>
         <AlternativesRoundup />
-        <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14 pb-6 sm:pb-8">
+        <MarketingContainer className="relative z-10 pb-6 sm:pb-8">
           <section>
             <div className="border-b border-border/70 pb-6 sm:pb-8">
               <p className="text-accent text-[11px] font-medium uppercase tracking-[0.14em]">
@@ -81,8 +81,8 @@ export default function AlternativesIndexPage() {
               <AlternativesList items={allAlternatives} />
             </div>
           </section>
-        </Container>
-        <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+        </MarketingContainer>
+        <MarketingContainer>
           <section className="py-16 md:py-24">
             <div className="max-w-5xl px-0 sm:px-6">
               <div className="max-w-xl">
@@ -94,7 +94,7 @@ export default function AlternativesIndexPage() {
               </div>
             </div>
           </section>
-        </Container>
+        </MarketingContainer>
       </div>
     </main>
   );

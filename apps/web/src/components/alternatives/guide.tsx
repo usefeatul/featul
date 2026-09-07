@@ -1,4 +1,4 @@
-import { Container } from "@/components/global/container"
+import { MarketingContainer } from "@/components/layout/container";
 import type { Alternative } from "@/config/alternatives"
 import { BookmarkIcon } from "@featul/ui/icons/bookmark"
 
@@ -6,7 +6,7 @@ export default function AlternativeGuide({ alt }: { alt: Alternative }) {
   if (!alt.guide?.length) return null
 
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="py-16" data-component="AlternativeGuide">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <BookmarkIcon aria-hidden className="size-5 text-primary" opacity={1} />
@@ -44,6 +44,6 @@ export default function AlternativeGuide({ alt }: { alt: Alternative }) {
           </div>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   )
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Check, Globe, Users } from "lucide-react";
@@ -15,7 +16,6 @@ import {
   overlayInnerClass,
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { Container } from "../global/container";
 import { NestedOverlayCard, VisualCardWell } from "./visual-well";
 
 const rowClass = "flex items-center gap-3 px-5 py-4 sm:px-6";
@@ -38,9 +38,9 @@ export default function Create() {
   const reduceMotion = !!shouldReduceMotion;
 
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="my-16 sm:my-20" data-component="Create">
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+        <div className={marketingRailClass}>
           <div className="max-w-3xl text-left">
             <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
               From a workspace to a shipped update.
@@ -275,7 +275,7 @@ export default function Create() {
           </div>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   );
 }
 

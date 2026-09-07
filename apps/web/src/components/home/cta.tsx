@@ -1,3 +1,4 @@
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
@@ -5,15 +6,14 @@ import {
   skyCardPrimaryCtaClass,
   skyCardKbdClassName,
 } from "@/components/shared/cta";
-import { Container } from "../global/container";
 import { HotkeyLink } from "../global/hotkey";
 import { LiveDemo } from "../global/demo";
 
 export default function CTA() {
   return (
     <section className="relative mb-0 mt-12 bg-background pb-10 pt-4 sm:mt-16 sm:pb-12 sm:pt-6" data-component="CTA">
-      <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+      <MarketingContainer className="relative z-10">
+        <div className={marketingRailClass}>
           <div className={overlayDialogClass}>
             <div
               className={cn(
@@ -54,7 +54,7 @@ export default function CTA() {
             </div>
           </div>
         </div>
-      </Container>
+      </MarketingContainer>
     </section>
   );
 }

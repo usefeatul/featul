@@ -1,8 +1,6 @@
+import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import { Container } from "@/components/global/container";
-import { edgeGutterXClass } from "@/components/layout/edge-pattern";
-import { cn } from "@featul/ui/lib/utils";
 import { INTEGRATIONS } from "@/lib/data/programmatic/matrix";
 import { IntegrationsIndexHero } from "@/components/integrations/index";
 import IntegrationsList from "@/components/integrations/list";
@@ -20,11 +18,8 @@ export default function IntegrationsIndexPage() {
   return (
     <main className="min-h-screen overflow-x-clip">
       <IntegrationsIndexHero />
-      <div className="relative mx-auto max-w-6xl">
-        <Container
-          maxWidth="6xl"
-          className={cn("relative z-10 pb-14 sm:pb-20", edgeGutterXClass)}
-        >
+      <div className={marketingStackClass}>
+        <MarketingContainer className="relative z-10 pb-14 sm:pb-20">
           <section className="mt-4">
             <div className="border-b border-border/70 pb-6 sm:pb-8">
               <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
@@ -48,7 +43,7 @@ export default function IntegrationsIndexPage() {
               <IntegrationsList items={items} />
             </div>
           </section>
-        </Container>
+        </MarketingContainer>
       </div>
     </main>
   );

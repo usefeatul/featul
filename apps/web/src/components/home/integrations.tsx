@@ -1,6 +1,6 @@
 "use client";
 
-import { Container } from "../global/container";
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import type { ComponentType } from "react";
 import Link from "next/link";
 import { SlackIcon } from "@featul/ui/icons/slack";
@@ -79,12 +79,12 @@ const integrations: IntegrationItem[] = [
 
 export default function Integrations() {
   return (
-    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section
         data-component="Integrations"
         className="my-12 max-w-full sm:my-16"
       >
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+        <div className={marketingRailClass}>
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
             Integrate with your favorite tools
           </h2>
@@ -160,6 +160,6 @@ export default function Integrations() {
           </div>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   );
 }

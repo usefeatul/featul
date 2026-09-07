@@ -1,4 +1,4 @@
-import { Container } from "../global/container";
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import { ChartIcon } from "@featul/ui/icons/chart";
 import { LoveIcon } from "@featul/ui/icons/love";
 import { SetupIcon } from "@featul/ui/icons/setup";
@@ -27,8 +27,8 @@ const cards = [
 export default function Listening() {
   return (
     <section className="relative my-12 sm:my-16" data-component="Listening">
-      <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
+      <MarketingContainer className="relative z-10">
+        <div className={marketingRailClass}>
           <LoveIcon aria-hidden className="mb-2 size-5 text-primary sm:mb-3" opacity={1} />
           <h2 className="font-heading mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
             Listen and act
@@ -64,7 +64,7 @@ export default function Listening() {
             })}
           </div>
         </div>
-      </Container>
+      </MarketingContainer>
     </section>
   );
 }
