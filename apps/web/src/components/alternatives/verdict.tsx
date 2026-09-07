@@ -51,6 +51,7 @@ export default function Verdict({ alt }: VerdictProps) {
                 kbdClassName={skyCardKbdClassName}
               />
               <LiveDemo
+                variant="default"
                 className={cn(
                   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
                   heroPrimaryCtaClass,
