@@ -2,8 +2,9 @@ import { cn } from "@featul/ui/lib/utils";
 
 const STRIP_WIDTH = "w-[clamp(2.25rem,5vw,4.5rem)]";
 
-/** px — 1px line repeated every 12px */
-const LINE_PERIOD = 12;
+/** px — 2px line every 8px so a line lands on the 64px navbar bottom */
+const LINE_PERIOD = 8;
+const LINE_THICKNESS = 2;
 
 type EdgeStripProps = {
   side: "left" | "right";
@@ -28,7 +29,7 @@ function EdgeStrip({ side }: EdgeStripProps) {
       <div
         aria-hidden
         className={cn(
-          "absolute inset-y-0 w-px bg-border",
+          "absolute inset-y-0 w-0.5 bg-border",
           side === "left" ? "right-0" : "left-0",
         )}
       />
@@ -53,11 +54,11 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
           >
             <rect
               x="0"
-              y={LINE_PERIOD - 1}
+              y={LINE_PERIOD - LINE_THICKNESS}
               width="1"
-              height="1"
+              height={LINE_THICKNESS}
               fill="var(--border)"
-              opacity="0.55"
+              opacity="0.7"
             />
           </pattern>
         </defs>

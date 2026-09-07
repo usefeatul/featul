@@ -153,7 +153,7 @@ export default function Navbar() {
         {scrolled ? (
           <div
             aria-hidden
-            className="pointer-events-none absolute bottom-0 z-10 h-px bg-border inset-x-0 lg:inset-x-[clamp(2.25rem,5vw,4.5rem)]"
+            className="pointer-events-none absolute bottom-0 z-10 h-0.5 bg-border inset-x-0 lg:inset-x-[clamp(2.25rem,5vw,4.5rem)]"
           />
         ) : null}
       </header>
