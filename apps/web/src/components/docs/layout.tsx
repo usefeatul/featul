@@ -1,7 +1,10 @@
 import type { ReactNode } from "react"
 import { JetBrains_Mono } from "next/font/google"
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
+import {
+  MarketingContainer,
+  MarketingRail,
+} from "@/components/layout/container"
 import { DocsSidebar } from "./sidebar"
 import { DocsMobileNav } from "./nav"
 
@@ -18,43 +21,20 @@ interface DocsLayoutShellProps {
 
 export function DocsLayoutShell({ children }: DocsLayoutShellProps) {
   return (
-    <div className={cn(docsMono.variable, "fixed inset-0 z-30 flex bg-muted")}>
-      <aside className="hidden w-56 shrink-0 flex-col lg:flex">
-        <div className="h-full overflow-y-auto py-8 pr-4 pl-6 scrollbar-hide">
-          <DocsSidebar />
-        </div>
-      </aside>
-
-      <DocsMobileNav />
-
-      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background pt-14 lg:bg-transparent lg:p-2 lg:pt-2">
-        <div
-          className={cn(
-            overlayDialogClass,
-            "relative flex min-h-0 flex-1 flex-col",
-            "max-lg:rounded-none max-lg:border-0 max-lg:bg-background max-lg:p-0",
-          )}
-        >
-          <div
-            className={cn(
-              overlayInnerClass,
-              "relative flex min-h-0 flex-1 flex-col",
-              "max-lg:rounded-none max-lg:ring-0 max-lg:ring-offset-0",
-            )}
-          >
-            <div
-              className="flex-1 overflow-y-auto"
-              data-docs-scroll-container="true"
-            >
-              <div className="container mx-auto max-w-[45rem] px-6 pt-8 pb-24 lg:px-12 lg:pb-12 xl:px-16">
-                <div className="flex justify-center">
-                  <div className="min-w-0 w-full max-w-3xl">{children}</div>
-                </div>
+    <div className={cn(docsMono.variable, "flex flex-1 flex-col")}>
+      <MarketingContainer className="relative z-10 flex-1 pt-28 pb-16 sm:pt-32 sm:pb-20">
+        <MarketingRail>
+          <div className="flex items-start gap-8">
+            <aside className="hidden w-48 shrink-0 lg:block">
+              <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-1 scrollbar-hide">
+                <DocsSidebar />
               </div>
-            </div>
+            </aside>
+            <div className="min-w-0 flex-1">{children}</div>
           </div>
-        </div>
-      </main>
+        </MarketingRail>
+      </MarketingContainer>
+      <DocsMobileNav />
     </div>
   )
 }

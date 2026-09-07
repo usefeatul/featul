@@ -2,7 +2,6 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeHighlight from "rehype-highlight"
-import { Prose } from "@/components/blog/prose"
 import {
   OverlayCard,
   OverlayCardPanel,
@@ -42,16 +41,17 @@ function extractTextFromChildren(children: React.ReactNode): string {
 
 export function DocsMarkdown({ markdown }: { markdown: string }) {
   return (
-    <Prose className="prose-h2:font-bold prose-h3:font-bold prose-h2:text-muted-foreground prose-h3:text-muted-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:content-none prose-code:after:content-none">
+    <div className="text-base leading-8 text-foreground/80 [&_strong]:font-semibold [&_strong]:text-foreground">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
         components={{
+          h1: () => null,
           h2: ({ children }) => {
             const text = extractTextFromChildren(children)
             const id = slugifyHeading(text)
             return (
-              <h2 id={id} className="font-bold text-muted-foreground tracking-wide">
+              <h2 id={id} className="mb-3 mt-8 scroll-mt-28 text-2xl font-semibold tracking-tight text-foreground first:mt-0">
                 {children}
               </h2>
             )
@@ -60,18 +60,28 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             const text = extractTextFromChildren(children)
             const id = slugifyHeading(text)
             return (
-              <h3 id={id} className="font-bold text-muted-foreground tracking-wide">
+              <h3 id={id} className="mb-2 mt-8 scroll-mt-28 text-lg font-semibold tracking-tight text-foreground">
                 {children}
               </h3>
             )
           },
           p: ({ children }) => (
-            <p className="text-accent tracking-normal">
+            <p className="mb-5 text-base leading-8 text-foreground/80">
               {children}
             </p>
           ),
+          ul: ({ children }) => (
+            <ul className="mb-5 list-disc space-y-2 pl-5">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="mb-5 list-decimal space-y-2 pl-5">
+              {children}
+            </ol>
+          ),
           li: ({ children }) => (
-            <li className="text-accent tracking-normal">
+            <li className="text-base leading-8 text-foreground/80">
               {children}
             </li>
           ),
@@ -97,7 +107,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             return (
               <a
                 href={url}
-                className="text-primary"
+                className="font-medium text-primary underline-offset-4 hover:underline"
                 target={isExternal ? "_blank" : undefined}
                 rel={isExternal ? "noopener noreferrer nofollow" : undefined}
               >
@@ -106,36 +116,29 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
             )
           },
           table: ({ children }) => (
-            <OverlayCard className="my-4 h-auto w-full">
-              <OverlayCardPanel className="overflow-x-auto p-0">
-                <table className="w-full border-collapse text-sm">
-                  {children}
-                </table>
-              </OverlayCardPanel>
-            </OverlayCard>
+            <div className="my-6 w-full overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                {children}
+              </table>
+            </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-primary/20 border-b border-border ">
+            <thead>
               {children}
             </thead>
           ),
-          tbody: ({ children }) => (
-            <tbody>
-              {children}
-            </tbody>
-          ),
           tr: ({ children }) => (
-            <tr className="border-b border-border last:border-b-0">
+            <tr className="border-b border-border">
               {children}
             </tr>
           ),
           th: ({ children }) => (
-            <th className="px-3 py-2 text-left text-xs font-medium text-foreground">
+            <th className="py-2 pr-6 text-left text-xs font-medium uppercase tracking-[0.08em] text-foreground/45">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="px-3 py-2 text-left text-xs text-accent">
+            <td className="py-3 pr-6 text-left text-sm text-foreground/70 first:font-medium first:text-foreground">
               {children}
             </td>
           ),
@@ -180,7 +183,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
       >
         {markdown}
       </ReactMarkdown>
-    </Prose>
+    </div>
   )
 }
 

@@ -1,41 +1,30 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import type { TocItem as TocItemType } from "@/lib/toc"
-import { docsSections } from "@/config/docsNav"
+import {
+  docsSections,
+  findDocsNav,
+  getDocsNeighbors,
+} from "@/config/docsNav"
 import { readDocsMarkdown, type DocsPageId } from "@/lib/docs"
 import { DocsMarkdown, extractDocsToc } from "@/components/docs/markdown"
 import { DocsToc } from "@/components/docs/toc"
-import { OverlayChip } from "@featul/ui/components/overlay-chip"
+import { DocsPager } from "@/components/docs/pager"
 import { createPageMetadata } from "@/lib/seo"
 import { SITE_URL } from "@/config/seo"
 import { buildDocsBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security"
 
 type DocsPageParams = {
-  slug?: string[]
+  slug: string[]
 }
 
 type DocsPageProps = {
   params: Promise<DocsPageParams>
 }
 
-function resolvePathname(params: { slug?: string[] }): string {
-  const segments = params.slug ?? []
-  if (!segments.length) {
-    return "/docs/getting-started"
-  }
-  return `/docs/${segments.join("/")}`
-}
-
-function findNavItem(pathname: string) {
-  for (const section of docsSections) {
-    for (const item of section.items) {
-      if (item.href === pathname) {
-        return { sectionLabel: section.label, item }
-      }
-    }
-  }
-  return null
+function resolvePathname(params: { slug: string[] }): string {
+  return `/docs/${params.slug.join("/")}`
 }
 
 function toTocItems(markdown: string): TocItemType[] {
@@ -47,25 +36,23 @@ function toTocItems(markdown: string): TocItemType[] {
   }))
 }
 
-// Pre-generate all docs pages at build time for SEO
 export async function generateStaticParams(): Promise<DocsPageParams[]> {
   const params: DocsPageParams[] = []
-  
+
   for (const section of docsSections) {
     for (const item of section.items) {
-      // Remove "/docs/" prefix and split into segments
       const segments = item.href.replace("/docs/", "").split("/").filter(Boolean)
-      params.push({ slug: segments.length ? segments : undefined })
+      if (segments.length) params.push({ slug: segments })
     }
   }
-  
+
   return params
 }
 
 export async function generateMetadata(props: DocsPageProps): Promise<Metadata> {
   const params = await props.params
   const pathname = resolvePathname(params)
-  const nav = findNavItem(pathname)
+  const nav = findDocsNav(pathname)
   if (!nav) notFound()
 
   const docs = await readDocsMarkdown(nav.item.id as DocsPageId)
@@ -84,14 +71,13 @@ export async function generateMetadata(props: DocsPageProps): Promise<Metadata> 
 export default async function DocsPage(props: DocsPageProps) {
   const params = await props.params
   const pathname = resolvePathname(params)
-  const nav = findNavItem(pathname)
-  if (!nav) {
-    notFound()
-  }
+  const nav = findDocsNav(pathname)
+  if (!nav) notFound()
 
   const docs = await readDocsMarkdown(nav.item.id as DocsPageId)
   const tocItems: TocItemType[] = toTocItems(docs.content)
   const pageTitle = docs.frontmatter.title ?? nav.item.label
+  const { prev, next } = getDocsNeighbors(pathname)
   const breadcrumbSchema = buildDocsBreadcrumbSchema({
     siteUrl: SITE_URL,
     pathname,
@@ -100,39 +86,41 @@ export default async function DocsPage(props: DocsPageProps) {
   })
 
   return (
-    <>
+    <div className="flex items-start gap-8">
       <script
         id="docs-breadcrumb-jsonld"
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
-      {/* Fixed TOC on the right */}
-      <aside className="pointer-events-none fixed top-12 right-6 z-20 hidden xl:block">
-        <div className="w-50 max-w-xs pointer-events-auto">
+
+      <article className="min-w-0 flex-1">
+        <header className="mb-8">
+          <p className="text-xs font-medium uppercase tracking-[0.08em] text-foreground/45">
+            {nav.sectionLabel}
+          </p>
+          <div className="mt-2 flex items-start justify-between gap-4">
+            <h1 className="min-w-0 text-3xl font-semibold tracking-tight text-foreground sm:text-[2.15rem]">
+              {pageTitle}
+            </h1>
+            <div className="shrink-0 pt-1">
+              <DocsPager prev={prev} next={next} />
+            </div>
+          </div>
+          {docs.frontmatter.description ? (
+            <p className="mt-3 text-lg leading-8 text-foreground/55">
+              {docs.frontmatter.description}
+            </p>
+          ) : null}
+        </header>
+        <DocsMarkdown markdown={docs.content} />
+      </article>
+
+      <aside className="hidden w-40 shrink-0 xl:block">
+        <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide">
           <DocsToc items={tocItems} />
         </div>
       </aside>
-
-      <section>
-        <div className="max-w-2xl lg:max-w-3xl space-y-6">
-          <div className="space-y-3">
-            <OverlayChip innerClassName="h-auto min-h-5 px-2 text-[11px] font-medium text-accent">
-              {nav.sectionLabel}
-            </OverlayChip>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">
-              {docs.frontmatter.title ?? nav.item.label}
-            </h1>
-            {docs.frontmatter.description && (
-              <p className="text-sm sm:text-base text-accent max-w-xl">
-                {docs.frontmatter.description}
-              </p>
-            )}
-          </div>
-          <DocsMarkdown markdown={docs.content} />
-        </div>
-      </section>
-    </>
+    </div>
   )
 }
-

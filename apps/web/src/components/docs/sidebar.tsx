@@ -2,124 +2,165 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { SearchIcon } from "@featul/ui/icons/search";
+import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
 import { cn } from "@featul/ui/lib/utils";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
-import { OverlayChip } from "@featul/ui/components/overlay-chip";
 import { docsSections } from "../../config/docsNav";
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useLayoutEffect,
-  useCallback,
-} from "react";
-import { motion } from "framer-motion";
-
-// Flatten all nav items for tracking
-const allNavItems = docsSections.flatMap((section) => section.items);
 
 export function DocsSidebar() {
   const pathname = usePathname();
-  const navRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
-  const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0, opacity: 0 });
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [query, setQuery] = useState("");
 
-  // Calculate indicator position based on active item
-  const updateIndicator = useCallback(() => {
-    const activeItem = allNavItems.find((item) => item.href === pathname);
-    if (!activeItem || !navRef.current) return;
+  const activeSection = docsSections.find((section) =>
+    section.items.some((item) => item.href === pathname),
+  )?.label;
 
-    const activeEl = itemRefs.current.get(activeItem.href);
-    if (!activeEl) return;
+  const [openSections, setOpenSections] = useState<Set<string>>(() => {
+    if (pathname === "/docs") {
+      return new Set(docsSections.map((section) => section.label));
+    }
+    return new Set(activeSection ? [activeSection] : []);
+  });
 
-    const navRect = navRef.current.getBoundingClientRect();
-    const itemRect = activeEl.getBoundingClientRect();
-    const indicatorInset = 7;
-
-    setIndicatorStyle({
-      top: itemRect.top - navRect.top + indicatorInset,
-      height: Math.max(itemRect.height - indicatorInset * 2, 0),
-      opacity: 1,
-    });
-  }, [pathname]);
-
-  // Update on pathname change and initial mount
-  useLayoutEffect(() => {
-    updateIndicator();
-  }, [updateIndicator]);
-
-  // Handle resize
   useEffect(() => {
-    window.addEventListener("resize", updateIndicator);
-    return () => window.removeEventListener("resize", updateIndicator);
-  }, [updateIndicator]);
+    if (pathname === "/docs") {
+      setOpenSections(new Set(docsSections.map((section) => section.label)));
+      return;
+    }
+    if (activeSection) {
+      setOpenSections((current) => {
+        if (current.has(activeSection)) return current;
+        const next = new Set(current);
+        next.add(activeSection);
+        return next;
+      });
+    }
+  }, [pathname, activeSection]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (target && /^(input|textarea|select)$/i.test(target.tagName)) return;
+      event.preventDefault();
+      inputRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const filteredSections = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return docsSections;
+    return docsSections
+      .map((section) => ({
+        ...section,
+        items: section.items.filter(
+          (item) =>
+            item.label.toLowerCase().includes(q) ||
+            section.label.toLowerCase().includes(q),
+        ),
+      }))
+      .filter((section) => section.items.length > 0);
+  }, [query]);
+
+  const searching = query.trim().length > 0;
+
+  function toggleSection(label: string) {
+    setOpenSections((current) => {
+      const next = new Set(current);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  }
 
   return (
-    <nav className="flex flex-col h-full select-none">
-      {/* Logo header - clean and simple */}
-      <Link
-        href="/"
-        className="group mb-12 flex items-center gap-3 pl-3"
-      >
-        <FeatulLogoIcon className="size-5 text-foreground" />
-        <OverlayChip innerClassName="h-auto min-h-5 px-2 text-[11px] font-medium text-foreground">
-          Docs
-        </OverlayChip>
-      </Link>
-
-      {/* Navigation sections with gliding indicator */}
-      <div ref={navRef} className="flex-1 space-y-8 relative">
-        {/* Gliding active indicator */}
-        <motion.div
-          className="absolute left-0 w-0.5 bg-primary rounded-full"
-          initial={false}
-          animate={{
-            top: indicatorStyle.top,
-            height: indicatorStyle.height,
-            opacity: indicatorStyle.opacity,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 120,
-            damping: 20,
-            mass: 1,
-          }}
+    <nav aria-label="Documentation" className="flex flex-col">
+      <label className="relative mb-6 block">
+        <span className="sr-only">Search docs</span>
+        <SearchIcon
+          size={14}
+          className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-accent"
         />
+        <input
+          ref={inputRef}
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search docs"
+          className="h-8 w-full rounded-md border border-border bg-background pl-8 pr-10 text-sm text-foreground outline-none placeholder:text-foreground/40 focus-visible:ring-2 focus-visible:ring-primary/20"
+        />
+        <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-border px-1 text-[10px] font-medium text-accent">
+          /
+        </kbd>
+      </label>
 
-        {docsSections.map((section) => (
-          <div key={section.label}>
-            {/* Section label */}
-            <p className="text-xs font-semibold text-foreground tracking-[0.1em] uppercase mb-3 pl-3">
-              {section.label}
-            </p>
-
-            {/* Section items */}
-            <ul className="space-y-0.5 border-l border-border/50">
-              {section.items.map((item) => {
-                const isActive = pathname === item.href;
-
-                return (
-                  <li key={item.href}>
-                    <Link
-                      ref={(el) => {
-                        if (el) itemRefs.current.set(item.href, el);
-                      }}
-                      href={item.href}
-                      className={cn(
-                        "group relative block py-1.5 pl-3 -ml-px text-sm transition-colors duration-150",
-                        isActive
-                          ? "text-foreground font-medium"
-                          : "text-muted-foreground/60 hover:text-foreground"
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+      <div className="space-y-1">
+        {!searching ? (
+          <Link
+            href="/docs"
+            className={cn(
+              "mb-2 block rounded-md px-2 py-1.5 text-sm leading-5 transition-colors",
+              pathname === "/docs"
+                ? "bg-muted font-medium text-foreground"
+                : "text-foreground/70 hover:text-foreground",
+            )}
+          >
+            Overview
+          </Link>
+        ) : null}
+        {filteredSections.map((section) => {
+          const isOpen = searching || openSections.has(section.label);
+          return (
+            <div key={section.label}>
+              <button
+                type="button"
+                onClick={() => toggleSection(section.label)}
+                className="flex w-full items-center justify-between gap-2 py-1.5 text-left text-xs font-medium uppercase tracking-[0.08em] text-foreground/45"
+                aria-expanded={isOpen}
+              >
+                {section.label}
+                <ChevronRightIcon
+                  size={12}
+                  className={cn(
+                    "shrink-0 text-foreground/35 transition-transform",
+                    isOpen && "rotate-90",
+                  )}
+                />
+              </button>
+              {isOpen ? (
+                <ul className="mb-3 space-y-0.5">
+                  {section.items.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            "block rounded-md px-2 py-1.5 text-sm leading-5 transition-colors",
+                            isActive
+                              ? "bg-muted font-medium text-foreground"
+                              : "text-foreground/70 hover:text-foreground",
+                          )}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : null}
+            </div>
+          );
+        })}
+        {filteredSections.length === 0 ? (
+          <p className="px-2 py-3 text-sm text-accent">No matching pages.</p>
+        ) : null}
       </div>
     </nav>
   );

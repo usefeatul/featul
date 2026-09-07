@@ -1,5 +1,5 @@
 ---
-title: Wellcome?
+title: What is Featul?
 description: A quick overview of Featul and how it helps you collect and manage user feedback.
 ---
 

@@ -9,6 +9,35 @@ export interface DocsNavSection {
   items: DocsNavItem[]
 }
 
+export type DocsNavEntry = DocsNavItem & { sectionLabel: string }
+
+export function flattenDocsNav(sections: DocsNavSection[] = docsSections): DocsNavEntry[] {
+  return sections.flatMap((section) =>
+    section.items.map((item) => ({ ...item, sectionLabel: section.label })),
+  )
+}
+
+export function findDocsNav(pathname: string, sections: DocsNavSection[] = docsSections) {
+  for (const section of sections) {
+    for (const item of section.items) {
+      if (item.href === pathname) {
+        return { sectionLabel: section.label, item }
+      }
+    }
+  }
+  return null
+}
+
+export function getDocsNeighbors(pathname: string, sections: DocsNavSection[] = docsSections) {
+  const items = flattenDocsNav(sections)
+  const index = items.findIndex((item) => item.href === pathname)
+  if (index < 0) return { prev: null, next: null }
+  return {
+    prev: items[index - 1] ?? null,
+    next: items[index + 1] ?? null,
+  }
+}
+
 export const docsSections: DocsNavSection[] = [
   {
     label: "Introduction",

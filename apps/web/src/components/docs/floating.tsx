@@ -17,9 +17,14 @@ import { useIsDocsMobile } from "@/hooks/docs"
 export function DocsMobileFloatingNav() {
   const isMobile = useIsDocsMobile()
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [isBottomNavVisible, setIsBottomNavVisible] = useState<boolean>(true)
   const lastScrollYRef = useRef<number>(0)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const currentPageLabel = useMemo(
     () => getDocsCurrentPageLabel(pathname),
@@ -67,12 +72,14 @@ export function DocsMobileFloatingNav() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  if (!mounted || !isMobile) return null
+
   return (
     <div
       className={cn(
-        "fixed bottom-6 left-1/2 -translate-x-1/2 z-70 transition-all duration-300 ease-out",
-        !isOpen && (!isBottomNavVisible || !isMobile)
-          ? "translate-y-24 opacity-0"
+        "fixed bottom-6 left-1/2 z-70 -translate-x-1/2 transition-all duration-300 ease-out lg:hidden",
+        !isOpen && !isBottomNavVisible
+          ? "pointer-events-none translate-y-24 opacity-0"
           : "translate-y-0 opacity-100",
       )}
     >

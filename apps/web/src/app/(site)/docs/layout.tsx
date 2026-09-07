@@ -6,10 +6,5 @@ export default function DocsLayout({
 }: {
   children: ReactNode
 }) {
-  return (
-    <DocsLayoutShell>
-      {children}
-    </DocsLayoutShell>
-  )
+  return <DocsLayoutShell>{children}</DocsLayoutShell>
 }
-
