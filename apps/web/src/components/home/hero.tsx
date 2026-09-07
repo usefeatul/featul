@@ -22,7 +22,7 @@ export function Hero() {
         className={cn("relative z-10", edgeGutterXClass)}
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="pt-24 sm:pt-28">
+          <div className="pt-32 sm:pt-36">
             <HeroContent />
           </div>
 

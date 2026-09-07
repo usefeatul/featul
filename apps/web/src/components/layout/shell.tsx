@@ -38,7 +38,7 @@ export function SkyPageShell({
         <Container
           maxWidth="6xl"
           className={cn(
-            "relative z-10 pt-24 sm:pt-28",
+            "relative z-10 pt-32 sm:pt-36",
             edgeGutterXClass,
             below ? "pb-0" : "pb-10 sm:pb-12",
           )}

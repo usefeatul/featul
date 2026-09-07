@@ -34,7 +34,7 @@ export function SkyMarketingHero({
         className={cn("relative z-10", edgeGutterXClass)}
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="pt-24 sm:pt-28">{children}</div>
+          <div className="pt-32 sm:pt-36">{children}</div>
 
           <SkyDashboardBanner
             data-component={
