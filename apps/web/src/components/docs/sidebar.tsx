@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchIcon } from "@featul/ui/icons/search";
+import { XMarkIcon } from "@featul/ui/icons/xmark";
 import { cn } from "@featul/ui/lib/utils";
 import { docsSections } from "../../config/docsNav";
 
@@ -88,12 +89,33 @@ export function DocsSidebar() {
         />
         <input
           ref={inputRef}
-          type="search"
+          type="text"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search docs"
-          className="h-8 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-foreground/40 focus-visible:ring-2 focus-visible:ring-primary/20"
+          autoComplete="off"
+          className={cn(
+            "h-8 w-full appearance-none rounded-md border border-border bg-background pl-8 text-sm text-foreground shadow-none outline-none placeholder:text-foreground/40",
+            "focus:bg-background focus:shadow-none focus-visible:border-border focus-visible:bg-background focus-visible:ring-0",
+            "autofill:bg-background autofill:shadow-[inset_0_0_0_1000px_var(--background)]",
+            "[&:-webkit-autofill]:bg-background [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_var(--background)] [&:-webkit-autofill]:[-webkit-text-fill-color:inherit]",
+            searching ? "pr-8" : "pr-3",
+          )}
         />
+        {searching ? (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              inputRef.current?.focus();
+            }}
+            aria-label="Clear search"
+            className="absolute top-1/2 left-auto flex -translate-y-1/2 items-center justify-center text-primary hover:text-primary/80"
+            style={{ right: 8 }}
+          >
+            <XMarkIcon size={14} className="text-primary" />
+          </button>
+        ) : null}
       </label>
 
       <div className="space-y-1">
