@@ -1,15 +1,17 @@
 ---
 title: Plan roadmap
-description: Turn feedback into an actionable roadmap with clear statuses.
+description: Turn feedback into a public or private roadmap.
 ---
 
-## Roadmap Boards
+## Roadmap
 
-Transform feedback into visual development pipelines. Roadmap boards display feature requests organized by development stage, giving customers visibility into your product direction.
+Roadmap is a built-in workspace view, not a board you create. Open it from the sidebar or at `yourproduct.featul.com/roadmap` when it is visible on the public site.
 
-## Default Status Pipeline
+Show or hide it on the public portal and widget from **Settings → Feedback**.
 
-Every roadmap board includes these statuses:
+## Status columns
+
+Requests on the roadmap use these statuses:
 
 | Status | Purpose |
 |--------|---------|
@@ -17,35 +19,27 @@ Every roadmap board includes these statuses:
 | **Review** | Under team consideration |
 | **Planned** | Committed to development |
 | **Progress** | Currently being built |
-| **Completed** | Shipped and available |
-| **Closed** | Won't be implemented |
+| **Completed** | Shipped |
+| **Closed** | Will not be implemented |
 
-## Customize Statuses
+## Manage roadmap items
 
-Adapt the pipeline to your workflow:
+Update status by:
 
-1. Go to **Settings → Boards**
-2. Select roadmap board
-3. Click **Edit roadmap statuses**
-4. Modify names, colors, and order
-5. Save changes
+- Dragging cards between columns
+- Changing status on an individual request
 
-Changes apply across all roadmap views and post cards.
+Pin important items so they stay visible at the top of a column.
 
-## Manage Roadmap Items
+## Public vs internal
 
-Update item status through:
-- **Drag and drop** between columns
-- **Status dropdown** on individual posts
-- **Bulk actions** for multiple items
+Keep the roadmap hidden while you groom the backlog, then turn **Enable Roadmap** on in **Settings → Feedback** when you are ready for customers to see it.
 
-Pin important items to keep them visible at the top of columns.
+## Close the loop
 
-## Connect to Changelog
+When work ships:
 
-Complete the feedback loop:
-1. Move completed features to **Completed** status
-2. Create changelog entry for the release
-3. Link changelog to original feedback post
+1. Move the request to **Completed**
+2. Publish a [changelog entry](/docs/getting-started/publish-updates)
 
-This shows users their requests led to real product improvements.
+That shows users their feedback led to a real product change.

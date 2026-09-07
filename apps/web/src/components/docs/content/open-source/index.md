@@ -3,68 +3,64 @@ title: Open Source
 description: Featul is open source software. View the code, contribute, or self-host.
 ---
 
-## Open Source Commitment
+## Open source commitment
 
-Featul is fully open source under the MIT License. Access the complete codebase, contribute improvements, or self-host for your organization.
+Featul is open source under the MIT License. You can read the code, contribute, or run your own instance.
 
-## Why Open Source?
+## Why open source?
 
-- **Transparency** – Full visibility into data handling and feature implementation
-- **Trust** – No hidden functionality or black boxes
-- **Community** – Collective improvements benefit all users
-- **Freedom** – Self-host, modify, and adapt to specific needs
-- **Longevity** – Code remains available regardless of service changes
+- **Transparency** – Full visibility into how feedback and auth work
+- **Trust** – No hidden product behavior
+- **Community** – Improvements can be shared
+- **Freedom** – Self-host and adapt the software
+- **Longevity** – The code stays available even if the hosted service changes
 
-## Source Code
+## Source code
 
-[View on GitHub](https://github.com/usefeatul/feautl)
+[View on GitHub](https://github.com/usefeatul/featul)
 
-## Tech Stack
+## Tech stack
 
-- **Frontend** – Next.js, React, Tailwind CSS
-- **Backend** – Elysia, Drizzle ORM  
-- **Database** – PostgreSQL
-- **Authentication** – Better Auth
+- **Apps** – Next.js and React (product app and marketing/docs site)
+- **API** – Type-safe RPC on Hono (jstack)
+- **Database** – PostgreSQL with Drizzle ORM
+- **Authentication** – Better Auth (email, Google, GitHub, passkeys, 2FA)
 - **Monorepo** – Turborepo with shared packages
 - **Editor** – Tiptap rich text editor
+- **Runtime** – Bun
 
 ## License
 
 MIT License permits:
+
 - Commercial and personal use
 - Modification and distribution
 - Private and public deployment
-- No copyleft requirements
 
-## Self-Hosting
-
-Deploy your own instance:
+## Self-hosting
 
 ### Requirements
-- Node.js 18+ or Bun
+
+- Node.js 20+ and Bun 1.2+
 - PostgreSQL database
-- Environment configuration
+- Environment configuration for the app and web sites
 
-### Quick Start
-1. Clone repository
+### Quick start
+
+1. Clone [usefeatul/featul](https://github.com/usefeatul/featul)
 2. Install dependencies: `bun install`
-3. Configure environment variables
-4. Run database migrations
-5. Start development server: `bun dev`
+3. Copy env examples: `cp apps/app/.env.example apps/app/.env.local` and `cp apps/web/.env.example apps/web/.env.local`
+4. Configure environment variables
+5. Run database migrations
+6. Start development: `bun dev`
 
-See repository README for detailed setup and deployment guides.
+See the repository README for the full setup.
 
 ## Contributing
 
-We welcome community contributions:
-
 1. Fork the repository
-2. Create feature branch
-3. Make changes with tests
-4. Submit pull request
+2. Create a feature branch
+3. Make your changes
+4. Open a pull request
 
-Contribute bug fixes, features, documentation, translations, or design improvements.
-
----
-
-**Note:** By contributing, you agree to license contributions under the MIT License.
+By contributing, you agree to license your work under the MIT License.

@@ -1,51 +1,50 @@
 ---
 title: Guest feedback
-description: Collect feedback from visitors without requiring account creation.
+description: Collect feedback from visitors without requiring an account.
 ---
 
-## Anonymous Submissions
+## Anonymous submissions
 
-Remove friction from feedback collection by allowing visitors to submit without creating accounts. This increases submission volume while maintaining quality control.
+Let visitors submit and vote without creating an account. This lowers friction on public boards and the embed widget.
 
 ## Configuration
 
-Enable guest submissions per board:
+Enable guest submissions from **Settings → Board Settings**:
 
-1. Navigate to **Settings → Boards**
-2. Select target board
-3. Enable **Allow anonymous submissions**
-4. Configure additional options:
-   - Allow guest comments
-   - Require approval queue
-   - Enable spam detection
+1. Open **Settings → Board Settings**
+2. Turn on **Enable anonymous submissions**
+3. Optionally keep **Enable comments** on if guests should discuss posts
 
-## Moderation Controls
+Guests are tracked with a browser fingerprint so they can vote and comment without an account. Signed-in users are attributed to their profile, or to the identity you pass through the [widget](/docs/getting-started/widget).
 
-Maintain quality with built-in moderation tools:
+## Moderation
+
+Keep boards clean with the tools in the workspace:
 
 | Tool | Function |
 |------|----------|
-| **Approval queue** | Hold submissions for review before publishing |
-| **Spam flagging** | Mark posts or comments as spam |
 | **Archive** | Remove content from public view |
+| **Spam** | Flag unwanted posts or comments |
 | **Reports** | Review user-submitted reports |
+| **Merge** | Combine duplicate requests |
 
-## When to Enable
+There is no separate approval queue. New posts go live according to your board settings.
 
-Guest feedback works best for:
-- Early-stage products building feedback base
-- Marketing pages capturing visitor input
-- Low-friction feedback widgets
+## When to enable
+
+Guest feedback works well for:
+
 - Public feature request boards
+- Marketing pages capturing visitor input
+- Low-friction in-app widgets
 
-## When to Require Sign-in
+## When to require sign-in
 
-Disable guest submissions when:
-- Following up with specific users is critical
-- Handling sensitive or confidential topics
-- Experiencing spam or abuse issues
-- Linking feedback to customer accounts is necessary
+Turn anonymous submissions off when:
 
-## Privacy Considerations
+- You need to follow up with a specific person
+- The board covers sensitive topics
+- You are seeing abuse
+- Feedback should be tied to a customer account
 
-For sensitive boards (security, private roadmaps), disable anonymous submissions to ensure only authenticated users can contribute.
+For public boards where signed-in names should stay private, see [Mask identities](/docs/getting-started/mask-identities).

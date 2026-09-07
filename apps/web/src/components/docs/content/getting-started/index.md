@@ -8,34 +8,37 @@ description: Create your account and start collecting customer feedback in minut
 Create your feedback portal in three steps:
 
 ### 1. Create Account
-Sign up with Google, GitHub, or email. Email users receive a verification code to complete registration.
+Sign up with Google, GitHub, or email. Email users receive a verification code to complete registration. You can also add a passkey or two-factor authentication later from **Account → Security**.
 
 ### 2. Set Up Workspace
-Choose a workspace name and subdomain (e.g., `yourproduct.featul.com`). This becomes your feedback portal URL.
+Choose a workspace name (up to 15 characters) and subdomain (e.g., `yourproduct.featul.com`). This becomes your public feedback portal URL.
 
-### 3. Create First Board
-Go to **Settings → Boards** and create a public feedback board. This is where customers submit ideas and vote on features.
+New workspaces start with **Features** and **Bugs** boards, plus a **Roadmap** and **Changelog**.
+
+### 3. Share a Board
+Open **Settings → Board Settings** to review privacy, anonymous submissions, and comments. Share `yourproduct.featul.com` so customers can submit ideas and vote.
 
 ## Customization Options
 
 After setup, personalize your workspace:
 
-- **Branding** – Upload logo and set brand colors
-- **Domain** – Connect custom domain like `feedback.yourcompany.com`
-- **Team** – Invite members to collaborate
+- **Branding** – Upload a logo, set brand colors, theme, and layout
+- **Domain** – Connect a custom domain like `feedback.yourcompany.com` (Starter and Professional)
+- **Team** – Invite members as admin, member, or viewer
+- **Widget** – Embed feedback inside your product from **Settings → Workspace**
 
 ## Share Your Portal
 
 Distribute your workspace URL through:
+
 - App navigation or help menus
 - Onboarding emails
-- Website feedback widgets
+- The [in-app widget](/docs/getting-started/widget)
 
 ## Next Steps
 
-- [Learn the keyboard shortcuts](/docs/getting-started/shortcuts) used across the workspace app
 - [Create additional boards](/docs/getting-started/create-boards) for different feedback types
-- [Embed the widget](/docs/getting-started/widget) to collect feedback inside your app
 - [Invite team members](/docs/getting-started/invite-members) to manage feedback together
 - [Plan your roadmap](/docs/getting-started/plan-roadmap) to share upcoming features
 - [Publish updates](/docs/getting-started/publish-updates) through your changelog
+- [Embed the widget](/docs/getting-started/widget) to collect feedback inside your app

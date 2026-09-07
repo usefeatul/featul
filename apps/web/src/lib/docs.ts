@@ -16,20 +16,15 @@ export type DocsPageId =
   | "getting-started/plan-roadmap"
   | "getting-started/publish-updates"
   | "getting-started/private-boards"
-  | "getting-started/smart-grouping"
+  | "getting-started/organize-feedback"
   | "getting-started/guest-feedback"
   | "getting-started/widget"
-  | "getting-started/add-userjot-links"
   | "getting-started/mask-identities"
   | "branding-setup/branding"
   | "branding-setup/domain"
   | "branding-setup/integrations"
-  | "branding-setup/sso"
+  | "branding-setup/data"
   | "open-source/index"
-  | "advanced/subdomain-tracking"
-  | "advanced/custom-events"
-  | "advanced/identify"
-  | "advanced/persist"
 
 const DOC_IDS: DocsPageId[] = [
   "getting-started/overview",
@@ -40,20 +35,15 @@ const DOC_IDS: DocsPageId[] = [
   "getting-started/plan-roadmap",
   "getting-started/publish-updates",
   "getting-started/private-boards",
-  "getting-started/smart-grouping",
+  "getting-started/organize-feedback",
   "getting-started/guest-feedback",
   "getting-started/widget",
-  "getting-started/add-userjot-links",
   "getting-started/mask-identities",
   "branding-setup/branding",
   "branding-setup/domain",
   "branding-setup/integrations",
-  "branding-setup/sso",
+  "branding-setup/data",
   "open-source/index",
-  "advanced/subdomain-tracking",
-  "advanced/custom-events",
-  "advanced/identify",
-  "advanced/persist",
 ]
 
 const DOC_ID_SET = new Set<string>(DOC_IDS)

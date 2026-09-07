@@ -1,52 +1,44 @@
 ---
 title: Invite members
-description: Add your team to Featul with the right roles and permissions.
+description: Add your team to Featul with the right role.
 ---
 
-## Team Roles
+## Team roles
 
-Control workspace access with role-based permissions:
+Control workspace access with three roles:
 
-| Role | Access Level |
-|------|--------------|
-| **Admin** | Full workspace control – settings, billing, members, all boards |
-| **Member** | Manage feedback, boards, roadmap, changelog |
-| **Viewer** | Read-only access to content |
+| Role | Access |
+|------|--------|
+| **Admin** | Full workspace control — settings, billing, members, boards, and branding |
+| **Member** | Manage boards, moderate feedback, and configure branding. Cannot change workspace, billing, or members |
+| **Viewer** | Read-only access |
 
-## Additional Permissions
+Roles are selected when you send an invite. You cannot pick individual permissions beyond the role.
 
-Fine-tune access beyond basic roles:
-
-- **Manage workspace** – Modify settings and configuration
-- **Manage billing** – Access subscription and payment settings  
-- **Manage members** – Invite, remove, modify team members
-- **Manage boards** – Create, edit, delete boards
-- **Moderate all boards** – Review and manage content across boards
-- **Configure branding** – Customize appearance and theme
-
-## Invite Process
+## Invite process
 
 1. Go to **Settings → Team**
 2. Click **Invite member**
-3. Enter email address
-4. Select role and permissions
-5. Send invitation
+3. Enter an email address
+4. Choose **admin**, **member**, or **viewer**
+5. Send the invite
 
-Invited members receive an email with workspace access link.
+Invited people receive an email with a workspace invite link.
 
-## Team Management
+Member limits depend on your plan (for example, Free includes a small team). Upgrade if you hit the cap.
+
+## Team management
 
 From **Settings → Team**, you can:
 
-- Modify member roles and permissions
-- Resend pending invitations
-- Revoke unaccepted invitations
+- Change member roles
+- Resend or revoke pending invitations
 - Remove team members
-- View member activity and access history
 
-## Best Practices
+The **Members** page in the workspace sidebar shows team activity.
 
-- Assign the minimum role needed for each member's responsibilities
-- Use **Viewer** role for stakeholders who need visibility without editing access
-- Reserve **Admin** role for team members who manage workspace settings and billing
-- Review team access regularly and remove inactive members
+## Best practices
+
+- Give each person the lowest role they need
+- Use **Viewer** for stakeholders who should see feedback without editing
+- Keep **Admin** for people who manage settings and billing

@@ -1,49 +1,41 @@
 ---
 title: Publish updates
-description: Share release notes and product updates through your changelog.
+description: Share release notes through your changelog.
 ---
 
-## Changelog Boards
+## Changelog
 
-Announce product changes through dedicated changelog boards. Keep customers informed about new features, improvements, and fixes while connecting updates to original feedback.
+Changelog is a built-in workspace section. Open it from the sidebar or at `yourproduct.featul.com/changelog` when it is visible on the public site.
 
-## Content Types
+Show or hide it on the public portal and widget from **Settings → Changelog**.
 
-Organize updates with descriptive tags:
+## Create an entry
 
-| Tag | Use For |
-|-----|---------|
-| **Feature** | New functionality |
-| **Improvement** | Enhanced existing features |
-| **Fix** | Bug fixes |
-| **Performance** | Speed and optimization |
-| **Security** | Security patches |
+1. Open **Changelog** in the workspace sidebar
+2. Click **Create Entry**
+3. Add a title and content
+4. Optionally add tags and a cover image
+5. Publish, or save as a draft
 
-## Create Changelog Entry
+You can use AI assist in the editor to draft or rewrite an entry, including from existing feedback posts.
 
-1. Navigate to **Changelog** board
-2. Click **New entry**
-3. Complete details:
-   - **Title** – Clear headline for the update
-   - **Content** – Explain what changed and why
-   - **Tags** – Select appropriate category
-4. Publish
+## Tags
 
-Entries appear chronologically on your changelog board.
+Create your own changelog tags in **Settings → Changelog** (for example Feature, Fix, or Improvement). Tags are empty until you add them.
 
-## Connect to Feedback
+## RSS
 
-Close the feedback loop:
-1. Update original request roadmap status to **Completed**
-2. Reference the request in changelog content
-3. Link to original feedback post
+Customers can follow updates in any RSS reader:
 
-This shows customers their input directly influenced product development.
+```
+https://yourproduct.featul.com/changelog/feed.xml
+```
 
-## Distribution
+If you connect a custom domain, the feed is `https://feedback.yourdomain.com/changelog/feed.xml`. Copy the URL from **Settings → Changelog**.
 
-Your changelog is accessible at:
+## Public URLs
+
+Your changelog is available at:
+
 - Workspace subdomain: `yourproduct.featul.com/changelog`
 - Custom domain: `feedback.yourdomain.com/changelog`
-
-Customers can subscribe to updates or check the changelog directly.

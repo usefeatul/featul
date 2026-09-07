@@ -3,51 +3,35 @@ title: Private boards
 description: Create internal boards that only your team can access.
 ---
 
-## Privacy Settings
+## Privacy settings
 
-Control board visibility with three access levels:
+Each feedback board is either public or private:
 
 | Type | Access |
 |------|--------|
-| **Public** | Anyone can view and submit feedback |
+| **Public** | Visible on your portal for customers |
 | **Private** | Only workspace members can access |
-| **Unlisted** | Accessible via direct link, hidden from navigation |
 
-## Internal Use Cases
+Private boards do not appear in public navigation.
 
-Private boards support internal workflows:
+## Internal use cases
 
-- **Backlog grooming** – Discuss and prioritize before public sharing
-- **Internal feedback** – Collect ideas from customer-facing teams
-- **Early-stage concepts** – Test ideas internally before customer exposure
-- **Sensitive topics** – Handle confidential features or issues
+Private boards work well for:
 
-## Create Private Board
+- Backlog grooming before public sharing
+- Internal ideas from customer-facing teams
+- Early-stage concepts
+- Sensitive topics
 
-1. Go to **Settings → Boards**
-2. Click **Create board** or edit existing
-3. Disable **Public** toggle
-4. Save changes
+## Create or convert a private board
 
-Private boards are invisible to non-members and don't appear in public navigation.
+1. Go to **Settings → Board Settings**
+2. Create a board, or open the menu on an existing board
+3. Set the type to **Private** or **Public**
 
-## Convert Privacy
+**Public → Private**: content becomes team-only.
+**Private → Public**: existing posts become visible to customers.
 
-Change board visibility at any time:
+Content stays on the board. Only who can see it changes.
 
-1. Navigate to **Settings → Boards**
-2. Select target board
-3. Toggle **Public** setting
-4. Save changes
-
-**Public → Private**: Content becomes team-only
-**Private → Public**: Existing posts become customer-visible
-
-Content remains on the board—only visibility changes.
-
-## Best Practices
-
-- Start private while establishing workflow
-- Move to public when ready for customer feedback
-- Use unlisted boards for beta users or specific groups
-- Maintain private boards for internal prioritization
+Roadmap and Changelog visibility is separate. Toggle those from **Settings → Feedback** and **Settings → Changelog**.

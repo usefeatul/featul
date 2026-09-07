@@ -15,7 +15,9 @@ Featul is a feedback management platform that helps teams collect, organize, and
 
 **Changelog** – Announce new features and updates. Keep your users engaged and informed about product improvements.
 
-**Team Collaboration** – Invite team members to manage feedback together. Assign roles, discuss requests internally, and coordinate responses.
+**Embed Widget** – Add a feedback widget to your product so customers can browse boards, vote, view the roadmap, and read updates without leaving your app.
+
+**Team Collaboration** – Invite team members as admins, members, or viewers. Discuss requests internally and coordinate responses.
 
 ## How It Works
 
