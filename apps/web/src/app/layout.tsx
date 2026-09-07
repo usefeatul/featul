@@ -118,13 +118,6 @@ export default function RootLayout({
             __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var nav=performance.getEntriesByType("navigation")[0];var reload=nav&&(nav.type==="reload"||nav.type==="back_forward");var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v4")||"0",10)||0}catch(e){}if(!reload)y=0;var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0){h.setAttribute("data-scrolled","");if(y>=80)h.style.opacity="0";function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)}})();`,
           }}
         />
-        {selineToken ? (
-          <Script
-            src="https://cdn.seline.com/seline.js"
-            data-token={selineToken}
-            strategy="afterInteractive"
-          />
-        ) : null}
         <OrganizationJsonLd />
         <script
           id="site-navigation-jsonld"
@@ -169,6 +162,14 @@ export default function RootLayout({
         <MarketingEdgePattern />
         {children}
         <DebugTools />
+        {selineToken ? (
+          <Script
+            src="/sln.js"
+            data-token={selineToken}
+            data-api-host="/_sln"
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );

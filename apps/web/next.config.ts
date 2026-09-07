@@ -64,6 +64,16 @@ const nextConfig = {
           destination: '/md/docs/:path*',
         },
       ],
+      afterFiles: [
+        {
+          source: '/sln.js',
+          destination: 'https://cdn.seline.com/seline.js',
+        },
+        {
+          source: '/_sln/:path*',
+          destination: 'https://api.seline.com/:path*',
+        },
+      ],
     }
   },
   async headers() {
@@ -76,7 +86,7 @@ const nextConfig = {
         key: 'Content-Security-Policy',
         value: [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.marblecms.com https://news.google.com",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.marblecms.com https://news.google.com https://cdn.seline.com",
           "style-src 'self' 'unsafe-inline'",
           "img-src 'self' data: blob: https:",
           "font-src 'self' data:",
