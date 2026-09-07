@@ -18,7 +18,7 @@ interface DocsLayoutShellProps {
 
 export function DocsLayoutShell({ children }: DocsLayoutShellProps) {
   return (
-    <div className={cn(docsMono.variable, "fixed inset-0 flex bg-muted")}>
+    <div className={cn(docsMono.variable, "fixed inset-0 z-30 flex bg-muted")}>
       <aside className="hidden w-56 shrink-0 flex-col lg:flex">
         <div className="h-full overflow-y-auto py-8 pr-4 pl-6 scrollbar-hide">
           <DocsSidebar />

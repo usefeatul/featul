@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getAllUseCasesForIndex } from "@/types/scenarios";
 import { Container } from "@/components/global/container";
+import { edgeGutterXClass } from "@/components/layout/edge-pattern";
+import { cn } from "@featul/ui/lib/utils";
 import { UseCasesIndexHero } from "@/components/use-cases/index";
 import UseCasesList from "@/components/use-cases/list";
 import { createPageMetadata } from "@/lib/seo";
@@ -21,7 +23,7 @@ export default function UseCasesIndexPage() {
       <div className="relative mx-auto max-w-6xl">
         <Container
           maxWidth="6xl"
-          className="relative z-10 px-4 pb-14 sm:px-10 sm:pb-20 lg:px-12 xl:px-14"
+          className={cn("relative z-10 pb-14 sm:pb-20", edgeGutterXClass)}
         >
           <section className="mt-4">
             <div className="border-b border-border/70 pb-6 sm:pb-8">

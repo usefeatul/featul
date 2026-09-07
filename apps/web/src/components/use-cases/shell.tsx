@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { Container } from "@/components/global/container";
+import { edgeGutterXClass } from "@/components/layout/edge-pattern";
+import { cn } from "@featul/ui/lib/utils";
 import { UseCaseHero } from "./hero";
 
 type UseCaseDetailShellProps = {
@@ -22,7 +24,7 @@ export function UseCaseDetailShell({
       {/* Match SkyMarketingHero dashboard image gutter */}
       <Container
         maxWidth="6xl"
-        className="relative z-10 px-4 pb-14 text-left sm:px-10 sm:pb-20 lg:px-12 xl:px-14"
+        className={cn("relative z-10 pb-14 text-left sm:pb-20", edgeGutterXClass)}
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="w-full max-w-3xl">{children}</div>

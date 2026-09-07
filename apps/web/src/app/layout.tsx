@@ -11,6 +11,7 @@ import {
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
 import OrganizationJsonLd from "@/components/seo/organization";
+import { SiteEdgePattern } from "@/components/layout/site-edge-pattern";
 import {
   buildSiteNavigationSchema,
   buildSoftwareApplicationSchema,
@@ -165,6 +166,7 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
+        <SiteEdgePattern />
         {children}
         <DebugTools />
       </body>

@@ -31,7 +31,7 @@ export function SkyPageShell({
 
   return (
     <main
-      className="flex min-h-full flex-1 flex-col overflow-x-clip bg-background"
+      className="flex min-h-full flex-1 flex-col overflow-x-clip"
       data-component={dataComponent}
     >
       <div className="relative mx-auto w-full max-w-6xl flex-1">

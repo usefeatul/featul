@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/global/container";
+import { edgeGutterXClass } from "@/components/layout/edge-pattern";
+import { cn } from "@featul/ui/lib/utils";
 import { INTEGRATIONS } from "@/lib/data/programmatic/matrix";
 import { IntegrationsIndexHero } from "@/components/integrations/index";
 import IntegrationsList from "@/components/integrations/list";
@@ -21,7 +23,7 @@ export default function IntegrationsIndexPage() {
       <div className="relative mx-auto max-w-6xl">
         <Container
           maxWidth="6xl"
-          className="relative z-10 px-4 pb-14 sm:px-10 sm:pb-20 lg:px-12 xl:px-14"
+          className={cn("relative z-10 pb-14 sm:pb-20", edgeGutterXClass)}
         >
           <section className="mt-4">
             <div className="border-b border-border/70 pb-6 sm:pb-8">

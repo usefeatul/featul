@@ -77,7 +77,7 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
       <div
         aria-hidden
         className={cn(
-          "pointer-events-none fixed inset-y-0 left-0 z-[1]",
+          "pointer-events-none fixed inset-y-0 left-0 z-[20]",
           className,
         )}
         data-component="MarketingEdgePatternLeft"
@@ -87,7 +87,7 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
       <div
         aria-hidden
         className={cn(
-          "pointer-events-none fixed inset-y-0 right-0 z-[1]",
+          "pointer-events-none fixed inset-y-0 right-0 z-[20]",
           className,
         )}
         data-component="MarketingEdgePatternRight"

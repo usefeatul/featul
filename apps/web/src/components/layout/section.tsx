@@ -20,7 +20,7 @@ export function SkySection({
   return (
     <section
       className={cn(
-        "relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden bg-background",
+        "relative overflow-hidden",
         !hasContent && "h-[20vh] min-h-[8.5rem]",
         className,
       )}
