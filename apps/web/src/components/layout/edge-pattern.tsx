@@ -12,9 +12,10 @@ export const edgeChromeInsetClass =
 export const edgeGutterXClass =
   "px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14";
 
-/** px — 0.5px line every 8px so a line lands on the 64px navbar bottom */
+/** 1px line every 8px — lands on the 64px navbar bottom; 1px survives all DPR/zoom levels. */
 const LINE_PERIOD = 8;
-const LINE_THICKNESS = 0.5;
+const LINE_THICKNESS = 1;
+const EDGE_LINE_COLOR = "var(--border)";
 
 type EdgeStripProps = {
   side: "left" | "right";
@@ -39,7 +40,7 @@ function EdgeStrip({ side }: EdgeStripProps) {
       <div
         aria-hidden
         className={cn(
-          "absolute inset-y-0 w-[0.5px] bg-border",
+          "absolute inset-y-0 w-px bg-border",
           side === "left" ? "right-0" : "left-0",
         )}
       />
@@ -67,8 +68,7 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
               y={LINE_PERIOD - LINE_THICKNESS}
               width="1"
               height={LINE_THICKNESS}
-              fill="var(--border)"
-              opacity="0.7"
+              fill={EDGE_LINE_COLOR}
             />
           </pattern>
         </defs>
