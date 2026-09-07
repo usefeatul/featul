@@ -79,7 +79,7 @@ const integrations: IntegrationItem[] = [
 
 export default function Integrations() {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
       <section
         data-component="Integrations"
         className="my-12 max-w-full sm:my-16"

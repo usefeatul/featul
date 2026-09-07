@@ -38,7 +38,7 @@ const cards = [
 export default function Setup() {
   return (
     <section className="relative my-12 sm:my-16" data-component="Setup">
-      <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
+      <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <SetupIcon aria-hidden className="size-5 text-primary mb-2 sm:mb-3" opacity={1} />
           <h2 className="font-heading mt-6 text-foreground text-balance text-2xl sm:text-3xl font-semibold">

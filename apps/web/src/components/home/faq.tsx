@@ -25,7 +25,7 @@ export default function FAQsFour({ contained = true }: FAQsFourProps) {
     if (!contained) return content
 
     return (
-        <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+        <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
             {content}
         </Container>
     )

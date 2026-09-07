@@ -1,6 +1,16 @@
 import { cn } from "@featul/ui/lib/utils";
 
-const STRIP_WIDTH = "w-[clamp(2.25rem,5vw,4.5rem)]";
+export const EDGE_STRIP_WIDTH = "var(--marketing-edge-strip)";
+
+export const edgeStripWidthClass = "w-[var(--marketing-edge-strip)]";
+
+/** Keep navbar chrome between the two vertical closing lines. */
+export const edgeChromeInsetClass =
+  "left-[calc(var(--marketing-edge-strip)+1px)] right-[var(--marketing-edge-strip)]";
+
+/** Horizontal padding that never sits under the edge pattern. */
+export const edgeGutterXClass =
+  "px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14";
 
 /** px — 0.5px line every 8px so a line lands on the 64px navbar bottom */
 const LINE_PERIOD = 8;
@@ -14,7 +24,7 @@ function EdgeStrip({ side }: EdgeStripProps) {
   return (
     <div
       className={cn(
-        STRIP_WIDTH,
+        edgeStripWidthClass,
         "relative h-full bg-[color-mix(in_oklab,var(--muted)_35%,var(--background))]",
       )}
     >
@@ -67,7 +77,7 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
       <div
         aria-hidden
         className={cn(
-          "pointer-events-none fixed inset-y-0 left-0 z-[1] hidden lg:block",
+          "pointer-events-none fixed inset-y-0 left-0 z-[1]",
           className,
         )}
         data-component="MarketingEdgePatternLeft"
@@ -77,7 +87,7 @@ export function MarketingEdgePattern({ className }: MarketingEdgePatternProps) {
       <div
         aria-hidden
         className={cn(
-          "pointer-events-none fixed inset-y-0 right-0 z-[1] hidden lg:block",
+          "pointer-events-none fixed inset-y-0 right-0 z-[1]",
           className,
         )}
         data-component="MarketingEdgePatternRight"

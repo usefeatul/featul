@@ -27,7 +27,7 @@ export function SkySection({
       data-component={dataComponent}
     >
       {hasContent ? (
-        <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14">
+        <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
           <div className={cn("pb-6 pt-14 sm:pb-8 sm:pt-16 md:pb-10", contentClassName)}>
             {children}
           </div>

@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { Container } from "../global/container";
+import { edgeGutterXClass } from "@/components/layout/edge-pattern";
+import { cn } from "@featul/ui/lib/utils";
 import {
   SkyDashboardBanner,
   SkyDashboardFrame,
@@ -17,7 +19,7 @@ export function Hero() {
     <section className="relative pb-8 sm:pb-12" data-component="Hero">
       <Container
         maxWidth="6xl"
-        className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14"
+        className={cn("relative z-10", edgeGutterXClass)}
       >
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="pt-24 sm:pt-28">

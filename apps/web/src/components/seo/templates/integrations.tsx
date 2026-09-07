@@ -96,7 +96,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
 
       <div className="relative mx-auto max-w-6xl">
         <SectionStack>
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
             <section className="py-16" data-component="IntegrationBenefits">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <SquareIcon aria-hidden className="size-5 text-primary" />
@@ -124,7 +124,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
             </section>
           </Container>
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
             <section className="py-16" data-component="IntegrationHowTo">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <SetupIcon aria-hidden className="size-5 text-primary" opacity={1} />
@@ -155,7 +155,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           </Container>
 
           {sections.extra?.length ? (
-            <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+            <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
               <section className="py-16" data-component="IntegrationGuide">
                 <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                   <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
@@ -178,7 +178,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
             </Container>
           ) : null}
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
             <section className="py-10 sm:py-14" data-component="IntegrationVerdict">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <OverlayCard>
@@ -218,7 +218,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
             </section>
           </Container>
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
             <section className="py-16 md:py-24" data-component="IntegrationFaqs">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <div className="max-w-xl">
@@ -254,7 +254,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
             </section>
           </Container>
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
             <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
               <RelatedLinks links={relatedLinks} title="Related resources" />
               <div className="pb-10">

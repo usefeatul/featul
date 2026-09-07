@@ -57,7 +57,7 @@ export default function AlternativesIndexPage() {
       <AlternativesIndexHero />
       <div className="relative mx-auto max-w-6xl">
         <AlternativesRoundup />
-        <Container maxWidth="6xl" className="relative z-10 px-4 sm:px-10 lg:px-12 xl:px-14 pb-6 sm:pb-8">
+        <Container maxWidth="6xl" className="relative z-10 px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14 pb-6 sm:pb-8">
           <section>
             <div className="border-b border-border/70 pb-6 sm:pb-8">
               <p className="text-accent text-[11px] font-medium uppercase tracking-[0.14em]">
@@ -82,7 +82,7 @@ export default function AlternativesIndexPage() {
             </div>
           </section>
         </Container>
-        <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+        <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
           <section className="py-16 md:py-24">
             <div className="max-w-5xl px-0 sm:px-6">
               <div className="max-w-xl">

@@ -10,7 +10,7 @@ export default function SiteLayout({
   return (
     <MarketingConsentManager>
       <MarketingEdgePattern />
-      <div className="relative z-10 flex min-h-screen flex-col">
+      <div className="relative z-10 flex min-h-screen flex-col overflow-x-clip">
         {/* <AnnouncementBanner /> */}
         <Navbar />
         <div className="flex flex-1 flex-col">{children}</div>

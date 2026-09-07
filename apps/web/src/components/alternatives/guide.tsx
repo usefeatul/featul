@@ -6,7 +6,7 @@ export default function AlternativeGuide({ alt }: { alt: Alternative }) {
   if (!alt.guide?.length) return null
 
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
       <section className="py-16" data-component="AlternativeGuide">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <BookmarkIcon aria-hidden className="size-5 text-primary" opacity={1} />

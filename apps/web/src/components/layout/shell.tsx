@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Container } from "@/components/global/container"
+import { edgeGutterXClass } from "@/components/layout/edge-pattern"
 import { cn } from "@featul/ui/lib/utils"
 
 type SkyPageShellProps = {
@@ -37,7 +38,8 @@ export function SkyPageShell({
         <Container
           maxWidth="6xl"
           className={cn(
-            "relative z-10 px-4 pt-24 sm:px-10 sm:pt-28 lg:px-12 xl:px-14",
+            "relative z-10 pt-24 sm:pt-28",
+            edgeGutterXClass,
             below ? "pb-0" : "pb-10 sm:pb-12",
           )}
         >

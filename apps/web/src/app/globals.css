@@ -4,6 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
 
+:root {
+  --marketing-edge-strip: clamp(1rem, 5vw, 4.5rem);
+}
+
 html {
   scroll-behavior: smooth;
 }

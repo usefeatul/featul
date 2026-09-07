@@ -3,9 +3,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Container } from "../global/container";
+import { edgeChromeInsetClass, edgeGutterXClass } from "@/components/layout/edge-pattern";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { Button } from "@featul/ui/components/button";
 import { MenuIcon } from "@featul/ui/icons/menu";
+import { cn } from "@featul/ui/lib/utils";
 import { APP_URL } from "@/config/auth";
 import { navigationConfig } from "@/config/homeNav";
 
@@ -42,11 +44,19 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
   return createPortal(
     <div
-      className="fixed inset-x-0 bottom-0 top-16 z-[70] overflow-y-auto overscroll-contain bg-background md:hidden"
+      className={cn(
+        "fixed bottom-0 top-16 z-[70] overflow-y-auto overscroll-contain bg-background md:hidden",
+        edgeChromeInsetClass,
+      )}
       data-component="MobileMenu"
     >
       {/* Sheet header */}
-      <div className="flex h-16 items-center justify-between border-b border-border px-4 sm:px-10 lg:px-12 xl:px-14">
+      <div
+        className={cn(
+          "flex h-16 items-center justify-between border-b border-border",
+          edgeGutterXClass,
+        )}
+      >
         <span className="inline-flex items-center gap-2">
           <FeatulLogoIcon />
           <span className="text-base font-semibold tracking-tight text-foreground">
@@ -63,7 +73,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           <MenuIcon className="text-accent size-5" />
         </Button>
       </div>
-      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+      <Container maxWidth="6xl" className={edgeGutterXClass}>
         <nav className="py-4 grid gap-2">
           {navigationConfig.main.map((item) => (
             <Link

@@ -55,7 +55,7 @@ export function PricingPlans() {
 
 export function PricingSection() {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
       <section className="my-16 sm:my-20" data-component="HomePricing">
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
           <div className="max-w-3xl text-left">

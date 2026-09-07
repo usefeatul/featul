@@ -15,7 +15,7 @@ import { StatusIcon } from "./icon"
 
 export default function Compare({ alt }: { alt: Alternative }) {
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
       <section className="py-16" data-component="Compare">
         <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
           <SquareIcon aria-hidden className="size-5 text-primary" />

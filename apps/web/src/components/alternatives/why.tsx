@@ -31,7 +31,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
   const tagline = alt.tagline?.toLowerCase() || "product feedback";
 
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+    <Container maxWidth="6xl" className="px-[max(1rem,calc(var(--marketing-edge-strip)+0.5rem))] sm:px-10 lg:px-12 xl:px-14">
       <section className="py-16" data-component="WhyBetter">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
