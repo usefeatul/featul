@@ -120,10 +120,9 @@ export default function RootLayout({
         />
         {selineToken ? (
           <Script
-            src="/sln.js"
+            src="https://cdn.seline.com/seline.js"
             data-token={selineToken}
-            data-api-host="/_sln"
-            strategy="beforeInteractive"
+            strategy="afterInteractive"
           />
         ) : null}
         <OrganizationJsonLd />
