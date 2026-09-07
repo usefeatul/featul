@@ -11,6 +11,9 @@ import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { MobileMenu } from "./menu";
 
+const scrolledEdgeInsetClass =
+  "lg:left-[calc(clamp(2.25rem,5vw,4.5rem)+1px)] lg:right-[clamp(2.25rem,5vw,4.5rem)]";
+
 export default function Navbar() {
   const main = navigationConfig.main;
   const before = main.slice(0, 2);
@@ -63,10 +66,22 @@ export default function Navbar() {
         )}
         data-component="Navbar"
       >
+        {scrolled ? (
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-0 bg-background",
+              scrolledEdgeInsetClass,
+            )}
+          />
+        ) : null}
         <Container maxWidth="6xl" className="relative px-4 sm:px-10 lg:px-12 xl:px-14">
           <div
             data-nav-bar
-            className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between bg-background px-1 sm:px-6"
+            className={cn(
+              "mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6",
+              !scrolled && "bg-background",
+            )}
           >
             <Link
               href="/"
@@ -153,7 +168,10 @@ export default function Navbar() {
         {scrolled ? (
           <div
             aria-hidden
-            className="pointer-events-none absolute bottom-0 z-10 h-0.5 bg-border inset-x-0 lg:inset-x-[clamp(2.25rem,5vw,4.5rem)]"
+            className={cn(
+              "pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[0.5px] bg-border",
+              scrolledEdgeInsetClass,
+            )}
           />
         ) : null}
       </header>

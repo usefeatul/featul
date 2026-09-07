@@ -2,9 +2,9 @@ import { cn } from "@featul/ui/lib/utils";
 
 const STRIP_WIDTH = "w-[clamp(2.25rem,5vw,4.5rem)]";
 
-/** px — 2px line every 8px so a line lands on the 64px navbar bottom */
+/** px — 0.5px line every 8px so a line lands on the 64px navbar bottom */
 const LINE_PERIOD = 8;
-const LINE_THICKNESS = 2;
+const LINE_THICKNESS = 0.5;
 
 type EdgeStripProps = {
   side: "left" | "right";
@@ -29,7 +29,7 @@ function EdgeStrip({ side }: EdgeStripProps) {
       <div
         aria-hidden
         className={cn(
-          "absolute inset-y-0 w-0.5 bg-border",
+          "absolute inset-y-0 w-[0.5px] bg-border",
           side === "left" ? "right-0" : "left-0",
         )}
       />

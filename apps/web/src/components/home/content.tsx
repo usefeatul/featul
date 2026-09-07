@@ -14,9 +14,9 @@ export function HeroContent() {
       </h1>
 
       <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-accent text-balance sm:mt-6 sm:text-base">
-        Collect votes, share a public roadmap, and publish a changelog. MIT
-        licensed, self-host or hosted in the EU, billed per workspace not per
-        seat.
+        Collect votes, share a public roadmap, and publish a changelog in one
+        MIT-licensed workspace, self-hosted or in the EU, billed per workspace
+        not per seat.
       </p>
 
       <HeroCta />
