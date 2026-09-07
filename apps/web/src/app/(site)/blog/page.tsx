@@ -31,7 +31,6 @@ export default async function BlogPage() {
   return (
     <SkyPageShell
       dataComponent="BlogIndex"
-      eyebrow="Journal"
       title="Blog"
       description="Thoughts, product notes, and quiet updates on building clearer customer feedback software."
       headerClassName="max-w-[620px]"
