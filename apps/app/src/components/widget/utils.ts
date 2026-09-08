@@ -217,16 +217,29 @@ export function readScreenshotPayload(
   return { dataUrl: null, error: code };
 }
 
-/** Convert a data URL to a File. Non-image blobs default to image/jpeg. */
+/**
+ * Decode a data URL to a File in-memory.
+ * `fetch(data:)` is blocked by widget CSP (`connect-src` has no `data:`).
+ */
 export async function dataUrlToImageFile(
   dataUrl: string,
   fileName: string,
 ): Promise<File> {
-  const response = await fetch(dataUrl);
-  const blob = await response.blob();
-  const type =
-    blob.type && blob.type.startsWith("image/") ? blob.type : "image/jpeg";
-  return new File([blob], fileName, { type });
+  const comma = dataUrl.indexOf(",");
+  if (comma < 0) {
+    throw new Error("Invalid image data URL");
+  }
+  const header = dataUrl.slice(0, comma);
+  const payload = dataUrl.slice(comma + 1);
+  const mimeMatch = /^data:(image\/(?:png|jpeg|jpg|webp));base64$/i.exec(header);
+  const rawType = mimeMatch?.[1]?.toLowerCase() ?? "image/jpeg";
+  const type = rawType === "image/jpg" ? "image/jpeg" : rawType;
+  const binary = atob(payload);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new File([bytes], fileName, { type });
 }
 
 /** Prefer a board named/slug `bugs`. Otherwise the first board. */

@@ -271,9 +271,13 @@ export function WidgetFeedbackCompose({
         attaching={uploading}
         onCancel={onScreenshotConsumed}
         onAttach={async (dataUrl) => {
-          const file = await dataUrlToImageFile(dataUrl, "screenshot.jpg");
-          const ok = await uploadFile(file);
-          if (ok) onScreenshotConsumed();
+          try {
+            const file = await dataUrlToImageFile(dataUrl, "screenshot.jpg");
+            const ok = await uploadFile(file);
+            if (ok) onScreenshotConsumed();
+          } catch {
+            setMessage("That image couldn’t be added.");
+          }
         }}
       />
     );
