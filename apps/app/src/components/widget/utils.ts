@@ -218,28 +218,46 @@ export function readScreenshotPayload(
 }
 
 /**
- * Decode a data URL to a File in-memory.
- * `fetch(data:)` is blocked by widget CSP (`connect-src` has no `data:`).
+ * JPEG File from canvas pixels. Uses toBlob so we never fetch/parse a data:
+ * URL (CSP connect-src has no data:, and data-URL headers can spoof MIME).
  */
-export async function dataUrlToImageFile(
-  dataUrl: string,
-  fileName: string,
+export function canvasToJpegFile(
+  canvas: HTMLCanvasElement,
+  fileName = "screenshot.jpg",
 ): Promise<File> {
-  const comma = dataUrl.indexOf(",");
-  if (comma < 0) {
-    throw new Error("Invalid image data URL");
-  }
-  const header = dataUrl.slice(0, comma);
-  const payload = dataUrl.slice(comma + 1);
-  const mimeMatch = /^data:(image\/(?:png|jpeg|jpg|webp));base64$/i.exec(header);
-  const rawType = mimeMatch?.[1]?.toLowerCase() ?? "image/jpeg";
-  const type = rawType === "image/jpg" ? "image/jpeg" : rawType;
-  const binary = atob(payload);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return new File([bytes], fileName, { type });
+  return new Promise((resolve, reject) => {
+    const fail = () => reject(new Error("Could not export screenshot"));
+    if (typeof canvas.toBlob !== "function") {
+      fail();
+      return;
+    }
+    try {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob || blob.size < 32) {
+            fail();
+            return;
+          }
+          void blob
+            .slice(0, 3)
+            .arrayBuffer()
+            .then((header) => {
+              const bytes = new Uint8Array(header);
+              // JPEG SOI is FF D8. Do not trust blob.type alone.
+              if (bytes[0] !== 0xff || bytes[1] !== 0xd8) {
+                fail();
+                return;
+              }
+              resolve(new File([blob], fileName, { type: "image/jpeg" }));
+            }, fail);
+        },
+        "image/jpeg",
+        0.84,
+      );
+    } catch {
+      fail();
+    }
+  });
 }
 
 /** Prefer a board named/slug `bugs`. Otherwise the first board. */

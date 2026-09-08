@@ -22,7 +22,7 @@ import type {
   WidgetPost,
 } from "./types";
 import { parseSimilarPosts, parseWidgetPost } from "./load";
-import { dataUrlToImageFile, isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload, deleteWidgetUploadedImage } from "./utils";
+import { isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload, deleteWidgetUploadedImage } from "./utils";
 import { WidgetImageStrip } from "./gallery";
 import {
   widgetToolbarInnerClass,
@@ -270,14 +270,9 @@ export function WidgetFeedbackCompose({
         ink={ink}
         attaching={uploading}
         onCancel={onScreenshotConsumed}
-        onAttach={async (dataUrl) => {
-          try {
-            const file = await dataUrlToImageFile(dataUrl, "screenshot.jpg");
-            const ok = await uploadFile(file);
-            if (ok) onScreenshotConsumed();
-          } catch {
-            setMessage("That image couldn’t be added.");
-          }
+        onAttach={async (file) => {
+          const ok = await uploadFile(file);
+          if (ok) onScreenshotConsumed();
         }}
       />
     );

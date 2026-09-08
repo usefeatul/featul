@@ -21,6 +21,7 @@ import {
   widgetToolbarSeparatorClass,
   widgetToolbarShellClass,
 } from "./chrome";
+import { canvasToJpegFile } from "./utils";
 
 type Tool = "draw" | "arrow" | "rect" | "text" | "redact" | "pin";
 type Point = { x: number; y: number };
@@ -40,7 +41,7 @@ type Props = {
   ink: string;
   attaching?: boolean;
   onCancel: () => void;
-  onAttach: (dataUrl: string) => void;
+  onAttach: (file: File) => void | Promise<void>;
 };
 
 const WEIGHTS = [1, 1.7, 2.5] as const;
@@ -291,7 +292,10 @@ export function ScreenshotAnnotator({
     value: string;
   } | null>(null);
   const [ready, setReady] = React.useState(false);
+  const [exporting, setExporting] = React.useState(false);
+  const exportingRef = React.useRef(false);
   const [, bump] = React.useState(0);
+  const busy = attaching || exporting;
 
   strokesRef.current = strokes;
 
@@ -398,7 +402,7 @@ export function ScreenshotAnnotator({
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     const image = imageRef.current;
-    if (!canvas || !ctx || !image || attaching) return;
+    if (!canvas || !ctx || !image || attaching || exportingRef.current) return;
     const pending = textDraft?.value.trim()
       ? ([
           {
@@ -415,13 +419,21 @@ export function ScreenshotAnnotator({
     for (const stroke of [...strokes, ...pending]) {
       drawStroke(ctx, stroke, image, false);
     }
-    onAttach(canvas.toDataURL("image/jpeg", 0.84));
+    exportingRef.current = true;
+    setExporting(true);
+    void canvasToJpegFile(canvas)
+      .then((file) => onAttach(file))
+      .catch(() => {})
+      .finally(() => {
+        exportingRef.current = false;
+        setExporting(false);
+      });
   }, [attaching, color, onAttach, strokes, textDraft, textSize]);
 
   React.useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       shiftRef.current = event.shiftKey;
-      if (attaching) return;
+      if (busy) return;
       const typing = event.target instanceof HTMLInputElement;
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
         event.preventDefault();
@@ -472,10 +484,10 @@ export function ScreenshotAnnotator({
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onShift);
     };
-  }, [attach, attaching, onCancel, paint, redo, textDraft, undo]);
+  }, [attach, busy, onCancel, paint, redo, textDraft, undo]);
 
   const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    if (attaching || event.button !== 0) return;
+    if (busy || event.button !== 0) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const point = eventPoint(event.nativeEvent, canvas);
@@ -584,7 +596,7 @@ export function ScreenshotAnnotator({
         <button
           type="button"
           onClick={onCancel}
-          disabled={attaching}
+          disabled={busy}
           className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:opacity-40"
           aria-label="Cancel screenshot"
         >
@@ -764,10 +776,10 @@ export function ScreenshotAnnotator({
           <button
             type="button"
             onClick={attach}
-            disabled={attaching || !ready}
+            disabled={busy || !ready}
             className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            {attaching ? (
+            {busy ? (
               <LoaderIcon className="size-3.5 animate-spin" />
             ) : (
               <>
