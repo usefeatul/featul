@@ -324,7 +324,7 @@ export function DesktopNav({
         })}
       </ul>
       {openItem && isNavDropdown(openItem) ? (
-        <div className="absolute left-1/2 top-full z-50 pt-3 -translate-x-1/2">
+        <div className="absolute left-1/2 top-full z-50 -mt-px -translate-x-1/2 pt-3">
           <MegaPanel
             item={openItem}
             labelledBy={`${navId}-${openItem.name}`}

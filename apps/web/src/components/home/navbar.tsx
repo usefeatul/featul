@@ -69,7 +69,7 @@ export default function Navbar() {
             )}
           />
         ) : null}
-        <MarketingContainer className="relative">
+        <MarketingContainer className="relative z-20">
           <div
             data-nav-bar
             className={cn(
@@ -135,7 +135,7 @@ export default function Navbar() {
           <div
             aria-hidden
             className={cn(
-              "pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[0.5px] bg-border",
+              "pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[0.5px] bg-border",
               // edgeChromeInsetClass,
             )}
           />
