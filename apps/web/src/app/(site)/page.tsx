@@ -40,9 +40,9 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <Hero />
+      <ConversionHero />
       <div className={marketingStackClass}>
         <SectionStack>
-          <ConversionHero />
           <FeaturesSection />
           <Listening />
           <Integrations />

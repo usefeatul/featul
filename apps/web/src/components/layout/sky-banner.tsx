@@ -26,7 +26,10 @@ export function SkyDashboardBanner({
 }: SkyDashboardBannerProps) {
   return (
     <div
-      className={cn("relative w-full overflow-hidden", className)}
+      className={cn(
+        "relative w-full overflow-hidden border-b border-white/20",
+        className,
+      )}
       data-component={dataComponent}
     >
       <div
@@ -44,11 +47,6 @@ export function SkyDashboardBanner({
       >
         {children}
       </div>
-
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-px bg-border"
-      />
     </div>
   );
 }
