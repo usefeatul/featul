@@ -13,15 +13,12 @@ import { MobileMenu } from "./menu";
 import { DesktopNav } from "./nav-menu";
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [canTransition, setCanTransition] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useLayoutEffect(() => {
     const onScroll = () => {
-      const next = window.scrollY > 0;
-      setScrolled(next);
-      document.documentElement.toggleAttribute("data-scrolled", next);
+      document.documentElement.toggleAttribute("data-scrolled", window.scrollY > 0);
     };
     onScroll();
     const frame = window.requestAnimationFrame(() => setCanTransition(true));
@@ -55,27 +52,15 @@ export default function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 bg-transparent",
+          "fixed top-0 left-0 right-0 z-50 border-b border-border bg-background",
           canTransition && "transition-colors",
         )}
         data-component="Navbar"
       >
-        {scrolled ? (
-          <div
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute inset-0 bg-background",
-              // edgeChromeInsetClass,
-            )}
-          />
-        ) : null}
         <MarketingContainer className="relative z-20">
           <div
             data-nav-bar
-            className={cn(
-              "relative mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-1 sm:px-6",
-              !scrolled && "bg-background",
-            )}
+            className="relative mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-1 sm:px-6"
           >
             <Link
               href="/"
@@ -131,15 +116,6 @@ export default function Navbar() {
             </Button>
           </div>
         </MarketingContainer>
-        {scrolled ? (
-          <div
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[0.5px] bg-border",
-              // edgeChromeInsetClass,
-            )}
-          />
-        ) : null}
       </header>
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>

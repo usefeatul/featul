@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState, type ComponentType } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ComponentType } from "react";
 import { ChevronDownIcon } from "@featul/ui/icons/chevron-down";
 import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
 import { FeedbackIcon } from "@featul/ui/icons/feedback";
@@ -55,7 +55,7 @@ const navIcons: Record<NavIconName, FeatulIcon> = {
 };
 
 const triggerClass =
-  "inline-flex h-8 items-center gap-1 rounded-full px-3 text-sm font-light text-accent transition-colors hover:text-foreground";
+  "relative z-10 inline-flex h-8 cursor-pointer items-center gap-1 rounded-md px-3 text-sm font-light text-accent transition-colors hover:text-foreground";
 
 function NavLink({
   item,
@@ -242,9 +242,23 @@ export function DesktopNav({
   onNavigate?: () => void;
 }) {
   const [open, setOpen] = useState<string | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pill, setPill] = useState<{ left: number; width: number } | null>(
+    null,
+  );
+  const [animatePill, setAnimatePill] = useState(false);
   const closeTimer = useRef<number | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const itemRefs = useRef(new Map<string, HTMLElement>());
   const navId = useId();
   const openItem = navigationConfig.main.find((item) => item.name === open);
+  const activeName = hovered ?? open;
+  const activeIsDropdown = Boolean(
+    activeName &&
+      navigationConfig.main.some(
+        (item) => item.name === activeName && isNavDropdown(item),
+      ),
+  );
 
   const cancelClose = () => {
     if (closeTimer.current) {
@@ -255,12 +269,45 @@ export function DesktopNav({
 
   const scheduleClose = () => {
     cancelClose();
-    closeTimer.current = window.setTimeout(() => setOpen(null), 140);
+    closeTimer.current = window.setTimeout(() => {
+      setOpen(null);
+      setHovered(null);
+    }, 140);
   };
+
+  const setItemRef = (name: string) => (node: HTMLElement | null) => {
+    if (node) itemRefs.current.set(name, node);
+    else itemRefs.current.delete(name);
+  };
+
+  useLayoutEffect(() => {
+    if (!activeName) {
+      setPill(null);
+      setAnimatePill(false);
+      return;
+    }
+
+    const list = listRef.current;
+    const el = itemRefs.current.get(activeName);
+    if (!list || !el) return;
+
+    const listBox = list.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    setPill({
+      left: box.left - listBox.left,
+      width: box.width,
+    });
+
+    const frame = window.requestAnimationFrame(() => setAnimatePill(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeName]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(null);
+      if (event.key === "Escape") {
+        setOpen(null);
+        setHovered(null);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -274,17 +321,43 @@ export function DesktopNav({
       onPointerLeave={scheduleClose}
       onPointerEnter={cancelClose}
     >
-      <ul className="flex items-center gap-1">
+      <ul ref={listRef} className="relative flex items-center gap-1">
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute top-0 h-8 rounded-md bg-card",
+            activeIsDropdown && "border border-border",
+            animatePill
+              ? "motion-safe:transition-[left,width,opacity,border-color] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+              : "motion-safe:transition-opacity motion-safe:duration-150",
+            pill ? "opacity-100" : "opacity-0",
+          )}
+          style={{
+            left: pill?.left ?? 0,
+            width: pill?.width ?? 0,
+          }}
+        />
         {navigationConfig.main.map((item) => {
           const triggerId = `${navId}-${item.name}`;
+          const isActive = activeName === item.name;
+
           if (!isNavDropdown(item)) {
             return (
-              <li key={item.name}>
-                <NavLink
-                  item={{ name: item.name, href: item.href ?? "/" }}
-                  className={triggerClass}
-                  onNavigate={onNavigate}
-                />
+              <li
+                key={item.name}
+                onPointerEnter={() => {
+                  cancelClose();
+                  setHovered(item.name);
+                  setOpen(null);
+                }}
+              >
+                <span ref={setItemRef(item.name)} className="inline-flex">
+                  <NavLink
+                    item={{ name: item.name, href: item.href ?? "/" }}
+                    className={cn(triggerClass, isActive && "text-foreground")}
+                    onNavigate={onNavigate}
+                  />
+                </span>
               </li>
             );
           }
@@ -295,24 +368,23 @@ export function DesktopNav({
               key={item.name}
               onPointerEnter={() => {
                 cancelClose();
+                setHovered(item.name);
                 setOpen(item.name);
               }}
             >
               <button
                 id={triggerId}
+                ref={setItemRef(item.name)}
                 type="button"
                 aria-expanded={isOpen}
                 aria-haspopup="menu"
-                className={cn(
-                  triggerClass,
-                  isOpen && "bg-background text-foreground ring-1 ring-border",
-                )}
+                className={cn(triggerClass, isActive && "text-foreground")}
                 onClick={() => setOpen(isOpen ? null : item.name)}
               >
                 {item.name}
                 <ChevronDownIcon
                   className={cn(
-                    "size-3 transition-transform",
+                    "size-3 transition-transform duration-300",
                     isOpen && "rotate-180",
                   )}
                   width={12}
@@ -324,12 +396,13 @@ export function DesktopNav({
         })}
       </ul>
       {openItem && isNavDropdown(openItem) ? (
-        <div className="absolute left-1/2 top-full z-50 -mt-px -translate-x-1/2 pt-3">
+        <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-8">
           <MegaPanel
             item={openItem}
             labelledBy={`${navId}-${openItem.name}`}
             onNavigate={() => {
               setOpen(null);
+              setHovered(null);
               onNavigate?.();
             }}
           />
