@@ -1,0 +1,344 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useId, useRef, useState, type ComponentType } from "react";
+import { ChevronDownIcon } from "@featul/ui/icons/chevron-down";
+import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
+import { FeedbackIcon } from "@featul/ui/icons/feedback";
+import { BoardIcon } from "@featul/ui/icons/board";
+import { VoteIcon } from "@featul/ui/icons/vote";
+import { RoadmapIcon } from "@featul/ui/icons/roadmap";
+import { ChangelogIcon } from "@featul/ui/icons/changelog";
+import { WidgetIcon } from "@featul/ui/icons/widget";
+import { DashboardIcon } from "@featul/ui/icons/dashboard";
+import { DocIcon } from "@featul/ui/icons/doc";
+import { BookIcon } from "@featul/ui/icons/book";
+import { WrenchIcon } from "@featul/ui/icons/wrench";
+import { MemberIcon } from "@featul/ui/icons/member";
+import { CodeIcon } from "@featul/ui/icons/code";
+import { IntegrationIcon } from "@featul/ui/icons/integration";
+import { ArticleIcon } from "@featul/ui/icons/article";
+import { DomainIcon } from "@featul/ui/icons/domain";
+import { cn } from "@featul/ui/lib/utils";
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card";
+import {
+  isExternalHref,
+  isNavDropdown,
+  navigationConfig,
+  type NavIconName,
+  type NavigationEntry,
+  type NavigationItem,
+} from "@/config/homeNav";
+
+type FeatulIcon = ComponentType<{
+  className?: string;
+  size?: number;
+  opacity?: number;
+}>;
+
+const navIcons: Record<NavIconName, FeatulIcon> = {
+  feedback: FeedbackIcon,
+  requests: BoardIcon,
+  voting: VoteIcon,
+  roadmap: RoadmapIcon,
+  changelog: ChangelogIcon,
+  widget: WidgetIcon,
+  dashboard: DashboardIcon,
+  docs: DocIcon,
+  definitions: BookIcon,
+  tools: WrenchIcon,
+  "use-cases": MemberIcon,
+  "open-source": CodeIcon,
+  integrations: IntegrationIcon,
+  blog: ArticleIcon,
+  demo: BoardIcon,
+  domain: DomainIcon,
+};
+
+const triggerClass =
+  "inline-flex h-8 items-center gap-1 rounded-full px-3 text-sm font-light text-accent transition-colors hover:text-foreground";
+
+function NavLink({
+  item,
+  className,
+  onNavigate,
+}: {
+  item: NavigationItem;
+  className?: string;
+  onNavigate?: () => void;
+}) {
+  const external = isExternalHref(item);
+  return (
+    <Link
+      href={item.href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : undefined)}
+      className={className}
+      onClick={onNavigate}
+    >
+      {item.name}
+    </Link>
+  );
+}
+
+function FeatureItem({
+  item,
+  onNavigate,
+}: {
+  item: NavigationItem;
+  onNavigate?: () => void;
+}) {
+  const Icon = item.icon ? navIcons[item.icon] : null;
+  const external = isExternalHref(item);
+
+  return (
+    <Link
+      href={item.href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : undefined)}
+      onClick={onNavigate}
+      className="group flex items-start gap-3 rounded-lg p-2 -mx-2 transition-colors hover:bg-muted"
+    >
+      {Icon ? (
+        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-accent transition-colors group-hover:text-primary">
+          <Icon aria-hidden className="size-4" size={16} />
+        </span>
+      ) : null}
+      <span className="min-w-0">
+        <span className="block text-sm font-medium text-foreground">{item.name}</span>
+        {item.description ? (
+          <span className="mt-0.5 block text-xs leading-4 text-accent">
+            {item.description}
+          </span>
+        ) : null}
+      </span>
+    </Link>
+  );
+}
+
+function ResourceItem({
+  item,
+  onNavigate,
+}: {
+  item: NavigationItem;
+  onNavigate?: () => void;
+}) {
+  const external = isExternalHref(item);
+  return (
+    <Link
+      href={item.href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : undefined)}
+      onClick={onNavigate}
+      className="block rounded-md px-0 py-1.5 text-sm text-accent transition-colors hover:text-foreground"
+    >
+      {item.name}
+    </Link>
+  );
+}
+
+function MegaPanel({
+  item,
+  labelledBy,
+  onNavigate,
+}: {
+  item: NavigationEntry & { columns: NonNullable<NavigationEntry["columns"]> };
+  labelledBy: string;
+  onNavigate?: () => void;
+}) {
+  const hasDescriptions = item.columns.some((column) =>
+    column.items.some((link) => Boolean(link.description)),
+  );
+
+  return (
+    <OverlayCard
+      role="menu"
+      aria-labelledby={labelledBy}
+      className={cn(
+        "h-auto",
+        item.highlight
+          ? "w-[min(64rem,calc(100vw-2rem))]"
+          : "w-[min(68rem,calc(100vw-2rem))]",
+      )}
+    >
+      <OverlayCardPanel
+        className={item.highlight ? "flex flex-col sm:flex-row" : undefined}
+      >
+        <div className="min-w-0 flex-1 p-5 sm:p-6 lg:p-7">
+          <div
+            className={cn(
+              "grid gap-8 lg:gap-10",
+              item.highlight ? "sm:grid-cols-2" : "sm:grid-cols-3",
+            )}
+          >
+            {item.columns.map((column) => (
+              <div key={column.title}>
+                <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-primary">
+                  {column.title}
+                </p>
+                <div
+                  className={cn(
+                    "mt-3",
+                    hasDescriptions ? "space-y-1" : "space-y-0.5",
+                  )}
+                >
+                  {column.items.map((link) =>
+                    hasDescriptions ? (
+                      <FeatureItem
+                        key={link.name}
+                        item={link}
+                        onNavigate={onNavigate}
+                      />
+                    ) : (
+                      <ResourceItem
+                        key={link.name}
+                        item={link}
+                        onNavigate={onNavigate}
+                      />
+                    ),
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {item.highlight ? (
+          <div className="flex w-full shrink-0 flex-col border-t border-border bg-card p-5 sm:w-[18.5rem] sm:border-t-0 sm:border-l sm:p-6">
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-primary">
+              {item.highlight.eyebrow}
+            </p>
+            <p className="mt-2 text-sm font-semibold leading-snug text-foreground">
+              {item.highlight.title}
+            </p>
+            <p className="text-accent mt-1.5 text-xs leading-5">
+              {item.highlight.description}
+            </p>
+            <Link
+              href={item.highlight.href}
+              onClick={onNavigate}
+              className="mt-3 inline-flex items-center gap-1 text-sm text-primary hover:underline"
+            >
+              {item.highlight.cta}
+              <ChevronRightIcon className="size-3.5" size={14} />
+            </Link>
+          </div>
+        ) : null}
+        {item.footer ? (
+          <div className="border-t border-border/60 px-4 py-3 sm:px-5">
+            <Link
+              href={item.footer.href}
+              onClick={onNavigate}
+              className="inline-flex items-center gap-1 text-sm text-accent transition-colors hover:text-primary"
+            >
+              {item.footer.name}
+              <ChevronRightIcon className="size-3.5" size={14} />
+            </Link>
+          </div>
+        ) : null}
+      </OverlayCardPanel>
+    </OverlayCard>
+  );
+}
+
+export function DesktopNav({
+  onNavigate,
+}: {
+  onNavigate?: () => void;
+}) {
+  const [open, setOpen] = useState<string | null>(null);
+  const closeTimer = useRef<number | null>(null);
+  const navId = useId();
+  const openItem = navigationConfig.main.find((item) => item.name === open);
+
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = window.setTimeout(() => setOpen(null), 140);
+  };
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => () => cancelClose(), []);
+
+  return (
+    <nav
+      className="absolute left-1/2 hidden -translate-x-1/2 md:flex md:items-center"
+      onPointerLeave={scheduleClose}
+      onPointerEnter={cancelClose}
+    >
+      <ul className="flex items-center gap-1">
+        {navigationConfig.main.map((item) => {
+          const triggerId = `${navId}-${item.name}`;
+          if (!isNavDropdown(item)) {
+            return (
+              <li key={item.name}>
+                <NavLink
+                  item={{ name: item.name, href: item.href ?? "/" }}
+                  className={triggerClass}
+                  onNavigate={onNavigate}
+                />
+              </li>
+            );
+          }
+
+          const isOpen = open === item.name;
+          return (
+            <li
+              key={item.name}
+              onPointerEnter={() => {
+                cancelClose();
+                setOpen(item.name);
+              }}
+            >
+              <button
+                id={triggerId}
+                type="button"
+                aria-expanded={isOpen}
+                aria-haspopup="menu"
+                className={cn(
+                  triggerClass,
+                  isOpen && "bg-background text-foreground ring-1 ring-border",
+                )}
+                onClick={() => setOpen(isOpen ? null : item.name)}
+              >
+                {item.name}
+                <ChevronDownIcon
+                  className={cn(
+                    "size-3 transition-transform",
+                    isOpen && "rotate-180",
+                  )}
+                  width={12}
+                  height={12}
+                />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {openItem && isNavDropdown(openItem) ? (
+        <div className="absolute left-1/2 top-full z-50 pt-3 -translate-x-1/2">
+          <MegaPanel
+            item={openItem}
+            labelledBy={`${navId}-${openItem.name}`}
+            onNavigate={() => {
+              setOpen(null);
+              onNavigate?.();
+            }}
+          />
+        </div>
+      ) : null}
+    </nav>
+  );
+}

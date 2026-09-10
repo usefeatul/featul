@@ -134,8 +134,10 @@ export default function RootLayout({
             __html: serializeJsonLd(
               buildSiteNavigationSchema(SITE_URL, [
                 { name: "Home", href: "/" },
-                ...navigationConfig.main.filter((i) =>
-                  ["/pricing", "/blog"].includes(i.href),
+                ...navigationConfig.main.flatMap((item) =>
+                  item.href && ["/pricing", "/blog", "/docs"].includes(item.href)
+                    ? [{ name: item.name, href: item.href }]
+                    : [],
                 ),
                 ...footerNavigationConfig.groups
                   .flatMap((g) => g.items)

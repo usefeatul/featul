@@ -5,18 +5,14 @@ import { navigationConfig } from "@/config/homeNav";
 import { MarketingContainer } from "@/components/layout/container";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
-import { Separator } from "@featul/ui/components/separator";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 // import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { MobileMenu } from "./menu";
+import { DesktopNav } from "./nav-menu";
 
 export default function Navbar() {
-  const main = navigationConfig.main;
-  const before = main.slice(0, 2);
-  const after = main.slice(2);
-
   const [scrolled, setScrolled] = useState(false);
   const [canTransition, setCanTransition] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -77,7 +73,7 @@ export default function Navbar() {
           <div
             data-nav-bar
             className={cn(
-              "mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-1 sm:px-6",
+              "relative mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-1 sm:px-6",
               !scrolled && "bg-background",
             )}
           >
@@ -85,44 +81,16 @@ export default function Navbar() {
               href="/"
               aria-label="Go home"
               data-nav-brand
-              className="inline-flex items-center gap-2"
+              className="relative z-10 inline-flex items-center gap-2"
             >
               <FeatulLogoIcon size={26} />
               <span className="text-lg font-semibold tracking-tight text-foreground">
                 Featul
               </span>
             </Link>
-            <nav className="hidden md:flex items-center text-sm gap-6 md:ml-auto">
-              {before.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "inline-flex items-center rounded-md h-8 px-2 transition-all",
-                    linkTone,
-                  )}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              {after.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "inline-flex items-center rounded-md h-8 px-2 transition-all",
-                    linkTone,
-                  )}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-            <div className="hidden md:flex items-center mx-2 h-4">
-              <Separator orientation="vertical" className="h-full" />
-            </div>
+            <DesktopNav />
 
-            <div className="hidden md:flex items-center gap-4">
+            <div className="relative z-10 hidden items-center gap-4 md:flex">
               {navigationConfig.auth.map((item) => (
                 <Link
                   key={item.name}
