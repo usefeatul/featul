@@ -21,10 +21,6 @@ import { ArticleIcon } from "@featul/ui/icons/article";
 import { DomainIcon } from "@featul/ui/icons/domain";
 import { cn } from "@featul/ui/lib/utils";
 import {
-  OverlayCard,
-  OverlayCardPanel,
-} from "@/components/shared/overlay-card";
-import {
   isExternalHref,
   isNavDropdown,
   navigationConfig,
@@ -151,20 +147,20 @@ function MegaPanel({
   );
 
   return (
-    <OverlayCard
+    <div
       role="menu"
       aria-labelledby={labelledBy}
       className={cn(
-        "h-auto",
+        "overflow-hidden rounded-xl bg-background shadow-[0_24px_60px_-28px_rgba(15,23,42,0.28)] ring-1 ring-border/50",
         item.highlight
           ? "w-[min(64rem,calc(100vw-2rem))]"
           : "w-[min(68rem,calc(100vw-2rem))]",
       )}
     >
-      <OverlayCardPanel
+      <div
         className={item.highlight ? "flex flex-col sm:flex-row" : undefined}
       >
-        <div className="min-w-0 flex-1 p-5 sm:p-6 lg:p-7">
+        <div className="min-w-0 flex-1 bg-background p-5 sm:p-6 lg:p-7">
           <div
             className={cn(
               "grid gap-8 lg:gap-10",
@@ -223,20 +219,20 @@ function MegaPanel({
             </Link>
           </div>
         ) : null}
-        {item.footer ? (
-          <div className="border-t border-border/60 px-4 py-3 sm:px-5">
-            <Link
-              href={item.footer.href}
-              onClick={onNavigate}
-              className="inline-flex items-center gap-1 text-sm text-accent transition-colors hover:text-primary"
-            >
-              {item.footer.name}
-              <ChevronRightIcon className="size-3.5" size={14} />
-            </Link>
-          </div>
-        ) : null}
-      </OverlayCardPanel>
-    </OverlayCard>
+      </div>
+      {item.footer ? (
+        <div className="border-t border-border bg-card px-5 py-3.5 sm:px-6">
+          <Link
+            href={item.footer.href}
+            onClick={onNavigate}
+            className="inline-flex items-center gap-1 text-sm text-accent transition-colors hover:text-primary"
+          >
+            {item.footer.name}
+            <ChevronRightIcon className="size-3.5" size={14} />
+          </Link>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
