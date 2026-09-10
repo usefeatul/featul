@@ -9,7 +9,7 @@ import { cn } from "@featul/ui/lib/utils"
 
 type SkyPageShellProps = {
   children: ReactNode
-  /** Rendered inside max-w-6xl but outside the padded Container (full rail width). */
+  /** Rendered inside max-w-7xl but outside the padded Container (full rail width). */
   below?: ReactNode
   dataComponent?: string
   eyebrow?: ReactNode
@@ -43,7 +43,7 @@ export function SkyPageShell({
             below ? "pb-0" : "pb-10 sm:pb-12",
           )}
         >
-          <div className="w-full max-w-6xl px-0 sm:px-6">
+          <div className="w-full max-w-7xl px-0 sm:px-6">
             {hasHeader ? (
               <header
                 className={cn(

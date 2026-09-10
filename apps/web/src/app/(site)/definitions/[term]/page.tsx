@@ -41,7 +41,7 @@ export default async function DefinitionPage({ params }: { params: Promise<{ ter
   return (
     <>
       <DefinitionDetail def={def} />
-      <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-10 lg:px-12 xl:px-14">
+      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-10 lg:px-12 xl:px-14">
         <RelatedLinks links={relatedLinks} title="Related resources" />
       </div>
       <DefinedTermJsonLd name={def.name} description={def.short} path={`/definitions/${def.slug}`} alternateNames={def.synonyms} />

@@ -84,7 +84,7 @@ export default function AlternativesIndexPage() {
         </MarketingContainer>
         <MarketingContainer>
           <section className="py-16 md:py-24">
-            <div className="max-w-5xl px-0 sm:px-6">
+            <div className="max-w-7xl px-0 sm:px-6">
               <div className="max-w-xl">
                 <FaqAccordion
                   title="FAQs about Featurebase and Canny alternatives"

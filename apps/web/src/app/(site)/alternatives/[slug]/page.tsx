@@ -139,7 +139,7 @@ export default async function AlternativePage({
           <Verdict alt={alt} />
           <AlternativeFAQs alt={alt} />
           <MarketingContainer>
-            <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+            <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
               <RelatedLinks links={related} title="Related comparisons" />
             </div>
           </MarketingContainer>

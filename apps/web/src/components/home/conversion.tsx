@@ -17,7 +17,7 @@ export function ConversionHero() {
       <MarketingContainer>
         <div className="mx-auto w-full px-1 sm:px-6">
           <div className="pb-4 pt-2 sm:pb-8 sm:pt-4">
-            <h2 className="font-heading text-foreground max-w-5xl text-balance text-xl font-semibold leading-snug sm:max-w-6xl sm:text-2xl sm:leading-snug md:text-3xl">
+            <h2 className="font-heading text-foreground max-w-6xl text-balance text-xl font-semibold leading-snug sm:max-w-7xl sm:text-2xl sm:leading-snug md:text-3xl">
               Build better products with customer feedback.
               <span className="text-accent/80 mt-2 block text-[0.95em] leading-relaxed sm:mt-1">
                 Collect, prioritize, and ship what matters with{" "}

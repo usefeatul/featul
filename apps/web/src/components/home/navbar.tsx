@@ -77,7 +77,7 @@ export default function Navbar() {
           <div
             data-nav-bar
             className={cn(
-              "mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6",
+              "mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-1 sm:px-6",
               !scrolled && "bg-background",
             )}
           >

@@ -49,7 +49,7 @@ export function SkyMarketingHero({
                 width={1762}
                 height={1124}
                 priority
-                sizes="(max-width: 1280px) 90vw, 896px"
+                sizes="(max-width: 1536px) 90vw, 1152px"
                 placeholder="blur"
                 blurDataURL={DASHBOARD_BLUR_DATA_URL}
                 className="block h-auto w-full"

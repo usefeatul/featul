@@ -20,7 +20,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
   return (
     <MarketingContainer>
       <section className="py-16" data-component="TLDR">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <BookmarkIcon aria-hidden className="mb-2 size-5 text-primary sm:mb-3" opacity={1} />
             <p className="text-xs text-accent sm:text-sm">

@@ -33,7 +33,7 @@ export default function WhyBetter({ alt }: { alt: Alternative }) {
   return (
     <MarketingContainer>
       <section className="py-16" data-component="WhyBetter">
-        <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
           <h2 className="text-foreground text-balance text-2xl sm:text-3xl lg:text-3xl font-semibold">
             Why do teams choose Featul over {alt.name}?
           </h2>

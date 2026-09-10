@@ -19,11 +19,11 @@ export default function AnnouncementBanner() {
       )}
     >
       <Container
-        maxWidth="6xl"
+        maxWidth="7xl"
         className="relative px-3 sm:px-10 lg:px-12 xl:px-14"
       >
-        <div className="pointer-events-none absolute inset-0 mx-auto max-w-6xl bg-[linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%),linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%)] bg-[length:1px_100%] bg-[position:left_top,right_top] bg-no-repeat px-1 sm:px-6" />
-        <div className="mx-auto flex h-10 w-full max-w-6xl items-center justify-center gap-1.5 px-1 text-xs sm:gap-2 sm:px-6 sm:text-[13px]">
+        <div className="pointer-events-none absolute inset-0 mx-auto max-w-7xl bg-[linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%),linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%)] bg-[length:1px_100%] bg-[position:left_top,right_top] bg-no-repeat px-1 sm:px-6" />
+        <div className="mx-auto flex h-10 w-full max-w-7xl items-center justify-center gap-1.5 px-1 text-xs sm:gap-2 sm:px-6 sm:text-[13px]">
           <span className="inline-flex h-6 shrink-0 items-center rounded-sm bg-primary-foreground/15 px-2 font-heading whitespace-nowrap">
             New
           </span>

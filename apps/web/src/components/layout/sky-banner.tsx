@@ -60,7 +60,7 @@ export function SkyDashboardFrame({
   className?: string;
 }) {
   return (
-    <div className={cn("w-full max-w-4xl", className)}>
+    <div className={cn("w-full max-w-6xl", className)}>
       <div className={dashboardGlassShellClass}>
         <div className={dashboardGlassInnerClass}>{children}</div>
       </div>

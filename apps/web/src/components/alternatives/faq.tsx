@@ -11,7 +11,7 @@ export default function AlternativeFAQs({ alt }: { alt: Alternative }) {
   return (
     <MarketingContainer>
       <section className="py-16 md:py-24">
-        <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
           <FaqAccordion
             title={`FAQs about ${alt.name} alternatives`}
             description={description}

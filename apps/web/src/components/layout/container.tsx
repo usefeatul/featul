@@ -3,8 +3,8 @@ import { Container } from "@/components/global/container";
 import { cn } from "@featul/ui/lib/utils";
 import { edgeGutterXClass } from "@/components/layout/edge-pattern";
 
-export const marketingRailClass = "mx-auto w-full max-w-6xl px-1 sm:px-6";
-export const marketingStackClass = "relative mx-auto max-w-6xl";
+export const marketingRailClass = "mx-auto w-full max-w-7xl px-1 sm:px-6";
+export const marketingStackClass = "relative mx-auto max-w-7xl";
 
 type MarketingBoxProps = {
   children: ReactNode;
@@ -14,7 +14,7 @@ type MarketingBoxProps = {
 /** Page-width container that stays clear of the ruled edge strips. */
 export function MarketingContainer({ children, className }: MarketingBoxProps) {
   return (
-    <Container maxWidth="6xl" className={cn(edgeGutterXClass, className)}>
+    <Container maxWidth="7xl" className={cn(edgeGutterXClass, className)}>
       {children}
     </Container>
   );

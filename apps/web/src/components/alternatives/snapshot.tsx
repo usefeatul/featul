@@ -45,7 +45,7 @@ export default function Snapshot({ alt }: { alt: Alternative }) {
   return (
     <MarketingContainer>
       <section className="py-16" data-component="AlternativeSnapshot">
-        <div className="mx-auto w-full max-w-6xl px-0 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
           <SquareIcon aria-hidden className="size-5 text-primary" />
           <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
             How do Featul and {alt.name} compare at a glance?

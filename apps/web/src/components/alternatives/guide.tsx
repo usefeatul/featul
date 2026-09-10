@@ -8,7 +8,7 @@ export default function AlternativeGuide({ alt }: { alt: Alternative }) {
   return (
     <MarketingContainer>
       <section className="py-16" data-component="AlternativeGuide">
-        <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
           <BookmarkIcon aria-hidden className="size-5 text-primary" opacity={1} />
           <p className="mt-6 text-sm leading-6 text-accent">
             Direct answers before you switch from {alt.name}.

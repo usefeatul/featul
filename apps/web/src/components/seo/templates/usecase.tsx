@@ -79,7 +79,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
         <SectionStack>
           <MarketingContainer>
             <section className="py-16" data-component="UseCaseChallenge">
-              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+              <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
                 <SquareIcon aria-hidden className="size-5 text-primary" />
                 <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
                   The challenge
@@ -105,7 +105,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
 
           <MarketingContainer>
             <section className="py-16" data-component="UseCaseSolution">
-              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+              <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
                 <SetupIcon aria-hidden className="size-5 text-primary" opacity={1} />
                 <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
                   How Featul helps
@@ -134,7 +134,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
 
           <MarketingContainer>
             <section className="py-10 sm:py-14" data-component="UseCaseVerdict">
-              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+              <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
                 <OverlayCard>
                   <OverlayCardPanel
                     className="bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
@@ -173,7 +173,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
 
           <MarketingContainer>
             <section className="py-16 md:py-24" data-component="UseCaseFaqs">
-              <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+              <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
                 <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
                   Frequently asked questions
                 </h2>
@@ -203,7 +203,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
           </MarketingContainer>
 
           <MarketingContainer>
-            <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+            <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
               <RelatedLinks links={relatedLinks} title="Related resources" />
               <div className="pb-10">
                 <Link

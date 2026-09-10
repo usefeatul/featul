@@ -21,7 +21,7 @@ export default function Verdict({ alt }: VerdictProps) {
   return (
     <MarketingContainer>
       <section className="py-10 sm:py-14" data-component="AlternativeVerdict">
-        <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-0 sm:px-6">
           <OverlayCard>
             <OverlayCardPanel
               className="bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
