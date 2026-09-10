@@ -1,12 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
-import { BoardIcon } from "@featul/ui/icons/board";
-import { RoadmapIcon } from "@featul/ui/icons/roadmap";
-import { ChangelogIcon } from "@featul/ui/icons/changelog";
 import { motion, useReducedMotion } from "framer-motion";
 
 const CONTACT_EMAIL = "contact@featul.com";
@@ -23,22 +19,6 @@ const productMoments = [
   "replied to a voter.",
 ];
 
-function ProductChip({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className: string;
-}) {
-  return (
-    <span
-      className={`mx-0.5 inline-flex items-center gap-0.5 rounded-md border px-1.5 py-0.5 align-baseline text-[0.9em] shadow-sm sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 ${className}`}
-    >
-      {children}
-    </span>
-  );
-}
-
 function MomentTicker() {
   const reduceMotion = useReducedMotion();
   const loop = [...productMoments, ...productMoments];
@@ -46,10 +26,10 @@ function MomentTicker() {
   return (
     <div
       aria-hidden
-      className="relative hidden h-[19rem] w-[16rem] shrink-0 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] lg:block xl:w-[18rem]"
+      className="relative hidden h-[19rem] w-[18rem] shrink-0 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)] lg:block xl:w-[22rem]"
     >
       <motion.ul
-        className="select-none text-right font-heading text-lg font-medium leading-8 text-white/55"
+        className="select-none text-right font-heading text-xl font-medium leading-9 tracking-tight text-zinc-300"
         animate={reduceMotion ? undefined : { y: ["0%", "-50%"] }}
         transition={
           reduceMotion
@@ -80,34 +60,21 @@ export function ConversionHero() {
     >
       <MarketingContainer>
         <div className="mx-auto w-full px-1 sm:px-6">
-          <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center lg:gap-16">
-            <div className="min-w-0 flex-1">
-              <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.14em] text-sky-300">
+          <div className="flex flex-col items-start justify-between gap-12 lg:flex-row lg:items-center lg:gap-20">
+            <div className="min-w-0 max-w-2xl flex-1">
+              <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.16em] text-primary">
                 From upvote to shipped
               </p>
-              <h2 className="font-heading max-w-3xl text-2xl font-semibold leading-snug text-white sm:text-3xl sm:leading-snug md:text-4xl">
-                Build better products with customer feedback.
-                <span className="mt-3 block text-[0.85em] font-medium leading-relaxed text-zinc-200 sm:mt-2">
-                  Collect, prioritize, and ship with{" "}
-                  <ProductChip className="border-sky-300/40 bg-sky-400/20 text-sky-100">
-                    <BoardIcon className="size-4 shrink-0 text-sky-300 sm:size-5" />
-                    boards
-                  </ProductChip>
-                  ,{" "}
-                  <ProductChip className="border-emerald-300/40 bg-emerald-400/20 text-emerald-100">
-                    <RoadmapIcon className="size-4 shrink-0 text-emerald-300 sm:size-5" />
-                    roadmaps
-                  </ProductChip>
-                  , and{" "}
-                  <ProductChip className="border-amber-300/40 bg-amber-400/20 text-amber-100">
-                    <ChangelogIcon className="size-4 shrink-0 text-amber-300 sm:size-5" />
-                    changelogs
-                  </ProductChip>
-                  .
+              <h2 className="font-heading text-4xl font-semibold tracking-tight text-white sm:text-5xl sm:leading-[1.08]">
+                Build better products
+                <span className="mt-1 block text-primary">
+                  from customer feedback.
                 </span>
               </h2>
-              <p className="mt-5 max-w-md text-sm leading-relaxed text-zinc-300">
-                Set up in minutes. Keep users in the loop as you ship.
+              <p className="mt-6 max-w-lg text-base leading-relaxed text-zinc-300 sm:text-lg">
+                Collect, prioritize, and ship, then{" "}
+                <span className="text-primary">close the loop</span>. Set up in
+                minutes. Keep users in the loop as you ship.
               </p>
               <div className="mt-8">
                 <Button
