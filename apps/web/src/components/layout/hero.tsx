@@ -45,21 +45,23 @@ export function SkyMarketingHero({
         }
         className={bannerClassName}
       >
-        <div className="relative z-10 mx-auto -mb-10 w-full max-w-[90rem] px-3 sm:px-6 lg:px-8 sm:-mb-14">
-          <SkyDashboardFrame>
-            <Image
-              src="/image/dashboard.png"
-              alt={imageAlt}
-              width={1762}
-              height={1124}
-              priority
-              sizes="(max-width: 1536px) 94vw, 1400px"
-              placeholder="blur"
-              blurDataURL={DASHBOARD_BLUR_DATA_URL}
-              className="block h-auto w-full"
-            />
-          </SkyDashboardFrame>
-        </div>
+        <MarketingContainer className="relative z-10 -mb-10 sm:-mb-14">
+          <MarketingRail>
+            <SkyDashboardFrame>
+              <Image
+                src="/image/dashboard.png"
+                alt={imageAlt}
+                width={1762}
+                height={1124}
+                priority
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                placeholder="blur"
+                blurDataURL={DASHBOARD_BLUR_DATA_URL}
+                className="block h-auto w-full"
+              />
+            </SkyDashboardFrame>
+          </MarketingRail>
+        </MarketingContainer>
       </SkyDashboardBanner>
     </section>
   );
