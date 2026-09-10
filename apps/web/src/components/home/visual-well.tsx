@@ -18,6 +18,7 @@ export function VisualCardWell({
   children,
   className,
   compact = false,
+  stepAlign = "start",
 }: {
   color: PixelColor;
   step?: string;
@@ -26,6 +27,7 @@ export function VisualCardWell({
   children: ReactNode;
   className?: string;
   compact?: boolean;
+  stepAlign?: "start" | "end";
 }) {
   return (
     <div
@@ -63,7 +65,12 @@ export function VisualCardWell({
         </div>
       ) : null}
       {step || label ? (
-        <div className="relative z-10 flex items-baseline gap-2 px-4 pt-4 sm:px-5">
+        <div
+          className={cn(
+            "relative z-10 flex items-baseline gap-2 px-4 pt-4 sm:px-5",
+            stepAlign === "end" && "justify-end",
+          )}
+        >
           {step ? (
             <span className="text-primary text-xs font-medium tabular-nums">
               {step}
