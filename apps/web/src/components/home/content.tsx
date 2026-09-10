@@ -9,6 +9,21 @@ import {
 } from "@/components/shared/heading-highlight";
 import { cn } from "@featul/ui/lib/utils";
 
+const EU_FLAG_STARS = [
+  { cx: 9, cy: 2.9 },
+  { cx: 10.55, cy: 3.315 },
+  { cx: 11.685, cy: 4.45 },
+  { cx: 12.1, cy: 6 },
+  { cx: 11.685, cy: 7.55 },
+  { cx: 10.55, cy: 8.685 },
+  { cx: 9, cy: 9.1 },
+  { cx: 7.45, cy: 8.685 },
+  { cx: 6.315, cy: 7.55 },
+  { cx: 5.9, cy: 6 },
+  { cx: 6.315, cy: 4.45 },
+  { cx: 7.45, cy: 3.315 },
+] as const;
+
 export function HeroContent() {
   return (
     <div className="max-w-2xl text-left" data-component="HeroContent">
@@ -29,12 +44,9 @@ export function HeroContent() {
           >
             <rect width="18" height="12" fill="#003399" />
             <g fill="#FFCC00">
-              {Array.from({ length: 12 }, (_, i) => {
-                const angle = (i * 30 * Math.PI) / 180;
-                const cx = 9 + Math.cos(angle - Math.PI / 2) * 3.1;
-                const cy = 6 + Math.sin(angle - Math.PI / 2) * 3.1;
-                return <circle key={i} cx={cx} cy={cy} r="0.45" />;
-              })}
+              {EU_FLAG_STARS.map((star, i) => (
+                <circle key={i} cx={star.cx} cy={star.cy} r="0.45" />
+              ))}
             </g>
           </svg>
           EU

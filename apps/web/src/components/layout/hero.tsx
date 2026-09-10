@@ -29,35 +29,38 @@ export function SkyMarketingHero({
 }: SkyMarketingHeroProps) {
   return (
     <section
-      className={cn("relative pb-8 sm:pb-10", className)}
+      className={cn("relative pb-0", className)}
       data-component={dataComponent}
     >
       <MarketingContainer className="relative z-10">
         <MarketingRail>
           <div className="pt-32 sm:pt-36">{children}</div>
           {beforeBanner}
-          <SkyDashboardBanner
-            data-component={
-              dataComponent ? `${dataComponent}Banner` : undefined
-            }
-            className={bannerClassName}
-          >
-            <SkyDashboardFrame>
-              <Image
-                src="/image/dashboard.png"
-                alt={imageAlt}
-                width={1762}
-                height={1124}
-                priority
-                sizes="(max-width: 1536px) 90vw, 1152px"
-                placeholder="blur"
-                blurDataURL={DASHBOARD_BLUR_DATA_URL}
-                className="block h-auto w-full"
-              />
-            </SkyDashboardFrame>
-          </SkyDashboardBanner>
         </MarketingRail>
       </MarketingContainer>
+
+      <SkyDashboardBanner
+        data-component={
+          dataComponent ? `${dataComponent}Banner` : undefined
+        }
+        className={bannerClassName}
+      >
+        <div className="relative z-10 mx-auto -mb-10 w-full max-w-[90rem] px-3 sm:px-6 lg:px-8 sm:-mb-14">
+          <SkyDashboardFrame>
+            <Image
+              src="/image/dashboard.png"
+              alt={imageAlt}
+              width={1762}
+              height={1124}
+              priority
+              sizes="(max-width: 1536px) 94vw, 1400px"
+              placeholder="blur"
+              blurDataURL={DASHBOARD_BLUR_DATA_URL}
+              className="block h-auto w-full"
+            />
+          </SkyDashboardFrame>
+        </div>
+      </SkyDashboardBanner>
     </section>
   );
 }

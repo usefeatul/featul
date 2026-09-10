@@ -3,7 +3,7 @@ import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
+// import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import { APP_URL } from "@/config/auth";
@@ -43,8 +43,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   return createPortal(
     <div
       className={cn(
-        "fixed bottom-0 top-16 z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
-        edgeChromeInsetClass,
+        "fixed inset-x-0 bottom-0 top-16 z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
+        // edgeChromeInsetClass,
       )}
       data-component="MobileMenu"
     >

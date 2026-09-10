@@ -9,7 +9,7 @@ import { Separator } from "@featul/ui/components/separator";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
-import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
+// import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { MobileMenu } from "./menu";
 
 export default function Navbar() {
@@ -69,7 +69,7 @@ export default function Navbar() {
             aria-hidden
             className={cn(
               "pointer-events-none absolute inset-0 bg-background",
-              edgeChromeInsetClass,
+              // edgeChromeInsetClass,
             )}
           />
         ) : null}
@@ -168,7 +168,7 @@ export default function Navbar() {
             aria-hidden
             className={cn(
               "pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[0.5px] bg-border",
-              edgeChromeInsetClass,
+              // edgeChromeInsetClass,
             )}
           />
         ) : null}

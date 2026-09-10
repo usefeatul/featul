@@ -11,7 +11,7 @@ import {
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
 import OrganizationJsonLd from "@/components/seo/organization";
-import { MarketingEdgePattern } from "@/components/layout/edge-pattern";
+// import { MarketingEdgePattern } from "@/components/layout/edge-pattern";
 import {
   buildSiteNavigationSchema,
   buildSoftwareApplicationSchema,
@@ -166,7 +166,7 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
-        <MarketingEdgePattern />
+        {/* <MarketingEdgePattern /> */}
         {children}
         <DebugTools />
       </body>

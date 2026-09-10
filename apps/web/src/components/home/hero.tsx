@@ -9,7 +9,7 @@ export function Hero() {
     <SkyMarketingHero
       dataComponent="Hero"
       imageAlt="Featul feedback dashboard"
-      className="sm:pb-12"
+      className="pb-0"
       bannerClassName="mt-2 sm:mt-3"
       beforeBanner={<HeroReviews />}
     >

@@ -98,6 +98,138 @@ const canvasLayout: CSSProperties = {
   imageRendering: "pixelated",
 };
 
+export type DitherBand = {
+  color: PixelColor;
+  /** 0–1 vertical stop where this color takes over. */
+  at: number;
+};
+
+type BandPaintSpec = {
+  bands: { fill: ReturnType<typeof fillOf>; at: number }[];
+  cell: number;
+  opacity: number;
+};
+
+function paintBands(
+  canvas: HTMLCanvasElement,
+  width: number,
+  height: number,
+  spec: BandPaintSpec,
+): void {
+  const ctx = canvas.getContext("2d");
+  if (!ctx || width <= 0 || height <= 0 || spec.bands.length === 0) return;
+  const cols = Math.min(MAX_COLS, Math.max(4, Math.round(width / spec.cell)));
+  const rows = Math.min(MAX_ROWS, Math.max(4, Math.round(height / spec.cell)));
+  if (canvas.width !== cols) canvas.width = cols;
+  if (canvas.height !== rows) canvas.height = rows;
+
+  const stops = spec.bands;
+  const o = spec.opacity;
+
+  for (let y = 0; y < rows; y++) {
+    const t = (y + 0.5) / rows;
+    let i = 0;
+    while (i < stops.length - 1 && stops[i + 1]!.at < t) i++;
+    const a = stops[i]!;
+    const b = stops[Math.min(i + 1, stops.length - 1)]!;
+    const span = Math.max(1e-6, b.at - a.at);
+    const local = (t - a.at) / span;
+    for (let x = 0; x < cols; x++) {
+      const threshold = BAYER4[y & 3]?.[x & 3] ?? 0.5;
+      const fill = local > threshold ? b.fill : a.fill;
+      ctx.fillStyle = rgb(fill, 1, o);
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+}
+
+export type DitherBandsProps = {
+  bands: DitherBand[];
+  cell?: number;
+  opacity?: number;
+  className?: string;
+};
+
+/** Full-area Bayer-dithered color bands (Ferndesk-style hero field). */
+export function DitherBands({
+  bands,
+  cell = 5,
+  opacity = 1,
+  className,
+}: DitherBandsProps) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const packed = bands
+    .map((band) => `${band.at}:${Array.isArray(band.color) ? band.color.join(",") : band.color}`)
+    .join("|");
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const canvas = canvasRef.current;
+    if (!wrap || !canvas) return;
+
+    const resolved = [...bands]
+      .map((band) => ({ fill: fillOf(band.color), at: band.at }))
+      .sort((a, b) => a.at - b.at);
+
+    let frame = 0;
+    let retries = 0;
+
+    const paint = () => {
+      const box = wrap.getBoundingClientRect();
+      if (box.width < 1 || box.height < 1) {
+        if (retries < 24) {
+          retries += 1;
+          schedule();
+        }
+        return;
+      }
+      retries = 0;
+      paintBands(canvas, box.width, box.height, {
+        bands: resolved,
+        cell,
+        opacity,
+      });
+    };
+
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        paint();
+      });
+    };
+
+    schedule();
+
+    const ro =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => {
+            schedule();
+          });
+    ro?.observe(wrap);
+
+    return () => {
+      ro?.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [packed, cell, opacity]);
+
+  return (
+    <div
+      ref={wrapRef}
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-0 overflow-hidden [contain:layout_paint] [overflow-anchor:none]",
+        className,
+      )}
+    >
+      <canvas ref={canvasRef} style={canvasLayout} />
+    </div>
+  );
+}
+
 export function DitherGradient({
   from,
   to = "transparent",
