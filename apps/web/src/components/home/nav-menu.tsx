@@ -153,8 +153,8 @@ function MegaPanel({
       className={cn(
         "overflow-hidden rounded-xl bg-card shadow-[0_24px_60px_-28px_rgba(15,23,42,0.28)] ring-1 ring-border/50",
         item.highlight
-          ? "w-[min(64rem,calc(100vw-2rem))]"
-          : "w-[min(68rem,calc(100vw-2rem))]",
+          ? "w-[min(52rem,calc(100vw-2rem))]"
+          : "w-[min(56rem,calc(100vw-2rem))]",
       )}
     >
       <div
