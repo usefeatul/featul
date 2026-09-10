@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Check, ChevronUp, Lock, Unlock } from "lucide-react";
+import { Heart } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { DitherGradient } from "@/components/dither-kit/gradient";
 import type { Rgb } from "@/components/dither-kit/palette";
 import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
-import { CommentsIcon } from "@featul/ui/icons/comments";
+import { Button } from "@featul/ui/components/button";
+import { LockIcon } from "@featul/ui/icons/lock";
 import { MergeIcon } from "@featul/ui/icons/merge";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
@@ -17,6 +18,7 @@ const PRIMARY_DOTS: Rgb = [232, 247, 255];
 
 const viewport = { once: true, amount: 0.4 } as const;
 const springIn = { type: "spring" as const, stiffness: 280, damping: 24 };
+const mockCardClass = "overflow-hidden rounded-lg bg-card ring-1 ring-border";
 
 const duplicatePosts = [
   { id: "dark", title: "Dark mode", votes: 18 },
@@ -116,7 +118,7 @@ function FeatureCard({
           <span className="absolute right-4 top-4 z-10 text-xs font-medium tabular-nums text-accent">
             {step}
           </span>
-          <div className="flex flex-1 items-center justify-center px-4 pb-6 pt-10 sm:px-6 sm:pb-8">
+          <div className="flex flex-1 flex-col px-4 pb-4 pt-11 sm:px-5">
             {children}
           </div>
         </div>
@@ -131,67 +133,97 @@ function FeatureCard({
   );
 }
 
+function HeartVote({
+  voted,
+  count,
+  label,
+  onToggle,
+}: {
+  voted: boolean;
+  count: number;
+  label: string;
+  onToggle: () => void;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="nav"
+      size="xs"
+      aria-pressed={voted}
+      aria-label={label}
+      onClick={onToggle}
+      className={cn("gap-1 tabular-nums", voted && "text-red-500")}
+    >
+      <Heart
+        className="size-3.5"
+        fill={voted ? "currentColor" : "none"}
+        strokeWidth={2}
+      />
+      {count}
+    </Button>
+  );
+}
+
 function ReviewMock({ reduceMotion }: { reduceMotion: boolean }) {
   const [voted, setVoted] = useState(false);
-  const [approved, setApproved] = useState(false);
-  const votes = voted ? 43 : 42;
+  const [status, setStatus] = useState<"review" | "planned">("review");
 
   return (
     <motion.div
-      className="w-full"
-      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      className="flex h-full w-full flex-col"
+      initial={false}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={viewport}
       transition={springIn}
     >
-      <div className="flex gap-3 rounded-2xl bg-muted/50 p-3 ring-1 ring-foreground/5">
-        <button
-          type="button"
-          aria-pressed={voted}
-          aria-label={voted ? "Remove vote from CSV import" : "Vote for CSV import"}
-          onClick={() => setVoted((value) => !value)}
-          className={cn(
-            "flex w-12 shrink-0 flex-col items-center justify-center rounded-xl py-2 text-sm font-semibold tabular-nums transition-colors",
-            voted
-              ? "bg-primary text-primary-foreground"
-              : "bg-background text-foreground ring-1 ring-border hover:ring-primary/40",
-          )}
-        >
-          <ChevronUp className="size-4" strokeWidth={2.4} />
-          {votes}
-        </button>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div>
+      <div className={mockCardClass}>
+        <div className="px-3.5 py-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
               <p className="text-foreground text-sm font-medium">CSV import</p>
-              <p className="text-accent mt-0.5 text-xs">waiting on you</p>
+              <p className="text-accent mt-0.5 text-xs">42 votes · waiting on you</p>
             </div>
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[11px] font-medium",
-                approved
-                  ? "bg-emerald-100 text-emerald-800"
-                  : "bg-sky-100 text-sky-800",
-              )}
-            >
-              {approved ? "Approved" : "Pending"}
-            </span>
+            <HeartVote
+              voted={voted}
+              count={voted ? 43 : 42}
+              label={voted ? "Remove vote from CSV import" : "Vote for CSV import"}
+              onToggle={() => setVoted((value) => !value)}
+            />
           </div>
-          <button
-            type="button"
-            onClick={() => setApproved((value) => !value)}
-            className={cn(
-              "mt-3 inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors",
-              approved
-                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                : "bg-foreground text-background hover:bg-foreground/90",
-            )}
-          >
-            {approved ? <Check className="size-3.5" strokeWidth={2.6} /> : null}
-            {approved ? "Approved" : "Approve to roadmap"}
-          </button>
+          <div className="mt-3 flex gap-1.5">
+            <Button
+              type="button"
+              variant={status === "planned" ? "default" : "nav"}
+              size="xs"
+              aria-pressed={status === "planned"}
+              onClick={() => setStatus("planned")}
+            >
+              Planned
+            </Button>
+            <Button
+              type="button"
+              variant={status === "review" ? "default" : "nav"}
+              size="xs"
+              aria-pressed={status === "review"}
+              onClick={() => setStatus("review")}
+            >
+              In review
+            </Button>
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-3 border-t border-border px-3.5 py-3">
+          <div className="min-w-0">
+            <p className="text-foreground text-sm font-medium">SSO for the portal</p>
+            <p className="text-accent mt-0.5 text-xs">Already on the roadmap</p>
+          </div>
+          <span className="text-accent shrink-0 text-[11px] font-medium">Planned</span>
         </div>
       </div>
+      <p className="text-accent mt-auto pt-4 text-xs leading-5">
+        {status === "planned"
+          ? "CSV import is on the roadmap. Customers can follow it."
+          : "Nothing moves to the roadmap until you review it."}
+      </p>
     </motion.div>
   );
 }
@@ -201,67 +233,87 @@ function MergeMock({ reduceMotion }: { reduceMotion: boolean }) {
 
   return (
     <motion.div
-      className="w-full"
-      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      className="flex h-full w-full flex-col"
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={viewport}
       transition={{ ...springIn, delay: 0.06 }}
     >
-      <div className="relative h-[8.75rem]">
-        {duplicatePosts.map((post, index) => {
-          const visible = merged ? index === 0 : true;
-          return (
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-accent text-[11px] font-medium tracking-wide uppercase">
+          {merged ? "One thread" : "3 similar posts"}
+        </p>
+        <Button
+          type="button"
+          variant="nav"
+          size="xs"
+          aria-pressed={merged}
+          onClick={() => setMerged((value) => !value)}
+        >
+          <MergeIcon className="size-3" />
+          {merged ? "Undo" : "Merge"}
+        </Button>
+      </div>
+
+      <div className={cn("mt-3", mockCardClass)}>
+        <div className="flex items-center justify-between gap-3 px-3.5 py-3">
+          <div className="min-w-0">
+            <p className="text-foreground text-sm font-medium">Dark mode</p>
+            <p className="text-accent mt-0.5 text-xs">
+              {merged ? "Votes and comments rolled up" : "18 votes"}
+            </p>
+          </div>
+          <span className="text-foreground text-xs font-medium tabular-nums">
+            {merged ? 36 : 18}
+          </span>
+        </div>
+
+        <AnimatePresence initial={false}>
+          {merged ? (
             <motion.div
-              key={post.id}
-              className="absolute inset-x-0 rounded-xl bg-background px-3 py-2.5 shadow-sm ring-1 ring-border"
-              animate={
-                reduceMotion
-                  ? undefined
-                  : {
-                      top: merged ? 0 : index * 30,
-                      opacity: visible ? 1 : 0,
-                      scale: merged && index !== 0 ? 0.94 : 1,
-                    }
-              }
-              transition={{ type: "spring", stiffness: 320, damping: 28 }}
-              style={{
-                top: reduceMotion ? (merged ? 0 : index * 30) : index * 30,
-                opacity: reduceMotion && !visible ? 0 : undefined,
-                zIndex: duplicatePosts.length - index,
-                pointerEvents: visible ? "auto" : "none",
-              }}
+              key="sources"
+              initial={reduceMotion ? false : { opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              className="overflow-hidden"
             >
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-foreground truncate text-sm font-medium">
-                    {merged ? "Dark mode" : post.title}
+              <div className="border-t border-border px-3.5 py-2">
+                {duplicatePosts.slice(1).map((post) => (
+                  <p
+                    key={post.id}
+                    className="text-accent flex items-center justify-between py-1 text-xs"
+                  >
+                    <span>Merged · {post.title}</span>
+                    <span className="tabular-nums">{post.votes}</span>
                   </p>
-                  <p className="text-accent mt-0.5 text-xs">
-                    {merged ? "Night theme, OLED rolled in" : `${post.votes} votes`}
-                  </p>
-                </div>
-                <span className="text-foreground shrink-0 text-xs font-semibold tabular-nums">
-                  {merged ? 36 : post.votes}
-                </span>
+                ))}
               </div>
             </motion.div>
-          );
-        })}
+          ) : (
+            <motion.div
+              key="dupes"
+              initial={false}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+            >
+              {duplicatePosts.slice(1).map((post) => (
+                <div
+                  key={post.id}
+                  className="flex items-center justify-between gap-3 border-t border-border px-3.5 py-3"
+                >
+                  <p className="text-foreground text-sm font-medium">{post.title}</p>
+                  <span className="text-accent text-xs tabular-nums">{post.votes}</span>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-      <button
-        type="button"
-        aria-pressed={merged}
-        onClick={() => setMerged((value) => !value)}
-        className={cn(
-          "mt-3 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg text-xs font-medium transition-colors",
-          merged
-            ? "bg-violet-100 text-violet-800 hover:bg-violet-200"
-            : "bg-foreground text-background hover:bg-foreground/90",
-        )}
-      >
-        <MergeIcon className="size-3.5" />
-        {merged ? "Merged · click to undo" : "Merge duplicates"}
-      </button>
+
+      <p className="text-accent mt-auto pt-4 text-xs leading-5">
+        {merged
+          ? "18 + 11 + 7 now count as one request."
+          : "Same idea, three posts. Keep the votes in one place."}
+      </p>
     </motion.div>
   );
 }
@@ -271,57 +323,87 @@ function InternalMock({ reduceMotion }: { reduceMotion: boolean }) {
 
   return (
     <motion.div
-      className="w-full"
-      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      className="flex h-full w-full flex-col"
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={viewport}
       transition={{ ...springIn, delay: 0.1 }}
     >
-      <div className="flex flex-col gap-2.5">
-        <div className="max-w-[95%] rounded-2xl rounded-tl-md bg-muted/70 px-3 py-2">
-          <p className="text-accent text-[11px] font-medium">Customer</p>
-          <p className="text-foreground mt-0.5 text-sm">Can we get CSV import?</p>
+      <div className={cn("flex flex-1 flex-col", mockCardClass)}>
+        <div className="flex flex-1 flex-col gap-3 px-3.5 py-3">
+          <div className="flex gap-2.5">
+            <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-foreground">
+              C
+            </span>
+            <div className="min-w-0">
+              <p className="text-accent text-[11px] font-medium">Customer</p>
+              <p className="text-foreground mt-0.5 text-sm leading-5">
+                Can we get CSV import?
+              </p>
+            </div>
+          </div>
+
+          <AnimatePresence initial={false}>
+            {internal ? (
+              <motion.div
+                key="note"
+                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+                className="flex gap-2.5"
+              >
+                <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[10px] font-medium text-primary">
+                  M
+                </span>
+                <div className="min-w-0">
+                  <p className="flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
+                    <span className="text-foreground">Maya</span>
+                    <span className="rounded bg-primary/10 px-1 py-px text-primary">
+                      Internal
+                    </span>
+                  </p>
+                  <p className="text-foreground mt-0.5 text-sm leading-5">
+                    <span className="font-medium text-primary">@alex</span> Should
+                    this wait for Q3?
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.p
+                key="hidden"
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-accent pl-8 text-xs leading-5"
+              >
+                Internal notes are hidden on the public board.
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
-        <AnimatePresence initial={false}>
-          {internal ? (
-            <motion.div
-              key="internal"
-              initial={reduceMotion ? false : { opacity: 0, y: 8, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: "auto" }}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="max-w-[95%] rounded-2xl rounded-tl-md bg-emerald-50 px-3 py-2 ring-1 ring-emerald-200/80">
-                <p className="flex items-center gap-1 text-[11px] font-medium text-emerald-800">
-                  <CommentsIcon className="size-3" />
-                  Maya · Internal
-                </p>
-                <p className="text-foreground mt-0.5 text-sm">
-                  Should this wait for Q3?
-                </p>
-              </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+
+        <div className="mt-auto flex items-center gap-2 border-t border-border px-3.5 py-2.5">
+          <Button
+            type="button"
+            variant={internal ? "default" : "nav"}
+            size="icon-sm"
+            aria-pressed={internal}
+            aria-label={
+              internal
+                ? "Internal note on. Click to hide from this preview."
+                : "Show the internal note"
+            }
+            onClick={() => setInternal((value) => !value)}
+          >
+            <LockIcon width={12} height={12} />
+          </Button>
+          <p className="text-accent min-w-0 flex-1 truncate text-xs">
+            {internal ? "Internal note to @alex" : "Write a public reply"}
+          </p>
+          <Button type="button" variant="nav" size="xs" tabIndex={-1}>
+            Post
+          </Button>
+        </div>
       </div>
-      <button
-        type="button"
-        aria-pressed={internal}
-        onClick={() => setInternal((value) => !value)}
-        className={cn(
-          "mt-3 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg text-xs font-medium transition-colors",
-          internal
-            ? "bg-emerald-700 text-white hover:bg-emerald-800"
-            : "bg-foreground text-background hover:bg-foreground/90",
-        )}
-      >
-        {internal ? (
-          <Lock className="size-3.5" strokeWidth={2.2} />
-        ) : (
-          <Unlock className="size-3.5" strokeWidth={2.2} />
-        )}
-        {internal ? "Workspace only" : "Show internal note"}
-      </button>
     </motion.div>
   );
 }
