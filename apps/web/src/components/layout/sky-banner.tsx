@@ -27,7 +27,7 @@ export function SkyDashboardBanner({
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden border-b border-white/20",
+        "relative w-full overflow-hidden border-b border-[color-mix(in_oklab,var(--accent)_50%,black)]",
         className,
       )}
       data-component={dataComponent}
@@ -37,6 +37,7 @@ export function SkyDashboardBanner({
         className="pointer-events-none absolute inset-x-0 bottom-0 top-[18%] sm:top-[22%]"
       >
         <HeroSkyDither />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-zinc-950" />
       </div>
 
       <div
