@@ -38,7 +38,7 @@ export default function FeaturesSection() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-[22%]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[38%] sm:h-[36%]"
       >
         <DitherGradient
           from={PRIMARY_DOTS}
@@ -49,7 +49,7 @@ export default function FeaturesSection() {
           sparse
           maxDensity={0.42}
           opacity={1}
-          className="[mask-image:linear-gradient(to_top,black_8%,black_52%,transparent_100%)]"
+          className="[mask-image:linear-gradient(to_top,black_0%,black_45%,transparent_100%)]"
         />
       </div>
       <MarketingContainer className="relative z-10">
