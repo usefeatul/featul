@@ -25,6 +25,10 @@ export type DitherGradientProps = {
   opacity?: number;
   bloom?: PixelBloom;
   className?: string;
+  /** Paint only dither dots; unlit cells stay transparent. */
+  sparse?: boolean;
+  /** Cap Bayer density so the field never fills solid. */
+  maxDensity?: number;
 };
 
 type PaintSpec = {
@@ -33,6 +37,8 @@ type PaintSpec = {
   direction: GradientDirection;
   cell: number;
   opacity: number;
+  sparse?: boolean;
+  maxDensity?: number;
 };
 
 function paintGradient(
@@ -52,6 +58,9 @@ function paintGradient(
   const fromFill = fillOf(spec.from);
   const toFill = spec.to === "transparent" ? null : fillOf(spec.to);
   const o = spec.opacity;
+  const cap = spec.maxDensity ?? 1;
+
+  ctx.clearRect(0, 0, cols, rows);
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
@@ -63,9 +72,15 @@ function paintGradient(
             : spec.direction === "left"
               ? 1 - (x + 0.5) / cols
               : (x + 0.5) / cols;
-      const density = 1 - t;
+      const density = Math.min(cap, 1 - t);
       const threshold = BAYER4[y & 3]?.[x & 3] ?? 0.5;
       const lit = density > threshold;
+      if (spec.sparse) {
+        if (!lit) continue;
+        ctx.fillStyle = rgb(fromFill, 1, o);
+        ctx.fillRect(x, y, 1, 1);
+        continue;
+      }
       if (toFill) {
         ctx.fillStyle = rgb(lit ? fromFill : toFill, 1, o);
         ctx.fillRect(x, y, 1, 1);
@@ -238,6 +253,8 @@ export function DitherGradient({
   opacity = 1,
   bloom = "off",
   className,
+  sparse = false,
+  maxDensity,
 }: DitherGradientProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -248,19 +265,27 @@ export function DitherGradient({
     const canvas = canvasRef.current;
     if (!wrap || !canvas) return;
 
-    let visible = false;
     let frame = 0;
+    let retries = 0;
 
     const paint = () => {
-      if (!visible) return;
       const box = wrap.getBoundingClientRect();
-      if (box.width < 1 || box.height < 1) return;
+      if (box.width < 1 || box.height < 1) {
+        if (retries < 24) {
+          retries += 1;
+          schedule();
+        }
+        return;
+      }
+      retries = 0;
       paintGradient(canvas, bloomRef.current, box.width, box.height, {
         from,
         to,
         direction,
         cell,
         opacity,
+        sparse,
+        maxDensity,
       });
     };
 
@@ -272,29 +297,21 @@ export function DitherGradient({
       });
     };
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        visible = entries.some((entry) => entry.isIntersecting);
-        if (visible) schedule();
-      },
-      { rootMargin: "120px" },
-    );
-    io.observe(wrap);
+    schedule();
 
     const ro =
       typeof ResizeObserver === "undefined"
         ? null
         : new ResizeObserver(() => {
-            if (visible) schedule();
+            schedule();
           });
     ro?.observe(wrap);
 
     return () => {
-      io.disconnect();
       ro?.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [from, to, direction, cell, opacity, bloom]);
+  }, [from, to, direction, cell, opacity, bloom, sparse, maxDensity]);
 
   const bloomStyle = pixelBloomStyle(bloom);
 

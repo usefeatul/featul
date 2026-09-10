@@ -55,7 +55,7 @@ function MomentTicker() {
 export function ConversionHero() {
   return (
     <section
-      className="relative z-10 bg-zinc-950 py-16 text-white sm:py-20 md:py-24"
+      className="relative z-10 bg-stone-900 py-16 text-white sm:py-20 md:py-24"
       data-component="ConversionHero"
     >
       <MarketingContainer>

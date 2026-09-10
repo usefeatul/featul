@@ -1,10 +1,12 @@
 "use client";
 
-import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import type { ReactNode } from "react";
 import { Check } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
+import { DitherGradient } from "@/components/dither-kit/gradient";
+import type { Rgb } from "@/components/dither-kit/palette";
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import { Switch } from "@featul/ui/components/switch";
 import { CommentsIcon } from "@featul/ui/icons/comments";
 import { MergeIcon } from "@featul/ui/icons/merge";
@@ -17,6 +19,9 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import { NestedOverlayCard, VisualCardWell } from "./visual-well";
 
+/** Very light mix of CSS `--primary` toward white. */
+const PRIMARY_DOTS: Rgb = [232, 247, 255];
+
 const rowClass = "flex items-center gap-3 px-5 py-4 sm:px-6";
 const viewport = { once: true, amount: 0.4 } as const;
 const springPop = { type: "spring" as const, stiffness: 420, damping: 18 };
@@ -27,8 +32,27 @@ export default function FeaturesSection() {
   const reduceMotion = !!shouldReduceMotion;
 
   return (
-    <MarketingContainer>
-      <section className="my-16 sm:my-20" data-component="Features">
+    <section
+      className="relative overflow-hidden bg-background py-16 sm:py-20 md:py-24"
+      data-component="Features"
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-[22%]"
+      >
+        <DitherGradient
+          from={PRIMARY_DOTS}
+          to="transparent"
+          direction="up"
+          cell={5}
+          bloom="off"
+          sparse
+          maxDensity={0.42}
+          opacity={1}
+          className="[mask-image:linear-gradient(to_top,black_8%,black_52%,transparent_100%)]"
+        />
+      </div>
+      <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <div className="max-w-3xl text-left">
             <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl sm:leading-[1.1] lg:text-5xl">
@@ -169,8 +193,8 @@ export default function FeaturesSection() {
             </FeatureCard>
           </div>
         </div>
-      </section>
-    </MarketingContainer>
+      </MarketingContainer>
+    </section>
   );
 }
 

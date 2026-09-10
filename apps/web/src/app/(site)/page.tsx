@@ -41,9 +41,9 @@ export default function Home() {
       />
       <Hero />
       <ConversionHero />
+      <FeaturesSection />
       <div className={marketingStackClass}>
         <SectionStack>
-          <FeaturesSection />
           <Listening />
           <Integrations />
           <Setup />
