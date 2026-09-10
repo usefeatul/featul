@@ -151,7 +151,7 @@ function MegaPanel({
       role="menu"
       aria-labelledby={labelledBy}
       className={cn(
-        "overflow-hidden rounded-xl bg-background shadow-[0_24px_60px_-28px_rgba(15,23,42,0.28)] ring-1 ring-border/50",
+        "overflow-hidden rounded-xl bg-card shadow-[0_24px_60px_-28px_rgba(15,23,42,0.28)] ring-1 ring-border/50",
         item.highlight
           ? "w-[min(64rem,calc(100vw-2rem))]"
           : "w-[min(68rem,calc(100vw-2rem))]",
@@ -160,7 +160,7 @@ function MegaPanel({
       <div
         className={item.highlight ? "flex flex-col sm:flex-row" : undefined}
       >
-        <div className="min-w-0 flex-1 bg-background p-5 sm:p-6 lg:p-7">
+        <div className="min-w-0 flex-1 bg-card p-5 sm:p-6 lg:p-7">
           <div
             className={cn(
               "grid gap-8 lg:gap-10",
@@ -199,7 +199,7 @@ function MegaPanel({
           </div>
         </div>
         {item.highlight ? (
-          <div className="flex w-full shrink-0 flex-col border-t border-border bg-card p-5 sm:w-[18.5rem] sm:border-t-0 sm:border-l sm:p-6">
+          <div className="flex w-full shrink-0 flex-col border-t border-border bg-background p-5 sm:w-[18.5rem] sm:border-t-0 sm:border-l sm:p-6">
             <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-primary">
               {item.highlight.eyebrow}
             </p>
@@ -221,7 +221,7 @@ function MegaPanel({
         ) : null}
       </div>
       {item.footer ? (
-        <div className="border-t border-border bg-card px-5 py-3.5 sm:px-6">
+        <div className="border-t border-border bg-background px-5 py-3.5 sm:px-6">
           <Link
             href={item.footer.href}
             onClick={onNavigate}
