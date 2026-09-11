@@ -13,16 +13,11 @@ import {
   MarketingContainer,
   marketingRailClass,
 } from "@/components/layout/container";
-import {
-  DASHBOARD_BLUR_DATA_URL,
-  SkyDashboardBanner,
-  SkyDashboardFrame,
-} from "@/components/layout/sky-banner";
+import { DASHBOARD_BLUR_DATA_URL } from "@/components/layout/sky-banner";
+import { HeroSkyDither } from "@/components/layout/sky-dither";
 import { APP_URL } from "@/config/auth";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
-import { SquarePattern } from "./square-pattern";
-
 type IntegrationItem = {
   slug: string;
   name: string;
@@ -84,12 +79,8 @@ export default function Integrations() {
       data-component="Integrations"
       className="relative w-full overflow-hidden"
     >
-      <SkyDashboardBanner
-        data-component="IntegrationsHero"
-        className="border-b-0"
-        contentClassName="items-stretch"
-      >
-        <MarketingContainer className="relative z-10 w-full pt-12 sm:pt-16 md:pt-20">
+      <div data-component="IntegrationsHero">
+        <MarketingContainer className="relative z-10 pt-12 sm:pt-16 md:pt-20">
           <div className={marketingRailClass}>
             <div className="max-w-3xl text-left">
               <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl sm:leading-[1.1] lg:text-5xl">
@@ -120,32 +111,35 @@ export default function Integrations() {
           </div>
         </MarketingContainer>
 
-        <MarketingContainer className="relative z-10 -mb-10 mt-10 w-full sm:-mb-14 sm:mt-12">
-          <div className={marketingRailClass}>
-            <SkyDashboardFrame>
-              <Image
-                src="/image/dashboard.png"
-                alt="Featul dashboard preview"
-                width={1762}
-                height={1124}
-                sizes="(max-width: 1280px) 100vw, 1280px"
-                placeholder="blur"
-                blurDataURL={DASHBOARD_BLUR_DATA_URL}
-                className="block h-auto w-full"
-              />
-            </SkyDashboardFrame>
+        <div className="relative mt-10 sm:mt-12">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-28 sm:h-32"
+          >
+            <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_30%,black_100%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-stone-900 sm:h-12" />
           </div>
-        </MarketingContainer>
-      </SkyDashboardBanner>
+
+          <MarketingContainer className="relative z-10 -mb-10 sm:-mb-14">
+            <div className={marketingRailClass}>
+              <div className="overflow-hidden">
+                <Image
+                  src="/image/dashboard.png"
+                  alt="Featul dashboard preview"
+                  width={1762}
+                  height={1124}
+                  sizes="(max-width: 1280px) 100vw, 1280px"
+                  placeholder="blur"
+                  blurDataURL={DASHBOARD_BLUR_DATA_URL}
+                  className="block h-auto w-full"
+                />
+              </div>
+            </div>
+          </MarketingContainer>
+        </div>
+      </div>
 
       <div className="relative w-full bg-stone-900 pb-16 pt-28 text-white sm:pb-20 sm:pt-36">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-28 [mask-image:linear-gradient(to_bottom,black_35%,transparent_100%)] sm:h-32"
-        >
-          <SquarePattern className="h-full w-full text-primary/12" size={7} gap={18} />
-        </div>
-
         <MarketingContainer className="relative z-10">
           <div className={marketingRailClass}>
             <div className="overflow-hidden rounded-xl border border-white/10 bg-stone-950/40">
