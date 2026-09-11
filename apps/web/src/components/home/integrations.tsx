@@ -12,16 +12,12 @@ import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import type { PixelColor } from "@/components/dither-kit/pixel";
-import { DitherGradient } from "@/components/dither-kit/gradient";
 
 type IntegrationItem = {
   slug: string;
   name: string;
   description: string;
-  status: "Available" | "Coming soon";
   icon: ComponentType<{ className?: string; size?: number }>;
-  color: PixelColor;
 };
 
 const integrations: IntegrationItem[] = [
@@ -29,51 +25,39 @@ const integrations: IntegrationItem[] = [
     slug: "slack",
     name: "Slack",
     description: "Get instant Slack alerts when new requests are submitted.",
-    status: "Available",
     icon: SlackIcon,
-    color: [224, 30, 90],
   },
   {
     slug: "discord",
     name: "Discord",
     description:
       "Send feedback notifications directly into your Discord channels.",
-    status: "Available",
     icon: DiscordIcon,
-    color: [70, 135, 225],
   },
   {
     slug: "notra",
     name: "Notra",
     description:
       "Import Notra changelog entries to keep product updates synced.",
-    status: "Available",
     icon: NotraIcon,
-    color: [145, 95, 230],
   },
   {
     slug: "nolt",
     name: "Nolt",
     description: "Import requests and comments from Nolt into Featul.",
-    status: "Coming soon",
     icon: NoltIcon,
-    color: [251, 115, 111],
   },
   {
     slug: "canny",
     name: "Canny",
     description: "Bring feature requests and comments over from Canny.",
-    status: "Coming soon",
     icon: CannyIcon,
-    color: [82, 93, 249],
   },
   {
     slug: "productboard",
     name: "ProductBoard",
     description: "Migrate posts, boards, and comments from ProductBoard.",
-    status: "Coming soon",
     icon: ProductBoardIcon,
-    color: [0, 113, 225],
   },
 ];
 
@@ -96,57 +80,25 @@ export default function Integrations() {
             </p>
           </div>
 
-          <article className={cn(overlayDialogClass, "mt-6")}>
+          <article className={cn(overlayDialogClass, "mt-8")}>
             <div className={cn(overlayInnerClass, "bg-border p-0")}>
               <div className="grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
                 {integrations.map((item) => {
                   const Icon = item.icon;
-                  const isAvailable = item.status === "Available";
 
                   return (
                     <Link
                       key={item.name}
                       href={`/integrations/${item.slug}`}
-                      className="group flex h-full min-h-[4.5rem] items-stretch bg-background transition-colors hover:bg-muted/40"
-                      aria-label={`Learn more about ${item.name}`}
+                      className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
                     >
-                      <div className="relative flex w-[3.75rem] shrink-0 items-center justify-center overflow-hidden sm:w-16">
-                        <DitherGradient
-                          from={item.color}
-                          to="transparent"
-                          direction="right"
-                          cell={3}
-                          bloom="low"
-                          opacity={isAvailable ? 0.9 : 0.72}
-                          className="[mask-image:linear-gradient(to_right,black_15%,transparent_92%)]"
-                        />
-                        <Icon className="relative z-10 size-6" />
-                      </div>
-
-                      <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-3 pr-3.5 sm:py-4">
-                        <div className="flex items-center gap-2">
-                          <h3 className="truncate text-sm font-medium text-foreground sm:text-base">
-                            {item.name}
-                          </h3>
-                          <span
-                            className={cn(
-                              "inline-flex items-center gap-1 text-[11px] font-medium",
-                              isAvailable ? "text-emerald-700" : "text-accent",
-                            )}
-                          >
-                            <span
-                              className={cn(
-                                "size-1.5 rounded-full",
-                                isAvailable ? "bg-emerald-500" : "bg-amber-400",
-                              )}
-                            />
-                            {item.status}
-                          </span>
-                        </div>
-                        <p className="text-accent mt-0.5 line-clamp-2 text-xs leading-5 sm:text-sm sm:leading-5">
-                          {item.description}
-                        </p>
-                      </div>
+                      <Icon aria-hidden className="size-6" />
+                      <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
+                        {item.name}
+                      </h3>
+                      <p className="text-accent mt-1.5 text-pretty text-sm leading-6">
+                        {item.description}
+                      </p>
                     </Link>
                   );
                 })}
