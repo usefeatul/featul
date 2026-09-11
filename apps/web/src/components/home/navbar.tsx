@@ -50,7 +50,7 @@ export default function Navbar() {
   }, []);
 
   const linkTone =
-    "font-light text-accent hover:text-foreground hover:bg-muted hover:ring-1 hover:ring-border";
+    "font-light text-accent hover:text-foreground hover:bg-card hover:ring-1 hover:ring-border";
 
   return (
     <>
