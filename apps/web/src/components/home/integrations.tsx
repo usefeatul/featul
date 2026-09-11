@@ -120,10 +120,10 @@ export default function Integrations() {
                 <div
                   aria-hidden
                   data-dither="integrations"
-                  className="pointer-events-none absolute bottom-[clamp(14rem,42vw,37.5rem)] left-1/2 z-[5] h-28 w-screen max-w-none -translate-x-1/2 -translate-y-1/2 sm:h-32 md:h-36"
+                  className="pointer-events-none absolute bottom-[clamp(14rem,42vw,37.5rem)] left-1/2 z-[5] h-28 w-screen max-w-none -translate-x-1/2 sm:h-32 md:h-36"
                 >
-                  <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_22%,black_78%,transparent_100%)]" />
-                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-stone-900" />
+                  <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_100%)]" />
+                  <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-stone-900 sm:h-12" />
                 </div>
                 <IntegrationsHeroTab className="relative z-10">
                   <Image
@@ -144,7 +144,7 @@ export default function Integrations() {
       </div>
 
       <div
-        className="relative z-10 w-full bg-stone-900 pb-16 text-white sm:pb-20"
+        className="relative z-10 -mt-px w-full bg-stone-900 pb-16 text-white sm:pb-20"
         style={{ paddingTop: "clamp(16rem, 44vw, 39.5rem)" }}
       >
         <MarketingContainer className="relative z-30">
