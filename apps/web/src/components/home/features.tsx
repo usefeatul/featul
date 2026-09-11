@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { Heart } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { DitherGradient } from "@/components/dither-kit/gradient";
 import type { Rgb } from "@/components/dither-kit/palette";
@@ -268,45 +268,27 @@ function MergeMock({ reduceMotion }: { reduceMotion: boolean }) {
           </span>
         </div>
 
-        <AnimatePresence initial={false}>
-          {merged ? (
-            <motion.div
-              key="sources"
-              initial={reduceMotion ? false : { opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-              className="overflow-hidden"
+        {duplicatePosts.slice(1).map((post) => (
+          <div
+            key={post.id}
+            className={cn(
+              "flex items-center justify-between gap-3 border-t border-border px-3.5",
+              merged ? "py-1.5" : "py-3",
+              !reduceMotion && "transition-[padding] duration-150 ease-out",
+            )}
+          >
+            <p
+              className={cn(
+                "min-w-0 font-medium",
+                merged ? "text-accent text-xs" : "text-foreground text-sm",
+                !reduceMotion && "transition-colors duration-150 ease-out",
+              )}
             >
-              <div className="border-t border-border px-3.5 py-2">
-                {duplicatePosts.slice(1).map((post) => (
-                  <p
-                    key={post.id}
-                    className="text-accent flex items-center justify-between py-1 text-xs"
-                  >
-                    <span>Merged · {post.title}</span>
-                    <span className="tabular-nums">{post.votes}</span>
-                  </p>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="dupes"
-              initial={false}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-            >
-              {duplicatePosts.slice(1).map((post) => (
-                <div
-                  key={post.id}
-                  className="flex items-center justify-between gap-3 border-t border-border px-3.5 py-3"
-                >
-                  <p className="text-foreground text-sm font-medium">{post.title}</p>
-                  <span className="text-accent text-xs tabular-nums">{post.votes}</span>
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {merged ? `Merged · ${post.title}` : post.title}
+            </p>
+            <span className="text-accent text-xs tabular-nums">{post.votes}</span>
+          </div>
+        ))}
       </div>
 
       <p className="text-accent mt-auto pt-4 text-xs leading-5">
@@ -343,15 +325,16 @@ function InternalMock({ reduceMotion }: { reduceMotion: boolean }) {
             </div>
           </div>
 
-          <AnimatePresence initial={false}>
-            {internal ? (
-              <motion.div
-                key="note"
-                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
-                className="flex gap-2.5"
-              >
+          <div
+            className={cn(
+              "grid",
+              internal ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+              !reduceMotion &&
+                "transition-[grid-template-rows,opacity] duration-150 ease-out",
+            )}
+          >
+            <div className="overflow-hidden">
+              <div className="flex gap-2.5">
                 <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[10px] font-medium text-primary">
                   M
                 </span>
@@ -367,18 +350,14 @@ function InternalMock({ reduceMotion }: { reduceMotion: boolean }) {
                     this wait for Q3?
                   </p>
                 </div>
-              </motion.div>
-            ) : (
-              <motion.p
-                key="hidden"
-                initial={reduceMotion ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-accent pl-8 text-xs leading-5"
-              >
-                Internal notes are hidden on the public board.
-              </motion.p>
-            )}
-          </AnimatePresence>
+              </div>
+            </div>
+          </div>
+          {!internal ? (
+            <p className="text-accent pl-8 text-xs leading-5">
+              Internal notes are hidden on the public board.
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-auto flex items-center gap-2 border-t border-border px-3.5 py-2.5">
