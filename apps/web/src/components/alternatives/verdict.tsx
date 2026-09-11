@@ -5,9 +5,9 @@ import type { Alternative } from "@/config/alternatives";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
 import {
-  heroKbdClassName,
   heroPrimaryCtaClass,
-  heroSecondaryCtaClass,
+  skyCardKbdClassName,
+  skyCardPrimaryCtaClass,
 } from "@/components/shared/cta";
 import { cn } from "@featul/ui/lib/utils";
 
@@ -42,14 +42,15 @@ export default function Verdict({ alt }: VerdictProps) {
                 label="Try Featul free"
                 className={cn(
                   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  heroPrimaryCtaClass,
+                  skyCardPrimaryCtaClass,
                 )}
-                kbdClassName={heroKbdClassName}
+                kbdClassName={skyCardKbdClassName}
               />
               <LiveDemo
+                variant="default"
                 className={cn(
-                  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  heroSecondaryCtaClass,
+                  "h-10 min-h-[40px] w-full min-w-[40px] shadow-sm sm:w-auto",
+                  heroPrimaryCtaClass,
                 )}
               />
             </div>

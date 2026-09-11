@@ -2,9 +2,9 @@ import { MarketingContainer, marketingRailClass } from "@/components/layout/cont
 import { SkyCtaFrame } from "@/components/layout/sky-banner";
 import { cn } from "@featul/ui/lib/utils";
 import {
-  heroKbdClassName,
   heroPrimaryCtaClass,
-  heroSecondaryCtaClass,
+  skyCardKbdClassName,
+  skyCardPrimaryCtaClass,
 } from "@/components/shared/cta";
 import { HotkeyLink } from "../global/hotkey";
 import { LiveDemo } from "../global/demo";
@@ -31,15 +31,16 @@ export default function CTA() {
                 variant="nav"
                 className={cn(
                   "group h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  heroPrimaryCtaClass,
+                  skyCardPrimaryCtaClass,
                 )}
-                kbdClassName={heroKbdClassName}
+                kbdClassName={skyCardKbdClassName}
                 label="Start for free"
               />
               <LiveDemo
+                variant="default"
                 className={cn(
-                  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  heroSecondaryCtaClass,
+                  "h-10 min-h-[40px] w-full min-w-[40px] shadow-sm sm:w-auto",
+                  heroPrimaryCtaClass,
                 )}
               />
             </div>

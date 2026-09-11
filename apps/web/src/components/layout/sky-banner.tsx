@@ -28,9 +28,10 @@ export function SkyDashboardFrame({
   );
 }
 
-const dashboardCtaInnerClass = "bg-background p-6 text-left sm:p-8";
+const dashboardCtaInnerClass =
+  "bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8";
 
-/** Bottom CTA card — same primary glass chrome as the hero screenshot. */
+/** Bottom CTA card — hero glass chrome with the sky image inside. */
 export function SkyCtaFrame({
   children,
   className,
@@ -42,7 +43,12 @@ export function SkyCtaFrame({
 }) {
   return (
     <SkyDashboardFrame className={className} data-component={dataComponent}>
-      <div className={dashboardCtaInnerClass}>{children}</div>
+      <div
+        className={dashboardCtaInnerClass}
+        style={{ backgroundImage: "url(/image/sky.PNG)" }}
+      >
+        {children}
+      </div>
     </SkyDashboardFrame>
   );
 }

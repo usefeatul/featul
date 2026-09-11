@@ -21,6 +21,15 @@ export const skySecondaryCtaClass =
 
 export const skyKbdClassName = "bg-accent/15 text-accent";
 
+/** CTA styles for cards placed over the sky image background */
+export const skyCardPrimaryCtaClass =
+  "border-white/85 bg-white text-foreground ring-white/70 hover:bg-white/92 hover:text-foreground";
+
+export const skyCardSecondaryCtaClass =
+  "border-white/70 bg-white/15 text-white ring-white/45 hover:bg-white/25 hover:text-white";
+
+export const skyCardKbdClassName = "bg-accent/15 text-accent";
+
 type HeroCtaProps = {
   hotkeyLabel?: string;
   liveDemoClassName?: string;
