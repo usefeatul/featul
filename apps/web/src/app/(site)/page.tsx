@@ -12,7 +12,6 @@ import Setup from "@/components/home/setup";
 import Create from "@/components/home/create";
 import Access from "@/components/home/access";
 import Integrations from "@/components/home/integrations";
-import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/features";
 import { ConversionHero } from "@/components/home/conversion";
 import { PricingSection } from "@/components/home/pricing";
@@ -44,7 +43,6 @@ export default function Home() {
         <SectionStack>
           <ConversionHero />
           <FeaturesSection />
-          <Listening />
           <Integrations />
           <Setup />
           <Create />
