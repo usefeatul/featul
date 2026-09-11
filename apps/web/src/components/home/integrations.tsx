@@ -18,6 +18,8 @@ import { HeroSkyDither } from "@/components/layout/sky-dither";
 import { APP_URL } from "@/config/auth";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
+import { IntegrationsHeroTab } from "./integrations-hero-tab";
+
 type IntegrationItem = {
   slug: string;
   name: string;
@@ -120,9 +122,9 @@ export default function Integrations() {
             <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-stone-900 sm:h-12" />
           </div>
 
-          <MarketingContainer className="relative z-10 -mb-10 sm:-mb-14">
+          <MarketingContainer className="relative z-20 -mb-[clamp(12rem,48vw,36rem)]">
             <div className={marketingRailClass}>
-              <div className="overflow-hidden">
+              <IntegrationsHeroTab>
                 <Image
                   src="/image/dashboard.png"
                   alt="Featul dashboard preview"
@@ -133,13 +135,13 @@ export default function Integrations() {
                   blurDataURL={DASHBOARD_BLUR_DATA_URL}
                   className="block h-auto w-full"
                 />
-              </div>
+              </IntegrationsHeroTab>
             </div>
           </MarketingContainer>
         </div>
       </div>
 
-      <div className="relative w-full bg-stone-900 pb-16 pt-28 text-white sm:pb-20 sm:pt-36">
+      <div className="relative w-full bg-stone-900 pb-16 pt-[clamp(13rem,50vw,38rem)] text-white sm:pb-20">
         <MarketingContainer className="relative z-10">
           <div className={marketingRailClass}>
             <div className="overflow-hidden rounded-xl border border-white/10 bg-stone-950/40">
