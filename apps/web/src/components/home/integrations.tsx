@@ -79,7 +79,7 @@ export default function Integrations() {
   return (
     <section
       data-component="Integrations"
-      className="relative w-full overflow-hidden"
+      className="relative w-full overflow-x-clip"
     >
       <div data-component="IntegrationsHero">
         <MarketingContainer className="relative z-10 pt-12 sm:pt-16 md:pt-20">
@@ -113,36 +113,43 @@ export default function Integrations() {
           </div>
         </MarketingContainer>
 
-        <div className="relative mt-10 sm:mt-12">
+        <div className="relative mt-10 sm:mt-12 pb-8 sm:pb-10">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-28 sm:h-32"
+            className="pointer-events-none absolute bottom-0 left-1/2 z-[5] h-32 w-screen max-w-none -translate-x-1/2 sm:h-36"
           >
-            <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_30%,black_100%)]" />
-            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-stone-900 sm:h-12" />
+            <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_24%,black_100%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-stone-900 sm:h-14" />
           </div>
 
-          <MarketingContainer className="relative z-20 -mb-[clamp(12rem,48vw,36rem)]">
+          <MarketingContainer className="relative z-20">
             <div className={marketingRailClass}>
-              <IntegrationsHeroTab>
-                <Image
-                  src="/image/dashboard.png"
-                  alt="Featul dashboard preview"
-                  width={1762}
-                  height={1124}
-                  sizes="(max-width: 1280px) 100vw, 1280px"
-                  placeholder="blur"
-                  blurDataURL={DASHBOARD_BLUR_DATA_URL}
-                  className="block h-auto w-full"
-                />
-              </IntegrationsHeroTab>
+              <div className="-mb-[clamp(12rem,39vw,33.5rem)]">
+                <IntegrationsHeroTab>
+                  <div className="max-h-[min(52vh,32rem)] overflow-hidden bg-card sm:max-h-[min(56vh,36rem)]">
+                    <Image
+                      src="/image/dashboard.png"
+                      alt="Featul dashboard preview"
+                      width={1762}
+                      height={1124}
+                      sizes="(max-width: 1280px) 100vw, 1280px"
+                      placeholder="blur"
+                      blurDataURL={DASHBOARD_BLUR_DATA_URL}
+                      className="block h-auto w-full"
+                    />
+                  </div>
+                </IntegrationsHeroTab>
+              </div>
             </div>
           </MarketingContainer>
         </div>
       </div>
 
-      <div className="relative w-full bg-stone-900 pb-16 pt-[clamp(13rem,50vw,38rem)] text-white sm:pb-20">
-        <MarketingContainer className="relative z-10">
+      <div
+        className="relative z-10 w-full bg-stone-900 pb-16 text-white sm:pb-20"
+        style={{ paddingTop: "clamp(15rem, 42vw, 36rem)" }}
+      >
+        <MarketingContainer className="relative z-30">
           <div className={marketingRailClass}>
             <div className="overflow-hidden rounded-xl border border-white/10 bg-stone-950/40">
               <div className="grid grid-cols-1 divide-y divide-white/10 sm:grid-cols-2 sm:divide-x lg:grid-cols-3">
