@@ -17,6 +17,9 @@ html {
   }
 }
 
+html[data-scrolled] [data-component="Navbar"] {
+  border-bottom-color: var(--border);
+}
 html[data-scrolled] [data-component="Navbar"] [data-nav-brand],
 html[data-scrolled] [data-component="Navbar"] [data-nav-brand] * {
   color: var(--foreground);

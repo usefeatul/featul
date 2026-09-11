@@ -52,7 +52,7 @@ export default function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 border-b border-border bg-background",
+          "fixed top-0 left-0 right-0 z-50 border-b border-transparent bg-background",
           canTransition && "transition-colors",
         )}
         data-component="Navbar"

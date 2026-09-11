@@ -29,7 +29,7 @@ function MomentTicker() {
       className="relative hidden h-[19rem] w-[18rem] shrink-0 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)] lg:block xl:w-[22rem]"
     >
       <motion.ul
-        className="select-none text-right font-heading text-xl font-medium leading-9 tracking-tight text-zinc-300"
+        className="select-none text-right font-heading text-2xl font-medium leading-10 tracking-tight text-accent"
         animate={reduceMotion ? undefined : { y: ["0%", "-50%"] }}
         transition={
           reduceMotion
