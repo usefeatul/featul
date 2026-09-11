@@ -3,12 +3,11 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { MarketingContainer, MarketingRail } from "@/components/layout/container";
-import { cn } from "@featul/ui/lib/utils";
 import {
   DASHBOARD_BLUR_DATA_URL,
-  SkyDashboardBanner,
   SkyDashboardFrame,
 } from "@/components/layout/sky-banner";
+import { cn } from "@featul/ui/lib/utils";
 
 type SkyMarketingHeroProps = {
   children: ReactNode;
@@ -36,26 +35,24 @@ export function SkyMarketingHero({
         <MarketingRail>
           <div className="pt-32 sm:pt-36">{children}</div>
           {beforeBanner}
-          <SkyDashboardBanner
+          <SkyDashboardFrame
             data-component={
               dataComponent ? `${dataComponent}Banner` : undefined
             }
             className={bannerClassName}
           >
-            <SkyDashboardFrame>
-              <Image
-                src="/image/dashboard.png"
-                alt={imageAlt}
-                width={1762}
-                height={1124}
-                priority
-                sizes="(max-width: 1280px) 90vw, 896px"
-                placeholder="blur"
-                blurDataURL={DASHBOARD_BLUR_DATA_URL}
-                className="block h-auto w-full"
-              />
-            </SkyDashboardFrame>
-          </SkyDashboardBanner>
+            <Image
+              src="/image/dashboard.png"
+              alt={imageAlt}
+              width={1762}
+              height={1124}
+              priority
+              sizes="(max-width: 1280px) 100vw, 1152px"
+              placeholder="blur"
+              blurDataURL={DASHBOARD_BLUR_DATA_URL}
+              className="block h-auto w-full"
+            />
+          </SkyDashboardFrame>
         </MarketingRail>
       </MarketingContainer>
     </section>
