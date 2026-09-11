@@ -10,8 +10,7 @@ import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
-import { cn } from "@featul/ui/lib/utils";
+import { SkyDashboardFrame } from "@/components/layout/sky-banner";
 
 type IntegrationItem = {
   slug: string;
@@ -80,31 +79,29 @@ export default function Integrations() {
             </p>
           </div>
 
-          <article className={cn(overlayDialogClass, "mt-8")}>
-            <div className={cn(overlayInnerClass, "bg-border p-0")}>
-              <div className="grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
-                {integrations.map((item) => {
-                  const Icon = item.icon;
+          <SkyDashboardFrame className="mt-8">
+            <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+              {integrations.map((item) => {
+                const Icon = item.icon;
 
-                  return (
-                    <Link
-                      key={item.name}
-                      href={`/integrations/${item.slug}`}
-                      className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
-                    >
-                      <Icon aria-hidden className="size-6" />
-                      <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
-                        {item.name}
-                      </h3>
-                      <p className="text-accent mt-1.5 text-pretty text-sm leading-6">
-                        {item.description}
-                      </p>
-                    </Link>
-                  );
-                })}
-              </div>
+                return (
+                  <Link
+                    key={item.name}
+                    href={`/integrations/${item.slug}`}
+                    className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
+                  >
+                    <Icon aria-hidden className="size-6" />
+                    <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
+                      {item.name}
+                    </h3>
+                    <p className="text-accent mt-1.5 text-pretty text-sm leading-6">
+                      {item.description}
+                    </p>
+                  </Link>
+                );
+              })}
             </div>
-          </article>
+          </SkyDashboardFrame>
         </div>
       </section>
     </MarketingContainer>
