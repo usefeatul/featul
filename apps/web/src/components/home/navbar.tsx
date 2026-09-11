@@ -5,7 +5,6 @@ import { navigationConfig } from "@/config/homeNav";
 import { MarketingContainer } from "@/components/layout/container";
 import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
-import { Separator } from "@featul/ui/components/separator";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
@@ -14,8 +13,6 @@ import { MobileMenu } from "./menu";
 
 export default function Navbar() {
   const main = navigationConfig.main;
-  const before = main.slice(0, 2);
-  const after = main.slice(2);
 
   const [scrolled, setScrolled] = useState(false);
   const [canTransition, setCanTransition] = useState(false);
@@ -77,7 +74,7 @@ export default function Navbar() {
           <div
             data-nav-bar
             className={cn(
-              "mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6",
+              "relative mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-1 sm:px-6",
               !scrolled && "bg-background",
             )}
           >
@@ -85,82 +82,75 @@ export default function Navbar() {
               href="/"
               aria-label="Go home"
               data-nav-brand
-              className="inline-flex items-center gap-2"
+              className="relative z-10 inline-flex shrink-0 items-center gap-2"
             >
               <FeatulLogoIcon size={26} />
               <span className="text-lg font-semibold tracking-tight text-foreground">
                 Featul
               </span>
             </Link>
-            <nav className="hidden md:flex items-center text-sm gap-6 md:ml-auto">
-              {before.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "inline-flex items-center rounded-md h-8 px-2 transition-all",
-                    linkTone,
-                  )}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              {after.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "inline-flex items-center rounded-md h-8 px-2 transition-all",
-                    linkTone,
-                  )}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-            <div className="hidden md:flex items-center mx-2 h-4">
-              <Separator orientation="vertical" className="h-full" />
-            </div>
 
-            <div className="hidden md:flex items-center gap-4">
-              {navigationConfig.auth.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  aria-label={item.name}
-                  className={cn(
-                    "text-sm inline-flex items-center rounded-md h-8 px-3 transition-all",
-                    linkTone,
-                  )}
+            <nav
+              aria-label="Primary"
+              className="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex"
+            >
+              <div className="pointer-events-auto flex items-center gap-6 text-sm">
+                {main.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={cn(
+                      "inline-flex h-8 items-center rounded-md px-2 transition-all",
+                      linkTone,
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            </nav>
+
+            <div className="relative z-10 flex shrink-0 items-center">
+              <div className="hidden items-center gap-4 md:flex">
+                {navigationConfig.auth.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    aria-label={item.name}
+                    className={cn(
+                      "inline-flex h-8 items-center rounded-md px-3 text-sm transition-all",
+                      linkTone,
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <Button
+                  asChild
+                  size="sm"
+                  variant="nav"
+                  className="font-heading border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
                 >
-                  {item.name}
-                </Link>
-              ))}
+                  <Link
+                    href={APP_URL}
+                    data-sln-event="cta: start for free clicked"
+                  >
+                    Start for free
+                  </Link>
+                </Button>
+              </div>
+
               <Button
-                asChild
-                size="sm"
+                type="button"
                 variant="nav"
-                className="font-heading border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                aria-label="Toggle menu"
+                data-nav-menu
+                className="inline-flex items-center justify-center rounded-md bg-muted md:hidden"
+                onClick={() => setMobileOpen((o) => !o)}
               >
-                <Link
-                  href={APP_URL}
-                  data-sln-event="cta: start for free clicked"
-                >
-                  Start for free
-                </Link>
+                <MenuIcon className="size-5 text-accent" />
               </Button>
             </div>
-
-            <Button
-              type="button"
-              variant="nav"
-              aria-label="Toggle menu"
-              data-nav-menu
-              className="md:hidden inline-flex items-center justify-center rounded-md bg-muted"
-              onClick={() => setMobileOpen((o) => !o)}
-            >
-              <MenuIcon className="size-5 text-accent" />
-            </Button>
           </div>
         </MarketingContainer>
         {scrolled ? (
