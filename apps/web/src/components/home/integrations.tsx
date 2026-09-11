@@ -116,29 +116,27 @@ export default function Integrations() {
         <div className="relative mt-10 sm:mt-12">
           <MarketingContainer className="relative z-20">
             <div className={marketingRailClass}>
-              <div className="-mb-[clamp(14rem,42vw,37.5rem)]">
-                <div className="relative">
-                  <div
-                    aria-hidden
-                    data-dither="integrations"
-                    className="pointer-events-none absolute bottom-0 left-1/2 z-[5] h-1/4 w-screen max-w-none min-h-24 -translate-x-1/2 sm:min-h-28"
-                  >
-                    <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_100%)]" />
-                    <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-stone-900 sm:h-14" />
-                  </div>
-                  <IntegrationsHeroTab className="relative z-10">
-                    <Image
-                      src="/image/dashboard.png"
-                      alt="Featul dashboard preview"
-                      width={1762}
-                      height={1124}
-                      sizes="(max-width: 1280px) 100vw, 1280px"
-                      placeholder="blur"
-                      blurDataURL={DASHBOARD_BLUR_DATA_URL}
-                      className="block h-auto w-full bg-card"
-                    />
-                  </IntegrationsHeroTab>
+              <div className="relative -mb-[clamp(14rem,42vw,37.5rem)]">
+                <div
+                  aria-hidden
+                  data-dither="integrations"
+                  className="pointer-events-none absolute bottom-[clamp(14rem,42vw,37.5rem)] left-1/2 z-[5] h-28 w-screen max-w-none -translate-x-1/2 -translate-y-1/2 sm:h-32 md:h-36"
+                >
+                  <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_22%,black_78%,transparent_100%)]" />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-stone-900" />
                 </div>
+                <IntegrationsHeroTab className="relative z-10">
+                  <Image
+                    src="/image/dashboard.png"
+                    alt="Featul dashboard preview"
+                    width={1762}
+                    height={1124}
+                    sizes="(max-width: 1280px) 100vw, 1280px"
+                    placeholder="blur"
+                    blurDataURL={DASHBOARD_BLUR_DATA_URL}
+                    className="block h-auto w-full bg-card"
+                  />
+                </IntegrationsHeroTab>
               </div>
             </div>
           </MarketingContainer>
