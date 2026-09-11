@@ -96,24 +96,19 @@ export default function Integrations() {
             </p>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {integrations.map((item) => {
-              const Icon = item.icon;
-              const isAvailable = item.status === "Available";
+          <article className={cn(overlayDialogClass, "mt-6")}>
+            <div className={cn(overlayInnerClass, "bg-border p-0")}>
+              <div className="grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
+                {integrations.map((item) => {
+                  const Icon = item.icon;
+                  const isAvailable = item.status === "Available";
 
-              return (
-                <Link
-                  key={item.name}
-                  href={`/integrations/${item.slug}`}
-                  className="group block h-full"
-                  aria-label={`Learn more about ${item.name}`}
-                >
-                  <article className={cn(overlayDialogClass, "h-full")}>
-                    <div
-                      className={cn(
-                        overlayInnerClass,
-                        "flex h-full min-h-[4.5rem] items-stretch",
-                      )}
+                  return (
+                    <Link
+                      key={item.name}
+                      href={`/integrations/${item.slug}`}
+                      className="group flex h-full min-h-[4.5rem] items-stretch bg-background transition-colors hover:bg-muted/40"
+                      aria-label={`Learn more about ${item.name}`}
                     >
                       <div className="relative flex w-[3.75rem] shrink-0 items-center justify-center overflow-hidden sm:w-16">
                         <DitherGradient
@@ -128,7 +123,7 @@ export default function Integrations() {
                         <Icon className="relative z-10 size-6" />
                       </div>
 
-                      <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-2.5 pr-3.5">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-3 pr-3.5 sm:py-4">
                         <div className="flex items-center gap-2">
                           <h3 className="truncate text-sm font-medium text-foreground sm:text-base">
                             {item.name}
@@ -152,12 +147,12 @@ export default function Integrations() {
                           {item.description}
                         </p>
                       </div>
-                    </div>
-                  </article>
-                </Link>
-              );
-            })}
-          </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </MarketingContainer>
