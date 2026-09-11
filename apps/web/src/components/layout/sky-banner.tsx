@@ -27,3 +27,22 @@ export function SkyDashboardFrame({
     </div>
   );
 }
+
+const dashboardCtaInnerClass = "bg-background p-6 text-left sm:p-8";
+
+/** Bottom CTA card — same primary glass chrome as the hero screenshot. */
+export function SkyCtaFrame({
+  children,
+  className,
+  "data-component": dataComponent,
+}: {
+  children: ReactNode;
+  className?: string;
+  "data-component"?: string;
+}) {
+  return (
+    <SkyDashboardFrame className={className} data-component={dataComponent}>
+      <div className={dashboardCtaInnerClass}>{children}</div>
+    </SkyDashboardFrame>
+  );
+}

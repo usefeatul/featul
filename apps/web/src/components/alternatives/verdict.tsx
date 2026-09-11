@@ -1,13 +1,13 @@
 import { MarketingContainer } from "@/components/layout/container";
+import { SkyCtaFrame } from "@/components/layout/sky-banner";
 import Link from "next/link";
 import type { Alternative } from "@/config/alternatives";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
-import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 import {
+  heroKbdClassName,
   heroPrimaryCtaClass,
-  skyCardKbdClassName,
-  skyCardPrimaryCtaClass,
+  heroSecondaryCtaClass,
 } from "@/components/shared/cta";
 import { cn } from "@featul/ui/lib/utils";
 
@@ -22,11 +22,7 @@ export default function Verdict({ alt }: VerdictProps) {
     <MarketingContainer>
       <section className="py-10 sm:py-14" data-component="AlternativeVerdict">
         <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-          <OverlayCard>
-            <OverlayCardPanel
-              className="bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
-              style={{ backgroundImage: "url(/image/sky.PNG)" }}
-            >
+          <SkyCtaFrame>
             <p className="text-sm text-foreground/70">
               The clear {alt.name} alternative
             </p>
@@ -46,20 +42,18 @@ export default function Verdict({ alt }: VerdictProps) {
                 label="Try Featul free"
                 className={cn(
                   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  skyCardPrimaryCtaClass,
+                  heroPrimaryCtaClass,
                 )}
-                kbdClassName={skyCardKbdClassName}
+                kbdClassName={heroKbdClassName}
               />
               <LiveDemo
-                variant="default"
                 className={cn(
                   "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  heroPrimaryCtaClass,
+                  heroSecondaryCtaClass,
                 )}
               />
             </div>
-            </OverlayCardPanel>
-          </OverlayCard>
+          </SkyCtaFrame>
 
           {alt.website ? (
             <p className="mt-3 text-sm text-accent">

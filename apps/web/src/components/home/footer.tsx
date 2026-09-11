@@ -150,7 +150,7 @@ export default function FooterSection() {
                 <div key={columnIndex} className="flex flex-col gap-12">
                   {column.groups.map((group) => (
                     <div key={group.title} className="text-sm">
-                      <span className="font-heading text-foreground block text-xs font-semibold uppercase tracking-wider">
+                      <span className="font-heading text-primary block text-xs font-semibold uppercase tracking-wider">
                         {group.title}
                       </span>
                       <div className="mt-5 space-y-3">

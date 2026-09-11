@@ -1,10 +1,10 @@
 import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { SkyCtaFrame } from "@/components/layout/sky-banner";
 import { cn } from "@featul/ui/lib/utils";
 import {
+  heroKbdClassName,
   heroPrimaryCtaClass,
-  skyCardPrimaryCtaClass,
-  skyCardKbdClassName,
+  heroSecondaryCtaClass,
 } from "@/components/shared/cta";
 import { HotkeyLink } from "../global/hotkey";
 import { LiveDemo } from "../global/demo";
@@ -14,14 +14,7 @@ export default function CTA() {
     <section className="relative mb-0 mt-12 bg-background pb-10 pt-4 sm:mt-16 sm:pb-12 sm:pt-6" data-component="CTA">
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
-          <div className={overlayDialogClass}>
-            <div
-              className={cn(
-                overlayInnerClass,
-                "bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8",
-              )}
-              style={{ backgroundImage: "url(/image/sky.PNG)" }}
-            >
+          <SkyCtaFrame>
             <h2 className="font-heading max-w-lg text-balance text-xl font-medium text-foreground sm:max-w-2xl sm:text-2xl lg:text-3xl">
               <span>
                 Collect and prioritize feedback.
@@ -38,21 +31,19 @@ export default function CTA() {
                 variant="nav"
                 className={cn(
                   "group h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  skyCardPrimaryCtaClass,
+                  heroPrimaryCtaClass,
                 )}
-                kbdClassName={skyCardKbdClassName}
+                kbdClassName={heroKbdClassName}
                 label="Start for free"
               />
               <LiveDemo
-                variant="default"
                 className={cn(
-                  "h-10 min-h-[40px] w-full min-w-[40px] shadow-sm sm:w-auto",
-                  heroPrimaryCtaClass,
+                  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
+                  heroSecondaryCtaClass,
                 )}
               />
             </div>
-            </div>
-          </div>
+          </SkyCtaFrame>
         </div>
       </MarketingContainer>
     </section>

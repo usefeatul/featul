@@ -24,10 +24,11 @@ import { IntegrationHero } from "@/components/integrations/hero";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
 import {
-  skyCardKbdClassName,
-  skyCardPrimaryCtaClass,
-  skyCardSecondaryCtaClass,
+  heroKbdClassName,
+  heroPrimaryCtaClass,
+  heroSecondaryCtaClass,
 } from "@/components/shared/cta";
+import { SkyCtaFrame } from "@/components/layout/sky-banner";
 import { cn } from "@featul/ui/lib/utils";
 import { RelatedLinks } from "@/components/seo/links";
 import {
@@ -181,18 +182,14 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           <MarketingContainer>
             <section className="py-10 sm:py-14" data-component="IntegrationVerdict">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <OverlayCard>
-                  <OverlayCardPanel
-                    className="bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
-                    style={{ backgroundImage: "url(/image/sky.PNG)" }}
-                  >
-                  <p className="text-sm text-white/85">
+                <SkyCtaFrame>
+                  <p className="text-sm text-foreground/70">
                     {meta.h1}
                   </p>
-                  <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-white sm:text-2xl lg:text-3xl">
+                  <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-foreground sm:text-2xl lg:text-3xl">
                     Connect {integration.name} and keep feedback moving.
                   </h2>
-                  <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
+                  <p className="mt-3 max-w-xl text-sm text-foreground/80 sm:text-base">
                     Set up in minutes. Triage where your team already works.
                   </p>
                   <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -201,19 +198,18 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                       label={`Connect ${integration.name}`}
                       className={cn(
                         "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                        skyCardPrimaryCtaClass,
+                        heroPrimaryCtaClass,
                       )}
-                      kbdClassName={skyCardKbdClassName}
+                      kbdClassName={heroKbdClassName}
                     />
                     <LiveDemo
                       className={cn(
                         "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                        skyCardSecondaryCtaClass,
+                        heroSecondaryCtaClass,
                       )}
                     />
                   </div>
-                  </OverlayCardPanel>
-                </OverlayCard>
+                </SkyCtaFrame>
               </div>
             </section>
           </MarketingContainer>
