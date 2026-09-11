@@ -149,8 +149,8 @@ export default function Integrations() {
       >
         <MarketingContainer className="relative z-30">
           <div className={marketingRailClass}>
-            <div className="overflow-hidden rounded-xl border border-white/10 bg-stone-950/40">
-              <div className="grid grid-cols-1 divide-y divide-white/10 sm:grid-cols-2 sm:divide-x lg:grid-cols-3">
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-stone-800/30">
+              <div className="grid grid-cols-1 divide-y divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-white/10 lg:grid-cols-3">
                 {integrations.map((item) => {
                   const Icon = item.icon;
                   const isAvailable = item.status === "Available";
@@ -159,7 +159,7 @@ export default function Integrations() {
                     <Link
                       key={item.slug}
                       href={`/integrations/${item.slug}`}
-                      className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-white/[0.03] sm:p-7"
+                      className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-white/[0.04] sm:p-7"
                       aria-label={`Learn more about ${item.name}`}
                     >
                       <div className="flex items-center justify-between gap-3">
