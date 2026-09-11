@@ -20,9 +20,11 @@ export function SkyDashboardFrame({
   "data-component"?: string;
 }) {
   return (
-    <div className={cn("w-full", className)} data-component={dataComponent}>
-      <div className={dashboardGlassShellClass}>
-        <div className={dashboardGlassInnerClass}>{children}</div>
+    <div className={cn("flex h-full w-full flex-col", className)} data-component={dataComponent}>
+      <div className={cn(dashboardGlassShellClass, "flex h-full flex-1 flex-col")}>
+        <div className={cn(dashboardGlassInnerClass, "flex h-full flex-1 flex-col")}>
+          {children}
+        </div>
       </div>
     </div>
   );
