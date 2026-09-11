@@ -17,21 +17,21 @@ export function IntegrationsHeroTab({
         className,
       )}
     >
-      <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-2.5 sm:px-5">
+      <div className="flex items-center gap-3 border-b border-border/80 bg-background/80 px-4 py-2 sm:px-5 sm:py-2.5">
         <div className="flex items-center gap-1.5" aria-hidden>
-          <span className="size-2.5 rounded-full bg-[#ff5f57]" />
-          <span className="size-2.5 rounded-full bg-[#febc2e]" />
-          <span className="size-2.5 rounded-full bg-[#28c840]" />
+          <span className="size-2 rounded-full bg-accent/35" />
+          <span className="size-2 rounded-full bg-accent/35" />
+          <span className="size-2 rounded-full bg-accent/35" />
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-md border border-border/60 bg-background px-3 py-1.5 sm:max-w-md sm:justify-start">
-          <FeatulLogoIcon size={14} />
-          <span className="truncate text-[11px] text-accent sm:text-xs">
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full border border-border/70 bg-muted/20 px-3 py-1.5 sm:max-w-sm">
+          <FeatulLogoIcon size={13} className="text-accent" />
+          <span className="truncate text-[11px] text-accent/80 sm:text-xs">
             app.featul.com/integrations
           </span>
         </div>
 
-        <div className="hidden w-10 shrink-0 sm:block" aria-hidden />
+        <div className="hidden w-7 shrink-0 sm:block" aria-hidden />
       </div>
 
       {children}

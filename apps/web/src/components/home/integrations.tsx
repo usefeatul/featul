@@ -113,20 +113,20 @@ export default function Integrations() {
           </div>
         </MarketingContainer>
 
-        <div className="relative mt-10 sm:mt-12 pb-8 sm:pb-10">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute bottom-0 left-1/2 z-[5] h-32 w-screen max-w-none -translate-x-1/2 sm:h-36"
-          >
-            <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_24%,black_100%)]" />
-            <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-stone-900 sm:h-14" />
-          </div>
-
+        <div className="relative mt-10 sm:mt-12">
           <MarketingContainer className="relative z-20">
             <div className={marketingRailClass}>
-              <div className="-mb-[clamp(12rem,39vw,33.5rem)]">
-                <IntegrationsHeroTab>
-                  <div className="max-h-[min(52vh,32rem)] overflow-hidden bg-card sm:max-h-[min(56vh,36rem)]">
+              <div className="-mb-[clamp(14rem,42vw,37.5rem)]">
+                <div className="relative">
+                  <div
+                    aria-hidden
+                    data-dither="integrations"
+                    className="pointer-events-none absolute bottom-0 left-1/2 z-[5] h-1/4 w-screen max-w-none min-h-24 -translate-x-1/2 sm:min-h-28"
+                  >
+                    <HeroSkyDither className="[mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_100%)]" />
+                    <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-stone-900 sm:h-14" />
+                  </div>
+                  <IntegrationsHeroTab className="relative z-10">
                     <Image
                       src="/image/dashboard.png"
                       alt="Featul dashboard preview"
@@ -135,10 +135,10 @@ export default function Integrations() {
                       sizes="(max-width: 1280px) 100vw, 1280px"
                       placeholder="blur"
                       blurDataURL={DASHBOARD_BLUR_DATA_URL}
-                      className="block h-auto w-full"
+                      className="block h-auto w-full bg-card"
                     />
-                  </div>
-                </IntegrationsHeroTab>
+                  </IntegrationsHeroTab>
+                </div>
               </div>
             </div>
           </MarketingContainer>
@@ -147,7 +147,7 @@ export default function Integrations() {
 
       <div
         className="relative z-10 w-full bg-stone-900 pb-16 text-white sm:pb-20"
-        style={{ paddingTop: "clamp(15rem, 42vw, 36rem)" }}
+        style={{ paddingTop: "clamp(16rem, 44vw, 39.5rem)" }}
       >
         <MarketingContainer className="relative z-30">
           <div className={marketingRailClass}>
