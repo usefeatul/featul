@@ -4,17 +4,13 @@ import { useState, type ReactNode } from "react";
 import { Heart } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
-import { DitherGradient } from "@/components/dither-kit/gradient";
-import type { Rgb } from "@/components/dither-kit/palette";
 import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import { Button } from "@featul/ui/components/button";
 import { LockIcon } from "@featul/ui/icons/lock";
 import { MergeIcon } from "@featul/ui/icons/merge";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-
-/** Very light mix of CSS `--primary` toward white. */
-const PRIMARY_DOTS: Rgb = [232, 247, 255];
+import { SquarePattern } from "./square-pattern";
 
 const viewport = { once: true, amount: 0.4 } as const;
 const springIn = { type: "spring" as const, stiffness: 280, damping: 24 };
@@ -37,30 +33,21 @@ export default function FeaturesSection() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[38%] sm:h-[36%]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[44%] sm:h-[40%] [mask-image:linear-gradient(to_top,black_0%,black_58%,transparent_100%)]"
       >
-        <DitherGradient
-          from={PRIMARY_DOTS}
-          to="transparent"
-          direction="up"
-          cell={5}
-          bloom="off"
-          sparse
-          maxDensity={0.42}
-          opacity={1}
-          className="[mask-image:linear-gradient(to_top,black_0%,black_45%,transparent_100%)]"
-        />
+        <SquarePattern className="h-full w-full" size={7} gap={18} />
       </div>
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <div className="max-w-3xl text-left">
             <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl sm:leading-[1.1] lg:text-5xl">
-              Decide what feedback becomes
-              <span className="mt-1 block text-primary">product work.</span>
+              Decide what to
+              <span className="mt-1 block text-primary">ship.</span>
             </h2>
-            <p className="text-accent mt-5 max-w-2xl text-base leading-relaxed sm:text-lg">
-              Review customer ideas before they move forward, merge repeats, and
-              keep the team conversation off the public board.
+            <p className="text-accent mt-5 max-w-3xl text-base leading-relaxed sm:text-lg">
+              Start with customer feedback. Featul reviews every request, merges
+              duplicates, keeps team notes private, and moves approved ideas
+              onto your roadmap.
             </p>
           </div>
 
@@ -68,7 +55,7 @@ export default function FeaturesSection() {
             <FeatureCard
               step="01"
               title="You control what gets prioritized."
-              body="Customers can submit, vote, and explain what matters. Nothing changes on your roadmap until you review it."
+              body="Customers submit, vote, and explain what matters. Nothing moves to your roadmap until you review it."
             >
               <ReviewMock reduceMotion={reduceMotion} />
             </FeatureCard>
@@ -76,7 +63,7 @@ export default function FeaturesSection() {
             <FeatureCard
               step="02"
               title="Keep one thread per idea."
-              body="When people ask for the same thing in different words, merge the posts so votes and comments live in one place."
+              body="Same ask, three posts. Merge them so votes and comments live in one thread."
             >
               <MergeMock reduceMotion={reduceMotion} />
             </FeatureCard>
@@ -84,7 +71,7 @@ export default function FeaturesSection() {
             <FeatureCard
               step="03"
               title="Keep the team thread private."
-              body="Leave internal comments and mention teammates without showing that discussion on the public board."
+              body="Mention teammates in an internal note. Customers never see that thread on the public board."
             >
               <InternalMock reduceMotion={reduceMotion} />
             </FeatureCard>
