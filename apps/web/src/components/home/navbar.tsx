@@ -294,7 +294,7 @@ export default function Navbar() {
           ref={createMaskRef}
           aria-hidden
           data-nav-create-mask
-          className="pointer-events-none absolute inset-0 z-20 overflow-hidden [transform:translateZ(0)]"
+          className="pointer-events-none absolute inset-0 z-20 overflow-hidden [clip-path:inset(100%_0_0_0)] [transform:translateZ(0)]"
         >
           <NavbarFrame scrolled decorative />
         </div>

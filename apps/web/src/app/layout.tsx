@@ -115,13 +115,13 @@ export default function RootLayout({
         <script
           id="home-scroll-memory"
           dangerouslySetInnerHTML={{
-            __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var nav=performance.getEntriesByType("navigation")[0];var reload=nav&&(nav.type==="reload"||nav.type==="back_forward");var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v4")||"0",10)||0}catch(e){}if(!reload)y=0;var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0){h.setAttribute("data-scrolled","");if(y>=80)h.style.opacity="0"}try{if(reload&&sessionStorage.getItem("featul:nav-over-create:v1")==="1")h.setAttribute("data-over-create","")}catch(e){}function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)})();`,
+            __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var nav=performance.getEntriesByType("navigation")[0];var reload=nav&&(nav.type==="reload"||nav.type==="back_forward");var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v4")||"0",10)||0}catch(e){}if(!reload)y=0;var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0){h.setAttribute("data-scrolled","");if(y>=80)h.style.opacity="0"}try{if(reload&&y>0&&sessionStorage.getItem("featul:nav-over-create:v1")==="1")h.setAttribute("data-over-create","")}catch(e){}function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)})();`,
           }}
         />
         <style
           id="nav-create-boot-css"
           dangerouslySetInnerHTML={{
-            __html: `[data-nav-create-mask]{--background:var(--primary);--foreground:oklch(99.7% 0.001 11.5);--accent:color-mix(in oklab,white 82%,var(--primary));--card:color-mix(in oklab,white 14%,var(--primary));--border:color-mix(in oklab,white 22%,var(--primary));--muted:color-mix(in oklab,white 16%,var(--primary))}html[data-over-create] [data-nav-create-mask]{clip-path:inset(0)}`,
+            __html: `[data-nav-create-mask]{--background:var(--primary);--foreground:oklch(99.7% 0.001 11.5);--accent:color-mix(in oklab,white 82%,var(--primary));--card:color-mix(in oklab,white 14%,var(--primary));--border:color-mix(in oklab,white 22%,var(--primary));--muted:color-mix(in oklab,white 16%,var(--primary));clip-path:inset(100% 0 0 0)}html[data-over-create] [data-nav-create-mask]{clip-path:inset(0)}`,
           }}
         />
         {selineToken ? (
