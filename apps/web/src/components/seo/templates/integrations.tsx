@@ -208,35 +208,33 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           <MarketingContainer>
             <section className="py-16 md:py-24" data-component="IntegrationFaqs">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <div className="max-w-xl">
-                  <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
-                    FAQs about {integration.name}
-                  </h2>
-                  <p className="mt-3 text-accent">
-                    Common setup and usage questions.
-                  </p>
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="mt-8 w-full border-y border-border/60"
-                  >
-                    {faqs.map((faq, i) => (
-                      <AccordionItem
-                        key={i}
-                        id={`faq-${integration.slug}-${i + 1}`}
-                        value={`faq-${integration.slug}-${i + 1}`}
-                        className="px-0"
-                      >
-                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm leading-relaxed text-accent">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </div>
+                <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                  FAQs about {integration.name}
+                </h2>
+                <p className="mt-3 text-accent">
+                  Common setup and usage questions.
+                </p>
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="mt-8 w-full border-y border-border/60"
+                >
+                  {faqs.map((faq, i) => (
+                    <AccordionItem
+                      key={i}
+                      id={`faq-${integration.slug}-${i + 1}`}
+                      value={`faq-${integration.slug}-${i + 1}`}
+                      className="px-0"
+                    >
+                      <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm leading-relaxed text-accent">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </div>
             </section>
           </MarketingContainer>
