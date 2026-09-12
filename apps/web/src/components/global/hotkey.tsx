@@ -14,6 +14,7 @@ type HotkeyLinkProps = {
   children?: React.ReactNode;
   label?: string;
   variant?: VariantProps<typeof buttonVariants>["variant"];
+  size?: VariantProps<typeof buttonVariants>["size"];
 };
 
 export function HotkeyLink({
@@ -23,6 +24,7 @@ export function HotkeyLink({
   children,
   label,
   variant = "default",
+  size = "lg",
 }: HotkeyLinkProps) {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLAnchorElement>) => {
@@ -56,7 +58,7 @@ export function HotkeyLink({
   }, [hotkey]);
 
   return (
-    <Button asChild size="lg" variant={variant} className={className}>
+    <Button asChild size={size} variant={variant} className={className}>
       <Link
         href={APP_URL}
         onKeyDown={handleKeyDown}

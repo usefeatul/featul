@@ -33,8 +33,10 @@ export default function Create() {
               </p>
               <div className="mt-6 flex flex-col items-stretch sm:mt-8 sm:flex-row sm:items-center">
                 <HotkeyLink
-                  variant="card"
-                  className="hover:bg-card hover:text-foreground"
+                  variant="nav"
+                  size="sm"
+                  className="font-heading border-white/80 bg-white text-primary hover:bg-white hover:text-primary"
+                  kbdClassName="bg-primary/15 text-primary"
                 />
               </div>
             </div>
