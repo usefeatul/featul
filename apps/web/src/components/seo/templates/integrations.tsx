@@ -11,13 +11,8 @@ import {
   buildFaqPageSchema,
   buildIntegrationsBreadcrumbSchema,
 } from "@/lib/schema";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@featul/ui/components/accordion";
 import type { IntegrationPageData } from "@/lib/data/programmatic/generators";
+import { FaqAccordion } from "@/components/shared/accordion";
 import type { RelatedLink } from "@/lib/seo/interlink";
 import { SITE_URL } from "@/config/seo";
 import { IntegrationHero } from "@/components/integrations/hero";
@@ -208,33 +203,15 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           <MarketingContainer>
             <section className="py-8 sm:py-10" data-component="IntegrationFaqs">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
-                  FAQs about {integration.name}
-                </h2>
-                <p className="mt-2 text-accent">
-                  Common setup and usage questions.
-                </p>
-                <Accordion
-                  type="single"
-                  collapsible
-                  className="mt-6 w-full border-y border-border/60"
-                >
-                  {faqs.map((faq, i) => (
-                    <AccordionItem
-                      key={i}
-                      id={`faq-${integration.slug}-${i + 1}`}
-                      value={`faq-${integration.slug}-${i + 1}`}
-                      className="px-0"
-                    >
-                      <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
-                        {faq.question}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-sm leading-relaxed text-accent">
-                        {faq.answer}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+                <FaqAccordion
+                  title={`FAQs about ${integration.name}`}
+                  description="Common setup and usage questions."
+                  items={faqs.map((faq, i) => ({
+                    id: `faq-${integration.slug}-${i + 1}`,
+                    question: faq.question,
+                    answer: faq.answer,
+                  }))}
+                />
               </div>
             </section>
           </MarketingContainer>
