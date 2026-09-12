@@ -77,7 +77,7 @@ export default function AlternativesIndexPage() {
               </p>
             </div>
 
-            <div className="mt-2">
+            <div className="mt-8">
               <AlternativesList items={allAlternatives} />
             </div>
           </section>
