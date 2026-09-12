@@ -26,7 +26,7 @@ function EdgeStrip({ side }: EdgeStripProps) {
     <div
       className={cn(
         edgeStripWidthClass,
-        "relative h-full bg-[color-mix(in_oklab,var(--muted)_35%,var(--background))]",
+        "relative h-full bg-transparent",
       )}
     >
       <svg

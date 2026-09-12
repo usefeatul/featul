@@ -1,7 +1,7 @@
 "use client";
 import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { Button } from "@featul/ui/components/button";
@@ -12,9 +12,16 @@ import { navigationConfig } from "@/config/homeNav";
 type MobileMenuProps = {
   open: boolean;
   onClose: () => void;
+  overCreate?: boolean;
+  style?: CSSProperties;
 };
 
-export function MobileMenu({ open, onClose }: MobileMenuProps) {
+export function MobileMenu({
+  open,
+  onClose,
+  overCreate = false,
+  style,
+}: MobileMenuProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -47,6 +54,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         edgeChromeInsetClass,
       )}
       data-component="MobileMenu"
+      data-over-create={overCreate ? "" : undefined}
+      style={style}
     >
       <MarketingContainer>
         <nav className="py-4 grid gap-2">
@@ -75,7 +84,12 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             <Button
               asChild
               variant="nav"
-              className="w-full font-semibold border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              className={cn(
+                "w-full font-semibold",
+                overCreate
+                  ? "border-white/80 bg-white text-primary hover:bg-white/90 hover:text-primary"
+                  : "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+              )}
             >
               <Link
                 href={APP_URL}

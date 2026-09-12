@@ -13,16 +13,31 @@ export const DASHBOARD_BLUR_DATA_URL =
 export function SkyDashboardFrame({
   children,
   className,
+  fill = false,
   "data-component": dataComponent,
 }: {
   children: ReactNode;
   className?: string;
+  fill?: boolean;
   "data-component"?: string;
 }) {
   return (
-    <div className={cn("flex h-full w-full flex-col", className)} data-component={dataComponent}>
-      <div className={cn(dashboardGlassShellClass, "flex h-full flex-1 flex-col")}>
-        <div className={cn(dashboardGlassInnerClass, "flex h-full flex-1 flex-col")}>
+    <div
+      className={cn(fill ? "flex h-full w-full flex-col" : "w-full", className)}
+      data-component={dataComponent}
+    >
+      <div
+        className={cn(
+          dashboardGlassShellClass,
+          fill && "flex h-full flex-1 flex-col",
+        )}
+      >
+        <div
+          className={cn(
+            dashboardGlassInnerClass,
+            fill && "flex h-full flex-1 flex-col",
+          )}
+        >
           {children}
         </div>
       </div>

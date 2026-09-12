@@ -6,6 +6,7 @@
 
 :root {
   --marketing-edge-strip: clamp(1rem, 5vw, 4.5rem);
+  --marketing-create-band: var(--color-primary, var(--primary));
 }
 
 html {
@@ -30,4 +31,8 @@ html[data-scrolled] [data-component="Navbar"] [data-slot="separator"] {
 html[data-scrolled] [data-component="Navbar"] [data-nav-menu] {
   background-color: var(--muted);
   color: var(--accent);
+}
+
+[data-nav-create-mask] {
+  clip-path: inset(100% 0 0 0);
 }
