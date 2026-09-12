@@ -31,10 +31,6 @@ import {
 import { SkyCtaFrame } from "@/components/layout/sky-banner";
 import { cn } from "@featul/ui/lib/utils";
 import { RelatedLinks } from "@/components/seo/links";
-import {
-  OverlayCard,
-  OverlayCardPanel,
-} from "@/components/shared/overlay-card";
 import { SectionStack } from "@/components/layout/stack";
 import { SquareIcon } from "@featul/ui/icons/square";
 import { SetupIcon } from "@featul/ui/icons/setup";
@@ -108,19 +104,24 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                   What your team gets when Featul and {integration.name} work
                   together.
                 </p>
-                <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-                  {sections.benefits.map((benefit, i) => (
-                    <li key={i} className="h-full">
-                      <OverlayCard>
-                        <OverlayCardPanel className="flex h-full flex-col px-4 py-3 sm:px-5 sm:py-4">
-                          <p className="text-sm leading-relaxed text-accent sm:text-base">
-                            {benefit.description}
-                          </p>
-                        </OverlayCardPanel>
-                      </OverlayCard>
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-8 max-w-2xl space-y-5">
+                  {sections.benefits.map((benefit, i) => {
+                    const showTitle = benefit.title !== `Benefit ${i + 1}`;
+
+                    return (
+                      <div key={i} className="space-y-2">
+                        {showTitle ? (
+                          <h3 className="text-base font-medium text-foreground sm:text-lg">
+                            {benefit.title}
+                          </h3>
+                        ) : null}
+                        <p className="text-sm leading-7 text-accent sm:text-base">
+                          {benefit.description}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </section>
           </MarketingContainer>
@@ -135,20 +136,9 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
                 <p className="mt-3 text-accent">
                   A short setup path from Featul into {integration.name}.
                 </p>
-                <ol className="mt-10 grid gap-3 sm:grid-cols-2">
+                <ol className="mt-8 max-w-2xl list-decimal space-y-4 pl-5 text-sm leading-7 text-accent sm:text-base">
                   {sections.howItWorks.map((step, i) => (
-                    <li key={i} className="h-full">
-                      <OverlayCard>
-                        <OverlayCardPanel className="flex h-full items-start gap-3 px-4 py-3 sm:px-5 sm:py-4">
-                          <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-foreground">
-                            {i + 1}
-                          </span>
-                          <span className="text-sm leading-relaxed text-accent sm:text-base">
-                            {step}
-                          </span>
-                        </OverlayCardPanel>
-                      </OverlayCard>
-                    </li>
+                    <li key={i}>{step}</li>
                   ))}
                 </ol>
               </div>
