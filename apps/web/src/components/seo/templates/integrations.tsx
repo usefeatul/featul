@@ -94,28 +94,28 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
       <div className={marketingStackClass}>
         <SectionStack>
           <MarketingContainer>
-            <section className="py-16" data-component="IntegrationBenefits">
+            <section className="pt-10 pb-6 sm:pt-12 sm:pb-8" data-component="IntegrationBenefits">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <SquareIcon aria-hidden className="size-5 text-primary" />
-                <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                <h2 className="mt-4 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
                   Why connect {integration.name}
                 </h2>
-                <p className="mt-3 text-accent">
+                <p className="mt-2 text-accent">
                   What your team gets when Featul and {integration.name} work
                   together.
                 </p>
-                <div className="mt-8 max-w-2xl space-y-5">
+                <div className="mt-5 max-w-2xl space-y-2">
                   {sections.benefits.map((benefit, i) => {
                     const showTitle = benefit.title !== `Benefit ${i + 1}`;
 
                     return (
-                      <div key={i} className="space-y-2">
+                      <div key={i} className="space-y-1">
                         {showTitle ? (
                           <h3 className="text-base font-medium text-foreground sm:text-lg">
                             {benefit.title}
                           </h3>
                         ) : null}
-                        <p className="text-sm leading-7 text-accent sm:text-base">
+                        <p className="text-sm leading-6 text-accent sm:text-base">
                           {benefit.description}
                         </p>
                       </div>
@@ -127,16 +127,16 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           </MarketingContainer>
 
           <MarketingContainer>
-            <section className="py-16" data-component="IntegrationHowTo">
+            <section className="py-6 sm:py-8" data-component="IntegrationHowTo">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <SetupIcon aria-hidden className="size-5 text-primary" opacity={1} />
-                <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                <h2 className="mt-4 text-balance text-2xl font-semibold text-foreground sm:text-3xl">
                   How to connect
                 </h2>
-                <p className="mt-3 text-accent">
+                <p className="mt-2 text-accent">
                   A short setup path from Featul into {integration.name}.
                 </p>
-                <ol className="mt-8 max-w-2xl list-decimal space-y-4 pl-5 text-sm leading-7 text-accent sm:text-base">
+                <ol className="mt-5 max-w-2xl list-decimal space-y-2 pl-5 text-sm leading-6 text-accent sm:text-base">
                   {sections.howItWorks.map((step, i) => (
                     <li key={i}>{step}</li>
                   ))}
@@ -147,12 +147,12 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
 
           {sections.extra?.length ? (
             <MarketingContainer>
-              <section className="py-16" data-component="IntegrationGuide">
+              <section className="py-6 sm:py-8" data-component="IntegrationGuide">
                 <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                   <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
                     {integration.name} integrations in more detail
                   </h2>
-                  <div className="mt-10 space-y-10">
+                  <div className="mt-6 space-y-6">
                     {sections.extra.map((section) => (
                       <article key={section.title} className="space-y-3">
                         <h3 className="text-base font-medium text-foreground sm:text-lg">
@@ -170,7 +170,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           ) : null}
 
           <MarketingContainer>
-            <section className="py-10 sm:py-14" data-component="IntegrationVerdict">
+            <section className="py-8 sm:py-10" data-component="IntegrationVerdict">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <SkyCtaFrame>
                   <p className="text-sm text-foreground/70">
@@ -206,18 +206,18 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
           </MarketingContainer>
 
           <MarketingContainer>
-            <section className="py-16 md:py-24" data-component="IntegrationFaqs">
+            <section className="py-8 sm:py-10" data-component="IntegrationFaqs">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
                   FAQs about {integration.name}
                 </h2>
-                <p className="mt-3 text-accent">
+                <p className="mt-2 text-accent">
                   Common setup and usage questions.
                 </p>
                 <Accordion
                   type="single"
                   collapsible
-                  className="mt-8 w-full border-y border-border/60"
+                  className="mt-6 w-full border-y border-border/60"
                 >
                   {faqs.map((faq, i) => (
                     <AccordionItem
