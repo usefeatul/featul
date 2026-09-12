@@ -4,9 +4,9 @@ import { SkyDashboardFrame } from "@/components/layout/sky-banner";
 import { AccentBar } from "@featul/ui/components/cardElements";
 import { BoardIcon } from "@featul/ui/icons/board";
 import { DomainIcon } from "@featul/ui/icons/domain";
-import { LinkIcon } from "@featul/ui/icons/link";
-import { LockIcon } from "@featul/ui/icons/lock";
-import { UserFocusIcon } from "@featul/ui/icons/userfocus";
+import { LinkStrokeIcon } from "@featul/ui/icons/link-stroke";
+import { LockStrokeIcon } from "@featul/ui/icons/lock-stroke";
+import { MemberIcon } from "@featul/ui/icons/member";
 import { VoteIcon } from "@featul/ui/icons/vote";
 
 type PortalItem = {
@@ -26,7 +26,7 @@ const portalItems: PortalItem[] = [
     name: "Your own domain",
     description:
       "Point feedback.yourbrand.com at the same portal. Customers stay on your brand; both URLs serve the public site.",
-    icon: LinkIcon,
+    icon: LinkStrokeIcon,
   },
   {
     name: "Browse, vote, and submit",
@@ -44,19 +44,19 @@ const portalItems: PortalItem[] = [
     name: "Private boards stay off it",
     description:
       "Give a key account their own board. Private boards never appear in public navigation. Your team still sees the full picture.",
-    icon: LockIcon,
+    icon: LockStrokeIcon,
   },
   {
     name: "Guest and anonymous",
     description:
       "Let people vote and submit without creating an account, and mask names when a public board should not show identities.",
-    icon: UserFocusIcon,
+    icon: MemberIcon,
   },
 ];
 
 export default function Access() {
   return (
-    <section className="relative mt-12 mb-12 sm:mt-16 sm:mb-16" data-component="Access">
+    <section className="relative mt-20 mb-12 sm:mt-28 sm:mb-16" data-component="Access">
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
@@ -79,9 +79,9 @@ export default function Access() {
                 return (
                   <div
                     key={item.name}
-                    className="group flex h-full flex-col bg-background px-5 py-5 sm:px-6 sm:py-6"
+                    className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
                   >
-                    <Icon aria-hidden className="size-6" />
+                    <Icon aria-hidden className="size-6 text-foreground" />
                     <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
                       {item.name}
                     </h3>

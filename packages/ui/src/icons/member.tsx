@@ -36,6 +36,7 @@ export const MemberIcon: React.FC<MemberIconProps> = ({ className = '', size = 1
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
+        className="origin-center transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-active:translate-y-0"
       />
     </svg>
   )
