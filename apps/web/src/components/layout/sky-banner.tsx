@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@featul/ui/lib/utils";
 
 const dashboardGlassShellClass =
-  "overflow-hidden rounded-lg border border-border bg-primary p-1 backdrop-blur-xl backdrop-saturate-150 sm:p-1.5";
+  "overflow-hidden rounded-lg border-2 border-primary bg-primary p-1 backdrop-blur-xl backdrop-saturate-150 sm:p-1.5";
 
 const dashboardGlassInnerClass = "overflow-hidden rounded-lg";
 
