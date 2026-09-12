@@ -1,4 +1,4 @@
-import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
+import { MarketingContainer, marketingRailClass, marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { INTEGRATIONS } from "@/lib/data/programmatic/matrix";
@@ -21,7 +21,7 @@ export default function IntegrationsIndexPage() {
       <div className={marketingStackClass}>
         <MarketingContainer className="relative z-10 pb-14 sm:pb-20">
           <section className="mt-4">
-            <div className="border-b border-border/70 pb-6 sm:pb-8">
+            <div className={marketingRailClass}>
               <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
                 Integrations
               </p>
@@ -37,10 +37,10 @@ export default function IntegrationsIndexPage() {
                 Open any integration for setup steps, benefits, and how it fits
                 into your Featul workflow.
               </p>
-            </div>
 
-            <div className="mt-2">
-              <IntegrationsList items={items} />
+              <div className="mt-8">
+                <IntegrationsList items={items} />
+              </div>
             </div>
           </section>
         </MarketingContainer>
