@@ -3,6 +3,15 @@
 import { useLayoutEffect } from "react";
 
 export const HOME_SCROLL_KEY = "featul:home-scroll:v4";
+export const HOME_NAV_CREATE_KEY = "featul:nav-over-create:v1";
+
+export function writeNavOverCreate(over: boolean) {
+  try {
+    sessionStorage.setItem(HOME_NAV_CREATE_KEY, over ? "1" : "0");
+  } catch {
+    /* ignore private-mode quota */
+  }
+}
 
 let initializedForThisDocument = false;
 
@@ -82,6 +91,13 @@ export function HomeScrollMemory() {
     const persist = () => {
       writeSavedY(window.scrollY);
       syncScrolled(window.scrollY);
+      const create = document.querySelector("[data-component='Create']");
+      if (!create) {
+        writeNavOverCreate(false);
+        return;
+      }
+      const rect = create.getBoundingClientRect();
+      writeNavOverCreate(!(rect.bottom <= 0 || rect.top >= 64));
     };
 
     syncScrolled(target);

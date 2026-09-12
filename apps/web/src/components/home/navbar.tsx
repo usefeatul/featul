@@ -9,6 +9,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
+import { writeNavOverCreate } from "@/components/home/scroll-restoration";
 import { MobileMenu } from "./menu";
 
 const FALLBACK_NAV_HEIGHT = 64;
@@ -202,30 +203,25 @@ export default function Navbar() {
 
   useLayoutEffect(() => {
     const html = document.documentElement;
-    html.removeAttribute("data-over-create");
     let ticking = false;
     let lastScrolled = window.scrollY > 0;
     let lastOverCreate = false;
-    let themed = false;
 
     const sync = () => {
       ticking = false;
       const navHeight = headerRef.current?.offsetHeight ?? FALLBACK_NAV_HEIGHT;
+      const createReady = !!document.querySelector("[data-component='Create']");
       const clip = clipCreateOverlap(navHeight);
       const mask = createMaskRef.current;
-      if (mask) {
-        if (!themed) {
-          const vars = createBandNavVars as Record<string, string>;
-          for (const [key, value] of Object.entries(vars)) {
-            mask.style.setProperty(key, value);
-          }
-          themed = true;
-        }
+      const nextOverCreate = clip !== HIDDEN_CLIP;
+
+      if (mask && (createReady || nextOverCreate)) {
         mask.style.clipPath = clip;
+        html.removeAttribute("data-over-create");
+        writeNavOverCreate(nextOverCreate);
       }
 
       const nextScrolled = window.scrollY > 0;
-      const nextOverCreate = clip !== HIDDEN_CLIP;
 
       if (nextScrolled !== lastScrolled) {
         lastScrolled = nextScrolled;
@@ -247,9 +243,11 @@ export default function Navbar() {
     sync();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    window.addEventListener("pagehide", sync);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.removeEventListener("pagehide", sync);
     };
   }, []);
 

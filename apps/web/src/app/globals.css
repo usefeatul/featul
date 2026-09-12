@@ -34,5 +34,14 @@ html[data-scrolled] [data-component="Navbar"] [data-nav-menu] {
 }
 
 [data-nav-create-mask] {
+  --background: var(--primary);
+  --foreground: oklch(99.700% 0.00105 11.528);
+  --accent: color-mix(in oklab, white 82%, var(--primary));
+  --card: color-mix(in oklab, white 14%, var(--primary));
+  --border: color-mix(in oklab, white 22%, var(--primary));
+  --muted: color-mix(in oklab, white 16%, var(--primary));
   clip-path: inset(100% 0 0 0);
+}
+html[data-over-create] [data-nav-create-mask] {
+  clip-path: inset(0);
 }
