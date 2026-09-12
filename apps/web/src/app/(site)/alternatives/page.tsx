@@ -1,4 +1,4 @@
-import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
+import { MarketingContainer, marketingRailClass, marketingStackClass } from "@/components/layout/container";
 import { getAllAlternatives } from "@/config/alternatives";
 import { ROUNDUP_FAQS } from "@/config/alternatives-roundup";
 import AlternativesList from "@/components/alternatives/list";
@@ -59,7 +59,7 @@ export default function AlternativesIndexPage() {
         <AlternativesRoundup />
         <MarketingContainer className="relative z-10 pb-6 sm:pb-8">
           <section>
-            <div className="border-b border-border/70 pb-6 sm:pb-8">
+            <div className={marketingRailClass}>
               <p className="text-accent text-[11px] font-medium uppercase tracking-[0.14em]">
                 All comparisons
               </p>
@@ -75,10 +75,10 @@ export default function AlternativesIndexPage() {
                 Detailed Featurebase, Canny, Productboard, and other alternative
                 pages with feature tables, migration notes, and honest tradeoffs.
               </p>
-            </div>
 
-            <div className="mt-8">
-              <AlternativesList items={allAlternatives} />
+              <div className="mt-8">
+                <AlternativesList items={allAlternatives} />
+              </div>
             </div>
           </section>
         </MarketingContainer>
