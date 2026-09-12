@@ -57,12 +57,12 @@ export default function Create() {
               data-component="CreateBanner"
               className="relative z-10"
             >
-              <div className="dark border-b border-border bg-background px-3 py-2.5 sm:px-4 sm:py-3">
+              <div className="border-b border-border bg-background px-3 py-2.5 sm:px-4 sm:py-3">
                 <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
                   <div className="flex items-center gap-1.5" aria-hidden>
-                    <span className="size-2.5 rounded-lg bg-white/35" />
-                    <span className="size-2.5 rounded-lg bg-white/35" />
-                    <span className="size-2.5 rounded-lg bg-white/35" />
+                    <span className="size-2.5 rounded-lg bg-foreground/20" />
+                    <span className="size-2.5 rounded-lg bg-foreground/20" />
+                    <span className="size-2.5 rounded-lg bg-foreground/20" />
                   </div>
                   <p className="min-w-0 truncate rounded-lg border border-border bg-white px-5 py-1.5 text-center text-xs font-light text-[oklch(0.2132_0.0042_264.48)] sm:px-8 sm:text-sm">
                     yourproduct.featul.com
