@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { cn } from "@featul/ui/lib/utils";
 
 export type DirectoryListItem = {
   href: string;
   title: string;
   description?: string;
   meta?: string;
+  metaClassName?: string;
 };
 
 function letterOf(title: string) {
@@ -51,7 +53,12 @@ export function DirectoryList({
                   <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground transition-colors group-hover:text-primary sm:text-base">
                     {item.title}
                     {item.meta ? (
-                      <span className="text-[11px] font-medium text-accent">
+                      <span
+                        className={cn(
+                          "text-[11px] font-medium text-accent",
+                          item.metaClassName,
+                        )}
+                      >
                         {item.meta}
                       </span>
                     ) : null}
