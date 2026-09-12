@@ -64,17 +64,17 @@ export default function Create() {
                     <span className="size-2.5 rounded-lg bg-border" />
                     <span className="size-2.5 rounded-lg bg-border" />
                   </div>
-                  <p className="min-w-0 truncate rounded-lg border border-border bg-background px-5 py-1.5 text-center text-xs font-medium text-foreground sm:px-8 sm:text-sm">
-                    yourproduct.featul.com
-                  </p>
+                    <p className="min-w-0 truncate rounded-lg border border-border bg-background px-5 py-1.5 text-center text-xs font-light text-foreground sm:px-8 sm:text-sm">
+                      yourproduct.featul.com
+                    </p>
                   <span aria-hidden />
                 </div>
               </div>
               <Image
-                src="/image/roadmap.png"
+                src="/image/subdomainview.png"
                 alt="Public Featul feedback portal on a workspace subdomain"
-                width={1762}
-                height={1124}
+                width={1861}
+                height={1137}
                 sizes="(max-width: 1280px) 100vw, 1152px"
                 loading="eager"
                 placeholder="blur"
