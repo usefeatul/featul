@@ -1,4 +1,4 @@
-import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
+import { MarketingContainer, marketingRailClass, marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { getAllUseCasesForIndex } from "@/types/scenarios";
 import { UseCasesIndexHero } from "@/components/use-cases/index";
@@ -21,7 +21,7 @@ export default function UseCasesIndexPage() {
       <div className={marketingStackClass}>
         <MarketingContainer className="relative z-10 pb-14 sm:pb-20">
           <section className="mt-4">
-            <div className="border-b border-border/70 pb-6 sm:pb-8">
+            <div className={marketingRailClass}>
               <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
                 Use cases
               </p>
@@ -37,10 +37,10 @@ export default function UseCasesIndexPage() {
                 Scenario-based walkthroughs for feedback, roadmaps, growth, and
                 customer success.
               </p>
-            </div>
 
-            <div className="mt-2">
-              <UseCasesList items={useCases} />
+              <div className="mt-8">
+                <UseCasesList items={useCases} />
+              </div>
             </div>
           </section>
         </MarketingContainer>
