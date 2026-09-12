@@ -14,7 +14,6 @@ import Access from "@/components/home/access";
 import Integrations from "@/components/home/integrations";
 import FeaturesSection from "@/components/home/features";
 import { ConversionHero } from "@/components/home/conversion";
-import { PricingSection } from "@/components/home/pricing";
 import { SectionStack } from "@/components/layout/stack";
 import { HomeScrollMemory } from "@/components/home/scroll-restoration";
 
@@ -47,7 +46,6 @@ export default function Home() {
           <Setup />
           <Create />
           <Access />
-          <PricingSection />
           <Faq />
           <StatsSection />
         </SectionStack>
