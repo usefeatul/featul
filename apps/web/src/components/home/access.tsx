@@ -56,7 +56,7 @@ const portalItems: PortalItem[] = [
 
 export default function Access() {
   return (
-    <section className="relative mt-8 mb-12 sm:mt-10 sm:mb-16" data-component="Access">
+    <section className="relative mt-12 mb-12 sm:mt-16 sm:mb-16" data-component="Access">
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
