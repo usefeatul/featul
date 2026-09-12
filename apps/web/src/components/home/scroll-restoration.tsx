@@ -13,6 +13,17 @@ export function writeNavOverCreate(over: boolean) {
   }
 }
 
+/** Visual primary band: heading block plus the half-image extension. */
+export function getCreateBandBounds() {
+  const create = document.querySelector("[data-component='Create']");
+  if (!create) return null;
+  const a = create.getBoundingClientRect();
+  const extend = document.querySelector("[data-create-band-extend]");
+  if (!extend) return { top: a.top, bottom: a.bottom };
+  const b = extend.getBoundingClientRect();
+  return { top: Math.min(a.top, b.top), bottom: Math.max(a.bottom, b.bottom) };
+}
+
 let initializedForThisDocument = false;
 
 function readSavedY() {
@@ -91,13 +102,12 @@ export function HomeScrollMemory() {
     const persist = () => {
       writeSavedY(window.scrollY);
       syncScrolled(window.scrollY);
-      const create = document.querySelector("[data-component='Create']");
-      if (!create) {
+      const band = getCreateBandBounds();
+      if (!band) {
         writeNavOverCreate(false);
         return;
       }
-      const rect = create.getBoundingClientRect();
-      writeNavOverCreate(!(rect.bottom <= 0 || rect.top >= 64));
+      writeNavOverCreate(!(band.bottom <= 0 || band.top >= 64));
     };
 
     syncScrolled(target);

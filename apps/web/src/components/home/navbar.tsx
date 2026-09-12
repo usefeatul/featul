@@ -9,7 +9,10 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
-import { writeNavOverCreate } from "@/components/home/scroll-restoration";
+import {
+  getCreateBandBounds,
+  writeNavOverCreate,
+} from "@/components/home/scroll-restoration";
 import { MobileMenu } from "./menu";
 
 const FALLBACK_NAV_HEIGHT = 64;
@@ -28,12 +31,11 @@ const linkTone =
   "font-light text-accent hover:text-foreground hover:bg-card hover:ring-1 hover:ring-border";
 
 function clipCreateOverlap(navHeight: number) {
-  const create = document.querySelector("[data-component='Create']");
-  if (!create) return HIDDEN_CLIP;
-  const rect = create.getBoundingClientRect();
-  if (rect.bottom <= 0 || rect.top >= navHeight) return HIDDEN_CLIP;
-  const top = Math.max(0, Math.round(rect.top));
-  const bottom = Math.min(navHeight, Math.round(rect.bottom));
+  const band = getCreateBandBounds();
+  if (!band) return HIDDEN_CLIP;
+  if (band.bottom <= 0 || band.top >= navHeight) return HIDDEN_CLIP;
+  const top = Math.max(0, Math.round(band.top));
+  const bottom = Math.min(navHeight, Math.round(band.bottom));
   if (bottom <= 0 || top >= navHeight) return HIDDEN_CLIP;
   return `inset(${top}px 0 ${navHeight - bottom}px 0)`;
 }
