@@ -16,7 +16,6 @@ export default function ToolList({
       title: tool.name,
       description: tool.description,
       meta: tool.isNew || isToolNew(tool.slug) ? "New" : undefined,
-      metaClassName: "text-primary",
     }));
 
   return <DirectoryList idPrefix="tool" items={items} />;
