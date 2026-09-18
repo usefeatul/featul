@@ -29,6 +29,9 @@ function resolveTitle(segment: string): string {
   return found ? found.label : "";
 }
 
+const compactActionButtonClass =
+  "size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]";
+
 export default function WorkspaceHeader({
   workspaceName,
 }: {
@@ -86,20 +89,28 @@ export default function WorkspaceHeader({
   ) : showRoadmapActions ? (
     <RoadmapHeaderActions />
   ) : showChangelogActions ? (
-    <Toolbar size="sm">
-      <ImportNotraDialog workspaceSlug={workspaceSlug} />
-      <ToolbarSeparator />
+    <div className="ml-auto flex shrink-0 items-center gap-1">
+      <ImportNotraDialog
+        workspaceSlug={workspaceSlug}
+        iconOnly
+        triggerClassName={compactActionButtonClass}
+      />
       <Button
         asChild
         variant="plain"
-        className={`${toolbarItemClass} px-3 text-xs font-medium text-muted-foreground hover:text-foreground`}
+        size="icon-sm"
+        className={compactActionButtonClass}
       >
-        <Link href={`/workspaces/${workspaceSlug}/changelog/new`}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Entry
+        <Link
+          href={`/workspaces/${workspaceSlug}/changelog/new`}
+          aria-label="New changelog entry"
+          title="New changelog entry"
+        >
+          <Plus className="size-4" />
+          <span className="sr-only">New entry</span>
         </Link>
       </Button>
-    </Toolbar>
+    </div>
   ) : showChangelogEditActions &&
     editorContext &&
     editorContext.actions.length > 0 ? (
@@ -153,14 +164,17 @@ export default function WorkspaceHeader({
   const isRequestList =
     rest.length === 0 || (rest[0] === "requests" && rest.length === 1);
 
-  const isCompactListHeader = isRequestList || showRoadmapActions;
+  const isCompactListHeader =
+    isRequestList || showRoadmapActions || showChangelogActions;
 
   if (isCompactListHeader) {
     return (
       <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6 dark:bg-[#191919]">
         <div className="flex min-h-12 items-center justify-between gap-3">
           <h1 className="shrink-0 text-sm font-medium">{title}</h1>
-          <FilterDynamicIsland />
+          {showRequestsActions || showRoadmapActions ? (
+            <FilterDynamicIsland />
+          ) : null}
           {pageActions}
         </div>
       </header>
