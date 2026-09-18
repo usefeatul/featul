@@ -24,9 +24,10 @@ type MergeCandidatesResponse = {
 export interface MergePopoverProps {
   postId: string
   workspaceSlug: string
+  className?: string
 }
 
-export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
+export function MergePopover({ postId, workspaceSlug, className }: MergePopoverProps) {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [mode, setMode] = React.useState<"merge_into" | "merge_here" | null>(null)
@@ -91,10 +92,10 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
             type="button"
             variant="plain"
             size="icon-sm"
-            className={toolbarItemClass}
+            className={className || toolbarItemClass}
             aria-label="Merge"
           >
-            <MergeIcon className="size-3.5" />
+            <MergeIcon className="size-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" list className="fit min-w-0">

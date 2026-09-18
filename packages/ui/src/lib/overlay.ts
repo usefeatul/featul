@@ -1,3 +1,10 @@
+/** Single, subtle edge for menus and confirmation dialogs. */
+export const subtleOverlayShellClass =
+  "overflow-hidden rounded-md border border-border/60 bg-popover text-popover-foreground shadow-sm"
+
+export const subtleOverlayInnerClass =
+  "overflow-hidden rounded-md bg-transparent"
+
 export const overlayShellClass =
   "overflow-hidden rounded-xl border border-border bg-card text-foreground dark:border-white/10 dark:bg-black"
 

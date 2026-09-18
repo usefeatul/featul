@@ -17,7 +17,6 @@ function SidebarItem({
   item,
   pathname,
   className = "",
-  shortcut,
   count,
   mutedIcon = false,
   onClick,
@@ -26,7 +25,6 @@ function SidebarItem({
   item: NavItem;
   pathname: string;
   className?: string;
-  shortcut?: string;
   count?: number;
   mutedIcon?: boolean;
   onClick?: () => void;
@@ -47,7 +45,7 @@ function SidebarItem({
       (!item.exact && activePrefix !== "/" && pathname.startsWith(activePrefix)));
   const classes = cn(
     sidebarRowClassName,
-    active ? "text-foreground" : "text-accent",
+    "text-foreground",
     className
   );
   const content = (
@@ -55,14 +53,14 @@ function SidebarItem({
       {hovered ? (
         <motion.span
           layoutId="sidebar-hover-pill"
-          className="absolute inset-0 z-0 rounded-md bg-muted dark:bg-black/40"
+          className="absolute inset-0 z-0 rounded-md bg-muted dark:bg-white/5"
           transition={pillTransition(reduceMotion)}
         />
       ) : null}
       {indicator && active ? (
         <motion.span
           layoutId="sidebar-active-pill"
-          className="absolute inset-0 z-0 rounded-md bg-muted dark:bg-muted/50"
+          className="absolute inset-0 z-0 rounded-md bg-muted dark:bg-white/[0.07]"
           transition={pillTransition(reduceMotion)}
         />
       ) : null}
@@ -72,19 +70,16 @@ function SidebarItem({
             "size-5 transition-colors duration-200",
             active
               ? "text-primary opacity-100"
-              : "text-foreground group-hover:text-primary",
-            !active && mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
+              : mutedIcon
+                ? "text-neutral-400 opacity-100 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary"
+                : "text-foreground group-hover:text-primary"
           )}
         />
       </span>
       <span className="relative z-[1] min-w-0 flex-1 truncate transition-colors duration-200">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <SidebarBadge className="relative z-[1] ml-auto shrink-0" fixedWidth={count < 10}>
+        <SidebarBadge className="relative z-[1] ml-auto shrink-0" innerClassName="text-accent" fixedWidth={count < 10}>
           {count}
-        </SidebarBadge>
-      ) : shortcut ? (
-        <SidebarBadge className="relative z-[1] ml-auto shrink-0">
-          {shortcut}
         </SidebarBadge>
       ) : null}
     </>

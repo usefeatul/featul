@@ -1,7 +1,8 @@
 "use client"
 
 import React from "react"
-import { OverlayChip } from "@featul/ui/components/overlay-chip"
+import { cn } from "@featul/ui/lib/utils"
+import { requestBadgeClass } from "./styles"
 import {
   Tooltip,
   TooltipTrigger,
@@ -24,11 +25,10 @@ export function LowInteractionMark({ days, className }: LowInteractionMarkProps)
           type="button"
           aria-label={label}
           onClick={(e) => e.stopPropagation()}
-          className={className}
+          className={cn(requestBadgeClass, "whitespace-nowrap uppercase tracking-[0.06em]", className)}
         >
-          <OverlayChip innerClassName="h-6 min-h-6 whitespace-nowrap px-2 text-xs font-medium text-violet-600 dark:text-violet-400">
-            Low Traction
-          </OverlayChip>
+          <span className="size-1.5 shrink-0 rounded-full bg-violet-500" aria-hidden />
+          Low Traction
         </button>
       </TooltipTrigger>
       <TooltipContent

@@ -1,26 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
 import { buildBottomNav, getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
 import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import AccountNav from "@/components/account/AccountNav";
-import {
-  useSidebarHotkeys,
-  getShortcutForLabel,
-} from "@/hooks/useSidebarHotkeys";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
+import SearchAction from "@/components/requests/actions/SearchAction";
+import RoadmapSearchAction from "@/components/roadmap/actions/RoadmapSearchAction";
+import { sidebarSearchClassName } from "./styles";
 import UserDropdown from "@/components/account/UserDropdown";
+import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
 import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
 import { PlusIcon } from "@featul/ui/icons/plus";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { LayoutGroup } from "framer-motion";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
@@ -67,7 +66,6 @@ export default function Sidebar({
   initialDeviceAccounts?: DeviceAccount[] | undefined;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const slug = getSlugFromPath(pathname);
   const isSettings = isWorkspaceSettingsPath(pathname);
   const isAccount = isWorkspaceAccountPath(pathname);
@@ -78,11 +76,11 @@ export default function Sidebar({
     initialCounts,
     initialDomainInfo || null,
   );
-  const [hotkeysActive, setHotkeysActive] = useState(false);
   const [createPostOpen, setCreatePostOpen] = useState(false);
   const openCreatePost = React.useCallback(() => setCreatePostOpen(true), []);
-  useSidebarHotkeys(hotkeysActive, middleNav, router);
   useCreatePostHotkey({ onOpen: openCreatePost });
+  const boardItem = middleNav.find((item) => item.label === "My Board");
+  const workspaceNav = middleNav.filter((item) => item.label !== "My Board");
 
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
@@ -90,34 +88,47 @@ export default function Sidebar({
 
   return (
     <aside
-      tabIndex={0}
-      onMouseEnter={() => setHotkeysActive(true)}
-      onMouseLeave={() => setHotkeysActive(false)}
-      onFocus={() => setHotkeysActive(true)}
-      onBlur={() => setHotkeysActive(false)}
       className={cn(
-        "hidden lg:flex w-full lg:w-60 lg:shrink-0 flex-col bg-background",
-        "lg:sticky lg:top-2 lg:h-[calc(100vh-1rem)] lg:overflow-hidden",
+        "hidden lg:flex w-full lg:w-64 lg:shrink-0 flex-col border-r border-border/30 bg-muted/40 dark:bg-[#202020]",
+        "lg:sticky lg:top-0 lg:h-dvh lg:overflow-hidden",
         className,
       )}
     >
-      <div className="p-3">
-        <div className={cn(sidebarRowClassName, "py-1")}>
-          <span className={sidebarLeadSlotClassName}>
-            <FeatulLogoIcon className="size-6" />
-          </span>
-          <div className="text-md font-semibold">Featul</div>
-        </div>
+      <div className="px-2 py-2">
         <WorkspaceSwitcher
-          className="mt-5.5"
           initialWorkspace={initialWorkspace}
           initialWorkspaces={initialWorkspaces}
         />
-        <Timezone
-          className="mt-2"
-          initialTimezone={initialTimezone}
-          initialServerNow={initialServerNow}
-        />
+          {pathname.split("/")[3] === "roadmap" ? (
+            <RoadmapSearchAction className={sidebarSearchClassName} />
+          ) : (
+            <SearchAction className={sidebarSearchClassName} />
+          )}
+        <div className="mt-4 px-1">
+          <button
+            type="button"
+            className={cn(
+              sidebarRowClassName,
+              "text-foreground hover:bg-muted dark:hover:bg-white/5",
+            )}
+            onClick={openCreatePost}
+          >
+            <span className={sidebarLeadSlotClassName}>
+              <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
+            </span>
+            <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
+              Create Posts
+            </span>
+          </button>
+          {boardItem ? (
+            <SidebarItem
+              item={boardItem}
+              pathname={pathname}
+              mutedIcon
+              className="mt-1.5"
+            />
+          ) : null}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-hide">
@@ -143,7 +154,7 @@ export default function Sidebar({
           </>
         ) : (
           <>
-            <SidebarSection title="REQUEST">
+            <SidebarSection title="Requests">
               {primaryNav.map((item) => (
                 <SidebarItem
                   key={item.label}
@@ -156,13 +167,12 @@ export default function Sidebar({
                 />
               ))}
             </SidebarSection>
-            <SidebarSection title="WORKSPACE" className="mt-4">
-              {middleNav.map((item) => (
+            <SidebarSection title="Workspace" className="mt-3">
+              {workspaceNav.map((item) => (
                 <SidebarItem
                   key={item.label}
                   item={item}
                   pathname={pathname}
-                  shortcut={getShortcutForLabel(item.label)}
                   mutedIcon
                 />
               ))}
@@ -172,22 +182,12 @@ export default function Sidebar({
         </LayoutGroup>
       </div>
 
-      <SidebarSection className="px-3 pb-4 pt-2">
-        <button
-          type="button"
-          className={cn(
-            sidebarRowClassName,
-            "text-accent hover:bg-muted dark:hover:bg-black/40",
-          )}
-          onClick={openCreatePost}
-        >
-          <span className={sidebarLeadSlotClassName}>
-            <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
-          </span>
-          <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
-            Create Posts
-          </span>
-        </button>
+      <SidebarSection className="border-t border-border/30 px-3 pb-3 pt-3">
+        <Timezone
+          className="mb-3"
+          initialTimezone={initialTimezone}
+          initialServerNow={initialServerNow}
+        />
         <CreatePostModal
           open={createPostOpen}
           onOpenChange={setCreatePostOpen}
@@ -203,10 +203,14 @@ export default function Sidebar({
             indicator={false}
           />
         ))}
-        <UserDropdown
-          initialUser={initialUser}
-          initialDeviceAccounts={initialDeviceAccounts}
-        />
+        <div className="flex items-center gap-1">
+          <UserDropdown
+            className="min-w-0 flex-1"
+            initialUser={initialUser}
+            initialDeviceAccounts={initialDeviceAccounts}
+          />
+          <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] dark:bg-[#292929] dark:hover:bg-[#303030]" />
+        </div>
       </SidebarSection>
     </aside>
   );

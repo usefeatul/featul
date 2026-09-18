@@ -7,7 +7,7 @@ type ContainerProps = {
   as?: React.ElementType
   withNavbarOffset?: boolean
   noPadding?: boolean
-  maxWidth?: '4xl' | '5xl' | '6xl' | '7xl' | '8xl'
+  maxWidth?: '4xl' | '5xl' | '6xl' | '7xl' | '8xl' | 'full'
 }
 
 export function Container({
@@ -19,15 +19,17 @@ export function Container({
   maxWidth = '7xl',
 }: ContainerProps) {
   const widthClass =
-    maxWidth === '4xl'
-      ? 'max-w-4xl'
-      : maxWidth === '5xl'
-        ? 'max-w-5xl'
-        : maxWidth === '6xl'
-          ? 'max-w-6xl'
-          : maxWidth === '7xl'
-            ? 'max-w-7xl'
-            : 'max-w-[88rem]'
+    maxWidth === 'full'
+      ? 'w-full max-w-none'
+      : maxWidth === '4xl'
+        ? 'max-w-4xl'
+        : maxWidth === '5xl'
+          ? 'max-w-5xl'
+          : maxWidth === '6xl'
+            ? 'max-w-6xl'
+            : maxWidth === '7xl'
+              ? 'max-w-7xl'
+              : 'max-w-[88rem]'
 
   const paddingX = noPadding ? '' : 'px-3 sm:px-4 md:px-6 lg:px-16 xl:px-20'
   const base = cn('mx-auto', widthClass, paddingX, withNavbarOffset && 'pt-2', className)

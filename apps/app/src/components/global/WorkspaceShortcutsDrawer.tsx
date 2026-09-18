@@ -16,7 +16,6 @@ import {
 
 const GROUP_LABELS: Record<string, string> = {
   "Global workspace": "General",
-  Sidebar: "Navigation",
   "Lists and bulk actions": "Lists",
   "Request detail": "Request detail",
   "Roadmap navigation": "Roadmap",

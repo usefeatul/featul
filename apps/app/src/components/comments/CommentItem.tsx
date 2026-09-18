@@ -101,21 +101,13 @@ export default function CommentItem({
   const isGuest = !comment.authorName || comment.authorName === "Guest"
   const showHiddenIdentity = hidePublicMemberIdentity && !isGuest
   const initials = getInitials(displayUser.name)
-  const indentPx = depth * 24
 
   return (
     <div className="group min-w-0">
       <div className="flex min-w-0 items-start gap-2">
         <div
           className="flex min-w-0 flex-1 items-start gap-2.5"
-          style={{ paddingLeft: indentPx }}
         >
-          {depth > 0 ? (
-            <span
-              aria-hidden
-              className="mt-3 h-px w-3 shrink-0 bg-border/70 dark:bg-white/15"
-            />
-          ) : null}
           <Avatar className="relative mt-0.5 size-7 shrink-0 overflow-visible">
             <AvatarImage src={displayUser.image} alt={displayUser.name} />
             <AvatarFallback className="bg-muted text-[10px] text-muted-foreground">

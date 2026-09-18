@@ -13,7 +13,6 @@ export const metadata = createPageMetadata({
   description: "All requests",
 });
 import RequestList from "@/components/requests/RequestList";
-import RequestPagination from "@/components/requests/RequestPagination";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 export const revalidate = 30;
@@ -45,15 +44,16 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
   );
 
   return (
-    <section className="space-y-3">
+    <section className="-mx-4 space-y-3 sm:-mx-8 lg:-mx-12 xl:-mx-16">
       <RequestList
         items={items}
         workspaceSlug={slug}
         initialTotalCount={totalCount}
+        initialOffset={offset + items.length}
+        variant="workspace"
         initialIsSelecting={initialIsSelecting}
         initialSelectedIds={initialSelectedIds}
       />
-      <RequestPagination workspaceSlug={slug} page={page} pageSize={pageSize} totalCount={totalCount} variant="workspace" />
     </section>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import { FilterIcon } from "@featul/ui/icons/filter";
 import { cn } from "@featul/ui/lib/utils";
 import {
   FILTER_ISLAND_BUTTON_HOVER_CLASS,
@@ -34,7 +34,7 @@ export function FilterIslandHeader({
       )}
     >
       <div className="flex min-w-0 items-center gap-1.5">
-        <ListFilterIcon
+        <FilterIcon
           className={cn("size-3 shrink-0", FILTER_ISLAND_MUTED_ICON_CLASS)}
         />
 

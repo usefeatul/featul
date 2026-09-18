@@ -9,7 +9,6 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { DropdownIcon } from "@featul/ui/icons/dropdown";
 import { client } from "@featul/api/client";
 import { cn } from "@featul/ui/lib/utils";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
@@ -57,7 +56,7 @@ export default function FlagsPicker({
         : `${activeFlags.length} flags`;
 
   return (
-    <Toolbar size="sm" className="w-fit">
+    <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -74,7 +73,6 @@ export default function FlagsPicker({
             disabled={saving}
           >
             <span className="max-w-[140px] truncate">{label}</span>
-            <DropdownIcon className="size-3" />
           </Button>
         </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">

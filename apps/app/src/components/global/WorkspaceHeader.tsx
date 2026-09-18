@@ -12,7 +12,6 @@ import { getAccountSectionMeta } from "@/config/account/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
-import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
 import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
@@ -26,7 +25,7 @@ function resolveTitle(segment: string): string {
   return found ? found.label : "";
 }
 
-export default function WorkspaceHeader() {
+export default function WorkspaceHeader({ workspaceName }: { workspaceName: string }) {
   const pathname = usePathname() || "/";
   const parts = pathname.split("/").filter(Boolean);
   const idx = parts.indexOf("workspaces");
@@ -38,7 +37,6 @@ export default function WorkspaceHeader() {
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
   const isMembersSection = rest[0] === "members";
   const isMemberDetail = isMembersSection && rest.length > 1;
-  const isChangelogSection = rest[0] === "changelog";
   const isSettingsSection = rest[0] === "settings";
   const isAccountSection = rest[0] === "account";
   const settingsMeta = isSettingsSection
@@ -140,38 +138,53 @@ export default function WorkspaceHeader() {
           </Button>,
         ])}
     </Toolbar>
-  ) : title && !isMembersSection && !isChangelogSection ? (
-    <Toolbar size="sm">
-      <WorkspaceNotificationsAction />
-    </Toolbar>
   ) : null;
 
+  if (rest[0] === "requests" && rest.length > 1) return null;
   if (!title && !pageActions) return null;
 
   const showFilterSummary = showRequestsActions || showRoadmapActions;
 
+  const showPageHeading = rest.length === 0 || rest.length === 1;
+
+  const isRequestList = rest.length === 0 || (rest[0] === "requests" && rest.length === 1);
+
+  if (isRequestList) {
+    return (
+      <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6 dark:bg-[#191919]">
+        <div className="flex min-h-12 items-center justify-between gap-3">
+          <h1 className="shrink-0 text-sm font-medium">{title}</h1>
+          <FilterDynamicIsland />
+          {pageActions}
+        </div>
+      </header>
+    );
+  }
+
   return (
-    <div className="mt-4 mb-6.5">
-      <div className="flex min-h-10 items-center justify-between gap-3">
-        {title ? (
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="min-w-0">
-              <h1 className="text-xl font-heading leading-tight font-semibold truncate">
-                {title}
-              </h1>
-              {settingsMeta?.desc || accountMeta?.desc ? (
-                <p className="mt-1 text-sm text-accent">
-                  {settingsMeta?.desc || accountMeta?.desc}
-                </p>
-              ) : null}
-            </div>
-            {showFilterSummary ? <FilterDynamicIsland /> : null}
-          </div>
-        ) : (
-          <div />
-        )}
-        {pageActions}
+    <header className="relative z-20 shrink-0 bg-background dark:bg-[#191919]">
+      <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
+        <Link href={`/workspaces/${workspaceSlug}`} className="max-w-48 truncate rounded-md px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5">
+          {workspaceName}
+        </Link>
+        <span aria-hidden className="text-accent/50">/</span>
+        <span className="truncate font-medium">{title}</span>
+        {!showPageHeading ? <div className="ml-auto">{pageActions}</div> : null}
       </div>
-    </div>
+      <div className={cn("px-4 sm:px-8 lg:px-12 xl:px-16", showPageHeading ? "pt-5 sm:pt-9" : "pt-3")}>
+        {showPageHeading ? (
+          <div className="pb-5 sm:pb-7">
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+            {settingsMeta?.desc || accountMeta?.desc ? (
+              <p className="mt-2 text-sm text-accent">{settingsMeta?.desc || accountMeta?.desc}</p>
+            ) : null}
+          </div>
+        ) : null}
+        <div className={cn("flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2", !showPageHeading && "mb-5", isSettingsSection && "mx-auto w-full max-w-4xl")}>
+          {showFilterSummary ? <FilterDynamicIsland /> : <span className="text-sm text-accent">{settingsMeta?.desc || accountMeta?.desc || title}</span>}
+          {showPageHeading ? pageActions : null}
+        </div>
+      </div>
+    </header>
   );
 }

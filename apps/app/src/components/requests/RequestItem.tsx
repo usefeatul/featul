@@ -16,8 +16,7 @@ import { ReportIndicator } from "./ReportIndicator"
 import { StaleMark } from "./StaleIndicator"
 import { LowInteractionMark } from "./LowInteractionIndicator"
 import { SnoozeIndicator } from "./SnoozeIndicator"
-import { FlagRibbon } from "@/components/global/FlagRibbon"
-import { OverlayChip } from "@featul/ui/components/overlay-chip"
+import { getActiveRequestFlags } from "@/components/global/flag-visuals"
 import type { RequestItemData } from "@/types/request"
 import type { TagSummary } from "@/types/post"
 import { SelectionControl } from "@/components/selection/SelectionControl"
@@ -30,6 +29,7 @@ import { getRequestLowInteractionDays } from "@/utils/request/low-interaction"
 import { isActivelySnoozed } from "@featul/api/shared/snooze"
 import { relativeTime } from "@/lib/time"
 import { normalizeRoadmapStatus } from "@/lib/roadmap"
+import { requestBadgeClass } from "./styles"
 
 interface RequestItemProps {
   item: RequestItemData
@@ -41,8 +41,7 @@ interface RequestItemProps {
   disableLink?: boolean
 }
 
-const metaChipInnerClass =
-  "h-6 min-h-6 max-w-full gap-1.5 px-2 text-xs font-medium text-accent"
+const metaChipInnerClass = cn(requestBadgeClass, "max-w-[9.5rem] uppercase tracking-[0.06em]")
 
 function RequestMetaChip({
   title,
@@ -52,83 +51,83 @@ function RequestMetaChip({
   children: React.ReactNode
 }) {
   return (
-    <OverlayChip
-      className="max-w-[9.5rem]"
-      innerClassName={metaChipInnerClass}
-    >
+    <span className={metaChipInnerClass}>
       <span className="inline-flex min-w-0 max-w-full items-center gap-1.5" title={title}>
         {children}
       </span>
-    </OverlayChip>
+    </span>
   )
 }
 
 function RequestBoardChip({ name }: { name: string }) {
   return (
     <RequestMetaChip title={name}>
-      <span className="min-w-0 truncate">{name}</span>
+      <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+      <span className="min-w-0 truncate uppercase tracking-wide">{name}</span>
     </RequestMetaChip>
   )
 }
 
-function RequestTagPills({
+export function RequestTagPills({
   tags,
   boardName,
+  expanded = false,
 }: {
   tags?: TagSummary[]
   boardName?: string | null
+  expanded?: boolean
 }) {
   const hasBoard = Boolean(boardName?.trim())
   const list = tags ?? []
   if (!hasBoard && list.length === 0) return null
 
-  const visible = list.slice(0, 2)
+  const visible = expanded ? list : list.slice(0, 2)
   const extra = list.length - visible.length
 
   return (
-    <div className="hidden min-w-0 shrink-0 items-center gap-1.5 md:flex">
+    <div className={expanded ? "contents" : "hidden min-w-0 shrink-0 items-center gap-1.5 xl:flex"}>
       {hasBoard ? <RequestBoardChip name={boardName!} /> : null}
       {visible.map((tag) => (
         <RequestMetaChip key={tag.id} title={tag.name}>
-          <span className="size-2 shrink-0 rounded-full bg-primary" aria-hidden />
+          <span className="size-1.5 shrink-0 rounded-full bg-primary" style={tag.color ? { backgroundColor: tag.color } : undefined} aria-hidden />
           <span className="min-w-0 truncate">{tag.name}</span>
         </RequestMetaChip>
       ))}
       {extra > 0 ? (
-        <OverlayChip innerClassName={cn(metaChipInnerClass, "px-2 tabular-nums")}>
+        <span className={cn(metaChipInnerClass, "tabular-nums")}>
           +{extra}
-        </OverlayChip>
+        </span>
       ) : null}
     </div>
   )
 }
 
-function RequestEngagementChip({
+export function RequestEngagementChip({
   postId,
   upvotes,
   hasVoted,
   commentCount,
+  showComments = false,
 }: {
   postId: string
   upvotes: number
   hasVoted?: boolean
   commentCount: number
+  showComments?: boolean
 }) {
   return (
-    <OverlayChip
-      innerClassName="h-6 min-h-6 divide-x divide-border p-0 text-xs font-medium tabular-nums text-accent dark:divide-white/10"
-    >
+    <span className="inline-flex shrink-0 items-center gap-1.5 tabular-nums">
       <UpvoteButton
         postId={postId}
         upvotes={upvotes}
         hasVoted={hasVoted}
-        className="relative z-10 h-full px-2 text-xs hover:text-red-500/80"
+        className={cn(requestBadgeClass, "relative z-10 gap-1 aria-pressed:text-red-500 hover:bg-muted/80 dark:hover:bg-[#2c2c2c]")}
       />
-      <span className="inline-flex h-full items-center gap-1.5 px-2">
-        <CommentsIcon aria-hidden className="size-3.5" />
+      <span className={cn(requestBadgeClass, "gap-1", !showComments && "hidden sm:inline-flex")} title={`${commentCount} comments`}>
+        <CommentsIcon aria-hidden className="size-3" />
         <span>{commentCount}</span>
       </span>
-    </OverlayChip>
+    </span>
   )
 }
 
@@ -156,7 +155,6 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     upvotes: item.upvotes,
     commentCount: item.commentCount,
   })
-  const isStale = staleDays != null
   const isSnoozed = isActivelySnoozed(item.snoozedUntil)
   const status = normalizeRoadmapStatus(item.roadmapStatus)
   const isSettled = status === "completed" || status === "closed"
@@ -169,18 +167,11 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   const rowClassName = getSelectableRowClassName(
     isSelectingMode,
     isSelectedMode,
-    cn(
-      "group/request relative flex items-center gap-3 overflow-hidden border-l-2 px-4 py-3",
-      isSnoozed
-        ? "border-l-sky-500 dark:border-l-sky-400"
-        : isStale
-          ? "border-l-amber-600 dark:border-l-amber-500"
-          : "border-l-transparent",
-    ),
+    "group/request relative flex min-h-10 items-center gap-3 overflow-hidden px-4 py-1.5 sm:px-6",
     "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
   )
   const actionsClassName = cn(
-    "relative z-10 flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground",
+    "relative z-10 flex shrink-0 items-center gap-2 text-xs text-muted-foreground lg:gap-3",
     isSelectingMode && "pointer-events-none",
   )
   const publishedLabel = relativeTime(item.publishedAt ?? item.createdAt)
@@ -205,8 +196,6 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
             aria-label={displayTitle}
           />
         )}
-        <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} isLocked={item.isLocked} />
-        {staleDays != null ? <StaleMark days={staleDays} /> : null}
         {isSelectingMode ? (
           <SelectionControl
             checked={isSelectedMode}
@@ -215,7 +204,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
             onClick={(e) => e.stopPropagation()}
           />
         ) : null}
-        <StatusIcon status={status} className="size-5 shrink-0 text-foreground/80" />
+        <StatusIcon status={status} className="size-4 shrink-0 text-foreground/80" />
         <span className="flex min-w-0 flex-1 items-center gap-2">
           <span
             className={cn(
@@ -231,14 +220,19 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
             <LowInteractionMark
               days={lowInteractionDays}
               className={cn(
-                "relative z-10 inline-flex shrink-0 appearance-none border-0 bg-transparent p-0",
+                "relative z-10 appearance-none border-0",
                 isSelectingMode && "pointer-events-none",
               )}
             />
           ) : null}
         </span>
         <div className={actionsClassName}>
-          <RequestTagPills tags={item.tags} boardName={item.boardName} />
+          {getActiveRequestFlags(item).map(({ key, label, Icon, iconClass }) => (
+            <span key={key} title={label} aria-label={label} className="inline-flex shrink-0">
+              <Icon className={cn("size-3.5", iconClass)} />
+            </span>
+          ))}
+          {staleDays != null ? <StaleMark days={staleDays} className="hidden sm:inline-flex" /> : null}
           <ReportIndicator count={item.reportCount || 0} />
           <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
           <RequestEngagementChip
@@ -247,11 +241,12 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
             hasVoted={item.hasVoted}
             commentCount={item.commentCount}
           />
-          <span className="hidden min-w-[2.5rem] text-right tabular-nums sm:inline">
+          <RequestTagPills tags={item.tags} boardName={item.boardName} />
+          <span className="hidden w-12 text-right text-[11px] tabular-nums sm:inline">
             {publishedLabel}
           </span>
           <div className="relative">
-            <Avatar className="size-6 bg-muted ring-1 ring-border relative overflow-visible">
+            <Avatar className="size-6 bg-muted relative overflow-visible">
               <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
               <AvatarFallback>{getInitials(authorLabel)}</AvatarFallback>
               <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />

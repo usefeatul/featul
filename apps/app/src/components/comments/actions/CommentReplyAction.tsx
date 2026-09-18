@@ -14,7 +14,7 @@ interface CommentReplyButtonProps {
 
 export default function CommentReplyButton({ onClick, isActive, className }: CommentReplyButtonProps) {
   return (
-    <Toolbar size="sm" className="w-fit">
+    <Toolbar variant="soft" size="sm" className="w-fit">
       <Button
         onClick={onClick}
         type="button"

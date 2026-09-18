@@ -16,10 +16,11 @@ import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 
 const SIDEBAR_HOVER_ITEM_CLASS =
-  "hover:bg-muted dark:hover:bg-black/40 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40"
+  "hover:bg-muted dark:hover:bg-white/5 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40"
 
 export default function WorkspaceSwitcher({
   className = "",
@@ -60,7 +61,7 @@ export default function WorkspaceSwitcher({
             type="button"
             className={cn(
               sidebarRowClassName,
-              "cursor-pointer text-left transition-colors hover:bg-muted dark:hover:bg-black/40",
+              "cursor-pointer text-left transition-colors hover:bg-muted dark:hover:bg-white/5",
             )}
           >
             <span className={cn(sidebarLeadSlotClassName, "overflow-hidden rounded-md")}>
@@ -76,11 +77,11 @@ export default function WorkspaceSwitcher({
                   priority
                   unoptimized={currentLogo.startsWith("data:")}
                 />
-              ) : null}
+              ) : <FeatulLogoIcon className="size-6 text-primary" />}
             </span>
-            <div className="flex min-w-0 flex-col items-start gap-1 overflow-hidden">
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
-              <span className="text-xs text-accent capitalize leading-none">{wsInfo?.plan || current?.plan || "Free"}</span>
+              <span className="ml-auto shrink-0 text-[10px] font-medium uppercase tracking-wide text-accent">{wsInfo?.plan || current?.plan || "Free"}</span>
             </div>
             <SidebarBadge className="ml-auto shrink-0">
               <ChevronIcon className="size-3 text-accent" />

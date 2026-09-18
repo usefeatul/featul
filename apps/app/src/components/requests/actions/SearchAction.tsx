@@ -38,6 +38,8 @@ export default function SearchAction({
       currentSearch={currentSearch}
       className={className}
       buttonVariant="card"
+      showShortcut
+      showLabel
       showNoResults
       onSearchSubmit={runSearch}
       onClearSearch={() => runSearch("")}

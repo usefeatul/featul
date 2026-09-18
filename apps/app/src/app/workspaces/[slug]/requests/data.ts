@@ -40,9 +40,11 @@ export type RequestsPageData = {
 export async function loadRequestsPageData({
   slug,
   searchParams,
+  offset: requestedOffset,
 }: {
   slug: string
   searchParams?: RequestsSearchParams
+  offset?: number
 }): Promise<RequestsPageData | null> {
   const sp = searchParams ?? {}
 
@@ -68,7 +70,7 @@ export async function loadRequestsPageData({
   // Pagination
   const pageSize = PAGE_SIZE
   const page = parsePositiveIntSearchParam(sp.page)
-  const offset = (page - 1) * pageSize
+  const offset = requestedOffset ?? (page - 1) * pageSize
 
   // Process status filter (use defaults if none provided)
   const statusFilter = statusRaw.map(normalizeStatus)

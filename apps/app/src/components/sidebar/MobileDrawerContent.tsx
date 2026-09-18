@@ -9,8 +9,12 @@ import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
+import SearchAction from "@/components/requests/actions/SearchAction";
+import RoadmapSearchAction from "@/components/roadmap/actions/RoadmapSearchAction";
+import { sidebarSearchClassName } from "./styles";
 import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
+import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
 import { PlusIcon } from "@featul/ui/icons/plus";
 import { getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
 import SettingsNav from "@/components/settings/global/SettingsNav";
@@ -23,6 +27,7 @@ import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 import { cn } from "@featul/ui/lib/utils";
 
 export default function MobileDrawerContent({
+  boardItem,
   pathname,
   primaryNav,
   statusCounts,
@@ -35,6 +40,7 @@ export default function MobileDrawerContent({
   initialDeviceAccounts,
   onLinkClick,
 }: {
+  boardItem?: NavItem;
   pathname: string;
   primaryNav: NavItem[];
   statusCounts?: Record<string, number>;
@@ -71,7 +77,7 @@ export default function MobileDrawerContent({
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent>
+    <DrawerContent className="bg-muted/40 dark:bg-[#202020]">
       <VisuallyHidden>
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
@@ -88,6 +94,36 @@ export default function MobileDrawerContent({
             initialWorkspace={initialWorkspace}
             initialWorkspaces={initialWorkspaces}
           />
+          {pathname.split("/")[3] === "roadmap" ? (
+            <RoadmapSearchAction className={sidebarSearchClassName} />
+          ) : (
+            <SearchAction className={sidebarSearchClassName} />
+          )}
+          <button
+            type="button"
+            className={cn(
+              sidebarRowClassName,
+              "mt-4",
+              "text-foreground hover:bg-muted dark:hover:bg-white/5",
+            )}
+            onClick={() => setCreatePostOpen(true)}
+          >
+            <span className={sidebarLeadSlotClassName}>
+              <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
+            </span>
+            <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
+              Create Posts
+            </span>
+          </button>
+          {boardItem ? (
+            <SidebarItem
+              item={boardItem}
+              pathname={pathname}
+              mutedIcon
+              className="mt-1.5"
+              onClick={onLinkClick}
+            />
+          ) : null}
           <Timezone
             className="mt-2"
             initialTimezone={initialTimezone}
@@ -139,21 +175,6 @@ export default function MobileDrawerContent({
         )}
 
         <SidebarSection className="pb-8">
-          <button
-            type="button"
-            className={cn(
-              sidebarRowClassName,
-              "text-accent hover:bg-muted dark:hover:bg-black/40",
-            )}
-            onClick={() => setCreatePostOpen(true)}
-          >
-            <span className={sidebarLeadSlotClassName}>
-              <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
-            </span>
-            <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
-              Create Posts
-            </span>
-          </button>
           <CreatePostModal
             open={createPostOpen}
             onOpenChange={setCreatePostOpen}
@@ -170,10 +191,14 @@ export default function MobileDrawerContent({
               onClick={onLinkClick}
             />
           ))}
-          <UserDropdown
-            initialUser={initialUser}
-            initialDeviceAccounts={initialDeviceAccounts}
-          />
+            <div className="flex items-center gap-1">
+            <UserDropdown
+              className="min-w-0 flex-1"
+              initialUser={initialUser}
+              initialDeviceAccounts={initialDeviceAccounts}
+            />
+            <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] dark:bg-[#292929] dark:hover:bg-[#303030]" />
+          </div>
         </SidebarSection>
       </ScrollArea>
     </DrawerContent>

@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
+import { LoaderIcon } from "@featul/ui/icons/loader";
+import { Button } from "@featul/ui/components/button";
+import { useInfiniteRequests } from "@/hooks/useInfiniteRequests";
 import RequestItem from "./RequestItem";
 import type { RequestItemData } from "@/types/request";
 import EmptyRequests from "./EmptyRequests";
@@ -9,16 +12,14 @@ import { SelectableListShell } from "@/components/selection/SelectableListShell"
 import { useBulkDeleteRequests } from "@/hooks/useBulkDeleteList";
 import { useBulkStatusUpdate } from "@/hooks/useBulkStatusUpdate";
 import { useSelectableList } from "@/hooks/useSelectableList";
-import {
-  RequestListGroup,
-  groupRequestsByStatus,
-} from "./RequestListGroup";
 
 interface RequestListProps {
   items: RequestItemData[];
   workspaceSlug: string;
   linkBase?: string;
   initialTotalCount?: number;
+  initialOffset?: number;
+  variant?: "workspace" | "requests";
   initialIsSelecting?: boolean;
   initialSelectedIds?: string[];
 }
@@ -29,20 +30,22 @@ function RequestListBase(props: RequestListProps) {
     workspaceSlug,
     linkBase,
     initialTotalCount,
+    initialOffset = items.length,
+    variant = "requests",
     initialIsSelecting,
     initialSelectedIds,
   } = props;
-  const [listItems, setListItems] = useState<RequestItemData[]>(items);
+  const { listItems, setListItems, sentinelRef, hasMore, isLoading, error, loadMore } = useInfiniteRequests({
+    items,
+    workspaceSlug,
+    initialOffset,
+    initialTotalCount: initialTotalCount ?? items.length,
+    variant,
+  });
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const listKey = workspaceSlug;
   const itemIds = useMemo(() => listItems.map((item) => item.id), [listItems]);
-  const groups = useMemo(() => groupRequestsByStatus(listItems), [listItems]);
-  const itemIndexById = useMemo(() => {
-    const map = new Map<string, number>();
-    listItems.forEach((item, index) => map.set(item.id, index));
-    return map;
-  }, [listItems]);
+
 
   const { isPending, isRefetching, handleBulkDelete } = useBulkDeleteRequests({
     workspaceSlug,
@@ -61,10 +64,6 @@ function RequestListBase(props: RequestListProps) {
   });
 
   const isBusy = isPending || isStatusPending;
-
-  useEffect(() => {
-    setListItems(items);
-  }, [items]);
 
   const selection = useSelectableList({
     listKey,
@@ -85,9 +84,10 @@ function RequestListBase(props: RequestListProps) {
 
   return (
     <SelectableListShell
-      variant="nested"
+      variant="plain"
+      className="w-full"
       wrapList={false}
-      toolbarClassName="border-l-2 border-l-transparent"
+      toolbarClassName="px-2"
       isPending={isBusy}
       selection={selection}
       confirmOpen={confirmOpen}
@@ -104,43 +104,34 @@ function RequestListBase(props: RequestListProps) {
         />
       }
     >
-      <div className="min-w-0 py-1">
-        {groups.map((group, index) => {
-          const isCollapsed = Boolean(collapsed[group.status]);
-          const isLast = index === groups.length - 1;
-          return (
-            <RequestListGroup
-              key={group.status}
-              status={group.status}
-              count={group.items.length}
-              collapsed={isCollapsed}
-              last={isLast}
-              className={index > 0 ? "mt-0.5" : undefined}
-              onToggle={() =>
-                setCollapsed((current) => ({
-                  ...current,
-                  [group.status]: !current[group.status],
-                }))
-              }
-            >
-              <ul className="m-0 list-none divide-y divide-border/40 p-0 dark:divide-white/6">
-                {group.items.map((item) => (
-                  <RequestItem
-                    key={item.id}
-                    item={item}
-                    workspaceSlug={workspaceSlug}
-                    linkBase={linkBase}
-                    disableLink={selection.isSelectingForRender}
-                    {...selection.getItemSelectionProps(
-                      item.id,
-                      itemIndexById.get(item.id) ?? 0,
-                    )}
-                  />
-                ))}
-              </ul>
-            </RequestListGroup>
-          );
-        })}
+      <ul className="m-0 min-w-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/40 dark:[&>li+li]:border-white/6">
+        {listItems.map((item, index) => (
+          <RequestItem
+            key={item.id}
+            item={item}
+            workspaceSlug={workspaceSlug}
+            linkBase={linkBase}
+            disableLink={selection.isSelectingForRender}
+            {...selection.getItemSelectionProps(item.id, index)}
+          />
+        ))}
+      </ul>
+      <div
+        ref={sentinelRef}
+        className={hasMore || error ? "flex h-10 items-center justify-center px-4" : "h-px"}
+        aria-live="polite"
+        aria-busy={isLoading}
+      >
+        {error ? (
+          <Button variant="plain" size="sm" onClick={() => void loadMore()} aria-label="Loading failed. Retry loading requests">
+            Try again
+          </Button>
+        ) : isLoading ? (
+          <span role="status" className="text-accent">
+            <LoaderIcon className="size-5 animate-spin motion-reduce:animate-none" size={20} />
+            <span className="sr-only">Loading requests</span>
+          </span>
+        ) : null}
       </div>
     </SelectableListShell>
   );

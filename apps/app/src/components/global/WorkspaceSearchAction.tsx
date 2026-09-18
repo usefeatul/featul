@@ -40,6 +40,8 @@ type WorkspaceSearchActionProps = {
   className?: string;
   buttonVariant: "card" | "nav";
   placeholder?: string;
+  showLabel?: boolean;
+  showShortcut?: boolean;
   showNoResults?: boolean;
   onSearchSubmit: (value: string) => void;
   onResultSelect: (result: WorkspaceSearchResult) => void;
@@ -157,6 +159,8 @@ export function WorkspaceSearchAction({
   className = "",
   buttonVariant,
   placeholder = "Search requests…",
+  showLabel = false,
+  showShortcut = false,
   showNoResults = false,
   onSearchSubmit,
   onResultSelect,
@@ -200,6 +204,8 @@ export function WorkspaceSearchAction({
           ? document.activeElement
           : null;
       if (isEditableElement(target) || isEditableElement(activeElement)) return;
+
+      if (!buttonRef.current?.getClientRects().length) return;
 
       event.preventDefault();
       setOpen(true);
@@ -287,6 +293,12 @@ export function WorkspaceSearchAction({
         onClick={() => setOpen(true)}
       >
         <SearchIcon className="w-4 h-4" size={16} />
+        {showLabel ? <span className="min-w-0 truncate text-left font-normal">{currentSearch || placeholder}</span> : null}
+        {showShortcut ? (
+          <kbd aria-hidden="true" className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded border border-border/50 px-1 py-0.5 font-sans text-[10px] leading-none text-accent">
+            <span>{platformKey}</span><span>K</span>
+          </kbd>
+        ) : null}
       </Button>
 
       <CommandDialog

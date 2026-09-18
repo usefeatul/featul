@@ -149,7 +149,7 @@ export default function CommentForm({
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <Toolbar size="sm" className="w-fit">
+        <Toolbar variant="soft" size="sm" className="w-fit">
           <input
             ref={fileInputRef}
             type="file"
@@ -176,7 +176,7 @@ export default function CommentForm({
 
           {canMarkInternal && (
             <>
-              <ToolbarSeparator />
+              <ToolbarSeparator className="self-stretch bg-border/40 dark:bg-white/10" />
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -219,7 +219,7 @@ export default function CommentForm({
 
         <div className="flex items-center gap-2">
           {onCancel ? (
-            <Toolbar size="sm" className="w-fit">
+            <Toolbar variant="soft" size="sm" className="w-fit">
               <Button
                 type="button"
                 size="xs"
@@ -235,8 +235,8 @@ export default function CommentForm({
           <Button
             type="submit"
             size="xs"
-            variant="default"
-            className="bg-primary px-4 text-primary-foreground hover:bg-primary/90"
+            variant="outline"
+            className="h-8 bg-black/5 px-4 dark:bg-white/5"
             disabled={
               (!content.trim() && !uploadedImage) || isPending || uploadingImage
             }

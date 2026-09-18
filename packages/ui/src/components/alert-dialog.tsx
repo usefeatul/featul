@@ -5,7 +5,7 @@ import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 
 import { cn } from "@featul/ui/lib/utils"
 import { buttonVariants } from "@featul/ui/components/button"
-import { overlayDialogClass, overlayDialogInnerClass } from "@featul/ui/lib/overlay"
+import { subtleOverlayShellClass, subtleOverlayInnerClass } from "@featul/ui/lib/overlay"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 
 function AlertDialog({
@@ -50,7 +50,7 @@ function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="alert-dialog-inner"
-      className={cn(overlayDialogInnerClass, "rounded-lg px-4 py-3", className)}
+      className={cn(subtleOverlayInnerClass, "px-4 py-3", className)}
       {...props}
     />
   )
@@ -70,8 +70,9 @@ function AlertDialogContent({
       <BaseAlertDialog.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          overlayDialogClass,
-          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none sm:max-w-sm",
+          subtleOverlayShellClass,
+          "p-2",
+          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-md duration-200 outline-none sm:max-w-sm",
           className
         )}
         {...props}

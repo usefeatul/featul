@@ -68,8 +68,9 @@ export default function MobileSidebar({
   return (
     <div className={cn("lg:hidden", className)}>
       <Drawer direction="right" open={open} onOpenChange={setOpen}>
-        <MobileBottomBar items={isSettings ? settingsNav : isAccount ? accountNav : middleNav} />
+        <MobileBottomBar items={isSettings ? settingsNav : isAccount ? accountNav : middleNav.filter((item) => item.label !== "My Board")} />
         <MobileDrawerContent
+          boardItem={middleNav.find((item) => item.label === "My Board")}
           pathname={pathname}
           primaryNav={primaryNav}
           statusCounts={statusCounts ?? undefined}

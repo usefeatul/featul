@@ -7,10 +7,10 @@ import { toast } from "sonner";
 
 
 
-export function RequestShareAction() {
+export function RequestShareAction({ url: shareUrl, title: shareTitle, className }: { url?: string; title?: string; className?: string } = {}) {
   const handleShare = async () => {
-    const url = window.location.href;
-    const title = document.title;
+    const url = shareUrl || window.location.href;
+    const title = shareTitle || document.title;
 
     if (navigator.share) {
       try {
@@ -19,7 +19,8 @@ export function RequestShareAction() {
           url,
         });
       } catch (err) {
-        console.error("Error sharing:", err);
+        if (err instanceof Error && err.name === "AbortError") return;
+        toast.error("Could not share this link. Please try again.");
       }
     } else {
       try {
@@ -33,9 +34,9 @@ export function RequestShareAction() {
   };
 
   return (
-    <PopoverListItem onClick={handleShare}>
+    <PopoverListItem onClick={handleShare} className={className}>
+      <ShareIcon className="size-4" />
       <span className="text-sm">Share</span>
-      <ShareIcon className="ml-auto size-4 text-muted-foreground" />
     </PopoverListItem>
   );
 }

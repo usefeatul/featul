@@ -109,7 +109,7 @@ function TooltipContent({
 					<div
 						className={cn(
 							overlayInnerClass,
-							"bg-black px-2 py-1.5 text-sm leading-relaxed text-white whitespace-normal wrap-break-word dark:bg-white dark:text-zinc-900",
+							"bg-black px-1.5 py-1 text-[11px] leading-normal text-white whitespace-normal wrap-break-word dark:bg-white dark:text-zinc-900",
 							className,
 						)}
 					>

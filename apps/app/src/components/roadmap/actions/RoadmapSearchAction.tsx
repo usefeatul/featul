@@ -39,6 +39,8 @@ export default function RoadmapSearchAction({
       className={className}
       buttonVariant="card"
       placeholder="Search roadmap…"
+      showShortcut
+      showLabel
       showNoResults
       onSearchSubmit={runSearch}
       onClearSearch={() => runSearch("")}

@@ -16,7 +16,6 @@ export const WORKSPACE_SHORTCUTS_OPEN_EVENT = "workspace-shortcuts:open";
 
 export const WORKSPACE_SHORTCUT_GROUP_ORDER = [
   "Global workspace",
-  "Sidebar",
   "Lists and bulk actions",
   "Request detail",
   "Roadmap navigation",
@@ -73,34 +72,6 @@ export const WORKSPACE_SHORTCUTS: WorkspaceShortcut[] = [
       { label: "Mac", keys: ["Command", "M"] },
       { label: "Windows", keys: ["Ctrl", "M"] },
     ],
-  },
-  {
-    id: "open-roadmap",
-    group: "Sidebar",
-    title: "Open Roadmap",
-    description: "Navigate to the roadmap view while the desktop sidebar is hovered or focused.",
-    bindings: [{ keys: ["R"] }],
-  },
-  {
-    id: "open-changelog",
-    group: "Sidebar",
-    title: "Open Changelog",
-    description: "Navigate to the changelog while the desktop sidebar is hovered or focused.",
-    bindings: [{ keys: ["C"] }],
-  },
-  {
-    id: "open-members",
-    group: "Sidebar",
-    title: "Open Members",
-    description: "Navigate to the members page while the desktop sidebar is hovered or focused.",
-    bindings: [{ keys: ["M"] }],
-  },
-  {
-    id: "open-board",
-    group: "Sidebar",
-    title: "Open My Board",
-    description: "Open the public board while the desktop sidebar is hovered or focused.",
-    bindings: [{ keys: ["B"] }],
   },
   {
     id: "toggle-bulk-selection",

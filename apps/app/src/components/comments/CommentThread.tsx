@@ -4,7 +4,6 @@ import AnimatedReplies from "./AnimatedReplies"
 import CommentItem from "./CommentItem"
 import { updateCommentCollapseState } from "@/lib/comments.actions"
 import type { CommentSurface } from "@/lib/comment/shared"
-import { cn } from "@featul/ui/lib/utils"
 
 interface CommentThreadProps {
   postId: string
@@ -87,6 +86,7 @@ interface ThreadItemProps {
   currentUserId?: string | null
   onUpdate?: () => void
   depth?: number
+  isLast?: boolean
   collapsedIds: Set<string>
   onToggleCollapse: (id: string) => void
   workspaceSlug?: string
@@ -100,6 +100,7 @@ function ThreadItem({
   currentUserId,
   onUpdate,
   depth = 0,
+  isLast = false,
   collapsedIds,
   onToggleCollapse,
   workspaceSlug,
@@ -111,14 +112,13 @@ function ThreadItem({
   const hasReplies = replies.length > 0
 
   return (
-    <div
-      className={cn(
-        "relative",
-        depth === 0 &&
-          "border-b border-border/60 last:border-b-0 dark:border-b-white/10",
-      )}
-    >
-      <div className="px-4 py-3">
+    <div className="relative">
+      {depth > 0 ? <>
+        {!isLast ? <span aria-hidden="true" className="pointer-events-none absolute bottom-0 left-1.5 top-0 border-l border-border/70 dark:border-white/15" /> : null}
+        <span aria-hidden="true" className="pointer-events-none absolute left-1.5 top-0 h-7 w-2.5 rounded-bl-md border-b border-l border-border/70 dark:border-white/15" />
+      </> : null}
+      <div className="relative px-4 py-3">
+        {hasReplies && !isCollapsed ? <span aria-hidden="true" className="pointer-events-none absolute bottom-0 left-[30px] top-[42px] border-l border-border/70 dark:border-white/15" /> : null}
         <CommentItem
           comment={comment}
           currentUserId={currentUserId}
@@ -135,8 +135,8 @@ function ThreadItem({
       </div>
 
       {hasReplies && (
-        <AnimatedReplies isOpen={!isCollapsed}>
-          {replies.map((reply) => (
+        <AnimatedReplies isOpen={!isCollapsed} className="ml-6">
+          {replies.map((reply, index) => (
             <ThreadItem
               key={reply.id}
               comment={reply}
@@ -144,6 +144,7 @@ function ThreadItem({
               currentUserId={currentUserId}
               onUpdate={onUpdate}
               depth={depth + 1}
+              isLast={index === replies.length - 1}
               collapsedIds={collapsedIds}
               onToggleCollapse={onToggleCollapse}
               workspaceSlug={workspaceSlug}

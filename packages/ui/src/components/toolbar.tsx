@@ -24,6 +24,7 @@ const toolbarVariants = cva("flex items-stretch overflow-visible", {
         variant: {
             default: toolbarShellClass,
             plain: "rounded-xl border border-border",
+            soft: "h-8 items-center overflow-hidden rounded-md border border-border/40 bg-black/5 dark:border-white/8 dark:bg-white/5",
         },
         size: {
             default: "",
@@ -40,7 +41,7 @@ const Toolbar = React.forwardRef<
     HTMLDivElement,
     React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof toolbarVariants>
 >(({ className, size, variant = "default", children, ...props }, ref) => {
-    const isNested = variant !== "plain"
+    const isNested = variant === "default"
 
     return (
         <div

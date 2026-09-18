@@ -34,6 +34,8 @@ type UseRequestMultiSelectFilterOptions = {
   filterKey: MultiSelectFilterKey;
   popoverKey: string;
   values: string[];
+  query?: string;
+  onQueryChange?: (query: string) => void;
 };
 
 type RequestMultiSelectFilterProps = {
@@ -56,10 +58,13 @@ export function useRequestMultiSelectFilter({
   filterKey,
   popoverKey,
   values,
+  query,
+  onQueryChange,
 }: UseRequestMultiSelectFilterOptions) {
   const router = useRouter();
   const pathname = usePathname() || "/";
-  const sp = useSearchParams();
+  const routeParams = useSearchParams();
+  const sp = React.useMemo(() => new URLSearchParams(query ?? routeParams.toString()), [query, routeParams]);
   const [open, setOpen] = useFilterPopover(popoverKey);
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname]);
 
@@ -82,11 +87,13 @@ export function useRequestMultiSelectFilter({
         tag: string[];
       }>);
 
-      React.startTransition(() => {
-        router.push(href, { scroll: false });
-      });
+      if (onQueryChange) {
+        onQueryChange(href.split("?")[1] || "");
+      } else {
+        React.startTransition(() => router.push(href, { scroll: false }));
+      }
     },
-    [filterKey, router, slug, sp],
+    [filterKey, router, slug, sp, onQueryChange],
   );
 
   const toggle = React.useCallback(

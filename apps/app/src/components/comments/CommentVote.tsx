@@ -164,7 +164,7 @@ export default function CommentVote({
   }
 
   return (
-    <Toolbar size="sm" className="w-fit">
+    <Toolbar variant="soft" size="sm" className="w-fit">
       <Button
         type="button"
         variant="plain"
@@ -196,7 +196,7 @@ export default function CommentVote({
         </AnimatePresence>
       </Button>
 
-      <ToolbarSeparator />
+      <ToolbarSeparator className="self-stretch bg-border/40 dark:bg-white/10" />
 
       <Button
         type="button"

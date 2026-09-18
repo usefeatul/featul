@@ -22,6 +22,7 @@ import { cn } from "@featul/ui/lib/utils"
 
 interface CommentListProps {
   postId: string
+  plain?: boolean
   initialCount?: number
   workspaceSlug?: string
   surface?: CommentSurface
@@ -33,6 +34,7 @@ interface CommentListProps {
 
 export default function CommentList({
   postId,
+  plain = false,
   initialCount: _initialCount = 0,
   workspaceSlug,
   surface = "workspace",
@@ -86,7 +88,7 @@ export default function CommentList({
 
   return (
     <div className="space-y-4">
-      <div className={settingsCardShellClass}>
+      <div className={plain ? "pt-2" : settingsCardShellClass}>
         <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
@@ -99,7 +101,7 @@ export default function CommentList({
             </span>
           </div>
         </header>
-        <div className={settingsCardInnerClass}>
+        <div className={plain ? "mt-3 rounded-md border border-border/40 bg-black/[0.02] p-3 dark:bg-white/[0.025]" : settingsCardInnerClass}>
           <CommentForm
             postId={postId}
             onSuccess={handleCommentSuccess}
@@ -108,7 +110,7 @@ export default function CommentList({
           />
         </div>
         {commentCount === 0 && !isLoading ? (
-          <div className={cn(settingsCardInnerClass, "mt-2 py-8 text-center")}>
+          <div className={cn(!plain && settingsCardInnerClass, "mt-2 py-8 text-center")}>
             <p className="text-sm text-accent">
               No comments yet. Be the first to comment!
             </p>
@@ -116,8 +118,8 @@ export default function CommentList({
         ) : null}
       </div>
       {commentCount > 0 ? (
-        <div className={cn(settingsCardShellClass, "pt-2")}>
-          <div className={cn(settingsCardInnerClass, "overflow-hidden p-0")}>
+        <div className={cn(!plain && settingsCardShellClass, "pt-2")}>
+          <div className={cn(!plain && settingsCardInnerClass, "overflow-hidden p-0")}>
             <CommentThread
               postId={postId}
               comments={comments}

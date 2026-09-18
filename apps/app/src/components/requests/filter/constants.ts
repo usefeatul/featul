@@ -3,12 +3,12 @@ import type { Transition } from "framer-motion";
 export const FILTER_ISLAND_EASE = [0.32, 0.72, 0, 1] as const;
 
 export const FILTER_ISLAND_MAX_WIDTH_CLASS =
-  "max-w-[min(32rem,calc(100vw-6rem))]";
+  "max-w-full";
 
-export const FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS = "min-w-[20rem]";
+export const FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS = "w-80 min-w-0";
 
 export const FILTER_ISLAND_SHELL_CLASS =
-  "cursor-pointer overflow-hidden rounded-xl border border-border bg-card p-1 text-foreground dark:border-white/10 dark:bg-black";
+  "cursor-pointer overflow-hidden rounded-md bg-black/5 text-foreground dark:bg-[#292929]";
 
 export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
 
@@ -22,13 +22,13 @@ export const FILTER_ISLAND_CHIP_CLASS =
   "inline-flex h-full min-w-fit cursor-pointer items-center gap-1.5 whitespace-nowrap px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_SHELL_CLASS =
-  "flex w-fit min-w-fit shrink-0 items-stretch rounded-xl border border-border bg-card p-0.5 text-foreground dark:border-white/10 dark:bg-black";
+  "flex w-fit min-w-0 max-w-full items-stretch rounded-md bg-black/5 text-foreground dark:bg-white/5";
 
 export const FILTER_ISLAND_CHIP_INNER_CLASS =
-  "flex h-6 min-h-6 min-w-fit items-stretch overflow-hidden rounded-md bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";
+  "flex h-6 min-h-6 min-w-0 items-stretch overflow-hidden rounded-md";
 
 export const FILTER_ISLAND_CONTENT_CLASS =
-  "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black";
+  "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-md";
 
 export const FILTER_ISLAND_INSET_X_CLASS = "px-2.5";
 

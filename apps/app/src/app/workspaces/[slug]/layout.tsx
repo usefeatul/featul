@@ -64,11 +64,11 @@ export default async function WorkspaceLayout({
   const serverNow = Date.now();
   return (
     <Container
-      className="min-h-screen lg:flex lg:gap-4 lg:px-6"
-      maxWidth="7xl"
+      className="workspace-shell fixed inset-0 flex h-dvh overflow-hidden overscroll-none bg-background dark:bg-[#191919]"
+      maxWidth="full"
       noPadding
     >
-      <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};}`}</style>
+      <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};} html:has(.workspace-shell),body:has(.workspace-shell){overflow:hidden;overscroll-behavior:none;}`}</style>
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
       <Sidebar
@@ -81,10 +81,12 @@ export default async function WorkspaceLayout({
         initialUser={session?.user}
         initialDeviceAccounts={deviceAccounts}
       />
-      <main className="flex min-h-screen w-full min-w-0 flex-col px-2 pb-10 sm:px-3 md:px-4 lg:min-h-0 lg:flex-1 lg:px-0 lg:pb-0">
+      <main className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden">
         <EditorHeaderProvider>
-          <WorkspaceHeader />
-          {children}
+          <WorkspaceHeader workspaceName={ws?.name ?? slug} />
+          <div data-workspace-scroll className="min-h-0 flex-1 overflow-y-auto overscroll-none px-4 pb-20 sm:px-8 lg:px-12 lg:pb-8 xl:px-16 has-[[data-request-detail]]:overflow-hidden lg:has-[[data-request-detail]]:pb-0">
+            {children}
+          </div>
         </EditorHeaderProvider>
       </main>
       <MobileSidebar
@@ -102,7 +104,7 @@ export default async function WorkspaceLayout({
         <Suspense fallback={null}>
           <WelcomeTourGate
             userId={userId}
-            workspaceName={ws.name}
+            workspaceName={ws?.name ?? slug}
             workspaceSlug={ws.slug}
           />
         </Suspense>

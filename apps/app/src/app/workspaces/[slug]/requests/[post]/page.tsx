@@ -1,3 +1,5 @@
+import { cookies } from "next/headers"
+import { REQUEST_PANEL_COOKIE } from "@/lib/request/panel"
 import { notFound } from "next/navigation"
 import RequestDetail from "@/components/requests/RequestDetail"
 import { resolveSearchParams } from "@/utils/search/params"
@@ -18,6 +20,8 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
   const { slug, post: postSlug } = await params
 
   const sp = await resolveSearchParams(searchParams)
+  const cookieStore = await cookies()
+  const initialPanelOpen = cookieStore.get(REQUEST_PANEL_COOKIE)?.value === "true"
 
   const data = await loadRequestDetailPageData({
     workspaceSlug: slug,
@@ -30,6 +34,7 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
   return (
     <RequestDetail
       post={data.post}
+      initialPanelOpen={initialPanelOpen}
       workspaceSlug={data.workspaceSlug}
       initialComments={data.initialComments}
       initialCollapsedIds={data.initialCollapsedIds}

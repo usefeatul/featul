@@ -13,7 +13,10 @@ import {
   PopoverSeparator,
 } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
+import { FilterIcon } from "@featul/ui/icons/filter";
 import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
+import { SORT_OPTIONS, type SortOrder } from "@/types/sort";
 import { LayersIcon } from "@featul/ui/icons/layers";
 import { TagIcon } from "@featul/ui/icons/tag";
 import { CalendarIcon } from "@featul/ui/icons/calendar";
@@ -27,7 +30,7 @@ import { SNOOZED_STATUS_KEY } from "@featul/api/shared/snooze";
 import { getSlugFromPath } from "@/config/nav";
 import { buildRequestsUrl } from "@/utils/request";
 import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters";
-import { filterToolbarButtonClass } from "@/utils/filter/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 import {
   fetchWorkspaceStatusCounts,
   workspaceQueryKeys,
@@ -38,7 +41,7 @@ import {
   useRequestMultiSelectFilter,
 } from "./MultiSelectFilter";
 
-type FilterView = "root" | "boards" | "status" | "tags";
+type FilterView = "root" | "boards" | "status" | "tags" | "sort";
 
 const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
@@ -63,25 +66,25 @@ type TagItem = {
   count?: number;
 };
 
-function MenuTrailing({ count }: { count: number }) {
-  return (
-    <span className="ml-auto flex items-center gap-1.5">
-      {count > 0 ? (
-        <span className="text-xs tabular-nums text-accent">{count}</span>
-      ) : null}
-      <ChevronRightIcon className="size-3.5 shrink-0 text-accent" size={14} />
-    </span>
-  );
+function MenuTrailing() {
+  return <ChevronRightIcon className="ml-auto size-3.5 shrink-0 text-accent" size={14} />;
 }
 
 export default function FiltersAction({
   className = "",
+  query,
+  onQueryChange,
+  showClear = false,
 }: {
   className?: string;
+  query?: string;
+  onQueryChange?: (query: string) => void;
+  showClear?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname() || "/";
-  const sp = useSearchParams();
+  const routeParams = useSearchParams();
+  const sp = React.useMemo(() => new URLSearchParams(query ?? routeParams.toString()), [query, routeParams]);
   const queryClient = useQueryClient();
   const slug = React.useMemo(() => getSlugFromPath(pathname), [pathname]);
   const [open, setOpen] = useFilterPopover("filters");
@@ -182,16 +185,22 @@ export default function FiltersAction({
     filterKey: "board",
     popoverKey: "filters-boards",
     values: boardValues,
+    query,
+    onQueryChange,
   });
   const statusFilter = useRequestMultiSelectFilter({
     filterKey: "status",
     popoverKey: "filters-status",
     values: statusValues,
+    query,
+    onQueryChange,
   });
   const tagFilter = useRequestMultiSelectFilter({
     filterKey: "tag",
     popoverKey: "filters-tags",
     values: tagValues,
+    query,
+    onQueryChange,
   });
 
   const staleCount = Number(statusCounts?.[STALE_STATUS_KEY] ?? 0);
@@ -215,6 +224,7 @@ export default function FiltersAction({
   ).length;
 
   const isActive =
+    filters.order !== "newest" ||
     filters.board.length > 0 ||
     filters.tag.length > 0 ||
     statusSelectionCount > 0 ||
@@ -264,11 +274,10 @@ export default function FiltersAction({
   const updateStatus = React.useCallback(
     (next: string[]) => {
       const href = buildRequestsUrl(slug, sp, { status: next, page: 1 });
-      React.startTransition(() => {
-        router.push(href, { scroll: false });
-      });
+      if (onQueryChange) onQueryChange(href.split("?")[1] || "");
+      else React.startTransition(() => router.push(href, { scroll: false }));
     },
-    [router, slug, sp],
+    [router, slug, sp, onQueryChange],
   );
 
   const toggleStatus = React.useCallback(
@@ -301,6 +310,13 @@ export default function FiltersAction({
     [updateStatus],
   );
 
+  const updateOrder = (order: SortOrder) => {
+    const href = buildRequestsUrl(slug, sp, { order, page: 1 });
+    if (onQueryChange) onQueryChange(href.split("?")[1] || "");
+    else React.startTransition(() => router.push(href, { scroll: false }));
+    handleOpenChange(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
@@ -308,30 +324,40 @@ export default function FiltersAction({
           type="button"
           variant="card"
           size="icon-sm"
-          aria-label="Filters"
+          aria-label="Filter and sort requests"
+          title="Filter and sort requests"
           aria-pressed={isActive}
-          className={filterToolbarButtonClass(isActive, className)}
+          className={cn(
+            className,
+            isActive && "bg-primary/30 text-primary ring-0 hover:bg-primary/40 hover:text-primary dark:bg-primary/30 dark:hover:bg-primary/40",
+          )}
         >
-          <ListFilterIcon className="size-4" size={16} />
+          <FilterIcon className="size-4" size={16} />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" list className="w-fit min-w-0">
         {view === "root" ? (
           <PopoverList>
+            <PopoverListItem onClick={() => setView("sort")}>
+              <ArrowUpDownIcon className="size-4 shrink-0" />
+              <span className="text-sm">Sort</span>
+              <MenuTrailing />
+            </PopoverListItem>
+            <PopoverSeparator />
             <PopoverListItem onClick={() => setView("boards")}>
               <LayersIcon className="size-4 shrink-0" size={16} />
               <span className="text-sm">Boards</span>
-              <MenuTrailing count={filters.board.length} />
+              <MenuTrailing />
             </PopoverListItem>
             <PopoverListItem onClick={() => setView("status")}>
               <ListFilterIcon className="size-4 shrink-0" size={16} />
               <span className="text-sm">Status</span>
-              <MenuTrailing count={statusSelectionCount} />
+              <MenuTrailing />
             </PopoverListItem>
             <PopoverListItem onClick={() => setView("tags")}>
               <TagIcon className="size-4 shrink-0" size={16} />
               <span className="text-sm">Tags</span>
-              <MenuTrailing count={filters.tag.length} />
+              <MenuTrailing />
             </PopoverListItem>
 
             {showStale || showLowInteraction || showSnoozed ? (
@@ -348,10 +374,7 @@ export default function FiltersAction({
               >
                 <CalendarIcon className="size-4 shrink-0" />
                 <span className="text-sm">Stale</span>
-                <span className="ml-auto text-xs tabular-nums text-accent">
-                  {staleCount}
-                </span>
-                {isStaleActive ? <span className="text-xs">✓</span> : null}
+                <span aria-hidden="true" className="ml-auto w-3 text-xs">{isStaleActive ? "✓" : null}</span>
               </PopoverListItem>
             ) : null}
 
@@ -371,12 +394,7 @@ export default function FiltersAction({
                   strokeWidth={2.25}
                 />
                 <span className="text-sm">Low Traction</span>
-                <span className="ml-auto text-xs tabular-nums text-accent">
-                  {lowInteractionCount}
-                </span>
-                {isLowInteractionActive ? (
-                  <span className="text-xs">✓</span>
-                ) : null}
+                <span aria-hidden="true" className="ml-auto w-3 text-xs">{isLowInteractionActive ? "✓" : null}</span>
               </PopoverListItem>
             ) : null}
 
@@ -390,10 +408,7 @@ export default function FiltersAction({
               >
                 <Clock className="size-4 shrink-0" strokeWidth={2.25} />
                 <span className="text-sm">Snoozed</span>
-                <span className="ml-auto text-xs tabular-nums text-accent">
-                  {snoozedCount}
-                </span>
-                {isSnoozedActive ? <span className="text-xs">✓</span> : null}
+                <span aria-hidden="true" className="ml-auto w-3 text-xs">{isSnoozedActive ? "✓" : null}</span>
               </PopoverListItem>
             ) : null}
           </PopoverList>
@@ -406,9 +421,26 @@ export default function FiltersAction({
                   ? "Boards"
                   : view === "status"
                     ? "Status"
-                    : "Tags"}
+                    : view === "sort"
+                      ? "Sort"
+                      : "Tags"}
               </span>
             </PopoverListBack>
+            {view === "sort" ? (
+              <PopoverList>
+                {SORT_OPTIONS.map(({ value, label }) => (
+                  <PopoverListItem
+                    key={value}
+                    role="menuitemradio"
+                    aria-checked={filters.order === value}
+                    onClick={() => updateOrder(value)}
+                  >
+                    <span className="text-sm">{label}</span>
+                    {filters.order === value ? <span className="ml-auto text-xs">✓</span> : null}
+                  </PopoverListItem>
+                ))}
+              </PopoverList>
+            ) : null}
             {view === "boards" ? (
               <RequestMultiSelectFilterList
                 items={boards.map((item) => ({
@@ -448,12 +480,7 @@ export default function FiltersAction({
                   id: item.id,
                   label: item.name,
                   value: item.slug,
-                  meta:
-                    typeof item.count === "number" ? (
-                      <span className="ml-auto text-xs tabular-nums text-accent">
-                        {item.count}
-                      </span>
-                    ) : undefined,
+
                 }))}
                 selected={tagFilter.selected}
                 isAllSelected={tagFilter.isAllSelected}
@@ -465,6 +492,21 @@ export default function FiltersAction({
             ) : null}
           </>
         )}
+        {showClear && isActive ? (
+          <>
+            <PopoverSeparator />
+            <PopoverList>
+              <PopoverListItem onClick={() => {
+                const href = buildRequestsUrl(slug, sp, { status: [], board: [], tag: [], order: "newest", page: 1 });
+                if (onQueryChange) onQueryChange(href.split("?")[1] || "");
+                else React.startTransition(() => router.push(href, { scroll: false }));
+                setView("root");
+              }}>
+                <span className="text-sm">Clear</span>
+              </PopoverListItem>
+            </PopoverList>
+          </>
+        ) : null}
       </PopoverContent>
     </Popover>
   );

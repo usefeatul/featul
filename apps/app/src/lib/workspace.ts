@@ -448,7 +448,7 @@ export async function getWorkspacePosts(
       ),
     )
     .where(and(...filters))
-    .orderBy(desc(post.isPinned), order)
+    .orderBy(desc(post.isPinned), order, desc(post.id))
     .limit(lim)
     .offset(off);
 

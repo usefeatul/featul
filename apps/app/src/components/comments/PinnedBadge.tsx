@@ -1,7 +1,8 @@
 "use client"
 
 import React from "react"
-import { OverlayChip } from "@featul/ui/components/overlay-chip"
+import { cn } from "@featul/ui/lib/utils"
+import { commentBadgeClass } from "./styles"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { PinIcon } from "@featul/ui/icons/pin"
 
@@ -9,13 +10,12 @@ export default function PinnedBadge({ className, size = 10 }: { className?: stri
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <OverlayChip
-          className={className}
-          innerClassName="bg-primary/10 text-primary dark:bg-primary/10"
+        <span
+          className={cn(commentBadgeClass, className)}
           aria-label="Pinned"
         >
-          <PinIcon width={size} height={size} className="text-primary" />
-        </OverlayChip>
+          <PinIcon width={size} height={size} className="text-accent" />
+        </span>
       </TooltipTrigger>
       <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1">
         Pinned

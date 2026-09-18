@@ -13,7 +13,7 @@ interface StaleMarkProps {
   className?: string
 }
 
-/** Invisible hit target on the row's left border — the border itself is colored amber when stale. */
+/** Compact age badge with the exact stale duration available on hover or focus. */
 export function StaleMark({ days, className }: StaleMarkProps) {
   const label = `Stale for ${days} day${days === 1 ? "" : "s"}`
 
@@ -25,10 +25,12 @@ export function StaleMark({ days, className }: StaleMarkProps) {
           aria-label={label}
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            "absolute inset-y-0 left-0 z-20 w-3 cursor-default",
+            "relative z-10 h-5 shrink-0 items-center rounded bg-amber-400 px-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950",
             className,
           )}
-        />
+        >
+          Stale {days >= 30 ? `${Math.floor(days / 30)}mo` : `${days}d`}
+        </button>
       </TooltipTrigger>
       <TooltipContent
         side="right"

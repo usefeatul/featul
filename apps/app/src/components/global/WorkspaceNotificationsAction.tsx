@@ -12,7 +12,7 @@ export default function WorkspaceNotificationsAction({
   return (
     <NotificationsBell
       linkMode="workspace"
-      side="bottom"
+      side="right"
       align="end"
       variant="card"
       size="icon-sm"

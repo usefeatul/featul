@@ -51,7 +51,7 @@ export default function CommentActions({
 
   return (
     <>
-      <Toolbar size="sm" className="w-fit">
+      <Toolbar variant="soft" size="sm" className="w-fit">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
