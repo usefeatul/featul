@@ -40,7 +40,7 @@ export function SortPopover({
     router.push(`${u.pathname}${q ? `?${q}` : ""}`)
   }
 
-  const label = order === "newest" ? "Newest" : order === "oldest" ? "Oldest" : "Most liked"
+  const label = order === "newest" ? "Newest" : order === "oldest" ? "Oldest" : "Most upvoted"
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,7 +65,7 @@ export function SortPopover({
             <span className="text-sm">Oldest</span>
           </PopoverListItem>
           <PopoverListItem onClick={() => go("likes")}> 
-            <span className="text-sm">Most liked</span>
+            <span className="text-sm">Most upvoted</span>
           </PopoverListItem>
         </PopoverList>
       </PopoverContent>

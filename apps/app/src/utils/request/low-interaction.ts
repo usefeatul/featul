@@ -25,7 +25,7 @@ export function getLowInteractionReferenceDate({
   return new Date(publishedAt || createdAt)
 }
 
-/** Days since submit when the post still has no extra likes or comments. */
+/** Days since submit when the post still has no extra upvotes or comments. */
 export function getRequestLowInteractionDays({
   roadmapStatus,
   publishedAt,

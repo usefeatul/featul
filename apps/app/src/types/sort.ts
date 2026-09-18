@@ -11,7 +11,7 @@ export interface SortOption {
 export const SORT_OPTIONS: SortOption[] = [
     { value: "newest", label: "Newest" },
     { value: "oldest", label: "Oldest" },
-    { value: "likes", label: "Most Liked" },
+    { value: "likes", label: "Most Upvoted" },
 ]
 
 /** Parse sort order with validation, defaulting to "newest" */

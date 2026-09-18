@@ -54,7 +54,7 @@ type SortableRoadmapItem = {
   createdAt: string
 }
 
-/** Sorts by likes or published/created date. */
+/** Sorts by upvotes or published/created date. */
 export function sortRoadmapItems<T extends SortableRoadmapItem>(
   items: T[],
   order: SortOrder,

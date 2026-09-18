@@ -111,7 +111,7 @@ function buildStalePostCondition(): SQL {
   ) as SQL;
 }
 
-/** Open posts submitted 5+ days ago with no extra likes and no comments. */
+/** Open posts submitted 5+ days ago with no extra upvotes and no comments. */
 function buildLowInteractionPostCondition(): SQL {
   return and(
     sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,

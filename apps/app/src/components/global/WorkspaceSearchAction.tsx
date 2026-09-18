@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Heart } from "lucide-react";
+import { ArrowBigUp } from "lucide-react";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { CommentsIcon } from "@featul/ui/icons/comments";
@@ -78,7 +78,7 @@ function SearchResultItem({
       </div>
       <div className="flex shrink-0 items-center gap-3 self-center text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1">
-          <Heart className="size-3.5 opacity-70" aria-hidden />
+          <ArrowBigUp className="size-3.5 opacity-70" aria-hidden />
           <span className="tabular-nums">{result.upvotes ?? 0}</span>
         </span>
         <span className="inline-flex items-center gap-1">

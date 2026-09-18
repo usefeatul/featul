@@ -36,12 +36,13 @@ export function UpvoteButton({
       className={cn(
         "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer group/vote",
         hasVoted
-          ? "text-red-500"
-          : "text-muted-foreground/70 hover:text-red-500/80",
+          ? "text-orange-500"
+          : "text-muted-foreground/70 hover:text-orange-500/80",
         className
       )}
       whileTap={{ scale: 0.97 }}
       aria-pressed={hasVoted}
+      aria-label={hasVoted ? "Remove upvote" : "Upvote"}
     >
       <VoteIcon hasVoted={hasVoted} />
       <VoteCount upvotes={upvotes} />

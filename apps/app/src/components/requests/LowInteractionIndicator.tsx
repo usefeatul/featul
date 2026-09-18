@@ -14,9 +14,9 @@ interface LowInteractionMarkProps {
   className?: string
 }
 
-/** Compact row attribute for posts with no extra likes or comments after 5 days. */
+/** Compact row attribute for posts with no extra upvotes or comments after 5 days. */
 export function LowInteractionMark({ days, className }: LowInteractionMarkProps) {
-  const label = `No likes or comments for ${days} day${days === 1 ? "" : "s"}`
+  const label = `No upvotes or comments for ${days} day${days === 1 ? "" : "s"}`
 
   return (
     <Tooltip>

@@ -460,7 +460,7 @@ function CommentVoteButton({
       onClick={() => void handleVote()}
       disabled={pending}
       className={`inline-flex items-center gap-1 text-xs tabular-nums transition-colors disabled:cursor-not-allowed ${
-        hasVoted ? "text-red-500" : "text-[rgb(var(--widget-fg)/0.45)] hover:text-red-400"
+        hasVoted ? "text-orange-500" : "text-[rgb(var(--widget-fg)/0.45)] hover:text-orange-400"
       }`}
       aria-pressed={hasVoted}
       aria-label={hasVoted ? "Remove upvote" : "Upvote"}

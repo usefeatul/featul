@@ -6,7 +6,7 @@ import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
 import { ImageIcon } from "@featul/ui/icons/image";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { Camera, Check, Heart } from "lucide-react";
+import { ArrowBigUp, Camera, Check } from "lucide-react";
 import { ScreenshotAnnotator } from "./annotate";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
@@ -366,7 +366,7 @@ export function WidgetFeedbackCompose({
                     {item.title}
                   </span>
                   <span className="inline-flex shrink-0 items-center gap-1 tabular-nums text-xs text-[rgb(var(--widget-fg)/0.4)]">
-                    <Heart className="size-3.5" />
+                    <ArrowBigUp className="size-3.5" />
                     {item.upvotes || 0}
                   </span>
                 </button>
