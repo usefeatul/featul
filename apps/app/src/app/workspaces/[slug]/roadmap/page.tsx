@@ -44,15 +44,17 @@ export default async function RoadmapPage({ params, searchParams }: Props) {
   const initialCollapsedByStatus = readInitialCollapsedByStatus(slug);
 
   return (
-    <RoadmapBoard
-      workspaceSlug={slug}
-      items={items}
-      currentUser={
-        session?.user
-          ? { name: session.user.name, image: session.user.image }
-          : undefined
-      }
-      initialCollapsedByStatus={await initialCollapsedByStatus}
-    />
+    <section className="-mx-4 h-[calc(100dvh-3rem)] bg-background sm:-mx-8 lg:-mx-12 xl:-mx-16 dark:bg-[#191919]">
+      <RoadmapBoard
+        workspaceSlug={slug}
+        items={items}
+        currentUser={
+          session?.user
+            ? { name: session.user.name, image: session.user.image }
+            : undefined
+        }
+        initialCollapsedByStatus={await initialCollapsedByStatus}
+      />
+    </section>
   );
 }

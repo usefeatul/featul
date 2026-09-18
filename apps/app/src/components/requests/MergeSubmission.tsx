@@ -13,7 +13,6 @@ import { normalizeRoadmapStatus } from "@/lib/roadmap"
 import {
   buildRoadmapPreview,
   formatRoadmapCardDate,
-  getRoadmapStatusTone,
 } from "@/components/roadmap/card"
 import RoadmapRequestItemFooter from "@/components/roadmap/RoadmapRequestItemFooter"
 import { randomAvatarUrl } from "@/utils/avatar"
@@ -45,8 +44,6 @@ function MergePostPreview({
   const dateLabel =
     formatRoadmapCardDate(post.publishedAt || post.createdAt || post.mergedAt) ||
     "No date"
-  const tone = getRoadmapStatusTone(post.roadmapStatus)
-
   return (
     <div className="relative flex h-full min-h-[152px] w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
       <div className="min-h-0 flex-1 px-3.5 pb-3 pt-3.5">
@@ -61,7 +58,6 @@ function MergePostPreview({
         </p>
       </div>
       <RoadmapRequestItemFooter
-        toneFooterClass={tone.footer}
         authorLabel={authorLabel}
         avatarSrc={avatarSrc}
         boardLabel={boardLabel}

@@ -6,16 +6,10 @@ import { useReducedMotion } from "framer-motion";
 import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
-import { OverlayChip } from "@featul/ui/components/overlay-chip";
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
 import RoadmapEmptyColumn from "@/components/roadmap/RoadmapEmptyColumn";
 import { getRoadmapStatusTone } from "@/components/roadmap/card";
-import {
-  settingsCardInnerClass,
-  settingsCardShellClass,
-} from "@/components/settings/global/SectionCard";
 
 const COLUMN_MOTION_MS = 550;
 
@@ -25,7 +19,7 @@ export const ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS =
 export function roadmapColumnWidthClass(collapsed: boolean) {
   return collapsed
     ? "md:min-w-14 md:flex-[0_0_56px]"
-    : "md:min-w-[300px] md:flex-[1_1_0px] lg:min-w-[320px]";
+    : "md:min-w-[270px] md:flex-[1_1_0px] lg:min-w-[280px]";
 }
 
 export default function RoadmapColumn({
@@ -68,9 +62,11 @@ export default function RoadmapColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        settingsCardShellClass,
-        "h-full min-h-0 w-full transition-colors duration-200",
-        isOver && "border-green-500/70 dark:border-green-500/70",
+        "flex h-full min-h-0 w-full flex-col overflow-hidden text-foreground transition-colors duration-200",
+        collapsed
+          ? "rounded-lg bg-card dark:bg-[#232323]"
+          : "bg-transparent",
+        isOver && "bg-green-500/[0.025]",
       )}
     >
       <div
@@ -78,7 +74,7 @@ export default function RoadmapColumn({
           "cursor-pointer",
           collapsed
             ? "relative flex min-h-0 flex-1 flex-col items-center gap-2 px-2 py-3"
-            : "flex items-center justify-between px-2 py-2",
+            : "flex min-h-10 items-center justify-between px-2.5 py-2",
         )}
         role="button"
         tabIndex={0}
@@ -99,10 +95,7 @@ export default function RoadmapColumn({
               )}
             />
             <div className="flex flex-col items-center gap-2">
-              <StatusIcon
-                status={id}
-                className="block size-4.5 shrink-0"
-              />
+              <StatusIcon status={id} className="block size-4.5 shrink-0" />
               <span
                 className="text-xs font-medium leading-none tracking-wide [writing-mode:vertical-rl]"
                 style={{ color: tone.color }}
@@ -111,9 +104,9 @@ export default function RoadmapColumn({
               </span>
             </div>
             <div className="min-h-2 flex-1" />
-            <OverlayChip className="mx-auto" innerClassName="min-w-5 px-1.5">
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
               {count}
-            </OverlayChip>
+            </span>
           </>
         ) : (
           <>
@@ -147,9 +140,9 @@ export default function RoadmapColumn({
                   <FillPlusIcon className="size-4" size={16} />
                 </Button>
               ) : null}
-              <OverlayChip innerClassName="min-w-5 px-1.5">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
                 {count}
-              </OverlayChip>
+              </span>
               <MoveVerticalIcon
                 className={cn(
                   "size-4 text-accent transition-transform duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
@@ -167,18 +160,15 @@ export default function RoadmapColumn({
           instant
             ? "transition-none"
             : "transition-[grid-template-rows,opacity] duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none",
-          collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100",
+          collapsed
+            ? "grid-rows-[0fr] opacity-0"
+            : "grid-rows-[1fr] opacity-100",
         )}
         aria-hidden={collapsed}
         inert={!!collapsed}
       >
         <div className="flex h-full min-h-0 flex-col overflow-hidden">
-          <ul
-            className={cn(
-              settingsCardInnerClass,
-              "min-h-[260px] min-h-0 flex-1 space-y-2 overflow-y-auto p-2",
-            )}
-          >
+          <ul className="min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-transparent px-1.5 pb-2">
             {showContent ? children : null}
             {showContent && count === 0 && !isOver ? (
               <RoadmapEmptyColumn
@@ -188,16 +178,9 @@ export default function RoadmapColumn({
             ) : null}
             {isOver ? (
               <li
-                className={cn(
-                  overlayShellClass,
-                  "mt-2 h-16 border-dashed border-green-500/70 p-1",
-                )}
+                className="mt-2 h-14 rounded-lg border border-dashed border-green-500/60 bg-green-500/[0.035]"
                 aria-hidden
-              >
-                <div
-                  className={cn(overlayInnerClass, "h-full bg-green-500/[0.04]")}
-                />
-              </li>
+              />
             ) : null}
           </ul>
         </div>

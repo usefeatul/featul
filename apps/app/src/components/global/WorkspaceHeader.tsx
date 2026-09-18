@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
-import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
+import {
+  Toolbar,
+  ToolbarSeparator,
+  toolbarItemClass,
+} from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
@@ -25,7 +29,11 @@ function resolveTitle(segment: string): string {
   return found ? found.label : "";
 }
 
-export default function WorkspaceHeader({ workspaceName }: { workspaceName: string }) {
+export default function WorkspaceHeader({
+  workspaceName,
+}: {
+  workspaceName: string;
+}) {
   const pathname = usePathname() || "/";
   const parts = pathname.split("/").filter(Boolean);
   const idx = parts.indexOf("workspaces");
@@ -104,10 +112,7 @@ export default function WorkspaceHeader({ workspaceName }: { workspaceName: stri
             className="flex h-full items-center gap-2 px-3 text-sm font-medium text-muted-foreground"
           >
             <span>{action.label}</span>
-            <Switch
-              checked={action.checked}
-              onCheckedChange={action.onClick}
-            />
+            <Switch checked={action.checked} onCheckedChange={action.onClick} />
           </div>
         ))}
       {editorContext.actions.some((action) => action.type === "switch") &&
@@ -117,9 +122,7 @@ export default function WorkspaceHeader({ workspaceName }: { workspaceName: stri
       {editorContext.actions
         .filter((action) => action.type === "button")
         .flatMap((action, index) => [
-          index > 0 ? (
-            <ToolbarSeparator key={`sep-${action.key}`} />
-          ) : null,
+          index > 0 ? <ToolbarSeparator key={`sep-${action.key}`} /> : null,
           <Button
             key={action.key}
             variant="plain"
@@ -147,9 +150,12 @@ export default function WorkspaceHeader({ workspaceName }: { workspaceName: stri
 
   const showPageHeading = rest.length === 0 || rest.length === 1;
 
-  const isRequestList = rest.length === 0 || (rest[0] === "requests" && rest.length === 1);
+  const isRequestList =
+    rest.length === 0 || (rest[0] === "requests" && rest.length === 1);
 
-  if (isRequestList) {
+  const isCompactListHeader = isRequestList || showRoadmapActions;
+
+  if (isCompactListHeader) {
     return (
       <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6 dark:bg-[#191919]">
         <div className="flex min-h-12 items-center justify-between gap-3">
@@ -164,24 +170,50 @@ export default function WorkspaceHeader({ workspaceName }: { workspaceName: stri
   return (
     <header className="relative z-20 shrink-0 bg-background dark:bg-[#191919]">
       <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
-        <Link href={`/workspaces/${workspaceSlug}`} className="max-w-48 truncate rounded-md px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5">
+        <Link
+          href={`/workspaces/${workspaceSlug}`}
+          className="max-w-48 truncate rounded-md px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5"
+        >
           {workspaceName}
         </Link>
-        <span aria-hidden className="text-accent/50">/</span>
+        <span aria-hidden className="text-accent/50">
+          /
+        </span>
         <span className="truncate font-medium">{title}</span>
         {!showPageHeading ? <div className="ml-auto">{pageActions}</div> : null}
       </div>
-      <div className={cn("px-4 sm:px-8 lg:px-12 xl:px-16", showPageHeading ? "pt-5 sm:pt-9" : "pt-3")}>
+      <div
+        className={cn(
+          "px-4 sm:px-8 lg:px-12 xl:px-16",
+          showPageHeading ? "pt-5 sm:pt-9" : "pt-3",
+        )}
+      >
         {showPageHeading ? (
           <div className="pb-5 sm:pb-7">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              {title}
+            </h1>
             {settingsMeta?.desc || accountMeta?.desc ? (
-              <p className="mt-2 text-sm text-accent">{settingsMeta?.desc || accountMeta?.desc}</p>
+              <p className="mt-2 text-sm text-accent">
+                {settingsMeta?.desc || accountMeta?.desc}
+              </p>
             ) : null}
           </div>
         ) : null}
-        <div className={cn("flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2", !showPageHeading && "mb-5", isSettingsSection && "mx-auto w-full max-w-4xl")}>
-          {showFilterSummary ? <FilterDynamicIsland /> : <span className="text-sm text-accent">{settingsMeta?.desc || accountMeta?.desc || title}</span>}
+        <div
+          className={cn(
+            "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
+            !showPageHeading && "mb-5",
+            isSettingsSection && "mx-auto w-full max-w-4xl",
+          )}
+        >
+          {showFilterSummary ? (
+            <FilterDynamicIsland />
+          ) : (
+            <span className="text-sm text-accent">
+              {settingsMeta?.desc || accountMeta?.desc || title}
+            </span>
+          )}
           {showPageHeading ? pageActions : null}
         </div>
       </div>

@@ -21,7 +21,6 @@ import { useRoadmapCanvasNavigation } from "@/hooks/useRoadmapCanvasNavigation";
 import { useRoadmapFilters } from "@/hooks/useRoadmapFilters";
 import type { RequestItemData } from "@/types/request";
 import type { PostUser } from "@/types/post";
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 type Item = RequestItemData;
@@ -39,12 +38,8 @@ export default function RoadmapBoard({
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const [createPostStatus, setCreatePostStatus] = React.useState("pending");
-  const {
-    boardScrollRef,
-    setColumnRef,
-    jumpToStatus,
-    getCurrentStatusIndex,
-  } = useRoadmapCanvasNavigation(ROADMAP_STATUSES);
+  const { boardScrollRef, setColumnRef, jumpToStatus, getCurrentStatusIndex } =
+    useRoadmapCanvasNavigation(ROADMAP_STATUSES);
   const {
     sensors,
     items,
@@ -78,9 +73,9 @@ export default function RoadmapBoard({
   );
 
   return (
-    <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
+    <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col bg-background dark:bg-[#191919]">
       {hasActiveFilters ? (
-        <p className="text-xs text-accent">
+        <p className="shrink-0 border-b border-border/30 px-4 py-2 text-xs text-accent dark:border-white/5">
           Showing {totalVisible} of {totalItems} items
         </p>
       ) : null}
@@ -96,9 +91,9 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="min-h-0 w-full min-w-0 flex-1 overflow-x-auto bg-background pb-2 [scrollbar-width:thin] snap-x snap-mandatory md:snap-none"
+          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 overflow-x-auto bg-background px-3 pb-2 snap-x snap-mandatory md:snap-none dark:bg-[#191919]"
         >
-          <div className="flex h-full min-h-0 min-w-max items-stretch gap-4 md:min-w-full md:flex-row">
+          <div className="flex h-full min-h-0 min-w-max items-stretch gap-2 md:min-w-full md:flex-row">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
               const itemsForStatus = grouped[s];
               return (
@@ -153,15 +148,12 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className={cn(
-                overlayShellClass,
-                "pointer-events-none h-[152px] w-[min(320px,85vw)] p-1 shadow-lg",
-              )}
+              className="pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden rounded-lg bg-muted shadow-lg ring-1 ring-border/50 dark:bg-[#232323] dark:ring-white/[0.08]"
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}
             >
-              <div className={cn(overlayInnerClass, "flex h-full min-w-0 flex-col")}>
+              <div className="flex h-full min-w-0 flex-col">
                 <RoadmapRequestItem
                   item={toRoadmapCardItem(activeItem)}
                   workspaceSlug={workspaceSlug}

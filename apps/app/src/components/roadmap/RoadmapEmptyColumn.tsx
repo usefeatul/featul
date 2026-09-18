@@ -2,8 +2,6 @@
 
 import { Button } from "@featul/ui/components/button";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
-import { cn } from "@featul/ui/lib/utils";
 
 export default function RoadmapEmptyColumn({
   label,
@@ -13,13 +11,8 @@ export default function RoadmapEmptyColumn({
   onCreate?: () => void;
 }) {
   return (
-    <li className={cn(overlayShellClass, "flex min-h-[152px] flex-col p-1")}>
-      <div
-        className={cn(
-          overlayInnerClass,
-          "flex flex-1 flex-col items-center justify-center px-4 py-6 text-center",
-        )}
-      >
+    <li className="flex min-h-[108px] flex-col rounded-lg border border-dashed border-border/50 bg-muted/20 dark:border-white/[0.07] dark:bg-white/[0.02]">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
         <p className="text-xs text-accent">No items in {label}</p>
         {onCreate ? (
           <Button
