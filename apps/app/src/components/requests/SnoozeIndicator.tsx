@@ -43,7 +43,7 @@ export function SnoozeIndicator({
           aria-label={label}
         >
           <Clock className="size-3.5" strokeWidth={2.25} aria-hidden />
-          <span className="text-xs tabular-nums">{untilLabel}</span>
+          <span className="text-[10px] tabular-nums">{untilLabel}</span>
         </div>
       </TooltipTrigger>
       <TooltipContent

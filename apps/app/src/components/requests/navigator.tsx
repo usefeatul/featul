@@ -14,6 +14,7 @@ import StatusIcon from "./StatusIcon"
 import Attributes from "./attributes"
 import FiltersAction from "./actions/FiltersAction"
 import { PanelIcon } from "@featul/ui/icons/panel"
+import { LoaderIcon } from "@featul/ui/icons/loader"
 import { motion, useReducedMotion } from "framer-motion"
 
 export default function Navigator({ workspaceSlug, postId, open, onClose }: {
@@ -51,6 +52,7 @@ export default function Navigator({ workspaceSlug, postId, open, onClose }: {
     refetchOnWindowFocus: false,
   })
   const listItems = [...new Map((data?.pages.flatMap((page) => page.items) ?? []).map((item) => [item.id, item])).values()]
+  const isInitialLoading = !data && isFetching
   useLayoutEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = queryClient.getQueryData<number>(["request-navigator-scroll", workspaceSlug, query]) ?? 0
@@ -100,27 +102,36 @@ export default function Navigator({ workspaceSlug, postId, open, onClose }: {
         </label>
       </div>
       <div ref={scrollRef} onScroll={(event) => queryClient.setQueryData(["request-navigator-scroll", workspaceSlug, query], event.currentTarget.scrollTop)} data-workspace-scroll className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain pb-3" aria-busy={isFetching}>
-        <ul className="m-0 min-w-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/40 dark:[&>li+li]:border-white/6">
-          {listItems.map((item) => (
-            <li key={item.id}>
-              <div className={cn("relative px-4 py-3 transition-colors hover:bg-muted/50 dark:hover:bg-white/[0.04]", item.id === selectedId && "bg-muted/50 dark:bg-white/[0.04]")}>
-              <Link href={`/workspaces/${workspaceSlug}/requests/${item.slug}?${query}`} scroll={false} prefetch={true}
-                onClick={() => { setSelectedId(item.id); if (window.matchMedia("(max-width: 767px)").matches) onClose() }}
-                aria-current={item.id === selectedId ? "page" : undefined}
-                aria-label={item.title}
-                className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" />
-                <div className="pointer-events-none relative flex items-start gap-2">
-                  <span className="mt-0.5 shrink-0"><StatusIcon status={normalizeRoadmapStatus(item.roadmapStatus)} className="size-4" /></span>
-                  <span className="line-clamp-2 text-sm font-medium leading-5">{item.title}</span>
+        {isInitialLoading ? (
+          <div role="status" aria-label="Loading requests" className="flex h-full min-h-40 items-center justify-center text-muted-foreground">
+            <LoaderIcon className="size-4 animate-spin motion-reduce:animate-none" size={16} />
+          </div>
+        ) : (
+          <ul className="m-0 min-w-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/30 dark:[&>li+li]:border-white/5">
+            {listItems.map((item) => (
+              <li key={item.id}>
+                <div className={cn("relative px-3.5 py-2.5 transition-colors hover:bg-muted/30 dark:hover:bg-white/[0.025]", item.id === selectedId && "bg-muted/40 dark:bg-white/[0.035]")}>
+                <Link href={`/workspaces/${workspaceSlug}/requests/${item.slug}?${query}`} scroll={false} prefetch={true}
+                  onClick={() => { setSelectedId(item.id); if (window.matchMedia("(max-width: 767px)").matches) onClose() }}
+                  aria-current={item.id === selectedId ? "page" : undefined}
+                  aria-label={item.title}
+                  className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" />
+                  <div className="pointer-events-none relative flex items-start gap-2">
+                    <span className="flex w-5 shrink-0 justify-center pt-0.5">
+                      <StatusIcon status={normalizeRoadmapStatus(item.roadmapStatus)} className="size-3.5 text-foreground/70" />
+                    </span>
+                    <span className="line-clamp-2 text-[13px] font-medium leading-[18px] text-foreground/90">{item.title}</span>
+                  </div>
+                  <Attributes item={item} />
                 </div>
-                <Attributes item={item} />
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        )}
         {data && !hasNextPage && !listItems.length && !isFetching && !isError ? <p className="px-3 py-6 text-center text-sm text-accent">No requests found.</p> : null}
         <div ref={sentinelRef} className="flex min-h-8 items-center justify-center">
           {isError ? <Button variant="plain" size="sm" onClick={() => void (data ? fetchNextPage() : refetch())}>Retry</Button> : null}
+          {!isError && data && isFetching ? <LoaderIcon className="size-3.5 animate-spin text-muted-foreground motion-reduce:animate-none" size={14} /> : null}
         </div>
       </div>
       </div>

@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useTransition } from "react"
-import { ThumbsUp, ThumbsDown } from "lucide-react"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
@@ -16,6 +15,7 @@ import {
   type CommentListResponse,
   type CommentSurface,
 } from "@/lib/comment/shared"
+import { VoteIcon } from "@/components/upvote/VoteIcon"
 
 interface CommentVoteProps {
   commentId: string
@@ -173,14 +173,13 @@ export default function CommentVote({
         disabled={isPending}
         className={cn(
           toolbarItemClass,
-          "min-w-10 justify-center gap-1.5 px-2.5",
-          userVote === "upvote"
-            ? "text-green-600 dark:text-green-400"
-            : "text-accent hover:text-foreground"
+          "min-w-10 justify-center gap-1.5 px-2.5 text-orange-500 group/vote hover:text-orange-500 dark:text-orange-500 dark:hover:text-orange-500"
         )}
+        aria-pressed={userVote === "upvote"}
+        aria-label="Upvote comment"
         title="Upvote"
       >
-        <ThumbsUp className={cn("size-3.5", userVote === "upvote" && "fill-current")} />
+        <VoteIcon hasVoted={userVote === "upvote"} direction="up" />
         <AnimatePresence initial={false} mode="popLayout">
           {upvotes > 0 && (
             <motion.span
@@ -206,14 +205,13 @@ export default function CommentVote({
         disabled={isPending}
         className={cn(
           toolbarItemClass,
-          "min-w-10 justify-center gap-1.5 px-2.5",
-          userVote === "downvote"
-            ? "text-red-600 dark:text-red-400"
-            : "text-accent hover:text-foreground"
+          "min-w-10 justify-center gap-1.5 px-2.5 text-red-500 group/vote hover:text-red-500 dark:text-red-500 dark:hover:text-red-500"
         )}
+        aria-pressed={userVote === "downvote"}
+        aria-label="Downvote comment"
         title="Downvote"
       >
-        <ThumbsDown className={cn("size-3.5", userVote === "downvote" && "fill-current")} />
+        <VoteIcon hasVoted={userVote === "downvote"} direction="down" />
         <AnimatePresence initial={false} mode="popLayout">
           {downvotes > 0 && (
             <motion.span

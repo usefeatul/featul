@@ -70,23 +70,19 @@ function RequestBoardChip({ name }: { name: string }) {
 
 export function RequestTagPills({
   tags,
-  boardName,
   expanded = false,
 }: {
   tags?: TagSummary[]
-  boardName?: string | null
   expanded?: boolean
 }) {
-  const hasBoard = Boolean(boardName?.trim())
   const list = tags ?? []
-  if (!hasBoard && list.length === 0) return null
+  if (list.length === 0) return null
 
   const visible = expanded ? list : list.slice(0, 2)
   const extra = list.length - visible.length
 
   return (
-    <div className={expanded ? "contents" : "hidden min-w-0 shrink-0 items-center gap-1.5 xl:flex"}>
-      {hasBoard ? <RequestBoardChip name={boardName!} /> : null}
+    <div className={expanded ? "contents" : "hidden min-w-0 shrink-0 flex-row-reverse items-center gap-1.5 xl:flex"}>
       {visible.map((tag) => (
         <RequestMetaChip key={tag.id} title={tag.name}>
           <span className="size-1.5 shrink-0 rounded-full bg-primary" style={tag.color ? { backgroundColor: tag.color } : undefined} aria-hidden />
@@ -116,17 +112,17 @@ export function RequestEngagementChip({
   showComments?: boolean
 }) {
   return (
-    <span className="inline-flex shrink-0 items-center gap-1.5 tabular-nums">
-      <UpvoteButton
-        postId={postId}
-        upvotes={upvotes}
-        hasVoted={hasVoted}
-        className={cn(requestBadgeClass, "relative z-10 gap-1 aria-pressed:text-red-500 hover:bg-muted/80 dark:hover:bg-[#2c2c2c]")}
-      />
+    <span className="inline-flex shrink-0 flex-row-reverse items-center gap-1.5 tabular-nums">
       <span className={cn(requestBadgeClass, "gap-1", !showComments && "hidden sm:inline-flex")} title={`${commentCount} comments`}>
         <CommentsIcon aria-hidden className="size-3" />
         <span>{commentCount}</span>
       </span>
+      <UpvoteButton
+        postId={postId}
+        upvotes={upvotes}
+        hasVoted={hasVoted}
+        className={cn(requestBadgeClass, "relative z-10 gap-1 text-muted-foreground/70 hover:bg-muted/80 dark:hover:bg-[#2c2c2c]")}
+      />
     </span>
   )
 }
@@ -171,7 +167,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
     "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
   )
   const actionsClassName = cn(
-    "relative z-10 flex shrink-0 items-center gap-2 text-xs text-muted-foreground lg:gap-3",
+    "relative z-10 flex shrink-0 items-center gap-2 text-[10px] text-muted-foreground lg:gap-3",
     isSelectingMode && "pointer-events-none",
   )
   const publishedLabel = relativeTime(item.publishedAt ?? item.createdAt)
@@ -227,22 +223,32 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           ) : null}
         </span>
         <div className={actionsClassName}>
+          {staleDays != null ? (
+            <StaleMark
+              days={staleDays}
+              className="hidden h-5 rounded-md bg-muted/70 px-1.5 text-[10px] font-medium tracking-normal text-amber-700 sm:inline-flex dark:bg-white/[0.055] dark:text-amber-400"
+            />
+          ) : null}
+          <ReportIndicator count={item.reportCount || 0} />
+          <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
           {getActiveRequestFlags(item).map(({ key, label, Icon, iconClass }) => (
             <span key={key} title={label} aria-label={label} className="inline-flex shrink-0">
               <Icon className={cn("size-3.5", iconClass)} />
             </span>
           ))}
-          {staleDays != null ? <StaleMark days={staleDays} className="hidden sm:inline-flex" /> : null}
-          <ReportIndicator count={item.reportCount || 0} />
-          <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
+          <RequestTagPills tags={item.tags} />
           <RequestEngagementChip
             postId={item.id}
             upvotes={item.upvotes}
             hasVoted={item.hasVoted}
             commentCount={item.commentCount}
           />
-          <RequestTagPills tags={item.tags} boardName={item.boardName} />
-          <span className="hidden w-12 text-right text-[11px] tabular-nums sm:inline">
+          {item.boardName?.trim() ? (
+            <span className="hidden xl:inline-flex">
+              <RequestBoardChip name={item.boardName} />
+            </span>
+          ) : null}
+          <span className="hidden w-12 text-right text-[10px] tabular-nums sm:inline">
             {publishedLabel}
           </span>
           <div className="relative">

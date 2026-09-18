@@ -8,6 +8,7 @@ import { cn } from "@featul/ui/lib/utils"
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { client } from "@featul/api/client"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
+import { TagIcon } from "@featul/ui/icons/tag"
 import { toast } from "sonner"
 
 type Tag = {
@@ -108,6 +109,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
               aria-label="Manage tags"
               disabled={mutation.isPending}
             >
+              <TagIcon className="size-3.5 shrink-0 text-muted-foreground" size={14} />
               <span className="max-w-[140px] truncate">
                 {selectedIds.length > 0 ? `${selectedIds.length} tag${selectedIds.length > 1 ? "s" : ""}` : "Tags"}
               </span>
@@ -130,6 +132,11 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
                     disabled={mutation.isPending}
                     onClick={() => toggleTag(it.id)}
                   >
+                    <span
+                      className="size-1.5 shrink-0 rounded-full bg-primary"
+                      style={it.color ? { backgroundColor: it.color } : undefined}
+                      aria-hidden
+                    />
                     <span className="text-sm truncate">{it.name}</span>
                     {isSelected ? <span className="ml-auto text-xs">✓</span> : null}
                   </PopoverListItem>

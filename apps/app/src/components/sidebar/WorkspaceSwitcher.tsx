@@ -18,6 +18,7 @@ import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
+import { getPlanColorClassName } from "@/lib/plan";
 
 const SIDEBAR_HOVER_ITEM_CLASS =
   "hover:bg-muted dark:hover:bg-white/5 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40"
@@ -52,6 +53,7 @@ export default function WorkspaceSwitcher({
     setOpen(false);
     handleCreateNew();
   }, [handleCreateNew]);
+  const currentPlan = wsInfo?.plan || current?.plan || "free";
 
   return (
     <div className={cn(className)}>
@@ -81,7 +83,14 @@ export default function WorkspaceSwitcher({
             </span>
             <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
-              <span className="ml-auto shrink-0 text-[10px] font-medium uppercase tracking-wide text-accent">{wsInfo?.plan || current?.plan || "Free"}</span>
+              <span
+                className={cn(
+                  "ml-auto shrink-0 text-[10px] font-medium uppercase tracking-wide",
+                  getPlanColorClassName(currentPlan),
+                )}
+              >
+                {currentPlan}
+              </span>
             </div>
             <SidebarBadge className="ml-auto shrink-0">
               <ChevronIcon className="size-3 text-accent" />
@@ -134,7 +143,12 @@ export default function WorkspaceSwitcher({
                         )}
                         <div className="flex flex-col overflow-hidden">
                           <span className="truncate text-sm font-medium">{name}</span>
-                          <span className="text-xs text-muted-foreground capitalize">
+                          <span
+                            className={cn(
+                              "text-xs capitalize",
+                              getPlanColorClassName(w.plan || "free"),
+                            )}
+                          >
                             {w.plan || "Free"}
                           </span>
                         </div>

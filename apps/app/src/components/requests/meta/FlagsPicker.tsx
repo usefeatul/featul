@@ -20,6 +20,7 @@ import {
   REQUEST_FLAG_VISUALS,
   getActiveRequestFlags,
 } from "@/components/global/flag-visuals";
+import { FlagIcon } from "@featul/ui/icons/flag";
 
 export default function FlagsPicker({
   postId,
@@ -72,6 +73,7 @@ export default function FlagsPicker({
             aria-label="Manage flags"
             disabled={saving}
           >
+            <FlagIcon className="size-3.5 shrink-0 text-muted-foreground" />
             <span className="max-w-[140px] truncate">{label}</span>
           </Button>
         </PopoverTrigger>

@@ -81,6 +81,7 @@ export default function BoardPicker({
               className,
             )}
           >
+            <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
             <span>{value?.name || "Board"}</span>
           </Button>
         </PopoverTrigger>
@@ -93,6 +94,7 @@ export default function BoardPicker({
               aria-checked={value?.slug === b.slug}
               onClick={() => select(b.slug, b.name)}
             >
+              <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
               <span className="text-sm">{b.name}</span>
               {value?.slug === b.slug ? (
                 <span className="ml-auto text-xs">✓</span>

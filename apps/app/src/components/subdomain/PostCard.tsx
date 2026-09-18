@@ -93,7 +93,7 @@ function PostCardBase({
               postId={item.id}
               upvotes={item.upvotes}
               hasVoted={item.hasVoted}
-              className="text-xs hover:text-orange-500/80"
+              className="text-xs"
               onChange={(v) => onVoteChange?.(item.id, v.upvotes, v.hasVoted)}
             />
           </div>

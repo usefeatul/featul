@@ -34,10 +34,7 @@ export function UpvoteButton({
       onClick={handleVote}
       disabled={isPending}
       className={cn(
-        "inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer group/vote",
-        hasVoted
-          ? "text-orange-500"
-          : "text-muted-foreground/70 hover:text-orange-500/80",
+        "inline-flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground/70 transition-colors group/vote hover:text-orange-500/80 aria-pressed:text-orange-500",
         className
       )}
       whileTap={{ scale: 0.97 }}

@@ -112,7 +112,7 @@ export function RequestContent({
             postId={post.id}
             upvotes={post.upvotes}
             hasVoted={post.hasVoted}
-            className="text-xs hover:text-orange-500/80"
+            className="text-xs"
           />
           <CommentCounter
             postId={post.id}

@@ -1,23 +1,26 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowBigUp } from "lucide-react";
+import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import { cn } from "@featul/ui/lib/utils";
 
 interface VoteIconProps {
   hasVoted: boolean;
+  direction?: "up" | "down";
 }
 
-export function VoteIcon({ hasVoted }: VoteIconProps) {
+export function VoteIcon({ hasVoted, direction = "up" }: VoteIconProps) {
+  const Icon = direction === "down" ? ArrowBigDown : ArrowBigUp;
+
   return (
     <span className="relative inline-flex items-center">
       <motion.span
-        key={hasVoted ? "upvoted" : "not-upvoted"}
+        key={`${direction}-${hasVoted ? "selected" : "not-selected"}`}
         animate={{
           scale: hasVoted ? [1, 1.2, 1] : [1, 0.95, 1],
-          y: hasVoted ? [0, -2, 0] : 0,
+          y: hasVoted ? [0, direction === "up" ? -2 : 2, 0] : 0,
         }}
         transition={{ duration: 0.25 }}
       >
-        <ArrowBigUp
+        <Icon
           className={cn(
             "h-3.5 w-3.5",
             !hasVoted && "group-hover/vote:scale-110 transition-transform"
@@ -31,7 +34,7 @@ export function VoteIcon({ hasVoted }: VoteIconProps) {
           <>
             <motion.span
               key="burst"
-              className="absolute -top-1 -left-1 h-5 w-5 rounded-full bg-orange-500/25"
+              className="absolute -top-1 -left-1 h-5 w-5 rounded-full bg-current/25"
               initial={{ scale: 0, opacity: 0.9 }}
               animate={{ scale: 1.8, opacity: 0 }}
               exit={{ opacity: 0 }}
@@ -40,7 +43,7 @@ export function VoteIcon({ hasVoted }: VoteIconProps) {
             />
             <motion.span
               key="burst-2"
-              className="absolute -top-0.5 -left-0.5 h-7 w-7 rounded-full bg-orange-500/15"
+              className="absolute -top-0.5 -left-0.5 h-7 w-7 rounded-full bg-current/15"
               initial={{ scale: 0, opacity: 0.8 }}
               animate={{ scale: 2.3, opacity: 0 }}
               exit={{ opacity: 0 }}

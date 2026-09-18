@@ -68,6 +68,18 @@ export function getPlanLimits(plan: PlanKey | string): PlanLimits {
   return LIMITS[normalizePlan(String(plan))];
 }
 
+/** Text colour used to identify each plan consistently across the product. */
+export function getPlanColorClassName(plan: PlanKey | string): string {
+  switch (normalizePlan(String(plan))) {
+    case "starter":
+      return "text-blue-600 dark:text-blue-400";
+    case "professional":
+      return "text-orange-600 dark:text-orange-400";
+    default:
+      return "text-muted-foreground";
+  }
+}
+
 export function isIntegrationsAllowed(plan: PlanKey | string): boolean {
   return getPlanLimits(plan).allowIntegrations;
 }
