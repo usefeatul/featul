@@ -4,17 +4,13 @@ import { useQuery } from "@tanstack/react-query"
 import type { Member } from "@/types/team"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import Link from "next/link"
-import { format } from "date-fns"
 import { roleBadgeClass } from "@/components/settings/team/RoleBadge"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import RoleBadge from "@/components/global/RoleBadge"
 import { fetchWorkspaceMembers } from "@/lib/team/client"
 import { teamQueryKeys } from "@/lib/team/keys"
-import {
-  settingsCardInnerClass,
-  settingsCardShellClass,
-} from "@/components/settings/global/SectionCard"
+import { relativeTime } from "@/lib/time"
 
 interface Props {
   slug: string
@@ -36,53 +32,60 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
   const items = data
 
   return (
-    <section className={settingsCardShellClass}>
-      <div className={cn(settingsCardInnerClass, "overflow-hidden p-0")}>
-        {items.length === 0 && !isLoading ? (
-          <p className="px-4 py-8 text-center text-sm text-accent">No members</p>
-        ) : (
-          <ul className="m-0 list-none p-0">
-            {items.map((m) => (
-              <li
-                key={m.userId}
-                className="border-b border-border/60 last:border-b-0 dark:border-b-white/10"
-              >
-                <Link
-                  href={`/workspaces/${slug}/members/${m.userId}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
-                >
-                  <div className="relative shrink-0">
-                    <Avatar className="relative size-8 overflow-visible">
-                      <AvatarImage src={m.image || ""} alt={m.name || m.email || ""} />
-                      <AvatarFallback className="bg-muted text-xs text-muted-foreground">
-                        {getInitials(m.name || m.email || "")}
-                      </AvatarFallback>
-                      <RoleBadge role={m.role} isOwner={m.isOwner} />
-                    </Avatar>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-foreground">
-                      {m.name || m.email || m.userId}
-                    </div>
-                    <div className="truncate text-xs text-accent">{m.email}</div>
-                  </div>
-                  <span
-                    className={cn(
-                      "hidden h-6 shrink-0 rounded-sm px-2 text-xs capitalize leading-6 sm:inline-block",
-                      roleBadgeClass(m.role, m.isOwner),
-                    )}
-                  >
-                    {m.isOwner ? "owner" : m.role}
+    <section className="min-w-0" aria-busy={isLoading}>
+      {items.length === 0 && !isLoading ? (
+        <div className="px-4 py-16 text-center sm:px-6">
+          <p className="text-sm font-medium text-foreground">No members yet</p>
+          <p className="mt-1 text-xs text-accent">
+            Workspace members will appear here.
+          </p>
+        </div>
+      ) : (
+        <ul className="m-0 min-w-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/40 dark:[&>li+li]:border-white/6">
+          {items.map((member) => {
+            const name = member.name || member.email || member.userId
+            return (
+              <li key={member.userId} className="list-none">
+                <div className="group/member relative flex min-h-10 items-center gap-3 overflow-hidden px-4 py-1.5 transition-colors hover:bg-muted/50 sm:px-6 dark:hover:bg-white/[0.04]">
+                  <Link
+                    href={`/workspaces/${slug}/members/${member.userId}`}
+                    aria-label={`View ${name}`}
+                    className="absolute inset-0 z-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
+                  />
+                  <Avatar className="relative size-6 shrink-0 overflow-visible bg-muted">
+                    <AvatarImage src={member.image || ""} alt={name} />
+                    <AvatarFallback className="text-[10px] text-muted-foreground">
+                      {getInitials(name)}
+                    </AvatarFallback>
+                    <RoleBadge role={member.role} isOwner={member.isOwner} />
+                  </Avatar>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium leading-5 text-foreground">
+                    {name}
                   </span>
-                  <span className="w-16 shrink-0 text-right text-xs text-accent">
-                    {m.joinedAt ? format(new Date(m.joinedAt), "MMM d") : "—"}
-                  </span>
-                </Link>
+                  <div className="pointer-events-none relative z-10 flex shrink-0 items-center gap-2 text-[10px] text-muted-foreground lg:gap-3">
+                    {member.email && member.email !== name ? (
+                      <span className="hidden max-w-52 truncate md:inline">
+                        {member.email}
+                      </span>
+                    ) : null}
+                    <span
+                      className={cn(
+                        "hidden h-5 rounded-md px-2 text-[10px] capitalize leading-5 sm:inline-block",
+                        roleBadgeClass(member.role, member.isOwner),
+                      )}
+                    >
+                      {member.isOwner ? "owner" : member.role}
+                    </span>
+                    <span className="hidden w-12 text-right tabular-nums sm:inline">
+                      {member.joinedAt ? relativeTime(member.joinedAt) : "—"}
+                    </span>
+                  </div>
+                </div>
               </li>
-            ))}
-          </ul>
-        )}
-      </div>
+            )
+          })}
+        </ul>
+      )}
     </section>
   )
 }

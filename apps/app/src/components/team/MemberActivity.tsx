@@ -7,11 +7,6 @@ import { MemberActivityFilters } from "@/components/team/MemberActivityFilters"
 import type { ActivityCategory } from "@/components/team/activity/utils"
 import { useMemberActivityFilters } from "@/components/team/useMemberActivityFilters"
 import type { ActivityItem } from "@/types/activity"
-import {
-  settingsCardInnerClass,
-  settingsCardShellClass,
-} from "@/components/settings/global/SectionCard"
-import { cn } from "@featul/ui/lib/utils"
 
 interface MemberActivityProps {
   workspaceSlug: string
@@ -54,13 +49,13 @@ export function MemberActivity({
   const shouldShowLoadMore = Boolean(hasNextPage && hasVisibleActivity)
 
   return (
-    <section className={cn(settingsCardShellClass, "w-full min-w-0")}>
-      <header className="flex items-center py-2">
-        <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
+    <section className="w-full min-w-0">
+      <header className="flex items-center border-b border-border/50 pb-3 dark:border-white/8">
+        <h2 className="text-sm font-medium text-foreground">
           Activity
         </h2>
       </header>
-      <div className={cn(settingsCardInnerClass, "min-w-0")}>
+      <div className="min-w-0 pt-4">
         <MemberActivityFilters
           categoryFilter={categoryFilter}
           statusFilter={statusFilter}
@@ -90,10 +85,9 @@ export function MemberActivity({
         )}
 
         {shouldShowLoadMore ? (
-          <div className="mt-3 flex justify-center border-t border-border/60 pt-3 dark:border-white/10">
+          <div className="mt-4 flex justify-center border-t border-border/50 pt-4 dark:border-white/8">
             <Button
               variant="plain"
-              className="dark:border-white/10 dark:bg-black"
               onClick={onLoadMore}
               disabled={isFetchingNextPage}
             >

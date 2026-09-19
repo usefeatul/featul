@@ -161,7 +161,7 @@ export default function WorkspaceHeader({
     </div>
   ) : null;
 
-  if (rest[0] === "requests" && rest.length > 1) return null;
+  if ((rest[0] === "requests" && rest.length > 1) || isMemberDetail) return null;
   if (!title && !pageActions) return null;
 
   const showFilterSummary = showRequestsActions || showRoadmapActions;
@@ -175,7 +175,10 @@ export default function WorkspaceHeader({
     isRequestList ||
     showRoadmapActions ||
     showChangelogActions ||
-    showChangelogEditActions;
+    showChangelogEditActions ||
+    (isMembersSection && !isMemberDetail);
+  const showHeaderUtilityRow =
+    showFilterSummary || Boolean(pageActions) || !showPageHeading;
 
   if (isCompactListHeader) {
     return (
@@ -224,23 +227,25 @@ export default function WorkspaceHeader({
             ) : null}
           </div>
         ) : null}
-        <div
-          className={cn(
-            "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
-            !showPageHeading && "mb-5",
-            (isSettingsSection || isAccountSection) &&
-              "mx-auto w-full max-w-4xl",
-          )}
-        >
-          {showFilterSummary ? (
-            <FilterDynamicIsland />
-          ) : (
-            <span className="text-sm text-accent">
-              {settingsMeta?.desc || accountMeta?.desc || title}
-            </span>
-          )}
-          {showPageHeading ? pageActions : null}
-        </div>
+        {showHeaderUtilityRow ? (
+          <div
+            className={cn(
+              "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
+              !showPageHeading && "mb-5",
+              (isSettingsSection || isAccountSection) &&
+                "mx-auto w-full max-w-4xl",
+            )}
+          >
+            {showFilterSummary ? (
+              <FilterDynamicIsland />
+            ) : (
+              <span className="text-sm text-accent">
+                {settingsMeta?.desc || accountMeta?.desc || title}
+              </span>
+            )}
+            {showPageHeading ? pageActions : null}
+          </div>
+        ) : null}
       </div>
     </header>
   );
