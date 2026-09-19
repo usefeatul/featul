@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 import {
   Toolbar,
-  ToolbarSeparator,
   toolbarItemClass,
 } from "@featul/ui/components/toolbar";
 
@@ -67,6 +66,9 @@ export default function WorkspaceHeader({
     const t = resolveTitle(rest[0] ?? "");
     title = t || "";
   }
+  if (showChangelogEditActions) {
+    title = rest[1] === "new" ? "New changelog" : "Edit changelog";
+  }
 
   const pageActions = isMemberDetail ? (
     <Toolbar size="sm">
@@ -114,44 +116,39 @@ export default function WorkspaceHeader({
   ) : showChangelogEditActions &&
     editorContext &&
     editorContext.actions.length > 0 ? (
-    <Toolbar size="sm">
-      {editorContext.actions
-        .filter((action) => action.type === "switch")
-        .map((action) => (
+    <div className="ml-auto flex shrink-0 items-center gap-1">
+      {editorContext.actions.map((action) =>
+        action.type === "switch" ? (
           <div
             key={action.key}
-            className="flex h-full items-center gap-2 px-3 text-sm font-medium text-muted-foreground"
+            className="flex h-8 items-center gap-2 rounded-md bg-black/5 px-2.5 text-xs font-medium text-muted-foreground dark:bg-[#292929]"
           >
             <span>{action.label}</span>
             <Switch checked={action.checked} onCheckedChange={action.onClick} />
           </div>
-        ))}
-      {editorContext.actions.some((action) => action.type === "switch") &&
-      editorContext.actions.some((action) => action.type === "button") ? (
-        <ToolbarSeparator />
-      ) : null}
-      {editorContext.actions
-        .filter((action) => action.type === "button")
-        .flatMap((action, index) => [
-          index > 0 ? <ToolbarSeparator key={`sep-${action.key}`} /> : null,
+        ) : (
           <Button
             key={action.key}
             variant="plain"
-            size="xs"
+            size="icon-sm"
             onClick={action.onClick}
             disabled={action.disabled}
             aria-pressed={action.active || undefined}
+            aria-label={action.label || "Back to changelog"}
+            title={action.label || "Back to changelog"}
             className={cn(
-              toolbarItemClass,
-              "gap-2 px-3",
-              action.active && "bg-muted/40 text-foreground",
+              compactActionButtonClass,
+              action.active && "bg-black/[0.08] text-foreground dark:bg-[#303030]",
             )}
           >
-            {action.label}
             {action.icon}
-          </Button>,
-        ])}
-    </Toolbar>
+            <span className="sr-only">
+              {action.label || "Back to changelog"}
+            </span>
+          </Button>
+        ),
+      )}
+    </div>
   ) : null;
 
   if (rest[0] === "requests" && rest.length > 1) return null;
@@ -165,7 +162,10 @@ export default function WorkspaceHeader({
     rest.length === 0 || (rest[0] === "requests" && rest.length === 1);
 
   const isCompactListHeader =
-    isRequestList || showRoadmapActions || showChangelogActions;
+    isRequestList ||
+    showRoadmapActions ||
+    showChangelogActions ||
+    showChangelogEditActions;
 
   if (isCompactListHeader) {
     return (

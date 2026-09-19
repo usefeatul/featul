@@ -10,20 +10,17 @@ import { toast } from "sonner";
 import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";
 import { uploadFileToSignedUrl } from "@/lib/upload";
 import { cn } from "@featul/ui/lib/utils";
-import { ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 interface CoverImageUploaderProps {
     workspaceSlug: string;
     coverImage: string | null;
     onCoverImageChange: (url: string | null) => void;
-    variant?: "image" | "button";
 }
 
 export function CoverImageUploader({
     workspaceSlug,
     coverImage,
     onCoverImageChange,
-    variant = "button",
 }: CoverImageUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -68,61 +65,26 @@ export function CoverImageUploader({
         event.target.value = "";
     };
 
-    if (variant === "image") {
-        if (coverImage) {
-            return (
-                <img
-                    src={coverImage}
-                    alt="Cover"
-                    className="h-auto w-full object-cover"
-                />
-            );
-        }
-
-        return (
-            <label
-                className={cn(
-                    "flex min-h-48 cursor-pointer flex-col items-center justify-center gap-2 px-4 py-10 text-center transition-colors",
-                    isDragging ? "bg-muted/50" : "hover:bg-muted/40",
-                    isUploading && "pointer-events-none opacity-70",
-                )}
-                onDragOver={(event) => {
-                    event.preventDefault();
-                    setIsDragging(true);
-                }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={(event) => {
-                    event.preventDefault();
-                    setIsDragging(false);
-                    const file = event.dataTransfer.files?.[0];
-                    if (file) handleUpload(file);
-                }}
-            >
-                <input
-                    type="file"
-                    accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
-                    className="hidden"
-                    onChange={onFileChange}
-                    disabled={isUploading}
-                />
-                {isUploading ? (
-                    <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
-                ) : (
-                    <ImageIcon className="size-6 text-muted-foreground" />
-                )}
-                <div className="text-sm font-medium text-foreground">
-                    {isUploading ? "Uploading cover…" : "Add a cover image"}
-                </div>
-                <p className="max-w-sm text-xs text-accent">
-                    Click or drop an image here. PNG, JPEG, WebP, or GIF up to 5MB.
-                </p>
-            </label>
-        );
-    }
-
     return (
-        <>
-            <label className="flex h-full cursor-pointer">
+        <div
+            className={cn(
+                "group relative aspect-[2/1] max-h-96 min-h-48 w-full overflow-hidden rounded-2xl bg-black/[0.025] ring-1 ring-inset ring-black/[0.06] transition-colors dark:bg-white/[0.025] dark:ring-white/[0.06]",
+                isDragging && "bg-black/[0.055] dark:bg-white/[0.055]",
+                isUploading && "pointer-events-none opacity-70",
+            )}
+            onDragOver={(event) => {
+                event.preventDefault();
+                setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(event) => {
+                event.preventDefault();
+                setIsDragging(false);
+                const file = event.dataTransfer.files?.[0];
+                if (file) handleUpload(file);
+            }}
+        >
+            <label className="absolute inset-0 flex cursor-pointer items-center justify-center">
                 <input
                     type="file"
                     accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
@@ -130,36 +92,50 @@ export function CoverImageUploader({
                     onChange={onFileChange}
                     disabled={isUploading}
                 />
-                <Button
-                    variant="plain"
-                    size="icon"
-                    className={cn(toolbarItemClass, "px-3")}
-                    asChild
-                    disabled={isUploading}
-                    aria-label={coverImage ? "Change cover image" : "Add cover image"}
-                >
-                    {isUploading ? (
-                        <span><LoaderIcon className="size-4 animate-spin" /></span>
-                    ) : (
-                        <span><ImageIcon className="size-4 text-muted-foreground" /></span>
-                    )}
-                </Button>
+                {coverImage ? (
+                    <>
+                        <img
+                            src={coverImage}
+                            alt="Changelog cover"
+                            className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+                        />
+                        <span className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
+                        <span className="absolute bottom-3 right-3 inline-flex h-8 translate-y-1 items-center gap-1.5 rounded-md bg-black/65 px-2.5 text-xs font-medium text-white opacity-0 backdrop-blur-sm transition-all group-hover:translate-y-0 group-hover:opacity-100">
+                            <ImageIcon className="size-3.5" />
+                            Change cover
+                        </span>
+                    </>
+                ) : (
+                    <span className="flex flex-col items-center gap-2 px-6 text-center">
+                        {isUploading ? (
+                            <LoaderIcon className="size-5 animate-spin text-muted-foreground" />
+                        ) : (
+                            <span className="flex size-9 items-center justify-center rounded-lg bg-black/5 text-muted-foreground dark:bg-white/[0.06]">
+                                <ImageIcon className="size-4" />
+                            </span>
+                        )}
+                        <span className="text-sm font-medium text-foreground">
+                            {isUploading ? "Uploading cover…" : "Add a cover image"}
+                        </span>
+                        <span className="text-xs text-muted-foreground/70">
+                            Drop an image here or click to browse
+                        </span>
+                    </span>
+                )}
             </label>
             {coverImage ? (
-                <>
-                    <ToolbarSeparator />
-                    <Button
-                        type="button"
-                        variant="plain"
-                        size="icon"
-                        className={cn(toolbarItemClass, "px-3")}
-                        onClick={() => onCoverImageChange(null)}
-                        aria-label="Remove cover image"
-                    >
-                        <X className="size-3.5" />
-                    </Button>
-                </>
+                <Button
+                    type="button"
+                    variant="plain"
+                    size="icon-sm"
+                    className="absolute right-3 top-3 size-8 rounded-md border-0 bg-black/65 p-0 text-white opacity-0 shadow-none ring-0 before:hidden backdrop-blur-sm hover:bg-black/80 hover:text-white group-hover:opacity-100 focus-visible:opacity-100"
+                    onClick={() => onCoverImageChange(null)}
+                    aria-label="Remove cover image"
+                    title="Remove cover image"
+                >
+                    <X className="size-3.5" />
+                </Button>
             ) : null}
-        </>
+        </div>
     );
 }
