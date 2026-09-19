@@ -45,7 +45,7 @@ export function SelectionToolbar({
   return (
     <div
       className={cn(
-        "sticky top-0 z-10 flex h-10 w-full items-center gap-3 border-b border-border/70 bg-card/95 backdrop-blur-sm",
+        "sticky top-0 z-30 flex h-10 w-full items-center gap-3 border-b border-border/70 bg-card",
         className ?? "px-3 sm:px-4",
       )}
       role="toolbar"

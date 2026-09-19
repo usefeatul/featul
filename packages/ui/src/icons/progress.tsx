@@ -6,7 +6,7 @@ interface InProgressIconProps {
   color?: string
 }
 
-export const ProgressIcon: React.FC<InProgressIconProps> = ({ className = '', size = 18, color = '#3b82f6' }) => {
+export const ProgressIcon: React.FC<InProgressIconProps> = ({ className = '', size = 18, color = '#4d96e8' }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="-0.5 -0.5 16 16" className={className} opacity={0.8} style={{ color }}>
       <title>progress</title>

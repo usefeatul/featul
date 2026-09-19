@@ -14,7 +14,7 @@ export type WorkspaceBranding = {
 export async function getBrandingColorsBySlug(
   slug: string
 ): Promise<{ primary: string }> {
-  let primary = "#3b82f6";
+  let primary = "#4d96e8";
   const [row] = await db
     .select({ primaryColor: brandingConfig.primaryColor })
     .from(workspace)
@@ -29,7 +29,7 @@ export async function getBrandingColorsBySlug(
 export async function getBrandingBySlug(
   slug: string
 ): Promise<WorkspaceBranding> {
-  let primary = "#3b82f6";
+  let primary = "#4d96e8";
   let theme: "light" | "dark" | "system" = "system";
   let sidebarPosition: "left" | "right" | undefined;
   let layoutStyle: "compact" | "comfortable" | "spacious" | undefined;

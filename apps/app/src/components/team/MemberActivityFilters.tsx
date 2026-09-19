@@ -19,10 +19,10 @@ interface MemberActivityFiltersProps {
 
 function chipClass(active: boolean) {
   return cn(
-    "h-7 rounded-md px-3 text-xs dark:border-white/10 dark:bg-black",
+    "h-7 rounded-md border-0 bg-muted/55 px-3 text-xs shadow-none ring-0 dark:bg-white/[0.045]",
     active
-      ? "border-primary/40 text-foreground ring-1 ring-primary/20"
-      : "text-accent hover:text-foreground",
+      ? "text-foreground ring-1 ring-primary/35"
+      : "text-accent hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.075]",
   )
 }
 
@@ -37,9 +37,9 @@ export function MemberActivityFilters({
   onStatusChange,
 }: MemberActivityFiltersProps) {
   return (
-    <div className="mb-3 space-y-2">
-      <div className="space-y-1.5">
-        <div className="px-0.5 text-[11px] uppercase tracking-wide text-accent/80">Type</div>
+    <div className="mb-5 flex flex-wrap gap-x-8 gap-y-3">
+      <div className="min-w-0 space-y-2">
+        <div className="px-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-accent/80">Type</div>
         <div className={rowClass}>
           <div className="inline-flex min-w-max gap-1.5 pr-1">
             {CATEGORY_FILTERS.map((filter) => (
@@ -59,8 +59,8 @@ export function MemberActivityFilters({
       </div>
 
       {availableStatuses.length > 0 ? (
-        <div className="space-y-1.5">
-          <div className="px-0.5 text-[11px] uppercase tracking-wide text-accent/80">Status</div>
+        <div className="min-w-0 space-y-2">
+          <div className="px-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-accent/80">Status</div>
           <div className={rowClass}>
             <div className="inline-flex min-w-max gap-1.5 pr-1">
               <Button

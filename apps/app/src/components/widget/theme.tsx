@@ -4,11 +4,11 @@ import * as React from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 import { postToParent, useParentOrigin } from "./messaging";
 
-export const WIDGET_SURFACE_DARK = "#1a1a1c";
+export const WIDGET_SURFACE_DARK = "#202020";
 export const WIDGET_SURFACE_LIGHT = "#ffffff";
-export const WIDGET_SHELL_DARK = "#000000";
-export const WIDGET_SHELL_LIGHT = "#f4f4f5";
-export const WIDGET_ACCENT_FALLBACK = "#3b82f6";
+export const WIDGET_SHELL_DARK = "#121212";
+export const WIDGET_SHELL_LIGHT = "#eeeeeb";
+export const WIDGET_ACCENT_FALLBACK = "#4d96e8";
 
 export type WidgetThemeMode = "light" | "dark" | "auto";
 export type WidgetResolvedTheme = "light" | "dark";

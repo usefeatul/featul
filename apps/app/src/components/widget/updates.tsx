@@ -64,7 +64,7 @@ export function changelogBadge(
 
 export function UpdateMetaRow({
   entry,
-  accent = "#3b82f6",
+  accent = "#4d96e8",
   fallbackBadge = "Just Shipped",
   className = "",
 }: {
@@ -98,7 +98,7 @@ export function UpdateMetaRow({
 
 export function WidgetUpdates({
   entries,
-  accent = "#3b82f6",
+  accent = "#4d96e8",
   selectedId = null,
   onOpen,
   onBack: _onBack,

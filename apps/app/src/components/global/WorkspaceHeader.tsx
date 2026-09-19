@@ -182,7 +182,7 @@ export default function WorkspaceHeader({
 
   if (isCompactListHeader) {
     return (
-      <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6 dark:bg-[#191919]">
+      <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6">
         <div className="flex min-h-12 items-center justify-between gap-3">
           <h1 className="shrink-0 text-sm font-medium">{title}</h1>
           {showRequestsActions || showRoadmapActions ? (
@@ -195,7 +195,7 @@ export default function WorkspaceHeader({
   }
 
   return (
-    <header className="relative z-20 shrink-0 bg-background dark:bg-[#191919]">
+    <header className="relative z-20 shrink-0 bg-background">
       <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
         <Link
           href={`/workspaces/${workspaceSlug}`}

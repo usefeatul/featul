@@ -44,7 +44,7 @@ export default async function RoadmapPage({ params, searchParams }: Props) {
   const initialCollapsedByStatus = readInitialCollapsedByStatus(slug);
 
   return (
-    <section className="-mx-4 h-[calc(100dvh-3rem)] bg-background sm:-mx-8 lg:-mx-12 xl:-mx-16 dark:bg-[#191919]">
+    <section className="-mx-4 h-[calc(100dvh-3rem)] bg-background sm:-mx-8 lg:-mx-12 xl:-mx-16">
       <RoadmapBoard
         workspaceSlug={slug}
         items={items}

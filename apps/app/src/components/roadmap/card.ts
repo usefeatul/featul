@@ -15,7 +15,7 @@ const ROADMAP_STATUS_TONES: Record<RoadmapStatus, RoadmapStatusTone> = {
     color: "#f59e0b",
   },
   progress: {
-    color: "#3b82f6",
+    color: "#4d96e8",
   },
   completed: {
     color: "#15CF59",

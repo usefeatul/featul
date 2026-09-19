@@ -9,7 +9,7 @@ export type ColorOption = {
 /** Built-in primary/accent pairs for workspace branding. */
 export const BRANDING_COLORS: ColorOption[] = [
   { key: "orange", name: "Orange", primary: "#f97316", accent: "#fb923c" },
-  { key: "blue", name: "Blue", primary: "#3b82f6", accent: "#60a5fa" },
+  { key: "blue", name: "Blue", primary: "#4d96e8", accent: "#78b4f3" },
   { key: "indigo", name: "Indigo", primary: "#6366f1", accent: "#818cf8" },
   { key: "purple", name: "Purple", primary: "#a855f7", accent: "#c084fc" },
   { key: "pink", name: "Pink", primary: "#ec4899", accent: "#f472b6" },

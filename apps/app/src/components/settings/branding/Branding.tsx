@@ -46,7 +46,7 @@ export default function BrandingSection({
   initialConfig,
   initialWorkspaceName,
 }: BrandingSectionProps) {
-  const initialPrimary = initialConfig?.primaryColor || "#3b82f6";
+  const initialPrimary = initialConfig?.primaryColor || "#4d96e8";
   const [logoUrl, setLogoUrl] = React.useState(String(initialConfig?.logoUrl || ""));
   const [primaryColor, setPrimaryColor] = React.useState(initialPrimary);
   const [theme, setTheme] = React.useState<"light" | "dark" | "system">(
@@ -88,7 +88,7 @@ export default function BrandingSection({
         const conf0 = initialConfig || null;
         if (mounted && conf0) {
           setLogoUrl(conf0.logoUrl || "");
-          const currentPrimary = conf0.primaryColor || "#3b82f6";
+          const currentPrimary = conf0.primaryColor || "#4d96e8";
           setPrimaryColor(currentPrimary);
           if (conf0.theme === "light" || conf0.theme === "dark" || conf0.theme === "system") setTheme(conf0.theme);
           setHidePoweredBy(
@@ -110,7 +110,7 @@ export default function BrandingSection({
           const conf = await loadBrandingBySlug(slug);
           if (mounted && conf) {
             setLogoUrl(conf.logoUrl || "");
-            const currentPrimary = conf.primaryColor || "#3b82f6";
+            const currentPrimary = conf.primaryColor || "#4d96e8";
             setPrimaryColor(currentPrimary);
             if (conf.theme === "light" || conf.theme === "dark" || conf.theme === "system") setTheme(conf.theme);
             setHidePoweredBy(
@@ -253,7 +253,7 @@ export default function BrandingSection({
       });
       toast.success("Settings updated");
     } catch (error: unknown) {
-      if (canBranding) applyBrandPrimary(prevP || "#3b82f6");
+      if (canBranding) applyBrandPrimary(prevP || "#4d96e8");
       const message =
         error instanceof Error && error.message
           ? error.message

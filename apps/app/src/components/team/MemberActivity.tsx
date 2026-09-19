@@ -50,12 +50,12 @@ export function MemberActivity({
 
   return (
     <section className="w-full min-w-0">
-      <header className="flex items-center border-b border-border/50 pb-3 dark:border-white/8">
-        <h2 className="text-sm font-medium text-foreground">
+      <header className="mb-4 flex items-center border-b border-border/30 pb-3 dark:border-white/5">
+        <h2 className="text-base font-semibold text-foreground">
           Activity
         </h2>
       </header>
-      <div className="min-w-0 pt-4">
+      <div className="min-w-0">
         <MemberActivityFilters
           categoryFilter={categoryFilter}
           statusFilter={statusFilter}
@@ -85,7 +85,7 @@ export function MemberActivity({
         )}
 
         {shouldShowLoadMore ? (
-          <div className="mt-4 flex justify-center border-t border-border/50 pt-4 dark:border-white/8">
+          <div className="mt-5 flex justify-center pt-2">
             <Button
               variant="plain"
               onClick={onLoadMore}

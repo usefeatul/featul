@@ -17,7 +17,7 @@ interface MemberActivityDaySectionProps {
 }
 
 const sectionClassName =
-  "space-y-1.5 border-t border-border/60 pt-4 first:border-t-0 first:pt-0 dark:border-white/10"
+  "space-y-2 border-t border-border/25 pt-5 first:border-t-0 first:pt-0 dark:border-white/5"
 
 const headingClassName =
   "px-2 pt-1 font-heading text-[12px] font-semibold uppercase leading-none tracking-[0.16em] text-foreground"
@@ -66,7 +66,7 @@ export function MemberActivityDaySection({
     <section className={sectionClassName}>
       <div className={headingClassName}>{dayGroup.label}</div>
 
-      <ul className="w-full min-w-0 divide-y divide-border/60 dark:divide-white/10">
+      <ul className="w-full min-w-0 space-y-0.5">
         {dayGroup.rows.map((row) => {
           if (row.kind === "item") {
             return <MemberActivityItemRow key={row.key} item={row.item} href={row.href} />

@@ -8,4 +8,4 @@ export const sidebarSectionLabelClassName =
   "flex min-h-5 items-center gap-2 px-2 text-xs font-medium text-accent";
 
 export const sidebarSearchClassName =
-  "mt-3 h-8 w-full justify-start gap-2 rounded-md border-0 bg-black/5 px-3 text-sm text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] dark:bg-[#292929] dark:hover:bg-[#303030]";
+  "mt-3 h-8 w-full justify-start gap-2 rounded-md border-0 bg-sidebar-accent/75 px-3 text-sm text-accent shadow-none ring-0 before:hidden hover:bg-sidebar-accent";

@@ -26,7 +26,7 @@ export type WidgetRoadmapItem = {
 };
 
 const SECTIONS = [
-  { key: "progress", label: "In progress", status: "progress", color: "#3b82f6" },
+  { key: "progress", label: "In progress", status: "progress", color: "#4d96e8" },
   { key: "planned", label: "Planned", status: "planned", color: "#f59e0b" },
   { key: "completed", label: "Done", status: "completed", color: "#15CF59" },
 ] as const;

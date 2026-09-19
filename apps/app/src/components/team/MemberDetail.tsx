@@ -82,8 +82,8 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
   const memberName = member?.name || member?.email || userId
 
   return (
-    <section data-member-detail className="relative -mx-4 h-[calc(100dvh-5rem)] min-w-0 overflow-y-auto overscroll-contain sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16">
-      <header className="sticky top-0 z-20 flex min-h-12 items-center gap-2 bg-background px-4 text-sm sm:px-6 dark:bg-[#191919]">
+    <section data-member-detail className="relative -mx-4 flex h-[calc(100dvh-5rem)] min-w-0 flex-col overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16">
+      <header className="z-20 flex min-h-12 shrink-0 items-center gap-2 bg-background px-4 text-sm sm:px-6">
         <nav aria-label="Member navigation" className="min-w-0 flex-1">
           <ol className="flex min-w-0 items-center gap-2">
             <li className="shrink-0">
@@ -102,33 +102,33 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
         </nav>
       </header>
 
-      <div className="px-4 sm:px-8">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 pb-10 pt-5 sm:pt-7 lg:pt-8">
-          <MemberHeader member={member} userId={userId} stats={stats} />
+      <div className="min-h-0 flex-1 md:grid md:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_23rem]">
+        <div data-workspace-scroll className="h-full min-w-0 overflow-y-auto overscroll-contain px-4 sm:px-6 lg:px-8 xl:px-10">
+          <div className="flex w-full flex-col gap-8 pb-10 pt-5 sm:pt-7 lg:pt-8">
+            <MemberHeader member={member} userId={userId} stats={stats} />
 
-          <div className="md:hidden">
-            <Toolbar size="sm">
-              <Button
-                type="button"
-                variant="plain"
-                className={tabClass("activity")}
-                onClick={() => setMobileTab("activity")}
-              >
-                Activity
-              </Button>
-              <ToolbarSeparator />
-              <Button
-                type="button"
-                variant="plain"
-                className={tabClass("top-posts")}
-                onClick={() => setMobileTab("top-posts")}
-              >
-                Top posts
-              </Button>
-            </Toolbar>
-          </div>
+            <div className="md:hidden">
+              <Toolbar size="sm">
+                <Button
+                  type="button"
+                  variant="plain"
+                  className={tabClass("activity")}
+                  onClick={() => setMobileTab("activity")}
+                >
+                  Activity
+                </Button>
+                <ToolbarSeparator />
+                <Button
+                  type="button"
+                  variant="plain"
+                  className={tabClass("top-posts")}
+                  onClick={() => setMobileTab("top-posts")}
+                >
+                  Top posts
+                </Button>
+              </Toolbar>
+            </div>
 
-          <div className="grid items-start gap-8 md:grid-cols-[minmax(0,0.68fr)_minmax(16rem,0.32fr)]">
             <div className={cn("min-w-0", mobileTab === "activity" ? "block" : "hidden md:block")}>
               <MemberActivity
                 workspaceSlug={slug}
@@ -145,8 +145,8 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
             </div>
             <div
               className={cn(
-                "min-w-0 md:sticky md:top-16",
-                mobileTab === "top-posts" ? "block" : "hidden md:block",
+                "min-w-0 md:hidden",
+                mobileTab === "top-posts" ? "block" : "hidden",
               )}
             >
               <MemberTopPosts
@@ -157,6 +157,14 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
             </div>
           </div>
         </div>
+
+        <aside className="relative hidden h-full min-w-0 overflow-y-auto px-6 py-8 before:absolute before:bottom-0 before:left-0 before:top-6 before:w-px before:bg-border/40 md:block xl:px-8 dark:before:bg-white/8">
+          <MemberTopPosts
+            slug={slug}
+            topPosts={topPosts}
+            isLoading={isStatsLoading || isStatsFetching}
+          />
+        </aside>
       </div>
     </section>
   )

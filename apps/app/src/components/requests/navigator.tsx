@@ -77,7 +77,7 @@ export default function Navigator({ workspaceSlug, postId, open, onClose }: {
       initial={false}
       animate={{ width: open ? "var(--panel-width)" : 0, opacity: open ? 1 : 0 }}
       transition={{ duration: reduceMotion ? 0 : 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className={cn("absolute inset-y-0 left-0 z-30 overflow-hidden bg-background [--panel-width:100%] md:relative md:inset-auto md:shrink-0 md:[--panel-width:22rem] dark:bg-[#191919]", !open && "pointer-events-none")}
+      className={cn("absolute inset-y-0 left-0 z-30 overflow-hidden bg-background [--panel-width:100%] md:relative md:inset-auto md:shrink-0 md:[--panel-width:22rem]", !open && "pointer-events-none")}
     >
       <div className="flex h-full w-[var(--panel-width)] flex-col md:border-r md:border-border/50">
 

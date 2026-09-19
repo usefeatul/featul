@@ -226,10 +226,10 @@ export function ChangelogEditor({
     return (
         <div
             data-changelog-editor
-            className="relative min-h-[calc(100dvh-3rem)] bg-background dark:bg-[#191919]"
+            className="relative min-h-[calc(100dvh-3rem)] bg-background"
         >
             <article
-                className={`flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background transition-[padding] duration-200 dark:bg-[#191919] ${isAiOpen ? "lg:pr-[22rem]" : ""}`}
+                className={`flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background transition-[padding] duration-200 ${isAiOpen ? "lg:pr-[22rem]" : ""}`}
             >
                 <div className="mx-auto w-full max-w-4xl shrink-0 px-4 pt-6 sm:px-6 sm:pt-8">
                     <CoverImageUploader

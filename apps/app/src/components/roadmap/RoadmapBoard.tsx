@@ -73,7 +73,7 @@ export default function RoadmapBoard({
   );
 
   return (
-    <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col bg-background dark:bg-[#191919]">
+    <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col bg-background">
       {hasActiveFilters ? (
         <p className="shrink-0 border-b border-border/30 px-4 py-2 text-xs text-accent dark:border-white/5">
           Showing {totalVisible} of {totalItems} items
@@ -91,7 +91,7 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 overflow-x-auto bg-background px-3 pb-2 snap-x snap-mandatory md:snap-none dark:bg-[#191919]"
+          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 overflow-x-auto bg-background px-3 pb-2 snap-x snap-mandatory md:snap-none"
         >
           <div className="flex h-full min-h-0 min-w-max items-stretch gap-2 md:min-w-full md:flex-row">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {

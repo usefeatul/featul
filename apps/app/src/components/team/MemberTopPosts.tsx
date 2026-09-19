@@ -22,9 +22,9 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className }: MemberT
 
   return (
     <section className={cn("w-full min-w-0", className)}>
-      <header className="flex min-h-9 items-start justify-between gap-2 border-b border-border/50 pb-3 dark:border-white/8">
+      <header className="flex min-h-9 items-start justify-between gap-2 border-b border-border/30 pb-3 dark:border-white/5">
         <div className="min-w-0">
-          <h2 className="text-sm font-medium text-foreground">
+          <h2 className="text-base font-semibold text-foreground">
             Top posts
           </h2>
           <p className="mt-1 text-xs text-accent">Ranked by upvotes</p>
@@ -37,7 +37,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className }: MemberT
           </div>
         ) : null}
       </header>
-      <div className="overflow-hidden pt-2">
+      <div className="overflow-hidden pt-3">
         {isLoading && !hasPosts ? (
           <div className="px-4 py-8">
             <LoadingSpinner label="Loading top posts..." />
@@ -47,13 +47,10 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className }: MemberT
             No posts yet
           </div>
         ) : (
-          <ul className="m-0 list-none p-0">
+          <ul className="m-0 list-none space-y-1 p-0">
             {displayedPosts.map((p) => (
-              <li
-                key={p.id}
-                className="border-b border-border/40 last:border-b-0 dark:border-b-white/6"
-              >
-                <div className="flex items-center justify-between gap-3 py-2.5 text-xs transition-colors hover:bg-muted/30">
+              <li key={p.id}>
+                <div className="flex items-center justify-between gap-3 rounded-md px-2 py-2.5 text-xs transition-colors hover:bg-muted/40 dark:hover:bg-white/[0.035]">
                   <div className="flex min-w-0 flex-1 items-center gap-2">
                     {p.status ? (
                       <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" />

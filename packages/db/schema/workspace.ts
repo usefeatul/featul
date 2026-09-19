@@ -37,7 +37,7 @@ export const workspace = pgTable(
     .defaultNow()
     .$onUpdate(() => new Date()),
   logo: text("logo"), // URL to logo image
-  primaryColor: text("primary_color").default("#3b82f6"), // hex color
+  primaryColor: text("primary_color").default("#4d96e8"), // hex color
   theme: text("theme", { enum: ["light", "dark", "system"] }).default("system"),
   hideBranding: boolean("hide_branding").default(false), // "Powered by featul"
   widgetSecret: text("widget_secret").notNull(),

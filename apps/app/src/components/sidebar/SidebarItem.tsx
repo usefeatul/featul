@@ -53,14 +53,14 @@ function SidebarItem({
       {hovered ? (
         <motion.span
           layoutId="sidebar-hover-pill"
-          className="absolute inset-0 z-0 rounded-md bg-muted dark:bg-white/5"
+          className="absolute inset-0 z-0 rounded-md bg-sidebar-accent/70"
           transition={pillTransition(reduceMotion)}
         />
       ) : null}
       {indicator && active ? (
         <motion.span
           layoutId="sidebar-active-pill"
-          className="absolute inset-0 z-0 rounded-md bg-muted dark:bg-white/[0.07]"
+          className="absolute inset-0 z-0 rounded-md bg-sidebar-accent"
           transition={pillTransition(reduceMotion)}
         />
       ) : null}

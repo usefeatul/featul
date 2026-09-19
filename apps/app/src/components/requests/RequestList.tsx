@@ -87,7 +87,7 @@ function RequestListBase(props: RequestListProps) {
       variant="plain"
       className="w-full"
       wrapList={false}
-      toolbarClassName="px-2"
+      toolbarClassName="px-4 sm:px-6"
       isPending={isBusy}
       selection={selection}
       confirmOpen={confirmOpen}

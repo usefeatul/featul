@@ -39,7 +39,7 @@ function formatShortDate(value: string | Date | null | undefined): string {
 
 export function WidgetFeedbackDetail({
   apiBase,
-  accent = "#3b82f6",
+  accent = "#4d96e8",
   postId,
   initialPost = null,
   userId,

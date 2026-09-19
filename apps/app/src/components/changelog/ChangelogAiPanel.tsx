@@ -949,7 +949,7 @@ export function ChangelogAiPanel({
   if (!open) return null;
 
   return (
-    <aside className="fixed inset-0 z-40 flex animate-in flex-col bg-background duration-200 slide-in-from-right-2 dark:bg-[#191919] lg:left-auto lg:w-[22rem] lg:border-l lg:border-border/60">
+    <aside className="fixed inset-0 z-40 flex animate-in flex-col bg-background duration-200 slide-in-from-right-2 lg:left-auto lg:w-[22rem] lg:border-l lg:border-border/60">
       <header className="flex h-12 shrink-0 items-center gap-2 px-4">
         <h2 className="text-sm font-medium">Assistant</h2>
         <div className="ml-auto flex items-center gap-1">

@@ -77,7 +77,7 @@ export default function MobileDrawerContent({
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent className="bg-muted/40 dark:bg-[#202020]">
+    <DrawerContent className="bg-sidebar text-sidebar-foreground">
       <VisuallyHidden>
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>

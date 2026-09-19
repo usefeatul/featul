@@ -99,7 +99,7 @@ function boot() {
     safeProbe: null,
     dockObserver: null,
     placeTimer: null,
-    accent: "#3b82f6",
+    accent: "#4d96e8",
     theme: "dark",
     listeners: { ready: new Set(), open: new Set(), close: new Set() },
   };
@@ -116,11 +116,11 @@ function boot() {
   }
 
   function panelBackground() {
-    return state.theme === "light" ? "#ffffff" : "#1a1a1c";
+    return state.theme === "light" ? "#ffffff" : "#202020";
   }
 
   function shellBackground() {
-    return state.theme === "light" ? "#f4f4f5" : "#000000";
+    return state.theme === "light" ? "#eeeeeb" : "#121212";
   }
 
   function launcherForeground() {
@@ -679,12 +679,12 @@ function boot() {
       "display:flex;align-items:stretch;overflow:hidden;border-radius:10px;padding:2px;border:1px solid " +
       (dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)") +
       ";background:" +
-      (dark ? "#171717" : "#f4f4f5") +
+      (dark ? "#252525" : "#eeeeeb") +
       ";";
     const inner = document.createElement("span");
     inner.style.cssText =
       "display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;background:" +
-      (dark ? "#0a0a0a" : "#ffffff") +
+      (dark ? "#121212" : "#ffffff") +
       ";box-shadow:inset 0 0 0 1px " +
       (dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)") +
       ";";
@@ -746,12 +746,12 @@ function boot() {
     dialog.style.cssText =
       "position:relative;z-index:1;width:min(calc(100vw - 8rem),1400px);height:min(88dvh,860px);max-height:92dvh;box-sizing:border-box;padding:8px;border-radius:16px;display:flex;flex-direction:column;outline:none;flex:0 1 auto;" +
       (dark
-        ? "background:#171717;color:#fafafa;border:1px solid rgba(255,255,255,0.12);"
-        : "background:#f4f4f5;color:#171717;border:1px solid rgba(0,0,0,0.1);");
+        ? "background:#252525;color:#f3f3f3;border:1px solid rgba(255,255,255,0.12);"
+        : "background:#eeeeeb;color:#202020;border:1px solid rgba(0,0,0,0.1);");
     const stage = document.createElement("div");
     stage.style.cssText =
       "flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px;" +
-      (dark ? "background:#0a0a0a;" : "background:#ffffff;");
+      (dark ? "background:#121212;" : "background:#ffffff;");
     const img = document.createElement("img");
     img.style.cssText =
       "max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;display:block;";

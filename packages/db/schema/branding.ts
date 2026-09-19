@@ -20,7 +20,7 @@ export const brandingConfig = pgTable(
     workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspace.id, { onDelete: "cascade" }),
-    primaryColor: text("primary_color").default("#3b82f6"),
+    primaryColor: text("primary_color").default("#4d96e8"),
     theme: text("theme", { enum: ["light", "dark", "system"] }).default(
       "system"
     ),
