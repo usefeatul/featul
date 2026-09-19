@@ -12,7 +12,7 @@ import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
-import { AiIcon } from "@featul/ui/icons/ai";
+import { Sparkles } from "lucide-react";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import { fetchWorkspaceMembers } from "@/lib/team/client";
@@ -57,6 +57,7 @@ export function ChangelogEditor({
     } | null>(null);
 
     const [isAiGenerating, setIsAiGenerating] = useState(false);
+    const [workspaceTags, setWorkspaceTags] = useState(availableTags);
 
     const {
         editorRef,
@@ -176,7 +177,7 @@ export function ChangelogEditor({
                           label: "AI",
                           type: "button" as const,
                           variant: "plain" as const,
-                          icon: <AiIcon className="size-4" />,
+                          icon: <Sparkles className="size-4" />,
                           active: isAiOpen,
                           onClick: () => {
                               setIsAiOpen((open) => !open);
@@ -221,7 +222,9 @@ export function ChangelogEditor({
             data-changelog-editor
             className="relative min-h-[calc(100dvh-3rem)] bg-background dark:bg-[#191919]"
         >
-            <article className="flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background dark:bg-[#191919]">
+            <article
+                className={`flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background transition-[padding] duration-200 dark:bg-[#191919] ${isAiOpen ? "lg:pr-[22rem]" : ""}`}
+            >
                 <div className="mx-auto w-full max-w-4xl shrink-0 px-4 pt-6 sm:px-6 sm:pt-8">
                     <CoverImageUploader
                         workspaceSlug={workspaceSlug}
@@ -236,7 +239,7 @@ export function ChangelogEditor({
                 <header className="mx-auto w-full max-w-4xl shrink-0 px-4 pb-2 pt-4 sm:px-6">
                     <div className="flex w-full flex-wrap items-center gap-1">
                         <TagSelector
-                            availableTags={availableTags}
+                            availableTags={workspaceTags}
                             selectedTags={selectedTags}
                             onTagsChange={(tags) => {
                                 setSelectedTags(tags);
@@ -285,7 +288,8 @@ export function ChangelogEditor({
                     setSummary={setSummary}
                     selectedTags={selectedTags}
                     setSelectedTags={setSelectedTags}
-                    availableTags={availableTags}
+                    availableTags={workspaceTags}
+                    onAvailableTagsChange={setWorkspaceTags}
                     coverImage={coverImage}
                     setIsDirty={setIsDirty}
                     onGeneratingChange={setIsAiGenerating}

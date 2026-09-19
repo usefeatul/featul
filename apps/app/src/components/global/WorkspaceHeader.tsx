@@ -56,6 +56,11 @@ export default function WorkspaceHeader({
     ? getAccountSectionMeta(rest[1] || "profile")
     : null;
   const editorContext = useEditorHeaderActionsOptional();
+  const isEditorAssistantOpen = Boolean(
+    editorContext?.actions.some(
+      (action) => action.key === "ai" && action.active,
+    ),
+  );
 
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
@@ -116,7 +121,12 @@ export default function WorkspaceHeader({
   ) : showChangelogEditActions &&
     editorContext &&
     editorContext.actions.length > 0 ? (
-    <div className="ml-auto flex shrink-0 items-center gap-1">
+    <div
+      className={cn(
+        "ml-auto flex shrink-0 items-center gap-1 transition-[margin] duration-200",
+        isEditorAssistantOpen && "lg:mr-[22rem]",
+      )}
+    >
       {editorContext.actions.map((action) =>
         action.type === "switch" ? (
           <div

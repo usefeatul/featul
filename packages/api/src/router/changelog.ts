@@ -247,20 +247,25 @@ export function createChangelogRouter() {
           });
         const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const currentTags = getChangelogTags(b.changelogTags);
+        const name = input.name.trim();
+        const existingTag = currentTags.find(
+          (tag) => tag.name.trim().toLowerCase() === name.toLowerCase(),
+        );
+        if (existingTag) {
+          return c.superjson({ ok: true, tag: existingTag, created: false });
+        }
         const maxTags = limits.maxChangelogTags;
         assertWithinLimit(
           currentTags.length,
           maxTags,
           (max) => `Changelog tags limit reached (${max})`,
         );
-        const slug = toSlug(input.name);
+        const slug = toSlug(name);
         const id = globalThis.crypto?.randomUUID
           ? globalThis.crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-        const next = [
-          ...currentTags,
-          { id, name: input.name.trim(), slug, color: input.color || null },
-        ];
+        const tag = { id, name, slug, color: input.color || null };
+        const next = [...currentTags, tag];
         await ctx.db
           .update(board)
           .set({ changelogTags: next, updatedAt: new Date() })
@@ -273,14 +278,14 @@ export function createChangelogRouter() {
           actionType: "create",
           entity: "changelog_tag",
           entityId: String(id),
-          title: input.name.trim(),
+          title: name,
           metadata: {
             slug,
             color: input.color || null,
           },
         });
 
-        return c.superjson({ ok: true });
+        return c.superjson({ ok: true, tag, created: true });
       }),
 
     tagsDelete: privateProcedure

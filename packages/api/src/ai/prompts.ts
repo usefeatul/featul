@@ -43,8 +43,13 @@ function extraContext(input: {
     ? `GitHub sources:\n${input.githubUrls.join("\n")}`
     : "";
   const tags = input.availableTagNames?.length
-    ? `If tags fit, end the markdown with a final line: TAGS: ${input.availableTagNames.slice(0, 12).join(", ")}`
-    : "";
+    ? [
+        "Suggest up to 4 concise tags that accurately describe the entry.",
+        `Prefer these existing tags when relevant: ${input.availableTagNames.slice(0, 20).join(", ")}.`,
+        "You may suggest a new tag when none of the existing tags fit.",
+        "End the markdown with one final line using this format: TAGS: tag one, tag two",
+      ].join(" ")
+    : "Suggest up to 4 concise tags that accurately describe the entry. End the markdown with one final line using this format: TAGS: tag one, tag two";
   const feedbackLinks = input.sourcePosts?.some((post) => post.slug)
     ? "If covering attached feedback, end with a ## Feedback section listing markdown links using /board/p/{slug} for each item."
     : "";
@@ -224,7 +229,7 @@ export function buildChatRefineOpenRouterMessages(input: {
     "Apply the user's latest request to this changelog entry.",
     "Return ONLY the full updated GitHub-flavored Markdown body.",
     "If they only asked to change the title or tags, keep the body the same.",
-    "You may start with TITLE: a new title, and end with TAGS: matching available tags.",
+    "You may start with TITLE: a new title, and end with TAGS: concise relevant tags.",
     "Do not include a chat reply or commentary.",
     extra.brandVoice,
     extra.feedbackLinks,
