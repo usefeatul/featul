@@ -17,6 +17,7 @@ import {
 } from "@/components/settings/global/SectionCard";
 import { cn } from "@featul/ui/lib/utils";
 import { MergeSubmissionSection } from "@/components/requests/MergeSubmission";
+import { Linkify } from "@/components/post/linkify";
 
 
 
@@ -82,7 +83,7 @@ export function RequestContent({
           <OnboardingPostContent content={normalizedContent} className="mb-6" />
         ) : (
           <div className="prose dark:prose-invert text-sm text-accent mb-6 wrap-break-word whitespace-pre-wrap leading-6">
-            {normalizedContent}
+            <Linkify content={normalizedContent} />
           </div>
         )
       ) : null}

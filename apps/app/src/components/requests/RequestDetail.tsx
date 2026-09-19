@@ -23,6 +23,7 @@ import { getDisplayUser, getInitials } from "@/utils/user"
 import { relativeTime } from "@/lib/time"
 import RoleBadge from "../global/RoleBadge"
 import { MergeSubmissionSection } from "./MergeSubmission"
+import { Linkify } from "@/components/post/linkify"
 
 type RequestDetailProps = {
   post: RequestDetailData
@@ -104,7 +105,7 @@ export default function RequestDetail({
                 <OnboardingPostContent content={normalizedContent} />
               ) : (
                 <div className="prose min-w-0 wrap-break-word whitespace-pre-wrap text-sm leading-7 text-foreground/85 dark:prose-invert">
-                  {normalizedContent}
+                  <Linkify content={normalizedContent} />
                 </div>
               )
             ) : null}
