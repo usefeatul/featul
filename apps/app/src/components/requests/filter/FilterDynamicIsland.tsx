@@ -40,8 +40,8 @@ export default function FilterDynamicIsland() {
       {isVisible ? (
         <motion.div
           key="filter-dynamic-island"
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ scale: 0.98 }}
+          animate={{ scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
           transition={transitions.visibility}
           className="relative z-20 h-8 min-w-0 flex-1"

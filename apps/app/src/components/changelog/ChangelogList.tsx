@@ -63,7 +63,7 @@ export function ChangelogList({
       variant="plain"
       className="w-full"
       wrapList={false}
-      toolbarClassName="px-2"
+      toolbarClassName="px-4 sm:px-6"
       isPending={isPending}
       selection={selection}
       confirmOpen={confirmOpen}

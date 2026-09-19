@@ -8,7 +8,7 @@ export const FILTER_ISLAND_MAX_WIDTH_CLASS =
 export const FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS = "w-80 min-w-0";
 
 export const FILTER_ISLAND_SHELL_CLASS =
-  "cursor-pointer overflow-hidden rounded-md bg-black/5 text-foreground dark:bg-[#292929]";
+  "isolate cursor-pointer overflow-hidden rounded-md bg-secondary text-foreground";
 
 export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
 
@@ -36,7 +36,7 @@ export const FILTER_ISLAND_CHIPS_ROW_CLASS =
   "flex flex-wrap items-center gap-2 px-2 pb-2 pt-1.5";
 
 export const FILTER_ISLAND_DIVIDER_CLASS =
-  "mx-1 h-px bg-border dark:bg-white/10";
+  "h-px w-full bg-border dark:bg-white/10";
 
 export type FilterIslandTransitions = {
   layout: Transition;
