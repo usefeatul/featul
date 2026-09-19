@@ -33,8 +33,10 @@ const compactActionButtonClass =
 
 export default function WorkspaceHeader({
   workspaceName,
+  embeddedInEditor = false,
 }: {
   workspaceName: string;
+  embeddedInEditor?: boolean;
 }) {
   const pathname = usePathname() || "/";
   const parts = pathname.split("/").filter(Boolean);
@@ -56,12 +58,8 @@ export default function WorkspaceHeader({
     ? getAccountSectionMeta(rest[1] || "profile")
     : null;
   const editorContext = useEditorHeaderActionsOptional();
-  const isEditorAssistantOpen = Boolean(
-    editorContext?.actions.some(
-      (action) => action.key === "ai" && action.active,
-    ),
-  );
-
+  const hasEmbeddedEditorHeader = rest[0] === "changelog" &&
+    (rest[1] === "new" || rest[2] === "edit");
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
     title = settingsMeta?.label || "Settings";
@@ -121,12 +119,7 @@ export default function WorkspaceHeader({
   ) : showChangelogEditActions &&
     editorContext &&
     editorContext.actions.length > 0 ? (
-    <div
-      className={cn(
-        "ml-auto flex shrink-0 items-center gap-1 transition-[margin] duration-200",
-        isEditorAssistantOpen && "lg:mr-[22rem]",
-      )}
-    >
+    <div className="ml-auto flex shrink-0 items-center gap-1">
       {editorContext.actions.map((action) =>
         action.type === "switch" ? (
           <div
@@ -161,6 +154,7 @@ export default function WorkspaceHeader({
     </div>
   ) : null;
 
+  if (hasEmbeddedEditorHeader && !embeddedInEditor) return null;
   if ((rest[0] === "requests" && rest.length > 1) || isMemberDetail) return null;
   if (!title && !pageActions) return null;
 

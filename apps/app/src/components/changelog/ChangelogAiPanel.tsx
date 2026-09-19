@@ -9,7 +9,7 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from "react";
-import { Plus, X } from "lucide-react";
+import { PanelRightClose, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
 import type {
@@ -949,7 +949,7 @@ export function ChangelogAiPanel({
   if (!open) return null;
 
   return (
-    <aside className="fixed inset-0 z-40 flex animate-in flex-col bg-background duration-200 slide-in-from-right-2 lg:left-auto lg:w-[22rem] lg:border-l lg:border-border/60">
+    <aside className="fixed inset-0 z-40 flex animate-in flex-col bg-background duration-200 slide-in-from-right-2 lg:relative lg:inset-auto lg:z-10 lg:h-full lg:w-[22rem] lg:shrink-0 lg:border-l lg:border-border/60 dark:lg:border-white/10">
       <header className="flex h-12 shrink-0 items-center gap-2 px-4">
         <h2 className="text-sm font-medium">Assistant</h2>
         <div className="ml-auto flex items-center gap-1">
@@ -973,7 +973,7 @@ export function ChangelogAiPanel({
             aria-label="Close assistant"
             title="Close assistant"
           >
-            <X className="size-4" />
+            <PanelRightClose className="size-4" />
           </Button>
         </div>
       </header>

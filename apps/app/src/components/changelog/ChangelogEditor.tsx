@@ -20,6 +20,8 @@ import ChangelogAiPanel from "./ChangelogAiPanel";
 import { getChangelogAiSlashSuggestions } from "./ai/slash";
 import { getPublishCheckIssues } from "./ai/publishCheck";
 import { clearChangelogAiChat } from "./ai/persist";
+import WorkspaceHeader from "@/components/global/WorkspaceHeader";
+import { cn } from "@featul/ui/lib/utils";
 
 const ENABLE_CHANGELOG_AI = true;
 
@@ -226,10 +228,18 @@ export function ChangelogEditor({
     return (
         <div
             data-changelog-editor
-            className="relative min-h-[calc(100dvh-3rem)] bg-background"
+            className={cn(
+                "relative min-h-dvh bg-background lg:flex lg:h-dvh lg:overflow-hidden",
+                isAiOpen && "lg:gap-px lg:bg-muted/45 lg:pr-1 dark:lg:bg-black/25",
+            )}
         >
+            <div className={cn(
+                "flex min-w-0 flex-1 flex-col bg-background lg:min-h-0",
+                isAiOpen && "lg:border-r lg:border-border/60 dark:lg:border-white/10",
+            )}>
+                <WorkspaceHeader workspaceName={workspaceSlug} embeddedInEditor />
             <article
-                className={`flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background transition-[padding] duration-200 ${isAiOpen ? "lg:pr-[22rem]" : ""}`}
+                className="flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background lg:min-h-0 lg:w-auto lg:flex-1 lg:overflow-y-auto lg:overscroll-contain"
             >
                 <div className="mx-auto w-full max-w-4xl shrink-0 px-4 pt-6 sm:px-6 sm:pt-8">
                     <CoverImageUploader
@@ -282,6 +292,7 @@ export function ChangelogEditor({
                     </div>
                 </div>
             </article>
+            </div>
 
             {ENABLE_CHANGELOG_AI ? (
                 <ChangelogAiPanel
