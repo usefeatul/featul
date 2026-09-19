@@ -1,9 +1,10 @@
 import type { AiChatIntent } from "@featul/api/ai/types";
 
 const REWRITE_RE =
-  /\b(rewrite|draft|write|improve|expand|format|make it|add more|shorter|longer|technical|from feedback|this week|change the title|retitle|tag)\b/i;
+  /\b(rewrite|draft|write|improve|expand|format|make it|add more|shorter|longer|technical|from feedback|this week|change the title|retitle)\b/i;
 const ASK_RE =
   /(\? *$)|^(what|why|how|is |are |should |does |do you|explain|review|check|what's missing|is this)/i;
+const TAGS_RE = /\btags?\b/i;
 
 export function detectChatIntent(input: {
   text: string;
@@ -13,6 +14,7 @@ export function detectChatIntent(input: {
   const isAsk = ASK_RE.test(text);
   const isRewrite = REWRITE_RE.test(text);
 
+  if (TAGS_RE.test(text)) return "tags";
   if (input.hasSelection && !isAsk) return "patch";
   if (input.hasSelection && isRewrite) return "patch";
   if (isAsk && !isRewrite) return "ask";
@@ -22,9 +24,7 @@ export function detectChatIntent(input: {
 export function extractGithubUrls(text: string) {
   const matches = text.match(/https?:\/\/github\.com\/[^\s)]+/gi) ?? [];
   return Array.from(
-    new Set(
-      matches.map((url) => url.replace(/[.,;:]+$/, "")).filter(Boolean),
-    ),
+    new Set(matches.map((url) => url.replace(/[.,;:]+$/, "")).filter(Boolean)),
   ).slice(0, 10);
 }
 

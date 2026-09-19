@@ -2,6 +2,7 @@ import {
   AI_STREAM_ASK_SYSTEM_PROMPT,
   AI_STREAM_PATCH_SYSTEM_PROMPT,
   AI_STREAM_REFINE_SYSTEM_PROMPT,
+  AI_STREAM_TAGS_SYSTEM_PROMPT,
   CHANGELOG_BODY_STRUCTURE,
   DETAIL_GUIDANCE,
   TONE_GUIDANCE,
@@ -33,7 +34,6 @@ type PromptInput = {
 function extraContext(input: {
   brandVoice?: string;
   githubUrls?: string[];
-  availableTagNames?: string[];
   sourcePosts?: AiSourcePost[];
 }) {
   const brandVoice = input.brandVoice?.trim()
@@ -42,19 +42,11 @@ function extraContext(input: {
   const githubUrls = input.githubUrls?.length
     ? `GitHub sources:\n${input.githubUrls.join("\n")}`
     : "";
-  const tags = input.availableTagNames?.length
-    ? [
-        "Suggest up to 4 concise tags that accurately describe the entry.",
-        `Prefer these existing tags when relevant: ${input.availableTagNames.slice(0, 20).join(", ")}.`,
-        "You may suggest a new tag when none of the existing tags fit.",
-        "End the markdown with one final line using this format: TAGS: tag one, tag two",
-      ].join(" ")
-    : "Suggest up to 4 concise tags that accurately describe the entry. End the markdown with one final line using this format: TAGS: tag one, tag two";
   const feedbackLinks = input.sourcePosts?.some((post) => post.slug)
     ? "If covering attached feedback, end with a ## Feedback section listing markdown links using /board/p/{slug} for each item."
     : "";
 
-  return { brandVoice, githubUrls, tags, feedbackLinks };
+  return { brandVoice, githubUrls, feedbackLinks };
 }
 
 function sharedContext(input: PromptInput) {
@@ -201,7 +193,6 @@ export function buildBodyStreamPrompt(input: {
     CHANGELOG_BODY_STRUCTURE,
     extra.brandVoice,
     extra.feedbackLinks,
-    extra.tags,
     extra.githubUrls,
     workspaceLine,
     `Title: ${input.title}`,
@@ -228,12 +219,12 @@ export function buildChatRefineOpenRouterMessages(input: {
   const context = [
     "Apply the user's latest request to this changelog entry.",
     "Return ONLY the full updated GitHub-flavored Markdown body.",
-    "If they only asked to change the title or tags, keep the body the same.",
-    "You may start with TITLE: a new title, and end with TAGS: concise relevant tags.",
+    "If they only asked to change the title, keep the body the same.",
+    "You may start with TITLE: a new title.",
+    "Do not suggest or change tags. Tag requests are handled separately and require confirmation.",
     "Do not include a chat reply or commentary.",
     extra.brandVoice,
     extra.feedbackLinks,
-    extra.tags,
     extra.githubUrls,
     input.workspaceName ? `Product: ${input.workspaceName}` : "",
     input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
@@ -335,6 +326,33 @@ export function buildChatPatchOpenRouterMessages(input: {
     { role: "user" as const, content: context },
     ...history,
     { role: "user" as const, content: input.prompt.trim() },
+  ];
+}
+
+export function buildChatTagsOpenRouterMessages(input: {
+  prompt: string;
+  title?: string;
+  contentMarkdown?: string;
+  workspaceName?: string;
+  availableTagNames?: string[];
+}) {
+  const context = [
+    input.workspaceName ? `Product: ${input.workspaceName}` : "",
+    input.title?.trim() ? `Title: ${input.title.trim()}` : "",
+    input.contentMarkdown?.trim()
+      ? `Changelog:\n${input.contentMarkdown.trim()}`
+      : "The changelog is currently empty.",
+    input.availableTagNames?.length
+      ? `Existing tags: ${input.availableTagNames.slice(0, 30).join(", ")}`
+      : "",
+    `Request: ${input.prompt.trim()}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  return [
+    { role: "system" as const, content: AI_STREAM_TAGS_SYSTEM_PROMPT },
+    { role: "user" as const, content: context },
   ];
 }
 

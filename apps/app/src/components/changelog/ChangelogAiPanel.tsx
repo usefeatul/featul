@@ -12,7 +12,6 @@ import {
 import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
-import { client } from "@featul/api/client";
 import type { FeedEditorRef } from "@/components/editor/editor";
 import { useAiSourcePosts } from "@/features/changelog/hooks/useAiSourcePosts";
 import { runChangelogAiStream } from "@/features/changelog/hooks/useChangelogAiStream";
@@ -21,18 +20,21 @@ import type { AiSourcePost } from "./AiSourcePostItem";
 import type { WorkspaceTag } from "./TagSelector";
 import { Actions, type AssistantAction } from "./assistant/actions";
 import { Composer } from "./assistant/composer";
-import {
-  Messages,
-  type AssistantMessage,
-} from "./assistant/messages";
+import { Messages, type AssistantMessage } from "./assistant/messages";
 import {
   assistantCopy,
   getAtQuery,
   nextId,
   STARTERS,
+  withoutEmDash,
   type AtQuery,
 } from "./assistant/config";
 import { Attachments, Sources, type SourceItem } from "./assistant/sources";
+import {
+  getFallbackTagSuggestions,
+  getTagDecision,
+  getTagRemovalDecision,
+} from "./assistant/decisions";
 import {
   detectChatIntent,
   extractGithubUrls,
@@ -69,7 +71,7 @@ interface ChangelogAiPanelProps {
   selectedTags: string[];
   setSelectedTags: (value: string[]) => void;
   availableTags: WorkspaceTag[];
-  onAvailableTagsChange: (value: WorkspaceTag[]) => void;
+  onAvailableTagsChange?: (value: WorkspaceTag[]) => void;
   coverImage?: string | null;
   editorRef: RefObject<FeedEditorRef | null>;
   setIsDirty: (value: boolean) => void;
@@ -89,7 +91,6 @@ export function ChangelogAiPanel({
   selectedTags,
   setSelectedTags,
   availableTags,
-  onAvailableTagsChange,
   coverImage,
   editorRef,
   setIsDirty,
@@ -102,6 +103,7 @@ export function ChangelogAiPanel({
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+  const [pendingTagNames, setPendingTagNames] = useState<string[]>([]);
   const [mention, setMention] = useState<AtQuery | null>(null);
   const [mentionIndex, setMentionIndex] = useState(0);
   const [undoSnapshot, setUndoSnapshot] = useState<EditorSnapshot | null>(null);
@@ -121,6 +123,7 @@ export function ChangelogAiPanel({
     if (!stored) return;
     setMessages(stored.messages);
     setSelectedPostIds(stored.selectedPostIds);
+    setPendingTagNames(stored.pendingTagNames);
   }, [open, workspaceSlug, entryId]);
 
   useEffect(() => {
@@ -128,8 +131,16 @@ export function ChangelogAiPanel({
     saveChangelogAiChat(workspaceSlug, entryId, {
       messages,
       selectedPostIds,
+      pendingTagNames,
     });
-  }, [open, workspaceSlug, entryId, messages, selectedPostIds]);
+  }, [
+    open,
+    workspaceSlug,
+    entryId,
+    messages,
+    selectedPostIds,
+    pendingTagNames,
+  ]);
 
   const completedThisWeek = useMemo(
     () =>
@@ -241,61 +252,26 @@ export function ChangelogAiPanel({
     setMention(getAtQuery(value, caret));
   };
 
-  const applySuggestedTags = async (names?: string[]) => {
-    const suggestions = Array.from(
-      new Set(
-        (names ?? [])
-          .map((name) => name.trim())
-          .filter(Boolean)
-          .map((name) => name.slice(0, 40)),
-      ),
-    ).slice(0, 4);
-    if (suggestions.length === 0) return [];
-
-    const nextTags = [...availableTags];
-    const applied: WorkspaceTag[] = [];
-
-    for (const name of suggestions) {
-      const existing = nextTags.find(
-        (tag) => tag.name.trim().toLowerCase() === name.toLowerCase(),
-      );
-      if (existing) {
-        applied.push(existing);
-        continue;
-      }
-
-      try {
-        const response = await client.changelog.tagsCreate.$post({
-          slug: workspaceSlug,
-          name,
-        });
-        if (!response.ok) {
-          throw new Error("Could not create the suggested tag");
-        }
-        const data = await response.json();
-        const created = (data as { tag?: WorkspaceTag }).tag;
-        if (created) {
-          nextTags.push(created);
-          applied.push(created);
-        }
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Could not create a tag",
-        );
-      }
+  const resolveWorkspaceTags = (names?: string[]) => {
+    const availableByName = new Map(
+      availableTags.map((tag) => [tag.name.trim().toLowerCase(), tag]),
+    );
+    const resolved = new Map<string, WorkspaceTag>();
+    for (const value of names ?? []) {
+      const tag = availableByName.get(value.trim().toLowerCase());
+      if (tag) resolved.set(tag.id, tag);
     }
+    return Array.from(resolved.values()).slice(0, 4);
+  };
 
-    if (nextTags.length !== availableTags.length) {
-      onAvailableTagsChange(nextTags);
-    }
-    if (applied.length > 0) {
-      setSelectedTags(
-        Array.from(new Set([...selectedTags, ...applied.map((tag) => tag.id)])),
-      );
-      setIsDirty(true);
-    }
-
-    return applied.map((tag) => tag.name);
+  const applyWorkspaceTags = (names: string[]) => {
+    const tags = resolveWorkspaceTags(names);
+    if (tags.length === 0) return [];
+    setSelectedTags(
+      Array.from(new Set([...selectedTags, ...tags.map((tag) => tag.id)])),
+    );
+    setIsDirty(true);
+    return tags.map((tag) => tag.name);
   };
 
   const insertPostMention = (post: AiSourcePost) => {
@@ -323,18 +299,203 @@ export function ChangelogAiPanel({
     setSelectedPostIds((current) => Array.from(new Set([...current, ...ids])));
     setMention(null);
     if (!prompt.trim()) {
-      setPrompt("Draft this week's changelog from the attached completed posts.");
+      setPrompt(
+        "Draft this week's changelog from the attached completed posts.",
+      );
     }
   };
 
-  const sendMessage = async (
-    rawText: string,
-    postIds = selectedPostIds,
-  ) => {
+  const sendMessage = async (rawText: string, postIds = selectedPostIds) => {
     const text = rawText.trim();
     if (!text || isLoading) return;
 
     if (mention) setMention(null);
+
+    const selectedWorkspaceTags = availableTags.filter((tag) =>
+      selectedTags.includes(tag.id),
+    );
+    const removal = getTagRemovalDecision(
+      text,
+      selectedWorkspaceTags.map((tag) => tag.name),
+    );
+    if (removal) {
+      const userMessage: AssistantMessage = {
+        id: nextId(),
+        role: "user",
+        content: text,
+      };
+
+      if (removal.kind === "ask") {
+        const names = selectedWorkspaceTags
+          .map((tag) => `“${tag.name}”`)
+          .join(", ");
+        setMessages((current) => [
+          ...current,
+          userMessage,
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              selectedWorkspaceTags.length > 0
+                ? `Which tag would you like me to remove: ${names}?`
+                : "This changelog is already untagged, so there is nothing to remove.",
+          },
+        ]);
+        setPrompt("");
+        return;
+      }
+
+      const namesToRemove =
+        removal.kind === "removeAll"
+          ? selectedWorkspaceTags.map((tag) => tag.name)
+          : removal.names;
+      const normalizedNames = new Set(
+        namesToRemove.map((name) => name.trim().toLowerCase()),
+      );
+      const removedTags = selectedWorkspaceTags.filter((tag) =>
+        normalizedNames.has(tag.name.trim().toLowerCase()),
+      );
+
+      if (removedTags.length > 0) {
+        captureSnapshot();
+        const removedIds = new Set(removedTags.map((tag) => tag.id));
+        setSelectedTags(selectedTags.filter((id) => !removedIds.has(id)));
+        setIsDirty(true);
+      }
+
+      const tagList = removedTags.map((tag) => `“${tag.name}”`).join(", ");
+      setMessages((current) => [
+        ...current,
+        userMessage,
+        {
+          id: nextId(),
+          role: "assistant",
+          content:
+            removedTags.length > 0
+              ? removal.kind === "removeAll"
+                ? "I have removed all tags from this changelog. It is now untagged."
+                : `I have removed ${tagList} from this changelog.`
+              : "This changelog is already untagged, so I have not changed anything.",
+          effect:
+            removedTags.length > 0
+              ? `${removedTags.length} tag${removedTags.length === 1 ? "" : "s"} removed`
+              : undefined,
+        },
+      ]);
+      setPendingTagNames([]);
+      setPrompt("");
+      return;
+    }
+
+    if (pendingTagNames.length > 0) {
+      const decision = getTagDecision(text, pendingTagNames);
+      if (decision) {
+        const userMessage: AssistantMessage = {
+          id: nextId(),
+          role: "user",
+          content: text,
+        };
+        if (decision.kind === "decline") {
+          setMessages((current) => [
+            ...current,
+            userMessage,
+            {
+              id: nextId(),
+              role: "assistant",
+              content:
+                "No problem. I will leave the tags unchanged. We can revisit them whenever you are ready.",
+            },
+          ]);
+          setPendingTagNames([]);
+          setPrompt("");
+          return;
+        }
+
+        const applied = applyWorkspaceTags(decision.names);
+        const tagList = applied.map((name) => `“${name}”`).join(", ");
+        setMessages((current) => [
+          ...current,
+          userMessage,
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              applied.length > 0
+                ? `I have added ${tagList} to this changelog. Would you like help with anything else?`
+                : "Those tags are no longer available in this workspace, so I have not changed anything.",
+            effect:
+              applied.length > 0
+                ? `${applied.length} tag${applied.length === 1 ? "" : "s"} added`
+                : undefined,
+          },
+        ]);
+        setPendingTagNames([]);
+        setPrompt("");
+        return;
+      }
+    }
+
+    const earlyIntent = detectChatIntent({ text, hasSelection: false });
+    if (earlyIntent === "tags") {
+      const lower = text.toLowerCase();
+      const mentionedTags = availableTags.filter((tag) =>
+        lower.includes(tag.name.trim().toLowerCase()),
+      );
+
+      if (mentionedTags.length > 0) {
+        const newTags = mentionedTags.filter(
+          (tag) => !selectedTags.includes(tag.id),
+        );
+        const names = mentionedTags.map((tag) => `“${tag.name}”`).join(", ");
+        const userMessage: AssistantMessage = {
+          id: nextId(),
+          role: "user",
+          content: text,
+        };
+
+        setMessages((current) => [
+          ...current,
+          userMessage,
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              newTags.length > 0
+                ? `${names} ${mentionedTags.length === 1 ? "is" : "are"} available in this workspace and could fit this changelog. Would you like me to add ${mentionedTags.length === 1 ? "it" : "them"}?`
+                : `${names} ${mentionedTags.length === 1 ? "is already" : "are already"} applied to this changelog.`,
+            suggestedTags:
+              newTags.length > 0 ? newTags.map((tag) => tag.name) : undefined,
+          },
+        ]);
+        setPendingTagNames(newTags.map((tag) => tag.name));
+        setPrompt("");
+        return;
+      }
+
+      const unselectedTags = availableTags.filter(
+        (tag) => !selectedTags.includes(tag.id),
+      );
+      if (unselectedTags.length === 0) {
+        const selectedNames = selectedWorkspaceTags
+          .map((tag) => `“${tag.name}”`)
+          .join(", ");
+        setMessages((current) => [
+          ...current,
+          { id: nextId(), role: "user", content: text },
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              selectedWorkspaceTags.length > 0
+                ? `The available workspace ${selectedWorkspaceTags.length === 1 ? "tag is" : "tags are"} already applied: ${selectedNames}. There are no other existing tags to suggest.`
+                : "This workspace does not have any existing tags to suggest yet.",
+          },
+        ]);
+        setPendingTagNames([]);
+        setPrompt("");
+        return;
+      }
+    }
 
     if (
       /attached shipped feedback/i.test(text) &&
@@ -358,13 +519,21 @@ export function ChangelogAiPanel({
       text,
       hasSelection: hasSelection && Boolean(selectionMarkdown.trim()),
     });
+    const availableTagNames =
+      intent === "tags"
+        ? availableTags
+            .filter((tag) => !selectedTags.includes(tag.id))
+            .map((tag) => tag.name)
+        : availableTags.map((tag) => tag.name);
     const history: AiChatMessage[] = messages
       .filter((message) => !message.status)
       .map((message) => ({
         role: message.role,
         content: message.content,
       }));
-    const attachedPosts = sourcePosts.filter((post) => postIds.includes(post.id));
+    const attachedPosts = sourcePosts.filter((post) =>
+      postIds.includes(post.id),
+    );
     const githubUrls = Array.from(
       new Set([
         ...extractGithubUrls(text),
@@ -387,12 +556,7 @@ export function ChangelogAiPanel({
       attachedTitles: attachedPosts.map((post) => post.title),
     };
     const assistantId = nextId();
-    const pendingLabel =
-      intent === "ask"
-        ? "Thinking…"
-        : intent === "patch"
-          ? "Updating the selection…"
-          : "Writing into the entry…";
+    const startedAt = Date.now();
 
     setMessages((current) => [
       ...current,
@@ -400,20 +564,32 @@ export function ChangelogAiPanel({
       {
         id: assistantId,
         role: "assistant",
-        content: pendingLabel,
+        content: "",
         status: "pending",
+        phase: "reading",
+        activity: intent,
+        startedAt,
       },
     ]);
     setPrompt("");
     setIsLoading(true);
     onGeneratingChange?.(true);
 
-    if (intent !== "ask") {
+    if (intent === "rewrite" || intent === "patch") {
       captureSnapshot();
     }
 
     const controller = new AbortController();
     abortRef.current = controller;
+    const planningTimer = window.setTimeout(() => {
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === assistantId && message.status === "pending"
+            ? { ...message, phase: "planning" }
+            : message,
+        ),
+      );
+    }, 450);
 
     try {
       let appliedTitle: string | undefined;
@@ -430,10 +606,9 @@ export function ChangelogAiPanel({
           sourcePostIds: postIds.length > 0 ? postIds : undefined,
           messages: history.length > 0 ? history : undefined,
           intent,
-          selectionMarkdown:
-            intent === "patch" ? selectionMarkdown : undefined,
+          selectionMarkdown: intent === "patch" ? selectionMarkdown : undefined,
           githubUrls: githubUrls.length > 0 ? githubUrls : undefined,
-          availableTagNames: availableTags.map((tag) => tag.name),
+          availableTagNames,
         },
         {
           editorRef,
@@ -441,16 +616,44 @@ export function ChangelogAiPanel({
           applyToEditor: intent === "rewrite",
           patchSelection: intent === "patch",
           signal: controller.signal,
+          onStatus: (phase) => {
+            if (phase === "generating") {
+              window.clearTimeout(planningTimer);
+              setMessages((current) =>
+                current.map((message) =>
+                  message.id === assistantId && message.status === "pending"
+                    ? { ...message, phase: "planning" }
+                    : message,
+                ),
+              );
+            }
+          },
+          onStreamStart: () => {
+            setMessages((current) =>
+              current.map((message) =>
+                message.id === assistantId
+                  ? { ...message, phase: "writing" }
+                  : message,
+              ),
+            );
+          },
           onTitle: (value) => {
             appliedTitle = value;
             setTitle(value);
           },
           onReplyDelta: (accumulated) => {
-            replyText = accumulated;
+            if (intent === "tags") return;
+            const formalReply = withoutEmDash(accumulated);
+            replyText = formalReply;
             setMessages((current) =>
               current.map((message) =>
                 message.id === assistantId
-                  ? { ...message, content: accumulated }
+                  ? {
+                      ...message,
+                      content: formalReply,
+                      status: "streaming",
+                      phase: "writing",
+                    }
                   : message,
               ),
             );
@@ -463,9 +666,10 @@ export function ChangelogAiPanel({
             if (result.summary) {
               setSummary(result.summary);
             }
-            suggestedTags = result.suggestedTags;
-            if (intent === "ask") {
-              replyText = result.reply || replyText;
+            suggestedTags =
+              intent === "tags" ? result.suggestedTags : undefined;
+            if (intent === "ask" || intent === "tags") {
+              replyText = withoutEmDash(result.reply || replyText || "");
               return;
             }
             if (intent === "patch" && result.contentMarkdown) {
@@ -480,7 +684,19 @@ export function ChangelogAiPanel({
         },
       );
 
-      const appliedTags = await applySuggestedTags(suggestedTags);
+      let resolvedSuggestions =
+        intent === "tags"
+          ? resolveWorkspaceTags(suggestedTags).map((tag) => tag.name)
+          : [];
+      if (intent === "tags" && resolvedSuggestions.length === 0) {
+        resolvedSuggestions = getFallbackTagSuggestions(
+          `${title}\n${contentMarkdown ?? ""}`,
+          availableTagNames,
+        );
+      }
+      if (intent === "tags") {
+        setPendingTagNames(resolvedSuggestions);
+      }
 
       setMessages((current) =>
         current.map((message) =>
@@ -488,19 +704,28 @@ export function ChangelogAiPanel({
             ? {
                 ...message,
                 status: undefined,
+                phase: undefined,
+                durationMs: Date.now() - startedAt,
                 content: assistantCopy({
                   intent,
                   hadContent,
                   title: appliedTitle,
                   sourceCount: postIds.length,
                   reply: replyText,
-                  appliedTags,
+                  suggestedTags: resolvedSuggestions,
+                  selectedTagNames: selectedWorkspaceTags.map(
+                    (tag) => tag.name,
+                  ),
                 }),
+                suggestedTags:
+                  intent === "tags" && resolvedSuggestions.length > 0
+                    ? resolvedSuggestions
+                    : undefined,
                 effect:
                   intent === "ask"
                     ? undefined
-                    : appliedTags.length > 0
-                      ? `Applied edit · ${appliedTags.length} tag${appliedTags.length === 1 ? "" : "s"} added`
+                    : intent === "tags"
+                      ? undefined
                       : intent === "patch"
                         ? "Selection updated"
                         : "Entry updated",
@@ -510,7 +735,7 @@ export function ChangelogAiPanel({
       );
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
-        if (intent !== "ask") {
+        if (intent === "rewrite" || intent === "patch") {
           restoreSnapshot();
         }
         setMessages((current) =>
@@ -521,7 +746,8 @@ export function ChangelogAiPanel({
           ),
         );
       } else {
-        const msg = err instanceof Error ? err.message : "Failed to run AI assist";
+        const msg =
+          err instanceof Error ? err.message : "Failed to run AI assist";
         toast.error(msg);
         setMessages((current) =>
           current.map((message) =>
@@ -532,6 +758,7 @@ export function ChangelogAiPanel({
         );
       }
     } finally {
+      window.clearTimeout(planningTimer);
       abortRef.current = null;
       setIsLoading(false);
       onGeneratingChange?.(false);
@@ -548,8 +775,8 @@ export function ChangelogAiPanel({
         .map((post) => post.title),
     });
     const local = issues.length
-      ? `Publish check:\n${issues.map((issue) => `• ${issue}`).join("\n")}`
-      : "Local check looks good. Asking AI for a second pass.";
+      ? `I found a few things worth checking before you publish:\n${issues.map((issue) => `• ${issue}`).join("\n")}`
+      : "The basic checks look good. I will take a closer look at the writing and structure now.";
     setMessages((current) => [
       ...current,
       {
@@ -648,25 +875,20 @@ export function ChangelogAiPanel({
   );
 
   const runStarter = (starter: AssistantAction) => {
-    if (starter.attachThisWeek) {
-      attachWeekPosts();
-      setPrompt(starter.prompt);
-      return;
-    }
-    if (starter.publishCheck) {
-      runPublishCheck(starter.prompt);
-      return;
-    }
+    const next = starter.attachFeedback
+      ? `${starter.prompt} @`
+      : starter.prompt;
+    setPrompt(next);
     if (starter.attachFeedback) {
-      setPrompt(`${starter.prompt} @`);
       setMention({
-        start: `${starter.prompt} @`.lastIndexOf("@"),
+        start: next.lastIndexOf("@"),
         query: "",
       });
-      inputRef.current?.focus();
-      return;
     }
-    void sendMessage(starter.prompt);
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(next.length, next.length);
+    });
   };
 
   const startAttachment = () => {
@@ -683,6 +905,7 @@ export function ChangelogAiPanel({
     abortRef.current?.abort();
     setMessages([]);
     setSelectedPostIds([]);
+    setPendingTagNames([]);
     setPrompt("");
     setMention(null);
     setUndoSnapshot(null);
@@ -727,7 +950,7 @@ export function ChangelogAiPanel({
         {messages.length === 0 ? (
           <div className="px-4 py-3">
             <h3 className="text-sm font-medium">How can I help?</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground/70">
               I can correct wording, update selected text, improve formatting,
               and create relevant tags from this changelog.
             </p>

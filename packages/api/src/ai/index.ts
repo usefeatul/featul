@@ -9,16 +9,14 @@ export type {
   StructuredGenerationAction,
 } from "./types";
 
-export {
-  AI_TEMPERATURE_BY_ACTION,
-  getMaxTokensByAction,
-} from "./constants";
+export { AI_TEMPERATURE_BY_ACTION, getMaxTokensByAction } from "./constants";
 
 export {
   buildBodyStreamPrompt,
   buildChatAskOpenRouterMessages,
   buildChatPatchOpenRouterMessages,
   buildChatRefineOpenRouterMessages,
+  buildChatTagsOpenRouterMessages,
   buildJsonAiUserPrompt,
   buildStreamRefineUserPrompt,
   buildTitleStreamPrompt,

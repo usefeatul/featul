@@ -38,7 +38,7 @@ export const aiChatMessageSchema = z.object({
   content: z.string().min(1).max(4000),
 });
 
-export const aiChatIntentSchema = z.enum(["ask", "rewrite", "patch"]);
+export const aiChatIntentSchema = z.enum(["ask", "rewrite", "patch", "tags"]);
 
 export const aiAssistSchema = z
   .object({

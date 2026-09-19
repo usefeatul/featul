@@ -2,16 +2,26 @@
 
 import type { RefObject } from "react";
 import { Check } from "lucide-react";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 import { cn } from "@featul/ui/lib/utils";
 import { Content } from "./content";
+import { withoutEmDash } from "./config";
+import {
+  Progress,
+  type AssistantActivity,
+  type AssistantPhase,
+} from "./progress";
 
 export type AssistantMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
   attachedTitles?: string[];
-  status?: "pending" | "error";
+  status?: "pending" | "streaming" | "error";
+  phase?: AssistantPhase;
+  activity?: AssistantActivity;
+  startedAt?: number;
+  durationMs?: number;
+  suggestedTags?: string[];
   effect?: string;
 };
 
@@ -41,16 +51,39 @@ export function Messages({
             )}
           >
             {message.status === "pending" ? (
-              <span className="inline-flex items-center gap-2 text-muted-foreground">
-                <LoaderIcon className="size-3.5 animate-spin" />
-                {message.content}
-              </span>
+              <Progress
+                phase={message.phase ?? "reading"}
+                activity={message.activity ?? "ask"}
+                startedAt={message.startedAt}
+              />
+            ) : message.role === "assistant" ? (
+              <>
+                {message.status === "streaming" ? (
+                  <div className="mb-2.5">
+                    <Progress
+                      phase={message.phase ?? "writing"}
+                      activity={message.activity ?? "ask"}
+                      startedAt={message.startedAt}
+                      compact
+                    />
+                  </div>
+                ) : null}
+                {!message.status && message.activity && message.durationMs ? (
+                  <div className="mb-4">
+                    <Progress
+                      phase={
+                        message.activity === "ask" ? "writing" : "applying"
+                      }
+                      activity={message.activity}
+                      durationMs={message.durationMs}
+                      complete
+                    />
+                  </div>
+                ) : null}
+                <Content>{withoutEmDash(message.content)}</Content>
+              </>
             ) : (
-              message.role === "assistant" ? (
-                <Content>{message.content}</Content>
-              ) : (
-                <span className="whitespace-pre-wrap">{message.content}</span>
-              )
+              <span className="whitespace-pre-wrap">{message.content}</span>
             )}
 
             {message.attachedTitles?.length ? (
@@ -61,6 +94,19 @@ export function Messages({
                     className="inline-flex max-w-full truncate rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
                   >
                     @{title}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+
+            {message.suggestedTags?.length ? (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {message.suggestedTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-md bg-black/5 px-2 py-1 text-[11px] font-medium text-muted-foreground dark:bg-white/[0.06]"
+                  >
+                    {tag}
                   </span>
                 ))}
               </div>

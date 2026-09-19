@@ -20,6 +20,7 @@ import {
   buildChatAskOpenRouterMessages,
   buildChatPatchOpenRouterMessages,
   buildChatRefineOpenRouterMessages,
+  buildChatTagsOpenRouterMessages,
   buildStreamRefineUserPrompt,
 } from "./prompts";
 import { sanitizeChangelogAiError } from "./security";
@@ -28,7 +29,6 @@ import {
   ensureFeedbackSection,
   fetchAiBrandContext,
   fetchAiSourcePostsByIds,
-  getWorkspaceNameForAi,
 } from "./sources";
 import { streamStructuredChangelog } from "./generation";
 import {
@@ -76,8 +76,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
   try {
     workspace = await requireBoardManagerBySlug(ctx, parsedInput.slug);
   } catch (err) {
-    const message =
-      err instanceof HTTPException ? err.message : "Forbidden";
+    const message = err instanceof HTTPException ? err.message : "Forbidden";
     const status = err instanceof HTTPException ? err.status : 403;
     return changelogAiJsonResponse(status, { message });
   }
@@ -101,7 +100,9 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
         const needsSourcePosts = Boolean(parsedInput.sourcePostIds?.length);
 
-        const [sourcePosts, workspaceName, brandContext] = await Promise.all([
+        const workspaceName = workspace.name?.trim() || "this product";
+        const needsBrandContext = intent !== "ask" && intent !== "tags";
+        const [sourcePosts, brandContext] = await Promise.all([
           needsSourcePosts
             ? fetchAiSourcePostsByIds({
                 db,
@@ -109,14 +110,12 @@ export async function createChangelogAiStreamResponse(req: Request) {
                 postIds: parsedInput.sourcePostIds!,
               })
             : Promise.resolve(undefined),
-          getWorkspaceNameForAi({
-            db,
-            workspaceId: workspace.id,
-          }),
-          fetchAiBrandContext({
-            db,
-            workspaceId: workspace.id,
-          }),
+          needsBrandContext
+            ? fetchAiBrandContext({
+                db,
+                workspaceId: workspace.id,
+              })
+            : Promise.resolve({ brandVoice: "", tagNames: [] as string[] }),
         ]);
 
         if (
@@ -125,16 +124,16 @@ export async function createChangelogAiStreamResponse(req: Request) {
         ) {
           send({
             type: "error",
-            message: "No valid shipped feedback items were found for generation",
+            message:
+              "No valid shipped feedback items were found for generation",
           });
           controller.close();
           return;
         }
 
-        const availableTagNames =
-          parsedInput.availableTagNames?.length
-            ? parsedInput.availableTagNames
-            : brandContext.tagNames;
+        const availableTagNames = parsedInput.availableTagNames?.length
+          ? parsedInput.availableTagNames
+          : brandContext.tagNames;
         const githubUrls = parsedInput.githubUrls;
 
         send({ type: "status", phase: "generating" });
@@ -189,6 +188,20 @@ export async function createChangelogAiStreamResponse(req: Request) {
           return;
         }
 
+        if (
+          parsedInput.action === "chat" &&
+          intent === "tags" &&
+          availableTagNames.length === 0
+        ) {
+          send({
+            type: "done",
+            reply: "This workspace does not have any changelog tags yet.",
+            suggestedTags: [],
+          });
+          controller.close();
+          return;
+        }
+
         const chatMessages =
           parsedInput.action === "chat" && intent === "ask"
             ? buildChatAskOpenRouterMessages({
@@ -200,68 +213,79 @@ export async function createChangelogAiStreamResponse(req: Request) {
                 history: parsedInput.messages,
                 githubUrls,
               })
-            : parsedInput.action === "chat" && intent === "patch"
-              ? buildChatPatchOpenRouterMessages({
+            : parsedInput.action === "chat" && intent === "tags"
+              ? buildChatTagsOpenRouterMessages({
                   prompt: parsedInput.prompt ?? "",
                   title: parsedInput.title,
                   contentMarkdown: parsedInput.contentMarkdown,
-                  selectionMarkdown: parsedInput.selectionMarkdown ?? "",
                   workspaceName,
-                  sourcePosts,
-                  history: parsedInput.messages,
-                  brandVoice: brandContext.brandVoice,
+                  availableTagNames,
                 })
-              : parsedInput.action === "chat"
-                ? buildChatRefineOpenRouterMessages({
+              : parsedInput.action === "chat" && intent === "patch"
+                ? buildChatPatchOpenRouterMessages({
                     prompt: parsedInput.prompt ?? "",
                     title: parsedInput.title,
                     contentMarkdown: parsedInput.contentMarkdown,
+                    selectionMarkdown: parsedInput.selectionMarkdown ?? "",
                     workspaceName,
                     sourcePosts,
                     history: parsedInput.messages,
                     brandVoice: brandContext.brandVoice,
-                    githubUrls,
-                    availableTagNames,
                   })
-                : [
-                    {
-                      role: "system" as const,
-                      content:
-                        parsedInput.action === "summary"
-                          ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
-                          : AI_STREAM_REFINE_SYSTEM_PROMPT,
-                    },
-                    {
-                      role: "user" as const,
-                      content: buildStreamRefineUserPrompt({
-                        action: parsedInput.action,
-                        prompt: parsedInput.prompt,
-                        title: parsedInput.title,
-                        contentMarkdown: parsedInput.contentMarkdown,
-                        tone: parsedInput.tone,
-                        detailLevel: parsedInput.detailLevel,
-                        workspaceName,
-                        sourcePosts,
-                      }),
-                    },
-                  ];
+                : parsedInput.action === "chat"
+                  ? buildChatRefineOpenRouterMessages({
+                      prompt: parsedInput.prompt ?? "",
+                      title: parsedInput.title,
+                      contentMarkdown: parsedInput.contentMarkdown,
+                      workspaceName,
+                      sourcePosts,
+                      history: parsedInput.messages,
+                      brandVoice: brandContext.brandVoice,
+                      githubUrls,
+                      availableTagNames,
+                    })
+                  : [
+                      {
+                        role: "system" as const,
+                        content:
+                          parsedInput.action === "summary"
+                            ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
+                            : AI_STREAM_REFINE_SYSTEM_PROMPT,
+                      },
+                      {
+                        role: "user" as const,
+                        content: buildStreamRefineUserPrompt({
+                          action: parsedInput.action,
+                          prompt: parsedInput.prompt,
+                          title: parsedInput.title,
+                          contentMarkdown: parsedInput.contentMarkdown,
+                          tone: parsedInput.tone,
+                          detailLevel: parsedInput.detailLevel,
+                          workspaceName,
+                          sourcePosts,
+                        }),
+                      },
+                    ];
 
         let accumulated = "";
         const maxTokens =
           intent === "ask"
             ? 700
-            : intent === "patch"
-              ? 1400
-              : getMaxTokensByAction(
-                  parsedInput.action,
-                  parsedInput.detailLevel,
-                );
+            : intent === "tags"
+              ? 120
+              : intent === "patch"
+                ? 1400
+                : getMaxTokensByAction(
+                    parsedInput.action,
+                    parsedInput.detailLevel,
+                  );
 
         await streamOpenRouterChat(
           {
             model,
             messages: chatMessages,
-            temperature: AI_TEMPERATURE_BY_ACTION[parsedInput.action as AiAction],
+            temperature:
+              AI_TEMPERATURE_BY_ACTION[parsedInput.action as AiAction],
             max_tokens: maxTokens,
           },
           (text) => {
@@ -281,6 +305,26 @@ export async function createChangelogAiStreamResponse(req: Request) {
           send({
             type: "done",
             summary: trimmed.slice(0, 512),
+          });
+          controller.close();
+          return;
+        }
+
+        if (intent === "tags") {
+          const meta = extractAiOutputMeta(trimmed);
+          const existingTags = new Map(
+            availableTagNames.map((name) => [name.toLowerCase(), name]),
+          );
+          const suggestedTags = (meta.suggestedTags ?? [])
+            .map((name) => existingTags.get(name.toLowerCase()))
+            .filter((name): name is string => Boolean(name))
+            .slice(0, 4);
+          send({
+            type: "done",
+            reply: suggestedTags.length
+              ? `Found ${suggestedTags.length} relevant workspace tags.`
+              : "No relevant tags were found.",
+            suggestedTags,
           });
           controller.close();
           return;

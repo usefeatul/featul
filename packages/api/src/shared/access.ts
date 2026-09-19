@@ -9,6 +9,7 @@ type WorkspaceRow = {
   ownerId: string
   plan: string
   slug: string
+  name: string
 }
 
 function activeMemberFilter(workspaceId: string, userId: string) {
@@ -114,6 +115,7 @@ async function loadWorkspaceBySlug(ctx: any, slug: string): Promise<WorkspaceRow
       ownerId: workspace.ownerId,
       plan: workspace.plan,
       slug: workspace.slug,
+      name: workspace.name,
     })
     .from(workspace)
     .where(eq(workspace.slug, slug))

@@ -17,34 +17,37 @@ export const STARTERS: AssistantAction[] = [
   {
     label: "Improve writing",
     prompt:
-      "Improve the writing. Correct grammar, tighten the wording, and keep the original meaning.",
+      "Could you improve the writing in this changelog while keeping the original meaning?",
     icon: Wand2,
   },
   {
     label: "Fix formatting",
-    prompt: "Fix the formatting and structure. Keep the meaning the same.",
+    prompt:
+      "Could you clean up the formatting and make this changelog easier to read without changing its meaning?",
     icon: AlignLeft,
   },
   {
     label: "Suggest tags",
     prompt:
-      "Analyze this changelog and add up to four concise, relevant tags. Create a new tag if no existing tag fits.",
+      "Could you suggest a few existing workspace tags that would fit this changelog?",
     icon: Tags,
   },
   {
     label: "Add summary",
-    prompt: "Add a concise opening summary that explains the user benefit.",
+    prompt:
+      "Could you add a short, natural opening summary that explains the main benefit to users?",
     icon: ListChecks,
   },
   {
     label: "Draft from feedback",
-    prompt: "Write a changelog from the attached shipped feedback.",
+    prompt: "Could you draft a changelog from the feedback I attach?",
     attachFeedback: true,
     icon: Sparkles,
   },
   {
     label: "Publish check",
-    prompt: "Review this changelog for publish readiness. What should we fix?",
+    prompt:
+      "Could you review this changelog and tell me what I should improve before publishing it?",
     publishCheck: true,
     icon: ClipboardCheck,
   },
@@ -52,6 +55,12 @@ export const STARTERS: AssistantAction[] = [
 
 export function nextId() {
   return crypto.randomUUID();
+}
+
+export function withoutEmDash(value: string) {
+  return value
+    .replace(/\bDone\s*[—–]\s*/g, "Done. ")
+    .replace(/\s*[—–]\s*/g, "; ");
 }
 
 export function getAtQuery(value: string, caret: number): AtQuery | null {
@@ -69,35 +78,45 @@ export function getAtQuery(value: string, caret: number): AtQuery | null {
 }
 
 export function assistantCopy(input: {
-  intent: "ask" | "rewrite" | "patch";
+  intent: "ask" | "rewrite" | "patch" | "tags";
   hadContent: boolean;
   title?: string;
   sourceCount: number;
   reply?: string;
-  appliedTags?: string[];
+  suggestedTags?: string[];
+  selectedTagNames?: string[];
 }) {
   if (input.intent === "ask") {
-    return input.reply || "Here's what I noticed.";
+    return withoutEmDash(input.reply || "Here is what I noticed.");
   }
-  if (input.appliedTags?.length) {
-    const tags = input.appliedTags.map((tag) => `“${tag}”`).join(", ");
-    return input.intent === "patch"
-      ? `Updated the selected text and added ${tags}.`
-      : `Updated the entry and added ${tags}.`;
+  if (input.intent === "tags") {
+    if (!input.suggestedTags?.length) {
+      if (input.selectedTagNames?.length) {
+        const selected = input.selectedTagNames
+          .map((tag) => `“${tag}”`)
+          .join(", ");
+        return `This changelog already has ${selected}. I checked the remaining workspace tags, but I could not find another one that fits closely enough.`;
+      }
+      return "I checked the tags already available in this workspace, but I could not find one that fits this changelog closely enough. Would you like to leave it untagged for now?";
+    }
+    const tags = input.suggestedTags.map((tag) => `“${tag}”`).join(", ");
+    const subject = input.suggestedTags.length === 1 ? "tag" : "tags";
+    const pronoun = input.suggestedTags.length === 1 ? "it" : "them";
+    return `I found the existing workspace ${subject} ${tags}, which looks like a good fit for this changelog. Would you like me to add ${pronoun}?`;
   }
   if (input.intent === "patch") {
-    return "Updated the selected text. Ask if you want another pass.";
+    return "I have updated only the selected text. Would you like me to make it warmer, shorter, or more technical?";
   }
   if (!input.hadContent && input.sourceCount > 0) {
     const countLabel = `${input.sourceCount} shipped item${input.sourceCount === 1 ? "" : "s"}`;
     return input.title
-      ? `Drafted “${input.title}” from ${countLabel}. What should we change?`
-      : `Drafted the changelog from ${countLabel}. What should we change?`;
+      ? `I have drafted “${input.title}” from ${countLabel}. Would you like to refine the tone or level of detail?`
+      : `I have drafted the changelog from ${countLabel}. Would you like to refine the tone or level of detail?`;
   }
   if (!input.hadContent) {
     return input.title
-      ? `Wrote a draft titled “${input.title}”. Keep chatting to refine it.`
-      : "Wrote a draft into the entry. Keep chatting to refine it.";
+      ? `I have written a draft titled “${input.title}”. Would you like me to refine anything else?`
+      : "I have written a draft in the editor. Would you like me to refine anything else?";
   }
-  return "Updated the entry. Ask if you want another pass.";
+  return "I have updated the changelog while keeping the original meaning. Would you like me to refine anything else?";
 }

@@ -39,7 +39,10 @@ export function extractTitleLine(raw: string): string | null {
   if (!firstLine) return null;
 
   return (
-    firstLine.replace(/^TITLE:\s*/i, "").replace(/^#+\s*/, "").trim() || null
+    firstLine
+      .replace(/^TITLE:\s*/i, "")
+      .replace(/^#+\s*/, "")
+      .trim() || null
   );
 }
 
@@ -104,14 +107,14 @@ export function extractAiOutputMeta(markdown: string) {
     body = body.replace(/^TITLE:\s*.+$/im, "").trim();
   }
 
-  const tagsMatch = body.match(/\nTAGS:\s*(.+)\s*$/im);
+  const tagsMatch = body.match(/(?:^|\n)TAGS:\s*(.+)\s*$/im);
   if (tagsMatch?.[1]?.trim()) {
     suggestedTags = tagsMatch[1]
       .split(",")
       .map((tag) => tag.trim())
       .filter(Boolean)
       .slice(0, 8);
-    body = body.replace(/\nTAGS:\s*.+\s*$/im, "").trim();
+    body = body.replace(/(?:^|\n)TAGS:\s*.+\s*$/im, "").trim();
   }
 
   return { body, title, suggestedTags };

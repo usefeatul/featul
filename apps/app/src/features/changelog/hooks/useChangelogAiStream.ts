@@ -11,6 +11,8 @@ type UseChangelogAiStreamOptions = {
   applyToEditor: boolean;
   patchSelection: boolean;
   signal?: AbortSignal;
+  onStatus?: (phase: "preparing" | "generating") => void;
+  onStreamStart?: () => void;
   onTitle?: (title: string) => void;
   onReplyDelta?: (accumulated: string) => void;
   onComplete?: (result: {
@@ -28,7 +30,24 @@ export async function runChangelogAiStream(
 ) {
   let pendingBody: string | null = null;
   let bodyFrame: number | null = null;
+  let pendingReply: string | null = null;
+  let replyFrame: number | null = null;
   let bodyStreamStarted = false;
+  let streamStarted = false;
+
+  const flushReplyPreview = () => {
+    replyFrame = null;
+    if (pendingReply === null) return;
+    const reply = pendingReply;
+    pendingReply = null;
+    options.onReplyDelta?.(reply);
+  };
+
+  const scheduleReplyPreview = (reply: string) => {
+    pendingReply = reply;
+    if (replyFrame !== null) return;
+    replyFrame = window.requestAnimationFrame(flushReplyPreview);
+  };
 
   const flushBodyPreview = () => {
     bodyFrame = null;
@@ -61,14 +80,19 @@ export async function runChangelogAiStream(
     await streamChangelogAiAssist(
       input,
       {
+        onStatus: options.onStatus,
         onTitle: (text) => {
           if (text.trim()) {
             options.onTitle?.(text.slice(0, 256));
           }
         },
         onDelta: (_text, accumulated) => {
+          if (!streamStarted) {
+            streamStarted = true;
+            options.onStreamStart?.();
+          }
           if (!options.applyToEditor) {
-            options.onReplyDelta?.(accumulated);
+            scheduleReplyPreview(accumulated);
             return;
           }
           scheduleBodyPreview(accumulated);
@@ -78,7 +102,12 @@ export async function runChangelogAiStream(
             window.cancelAnimationFrame(bodyFrame);
             bodyFrame = null;
           }
+          if (replyFrame !== null) {
+            window.cancelAnimationFrame(replyFrame);
+            replyFrame = null;
+          }
           pendingBody = null;
+          pendingReply = null;
           options.onComplete?.({
             title: event.title,
             contentMarkdown: event.contentMarkdown,
@@ -93,6 +122,9 @@ export async function runChangelogAiStream(
   } finally {
     if (bodyFrame !== null) {
       window.cancelAnimationFrame(bodyFrame);
+    }
+    if (replyFrame !== null) {
+      window.cancelAnimationFrame(replyFrame);
     }
   }
 }

@@ -1,16 +1,22 @@
 const PREFIX = "featul:changelog-ai:";
 
+type PersistedActivity = "ask" | "rewrite" | "patch" | "tags";
+
 export type PersistedAiChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
   attachedTitles?: string[];
-  status?: "pending" | "error";
+  status?: "pending" | "streaming" | "error";
+  activity?: PersistedActivity;
+  durationMs?: number;
+  suggestedTags?: string[];
 };
 
 type PersistedAiChat = {
   messages: PersistedAiChatMessage[];
   selectedPostIds: string[];
+  pendingTagNames: string[];
 };
 
 function keyFor(slug: string, entryId?: string) {
@@ -29,10 +35,14 @@ export function loadChangelogAiChat(slug: string, entryId?: string) {
     if (!Array.isArray(parsed.messages)) return null;
     return {
       messages: parsed.messages.filter(
-        (message) => message.status !== "pending",
+        (message) =>
+          message.status !== "pending" && message.status !== "streaming",
       ),
       selectedPostIds: Array.isArray(parsed.selectedPostIds)
         ? parsed.selectedPostIds
+        : [],
+      pendingTagNames: Array.isArray(parsed.pendingTagNames)
+        ? parsed.pendingTagNames
         : [],
     } satisfies PersistedAiChat;
   } catch {
@@ -48,9 +58,13 @@ export function saveChangelogAiChat(
   if (typeof window === "undefined") return;
   const body: PersistedAiChat = {
     messages: payload.messages
-      .filter((message) => message.status !== "pending")
+      .filter(
+        (message) =>
+          message.status !== "pending" && message.status !== "streaming",
+      )
       .slice(-24),
     selectedPostIds: payload.selectedPostIds.slice(0, 20),
+    pendingTagNames: payload.pendingTagNames.slice(0, 4),
   };
   window.localStorage.setItem(keyFor(slug, entryId), JSON.stringify(body));
   if (entryId) {

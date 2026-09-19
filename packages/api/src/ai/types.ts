@@ -7,7 +7,7 @@ export type AiAction =
   | "summary"
   | "generateFromPosts";
 
-export type AiChatIntent = "ask" | "rewrite" | "patch";
+export type AiChatIntent = "ask" | "rewrite" | "patch" | "tags";
 
 export type AiChatMessage = {
   role: "user" | "assistant";
