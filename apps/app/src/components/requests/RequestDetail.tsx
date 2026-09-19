@@ -24,6 +24,7 @@ import { relativeTime } from "@/lib/time"
 import RoleBadge from "../global/RoleBadge"
 import { MergeSubmissionSection } from "./MergeSubmission"
 import { Linkify } from "@/components/post/linkify"
+import { cn } from "@featul/ui/lib/utils"
 
 type RequestDetailProps = {
   post: RequestDetailData
@@ -63,9 +64,21 @@ export default function RequestDetail({
     : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
 
   return (
-    <section data-request-detail className="relative -mx-4 flex h-[calc(100dvh-5rem)] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16">
+    <section
+      data-request-detail
+      className={cn(
+        "relative -mx-4 flex h-[calc(100dvh-5rem)] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16",
+        listOpen && "lg:gap-px lg:bg-muted/45 dark:lg:bg-black/25",
+      )}
+    >
       <Navigator workspaceSlug={workspaceSlug} postId={post.id} open={listOpen} onClose={() => toggleList(false)} />
-      <div id="request-detail-scroll" className="min-w-0 flex-1 overflow-y-auto overscroll-contain">
+      <div
+        id="request-detail-scroll"
+        className={cn(
+          "min-w-0 flex-1 overflow-y-auto overscroll-contain bg-background",
+          listOpen && "lg:border-r lg:border-border/60 dark:lg:border-white/10",
+        )}
+      >
       <Header title={post.title} postId={post.id} workspaceSlug={workspaceSlug} backHref={backHref} prevHref={prevHref} nextHref={nextHref} readonly={readonly} onOpenList={listOpen ? undefined : () => toggleList(true)} />
       <div className="px-4 sm:px-8">
       <div className="mx-auto w-full max-w-[720px] pb-10 pt-5 sm:pt-7 lg:pt-8">

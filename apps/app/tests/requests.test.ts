@@ -42,7 +42,7 @@ test("preserves every filter while advancing independently of the URL page", asy
   expect(filtered).toHaveBeenCalledWith({ slug: "demo", offset: 20, searchParams: {
     status: '["planned"]', board: '["bugs"]', tag: '["ux"]', order: "likes", search: "editor",
   } });
-  expect(result).toEqual({ items: [{ id: "filtered" }], nextOffset: 21, hasMore: false });
+  expect(result).toEqual({ items: [{ id: "filtered" }], nextOffset: 21, totalCount: 21, hasMore: false });
 });
 
 test("empty batches stop loading even if the count changed", async () => {

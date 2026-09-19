@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronsUp, ChevronsDown } from "lucide-react";
+import { ChevronsUp, ChevronsDown, PanelRightOpen } from "lucide-react";
 import { Button } from "@featul/ui/components/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { MergePopover } from "./MergePopover";
 import Menu from "./menu";
-import { PanelIcon } from "@featul/ui/icons/panel";
 
 const actionClass = "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 data-[state=open]:bg-black/10 dark:bg-transparent dark:hover:bg-white/10 dark:data-[state=open]:bg-white/10";
 
@@ -24,16 +23,6 @@ type HeaderProps = {
 export default function Header({ title, postId, workspaceSlug, backHref, prevHref, nextHref, readonly, onOpenList }: HeaderProps) {
   return (
     <header className="sticky top-0 z-20 flex min-h-12 items-center gap-2 bg-background pl-2 pr-4 sm:pr-6">
-      {onOpenList ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="plain" className={actionClass} onClick={onOpenList} aria-label="Show request list" aria-expanded={false} aria-controls="request-navigator">
-              <PanelIcon className="size-4 text-neutral-400 dark:text-neutral-300" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={6}>Show request list</TooltipContent>
-        </Tooltip>
-      ) : null}
       <nav aria-label="Request navigation" className="min-w-0 flex-1">
         <ol className="flex min-w-0 items-center gap-2 text-sm">
           <li className="shrink-0">
@@ -52,6 +41,16 @@ export default function Header({ title, postId, workspaceSlug, backHref, prevHre
           <MergePopover postId={postId} workspaceSlug={workspaceSlug} className={actionClass} />
         </> : null}
         <Menu postId={postId} workspaceSlug={workspaceSlug} title={title} backHref={backHref} readonly={readonly} className={actionClass} />
+        {onOpenList ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="plain" className={actionClass} onClick={onOpenList} aria-label="Show request queue" aria-expanded={false} aria-controls="request-navigator">
+                <PanelRightOpen className="size-4 text-neutral-400 dark:text-neutral-300" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6}>Show request queue</TooltipContent>
+          </Tooltip>
+        ) : null}
       </div>
     </header>
   );

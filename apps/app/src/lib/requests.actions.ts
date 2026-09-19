@@ -39,7 +39,7 @@ export async function loadMoreRequests(input: z.infer<typeof batchInput>) {
     });
     if (!data) throw new Error("Workspace not found");
     const nextOffset = offset + data.rows.length;
-    return { items: data.rows, nextOffset, hasMore: data.rows.length > 0 && nextOffset < data.totalCount };
+    return { items: data.rows, nextOffset, totalCount: data.totalCount, hasMore: data.rows.length > 0 && nextOffset < data.totalCount };
   }
 
   const [rows, totalCount] = await Promise.all([
@@ -54,5 +54,5 @@ export async function loadMoreRequests(input: z.infer<typeof batchInput>) {
     }),
   ]);
   const nextOffset = offset + rows.length;
-  return { items: rows.map(toRequestItemData), nextOffset, hasMore: rows.length > 0 && nextOffset < totalCount };
+  return { items: rows.map(toRequestItemData), nextOffset, totalCount, hasMore: rows.length > 0 && nextOffset < totalCount };
 }
