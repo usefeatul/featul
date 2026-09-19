@@ -27,7 +27,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
   return (
     <div className="pointer-events-none relative mt-1.5 space-y-1.5 [&_button]:pointer-events-auto">
       <div className="flex min-w-0 items-center gap-2 text-[10px] leading-none text-muted-foreground">
-        <Avatar className="relative size-5 shrink-0 overflow-visible bg-muted">
+        <Avatar className="relative size-6 shrink-0 overflow-visible bg-muted">
           <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={author} />
           <AvatarFallback>{getInitials(author)}</AvatarFallback>
           <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />
@@ -68,7 +68,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
         </div>
       </div>
       {hasSecondaryIndicators ? (
-        <div className="flex flex-wrap items-center gap-1.5 pl-7">
+        <div className="flex flex-wrap items-center gap-1.5 pl-8">
           {lowInteractionDays != null ? <LowInteractionMark days={lowInteractionDays} /> : null}
           <ReportIndicator count={item.reportCount || 0} />
           <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
