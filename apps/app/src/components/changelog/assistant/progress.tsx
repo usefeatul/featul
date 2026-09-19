@@ -11,6 +11,7 @@ import {
   Tags,
   type LucideIcon,
 } from "lucide-react";
+import { Shimmer } from "./shimmer";
 
 export type AssistantPhase = "reading" | "planning" | "writing" | "applying";
 export type AssistantActivity = "ask" | "rewrite" | "patch" | "tags";
@@ -96,9 +97,11 @@ export function Progress({
             complete ? "size-3.5 shrink-0" : "size-3.5 shrink-0 animate-pulse"
           }
         />
-        <span className={complete ? undefined : "ai-thinking-shimmer"}>
-          {complete ? `Thought for ${elapsed}s` : "Thinking…"}
-        </span>
+        {complete ? (
+          <span>{`Thought for ${elapsed}s`}</span>
+        ) : (
+          <Shimmer>Thinking…</Shimmer>
+        )}
       </div>
 
       {visiblePhases.map((visiblePhase) => {
@@ -115,9 +118,11 @@ export function Progress({
                   : "size-3.5 shrink-0"
               }
             />
-            <span className={!complete ? "ai-thinking-shimmer" : undefined}>
-              {phaseLabel(visiblePhase, activity)}
-            </span>
+            {complete ? (
+              <span>{phaseLabel(visiblePhase, activity)}</span>
+            ) : (
+              <Shimmer>{phaseLabel(visiblePhase, activity)}</Shimmer>
+            )}
           </div>
         );
       })}
