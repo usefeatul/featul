@@ -15,6 +15,8 @@ export const metadata = createPageMetadata({
 import RequestList from "@/components/requests/RequestList";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { REQUEST_BATCH_SIZE } from "@/lib/request/pagination";
+import { DEFAULT_REQUEST_STATUSES } from "@/lib/request/statuses";
 export const revalidate = 30;
 
 type SearchParams = { page?: string | string[] };
@@ -28,13 +30,18 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
   if (!ws) return notFound();
 
   const sp = (await resolveSearchParams(searchParams)) ?? {};
-  const PAGE_SIZE = 20;
-  const pageSize = PAGE_SIZE;
+  const pageSize = REQUEST_BATCH_SIZE;
   const page = parsePositiveIntSearchParam(sp.page);
   const offset = (page - 1) * pageSize;
 
-  const rows = await getWorkspacePosts(slug, { order: "newest", limit: pageSize, offset });
-  const totalCount = await getWorkspacePostsCount(slug, {});
+  const statuses = [...DEFAULT_REQUEST_STATUSES];
+  const rows = await getWorkspacePosts(slug, {
+    statuses,
+    order: "newest",
+    limit: pageSize,
+    offset,
+  });
+  const totalCount = await getWorkspacePostsCount(slug, { statuses });
 
   const items: RequestItemData[] = rows.map((row) =>
     toRequestItemData({

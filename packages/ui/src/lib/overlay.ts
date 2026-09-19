@@ -6,14 +6,14 @@ export const subtleOverlayInnerClass =
   "overflow-hidden rounded-md bg-transparent"
 
 export const overlayShellClass =
-  "overflow-hidden rounded-xl border border-border bg-card text-foreground"
+  "overflow-hidden rounded-xl border border-border bg-card text-foreground dark:border-white/10 dark:bg-black"
 
 export const overlayInnerClass =
-  "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card"
+  "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
 
 /** Inner dialog surface — `rounded-lg` to sit inside the `rounded-xl` shell. */
 export const overlayDialogInnerClass =
-  "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card"
+  "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
 
 /** Outer chip shell — same two-tone frame as integration cards, `rounded-md`. */
 export const overlayChipShellClass =

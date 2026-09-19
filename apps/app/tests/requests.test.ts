@@ -48,7 +48,12 @@ test("preserves every filter while advancing independently of the URL page", asy
 test("empty batches stop loading even if the count changed", async () => {
   const result = await loadMoreRequests({ ...input, variant: "workspace" });
   expect(result.hasMore).toBe(false);
-  expect(posts).toHaveBeenCalledWith("demo", { order: "newest", limit: 20, offset: 20 });
+  expect(posts).toHaveBeenCalledWith("demo", {
+    statuses: ["pending", "review", "planned", "progress"],
+    order: "newest",
+    limit: 50,
+    offset: 20,
+  });
 });
 
 test("validates offsets before querying", async () => {

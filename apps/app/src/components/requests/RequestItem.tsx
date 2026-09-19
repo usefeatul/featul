@@ -153,7 +153,6 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
   })
   const isSnoozed = isActivelySnoozed(item.snoozedUntil)
   const status = normalizeRoadmapStatus(item.roadmapStatus)
-  const isSettled = status === "completed" || status === "closed"
   const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
     if (!isSelectingMode) return
     e.preventDefault()
@@ -205,7 +204,7 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           <span
             className={cn(
               "min-w-0 truncate text-sm font-medium leading-5",
-              isLinkDisabled || isSnoozed || isSettled
+              isLinkDisabled || isSnoozed
                 ? "text-muted-foreground"
                 : "text-foreground",
             )}

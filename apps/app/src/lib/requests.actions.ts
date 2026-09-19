@@ -5,6 +5,8 @@ import { getServerSession } from "@featul/auth/session";
 import { getWorkspacePosts, getWorkspacePostsCount, listUserWorkspaces } from "@/lib/workspace";
 import { toRequestItemData } from "@/lib/request/item";
 import { loadRequestsPageData } from "@/app/workspaces/[slug]/requests/data";
+import { REQUEST_BATCH_SIZE } from "@/lib/request/pagination";
+import { DEFAULT_REQUEST_STATUSES } from "@/lib/request/statuses";
 
 const batchInput = z.object({
   slug: z.string().min(1),
@@ -41,8 +43,15 @@ export async function loadMoreRequests(input: z.infer<typeof batchInput>) {
   }
 
   const [rows, totalCount] = await Promise.all([
-    getWorkspacePosts(slug, { order: "newest", limit: 20, offset }),
-    getWorkspacePostsCount(slug, {}),
+    getWorkspacePosts(slug, {
+      statuses: [...DEFAULT_REQUEST_STATUSES],
+      order: "newest",
+      limit: REQUEST_BATCH_SIZE,
+      offset,
+    }),
+    getWorkspacePostsCount(slug, {
+      statuses: [...DEFAULT_REQUEST_STATUSES],
+    }),
   ]);
   const nextOffset = offset + rows.length;
   return { items: rows.map(toRequestItemData), nextOffset, hasMore: rows.length > 0 && nextOffset < totalCount };

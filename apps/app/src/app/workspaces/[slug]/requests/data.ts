@@ -8,11 +8,8 @@ import {
 import type { RequestItemData } from "@/types/request"
 import { parseRequestFiltersFromRecord } from "@/utils/request/filters"
 import { boardSlugsForSearch } from "@featul/api/post/search"
-
-const PAGE_SIZE = 20
-
-/** Default statuses to show when no filter is applied */
-const DEFAULT_STATUSES = ["pending", "review", "planned", "progress"] as const
+import { REQUEST_BATCH_SIZE } from "@/lib/request/pagination"
+import { DEFAULT_REQUEST_STATUSES } from "@/lib/request/statuses"
 
 export type RequestsSearchParams = {
   status?: string | string[]
@@ -68,14 +65,14 @@ export async function loadRequestsPageData({
     parseRequestFiltersFromRecord(sp)
 
   // Pagination
-  const pageSize = PAGE_SIZE
+  const pageSize = REQUEST_BATCH_SIZE
   const page = parsePositiveIntSearchParam(sp.page)
   const offset = requestedOffset ?? (page - 1) * pageSize
 
   // Process status filter (use defaults if none provided)
   const statusFilter = statusRaw.map(normalizeStatus)
   if (statusFilter.length === 0) {
-    statusFilter.push(...DEFAULT_STATUSES)
+    statusFilter.push(...DEFAULT_REQUEST_STATUSES)
   }
 
   // Process board/tag filters (clear boards when searching)
