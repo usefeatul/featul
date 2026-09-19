@@ -228,7 +228,8 @@ export default function WorkspaceHeader({
           className={cn(
             "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
             !showPageHeading && "mb-5",
-            isSettingsSection && "mx-auto w-full max-w-4xl",
+            (isSettingsSection || isAccountSection) &&
+              "mx-auto w-full max-w-4xl",
           )}
         >
           {showFilterSummary ? (

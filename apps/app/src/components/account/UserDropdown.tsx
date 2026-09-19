@@ -297,7 +297,7 @@ export default function UserDropdown({
                 type="button"
                 className={cn(
                   sidebarRowClassName,
-                  "text-accent hover:bg-muted dark:hover:bg-black/40",
+                  "text-foreground hover:bg-muted dark:hover:bg-black/40",
                 )}
               >
                 <span className={sidebarLeadSlotClassName}>
