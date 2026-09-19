@@ -219,6 +219,10 @@ export function buildChatRefineOpenRouterMessages(input: {
   const context = [
     "Apply the user's latest request to this changelog entry.",
     "Return ONLY the full updated GitHub-flavored Markdown body.",
+    "Make the smallest change needed to satisfy the request.",
+    "Preserve every unaffected heading, paragraph, list item, link, and their order verbatim.",
+    "Do not regenerate, condense, expand, or rephrase unrelated parts of the entry.",
+    "If the request targets one named section, change only that section.",
     "If they only asked to change the title, keep the body the same.",
     "You may start with TITLE: a new title.",
     "Do not suggest or change tags. Tag requests are handled separately and require confirmation.",

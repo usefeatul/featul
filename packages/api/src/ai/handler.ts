@@ -351,7 +351,10 @@ export async function createChangelogAiStreamResponse(req: Request) {
           title:
             meta.title ||
             extractTitleFromMarkdown(contentMarkdown, parsedInput.title),
-          summary: extractSummaryFromMarkdown(contentMarkdown),
+          summary:
+            parsedInput.action === "chat"
+              ? undefined
+              : extractSummaryFromMarkdown(contentMarkdown),
           suggestedTags: meta.suggestedTags,
         });
         controller.close();

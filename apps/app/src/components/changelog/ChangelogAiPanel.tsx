@@ -12,7 +12,10 @@ import {
 import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
-import type { FeedEditorRef } from "@/components/editor/editor";
+import type {
+  EditorTextSelection,
+  FeedEditorRef,
+} from "@/components/editor/editor";
 import { useAiSourcePosts } from "@/features/changelog/hooks/useAiSourcePosts";
 import { runChangelogAiStream } from "@/features/changelog/hooks/useChangelogAiStream";
 import type { AiChatMessage } from "@/features/changelog/types";
@@ -38,6 +41,7 @@ import {
 import {
   detectChatIntent,
   extractGithubUrls,
+  isSummaryRequest,
   isWithinPastWeek,
 } from "./ai/intent";
 import {
@@ -78,6 +82,7 @@ interface ChangelogAiPanelProps {
   onGeneratingChange?: (generating: boolean) => void;
   pendingPrompt?: PendingPrompt | null;
   onPendingPromptHandled?: () => void;
+  composerFocusRequest?: number;
 }
 
 export function ChangelogAiPanel({
@@ -97,6 +102,7 @@ export function ChangelogAiPanel({
   onGeneratingChange,
   pendingPrompt,
   onPendingPromptHandled,
+  composerFocusRequest = 0,
 }: ChangelogAiPanelProps) {
   const restored = useRef(false);
   const [prompt, setPrompt] = useState("");
@@ -104,6 +110,8 @@ export function ChangelogAiPanel({
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
   const [pendingTagNames, setPendingTagNames] = useState<string[]>([]);
+  const [selectionContext, setSelectionContext] =
+    useState<EditorTextSelection | null>(null);
   const [mention, setMention] = useState<AtQuery | null>(null);
   const [mentionIndex, setMentionIndex] = useState(0);
   const [undoSnapshot, setUndoSnapshot] = useState<EditorSnapshot | null>(null);
@@ -208,10 +216,11 @@ export function ChangelogAiPanel({
   useEffect(() => {
     if (!open) return;
     const frame = window.requestAnimationFrame(() => {
+      setSelectionContext(editorRef.current?.getTextSelection() ?? null);
       inputRef.current?.focus();
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [open]);
+  }, [open, composerFocusRequest, editorRef]);
 
   useEffect(() => {
     if (!open) return;
@@ -513,12 +522,17 @@ export function ChangelogAiPanel({
 
     const contentMarkdown = editorRef.current?.getMarkdown();
     const hadContent = Boolean(contentMarkdown?.trim());
-    const hasSelection = Boolean(editorRef.current?.hasTextSelection());
-    const selectionMarkdown = editorRef.current?.getSelectedText() || "";
+    const textSelection: EditorTextSelection | null =
+      selectionContext ?? editorRef.current?.getTextSelection() ?? null;
+    const selectionMarkdown = textSelection?.text ?? "";
     const intent = detectChatIntent({
       text,
-      hasSelection: hasSelection && Boolean(selectionMarkdown.trim()),
+      hasSelection: Boolean(textSelection && selectionMarkdown.trim()),
     });
+    const summaryRequest =
+      intent === "rewrite" && !textSelection && isSummaryRequest(text);
+    const streamIntoEditor =
+      intent === "rewrite" && !hadContent && !summaryRequest;
     const availableTagNames =
       intent === "tags"
         ? availableTags
@@ -575,7 +589,7 @@ export function ChangelogAiPanel({
     setIsLoading(true);
     onGeneratingChange?.(true);
 
-    if (intent === "rewrite" || intent === "patch") {
+    if (intent === "patch" || (intent === "rewrite" && !summaryRequest)) {
       captureSnapshot();
     }
 
@@ -599,7 +613,7 @@ export function ChangelogAiPanel({
       await runChangelogAiStream(
         {
           slug: workspaceSlug,
-          action: "chat",
+          action: summaryRequest ? "summary" : "chat",
           prompt: text,
           title: title.trim() || undefined,
           contentMarkdown: contentMarkdown?.trim() || undefined,
@@ -612,8 +626,8 @@ export function ChangelogAiPanel({
         },
         {
           editorRef,
-          usesStructuredSections: !hadContent && intent === "rewrite",
-          applyToEditor: intent === "rewrite",
+          usesStructuredSections: streamIntoEditor,
+          applyToEditor: streamIntoEditor,
           patchSelection: intent === "patch",
           signal: controller.signal,
           onStatus: (phase) => {
@@ -666,6 +680,11 @@ export function ChangelogAiPanel({
             if (result.summary) {
               setSummary(result.summary);
             }
+            if (summaryRequest) {
+              replyText = withoutEmDash(result.summary || replyText || "");
+              setIsDirty(true);
+              return;
+            }
             suggestedTags =
               intent === "tags" ? result.suggestedTags : undefined;
             if (intent === "ask" || intent === "tags") {
@@ -673,9 +692,18 @@ export function ChangelogAiPanel({
               return;
             }
             if (intent === "patch" && result.contentMarkdown) {
-              editorRef.current?.replaceSelectionWithMarkdown(
-                result.contentMarkdown,
-              );
+              const applied = textSelection
+                ? editorRef.current?.replaceTextRangeWithMarkdown(
+                    textSelection,
+                    result.contentMarkdown,
+                  )
+                : false;
+              if (!applied) {
+                throw new Error(
+                  "The selected text changed before the edit finished. Select it again and retry.",
+                );
+              }
+              setSelectionContext(null);
             } else if (result.contentMarkdown) {
               editorRef.current?.setContentFromMarkdown(result.contentMarkdown);
             }
@@ -712,6 +740,7 @@ export function ChangelogAiPanel({
                   title: appliedTitle,
                   sourceCount: postIds.length,
                   reply: replyText,
+                  summaryUpdated: summaryRequest,
                   suggestedTags: resolvedSuggestions,
                   selectedTagNames: selectedWorkspaceTags.map(
                     (tag) => tag.name,
@@ -726,9 +755,11 @@ export function ChangelogAiPanel({
                     ? undefined
                     : intent === "tags"
                       ? undefined
-                      : intent === "patch"
-                        ? "Selection updated"
-                        : "Entry updated",
+                      : summaryRequest
+                        ? "Summary updated"
+                        : intent === "patch"
+                          ? "Selection updated"
+                          : "Entry updated",
               }
             : message,
         ),
@@ -907,6 +938,7 @@ export function ChangelogAiPanel({
     setSelectedPostIds([]);
     setPendingTagNames([]);
     setPrompt("");
+    setSelectionContext(null);
     setMention(null);
     setUndoSnapshot(null);
     undoSnapshotRef.current = null;
@@ -950,20 +982,9 @@ export function ChangelogAiPanel({
         {messages.length === 0 ? (
           <div className="px-4 py-3">
             <h3 className="text-sm font-medium">How can I help?</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground/70">
+            <p className="mt-1.5 text-sm font-light leading-relaxed text-muted-foreground/70">
               I can correct wording, update selected text, improve formatting,
               and create relevant tags from this changelog.
-            </p>
-            <div className="mt-5">
-              <Actions
-                actions={STARTERS}
-                disabled={isLoading}
-                onSelect={runStarter}
-              />
-            </div>
-            <p className="mt-5 text-xs leading-relaxed text-muted-foreground/70">
-              Tip: select a few words in the editor, then tell me how to change
-              them. Only the selection will be replaced.
             </p>
           </div>
         ) : (
@@ -1005,10 +1026,16 @@ export function ChangelogAiPanel({
           }
         />
 
-        {messages.length > 0 && !mention && !prompt.trim() ? (
+        {messages.length === 0 &&
+        !selectionContext &&
+        !mention &&
+        !prompt.trim() ? (
           <div className="mb-2">
+            <p className="mb-2 text-[11px] font-light leading-relaxed text-muted-foreground/70">
+              Tip: Select text in the editor, then tell me how to change it.
+            </p>
             <Actions
-              actions={STARTERS.slice(0, 4)}
+              actions={STARTERS}
               disabled={isLoading}
               onSelect={runStarter}
             />
@@ -1018,6 +1045,7 @@ export function ChangelogAiPanel({
         <Composer
           inputRef={inputRef}
           value={prompt}
+          selectionText={selectionContext?.text}
           isLoading={isLoading}
           canUndo={Boolean(undoSnapshot)}
           onChange={(value, caret) => {

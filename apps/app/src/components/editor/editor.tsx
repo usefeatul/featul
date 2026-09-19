@@ -33,6 +33,8 @@ import {
 	type JSONContent,
 	type MentionSuggestionItem,
 } from "@featul/editor";
+import { Button } from "@featul/ui/components/button";
+import { Sparkles } from "lucide-react";
 import {
 	forwardRef,
 	type ForwardedRef,
@@ -47,7 +49,7 @@ import {
  * This component provides the editor menus (bubble menu, table menus) and content.
  * It relies on the editor instance from context (EditorContext / useFeatulEditor).
  */
-function FeedEditorMenus() {
+function FeedEditorMenus({ onAiSelection }: { onAiSelection?: () => void }) {
 	const { editor } = useCurrentEditor();
 	const contentEditor: TiptapEditor | null = editor;
 
@@ -86,6 +88,22 @@ function FeedEditorMenus() {
 				<EditorLinkSelector />
 
 				<EditorClearFormatting />
+
+				{onAiSelection ? (
+					<Button
+						type="button"
+						variant="plain"
+						size="sm"
+						className="h-8.5 gap-1.5 rounded-md px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+						onMouseDown={(event) => event.preventDefault()}
+						onClick={onAiSelection}
+						aria-label="Edit selection with AI"
+						title="Edit selection with AI"
+					>
+						<Sparkles className="size-3.5" />
+						Ask AI
+					</Button>
+				) : null}
 			</EditorBubbleMenu>
 
 			<div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer [&_a]:text-primary [&_a]:font-medium [&_a]:underline [&_a]:decoration-primary/40 [&_a:hover]:decoration-primary [&_a[href*='github.com']]:rounded [&_a[href*='github.com']]:bg-primary/5 [&_a[href*='github.com']]:px-1 [&_a[href*='github.com']]:py-0.5 [&_a[href*='github.com']]:font-semibold">
@@ -97,6 +115,12 @@ function FeedEditorMenus() {
 	);
 }
 
+export type EditorTextSelection = {
+	from: number;
+	to: number;
+	text: string;
+};
+
 export interface FeedEditorRef {
 	focus: () => void;
 	getContent: () => JSONContent | undefined;
@@ -105,9 +129,11 @@ export interface FeedEditorRef {
 	setStreamingMarkdown: (markdown: string) => void;
 	beginAiStream: () => void;
 	updateStreamingMarkdown: (markdown: string) => void;
-	hasTextSelection: () => boolean;
-	getSelectedText: () => string;
-	replaceSelectionWithMarkdown: (markdown: string) => void;
+	getTextSelection: () => EditorTextSelection | null;
+	replaceTextRangeWithMarkdown: (
+		selection: EditorTextSelection,
+		markdown: string,
+	) => boolean;
 }
 
 export interface FeedEditorProps {
@@ -120,6 +146,7 @@ export interface FeedEditorProps {
 	/** Upload handler for images (slash command, drag & drop, paste) */
 	onImageUpload?: (file: File) => Promise<string>;
 	additionalSlashSuggestions?: AdditionalSlashSuggestionsSource;
+	onAiSelection?: () => void;
 }
 
 /**
@@ -139,6 +166,7 @@ export const FeedEditor = forwardRef(
 			mentionSuggestions,
 			onImageUpload,
 			additionalSlashSuggestions,
+			onAiSelection,
 		}: FeedEditorProps,
 		ref: ForwardedRef<FeedEditorRef>,
 	) => {
@@ -242,30 +270,33 @@ export const FeedEditor = forwardRef(
 					state.lastAppliedLength = markdown.length;
 					state.lastGoodMarkdown = markdown;
 				},
-				hasTextSelection: () => {
-					if (!editor) return false;
-					const { empty } = editor.state.selection;
-					return !empty;
-				},
-				getSelectedText: () => {
-					if (!editor) return "";
+				getTextSelection: () => {
+					if (!editor) return null;
 					const { from, to, empty } = editor.state.selection;
-					if (empty) return "";
-					return editor.state.doc.textBetween(from, to, "\n");
+					if (empty) return null;
+					return {
+						from,
+						to,
+						text: editor.state.doc.textBetween(from, to, "\n"),
+					};
 				},
-				replaceSelectionWithMarkdown: (markdown: string) => {
-					if (!editor) return;
-					const { empty } = editor.state.selection;
-					if (empty) {
-						editor.commands.setContent(markdown, { contentType: "markdown" });
-						return;
-					}
+				replaceTextRangeWithMarkdown: (selection, markdown) => {
+					if (!editor) return false;
+					const currentText = editor.state.doc.textBetween(
+						selection.from,
+						selection.to,
+						"\n",
+					);
+					if (currentText !== selection.text) return false;
 
-					editor
+					return editor
 						.chain()
 						.focus()
-						.deleteSelection()
-						.insertContent(markdown, { contentType: "markdown" })
+						.insertContentAt(
+							{ from: selection.from, to: selection.to },
+							markdown,
+							{ contentType: "markdown" },
+						)
 						.run();
 				},
 			}),
@@ -279,7 +310,7 @@ export const FeedEditor = forwardRef(
 		return (
 			<EditorContext.Provider value={{ editor }}>
 				<div className={className}>
-					<FeedEditorMenus />
+					<FeedEditorMenus onAiSelection={onAiSelection} />
 				</div>
 			</EditorContext.Provider>
 		);

@@ -83,11 +83,17 @@ export function assistantCopy(input: {
   title?: string;
   sourceCount: number;
   reply?: string;
+  summaryUpdated?: boolean;
   suggestedTags?: string[];
   selectedTagNames?: string[];
 }) {
   if (input.intent === "ask") {
     return withoutEmDash(input.reply || "Here is what I noticed.");
+  }
+  if (input.summaryUpdated) {
+    return input.reply
+      ? `I added this summary:\n\n${input.reply}`
+      : "I added a summary without changing the changelog body.";
   }
   if (input.intent === "tags") {
     if (!input.suggestedTags?.length) {
@@ -105,7 +111,10 @@ export function assistantCopy(input: {
     return `I found the existing workspace ${subject} ${tags}, which looks like a good fit for this changelog. Would you like me to add ${pronoun}?`;
   }
   if (input.intent === "patch") {
-    return "I have updated only the selected text. Would you like me to make it warmer, shorter, or more technical?";
+    return (
+      input.reply ||
+      "I have updated only the selected text. Would you like me to make it warmer, shorter, or more technical?"
+    );
   }
   if (!input.hadContent && input.sourceCount > 0) {
     const countLabel = `${input.sourceCount} shipped item${input.sourceCount === 1 ? "" : "s"}`;
@@ -118,5 +127,6 @@ export function assistantCopy(input: {
       ? `I have written a draft titled “${input.title}”. Would you like me to refine anything else?`
       : "I have written a draft in the editor. Would you like me to refine anything else?";
   }
+  if (input.reply) return input.reply;
   return "I have updated the changelog while keeping the original meaning. Would you like me to refine anything else?";
 }

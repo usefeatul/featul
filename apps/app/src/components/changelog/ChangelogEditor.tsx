@@ -49,6 +49,7 @@ export function ChangelogEditor({
     const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
     const [isAiOpen, setIsAiOpen] = useState(mode === "create");
+    const [aiComposerFocusRequest, setAiComposerFocusRequest] = useState(0);
     const [pendingPrompt, setPendingPrompt] = useState<{
         text: string;
         attachFeedback?: boolean;
@@ -85,6 +86,11 @@ export function ChangelogEditor({
 
     const openAiPanel = useCallback(() => {
         setIsAiOpen(true);
+    }, []);
+
+    const openAiForSelection = useCallback(() => {
+        setIsAiOpen(true);
+        setAiComposerFocusRequest((request) => request + 1);
     }, []);
 
     const saveWithCheck = useCallback(async () => {
@@ -270,6 +276,7 @@ export function ChangelogEditor({
                             mentionSuggestions={mentionSuggestions}
                             onImageUpload={handleImageUpload}
                             additionalSlashSuggestions={additionalSlashSuggestions}
+                            onAiSelection={openAiForSelection}
                             onUpdate={() => setIsDirty(true)}
                         />
                     </div>
@@ -295,6 +302,7 @@ export function ChangelogEditor({
                     onGeneratingChange={setIsAiGenerating}
                     pendingPrompt={pendingPrompt}
                     onPendingPromptHandled={() => setPendingPrompt(null)}
+                    composerFocusRequest={aiComposerFocusRequest}
                 />
             ) : null}
         </div>
