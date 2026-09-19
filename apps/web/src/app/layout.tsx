@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Sora } from "next/font/google";
+import { Inter, Inter_Tight } from "next/font/google";
 import { DebugTools } from "@featul/ui/global/debug-tools";
 import Script from "next/script";
 import "./globals.css";
@@ -21,16 +21,16 @@ import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { serializeJsonLd } from "@/lib/security";
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
   variable: "--font-jakarta",
 });
 
-const sora = Sora({
+const interTight = Inter_Tight({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-playfair",
 });
@@ -108,7 +108,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${sora.variable}`}
+      className={`${inter.variable} ${interTight.variable}`}
       suppressHydrationWarning
     >
       <head>
