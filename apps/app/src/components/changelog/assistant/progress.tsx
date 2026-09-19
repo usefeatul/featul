@@ -1,16 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  BookOpen,
-  Check,
-  List,
-  MessageSquare,
-  Pencil,
-  Sparkles,
-  Tags,
-  type LucideIcon,
-} from "lucide-react";
+import { Dots } from "./dots";
 import { Shimmer } from "./shimmer";
 
 export type AssistantPhase = "reading" | "planning" | "writing" | "applying";
@@ -30,18 +21,6 @@ function phaseLabel(phase: AssistantPhase, activity: AssistantActivity) {
   if (activity === "tags") return "Adding tags";
   if (activity === "patch") return "Applying selection";
   return "Editing text";
-}
-
-function phaseIcon(
-  phase: AssistantPhase,
-  activity: AssistantActivity,
-): LucideIcon {
-  if (phase === "reading") return BookOpen;
-  if (phase === "planning") return List;
-  if (phase === "applying") return Check;
-  if (activity === "tags") return Tags;
-  if (activity === "ask") return MessageSquare;
-  return Pencil;
 }
 
 export function Progress({
@@ -91,12 +70,7 @@ export function Progress({
       aria-live={complete ? "off" : "polite"}
     >
       <div className="flex items-center gap-2">
-        <Sparkles
-          strokeWidth={1.5}
-          className={
-            complete ? "size-3.5 shrink-0" : "size-3.5 shrink-0 animate-pulse"
-          }
-        />
+        <Dots active={!complete} />
         {complete ? (
           <span>{`Thought for ${elapsed}s`}</span>
         ) : (
@@ -105,23 +79,15 @@ export function Progress({
       </div>
 
       {visiblePhases.map((visiblePhase) => {
-        const Icon = phaseIcon(visiblePhase, activity);
         const isActive = visiblePhase === phase && !complete;
 
         return (
           <div key={visiblePhase} className="flex items-center gap-2">
-            <Icon
-              strokeWidth={1.5}
-              className={
-                isActive
-                  ? "size-3.5 shrink-0 animate-pulse"
-                  : "size-3.5 shrink-0"
-              }
-            />
-            {complete ? (
-              <span>{phaseLabel(visiblePhase, activity)}</span>
-            ) : (
+            <Dots active={isActive} />
+            {isActive ? (
               <Shimmer>{phaseLabel(visiblePhase, activity)}</Shimmer>
+            ) : (
+              <span>{phaseLabel(visiblePhase, activity)}</span>
             )}
           </div>
         );
