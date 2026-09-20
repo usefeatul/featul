@@ -234,7 +234,7 @@ export function ChangelogEditor({
             )}>
                 <WorkspaceHeader workspaceName={workspaceSlug} embeddedInEditor editorActions={headerActions} />
             <article
-                className="flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background lg:min-h-0 lg:w-auto lg:flex-1 lg:overflow-y-auto lg:overscroll-contain"
+                className="scrollbar-hide flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background lg:min-h-0 lg:w-auto lg:flex-1 lg:overflow-y-auto lg:overscroll-contain"
             >
                 <div className="mx-auto w-full max-w-4xl shrink-0 px-4 pt-6 sm:px-6 sm:pt-8">
                     <CoverImageUploader

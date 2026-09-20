@@ -75,7 +75,7 @@ export default function RequestDetail({
       <div
         id="request-detail-scroll"
         className={cn(
-          "min-w-0 flex-1 overflow-y-auto overscroll-contain bg-background",
+          "scrollbar-hide min-w-0 flex-1 overflow-y-auto overscroll-contain bg-background",
           listOpen && "lg:border-r lg:border-border/60 dark:lg:border-white/10",
         )}
       >
