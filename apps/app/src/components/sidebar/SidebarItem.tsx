@@ -78,7 +78,7 @@ function SidebarItem({
       </span>
       <span className="relative z-[1] min-w-0 flex-1 truncate transition-colors duration-200">{item.label}</span>
       {typeof count === "number" && count > 0 ? (
-        <SidebarBadge className="relative z-[1] ml-auto shrink-0" innerClassName="text-accent" fixedWidth={count < 10}>
+        <SidebarBadge className="relative z-[1] ml-auto shrink-0" innerClassName="font-medium text-muted-foreground/70" fixedWidth={count < 10}>
           {count}
         </SidebarBadge>
       ) : null}

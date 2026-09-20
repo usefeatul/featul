@@ -89,7 +89,7 @@ export default function Sidebar({
   return (
     <aside
       className={cn(
-        "hidden lg:flex w-full lg:w-72 lg:shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
+        "hidden lg:flex w-full lg:w-[268px] lg:shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
         "lg:sticky lg:top-0 lg:h-dvh lg:overflow-hidden",
         className,
       )}

@@ -60,7 +60,7 @@ export default function Timezone({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <SidebarBadge className="ml-auto shrink-0" fixedWidth={false} innerClassName="px-1.5 text-accent">
+              <SidebarBadge className="ml-auto shrink-0" fixedWidth={false} innerClassName="px-1.5 font-medium text-muted-foreground/70">
                 {time}
               </SidebarBadge>
             </TooltipTrigger>
