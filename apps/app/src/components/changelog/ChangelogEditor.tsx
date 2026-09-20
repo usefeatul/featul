@@ -6,7 +6,7 @@ import { FeedEditor } from "@/components/editor/editor";
 import type { JSONContent, MentionSuggestionItem } from "@featul/editor";
 import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
-import { useEditorHeaderActions } from "./EditorHeaderContext";
+import type { EditorAction } from "./EditorHeaderContext";
 import { CoverImageUploader } from "./CoverImageUploader";
 import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
@@ -22,12 +22,14 @@ import { getPublishCheckIssues } from "./ai/publishCheck";
 import { clearChangelogAiChat } from "./ai/persist";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
 import { cn } from "@featul/ui/lib/utils";
+import { useAssistantPanel } from "@/hooks/useAssistantPanel";
 
 const ENABLE_CHANGELOG_AI = true;
 
 interface ChangelogEditorProps {
     workspaceSlug: string;
     mode: "create" | "edit";
+    initialAiOpen?: boolean;
     entryId?: string;
     initialData?: {
         title: string;
@@ -43,14 +45,14 @@ interface ChangelogEditorProps {
 export function ChangelogEditor({
     workspaceSlug,
     mode,
+    initialAiOpen = mode === "create",
     entryId,
     initialData,
     availableTags,
 }: ChangelogEditorProps) {
     const router = useRouter();
-    const { setActions, clearActions } = useEditorHeaderActions();
     const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
-    const [isAiOpen, setIsAiOpen] = useState(mode === "create");
+    const [isAiOpen, setIsAiOpen] = useAssistantPanel(initialAiOpen);
     const [aiComposerFocusRequest, setAiComposerFocusRequest] = useState(0);
     const [pendingPrompt, setPendingPrompt] = useState<{
         text: string;
@@ -88,12 +90,12 @@ export function ChangelogEditor({
 
     const openAiPanel = useCallback(() => {
         setIsAiOpen(true);
-    }, []);
+    }, [setIsAiOpen]);
 
     const openAiForSelection = useCallback(() => {
         setIsAiOpen(true);
         setAiComposerFocusRequest((request) => request + 1);
-    }, []);
+    }, [setIsAiOpen]);
 
     const saveWithCheck = useCallback(async () => {
         if (!isDraft) {
@@ -176,20 +178,16 @@ export function ChangelogEditor({
         };
     }, [workspaceSlug]);
 
-    useEffect(() => {
-        setActions([
-            ...(ENABLE_CHANGELOG_AI
+    const headerActions: EditorAction[] = [
+            ...(ENABLE_CHANGELOG_AI && !isAiOpen
                 ? [
                       {
                           key: "ai",
-                          label: "AI",
+                          label: "Show assistant",
                           type: "button" as const,
                           variant: "plain" as const,
                           icon: <Sparkles className="size-4" />,
-                          active: isAiOpen,
-                          onClick: () => {
-                              setIsAiOpen((open) => !open);
-                          },
+                          onClick: openAiPanel,
                       },
                   ]
                 : []),
@@ -220,24 +218,21 @@ export function ChangelogEditor({
                 icon: <ChevronLeftIcon className="size-3" />,
                 onClick: () => router.push(`/workspaces/${workspaceSlug}/changelog`),
             },
-        ]);
-
-        return () => clearActions();
-    }, [setActions, clearActions, saveWithCheck, isSaving, isDraft, isDirty, isAiOpen, router, workspaceSlug, setIsDraft, setIsDirty]);
+    ];
 
     return (
         <div
             data-changelog-editor
             className={cn(
-                "relative min-h-dvh bg-background lg:flex lg:h-dvh lg:overflow-hidden",
-                isAiOpen && "lg:gap-px lg:bg-muted/45 lg:pr-1 dark:lg:bg-black/25",
+                "relative min-h-dvh bg-background lg:flex lg:h-dvh lg:overflow-hidden lg:bg-muted/45 dark:lg:bg-black/25 lg:transition-[gap,padding-right] lg:duration-300 lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:motion-reduce:transition-none",
+                isAiOpen ? "lg:gap-px lg:pr-1" : "lg:gap-0 lg:pr-0",
             )}
         >
             <div className={cn(
-                "flex min-w-0 flex-1 flex-col bg-background lg:min-h-0",
-                isAiOpen && "lg:border-r lg:border-border/60 dark:lg:border-white/10",
+                "flex min-w-0 flex-1 flex-col bg-background lg:min-h-0 lg:border-border/60 dark:lg:border-white/10 lg:transition-[border-right-width] lg:duration-300 lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:motion-reduce:transition-none",
+                isAiOpen ? "lg:border-r" : "lg:border-r-0",
             )}>
-                <WorkspaceHeader workspaceName={workspaceSlug} embeddedInEditor />
+                <WorkspaceHeader workspaceName={workspaceSlug} embeddedInEditor editorActions={headerActions} />
             <article
                 className="flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background lg:min-h-0 lg:w-auto lg:flex-1 lg:overflow-y-auto lg:overscroll-contain"
             >

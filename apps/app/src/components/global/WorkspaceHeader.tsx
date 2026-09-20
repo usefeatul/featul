@@ -16,7 +16,7 @@ import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
 import { Plus } from "lucide-react";
-import { useEditorHeaderActionsOptional } from "@/components/changelog/EditorHeaderContext";
+import { useEditorHeaderActionsOptional, type EditorAction } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
 import { cn } from "@featul/ui/lib/utils";
 
@@ -34,9 +34,11 @@ const compactActionButtonClass =
 export default function WorkspaceHeader({
   workspaceName,
   embeddedInEditor = false,
+  editorActions,
 }: {
   workspaceName: string;
   embeddedInEditor?: boolean;
+  editorActions?: EditorAction[];
 }) {
   const pathname = usePathname() || "/";
   const parts = pathname.split("/").filter(Boolean);
@@ -58,6 +60,7 @@ export default function WorkspaceHeader({
     ? getAccountSectionMeta(rest[1] || "profile")
     : null;
   const editorContext = useEditorHeaderActionsOptional();
+  const actions = editorActions ?? editorContext?.actions ?? [];
   const hasEmbeddedEditorHeader = rest[0] === "changelog" &&
     (rest[1] === "new" || rest[2] === "edit");
   let title = rest.length === 0 ? "Requests" : "";
@@ -117,10 +120,9 @@ export default function WorkspaceHeader({
       </Button>
     </div>
   ) : showChangelogEditActions &&
-    editorContext &&
-    editorContext.actions.length > 0 ? (
+    actions.length > 0 ? (
     <div className="ml-auto flex shrink-0 items-center gap-1">
-      {editorContext.actions.map((action) =>
+      {actions.map((action) =>
         action.type === "switch" ? (
           <div
             key={action.key}
@@ -137,6 +139,9 @@ export default function WorkspaceHeader({
             onClick={action.onClick}
             disabled={action.disabled}
             aria-pressed={action.active || undefined}
+            aria-expanded={action.key === "ai" ? Boolean(action.active) : undefined}
+            aria-controls={action.key === "ai" ? "changelog-assistant" : undefined}
+            id={action.key === "ai" ? "assistant-panel-toggle" : undefined}
             aria-label={action.label || "Back to changelog"}
             title={action.label || "Back to changelog"}
             className={cn(

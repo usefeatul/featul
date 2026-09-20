@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react"
 
-interface EditorAction {
+export interface EditorAction {
     key: string
     label: string
     icon?: ReactNode

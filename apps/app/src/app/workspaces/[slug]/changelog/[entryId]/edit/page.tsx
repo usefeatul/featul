@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { ASSISTANT_PANEL_COOKIE } from "@/lib/changelog/panel";
 import { createPageMetadata } from "@/lib/seo";
 import { ChangelogEditor } from "@/components/changelog/ChangelogEditor";
 import { getChangelogEntryForEdit } from "../../data";
@@ -22,11 +24,13 @@ export default async function EditChangelogPage({ params }: Props) {
     }
 
     const { entry, availableTags } = data;
+    const initialAiOpen = (await cookies()).get(ASSISTANT_PANEL_COOKIE)?.value === "true";
 
     return (
         <ChangelogEditor
             workspaceSlug={slug}
             mode="edit"
+            initialAiOpen={initialAiOpen}
             entryId={entryId}
             initialData={{
                 title: entry.title,

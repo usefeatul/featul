@@ -12,6 +12,7 @@ import {
 import { PanelRightClose, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
+import { cn } from "@featul/ui/lib/utils";
 import type {
   EditorTextSelection,
   FeedEditorRef,
@@ -214,7 +215,12 @@ export function ChangelogAiPanel({
   }, [mention?.query, mentionItems.length]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      if (document.getElementById("changelog-assistant")?.contains(document.activeElement)) {
+        document.getElementById("assistant-panel-toggle")?.focus();
+      }
+      return;
+    }
     const frame = window.requestAnimationFrame(() => {
       setSelectionContext(editorRef.current?.getTextSelection() ?? null);
       inputRef.current?.focus();
@@ -254,8 +260,9 @@ export function ChangelogAiPanel({
   }, [open, onOpenChange, restoreSnapshot, undoSnapshot]);
 
   useEffect(() => {
+    if (!open) return;
     bottomRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, isLoading]);
+  }, [messages, isLoading, open]);
 
   const updateMention = (value: string, caret: number) => {
     setMention(getAtQuery(value, caret));
@@ -946,10 +953,22 @@ export function ChangelogAiPanel({
     window.requestAnimationFrame(() => inputRef.current?.focus());
   };
 
-  if (!open) return null;
-
   return (
-    <aside className="fixed inset-0 z-40 flex animate-in flex-col bg-background duration-200 slide-in-from-right-2 lg:relative lg:inset-auto lg:z-10 lg:h-full lg:w-[22rem] lg:shrink-0 lg:border-l lg:border-border/60 dark:lg:border-white/10">
+    <aside
+      id="changelog-assistant"
+      aria-label="AI assistant"
+      aria-hidden={!open}
+      inert={!open}
+      data-state={open ? "open" : "closed"}
+      className={cn(
+        "fixed inset-0 z-40 overflow-hidden bg-background transition-[translate,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+        "lg:relative lg:inset-auto lg:z-10 lg:h-full lg:shrink-0 lg:transition-[width,opacity] lg:motion-reduce:transition-none",
+        open
+          ? "translate-x-0 opacity-100 lg:w-[22rem]"
+          : "pointer-events-none translate-x-full opacity-0 lg:w-0 lg:translate-x-0",
+      )}
+    >
+      <div className="flex h-full w-full flex-col lg:w-[22rem] lg:border-l lg:border-border/60 dark:lg:border-white/10">
       <header className="flex h-12 shrink-0 items-center gap-2 px-4">
         <h2 className="text-sm font-medium">Assistant</h2>
         <div className="ml-auto flex items-center gap-1">
@@ -971,6 +990,8 @@ export function ChangelogAiPanel({
             className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.06]"
             onClick={() => onOpenChange(false)}
             aria-label="Close assistant"
+            aria-expanded={open}
+            aria-controls="changelog-assistant"
             title="Close assistant"
           >
             <PanelRightClose className="size-4" />
@@ -1072,6 +1093,7 @@ export function ChangelogAiPanel({
           onSend={() => void sendMessage(prompt)}
           onStop={() => abortRef.current?.abort()}
         />
+      </div>
       </div>
     </aside>
   );
