@@ -30,7 +30,7 @@ export function Actions({
             type="button"
             disabled={disabled}
             onClick={() => onSelect(action)}
-            className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-dashed border-border/80 px-2.5 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-black/5 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-white/[0.05]"
+            className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-dashed border-border/80 px-2.5 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-black/5 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-white/[0.05]"
           >
             <Icon className="size-3.5" />
             {action.label}

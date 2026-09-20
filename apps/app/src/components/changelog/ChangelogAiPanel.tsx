@@ -13,6 +13,7 @@ import { PanelRightClose, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
+import { useIsomorphicLayoutEffect } from "@featul/ui/hooks/use-isomorphic-layout-effect";
 import type {
   EditorTextSelection,
   FeedEditorRef,
@@ -105,7 +106,7 @@ export function ChangelogAiPanel({
   onPendingPromptHandled,
   composerFocusRequest = 0,
 }: ChangelogAiPanelProps) {
-  const restored = useRef(false);
+  const [historyReady, setHistoryReady] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
@@ -125,18 +126,19 @@ export function ChangelogAiPanel({
 
   mentionRef.current = mention;
 
-  useEffect(() => {
-    if (!open || restored.current) return;
-    restored.current = true;
+  useIsomorphicLayoutEffect(() => {
+    if (historyReady) return;
     const stored = loadChangelogAiChat(workspaceSlug, entryId);
-    if (!stored) return;
-    setMessages(stored.messages);
-    setSelectedPostIds(stored.selectedPostIds);
-    setPendingTagNames(stored.pendingTagNames);
-  }, [open, workspaceSlug, entryId]);
+    if (stored) {
+      setMessages(stored.messages);
+      setSelectedPostIds(stored.selectedPostIds);
+      setPendingTagNames(stored.pendingTagNames);
+    }
+    setHistoryReady(true);
+  }, [historyReady, workspaceSlug, entryId]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !historyReady) return;
     saveChangelogAiChat(workspaceSlug, entryId, {
       messages,
       selectedPostIds,
@@ -144,6 +146,7 @@ export function ChangelogAiPanel({
     });
   }, [
     open,
+    historyReady,
     workspaceSlug,
     entryId,
     messages,
@@ -838,7 +841,7 @@ export function ChangelogAiPanel({
   };
 
   useEffect(() => {
-    if (!open || !pendingPrompt) return;
+    if (!open || !historyReady || !pendingPrompt) return;
     onPendingPromptHandled?.();
 
     if (pendingPrompt.attachThisWeek) {
@@ -866,7 +869,7 @@ export function ChangelogAiPanel({
     }
 
     void pendingActionsRef.current.sendMessage(pendingPrompt.text);
-  }, [open, pendingPrompt, onPendingPromptHandled]);
+  }, [open, historyReady, pendingPrompt, onPendingPromptHandled]);
 
   const handleInputKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (mention) {
@@ -999,8 +1002,18 @@ export function ChangelogAiPanel({
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-        {messages.length === 0 ? (
+      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide" aria-busy={!historyReady}>
+        {!historyReady ? (
+          <div role="status" className="space-y-4 px-4 py-5">
+            <span className="sr-only">Loading conversation</span>
+            <div aria-hidden="true" className="ml-auto h-16 w-4/5 rounded-xl bg-muted/50" />
+            <div aria-hidden="true" className="space-y-2">
+              <div className="h-3 w-2/3 rounded bg-muted/50" />
+              <div className="h-3 w-full rounded bg-muted/50" />
+              <div className="h-3 w-3/4 rounded bg-muted/50" />
+            </div>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="px-4 py-3">
             <h3 className="text-sm font-medium">How can I help?</h3>
             <p className="mt-1.5 text-sm font-light leading-relaxed text-muted-foreground/70">
@@ -1047,7 +1060,7 @@ export function ChangelogAiPanel({
           }
         />
 
-        {messages.length === 0 &&
+        {historyReady && messages.length === 0 &&
         !selectionContext &&
         !mention &&
         !prompt.trim() ? (

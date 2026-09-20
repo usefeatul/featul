@@ -3,7 +3,7 @@
 import type { KeyboardEvent, MouseEvent, RefObject } from "react";
 import { ArrowUp, Paperclip, Square, Undo2 } from "lucide-react";
 import { Button } from "@featul/ui/components/button";
-import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize";
+import TextareaAutosize from "react-textarea-autosize";
 
 export function Composer({
   inputRef,
@@ -63,12 +63,13 @@ export function Composer({
         onKeyDown={onKeyDown}
         minRows={2}
         maxRows={7}
+        rows={2}
         placeholder={
           selectionText
             ? "Tell AI how to change this selection…"
             : "Ask about this entry…"
         }
-        className="w-full resize-none bg-transparent px-1.5 py-1 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+        className="block min-h-[calc(2lh+0.5rem)] w-full resize-none bg-transparent px-1.5 py-1 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
       />
       <div className="mt-1 flex items-center gap-1">
         <Button

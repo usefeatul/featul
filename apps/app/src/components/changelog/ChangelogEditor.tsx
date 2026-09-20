@@ -291,6 +291,7 @@ export function ChangelogEditor({
 
             {ENABLE_CHANGELOG_AI ? (
                 <ChangelogAiPanel
+                    key={`${workspaceSlug}:${entryId ?? "draft"}`}
                     open={isAiOpen}
                     onOpenChange={setIsAiOpen}
                     workspaceSlug={workspaceSlug}
