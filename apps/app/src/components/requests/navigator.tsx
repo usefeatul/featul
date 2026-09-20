@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { PanelRightClose, Search, X } from "lucide-react"
+import { PanelLeftClose, Search, X } from "lucide-react"
 import { Button } from "@featul/ui/components/button"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { cn } from "@featul/ui/lib/utils"
@@ -23,7 +23,7 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
   initialWidth?: number
   onClose: () => void
 }) {
-  const resize = usePanelResize(open, "requests", initialWidth)
+  const resize = usePanelResize(open, "requests", initialWidth, "left")
   const searchParams = useSearchParams()
   const [filterQuery, setFilterQuery] = useState(searchParams.toString())
   const [search, setSearch] = useState(searchParams.get("search") || "")
@@ -115,15 +115,15 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
       inert={!open}
       className={cn(
         "absolute inset-x-0 bottom-0 z-30 h-[82dvh] overflow-hidden rounded-t-2xl bg-background shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
-        "md:relative md:inset-auto md:order-last md:z-10 md:h-full md:shrink-0 md:rounded-none md:bg-transparent md:shadow-none md:transition-[width,opacity] md:duration-200",
+        "md:relative md:inset-auto md:z-10 md:h-full md:shrink-0 md:rounded-none md:bg-transparent md:shadow-none md:transition-[width,opacity] md:duration-200",
         open
-          ? "translate-y-0 opacity-100 md:mr-1 md:w-[var(--resizable-panel-width)] md:translate-y-0"
+          ? "translate-y-0 opacity-100 md:w-[var(--resizable-panel-width)] md:translate-y-0"
           : "pointer-events-none translate-y-full opacity-0 md:w-0 md:translate-y-0",
         resize.isResizing && "md:transition-none",
       )}
     >
       <Resizer resize={resize} controls="request-navigator" label="Resize request sidebar" className="hidden md:flex" />
-      <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-l md:border-border/60 md:shadow-none dark:md:border-white/10">
+      <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:md:border-white/10">
         <div className="flex min-h-13 shrink-0 items-center justify-between px-3">
           <div className="flex min-w-0 items-center gap-2">
             <h2 className="truncate text-sm font-semibold">Request queue</h2>
@@ -151,7 +151,7 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="plain" onClick={onClose} aria-label="Hide request queue" aria-expanded={true} aria-controls="request-navigator" className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]">
-                  <PanelRightClose className="size-4 text-neutral-400 dark:text-neutral-300" />
+                  <PanelLeftClose className="size-4 text-neutral-400 dark:text-neutral-300" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom" sideOffset={6}>Hide request queue</TooltipContent>

@@ -30,7 +30,7 @@ export function Resizer({
       aria-valuemax={Math.round(resize.maxWidth / resize.minWidth * 100)}
       aria-valuenow={Math.round(width / resize.minWidth * 100)}
       aria-valuetext={`${Math.round(width / resize.minWidth * 100)}% width`}
-      title="Drag left to widen · Double-click to reset"
+      title={`Drag ${resize.side === "left" ? "right" : "left"} to widen · Double-click to reset`}
       onPanStart={resize.onPanStart}
       onPan={resize.onPan}
       onPanEnd={resize.onPanEnd}
@@ -38,12 +38,14 @@ export function Resizer({
       onDoubleClick={resize.onDoubleClick}
       onKeyDown={resize.onKeyDown}
       className={cn(
-        "group/resizer absolute inset-y-0 left-0 z-30 flex w-3 cursor-col-resize touch-none select-none items-center justify-center outline-none",
+        "group/resizer absolute inset-y-0 z-30 flex w-3 cursor-col-resize touch-none select-none items-center justify-center outline-none",
+        resize.side === "left" ? "right-0" : "left-0",
         className,
       )}
     >
       <span className={cn(
-        "absolute inset-y-0 left-0 w-px transition-colors group-hover/resizer:bg-primary/50 group-focus-visible/resizer:bg-primary motion-reduce:transition-none",
+        "absolute inset-y-0 w-px transition-colors group-hover/resizer:bg-primary/50 group-focus-visible/resizer:bg-primary motion-reduce:transition-none",
+        resize.side === "left" ? "right-0" : "left-0",
         resize.isResizing && "bg-primary/50",
       )} />
     </motion.div>

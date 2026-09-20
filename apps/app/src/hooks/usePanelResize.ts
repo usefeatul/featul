@@ -12,7 +12,8 @@ import {
 } from "@/lib/panel";
 
 /** Widths are in rem so resizing follows the same scale as the existing panels. */
-export function usePanelResize(open: boolean, panel: PanelKind, initialWidth = BASE_WIDTH) {
+export function usePanelResize(open: boolean, panel: PanelKind, initialWidth = BASE_WIDTH, side: "left" | "right" = "right") {
+  const direction = side === "left" ? 1 : -1;
   const panelRef = useRef<HTMLElement>(null);
   const width = useMotionValue(parsePanelWidth(initialWidth));
   const preferredWidth = useRef(parsePanelWidth(initialWidth));
@@ -79,6 +80,7 @@ export function usePanelResize(open: boolean, panel: PanelKind, initialWidth = B
   };
 
   return {
+    side,
     panelRef,
     width,
     minWidth: BASE_WIDTH,
@@ -94,7 +96,7 @@ export function usePanelResize(open: boolean, panel: PanelKind, initialWidth = B
     },
     onPan: (_event: PointerEvent, info: PanInfo) => {
       if (!open || !gesture.current) return;
-      setWidth(gesture.current.width - info.offset.x / gesture.current.rem);
+      setWidth(gesture.current.width + direction * info.offset.x / gesture.current.rem);
     },
     onPanEnd: finish,
     onPointerCancel: finish,
@@ -103,8 +105,8 @@ export function usePanelResize(open: boolean, panel: PanelKind, initialWidth = B
       saveWidth();
     },
     onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "ArrowLeft") setWidth(width.get() + 0.5);
-      else if (event.key === "ArrowRight") setWidth(width.get() - 0.5);
+      if (event.key === "ArrowLeft") setWidth(width.get() - direction * 0.5);
+      else if (event.key === "ArrowRight") setWidth(width.get() + direction * 0.5);
       else if (event.key === "Home") setWidth(BASE_WIDTH);
       else if (event.key === "End") setWidth(maxWidth);
       else if (event.key === "Escape" && gesture.current) {

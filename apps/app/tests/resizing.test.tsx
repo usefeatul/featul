@@ -7,7 +7,7 @@ import type { PanInfo } from "framer-motion";
 import { usePanelResize } from "../src/hooks/usePanelResize";
 import { PANEL_WIDTH_COOKIES, parsePanelWidth, type PanelKind } from "../src/lib/panel";
 
-test("right panels resize within bounds, reset, and restore selection after dragging", async () => {
+test("panels resize in either direction within bounds and restore selection after dragging", async () => {
   const dom = new Window({ url: "http://localhost" });
   let measure: () => void = () => {};
   Object.assign(globalThis, {
@@ -25,8 +25,8 @@ test("right panels resize within bounds, reset, and restore selection after drag
   document.body.style.cursor = "crosshair";
   document.body.style.userSelect = "text";
   let resize!: ReturnType<typeof usePanelResize>;
-  function Harness({ open }: { open: boolean }) {
-    resize = usePanelResize(open, "requests");
+  function Harness({ open, side = "right" }: { open: boolean; side?: "left" | "right" }) {
+    resize = usePanelResize(open, "requests", 22, side);
     return <div><aside ref={resize.panelRef} /></div>;
   }
   const host = document.createElement("div");
@@ -82,6 +82,15 @@ test("right panels resize within bounds, reset, and restore selection after drag
     await act(async () => resize.onPanStart());
     await act(async () => resize.onPointerCancel());
     expect(document.body.style.userSelect).toBe("text");
+    await act(async () => root.render(<Harness open side="left" />));
+    await act(async () => resize.onPanStart());
+    await act(async () => pan(32));
+    expect(resize.width.get()).toBe(24);
+    await act(async () => resize.onPanEnd());
+    await act(async () => key("ArrowLeft"));
+    expect(resize.width.get()).toBe(23.5);
+    await act(async () => key("ArrowRight"));
+    expect(resize.width.get()).toBe(24);
     await act(async () => resize.onPanStart());
   } finally {
     await act(async () => root.unmount());

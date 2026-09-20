@@ -70,7 +70,7 @@ export default function RequestDetail({
       data-request-detail
       className={cn(
         "relative -mx-4 flex h-[calc(100dvh-5rem)] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16",
-        listOpen && "lg:gap-px lg:bg-muted/45 dark:lg:bg-black/25",
+        listOpen && "lg:gap-[2px] lg:bg-muted/45 dark:lg:bg-black/25",
       )}
     >
       <Navigator workspaceSlug={workspaceSlug} postId={post.id} open={listOpen} onClose={() => toggleList(false)} initialWidth={initialPanelWidth} />
@@ -78,7 +78,7 @@ export default function RequestDetail({
         id="request-detail-scroll"
         className={cn(
           "scrollbar-hide min-w-0 flex-1 overflow-y-auto overscroll-contain bg-background",
-          listOpen && "lg:border-r lg:border-border/60 dark:lg:border-white/10",
+          listOpen && "lg:border-l lg:border-border/60 dark:lg:border-white/10",
         )}
       >
       <Header title={post.title} postId={post.id} workspaceSlug={workspaceSlug} backHref={backHref} prevHref={prevHref} nextHref={nextHref} readonly={readonly} onOpenList={listOpen ? undefined : () => toggleList(true)} />

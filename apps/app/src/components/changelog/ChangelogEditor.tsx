@@ -227,7 +227,7 @@ export function ChangelogEditor({
             data-changelog-editor
             className={cn(
                 "relative min-h-dvh bg-background lg:flex lg:h-dvh lg:overflow-hidden lg:bg-muted/45 dark:lg:bg-black/25 lg:transition-[gap,padding-right] lg:duration-300 lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:motion-reduce:transition-none",
-                isAiOpen ? "lg:gap-px lg:pr-1" : "lg:gap-0 lg:pr-0",
+                isAiOpen ? "lg:gap-[2px] lg:pr-1" : "lg:gap-0 lg:pr-0",
             )}
         >
             <div className={cn(

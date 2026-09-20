@@ -64,7 +64,7 @@ export default async function WorkspaceLayout({
   const serverNow = Date.now();
   return (
     <Container
-      className="workspace-shell fixed inset-0 flex h-dvh overflow-hidden overscroll-none bg-background"
+      className="workspace-shell fixed inset-0 flex h-dvh overflow-hidden overscroll-none bg-background lg:gap-[2px] lg:bg-muted/45 dark:lg:bg-black/25"
       maxWidth="full"
       noPadding
     >
@@ -81,7 +81,7 @@ export default async function WorkspaceLayout({
         initialUser={session?.user}
         initialDeviceAccounts={deviceAccounts}
       />
-      <main className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden">
+      <main className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden bg-background lg:border-l lg:border-border/60 dark:lg:border-white/10">
         <EditorHeaderProvider>
           <WorkspaceHeader workspaceName={ws?.name ?? slug} />
           <div data-workspace-scroll className="min-h-0 flex-1 overflow-y-auto overscroll-none px-4 pb-20 sm:px-8 lg:px-12 lg:pb-8 xl:px-16 has-[[data-changelog-editor]]:px-0 has-[[data-changelog-editor]]:pb-0 has-[[data-request-detail]]:overflow-hidden lg:has-[[data-request-detail]]:pb-0">
