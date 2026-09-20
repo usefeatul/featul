@@ -151,7 +151,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
         <span key={tag.id} className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-md bg-black/5 pl-2.5 pr-1.5 text-xs font-medium dark:bg-white/5">
           <span className="size-1.5 shrink-0 rounded-full bg-primary" />
           <span className="truncate">{tag.name}</span>
-          <button type="button" aria-label={`Remove ${tag.name} tag`} title={`Remove ${tag.name}`} disabled={mutation.isPending} onClick={() => toggleTag(tag.id)} className="flex size-5 shrink-0 items-center justify-center rounded text-accent hover:bg-black/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50 dark:hover:bg-white/10">
+          <button type="button" aria-label={`Remove ${tag.name} tag`} title={`Remove ${tag.name}`} disabled={mutation.isPending} onClick={() => toggleTag(tag.id)} className="flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-accent hover:bg-black/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:cursor-wait disabled:opacity-50 dark:hover:bg-white/10">
             <XMarkIcon className="size-3" />
           </button>
         </span>

@@ -29,7 +29,7 @@ function resolveTitle(segment: string): string {
 }
 
 const compactActionButtonClass =
-  "size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]";
+  "size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-[#292929] dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
 
 export default function WorkspaceHeader({
   workspaceName,

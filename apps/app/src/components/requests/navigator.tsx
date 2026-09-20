@@ -12,13 +12,18 @@ import FiltersAction from "./actions/FiltersAction"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters"
 import { QueueItem } from "./queueitem"
+import { motion } from "framer-motion"
+import { usePanelResize } from "@/hooks/usePanelResize"
+import { Resizer } from "@/components/global/resizer"
 
-export default function Navigator({ workspaceSlug, postId, open, onClose }: {
+export default function Navigator({ workspaceSlug, postId, open, onClose, initialWidth }: {
   workspaceSlug: string
   postId: string
   open: boolean
+  initialWidth?: number
   onClose: () => void
 }) {
+  const resize = usePanelResize(open, "requests", initialWidth)
   const searchParams = useSearchParams()
   const [filterQuery, setFilterQuery] = useState(searchParams.toString())
   const [search, setSearch] = useState(searchParams.get("search") || "")
@@ -101,7 +106,9 @@ export default function Navigator({ workspaceSlug, postId, open, onClose }: {
   }, [open, hasNextPage, isFetching, isError, fetchNextPage])
 
   return (
-    <aside
+    <motion.aside
+      ref={resize.panelRef}
+      style={resize.style}
       id="request-navigator"
       aria-label="Request queue"
       aria-hidden={!open}
@@ -110,11 +117,13 @@ export default function Navigator({ workspaceSlug, postId, open, onClose }: {
         "absolute inset-x-0 bottom-0 z-30 h-[82dvh] overflow-hidden rounded-t-2xl bg-background shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
         "md:relative md:inset-auto md:order-last md:z-10 md:h-full md:shrink-0 md:rounded-none md:bg-transparent md:shadow-none md:transition-[width,opacity] md:duration-200",
         open
-          ? "translate-y-0 opacity-100 md:mr-1 md:w-[22rem] md:translate-y-0"
+          ? "translate-y-0 opacity-100 md:mr-1 md:w-[var(--resizable-panel-width)] md:translate-y-0"
           : "pointer-events-none translate-y-full opacity-0 md:w-0 md:translate-y-0",
+        resize.isResizing && "md:transition-none",
       )}
     >
-      <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[22rem] md:rounded-none md:border-0 md:border-l md:border-border/60 md:shadow-none dark:md:border-white/10">
+      <Resizer resize={resize} controls="request-navigator" label="Resize request sidebar" className="hidden md:flex" />
+      <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-l md:border-border/60 md:shadow-none dark:md:border-white/10">
         <div className="flex min-h-13 shrink-0 items-center justify-between px-3">
           <div className="flex min-w-0 items-center gap-2">
             <h2 className="truncate text-sm font-semibold">Request queue</h2>
@@ -132,16 +141,16 @@ export default function Navigator({ workspaceSlug, postId, open, onClose }: {
               aria-label={searchOpen ? "Hide request search" : "Search request queue"}
               aria-expanded={searchOpen}
               className={cn(
-                "size-7 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] dark:hover:bg-white/[0.06]",
+                "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] dark:hover:bg-white/[0.03]",
                 search && "bg-primary/15 text-primary",
               )}
             >
-              <Search className="size-3.5" />
+              <Search className="size-4" />
             </Button>
-            <FiltersAction query={query} onQueryChange={setFilterQuery} showClear className="size-7 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.06] [&_svg]:size-3.5" />
+            <FiltersAction query={query} onQueryChange={setFilterQuery} showClear className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-4" />
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="plain" onClick={onClose} aria-label="Hide request queue" aria-expanded={true} aria-controls="request-navigator" className="size-7 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/10">
+                <Button variant="plain" onClick={onClose} aria-label="Hide request queue" aria-expanded={true} aria-controls="request-navigator" className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]">
                   <PanelRightClose className="size-4 text-neutral-400 dark:text-neutral-300" />
                 </Button>
               </TooltipTrigger>
@@ -210,6 +219,6 @@ export default function Navigator({ workspaceSlug, postId, open, onClose }: {
           </div>
         </div>
       </div>
-    </aside>
+    </motion.aside>
   )
 }

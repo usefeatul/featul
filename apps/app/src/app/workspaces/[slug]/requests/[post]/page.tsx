@@ -1,5 +1,6 @@
 import { cookies } from "next/headers"
 import { REQUEST_PANEL_COOKIE } from "@/lib/request/panel"
+import { PANEL_WIDTH_COOKIES, parsePanelWidth } from "@/lib/panel"
 import { notFound } from "next/navigation"
 import RequestDetail from "@/components/requests/RequestDetail"
 import { resolveSearchParams } from "@/utils/search/params"
@@ -35,6 +36,7 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
     <RequestDetail
       post={data.post}
       initialPanelOpen={initialPanelOpen}
+      initialPanelWidth={parsePanelWidth(cookieStore.get(PANEL_WIDTH_COOKIES.requests)?.value)}
       workspaceSlug={data.workspaceSlug}
       initialComments={data.initialComments}
       initialCollapsedIds={data.initialCollapsedIds}

@@ -10,6 +10,9 @@ import {
   type RefObject,
 } from "react";
 import { PanelRightClose, Plus } from "lucide-react";
+import { motion } from "framer-motion";
+import { usePanelResize } from "@/hooks/usePanelResize";
+import { Resizer } from "@/components/global/resizer";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
@@ -68,6 +71,7 @@ type EditorSnapshot = {
 
 interface ChangelogAiPanelProps {
   open: boolean;
+  initialWidth?: number;
   onOpenChange: (open: boolean) => void;
   workspaceSlug: string;
   entryId?: string;
@@ -89,6 +93,7 @@ interface ChangelogAiPanelProps {
 
 export function ChangelogAiPanel({
   open,
+  initialWidth,
   onOpenChange,
   workspaceSlug,
   entryId,
@@ -106,6 +111,7 @@ export function ChangelogAiPanel({
   onPendingPromptHandled,
   composerFocusRequest = 0,
 }: ChangelogAiPanelProps) {
+  const resize = usePanelResize(open, "assistant", initialWidth);
   const [historyReady, setHistoryReady] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -957,7 +963,9 @@ export function ChangelogAiPanel({
   };
 
   return (
-    <aside
+    <motion.aside
+      ref={resize.panelRef}
+      style={resize.style}
       id="changelog-assistant"
       aria-label="AI assistant"
       aria-hidden={!open}
@@ -967,11 +975,13 @@ export function ChangelogAiPanel({
         "fixed inset-0 z-40 overflow-hidden bg-background transition-[translate,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
         "lg:relative lg:inset-auto lg:z-10 lg:h-full lg:shrink-0 lg:transition-[width,opacity] lg:motion-reduce:transition-none",
         open
-          ? "translate-x-0 opacity-100 lg:w-[22rem]"
+          ? "translate-x-0 opacity-100 lg:w-[var(--resizable-panel-width)]"
           : "pointer-events-none translate-x-full opacity-0 lg:w-0 lg:translate-x-0",
+        resize.isResizing && "lg:transition-none",
       )}
     >
-      <div className="flex h-full w-full flex-col lg:w-[22rem] lg:border-l lg:border-border/60 dark:lg:border-white/10">
+      <Resizer resize={resize} controls="changelog-assistant" label="Resize AI sidebar" className="hidden lg:flex" />
+      <div className="flex h-full w-full flex-col lg:w-[var(--resizable-panel-width)] lg:border-l lg:border-border/60 dark:lg:border-white/10">
       <header className="flex h-12 shrink-0 items-center gap-2 px-4">
         <h2 className="text-sm font-medium">Assistant</h2>
         <div className="ml-auto flex items-center gap-1">
@@ -979,7 +989,7 @@ export function ChangelogAiPanel({
             type="button"
             variant="plain"
             size="icon-sm"
-            className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.06]"
+            className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
             onClick={clearConversation}
             aria-label="New conversation"
             title="New conversation"
@@ -990,7 +1000,7 @@ export function ChangelogAiPanel({
             type="button"
             variant="plain"
             size="icon-sm"
-            className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.06]"
+            className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
             onClick={() => onOpenChange(false)}
             aria-label="Close assistant"
             aria-expanded={open}
@@ -1108,7 +1118,7 @@ export function ChangelogAiPanel({
         />
       </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 }
 

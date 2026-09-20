@@ -44,17 +44,17 @@ export function QueueItem({
         />
 
         <div className="pointer-events-none relative min-w-0">
-          <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
-            <StatusIcon status={status} className="size-3.5 shrink-0 text-foreground/70" />
-            <span>{statusLabel(status)}</span>
+          <div className="flex items-start gap-1.5">
+            <span role="img" aria-label={statusLabel(status)} className="flex h-[18px] shrink-0 items-center">
+              <StatusIcon status={status} className="size-3.5 text-foreground/70" />
+            </span>
+            <p className="min-w-0 flex-1 line-clamp-2 text-[13px] font-semibold leading-[18px] text-foreground/90">
+              {item.title}
+            </p>
             {active ? (
-              <span className="ml-auto text-primary">Viewing</span>
+              <span className="shrink-0 text-[10px] font-medium leading-[18px] text-primary">Viewing</span>
             ) : null}
           </div>
-
-          <p className="line-clamp-2 text-[13px] font-semibold leading-[18px] text-foreground/90">
-            {item.title}
-          </p>
 
           <Attributes item={item} />
         </div>

@@ -109,7 +109,7 @@ export default function Sidebar({
             type="button"
             className={cn(
               sidebarRowClassName,
-              "text-foreground hover:bg-muted dark:hover:bg-white/5",
+              "cursor-pointer text-foreground hover:bg-muted dark:hover:bg-white/5",
             )}
             onClick={openCreatePost}
           >

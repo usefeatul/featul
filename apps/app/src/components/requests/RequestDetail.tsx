@@ -30,6 +30,7 @@ type RequestDetailProps = {
   post: RequestDetailData
   workspaceSlug: string
   initialPanelOpen?: boolean
+  initialPanelWidth?: number
   readonly?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
@@ -41,6 +42,7 @@ export default function RequestDetail({
   workspaceSlug,
   readonly = false,
   initialPanelOpen = false,
+  initialPanelWidth,
   initialComments,
   initialCollapsedIds,
   navigation,
@@ -71,7 +73,7 @@ export default function RequestDetail({
         listOpen && "lg:gap-px lg:bg-muted/45 dark:lg:bg-black/25",
       )}
     >
-      <Navigator workspaceSlug={workspaceSlug} postId={post.id} open={listOpen} onClose={() => toggleList(false)} />
+      <Navigator workspaceSlug={workspaceSlug} postId={post.id} open={listOpen} onClose={() => toggleList(false)} initialWidth={initialPanelWidth} />
       <div
         id="request-detail-scroll"
         className={cn(
@@ -144,7 +146,7 @@ export default function RequestDetail({
             <Properties key={post.id} post={post} workspaceSlug={workspaceSlug} readonly={readonly} />
           </div>
           <div className="flex justify-end">
-            <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="h-8 rounded-md bg-muted px-2.5 hover:bg-muted/80 dark:bg-[#242424] dark:hover:bg-[#2c2c2c]" />
+            <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="h-8 rounded-md border border-border/50 bg-muted px-2.5 hover:bg-muted/80 dark:border-white/[0.08] dark:bg-[#242424] dark:hover:bg-[#2c2c2c]" />
           </div>
         </div>
       </article>

@@ -33,7 +33,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
           <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />
         </Avatar>
         <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
-          <span className="max-w-20 truncate">{author}</span>
+          <span className="max-w-20 truncate font-medium">{author}</span>
           <span aria-hidden className="text-border">·</span>
           <span title={item.boardName} className="inline-flex h-5 min-w-0 max-w-24 items-center gap-1.5 rounded-md bg-muted/70 px-1.5 dark:bg-white/[0.055]">
             <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary" />

@@ -7,7 +7,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/t
 import { MergePopover } from "./MergePopover";
 import Menu from "./menu";
 
-const actionClass = "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 data-[state=open]:bg-black/10 dark:bg-transparent dark:hover:bg-white/10 dark:data-[state=open]:bg-white/10";
+const actionClass = "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
 
 type HeaderProps = {
   title: string;

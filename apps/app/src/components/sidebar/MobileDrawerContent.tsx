@@ -104,7 +104,7 @@ export default function MobileDrawerContent({
             className={cn(
               sidebarRowClassName,
               "mt-4",
-              "text-foreground hover:bg-muted dark:hover:bg-white/5",
+              "cursor-pointer text-foreground hover:bg-muted dark:hover:bg-white/5",
             )}
             onClick={() => setCreatePostOpen(true)}
           >

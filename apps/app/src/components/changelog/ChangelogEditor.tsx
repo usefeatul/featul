@@ -30,6 +30,7 @@ interface ChangelogEditorProps {
     workspaceSlug: string;
     mode: "create" | "edit";
     initialAiOpen?: boolean;
+    initialAiWidth?: number;
     entryId?: string;
     initialData?: {
         title: string;
@@ -46,6 +47,7 @@ export function ChangelogEditor({
     workspaceSlug,
     mode,
     initialAiOpen = mode === "create",
+    initialAiWidth,
     entryId,
     initialData,
     availableTags,
@@ -293,6 +295,7 @@ export function ChangelogEditor({
                 <ChangelogAiPanel
                     key={`${workspaceSlug}:${entryId ?? "draft"}`}
                     open={isAiOpen}
+                    initialWidth={initialAiWidth}
                     onOpenChange={setIsAiOpen}
                     workspaceSlug={workspaceSlug}
                     entryId={entryId}
