@@ -168,7 +168,7 @@ export default function RoadmapColumn({
         inert={!!collapsed}
       >
         <div className="flex h-full min-h-0 flex-col overflow-hidden">
-          <ul className="min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-transparent px-1.5 pb-2">
+          <ul className="scrollbar-hide min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-transparent px-1.5 pb-2">
             {showContent ? children : null}
             {showContent && count === 0 && !isOver ? (
               <RoadmapEmptyColumn
