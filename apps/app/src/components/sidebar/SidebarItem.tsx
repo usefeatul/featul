@@ -21,6 +21,7 @@ function SidebarItem({
   mutedIcon = false,
   onClick,
   indicator = true,
+  collapsed = false,
 }: {
   item: NavItem;
   pathname: string;
@@ -29,6 +30,7 @@ function SidebarItem({
   mutedIcon?: boolean;
   onClick?: () => void;
   indicator?: boolean;
+  collapsed?: boolean;
 }) {
   const Icon = item.icon;
   const reduceMotion = useReducedMotion();
@@ -46,6 +48,8 @@ function SidebarItem({
   const classes = cn(
     sidebarRowClassName,
     "text-foreground",
+    collapsed &&
+      "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
     className
   );
   const content = (
@@ -76,8 +80,12 @@ function SidebarItem({
           )}
         />
       </span>
-      <span className="relative z-[1] min-w-0 flex-1 truncate transition-colors duration-200">{item.label}</span>
-      {typeof count === "number" && count > 0 ? (
+      {!collapsed ? (
+        <span className="relative z-[1] min-w-0 flex-1 truncate transition-colors duration-200">
+          {item.label}
+        </span>
+      ) : null}
+      {!collapsed && typeof count === "number" && count > 0 ? (
         <SidebarBadge className="relative z-[1] ml-auto shrink-0" innerClassName="font-medium text-muted-foreground/70" fixedWidth={count < 10}>
           {count}
         </SidebarBadge>
@@ -98,6 +106,8 @@ function SidebarItem({
         rel="noopener noreferrer"
         className={classes}
         aria-current={active ? "page" : undefined}
+        aria-label={collapsed ? item.label : undefined}
+        title={collapsed ? item.label : undefined}
         onClick={onClick}
         {...hoverProps}
       >
@@ -112,6 +122,8 @@ function SidebarItem({
       replace={item.replace}
       className={classes}
       aria-current={active ? "page" : undefined}
+      aria-label={collapsed ? item.label : undefined}
+      title={collapsed ? item.label : undefined}
       onClick={onClick}
       {...hoverProps}
     >

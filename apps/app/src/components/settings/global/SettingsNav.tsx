@@ -7,8 +7,10 @@ import SidebarItem from "@/components/sidebar/SidebarItem"
 
 export default function SettingsNav({
   onLinkClick,
+  collapsed = false,
 }: {
   onLinkClick?: () => void
+  collapsed?: boolean
 }) {
   const pathname = usePathname() || ""
   const slug = getSlugFromPath(pathname)
@@ -22,6 +24,7 @@ export default function SettingsNav({
           item={item}
           pathname={pathname}
           mutedIcon
+          collapsed={collapsed}
           onClick={onLinkClick}
         />
       ))}

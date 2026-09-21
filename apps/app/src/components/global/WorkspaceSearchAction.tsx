@@ -43,6 +43,7 @@ type WorkspaceSearchActionProps = {
   showLabel?: boolean;
   showShortcut?: boolean;
   showNoResults?: boolean;
+  compact?: boolean;
   onSearchSubmit: (value: string) => void;
   onResultSelect: (result: WorkspaceSearchResult) => void;
   onClearSearch?: () => void;
@@ -162,6 +163,7 @@ export function WorkspaceSearchAction({
   showLabel = false,
   showShortcut = false,
   showNoResults = false,
+  compact = false,
   onSearchSubmit,
   onResultSelect,
   onClearSearch,
@@ -289,10 +291,20 @@ export function WorkspaceSearchAction({
         aria-label={`Search (${platformKey}K)`}
         title={`Search (${platformKey}K)`}
         aria-pressed={isSearchActive}
-        className={filterToolbarButtonClass(isSearchActive, className)}
+        className={cn(
+          filterToolbarButtonClass(isSearchActive && !compact, className),
+          compact &&
+            "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
+        )}
         onClick={() => setOpen(true)}
       >
-        <SearchIcon className="w-4 h-4" size={16} />
+        <SearchIcon
+          className={cn(
+            "size-4",
+            compact && "size-5 transition-colors duration-200",
+          )}
+          size={compact ? 20 : 16}
+        />
         {showLabel ? <span className="min-w-0 truncate text-left font-normal">{currentSearch || placeholder}</span> : null}
         {showShortcut ? (
           <kbd aria-hidden="true" className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded border border-border/50 px-1 py-0.5 font-sans text-[10px] leading-none text-accent">

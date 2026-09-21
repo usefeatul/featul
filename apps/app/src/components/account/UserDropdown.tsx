@@ -45,10 +45,12 @@ export default function UserDropdown({
   className = "",
   initialUser,
   initialDeviceAccounts,
+  collapsed = false,
 }: {
   className?: string;
   initialUser?: UserIdentity;
   initialDeviceAccounts?: DeviceAccount[];
+  collapsed?: boolean;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -291,14 +293,21 @@ export default function UserDropdown({
               }
             }}
           >
-            <DropdownMenuTrigger asChild className="w-full cursor-pointer">
+            <DropdownMenuTrigger
+              asChild
+              className={cn(collapsed ? "w-9" : "w-full", "cursor-pointer")}
+            >
               <button
                 suppressHydrationWarning
                 type="button"
                 className={cn(
                   sidebarRowClassName,
                   "text-foreground hover:bg-muted dark:hover:bg-black/40",
+                  collapsed &&
+                    "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
                 )}
+                aria-label={collapsed ? displayUser.name || "Account" : undefined}
+                title={collapsed ? displayUser.name || "Account" : undefined}
               >
                 <span className={sidebarLeadSlotClassName}>
                   <Avatar className="size-5">
@@ -312,13 +321,16 @@ export default function UserDropdown({
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                 </span>
-                <span className="truncate transition-colors">
-                  {displayUser.name || "Account"}
-                </span>
+                {!collapsed ? (
+                  <span className="truncate transition-colors">
+                    {displayUser.name || "Account"}
+                  </span>
+                ) : null}
               </button>
             </DropdownMenuTrigger>
 
             <UserDropdownMenu
+              collapsed={collapsed}
               showAccounts={showAccounts}
               accounts={accounts}
               switchingAccountUserId={switchingAccountUserId}
@@ -333,14 +345,16 @@ export default function UserDropdown({
           </DropdownMenu>
         </div>
 
-        <UserDropdownQuickSwitch
-          accounts={accounts}
-          switchingAccountUserId={switchingAccountUserId}
-          removingAccountUserId={removingAccountUserId}
-          onSwitchAccount={onSwitchAccount}
-          onOpenMenu={() => setOpen(true)}
-          onOpenAccountActions={onOpenAccountActions}
-        />
+        {!collapsed ? (
+          <UserDropdownQuickSwitch
+            accounts={accounts}
+            switchingAccountUserId={switchingAccountUserId}
+            removingAccountUserId={removingAccountUserId}
+            onSwitchAccount={onSwitchAccount}
+            onOpenMenu={() => setOpen(true)}
+            onOpenAccountActions={onOpenAccountActions}
+          />
+        ) : null}
       </div>
 
       <AccountActionsPopover

@@ -25,6 +25,7 @@ const SIDEBAR_HOVER_ITEM_CLASS =
   "hover:bg-muted dark:hover:bg-black/40 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40";
 
 type UserDropdownMenuProps = {
+  collapsed?: boolean;
   showAccounts: boolean;
   accounts: UserDropdownAccount[];
   switchingAccountUserId: string | null;
@@ -41,6 +42,7 @@ type UserDropdownMenuProps = {
 };
 
 export default function UserDropdownMenu({
+  collapsed = false,
   showAccounts,
   accounts,
   switchingAccountUserId,
@@ -59,9 +61,9 @@ export default function UserDropdownMenu({
   return (
     <DropdownMenuContent
       className="w-40 max-w-[85vw]"
-      side="bottom"
-      align="center"
-      sideOffset={8}
+      side={collapsed ? "right" : "bottom"}
+      align={collapsed ? "end" : "center"}
+      sideOffset={collapsed ? 12 : 8}
       withBackdrop
     >
       <DropdownMenuItem

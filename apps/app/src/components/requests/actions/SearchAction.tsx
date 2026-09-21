@@ -11,8 +11,10 @@ import { getSlugFromPath } from "@/config/nav";
 
 export default function SearchAction({
   className = "",
+  compact = false,
 }: {
   className?: string;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname() || "/";
@@ -38,8 +40,9 @@ export default function SearchAction({
       currentSearch={currentSearch}
       className={className}
       buttonVariant="card"
-      showShortcut
-      showLabel
+      showShortcut={!compact}
+      showLabel={!compact}
+      compact={compact}
       showNoResults
       onSearchSubmit={runSearch}
       onClearSearch={() => runSearch("")}

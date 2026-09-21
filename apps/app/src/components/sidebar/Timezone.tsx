@@ -15,12 +15,14 @@ interface TimezoneProps {
   className?: string;
   initialTimezone?: string | null;
   initialServerNow?: number;
+  collapsed?: boolean;
 }
 
 export default function Timezone({
   className = "",
   initialTimezone,
-  initialServerNow
+  initialServerNow,
+  collapsed = false,
 }: TimezoneProps) {
   const pathname = usePathname();
   const slug = getSlugFromPath(pathname || "");
@@ -72,6 +74,8 @@ export default function Timezone({
             className={cn(
               sidebarRowClassName,
               "cursor-default text-muted-foreground outline-none transition-colors hover:bg-sidebar-accent/60 focus-visible:ring-2 focus-visible:ring-ring/50",
+              collapsed &&
+                "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
               className,
             )}
           >
@@ -80,12 +84,16 @@ export default function Timezone({
                 className="size-5 text-neutral-400 transition-colors duration-200 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary"
               />
             </span>
-            <span className="min-w-0 flex-1 truncate text-foreground/75">
-              {city} time
-            </span>
-            <time className="shrink-0 text-xs font-medium tabular-nums text-foreground/80">
-              {time}
-            </time>
+            {!collapsed ? (
+              <>
+                <span className="min-w-0 flex-1 truncate text-foreground/75">
+                  {city} time
+                </span>
+                <time className="shrink-0 text-xs font-medium tabular-nums text-foreground/80">
+                  {time}
+                </time>
+              </>
+            ) : null}
           </div>
         </TooltipTrigger>
         <TooltipContent side="right" sideOffset={8} className="text-xs">

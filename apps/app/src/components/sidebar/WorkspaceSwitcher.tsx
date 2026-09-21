@@ -27,10 +27,12 @@ export default function WorkspaceSwitcher({
   className = "",
   initialWorkspace,
   initialWorkspaces,
+  collapsed = false,
 }: {
   className?: string;
   initialWorkspace?: Ws | null;
   initialWorkspaces?: Ws[];
+  collapsed?: boolean;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
@@ -64,9 +66,19 @@ export default function WorkspaceSwitcher({
             className={cn(
               sidebarRowClassName,
               "cursor-pointer text-left transition-colors hover:bg-muted dark:hover:bg-white/5",
+              collapsed &&
+                "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
             )}
+            aria-label={collapsed ? `Switch workspace: ${currentName}` : undefined}
+            title={collapsed ? currentName : undefined}
           >
-            <span className={cn(sidebarLeadSlotClassName, "overflow-hidden rounded-md")}>
+            <span
+              className={cn(
+                sidebarLeadSlotClassName,
+                "overflow-hidden rounded-md",
+                collapsed && "size-6",
+              )}
+            >
               {currentLogo ? (
                 <Image
                   key={currentLogo}
@@ -81,6 +93,7 @@ export default function WorkspaceSwitcher({
                 />
               ) : <FeatulLogoIcon className="size-6 text-primary" />}
             </span>
+            {!collapsed ? (
             <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
               <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
               <span
@@ -92,16 +105,17 @@ export default function WorkspaceSwitcher({
                 {currentPlan}
               </span>
             </div>
-            <SidebarBadge className="ml-auto shrink-0">
+            ) : null}
+            {!collapsed ? <SidebarBadge className="ml-auto shrink-0">
               <ChevronIcon className="size-3 text-accent" />
-            </SidebarBadge>
+            </SidebarBadge> : null}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="w-46 max-w-[95vw]"
-          side="bottom"
-          align="center"
-          sideOffset={8}
+          side={collapsed ? "right" : "bottom"}
+          align={collapsed ? "start" : "center"}
+          sideOffset={collapsed ? 12 : 8}
           withBackdrop
         >
           {all.length === 0 ? (

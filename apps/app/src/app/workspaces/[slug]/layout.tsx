@@ -22,6 +22,7 @@ import UnauthorizedWorkspace from "@/components/global/Unauthorized";
 import { EditorHeaderProvider } from "@/components/changelog/EditorHeaderContext";
 import { WelcomeTourGate } from "@/components/onboarding/WelcomeTourGate";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 
 export const revalidate = 30;
 
@@ -33,6 +34,9 @@ export default async function WorkspaceLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const cookieStore = await cookies();
+  const initialSidebarCollapsed =
+    cookieStore.get("featul_sidebar_collapsed")?.value === "true";
   const session = await getServerSession();
   const userId = session?.user?.id || null;
   if (!userId) {
@@ -72,6 +76,7 @@ export default async function WorkspaceLayout({
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
       <Sidebar
+        initialCollapsed={initialSidebarCollapsed}
         initialCounts={counts}
         initialTimezone={timezone}
         initialServerNow={serverNow}

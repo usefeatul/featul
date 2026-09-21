@@ -11,8 +11,10 @@ import { getSlugFromPath } from "@/config/nav";
 
 export default function RoadmapSearchAction({
   className = "",
+  compact = false,
 }: {
   className?: string;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname() || "/";
@@ -39,8 +41,9 @@ export default function RoadmapSearchAction({
       className={className}
       buttonVariant="card"
       placeholder="Search roadmap…"
-      showShortcut
-      showLabel
+      showShortcut={!compact}
+      showLabel={!compact}
+      compact={compact}
       showNoResults
       onSearchSubmit={runSearch}
       onClearSearch={() => runSearch("")}
