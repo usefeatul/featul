@@ -232,7 +232,7 @@ export default function Sidebar({
             initialUser={initialUser}
             initialDeviceAccounts={initialDeviceAccounts}
           />
-          <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] dark:bg-[#292929] dark:hover:bg-[#303030]" />
+          <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]" />
         </div>
       </SidebarSection>
     </aside>
