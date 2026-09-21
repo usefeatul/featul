@@ -25,7 +25,7 @@ const headingClassName =
 const groupButtonClassName =
   "block w-full rounded-md px-2 py-2.5 text-left hover:bg-muted/40"
 
-const groupRowClassName = "text-xs text-accent flex items-center gap-2 min-w-0"
+const groupRowClassName = "text-sm text-accent flex items-center gap-2 min-w-0"
 
 const counterClassName =
   "inline-flex shrink-0 items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] text-accent"
@@ -45,7 +45,7 @@ function GroupSummaryRow({
     <li className="py-0">
       <button type="button" onClick={onExpand} className={groupButtonClassName}>
         <div className={groupRowClassName}>
-          <span className="font-medium shrink-0">{format(new Date(createdAt), "LLL d")}</span>
+          <span className="text-xs font-medium shrink-0">{format(new Date(createdAt), "LLL d")}</span>
           <span className="min-w-0 flex-1">
             <MemberActivityDescription item={item} />
           </span>

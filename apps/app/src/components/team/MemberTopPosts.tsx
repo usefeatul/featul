@@ -26,14 +26,14 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = f
       <header className={cn(
         "flex justify-between gap-2",
         panel
-          ? "min-h-12 shrink-0 items-center border-b border-border/60 px-3 dark:border-white/10"
+          ? "shrink-0 items-center border-b border-border/60 px-4 py-4 dark:border-white/10"
           : "min-h-9 items-start border-b border-border/30 pb-3 dark:border-white/5",
       )}>
         <div className="min-w-0">
           <h2 className={cn("font-semibold text-foreground", panel ? "text-sm" : "text-base")}>
             Top posts
           </h2>
-          {!panel ? <p className="mt-1 text-xs text-accent">Ranked by upvotes</p> : null}
+          <p className="mt-1 text-xs text-accent">Ranked by upvotes</p>
         </div>
         {hasPosts ? (
           <div className="flex shrink-0 items-center">
@@ -43,8 +43,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = f
           </div>
         ) : null}
       </header>
-      <div className={cn(panel ? "scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3" : "overflow-hidden pt-3")}>
-        {panel ? <p className="mb-2 px-2 text-xs text-accent">Ranked by upvotes</p> : null}
+      <div className={cn(panel ? "scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain" : "overflow-hidden")}>
         {isLoading && !hasPosts ? (
           <div className="px-4 py-8">
             <LoadingSpinner label="Loading top posts..." />
@@ -54,31 +53,32 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = f
             No posts yet
           </div>
         ) : (
-          <ul className="m-0 list-none space-y-1 p-0">
-            {displayedPosts.map((p) => (
-              <li key={p.id}>
-                <div className="flex items-center justify-between gap-3 rounded-md px-2 py-2.5 text-xs transition-colors hover:bg-muted/40 dark:hover:bg-white/[0.035]">
-                  <div className="flex min-w-0 flex-1 items-center gap-2">
+          <ol className="m-0 list-none p-0">
+            {displayedPosts.map((p, index) => (
+              <li key={p.id} className="border-b border-border/60 dark:border-white/10">
+                <div className="flex min-h-20 items-center gap-3 px-4 py-4 transition-colors hover:bg-black/[0.06] focus-within:bg-black/[0.06] dark:hover:bg-white/[0.03] dark:focus-within:bg-white/[0.03]">
+                  <Link
+                    href={`/workspaces/${slug}/requests/${p.slug}`}
+                    className="flex min-w-0 flex-1 items-start gap-2 rounded-sm text-sm font-medium leading-5 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    title={p.title}
+                  >
+                    <span aria-hidden="true" className="mr-1 w-4 shrink-0 text-[11px] font-medium tabular-nums text-muted-foreground/70">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
                     {p.status ? (
-                      <StatusIcon status={String(p.status)} className="size-3.5 shrink-0" />
+                      <StatusIcon status={String(p.status)} className="mt-px size-[18px] shrink-0" />
                     ) : null}
-                    <Link
-                      href={`/workspaces/${slug}/requests/${p.slug}`}
-                      className="min-w-0 flex-1 truncate text-foreground hover:text-primary"
-                      title={p.title}
-                    >
-                      {p.title}
-                    </Link>
-                  </div>
+                    <span className="line-clamp-2 break-words">{p.title}</span>
+                  </Link>
                   <UpvoteButton
                     postId={p.id}
                     upvotes={Number(p.upvotes || 0)}
-                    className="shrink-0 text-xs"
+                    className="min-h-8 min-w-14 shrink-0 justify-center rounded-md border border-border/60 px-2 text-xs tabular-nums hover:bg-black/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-white/10 dark:hover:bg-white/[0.03]"
                   />
                 </div>
               </li>
             ))}
-          </ul>
+          </ol>
         )}
       </div>
     </section>

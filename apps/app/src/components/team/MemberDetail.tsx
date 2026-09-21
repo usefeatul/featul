@@ -165,9 +165,14 @@ export default function MemberDetail({ slug, userId, initialMembers, initialMemb
       </div>
 
       <aside aria-label="Member statistics and top posts" className="hidden h-full min-h-0 w-[22rem] shrink-0 flex-col overflow-hidden border-l border-border/60 bg-background md:flex dark:border-white/10">
-        <div className="shrink-0 border-b border-border/60 p-3 dark:border-white/10">
-          <MemberCounters stats={stats} />
-        </div>
+        <section aria-labelledby="member-overview-heading" className="shrink-0 border-b border-border/60 dark:border-white/10">
+          <header className="flex min-h-12 items-center px-4">
+            <h2 id="member-overview-heading" className="text-sm font-semibold text-foreground">At a glance</h2>
+          </header>
+          <div className="px-2 pb-6 pt-3">
+            <MemberCounters stats={stats} />
+          </div>
+        </section>
         <MemberTopPosts
           panel
           slug={slug}

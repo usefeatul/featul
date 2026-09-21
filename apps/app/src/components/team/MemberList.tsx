@@ -64,14 +64,16 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
                   </span>
                   <div className="pointer-events-none relative z-10 flex shrink-0 items-center gap-2 text-[10px] text-muted-foreground lg:gap-3">
                     {member.email && member.email !== name ? (
-                      <span className="hidden max-w-52 truncate md:inline">
+                      <span className="hidden max-w-52 truncate text-sm md:inline">
                         {member.email}
                       </span>
                     ) : null}
                     <span
                       className={cn(
-                        "hidden h-5 rounded-md px-2 text-[10px] capitalize leading-5 sm:inline-block",
-                        roleBadgeClass(member.role, member.isOwner),
+                        "hidden h-5 rounded-md px-2 text-sm capitalize leading-5 sm:inline-block",
+                        member.isOwner
+                          ? "bg-muted text-primary"
+                          : roleBadgeClass(member.role, member.isOwner),
                       )}
                     >
                       {member.isOwner ? "owner" : member.role}
