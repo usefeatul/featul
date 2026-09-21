@@ -9,18 +9,21 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from "react";
-import { Plus } from "lucide-react";
+import { ArrowLeft, History as HistoryIcon, Plus } from "lucide-react";
 import { PanelIcon } from "@featul/ui/icons/panel";
 import { motion } from "framer-motion";
 import { usePanelResize } from "@/hooks/usePanelResize";
 import { Resizer } from "@/components/global/resizer";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@featul/ui/components/tooltip";
 import { cn } from "@featul/ui/lib/utils";
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys } from "@/components/global/keys";
-import { useIsomorphicLayoutEffect } from "@featul/ui/hooks/use-isomorphic-layout-effect";
 import type {
   EditorTextSelection,
   FeedEditorRef,
@@ -32,6 +35,7 @@ import type { AiSourcePost } from "./AiSourcePostItem";
 import type { WorkspaceTag } from "./TagSelector";
 import { Actions, type AssistantAction } from "./assistant/actions";
 import { Composer } from "./assistant/composer";
+import { ConversationHistory } from "./assistant/history";
 import { Messages, type AssistantMessage } from "./assistant/messages";
 import {
   assistantCopy,
@@ -59,6 +63,14 @@ import {
   saveChangelogAiChat,
 } from "./ai/persist";
 import { getPublishCheckIssues } from "./ai/publishCheck";
+import {
+  deleteChangelogAiConversation,
+  getChangelogAiConversation,
+  listChangelogAiConversations,
+  saveChangelogAiConversation,
+  type ChangelogAiConversationSummary,
+  type ChangelogAiHistoryMessage,
+} from "@/features/changelog/history";
 
 type PendingPrompt = {
   text: string;
@@ -72,6 +84,37 @@ type EditorSnapshot = {
   title: string;
   tags: string[];
 };
+
+function conversationTitle(messages: AssistantMessage[]) {
+  const firstUserMessage = messages.find(
+    (message) => message.role === "user" && message.content.trim(),
+  );
+  if (!firstUserMessage) return "New conversation";
+  const title = firstUserMessage.content.replace(/\s+/g, " ").trim();
+  return title.length > 72 ? `${title.slice(0, 69)}...` : title;
+}
+
+function persistedMessages(
+  messages: AssistantMessage[],
+): ChangelogAiHistoryMessage[] {
+  return messages
+    .filter(
+      (message) =>
+        message.status !== "pending" && message.status !== "streaming",
+    )
+    .slice(-24)
+    .map((message) => ({
+      id: message.id,
+      role: message.role,
+      content: message.content,
+      attachedTitles: message.attachedTitles,
+      status: message.status === "error" ? "error" : undefined,
+      activity: message.activity,
+      durationMs: message.durationMs,
+      suggestedTags: message.suggestedTags,
+      effect: message.effect,
+    }));
+}
 
 interface ChangelogAiPanelProps {
   open: boolean;
@@ -120,6 +163,12 @@ export function ChangelogAiPanel({
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<
+    ChangelogAiConversationSummary[]
+  >([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
   const [pendingTagNames, setPendingTagNames] = useState<string[]>([]);
   const [selectionContext, setSelectionContext] =
@@ -132,24 +181,84 @@ export function ChangelogAiPanel({
   const mentionRef = useRef<AtQuery | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const undoSnapshotRef = useRef<EditorSnapshot | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
+  const conversationEntryIdRef = useRef<string | null>(null);
+  const conversationEpochRef = useRef(0);
+  const syncPromiseRef = useRef<Promise<string | null> | null>(null);
   const { sourcePosts, isLoadingPosts } = useAiSourcePosts(workspaceSlug, open);
 
   mentionRef.current = mention;
 
-  useIsomorphicLayoutEffect(() => {
-    if (historyReady) return;
+  useEffect(() => {
+    let cancelled = false;
     const stored = loadChangelogAiChat(workspaceSlug, entryId);
     if (stored) {
       setMessages(stored.messages);
       setSelectedPostIds(stored.selectedPostIds);
       setPendingTagNames(stored.pendingTagNames);
+      setConversationId(stored.conversationId ?? null);
+      conversationIdRef.current = stored.conversationId ?? null;
     }
-    setHistoryReady(true);
-  }, [historyReady, workspaceSlug, entryId]);
+
+    const loadHistory = async () => {
+      setIsHistoryLoading(true);
+      try {
+        const nextConversations =
+          await listChangelogAiConversations(workspaceSlug);
+        if (cancelled) return;
+        setConversations(nextConversations);
+
+        const hasUnsyncedLocalChat = Boolean(
+          stored?.messages.length && !stored.conversationId,
+        );
+        const preferredId =
+          stored?.conversationId ||
+          (!hasUnsyncedLocalChat
+            ? nextConversations.find(
+                (conversation) => conversation.entryId === (entryId ?? null),
+              )?.id
+            : undefined);
+
+        if (preferredId) {
+          try {
+            const conversation = await getChangelogAiConversation(
+              workspaceSlug,
+              preferredId,
+            );
+            if (cancelled) return;
+            setMessages(conversation.messages);
+            setSelectedPostIds(conversation.selectedPostIds);
+            setPendingTagNames(conversation.pendingTagNames);
+            setConversationId(conversation.id);
+            conversationIdRef.current = conversation.id;
+            conversationEntryIdRef.current = conversation.entryId;
+          } catch {
+            if (stored?.conversationId === preferredId) {
+              setConversationId(null);
+              conversationIdRef.current = null;
+            }
+          }
+        }
+      } catch {
+        // Local browser persistence remains available if history is offline.
+      } finally {
+        if (!cancelled) {
+          setHistoryReady(true);
+          setIsHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [workspaceSlug, entryId]);
 
   useEffect(() => {
     if (!open || !historyReady) return;
     saveChangelogAiChat(workspaceSlug, entryId, {
+      conversationId: conversationId ?? undefined,
       messages,
       selectedPostIds,
       pendingTagNames,
@@ -159,9 +268,80 @@ export function ChangelogAiPanel({
     historyReady,
     workspaceSlug,
     entryId,
+    conversationId,
     messages,
     selectedPostIds,
     pendingTagNames,
+  ]);
+
+  const syncConversation = useCallback(() => {
+    if (syncPromiseRef.current) return syncPromiseRef.current;
+
+    const stableMessages = persistedMessages(messages);
+    if (stableMessages.length === 0) {
+      return Promise.resolve(null);
+    }
+
+    const requestConversationId = conversationIdRef.current;
+    const requestEpoch = conversationEpochRef.current;
+    const promise = saveChangelogAiConversation({
+      slug: workspaceSlug,
+      conversationId: requestConversationId ?? undefined,
+      entryId:
+        !requestConversationId ||
+        (entryId && conversationEntryIdRef.current === null)
+          ? (entryId ?? null)
+          : undefined,
+      title: conversationTitle(messages),
+      messages: stableMessages,
+      selectedPostIds,
+      pendingTagNames,
+    })
+      .then(({ conversation, summary }) => {
+        if (conversationEpochRef.current !== requestEpoch) {
+          return conversation.id;
+        }
+
+        conversationIdRef.current = conversation.id;
+        conversationEntryIdRef.current = conversation.entryId;
+        setConversationId(conversation.id);
+        setConversations((current) => [
+          summary,
+          ...current.filter((item) => item.id !== summary.id),
+        ]);
+        saveChangelogAiChat(workspaceSlug, entryId, {
+          conversationId: conversation.id,
+          messages: stableMessages,
+          selectedPostIds,
+          pendingTagNames,
+        });
+        return conversation.id;
+      })
+      .catch(() => null)
+      .finally(() => {
+        if (syncPromiseRef.current === promise) {
+          syncPromiseRef.current = null;
+        }
+      });
+
+    syncPromiseRef.current = promise;
+    return promise;
+  }, [workspaceSlug, entryId, messages, selectedPostIds, pendingTagNames]);
+
+  useEffect(() => {
+    if (!open || !historyReady || isLoading || messages.length === 0) return;
+    const timer = window.setTimeout(() => {
+      void syncConversation();
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [
+    open,
+    historyReady,
+    isLoading,
+    messages,
+    selectedPostIds,
+    pendingTagNames,
+    syncConversation,
   ]);
 
   const completedThisWeek = useMemo(
@@ -229,7 +409,11 @@ export function ChangelogAiPanel({
 
   useEffect(() => {
     if (!open) {
-      if (document.getElementById("changelog-assistant")?.contains(document.activeElement)) {
+      if (
+        document
+          .getElementById("changelog-assistant")
+          ?.contains(document.activeElement)
+      ) {
         document.getElementById("assistant-panel-toggle")?.focus();
       }
       return;
@@ -883,6 +1067,11 @@ export function ChangelogAiPanel({
 
   const handleInputKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (mention) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeAttachment();
+        return;
+      }
       if (event.key === "ArrowDown") {
         event.preventDefault();
         setMentionIndex((index) =>
@@ -925,6 +1114,24 @@ export function ChangelogAiPanel({
     selectedPostIds.includes(post.id),
   );
 
+  const closeAttachment = () => {
+    const activeMention = mentionRef.current;
+    if (!activeMention) return;
+
+    const mentionEnd =
+      activeMention.start + activeMention.query.length + 1;
+    const before = prompt.slice(0, activeMention.start).trimEnd();
+    const after = prompt.slice(mentionEnd).trimStart();
+    const next = before && after ? `${before} ${after}` : before || after;
+    setPrompt(next);
+    setMention(null);
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      const caret = Math.min(activeMention.start, next.length);
+      inputRef.current?.setSelectionRange(caret, caret);
+    });
+  };
+
   const runStarter = (starter: AssistantAction) => {
     const next = starter.attachFeedback
       ? `${starter.prompt} @`
@@ -943,6 +1150,10 @@ export function ChangelogAiPanel({
   };
 
   const startAttachment = () => {
+    if (mentionRef.current) {
+      closeAttachment();
+      return;
+    }
     const next = prompt.trim() ? `${prompt} @` : "@";
     setPrompt(next);
     setMention({ start: next.lastIndexOf("@"), query: "" });
@@ -952,8 +1163,12 @@ export function ChangelogAiPanel({
     });
   };
 
-  const clearConversation = () => {
+  const resetConversation = () => {
     abortRef.current?.abort();
+    conversationEpochRef.current += 1;
+    conversationIdRef.current = null;
+    conversationEntryIdRef.current = null;
+    setConversationId(null);
     setMessages([]);
     setSelectedPostIds([]);
     setPendingTagNames([]);
@@ -964,6 +1179,77 @@ export function ChangelogAiPanel({
     undoSnapshotRef.current = null;
     clearChangelogAiChat(workspaceSlug, entryId);
     window.requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const clearConversation = async () => {
+    const hasMessages = persistedMessages(messages).length > 0;
+    const savedConversationId = await syncConversation();
+    if (hasMessages && !savedConversationId) {
+      toast.error("Could not sync this conversation. Please try again.");
+      return;
+    }
+    resetConversation();
+    setHistoryOpen(false);
+  };
+
+  const selectConversation = async (nextConversationId: string) => {
+    if (nextConversationId === conversationIdRef.current) {
+      setHistoryOpen(false);
+      return;
+    }
+
+    const hasMessages = persistedMessages(messages).length > 0;
+    const savedConversationId = await syncConversation();
+    if (hasMessages && !savedConversationId) {
+      toast.error("Could not sync this conversation. Please try again.");
+      return;
+    }
+    conversationEpochRef.current += 1;
+    setIsHistoryLoading(true);
+    try {
+      const conversation = await getChangelogAiConversation(
+        workspaceSlug,
+        nextConversationId,
+      );
+      conversationIdRef.current = conversation.id;
+      conversationEntryIdRef.current = conversation.entryId;
+      setConversationId(conversation.id);
+      setMessages(conversation.messages);
+      setSelectedPostIds(conversation.selectedPostIds);
+      setPendingTagNames(conversation.pendingTagNames);
+      setPrompt("");
+      setSelectionContext(null);
+      setMention(null);
+      setUndoSnapshot(null);
+      undoSnapshotRef.current = null;
+      saveChangelogAiChat(workspaceSlug, entryId, {
+        conversationId: conversation.id,
+        messages: conversation.messages,
+        selectedPostIds: conversation.selectedPostIds,
+        pendingTagNames: conversation.pendingTagNames,
+      });
+      setHistoryOpen(false);
+    } catch {
+      toast.error("Could not load that conversation");
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
+  const deleteConversation = async (deletedConversationId: string) => {
+    try {
+      await deleteChangelogAiConversation(workspaceSlug, deletedConversationId);
+      setConversations((current) =>
+        current.filter(
+          (conversation) => conversation.id !== deletedConversationId,
+        ),
+      );
+      if (deletedConversationId === conversationIdRef.current) {
+        resetConversation();
+      }
+    } catch {
+      toast.error("Could not delete that conversation");
+    }
   };
 
   return (
@@ -984,151 +1270,216 @@ export function ChangelogAiPanel({
         resize.isResizing && "lg:transition-none",
       )}
     >
-      <Resizer resize={resize} controls="changelog-assistant" label="Resize AI sidebar" className="hidden lg:flex" />
+      <Resizer
+        resize={resize}
+        controls="changelog-assistant"
+        label="Resize AI sidebar"
+        className="hidden lg:flex"
+      />
       <div className="flex h-full w-full flex-col lg:w-[var(--resizable-panel-width)] lg:border-l lg:border-border/60 dark:lg:border-white/10">
-      <header className="flex h-12 shrink-0 items-center gap-2 px-4">
-        <h2 className="text-sm font-medium">Assistant</h2>
-        <div className="ml-auto flex items-center gap-1">
-          <Button
-            type="button"
-            variant="plain"
-            size="icon-sm"
-            className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
-            onClick={clearConversation}
-            aria-label="New conversation"
-            title="New conversation"
-          >
-            <Plus className="size-[18px]" />
-          </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
+        <header className="flex min-h-13 shrink-0 items-center gap-2 px-3">
+          {historyOpen ? (
+            <Button
+              type="button"
+              variant="plain"
+              size="icon-sm"
+              className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+              onClick={() => setHistoryOpen(false)}
+              aria-label="Back to conversation"
+              title="Back to conversation"
+            >
+              <ArrowLeft className="size-[18px]" />
+            </Button>
+          ) : null}
+          <h2 className="text-sm font-semibold">
+            {historyOpen ? "History" : "Assistant"}
+          </h2>
+          {historyOpen ? (
+            <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+              {conversations.length}
+            </span>
+          ) : null}
+          <div className="ml-auto flex items-center gap-1">
+            {!historyOpen ? (
               <Button
                 type="button"
                 variant="plain"
                 size="icon-sm"
+                disabled={isLoading}
                 className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
-                onClick={() => onOpenChange(false)}
-                aria-label="Hide AI assistant"
-                aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
-                aria-expanded={open}
-                aria-controls="changelog-assistant"
+                onClick={() => setHistoryOpen(true)}
+                aria-label="Conversation history"
+                title="Conversation history"
               >
-                <PanelIcon side="right" className="size-[18px]" />
+                <HistoryIcon className="size-[18px]" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={6} className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium">
-              <span>Hide AI assistant</span>
-              <PanelShortcutKeys />
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </header>
-
-      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide" aria-busy={!historyReady}>
-        {!historyReady ? (
-          <div role="status" className="space-y-4 px-4 py-5">
-            <span className="sr-only">Loading conversation</span>
-            <div aria-hidden="true" className="ml-auto h-16 w-4/5 rounded-xl bg-muted/50" />
-            <div aria-hidden="true" className="space-y-2">
-              <div className="h-3 w-2/3 rounded bg-muted/50" />
-              <div className="h-3 w-full rounded bg-muted/50" />
-              <div className="h-3 w-3/4 rounded bg-muted/50" />
-            </div>
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="px-4 py-3">
-            <h3 className="text-sm font-medium">How can I help?</h3>
-            <p className="mt-1.5 text-sm font-light leading-relaxed text-muted-foreground/70">
-              I can correct wording, update selected text, improve formatting,
-              and create relevant tags from this changelog.
-            </p>
-          </div>
-        ) : (
-          <Messages
-            messages={messages}
-            bottomRef={bottomRef}
-            onRetry={() => {
-              const lastUser = [...messages]
-                .reverse()
-                .find((message) => message.role === "user");
-              if (lastUser) void sendMessage(lastUser.content);
-            }}
-          />
-        )}
-      </div>
-
-      <div className="shrink-0 p-3 pt-1">
-        {mention ? (
-          <Sources
-            query={mention.query}
-            isLoading={isLoadingPosts}
-            items={mentionItems}
-            selectedIndex={mentionIndex}
-            completedThisWeekCount={completedThisWeek.length}
-            completedPosts={completedPosts}
-            progressPosts={progressPosts}
-            onSelectWeek={attachWeekPosts}
-            onSelectPost={insertPostMention}
-            onHighlight={setMentionIndex}
-          />
-        ) : null}
-
-        <Attachments
-          posts={selectedPosts}
-          onRemove={(id) =>
-            setSelectedPostIds((current) =>
-              current.filter((postId) => postId !== id),
-            )
-          }
-        />
-
-        {historyReady && messages.length === 0 &&
-        !selectionContext &&
-        !mention &&
-        !prompt.trim() ? (
-          <div className="mb-2">
-            <p className="mb-2 text-[11px] font-light leading-relaxed text-muted-foreground/70">
-              Tip: Select text in the editor, then tell me how to change it.
-            </p>
-            <Actions
-              actions={STARTERS}
+            ) : null}
+            <Button
+              type="button"
+              variant="plain"
+              size="icon-sm"
               disabled={isLoading}
-              onSelect={runStarter}
-            />
+              className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+              onClick={() => void clearConversation()}
+              aria-label="New conversation"
+              title="New conversation"
+            >
+              <Plus className="size-[18px]" />
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="plain"
+                  size="icon-sm"
+                  className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+                  onClick={() => onOpenChange(false)}
+                  aria-label="Hide AI assistant"
+                  aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
+                  aria-expanded={open}
+                  aria-controls="changelog-assistant"
+                >
+                  <PanelIcon side="right" className="size-[18px]" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={6}
+                className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium"
+              >
+                <span>Hide AI assistant</span>
+                <PanelShortcutKeys />
+              </TooltipContent>
+            </Tooltip>
           </div>
-        ) : null}
+        </header>
 
-        <Composer
-          inputRef={inputRef}
-          value={prompt}
-          selectionText={selectionContext?.text}
-          isLoading={isLoading}
-          canUndo={Boolean(undoSnapshot)}
-          onChange={(value, caret) => {
-            setPrompt(value);
-            updateMention(value, caret);
-          }}
-          onClick={(event) => {
-            const field = event.currentTarget;
-            updateMention(
-              field.value,
-              field.selectionStart ?? field.value.length,
-            );
-          }}
-          onKeyUp={(event) => {
-            const field = event.currentTarget;
-            updateMention(
-              field.value,
-              field.selectionStart ?? field.value.length,
-            );
-          }}
-          onKeyDown={handleInputKeyDown}
-          onAttach={startAttachment}
-          onUndo={restoreSnapshot}
-          onSend={() => void sendMessage(prompt)}
-          onStop={() => abortRef.current?.abort()}
-        />
-      </div>
+        {historyOpen ? (
+          <ConversationHistory
+            conversations={conversations}
+            activeId={conversationId}
+            loading={isHistoryLoading}
+            onSelect={(id) => void selectConversation(id)}
+            onDelete={(id) => void deleteConversation(id)}
+          />
+        ) : (
+          <>
+            <div
+              className="scrollbar-hide min-h-0 flex-1 overflow-y-auto"
+              aria-busy={!historyReady}
+            >
+              {!historyReady ? (
+                <div role="status" className="space-y-4 px-4 py-5">
+                  <span className="sr-only">Loading conversation</span>
+                  <div
+                    aria-hidden="true"
+                    className="ml-auto h-16 w-4/5 rounded-xl bg-muted/50"
+                  />
+                  <div aria-hidden="true" className="space-y-2">
+                    <div className="h-3 w-2/3 rounded bg-muted/50" />
+                    <div className="h-3 w-full rounded bg-muted/50" />
+                    <div className="h-3 w-3/4 rounded bg-muted/50" />
+                  </div>
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="px-4 py-3">
+                  <h3 className="text-sm font-medium">How can I help?</h3>
+                  <p className="mt-1.5 text-sm font-light leading-relaxed text-muted-foreground/70">
+                    I can correct wording, update selected text, improve
+                    formatting, and create relevant tags from this changelog.
+                  </p>
+                </div>
+              ) : (
+                <Messages
+                  messages={messages}
+                  bottomRef={bottomRef}
+                  onRetry={() => {
+                    const lastUser = [...messages]
+                      .reverse()
+                      .find((message) => message.role === "user");
+                    if (lastUser) void sendMessage(lastUser.content);
+                  }}
+                />
+              )}
+            </div>
+
+            <div className="shrink-0 p-3 pt-1">
+              <Attachments
+                posts={selectedPosts}
+                onRemove={(id) =>
+                  setSelectedPostIds((current) =>
+                    current.filter((postId) => postId !== id),
+                  )
+                }
+              />
+
+              {historyReady &&
+              messages.length === 0 &&
+              !selectionContext &&
+              !mention &&
+              !prompt.trim() ? (
+                <div className="mb-2">
+                  <p className="mb-2 text-[11px] font-light leading-relaxed text-muted-foreground/70">
+                    Tip: Select text in the editor, then tell me how to change it.
+                  </p>
+                  <Actions
+                    actions={STARTERS}
+                    disabled={isLoading}
+                    onSelect={runStarter}
+                  />
+                </div>
+              ) : null}
+
+              <div className="relative z-20">
+                {mention ? (
+                  <Sources
+                    query={mention.query}
+                    isLoading={isLoadingPosts}
+                    items={mentionItems}
+                    selectedIndex={mentionIndex}
+                    completedThisWeekCount={completedThisWeek.length}
+                    completedPosts={completedPosts}
+                    progressPosts={progressPosts}
+                    onSelectWeek={attachWeekPosts}
+                    onSelectPost={insertPostMention}
+                    onHighlight={setMentionIndex}
+                  />
+                ) : null}
+                <Composer
+                  inputRef={inputRef}
+                  value={prompt}
+                  selectionText={selectionContext?.text}
+                  attachmentOpen={Boolean(mention)}
+                  isLoading={isLoading}
+                  canUndo={Boolean(undoSnapshot)}
+                  onChange={(value, caret) => {
+                    setPrompt(value);
+                    updateMention(value, caret);
+                  }}
+                  onClick={(event) => {
+                    const field = event.currentTarget;
+                    updateMention(
+                      field.value,
+                      field.selectionStart ?? field.value.length,
+                    );
+                  }}
+                  onKeyUp={(event) => {
+                    const field = event.currentTarget;
+                    updateMention(
+                      field.value,
+                      field.selectionStart ?? field.value.length,
+                    );
+                  }}
+                  onKeyDown={handleInputKeyDown}
+                  onAttach={startAttachment}
+                  onUndo={restoreSnapshot}
+                  onSend={() => void sendMessage(prompt)}
+                  onStop={() => abortRef.current?.abort()}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </motion.aside>
   );

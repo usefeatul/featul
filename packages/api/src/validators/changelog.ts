@@ -40,6 +40,40 @@ export const aiChatMessageSchema = z.object({
 
 export const aiChatIntentSchema = z.enum(["ask", "rewrite", "patch", "tags"]);
 
+export const changelogAiStoredMessageSchema = z.object({
+  id: z.string().min(1).max(128),
+  role: z.enum(["user", "assistant"]),
+  content: z.string().max(20000),
+  attachedTitles: z.array(z.string().max(256)).max(20).optional(),
+  status: z.literal("error").optional(),
+  activity: aiChatIntentSchema.optional(),
+  durationMs: z.number().int().min(0).max(600000).optional(),
+  suggestedTags: z.array(z.string().max(64)).max(20).optional(),
+  effect: z.string().max(256).optional(),
+});
+
+export const aiConversationsListSchema = z.object({
+  slug: bySlugSchema.shape.slug,
+  limit: z.number().int().min(1).max(50).optional(),
+});
+
+export const aiConversationGetSchema = z.object({
+  slug: bySlugSchema.shape.slug,
+  conversationId: z.string().min(1),
+});
+
+export const aiConversationSaveSchema = z.object({
+  slug: bySlugSchema.shape.slug,
+  conversationId: z.string().min(1).optional(),
+  entryId: z.string().min(1).nullable().optional(),
+  title: z.string().min(1).max(120),
+  messages: z.array(changelogAiStoredMessageSchema).max(24),
+  selectedPostIds: z.array(z.string().min(1)).max(20),
+  pendingTagNames: z.array(z.string().min(1).max(64)).max(4),
+});
+
+export const aiConversationDeleteSchema = aiConversationGetSchema;
+
 export const aiAssistSchema = z
   .object({
     slug: bySlugSchema.shape.slug,

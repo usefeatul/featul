@@ -39,6 +39,7 @@ export const {
   brandingConfig,
   workspaceSlugReservation,
   changelogEntry,
+  changelogAiConversation,
   changelogMention,
   activityLog,
   workspaceIntegration,

@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
+import { CalendarCheck2 } from "lucide-react";
 import { PopoverList, PopoverListItem } from "@featul/ui/components/popover";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { XMarkIcon } from "@featul/ui/icons/xmark";
@@ -32,7 +33,7 @@ function SourceGroup({
 
   return (
     <>
-      <p className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+      <p className="sticky top-0 z-10 border-y border-border/40 bg-background/95 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground backdrop-blur-sm dark:border-white/[0.06] dark:bg-[#202020]/95">
         {label}
       </p>
       {posts.map((post) => {
@@ -49,15 +50,17 @@ function SourceGroup({
             onClick={() => onSelect(post)}
             onMouseEnter={() => onHighlight(index)}
             className={cn(
-              "w-full gap-2 whitespace-normal text-sm",
-              index === selectedIndex && "bg-muted/40",
+              "min-h-10 w-full gap-2 whitespace-normal px-3 py-2.5 text-[13px] font-medium",
+              index === selectedIndex && "bg-muted/65 dark:bg-white/[0.055]",
             )}
           >
             <StatusIcon
               status={post.roadmapStatus || undefined}
-              className="size-4 shrink-0"
+              className="size-3.5 shrink-0 text-foreground/70"
             />
-            <span className="min-w-0 flex-1 truncate">{post.title}</span>
+            <span className="min-w-0 flex-1 truncate text-foreground/90">
+              {post.title}
+            </span>
             {post.githubUrl ? (
               <GitHubIcon className="size-3.5 shrink-0 text-muted-foreground" />
             ) : null}
@@ -92,12 +95,12 @@ export function Sources({
   onHighlight: (index: number) => void;
 }) {
   return (
-    <div className="mb-2 overflow-hidden rounded-xl bg-background ring-1 ring-border/70 dark:bg-[#202020]">
-      <p className="px-3 py-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-        Attach feedback
-      </p>
+    <div
+      id="changelog-feedback-picker"
+      className="absolute inset-x-3 bottom-[calc(100%-0.75rem)] z-20 overflow-hidden rounded-xl bg-card shadow-xl ring-1 ring-border/70 dark:ring-white/10"
+    >
       {isLoading ? (
-        <div className="flex items-center gap-2 px-3 py-6 text-xs text-muted-foreground">
+        <div className="flex items-center justify-center gap-2 px-3 py-6 text-xs text-muted-foreground">
           <LoaderIcon className="size-3.5 animate-spin" />
           Loading posts…
         </div>
@@ -106,7 +109,7 @@ export function Sources({
           No posts match “{query}”.
         </p>
       ) : (
-        <PopoverList className="flex max-h-56 w-full flex-col overflow-y-auto scrollbar-hide">
+        <PopoverList className="scrollbar-hide flex max-h-64 w-full flex-col overflow-y-auto overscroll-contain">
           {items[0]?.kind === "week" ? (
             <PopoverListItem
               type="button"
@@ -116,11 +119,18 @@ export function Sources({
               onClick={onSelectWeek}
               onMouseEnter={() => onHighlight(0)}
               className={cn(
-                "w-full text-sm font-medium text-primary",
-                selectedIndex === 0 && "bg-muted/40",
+                "min-h-10 w-full gap-2 px-3 py-2.5 text-[13px] font-medium text-foreground/90",
+                selectedIndex === 0 &&
+                  "bg-muted/65 dark:bg-white/[0.055]",
               )}
             >
-              All completed this week ({completedThisWeekCount})
+              <CalendarCheck2 className="size-3.5 shrink-0 text-primary" />
+              <span className="min-w-0 flex-1 truncate">
+                All completed this week
+              </span>
+              <span className="inline-flex h-5 shrink-0 items-center rounded-md bg-muted px-2 text-[10px] font-medium tabular-nums text-muted-foreground dark:bg-[#2a2a2a]">
+                {completedThisWeekCount}
+              </span>
             </PopoverListItem>
           ) : null}
           <SourceGroup
@@ -161,7 +171,7 @@ export function Attachments({
           key={post.id}
           type="button"
           onClick={() => onRemove(post.id)}
-          className="inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary hover:bg-primary/15"
+          className="inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-muted/70 px-2 py-1 text-[11px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground dark:bg-[#242424] dark:hover:bg-[#2a2a2a]"
         >
           <StatusIcon
             status={post.roadmapStatus || undefined}

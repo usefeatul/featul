@@ -3,12 +3,14 @@
 import type { KeyboardEvent, MouseEvent, RefObject } from "react";
 import { ArrowUp, Paperclip, Square, Undo2 } from "lucide-react";
 import { Button } from "@featul/ui/components/button";
+import { cn } from "@featul/ui/lib/utils";
 import TextareaAutosize from "react-textarea-autosize";
 
 export function Composer({
   inputRef,
   value,
   selectionText,
+  attachmentOpen,
   isLoading,
   canUndo,
   onChange,
@@ -23,6 +25,7 @@ export function Composer({
   inputRef: RefObject<HTMLTextAreaElement | null>;
   value: string;
   selectionText?: string;
+  attachmentOpen: boolean;
   isLoading: boolean;
   canUndo: boolean;
   onChange: (value: string, caret: number) => void;
@@ -35,7 +38,7 @@ export function Composer({
   onStop: () => void;
 }) {
   return (
-    <div className="rounded-xl bg-black/[0.035] p-2 ring-1 ring-inset ring-black/[0.07] dark:bg-white/[0.035] dark:ring-white/[0.08]">
+    <div className="relative z-30 rounded-xl bg-card p-2 ring-1 ring-inset ring-black/[0.07] dark:ring-white/[0.08]">
       {selectionText ? (
         <div className="mb-1.5 rounded-lg bg-black/[0.04] px-2.5 py-2 dark:bg-white/[0.05]">
           <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/60">
@@ -76,9 +79,16 @@ export function Composer({
           type="button"
           variant="plain"
           size="icon-sm"
-          className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.06]"
+          className={cn(
+            "size-8 rounded-md border-0 text-muted-foreground shadow-none before:hidden hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.08]",
+            attachmentOpen
+              ? "bg-primary/10 text-primary dark:bg-primary/15"
+              : "bg-muted/70 dark:bg-white/[0.055]",
+          )}
           onClick={onAttach}
           aria-label="Attach feedback"
+          aria-expanded={attachmentOpen}
+          aria-controls="changelog-feedback-picker"
           title="Attach feedback"
         >
           <Paperclip className="size-3.5" />
@@ -96,13 +106,11 @@ export function Composer({
             <Undo2 className="size-3.5" />
           </Button>
         ) : null}
-        <span className="ml-auto hidden text-[10px] text-muted-foreground/60 sm:inline">
-          Enter to send
-        </span>
         <Button
           type="button"
+          variant="default"
           size="icon-sm"
-          className="ml-1 size-8 rounded-full"
+          className="ml-auto size-8 rounded-md"
           aria-label={isLoading ? "Stop" : "Send"}
           disabled={!isLoading && !value.trim()}
           onClick={isLoading ? onStop : onSend}

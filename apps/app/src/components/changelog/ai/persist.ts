@@ -11,9 +11,11 @@ export type PersistedAiChatMessage = {
   activity?: PersistedActivity;
   durationMs?: number;
   suggestedTags?: string[];
+  effect?: string;
 };
 
 type PersistedAiChat = {
+  conversationId?: string;
   messages: PersistedAiChatMessage[];
   selectedPostIds: string[];
   pendingTagNames: string[];
@@ -34,6 +36,10 @@ export function loadChangelogAiChat(slug: string, entryId?: string) {
     const parsed = JSON.parse(raw) as PersistedAiChat;
     if (!Array.isArray(parsed.messages)) return null;
     return {
+      conversationId:
+        typeof parsed.conversationId === "string"
+          ? parsed.conversationId
+          : undefined,
       messages: parsed.messages.filter(
         (message) =>
           message.status !== "pending" && message.status !== "streaming",
@@ -57,6 +63,7 @@ export function saveChangelogAiChat(
 ) {
   if (typeof window === "undefined") return;
   const body: PersistedAiChat = {
+    conversationId: payload.conversationId,
     messages: payload.messages
       .filter(
         (message) =>

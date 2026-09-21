@@ -13,9 +13,16 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug } from "../shared/slug";
-import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
-import { assertOptionalWorkspaceAssetUrl, WORKSPACE_CHANGELOG_FOLDERS } from "../storage/urls";
+import {
+  getWorkspaceAccessPlan,
+  requireBoardManagerBySlug,
+} from "../shared/access";
+import {
+  assertOptionalWorkspaceAssetUrl,
+  WORKSPACE_CHANGELOG_FOLDERS,
+} from "../storage/urls";
 import { createChangelogAutomationProcedures } from "./automation";
+import { createChangelogHistoryProcedures } from "../changelog/history";
 import {
   getChangelogTags,
   findTagsByIds,
@@ -330,6 +337,7 @@ export function createChangelogRouter() {
         return c.superjson({ ok: true });
       }),
     ...createChangelogAutomationProcedures(),
+    ...createChangelogHistoryProcedures(),
 
     // Entry CRUD operations
     entriesCreate: privateProcedure
@@ -389,7 +397,9 @@ export function createChangelogRouter() {
           })
           .returning();
 
-        const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+        const mentionUserIds = extractMentionedUserIdsFromContent(
+          input.content,
+        );
         if (mentionUserIds.length > 0) {
           const validMentionUserIds = await resolveValidMentionUserIds({
             ctx,
@@ -490,7 +500,9 @@ export function createChangelogRouter() {
           .returning();
 
         if (input.content !== undefined) {
-          const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+          const mentionUserIds = extractMentionedUserIdsFromContent(
+            input.content,
+          );
 
           const validMentionUserIds = await resolveValidMentionUserIds({
             ctx,
@@ -499,8 +511,10 @@ export function createChangelogRouter() {
             mentionUserIds,
           });
 
-          const existingMentions: Array<{ id: string; mentionedUserId: string }> =
-            await ctx.db
+          const existingMentions: Array<{
+            id: string;
+            mentionedUserId: string;
+          }> = await ctx.db
             .select({
               id: changelogMention.id,
               mentionedUserId: changelogMention.mentionedUserId,
@@ -509,10 +523,12 @@ export function createChangelogRouter() {
             .where(eq(changelogMention.entryId, input.entryId));
 
           const existingByUserId = new Map(
-            existingMentions.map((mention: { id: string; mentionedUserId: string }) => [
-              mention.mentionedUserId,
-              mention,
-            ]),
+            existingMentions.map(
+              (mention: { id: string; mentionedUserId: string }) => [
+                mention.mentionedUserId,
+                mention,
+              ],
+            ),
           );
           const nextUserIdSet = new Set(validMentionUserIds);
 
@@ -521,7 +537,9 @@ export function createChangelogRouter() {
               (mention: { id: string; mentionedUserId: string }) =>
                 !nextUserIdSet.has(mention.mentionedUserId),
             )
-            .map((mention: { id: string; mentionedUserId: string }) => mention.id);
+            .map(
+              (mention: { id: string; mentionedUserId: string }) => mention.id,
+            );
 
           if (mentionIdsToDelete.length > 0) {
             await ctx.db

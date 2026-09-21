@@ -19,7 +19,6 @@ import { fetchWorkspaceMembers } from "@/lib/team/client";
 import ChangelogAiPanel from "./ChangelogAiPanel";
 import { getChangelogAiSlashSuggestions } from "./ai/slash";
 import { getPublishCheckIssues } from "./ai/publishCheck";
-import { clearChangelogAiChat } from "./ai/persist";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
 import { cn } from "@featul/ui/lib/utils";
 import { useAssistantPanel } from "@/hooks/useAssistantPanel";
@@ -117,18 +116,9 @@ export function ChangelogEditor({
           description: issues.join(" · "),
         });
       }
-      clearChangelogAiChat(workspaceSlug, entryId);
     }
     await handleSave();
-  }, [
-    isDraft,
-    title,
-    coverImage,
-    editorRef,
-    workspaceSlug,
-    entryId,
-    handleSave,
-  ]);
+  }, [isDraft, title, coverImage, editorRef, handleSave]);
 
   const additionalSlashSuggestions = useCallback(
     ({ query }: { query: string }) => {
