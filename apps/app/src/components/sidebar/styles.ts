@@ -8,4 +8,4 @@ export const sidebarSectionLabelClassName =
   "flex min-h-5 items-center gap-2 px-2 text-xs font-medium text-accent";
 
 export const sidebarSearchClassName =
-  "mt-3 h-8 w-full justify-start gap-2 rounded-md border border-border/60 bg-sidebar-accent/75 px-3 text-sm text-accent shadow-none ring-0 before:hidden hover:bg-sidebar-accent dark:border-white/10 dark:bg-white/[0.08] dark:hover:bg-white/[0.12]";
+  "mt-3 h-9 w-full justify-start gap-2 rounded-md border border-border/60 bg-muted/70 px-3 text-sm text-foreground shadow-none ring-0 before:hidden hover:bg-muted dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1] [&_svg]:text-muted-foreground [&_kbd]:h-6 [&_kbd]:min-w-7 [&_kbd]:rounded-md [&_kbd]:border-0 [&_kbd]:bg-background/90 [&_kbd]:px-1.5 [&_kbd]:text-muted-foreground [&_kbd]:shadow-none dark:[&_kbd]:bg-black/30";

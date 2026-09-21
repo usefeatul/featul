@@ -39,7 +39,7 @@ export default function Header({
   onOpenList,
 }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-20 flex min-h-12 items-center gap-2 bg-background pl-2 pr-4 sm:pr-6">
+    <header className="sticky top-0 z-20 flex min-h-13 items-center gap-2 bg-background pl-2 pr-4 sm:pr-6">
       {onOpenList ? (
         <Tooltip>
           <TooltipTrigger asChild>

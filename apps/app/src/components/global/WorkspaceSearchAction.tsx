@@ -305,10 +305,23 @@ export function WorkspaceSearchAction({
           )}
           size={compact ? 20 : 16}
         />
-        {showLabel ? <span className="min-w-0 truncate text-left font-normal">{currentSearch || placeholder}</span> : null}
+        {showLabel ? (
+          <span
+            className={cn(
+              "min-w-0 truncate text-left font-normal",
+              currentSearch ? "text-foreground" : "text-muted-foreground",
+            )}
+          >
+            {currentSearch || placeholder}
+          </span>
+        ) : null}
         {showShortcut ? (
-          <kbd aria-hidden="true" className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded border border-border/50 px-1 py-0.5 font-sans text-[10px] leading-none text-accent">
-            <span>{platformKey}</span><span>K</span>
+          <kbd
+            aria-hidden="true"
+            className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded border border-border/50 px-1 py-0.5 font-sans text-[10px] leading-none text-accent"
+          >
+            <span>{platformKey}</span>
+            <span>K</span>
           </kbd>
         ) : null}
       </Button>
@@ -365,7 +378,10 @@ export function WorkspaceSearchAction({
           ) : null}
           {isSearching ? (
             <SearchStatusMessage>
-              <LoaderIcon className="size-4 animate-spin opacity-70" size={16} />
+              <LoaderIcon
+                className="size-4 animate-spin opacity-70"
+                size={16}
+              />
               Searching…
             </SearchStatusMessage>
           ) : null}
@@ -397,9 +413,7 @@ export function WorkspaceSearchAction({
               <CommandGroup>
                 <CommandItem onSelect={handleSubmit} className="text-primary">
                   <SearchIcon className="size-3.5 opacity-70" size={14} />
-                  <span>
-                    View all results for &ldquo;{trimmedValue}&rdquo;
-                  </span>
+                  <span>View all results for &ldquo;{trimmedValue}&rdquo;</span>
                   <CommandShortcut>{enterKey}</CommandShortcut>
                 </CommandItem>
               </CommandGroup>
