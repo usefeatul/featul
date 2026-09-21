@@ -77,6 +77,8 @@ export default function Sidebar({
     initialDomainInfo || null,
   );
   const [createPostOpen, setCreatePostOpen] = useState(false);
+  const navRef = React.useRef<HTMLDivElement>(null);
+  const [navScrollable, setNavScrollable] = useState(false);
   const openCreatePost = React.useCallback(() => setCreatePostOpen(true), []);
   useCreatePostHotkey({ onOpen: openCreatePost });
   const boardItem = middleNav.find((item) => item.label === "My Board");
@@ -85,6 +87,22 @@ export default function Sidebar({
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
+
+  React.useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const updateScrollable = () => {
+      setNavScrollable(nav.scrollHeight > nav.clientHeight + 1);
+    };
+
+    updateScrollable();
+    const observer = new ResizeObserver(updateScrollable);
+    observer.observe(nav);
+    Array.from(nav.children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, [isAccount, isSettings, pathname, primaryNav.length, workspaceNav.length]);
 
   return (
     <aside
@@ -131,7 +149,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-hide">
+      <div ref={navRef} className="flex-1 overflow-y-auto scrollbar-hide">
         <LayoutGroup id="desktop-sidebar-nav">
         {isSettings || isAccount ? (
           <>
@@ -182,7 +200,12 @@ export default function Sidebar({
         </LayoutGroup>
       </div>
 
-      <SidebarSection className="border-t border-border/30 px-3 pb-3 pt-3">
+      <SidebarSection
+        className={cn(
+          "px-3 pb-3 pt-3",
+          navScrollable && "border-t border-border/30",
+        )}
+      >
         <Timezone
           className="mb-3"
           initialTimezone={initialTimezone}

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { cn } from "@featul/ui/lib/utils"
 import type { RequestItemData } from "@/types/request"
 import { normalizeRoadmapStatus, statusLabel } from "@/lib/roadmap"
+import { relativeTime } from "@/lib/time"
 import Attributes from "./attributes"
 import StatusIcon from "./StatusIcon"
 
@@ -22,6 +23,8 @@ export function QueueItem({
 }) {
   const status = normalizeRoadmapStatus(item.roadmapStatus)
   const href = `/workspaces/${workspaceSlug}/requests/${item.slug}${query ? `?${query}` : ""}`
+  const publishedAt = item.publishedAt ?? item.createdAt
+  const publishedLabel = relativeTime(publishedAt)
 
   return (
     <li
@@ -51,9 +54,19 @@ export function QueueItem({
             <p className="min-w-0 flex-1 line-clamp-2 text-[13px] font-semibold leading-[18px] text-foreground/90">
               {item.title}
             </p>
-            {active ? (
-              <span className="shrink-0 text-[10px] font-medium leading-[18px] text-primary">Viewing</span>
-            ) : null}
+            <span className="shrink-0 pl-1 text-[10px] font-medium leading-[18px] tabular-nums">
+              {active ? (
+                <span className="text-primary">Viewing</span>
+              ) : (
+                <time
+                  dateTime={publishedAt}
+                  aria-label={`Submitted ${publishedLabel}`}
+                  className="text-muted-foreground/70 transition-colors group-hover/queue:text-muted-foreground"
+                >
+                  {publishedLabel}
+                </time>
+              )}
+            </span>
           </div>
 
           <Attributes item={item} />

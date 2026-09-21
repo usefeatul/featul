@@ -174,7 +174,7 @@ export default function MobileDrawerContent({
           </LayoutGroup>
         )}
 
-        <SidebarSection className="pb-8">
+        <SidebarSection className="border-t border-border/30 pb-8">
           <CreatePostModal
             open={createPostOpen}
             onOpenChange={setCreatePostOpen}

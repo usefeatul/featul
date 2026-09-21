@@ -6,7 +6,6 @@ import { isActivelySnoozed } from "@featul/api/shared/snooze"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import { randomAvatarUrl } from "@/utils/avatar"
-import { relativeTime } from "@/lib/time"
 import { getRequestStaleDays } from "@/utils/request/stale"
 import { getRequestLowInteractionDays } from "@/utils/request/low-interaction"
 import { getActiveRequestFlags } from "@/components/global/flag-visuals"
@@ -62,9 +61,6 @@ export default function Attributes({ item }: { item: RequestItemData }) {
               className="h-5 rounded-md bg-muted/70 px-1.5 text-[10px] font-medium tracking-normal text-amber-700 dark:bg-white/[0.055] dark:text-amber-400"
             />
           ) : null}
-          <time className="shrink-0 text-muted-foreground/80" dateTime={item.publishedAt ?? item.createdAt}>
-            {relativeTime(item.publishedAt ?? item.createdAt)}
-          </time>
         </div>
       </div>
       {hasSecondaryIndicators ? (

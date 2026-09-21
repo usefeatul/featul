@@ -3,12 +3,13 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
+import { ClockIcon } from "@featul/ui/icons/clock";
 import { getSlugFromPath } from "../../config/nav";
 import { formatTime12h } from "@/lib/time";
+import { friendlyTimezoneCity } from "@/lib/timezone";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@featul/ui/components/tooltip";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";
-import { SidebarBadge } from "./badge";
-import { sidebarSectionLabelClassName } from "./styles";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 
 interface TimezoneProps {
   className?: string;
@@ -24,16 +25,13 @@ export default function Timezone({
   const pathname = usePathname();
   const slug = getSlugFromPath(pathname || "");
 
-  // Calculate server time drift (memoized since it's based on initial values)
   const drift = React.useMemo(
     () => (initialServerNow ? initialServerNow - Date.now() : 0),
     [initialServerNow]
   );
 
-  // Get timezone from TanStack Query cache
   const { timezone } = useWorkspaceTimezone(slug || "", initialTimezone || undefined);
 
-  // Format and update time display
   const [time, setTime] = React.useState<string>(() =>
     timezone ? formatTime12h(timezone, new Date(Date.now() + drift)) : ""
   );
@@ -45,39 +43,55 @@ export default function Timezone({
       setTime(formatTime12h(timezone, new Date(Date.now() + drift)));
     };
 
-    updateTime(); // Update immediately
-    const intervalId = setInterval(updateTime, 1000);
+    updateTime();
 
-    return () => clearInterval(intervalId);
+    let intervalId: number | undefined;
+    const now = Date.now() + drift;
+    const timeoutId = window.setTimeout(() => {
+      updateTime();
+      intervalId = window.setInterval(updateTime, 60_000);
+    }, 60_000 - (now % 60_000));
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId) window.clearInterval(intervalId);
+    };
   }, [timezone, drift]);
 
   if (!timezone || !time) return null;
 
+  const city = friendlyTimezoneCity(timezone);
+
   return (
-    <div className={cn(className)}>
-      <div className={sidebarSectionLabelClassName}>
-        <span className="min-w-0 flex-1 truncate">TIME</span>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <SidebarBadge className="ml-auto shrink-0" fixedWidth={false} innerClassName="px-1.5 font-medium text-muted-foreground/70">
-                {time}
-              </SidebarBadge>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              sideOffset={6}
-              align="end"
-            >
-              <span className="font-bold">Current workspace time</span>{" "}
-              <span className="text-white/75 dark:text-black/65">
-                in the workspace&apos;s timezone. All dates, ranges, and graphs
-                you see are matched to this timezone.
-              </span>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            tabIndex={0}
+            aria-label={`${city} workspace time, ${time}`}
+            className={cn(
+              sidebarRowClassName,
+              "cursor-default text-muted-foreground outline-none transition-colors hover:bg-sidebar-accent/60 focus-visible:ring-2 focus-visible:ring-ring/50",
+              className,
+            )}
+          >
+            <span className={sidebarLeadSlotClassName}>
+              <ClockIcon
+                className="size-5 text-neutral-400 transition-colors duration-200 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary"
+              />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-foreground/75">
+              {city} time
+            </span>
+            <time className="shrink-0 text-xs font-medium tabular-nums text-foreground/80">
+              {time}
+            </time>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8} className="text-xs">
+          <span className="font-semibold">Workspace timezone:</span> {timezone}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
