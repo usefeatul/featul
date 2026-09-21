@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import { ImageIcon } from "@featul/ui/icons/image";
@@ -24,6 +24,7 @@ export function CoverImageUploader({
 }: CoverImageUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const handleUpload = useCallback(async (file: File) => {
         if (!IMAGE_UPLOAD_CONTENT_TYPES.includes(file.type as (typeof IMAGE_UPLOAD_CONTENT_TYPES)[number])) {
@@ -68,7 +69,7 @@ export function CoverImageUploader({
     return (
         <div
             className={cn(
-                "group relative aspect-[2/1] max-h-96 min-h-48 w-full overflow-hidden rounded-2xl bg-black/[0.025] ring-1 ring-inset ring-black/[0.06] transition-colors dark:bg-white/[0.025] dark:ring-white/[0.06]",
+                "relative aspect-[2/1] max-h-96 min-h-48 w-full overflow-hidden rounded-2xl bg-black/[0.025] ring-1 ring-inset ring-black/[0.06] transition-colors dark:bg-white/[0.025] dark:ring-white/[0.06]",
                 isDragging && "bg-black/[0.055] dark:bg-white/[0.055]",
                 isUploading && "pointer-events-none opacity-70",
             )}
@@ -86,6 +87,7 @@ export function CoverImageUploader({
         >
             <label className="absolute inset-0 flex cursor-pointer items-center justify-center">
                 <input
+                    ref={inputRef}
                     type="file"
                     accept={IMAGE_UPLOAD_CONTENT_TYPES.join(",")}
                     className="hidden"
@@ -93,18 +95,11 @@ export function CoverImageUploader({
                     disabled={isUploading}
                 />
                 {coverImage ? (
-                    <>
-                        <img
-                            src={coverImage}
-                            alt="Changelog cover"
-                            className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
-                        />
-                        <span className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
-                        <span className="absolute bottom-3 right-3 inline-flex h-8 translate-y-1 items-center gap-1.5 rounded-md bg-black/65 px-2.5 text-xs font-medium text-white opacity-0 backdrop-blur-sm transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                            <ImageIcon className="size-3.5" />
-                            Change cover
-                        </span>
-                    </>
+                    <img
+                        src={coverImage}
+                        alt="Changelog cover"
+                        className="size-full object-cover"
+                    />
                 ) : (
                     <span className="flex flex-col items-center gap-2 px-6 text-center">
                         {isUploading ? (
@@ -124,17 +119,30 @@ export function CoverImageUploader({
                 )}
             </label>
             {coverImage ? (
-                <Button
-                    type="button"
-                    variant="plain"
-                    size="icon-sm"
-                    className="absolute right-3 top-3 size-8 rounded-md border-0 bg-black/65 p-0 text-white opacity-0 shadow-none ring-0 before:hidden backdrop-blur-sm hover:bg-black/80 hover:text-white group-hover:opacity-100 focus-visible:opacity-100"
-                    onClick={() => onCoverImageChange(null)}
-                    aria-label="Remove cover image"
-                    title="Remove cover image"
-                >
-                    <X className="size-3.5" />
-                </Button>
+                <div className="absolute right-3 top-3 flex items-center gap-1.5">
+                    <Button
+                        type="button"
+                        variant="plain"
+                        size="sm"
+                        disabled={isUploading}
+                        className="h-8 gap-1.5 rounded-md border border-border/60 bg-card px-2.5 text-xs font-medium text-foreground shadow-none ring-0 before:hidden hover:bg-muted hover:text-foreground dark:border-white/10 dark:bg-card dark:text-foreground dark:hover:bg-muted"
+                        onClick={() => inputRef.current?.click()}
+                    >
+                        Change cover
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="plain"
+                        size="icon-sm"
+                        disabled={isUploading}
+                        className="size-8 rounded-md border border-border/60 bg-card p-0 text-foreground shadow-none ring-0 before:hidden hover:bg-muted hover:text-foreground dark:border-white/10 dark:bg-card dark:text-foreground dark:hover:bg-muted"
+                        onClick={() => onCoverImageChange(null)}
+                        aria-label="Remove cover image"
+                        title="Remove cover image"
+                    >
+                        <X className="size-3.5" />
+                    </Button>
+                </div>
             ) : null}
         </div>
     );

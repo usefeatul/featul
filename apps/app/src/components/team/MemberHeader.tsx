@@ -12,25 +12,9 @@ import RoleBadge from "@/components/global/RoleBadge"
 interface MemberHeaderProps {
   member?: Member
   userId: string
-  stats: {
-    posts: number
-    comments: number
-    upvotes: number
-  }
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="min-w-0 px-4 text-center first:pl-0 last:pr-0 lg:min-w-28">
-      <div className="text-xs text-accent">{label}</div>
-      <div className="mt-1 text-2xl font-semibold tabular-nums text-foreground">
-        {value}
-      </div>
-    </div>
-  )
-}
-
-export function MemberHeader({ member, userId, stats }: MemberHeaderProps) {
+export function MemberHeader({ member, userId }: MemberHeaderProps) {
   return (
     <section className="flex w-full flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
       <header className="flex min-w-0 items-center gap-4">
@@ -64,11 +48,6 @@ export function MemberHeader({ member, userId, stats }: MemberHeaderProps) {
           </div>
         </div>
       </header>
-      <div className="grid w-full grid-cols-3 rounded-lg bg-muted/35 px-5 py-4 lg:ml-auto lg:w-auto lg:min-w-[24rem] dark:bg-white/[0.025]">
-        <StatCard label="Posts" value={Number(stats.posts || 0)} />
-        <StatCard label="Comments" value={Number(stats.comments || 0)} />
-        <StatCard label="Upvotes" value={Number(stats.upvotes || 0)} />
-      </div>
     </section>
   )
 }

@@ -53,7 +53,7 @@ export default function CommentList({
 
   const queryKey = getCommentsQueryKey(postId, surface)
 
-  const { data: commentsData, isLoading, refetch } = useQuery<CommentListResponse>({
+  const { data: commentsData, refetch } = useQuery<CommentListResponse>({
     queryKey,
     queryFn: async () => {
       const res = await client.comment.list.$get({
@@ -109,13 +109,6 @@ export default function CommentList({
             surface={surface}
           />
         </div>
-        {commentCount === 0 && !isLoading ? (
-          <div className={cn(!plain && settingsCardInnerClass, "mt-2 py-8 text-center")}>
-            <p className="text-sm text-accent">
-              No comments yet. Be the first to comment!
-            </p>
-          </div>
-        ) : null}
       </div>
       {commentCount > 0 ? (
         <div className={cn(!plain && settingsCardShellClass, "pt-2")}>

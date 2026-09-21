@@ -35,10 +35,12 @@ export default function WorkspaceHeader({
   workspaceName,
   embeddedInEditor = false,
   editorActions,
+  editorTitle,
 }: {
   workspaceName: string;
   embeddedInEditor?: boolean;
   editorActions?: EditorAction[];
+  editorTitle?: string;
 }) {
   const pathname = usePathname() || "/";
   const parts = pathname.split("/").filter(Boolean);
@@ -180,10 +182,31 @@ export default function WorkspaceHeader({
     showFilterSummary || Boolean(pageActions) || !showPageHeading;
 
   if (isCompactListHeader) {
+    const changelogTitle = editorTitle?.trim() || "Untitled changelog";
     return (
       <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6">
-        <div className="flex min-h-12 items-center justify-between gap-3">
-          <h1 className="shrink-0 text-sm font-medium">{title}</h1>
+        <div className="flex min-h-12 min-w-0 items-center justify-between gap-3">
+          {embeddedInEditor && showChangelogEditActions ? (
+            <nav aria-label="Changelog navigation" className="min-w-0 flex-1">
+              <ol className="flex min-w-0 items-center gap-2 text-sm">
+                <li className="shrink-0">
+                  <Link
+                    href={`/workspaces/${workspaceSlug}/changelog`}
+                    aria-label="Back to changelog"
+                    className="flex items-center rounded-md py-1 text-accent transition-colors hover:text-foreground"
+                  >
+                    Changelog
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="shrink-0 text-accent/50">/</li>
+                <li aria-current="page" className="min-w-0 truncate font-medium" title={changelogTitle}>
+                  {changelogTitle}
+                </li>
+              </ol>
+            </nav>
+          ) : (
+            <h1 className="shrink-0 text-sm font-medium">{title}</h1>
+          )}
           {showRequestsActions || showRoadmapActions ? (
             <FilterDynamicIsland />
           ) : null}

@@ -234,7 +234,7 @@ export function ChangelogEditor({
                 "flex min-w-0 flex-1 flex-col bg-background lg:min-h-0 lg:border-border/60 dark:lg:border-white/10 lg:transition-[border-right-width] lg:duration-300 lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:motion-reduce:transition-none",
                 isAiOpen ? "lg:border-r" : "lg:border-r-0",
             )}>
-                <WorkspaceHeader workspaceName={workspaceSlug} embeddedInEditor editorActions={headerActions} />
+                <WorkspaceHeader workspaceName={workspaceSlug} embeddedInEditor editorActions={headerActions} editorTitle={title} />
             <article
                 className="scrollbar-hide flex min-h-[calc(100dvh-3rem)] w-full min-w-0 flex-col bg-background lg:min-h-0 lg:w-auto lg:flex-1 lg:overflow-y-auto lg:overscroll-contain"
             >

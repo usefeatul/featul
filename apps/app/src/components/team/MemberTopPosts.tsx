@@ -14,20 +14,26 @@ interface MemberTopPostsProps {
   topPosts: MemberTopPost[]
   isLoading?: boolean
   className?: string
+  panel?: boolean
 }
 
-export function MemberTopPosts({ slug, topPosts, isLoading, className }: MemberTopPostsProps) {
+export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = false }: MemberTopPostsProps) {
   const hasPosts = topPosts.length > 0
   const displayedPosts = topPosts.slice(0, 5)
 
   return (
-    <section className={cn("w-full min-w-0", className)}>
-      <header className="flex min-h-9 items-start justify-between gap-2 border-b border-border/30 pb-3 dark:border-white/5">
+    <section className={cn("w-full min-w-0", panel && "flex min-h-0 flex-1 flex-col", className)}>
+      <header className={cn(
+        "flex justify-between gap-2",
+        panel
+          ? "min-h-12 shrink-0 items-center border-b border-border/60 px-3 dark:border-white/10"
+          : "min-h-9 items-start border-b border-border/30 pb-3 dark:border-white/5",
+      )}>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-foreground">
+          <h2 className={cn("font-semibold text-foreground", panel ? "text-sm" : "text-base")}>
             Top posts
           </h2>
-          <p className="mt-1 text-xs text-accent">Ranked by upvotes</p>
+          {!panel ? <p className="mt-1 text-xs text-accent">Ranked by upvotes</p> : null}
         </div>
         {hasPosts ? (
           <div className="flex shrink-0 items-center">
@@ -37,7 +43,8 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className }: MemberT
           </div>
         ) : null}
       </header>
-      <div className="overflow-hidden pt-3">
+      <div className={cn(panel ? "scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3" : "overflow-hidden pt-3")}>
+        {panel ? <p className="mb-2 px-2 text-xs text-accent">Ranked by upvotes</p> : null}
         {isLoading && !hasPosts ? (
           <div className="px-4 py-8">
             <LoadingSpinner label="Loading top posts..." />
