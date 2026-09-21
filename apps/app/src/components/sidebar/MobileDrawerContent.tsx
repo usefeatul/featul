@@ -114,7 +114,7 @@ export default function MobileDrawerContent({
             onClick={() => setCreatePostOpen(true)}
           >
             <span className={sidebarLeadSlotClassName}>
-              <WorkspaceCreateIcon className="size-5 text-neutral-400 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
+              <WorkspaceCreateIcon className="size-5 text-neutral-600 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
             </span>
             <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
               Create Posts

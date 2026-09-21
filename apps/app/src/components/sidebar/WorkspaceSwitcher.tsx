@@ -121,7 +121,7 @@ export default function WorkspaceSwitcher({
             ) : null}
             {!collapsed ? (
               <SidebarBadge className="ml-auto shrink-0">
-                <WorkspaceSwitcherIcon className="size-3 text-accent" />
+                <WorkspaceSwitcherIcon className="size-3 text-neutral-600 dark:text-neutral-300" />
               </SidebarBadge>
             ) : null}
           </button>

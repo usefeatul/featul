@@ -91,7 +91,7 @@ export default function Timezone({
             )}
           >
             <span className={sidebarLeadSlotClassName}>
-              <WorkspaceTimerIcon className="size-5 text-neutral-400 transition-colors duration-200 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
+              <WorkspaceTimerIcon className="size-5 text-neutral-600 transition-colors duration-200 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
             </span>
             {!collapsed ? (
               <>

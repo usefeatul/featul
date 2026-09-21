@@ -183,7 +183,7 @@ export function ChangelogEditor({
             type: "button" as const,
             variant: "plain" as const,
             shortcut: PANEL_SHORTCUT_LABEL,
-            icon: <PanelIcon side="right" className="size-[18px]" />,
+            icon: <PanelIcon side="right" filled className="size-[18px]" />,
             onClick: openAiPanel,
           },
         ]

@@ -164,12 +164,12 @@ export default function Sidebar({
               <button
                 type="button"
                 onClick={toggleCollapsed}
-                className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-neutral-600 transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-neutral-300 dark:hover:text-primary"
                 aria-label="Collapse sidebar"
                 aria-expanded={true}
                 title="Collapse sidebar"
               >
-                <PanelIcon className="size-[18px]" />
+                <PanelIcon filled className="size-[18px]" />
               </button>
             </>
           )}
@@ -205,7 +205,7 @@ export default function Sidebar({
             title={collapsed ? "Create post" : undefined}
           >
             <span className={sidebarLeadSlotClassName}>
-              <WorkspaceCreateIcon className="size-5 text-neutral-400 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
+              <WorkspaceCreateIcon className="size-5 text-neutral-600 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
             </span>
             {!collapsed ? (
               <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
@@ -339,12 +339,12 @@ export default function Sidebar({
           <button
             type="button"
             onClick={toggleCollapsed}
-            className="mx-auto mt-2 flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            className="mx-auto mt-2 flex size-9 cursor-pointer items-center justify-center rounded-md text-neutral-600 transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-neutral-300 dark:hover:text-primary"
             aria-label="Expand sidebar"
             aria-expanded={false}
             title="Expand sidebar"
           >
-            <PanelIcon className="size-[18px]" />
+            <PanelIcon filled className="size-[18px]" />
           </button>
         ) : null}
         <div

@@ -52,7 +52,7 @@ export default function Header({
               aria-expanded={false}
               aria-controls="request-navigator"
             >
-              <PanelIcon className="size-[18px]" />
+              <PanelIcon filled className="size-[18px]" />
             </Button>
           </TooltipTrigger>
           <TooltipContent

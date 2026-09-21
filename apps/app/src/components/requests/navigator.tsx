@@ -242,7 +242,7 @@ export default function Navigator({
                     aria-controls="request-navigator"
                     className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]"
                   >
-                    <PanelIcon className="size-[18px]" />
+                    <PanelIcon filled className="size-[18px]" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent

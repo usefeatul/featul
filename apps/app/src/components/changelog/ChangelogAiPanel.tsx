@@ -1339,7 +1339,7 @@ export function ChangelogAiPanel({
                   aria-expanded={open}
                   aria-controls="changelog-assistant"
                 >
-                  <PanelIcon side="right" className="size-[18px]" />
+                  <PanelIcon side="right" filled className="size-[18px]" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent

@@ -75,7 +75,7 @@ function SidebarItem({
             active
               ? "text-primary opacity-100"
               : mutedIcon
-                ? "text-neutral-400 opacity-100 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary"
+                ? "text-neutral-600 opacity-100 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary"
                 : "text-foreground group-hover:text-primary"
           )}
         />

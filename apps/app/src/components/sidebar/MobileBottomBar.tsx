@@ -53,7 +53,7 @@ export default function MobileBottomBar({ items }: { items: NavItem[] }) {
                     "size-[18px] transition-[color,opacity,transform] duration-200 group-active:scale-90",
                     active
                       ? "text-primary opacity-100"
-                      : "text-foreground opacity-55 group-hover:text-primary group-hover:opacity-100",
+                      : "text-neutral-600 opacity-100 group-hover:text-primary dark:text-neutral-300",
                   )}
                 />
               </span>
@@ -83,7 +83,7 @@ export default function MobileBottomBar({ items }: { items: NavItem[] }) {
                   "size-[18px] transition-[color,opacity,transform] duration-200 group-active:scale-90",
                   moreActive
                     ? "text-primary opacity-100"
-                    : "text-foreground opacity-55 group-hover:text-primary group-hover:opacity-100",
+                    : "text-neutral-600 opacity-100 group-hover:text-primary dark:text-neutral-300",
                 )}
               />
             </span>
