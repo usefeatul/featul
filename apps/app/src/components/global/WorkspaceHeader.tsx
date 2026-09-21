@@ -19,6 +19,9 @@ import { Plus } from "lucide-react";
 import { useEditorHeaderActionsOptional, type EditorAction } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
 import { cn } from "@featul/ui/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
+import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
+import { PanelShortcutKeys } from "@/components/global/keys";
 
 /** Title from the last path segment via WORKSPACE_TITLES, then SECTIONS. */
 function resolveTitle(segment: string): string {
@@ -30,6 +33,44 @@ function resolveTitle(segment: string): string {
 
 const compactActionButtonClass =
   "size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-[#292929] dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
+
+function EditorActionButton({ action }: { action: EditorAction }) {
+  const label = action.label || "Back to changelog";
+  const button = (
+    <Button
+      variant="plain"
+      size="icon-sm"
+      onClick={action.onClick}
+      disabled={action.disabled}
+      aria-pressed={action.active || undefined}
+      aria-expanded={action.key === "ai" ? Boolean(action.active) : undefined}
+      aria-controls={action.key === "ai" ? "changelog-assistant" : undefined}
+      id={action.key === "ai" ? "assistant-panel-toggle" : undefined}
+      aria-label={label}
+      aria-keyshortcuts={action.shortcut ? PANEL_ARIA_SHORTCUTS : undefined}
+      title={action.shortcut ? undefined : label}
+      className={cn(
+        compactActionButtonClass,
+        action.active && "bg-black/[0.08] text-foreground dark:bg-[#303030]",
+      )}
+    >
+      {action.icon}
+      <span className="sr-only">{label}</span>
+    </Button>
+  );
+
+  if (!action.shortcut) return button;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={6} className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium">
+        <span>{label}</span>
+        <PanelShortcutKeys />
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export default function WorkspaceHeader({
   workspaceName,
@@ -134,28 +175,7 @@ export default function WorkspaceHeader({
             <Switch checked={action.checked} onCheckedChange={action.onClick} />
           </div>
         ) : (
-          <Button
-            key={action.key}
-            variant="plain"
-            size="icon-sm"
-            onClick={action.onClick}
-            disabled={action.disabled}
-            aria-pressed={action.active || undefined}
-            aria-expanded={action.key === "ai" ? Boolean(action.active) : undefined}
-            aria-controls={action.key === "ai" ? "changelog-assistant" : undefined}
-            id={action.key === "ai" ? "assistant-panel-toggle" : undefined}
-            aria-label={action.label || "Back to changelog"}
-            title={action.label || "Back to changelog"}
-            className={cn(
-              compactActionButtonClass,
-              action.active && "bg-black/[0.08] text-foreground dark:bg-[#303030]",
-            )}
-          >
-            {action.icon}
-            <span className="sr-only">
-              {action.label || "Back to changelog"}
-            </span>
-          </Button>
+          <EditorActionButton key={action.key} action={action} />
         ),
       )}
     </div>

@@ -6,6 +6,8 @@ import { Search, X } from "lucide-react"
 import { PanelIcon } from "@featul/ui/icons/panel"
 import { Button } from "@featul/ui/components/button"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
+import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut"
+import { PanelShortcutKeys } from "@/components/global/keys"
 import { cn } from "@featul/ui/lib/utils"
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 import { loadMoreRequests } from "@/lib/requests.actions"
@@ -151,11 +153,14 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
             <FiltersAction query={query} onQueryChange={setFilterQuery} showClear className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-[18px]" />
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="plain" onClick={onClose} aria-label="Hide request queue" aria-expanded={true} aria-controls="request-navigator" className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]">
+                <Button variant="plain" onClick={onClose} aria-label="Hide request list" aria-keyshortcuts={PANEL_ARIA_SHORTCUTS} aria-expanded={true} aria-controls="request-navigator" className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]">
                   <PanelIcon className="size-[18px]" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={6}>Hide request queue</TooltipContent>
+              <TooltipContent side="bottom" sideOffset={6} className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium">
+                <span>Hide request list</span>
+                <PanelShortcutKeys />
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>

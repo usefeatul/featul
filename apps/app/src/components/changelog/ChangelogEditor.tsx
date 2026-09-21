@@ -23,6 +23,7 @@ import { clearChangelogAiChat } from "./ai/persist";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
 import { cn } from "@featul/ui/lib/utils";
 import { useAssistantPanel } from "@/hooks/useAssistantPanel";
+import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 
 const ENABLE_CHANGELOG_AI = true;
 
@@ -93,6 +94,8 @@ export function ChangelogEditor({
     const openAiPanel = useCallback(() => {
         setIsAiOpen(true);
     }, [setIsAiOpen]);
+
+    usePanelShortcut(() => setIsAiOpen(!isAiOpen));
 
     const openAiForSelection = useCallback(() => {
         setIsAiOpen(true);
@@ -185,9 +188,10 @@ export function ChangelogEditor({
                 ? [
                       {
                           key: "ai",
-                          label: "Show assistant",
+                          label: "Show AI assistant",
                           type: "button" as const,
                           variant: "plain" as const,
+                          shortcut: PANEL_SHORTCUT_LABEL,
                           icon: <PanelIcon side="right" className="size-[18px]" />,
                           onClick: openAiPanel,
                       },

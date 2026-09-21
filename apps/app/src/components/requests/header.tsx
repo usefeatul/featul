@@ -7,6 +7,8 @@ import { Button } from "@featul/ui/components/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { MergePopover } from "./MergePopover";
 import Menu from "./menu";
+import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
+import { PanelShortcutKeys } from "@/components/global/keys";
 
 const actionClass = "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
 
@@ -27,11 +29,14 @@ export default function Header({ title, postId, workspaceSlug, backHref, prevHre
       {onOpenList ? (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="plain" className={actionClass} onClick={onOpenList} aria-label="Show request queue" aria-expanded={false} aria-controls="request-navigator">
+            <Button variant="plain" className={actionClass} onClick={onOpenList} aria-label="Show request list" aria-keyshortcuts={PANEL_ARIA_SHORTCUTS} aria-expanded={false} aria-controls="request-navigator">
               <PanelIcon className="size-[18px]" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={6}>Show request queue</TooltipContent>
+          <TooltipContent side="bottom" sideOffset={6} className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium">
+            <span>Show request list</span>
+            <PanelShortcutKeys />
+          </TooltipContent>
         </Tooltip>
       ) : null}
       <nav aria-label="Request navigation" className="min-w-0 flex-1">

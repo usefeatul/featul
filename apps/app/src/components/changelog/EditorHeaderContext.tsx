@@ -19,6 +19,7 @@ export interface EditorAction {
     checked?: boolean
     active?: boolean
     variant?: "card" | "plain"
+    shortcut?: string
 }
 
 interface EditorHeaderContextValue {

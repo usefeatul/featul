@@ -25,6 +25,7 @@ import RoleBadge from "../global/RoleBadge"
 import { MergeSubmissionSection } from "./MergeSubmission"
 import { Linkify } from "@/components/post/linkify"
 import { cn } from "@featul/ui/lib/utils"
+import { usePanelShortcut } from "@/hooks/shortcut"
 
 type RequestDetailProps = {
   post: RequestDetailData
@@ -51,6 +52,7 @@ export default function RequestDetail({
   const backHref = buildRequestsUrl(workspaceSlug, searchParams, {})
   const isMobile = useIsMobile()
   const [listOpen, toggleList] = useRequestPanel(initialPanelOpen)
+  usePanelShortcut(() => toggleList(!listOpen))
   useEffect(() => {
     document.getElementById("request-detail-scroll")?.scrollTo({ top: 0 })
   }, [post.id])

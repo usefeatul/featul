@@ -16,7 +16,10 @@ import { usePanelResize } from "@/hooks/usePanelResize";
 import { Resizer } from "@/components/global/resizer";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
 import { cn } from "@featul/ui/lib/utils";
+import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
+import { PanelShortcutKeys } from "@/components/global/keys";
 import { useIsomorphicLayoutEffect } from "@featul/ui/hooks/use-isomorphic-layout-effect";
 import type {
   EditorTextSelection,
@@ -997,19 +1000,27 @@ export function ChangelogAiPanel({
           >
             <Plus className="size-[18px]" />
           </Button>
-          <Button
-            type="button"
-            variant="plain"
-            size="icon-sm"
-            className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
-            onClick={() => onOpenChange(false)}
-            aria-label="Close assistant"
-            aria-expanded={open}
-            aria-controls="changelog-assistant"
-            title="Close assistant"
-          >
-            <PanelIcon side="right" className="size-[18px]" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="plain"
+                size="icon-sm"
+                className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+                onClick={() => onOpenChange(false)}
+                aria-label="Hide AI assistant"
+                aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
+                aria-expanded={open}
+                aria-controls="changelog-assistant"
+              >
+                <PanelIcon side="right" className="size-[18px]" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6} className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium">
+              <span>Hide AI assistant</span>
+              <PanelShortcutKeys />
+            </TooltipContent>
+          </Tooltip>
         </div>
       </header>
 
