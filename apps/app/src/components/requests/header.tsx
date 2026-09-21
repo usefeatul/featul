@@ -8,7 +8,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/t
 import { MergePopover } from "./MergePopover";
 import Menu from "./menu";
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
-import { PanelShortcutKeys } from "@/components/global/keys";
+import { PanelShortcutKeys, ShortcutKey } from "@/components/global/keys";
 
 const actionClass = "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
 
@@ -66,13 +66,14 @@ export default function Header({ title, postId, workspaceSlug, backHref, prevHre
 function NavigationButton({ href, direction }: { href?: string; direction: "up" | "down" }) {
   const label = direction === "up" ? "Previous request" : "Next request";
   const Icon = direction === "up" ? ChevronsUp : ChevronsDown;
+  const shortcut = direction === "up" ? "Z" : "X";
 
   return (
     <Tooltip>
       {href ? (
         <TooltipTrigger asChild>
           <Button asChild variant="plain" className={actionClass}>
-            <Link href={href} prefetch={true} aria-label={label}><Icon className="size-[18px]" /></Link>
+            <Link href={href} prefetch={true} aria-label={label} aria-keyshortcuts={shortcut.toLowerCase()}><Icon className="size-[18px]" /></Link>
           </Button>
         </TooltipTrigger>
       ) : (
@@ -84,8 +85,9 @@ function NavigationButton({ href, direction }: { href?: string; direction: "up" 
           </span>
         </TooltipTrigger>
       )}
-      <TooltipContent side="bottom" sideOffset={6}>
-        {href ? label : direction === "up" ? "No previous request" : "No next request"}
+      <TooltipContent side="bottom" sideOffset={6} className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium">
+        <span>{href ? label : direction === "up" ? "No previous request" : "No next request"}</span>
+        <ShortcutKey>{shortcut}</ShortcutKey>
       </TooltipContent>
     </Tooltip>
   );

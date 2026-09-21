@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 const keyClassName =
-  "inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] bg-white/15 px-1 text-[10px] font-medium leading-none text-white/80 dark:bg-black/[0.07] dark:text-zinc-500";
+  "inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] bg-white/25 px-1 text-[10px] font-medium leading-none text-white dark:bg-black/[0.14] dark:text-zinc-700";
+
+export function ShortcutKey({ children }: { children: ReactNode }) {
+  return <kbd className={keyClassName}>{children}</kbd>;
+}
 
 export function PanelShortcutKeys() {
   const [modifier, setModifier] = useState("⌘");
@@ -16,8 +20,8 @@ export function PanelShortcutKeys() {
 
   return (
     <span aria-hidden="true" className="inline-flex items-center gap-1">
-      <kbd className={keyClassName}>{modifier}</kbd>
-      <kbd className={keyClassName}>\</kbd>
+      <ShortcutKey>{modifier}</ShortcutKey>
+      <ShortcutKey>\</ShortcutKey>
     </span>
   );
 }
