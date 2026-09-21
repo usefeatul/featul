@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
-import {
-  Toolbar,
-  toolbarItemClass,
-} from "@featul/ui/components/toolbar";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
@@ -16,10 +13,17 @@ import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
 import { Plus } from "lucide-react";
-import { useEditorHeaderActionsOptional, type EditorAction } from "@/components/changelog/EditorHeaderContext";
+import {
+  useEditorHeaderActionsOptional,
+  type EditorAction,
+} from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
 import { cn } from "@featul/ui/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@featul/ui/components/tooltip";
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys } from "@/components/global/keys";
 
@@ -64,7 +68,11 @@ function EditorActionButton({ action }: { action: EditorAction }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>{button}</TooltipTrigger>
-      <TooltipContent side="bottom" sideOffset={6} className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium">
+      <TooltipContent
+        side="bottom"
+        sideOffset={6}
+        className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium"
+      >
         <span>{label}</span>
         <PanelShortcutKeys />
       </TooltipContent>
@@ -104,8 +112,8 @@ export default function WorkspaceHeader({
     : null;
   const editorContext = useEditorHeaderActionsOptional();
   const actions = editorActions ?? editorContext?.actions ?? [];
-  const hasEmbeddedEditorHeader = rest[0] === "changelog" &&
-    (rest[1] === "new" || rest[2] === "edit");
+  const hasEmbeddedEditorHeader =
+    rest[0] === "changelog" && (rest[1] === "new" || rest[2] === "edit");
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
     title = settingsMeta?.label || "Settings";
@@ -162,8 +170,7 @@ export default function WorkspaceHeader({
         </Link>
       </Button>
     </div>
-  ) : showChangelogEditActions &&
-    actions.length > 0 ? (
+  ) : showChangelogEditActions && actions.length > 0 ? (
     <div className="ml-auto flex shrink-0 items-center gap-1">
       {actions.map((action) =>
         action.type === "switch" ? (
@@ -182,7 +189,8 @@ export default function WorkspaceHeader({
   ) : null;
 
   if (hasEmbeddedEditorHeader && !embeddedInEditor) return null;
-  if ((rest[0] === "requests" && rest.length > 1) || isMemberDetail) return null;
+  if ((rest[0] === "requests" && rest.length > 1) || isMemberDetail)
+    return null;
   if (!title && !pageActions) return null;
 
   const showFilterSummary = showRequestsActions || showRoadmapActions;
@@ -205,7 +213,7 @@ export default function WorkspaceHeader({
     const changelogTitle = editorTitle?.trim() || "Untitled changelog";
     return (
       <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6">
-        <div className="flex min-h-12 min-w-0 items-center justify-between gap-3">
+        <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
           {embeddedInEditor && showChangelogEditActions ? (
             <nav aria-label="Changelog navigation" className="min-w-0 flex-1">
               <ol className="flex min-w-0 items-center gap-2 text-sm">
@@ -218,14 +226,22 @@ export default function WorkspaceHeader({
                     Changelog
                   </Link>
                 </li>
-                <li aria-hidden="true" className="shrink-0 text-accent/50">/</li>
-                <li aria-current="page" className="min-w-0 truncate font-medium" title={changelogTitle}>
+                <li aria-hidden="true" className="shrink-0 text-accent/50">
+                  /
+                </li>
+                <li
+                  aria-current="page"
+                  className="min-w-0 truncate font-medium"
+                  title={changelogTitle}
+                >
                   {changelogTitle}
                 </li>
               </ol>
             </nav>
           ) : (
-            <h1 className="shrink-0 text-sm font-medium">{title}</h1>
+            <h1 className="min-w-0 flex-1 truncate text-sm font-medium">
+              {title}
+            </h1>
           )}
           {showRequestsActions || showRoadmapActions ? (
             <FilterDynamicIsland />

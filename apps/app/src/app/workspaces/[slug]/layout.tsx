@@ -68,7 +68,7 @@ export default async function WorkspaceLayout({
       maxWidth="full"
       noPadding
     >
-      <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};} html:has(.workspace-shell),body:has(.workspace-shell){overflow:hidden;overscroll-behavior:none;}`}</style>
+      <style>{`:root{--primary:${p};--ring:${p};--sidebar-primary:${p};--workspace-mobile-nav-height:calc(3.5rem + env(safe-area-inset-bottom));} html:has(.workspace-shell),body:has(.workspace-shell){overflow:hidden;overscroll-behavior:none;}`}</style>
       <BrandVarsEffect primary={p} />
       <WorkspaceEvents slug={slug} />
       <Sidebar
@@ -84,7 +84,10 @@ export default async function WorkspaceLayout({
       <main className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden bg-background lg:border-l lg:border-border/60 dark:lg:border-white/10">
         <EditorHeaderProvider>
           <WorkspaceHeader workspaceName={ws?.name ?? slug} />
-          <div data-workspace-scroll className="min-h-0 flex-1 overflow-y-auto overscroll-none px-4 pb-20 sm:px-8 lg:px-12 lg:pb-8 xl:px-16 has-[[data-changelog-editor]]:px-0 has-[[data-changelog-editor]]:pb-0 has-[[data-request-detail]]:overflow-hidden lg:has-[[data-request-detail]]:pb-0 has-[[data-member-detail]]:overflow-hidden lg:has-[[data-member-detail]]:pb-0">
+          <div
+            data-workspace-scroll
+            className="min-h-0 flex-1 overflow-y-auto overscroll-none px-4 pb-[var(--workspace-mobile-nav-height)] sm:px-8 lg:px-12 lg:pb-8 xl:px-16 has-[[data-changelog-editor]]:px-0 has-[[data-changelog-editor]]:pb-0 has-[[data-request-detail]]:overflow-hidden has-[[data-request-detail]]:pb-0 has-[[data-member-detail]]:overflow-hidden has-[[data-member-detail]]:pb-0"
+          >
             {children}
           </div>
         </EditorHeaderProvider>

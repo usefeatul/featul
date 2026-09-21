@@ -16,7 +16,12 @@ import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
 import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
 import { PlusIcon } from "@featul/ui/icons/plus";
-import { getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
+import {
+  getSlugFromPath,
+  isWorkspaceAccountPath,
+  isWorkspaceSettingsPath,
+  workspaceBase,
+} from "../../config/nav";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import AccountNav from "@/components/account/AccountNav";
 import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
@@ -77,7 +82,7 @@ export default function MobileDrawerContent({
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent className="bg-sidebar text-sidebar-foreground">
+    <DrawerContent className="bg-sidebar pb-[env(safe-area-inset-bottom)] text-sidebar-foreground">
       <VisuallyHidden>
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
@@ -132,7 +137,9 @@ export default function MobileDrawerContent({
         </div>
 
         {isSettings || isAccount ? (
-          <LayoutGroup id={isSettings ? "mobile-settings-nav" : "mobile-account-nav"}>
+          <LayoutGroup
+            id={isSettings ? "mobile-settings-nav" : "mobile-account-nav"}
+          >
             <SidebarSection>
               <SidebarItem
                 item={{
@@ -147,7 +154,10 @@ export default function MobileDrawerContent({
                 onClick={onLinkClick}
               />
             </SidebarSection>
-            <SidebarSection title={isSettings ? "SETTINGS" : "ACCOUNT"} className="mt-4">
+            <SidebarSection
+              title={isSettings ? "SETTINGS" : "ACCOUNT"}
+              className="mt-4"
+            >
               {isSettings ? (
                 <SettingsNav onLinkClick={onLinkClick} />
               ) : (
@@ -164,7 +174,9 @@ export default function MobileDrawerContent({
                   item={item}
                   pathname={pathname}
                   count={
-                    statusCounts ? statusCounts[statusKey(item.label)] : undefined
+                    statusCounts
+                      ? statusCounts[statusKey(item.label)]
+                      : undefined
                   }
                   mutedIcon={false}
                   onClick={onLinkClick}
@@ -191,7 +203,7 @@ export default function MobileDrawerContent({
               onClick={onLinkClick}
             />
           ))}
-            <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <UserDropdown
               className="min-w-0 flex-1"
               initialUser={initialUser}

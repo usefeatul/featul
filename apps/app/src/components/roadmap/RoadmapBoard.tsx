@@ -91,7 +91,7 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 overflow-x-auto bg-background px-3 pb-2 snap-x snap-mandatory md:snap-none"
+          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 touch-pan-x snap-x snap-mandatory scroll-px-3 overflow-x-auto bg-background px-3 pb-2 md:snap-none"
         >
           <div className="flex h-full min-h-0 min-w-max items-stretch gap-2 md:min-w-full md:flex-row">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
@@ -101,7 +101,7 @@ export default function RoadmapBoard({
                   key={s}
                   ref={(node) => setColumnRef(s, node)}
                   className={cn(
-                    "flex h-full min-h-0 w-[85vw] shrink-0 snap-center overflow-hidden sm:w-[320px] md:w-auto",
+                    "flex h-full min-h-0 w-[calc(100vw-2rem)] max-w-[360px] shrink-0 snap-start overflow-hidden md:w-auto md:max-w-none md:snap-center",
                     ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
                     roadmapColumnWidthClass(!!collapsedByStatus[s]),
                   )}

@@ -1,62 +1,72 @@
-"use client"
+"use client";
 
-import React from "react"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import StatusIcon from "./StatusIcon"
-import { CommentsIcon } from "@featul/ui/icons/comments"
-import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
-import { cn } from "@featul/ui/lib/utils"
-import { getInitials } from "@/utils/user"
-import { randomAvatarUrl } from "@/utils/avatar"
-import RoleBadge from "@/components/global/RoleBadge"
-import { UpvoteButton } from "@/components/upvote/UpvoteButton"
-import { RequestItemContextMenu } from "./RequestItemContextMenu"
-import { ReportIndicator } from "./ReportIndicator"
-import { StaleMark } from "./StaleIndicator"
-import { LowInteractionMark } from "./LowInteractionIndicator"
-import { SnoozeIndicator } from "./SnoozeIndicator"
-import { getActiveRequestFlags } from "@/components/global/flag-visuals"
-import type { RequestItemData } from "@/types/request"
-import type { TagSummary } from "@/types/post"
-import { SelectionControl } from "@/components/selection/SelectionControl"
+import React from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import StatusIcon from "./StatusIcon";
+import { CommentsIcon } from "@featul/ui/icons/comments";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@featul/ui/components/avatar";
+import { cn } from "@featul/ui/lib/utils";
+import { getInitials } from "@/utils/user";
+import { randomAvatarUrl } from "@/utils/avatar";
+import RoleBadge from "@/components/global/RoleBadge";
+import { UpvoteButton } from "@/components/upvote/UpvoteButton";
+import { RequestItemContextMenu } from "./RequestItemContextMenu";
+import { ReportIndicator } from "./ReportIndicator";
+import { StaleMark } from "./StaleIndicator";
+import { LowInteractionMark } from "./LowInteractionIndicator";
+import { SnoozeIndicator } from "./SnoozeIndicator";
+import { getActiveRequestFlags } from "@/components/global/flag-visuals";
+import type { RequestItemData } from "@/types/request";
+import type { TagSummary } from "@/types/post";
+import { SelectionControl } from "@/components/selection/SelectionControl";
 import {
   getSelectableRowClassName,
   type SelectionToggleMeta,
-} from "@/components/selection/Row"
-import { getRequestStaleDays } from "@/utils/request/stale"
-import { getRequestLowInteractionDays } from "@/utils/request/low-interaction"
-import { isActivelySnoozed } from "@featul/api/shared/snooze"
-import { relativeTime } from "@/lib/time"
-import { normalizeRoadmapStatus } from "@/lib/roadmap"
-import { requestBadgeClass } from "./styles"
+} from "@/components/selection/Row";
+import { getRequestStaleDays } from "@/utils/request/stale";
+import { getRequestLowInteractionDays } from "@/utils/request/low-interaction";
+import { isActivelySnoozed } from "@featul/api/shared/snooze";
+import { relativeTime } from "@/lib/time";
+import { normalizeRoadmapStatus } from "@/lib/roadmap";
+import { requestBadgeClass } from "./styles";
 
 interface RequestItemProps {
-  item: RequestItemData
-  workspaceSlug: string
-  linkBase?: string
-  isSelecting?: boolean
-  isSelected?: boolean
-  onToggle?: (checked: boolean, meta?: SelectionToggleMeta) => void
-  disableLink?: boolean
+  item: RequestItemData;
+  workspaceSlug: string;
+  linkBase?: string;
+  isSelecting?: boolean;
+  isSelected?: boolean;
+  onToggle?: (checked: boolean, meta?: SelectionToggleMeta) => void;
+  disableLink?: boolean;
 }
 
-const metaChipInnerClass = cn(requestBadgeClass, "max-w-[9.5rem] uppercase tracking-[0.06em]")
+const metaChipInnerClass = cn(
+  requestBadgeClass,
+  "max-w-[9.5rem] uppercase tracking-[0.06em]",
+);
 
 function RequestMetaChip({
   title,
   children,
 }: {
-  title?: string
-  children: React.ReactNode
+  title?: string;
+  children: React.ReactNode;
 }) {
   return (
     <span className={metaChipInnerClass}>
-      <span className="inline-flex min-w-0 max-w-full items-center gap-1.5" title={title}>
+      <span
+        className="inline-flex min-w-0 max-w-full items-center gap-1.5"
+        title={title}
+      >
         {children}
       </span>
     </span>
-  )
+  );
 }
 
 function RequestBoardChip({ name }: { name: string }) {
@@ -65,37 +75,45 @@ function RequestBoardChip({ name }: { name: string }) {
       <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
       <span className="min-w-0 truncate uppercase tracking-wide">{name}</span>
     </RequestMetaChip>
-  )
+  );
 }
 
 export function RequestTagPills({
   tags,
   expanded = false,
 }: {
-  tags?: TagSummary[]
-  expanded?: boolean
+  tags?: TagSummary[];
+  expanded?: boolean;
 }) {
-  const list = tags ?? []
-  if (list.length === 0) return null
+  const list = tags ?? [];
+  if (list.length === 0) return null;
 
-  const visible = expanded ? list : list.slice(0, 2)
-  const extra = list.length - visible.length
+  const visible = expanded ? list : list.slice(0, 2);
+  const extra = list.length - visible.length;
 
   return (
-    <div className={expanded ? "contents" : "hidden min-w-0 shrink-0 flex-row-reverse items-center gap-1.5 xl:flex"}>
+    <div
+      className={
+        expanded
+          ? "contents"
+          : "hidden min-w-0 shrink-0 flex-row-reverse items-center gap-1.5 xl:flex"
+      }
+    >
       {visible.map((tag) => (
         <RequestMetaChip key={tag.id} title={tag.name}>
-          <span className="size-1.5 shrink-0 rounded-full bg-primary" style={tag.color ? { backgroundColor: tag.color } : undefined} aria-hidden />
+          <span
+            className="size-1.5 shrink-0 rounded-full bg-primary"
+            style={tag.color ? { backgroundColor: tag.color } : undefined}
+            aria-hidden
+          />
           <span className="min-w-0 truncate">{tag.name}</span>
         </RequestMetaChip>
       ))}
       {extra > 0 ? (
-        <span className={cn(metaChipInnerClass, "tabular-nums")}>
-          +{extra}
-        </span>
+        <span className={cn(metaChipInnerClass, "tabular-nums")}>+{extra}</span>
       ) : null}
     </div>
-  )
+  );
 }
 
 export function RequestEngagementChip({
@@ -105,15 +123,22 @@ export function RequestEngagementChip({
   commentCount,
   showComments = false,
 }: {
-  postId: string
-  upvotes: number
-  hasVoted?: boolean
-  commentCount: number
-  showComments?: boolean
+  postId: string;
+  upvotes: number;
+  hasVoted?: boolean;
+  commentCount: number;
+  showComments?: boolean;
 }) {
   return (
     <span className="inline-flex shrink-0 flex-row-reverse items-center gap-1.5 tabular-nums">
-      <span className={cn(requestBadgeClass, "gap-1", !showComments && "hidden sm:inline-flex")} title={`${commentCount} comments`}>
+      <span
+        className={cn(
+          requestBadgeClass,
+          "gap-1",
+          !showComments && "hidden sm:inline-flex",
+        )}
+        title={`${commentCount} comments`}
+      >
         <CommentsIcon aria-hidden className="size-3" />
         <span>{commentCount}</span>
       </span>
@@ -121,55 +146,73 @@ export function RequestEngagementChip({
         postId={postId}
         upvotes={upvotes}
         hasVoted={hasVoted}
-        className={cn(requestBadgeClass, "relative z-10 gap-1 text-muted-foreground/70 hover:bg-muted/80 dark:hover:bg-[#2c2c2c]")}
+        className={cn(
+          requestBadgeClass,
+          "relative z-10 gap-1 text-muted-foreground/70 hover:bg-muted/80 dark:hover:bg-[#2c2c2c]",
+        )}
       />
     </span>
-  )
+  );
 }
 
-function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelected, onToggle, disableLink }: RequestItemProps) {
-  const searchParams = useSearchParams()
-  const queryString = searchParams.toString() ? `?${searchParams.toString()}` : ""
-  const base = linkBase || `/workspaces/${workspaceSlug}`
-  const href = `${base}/requests/${item.slug}${queryString}`
-  const title = item.title ?? ""
-  const displayTitle = title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title
-  const isSelectingMode = Boolean(isSelecting)
-  const isSelectedMode = Boolean(isSelected)
-  const isLinkDisabled = Boolean(disableLink || isSelectingMode)
-  const authorLabel = item.isAnonymous ? "Guest" : (item.authorName || "Guest")
+function RequestItemBase({
+  item,
+  workspaceSlug,
+  linkBase,
+  isSelecting,
+  isSelected,
+  onToggle,
+  disableLink,
+}: RequestItemProps) {
+  const searchParams = useSearchParams();
+  const queryString = searchParams.toString()
+    ? `?${searchParams.toString()}`
+    : "";
+  const base = linkBase || `/workspaces/${workspaceSlug}`;
+  const href = `${base}/requests/${item.slug}${queryString}`;
+  const title = item.title ?? "";
+  const displayTitle =
+    title.length > 110 ? `${title.slice(0, 110).trimEnd()}…` : title;
+  const isSelectingMode = Boolean(isSelecting);
+  const isSelectedMode = Boolean(isSelected);
+  const isLinkDisabled = Boolean(disableLink || isSelectingMode);
+  const authorLabel = item.isAnonymous ? "Guest" : item.authorName || "Guest";
   const staleDays = getRequestStaleDays({
     createdAt: item.createdAt,
     publishedAt: item.publishedAt,
     updatedAt: item.updatedAt,
     roadmapStatus: item.roadmapStatus,
-  })
+  });
   const lowInteractionDays = getRequestLowInteractionDays({
     createdAt: item.createdAt,
     publishedAt: item.publishedAt,
     roadmapStatus: item.roadmapStatus,
     upvotes: item.upvotes,
     commentCount: item.commentCount,
-  })
-  const isSnoozed = isActivelySnoozed(item.snoozedUntil)
-  const status = normalizeRoadmapStatus(item.roadmapStatus)
-  const handleRowClick: React.MouseEventHandler<HTMLDivElement> = React.useCallback((e) => {
-    if (!isSelectingMode) return
-    e.preventDefault()
-    e.stopPropagation()
-    onToggle?.(!isSelectedMode, { shiftKey: e.shiftKey })
-  }, [isSelectingMode, isSelectedMode, onToggle])
+  });
+  const isSnoozed = isActivelySnoozed(item.snoozedUntil);
+  const status = normalizeRoadmapStatus(item.roadmapStatus);
+  const handleRowClick: React.MouseEventHandler<HTMLDivElement> =
+    React.useCallback(
+      (e) => {
+        if (!isSelectingMode) return;
+        e.preventDefault();
+        e.stopPropagation();
+        onToggle?.(!isSelectedMode, { shiftKey: e.shiftKey });
+      },
+      [isSelectingMode, isSelectedMode, onToggle],
+    );
   const rowClassName = getSelectableRowClassName(
     isSelectingMode,
     isSelectedMode,
-    "group/request relative flex min-h-10 items-center gap-3 overflow-hidden px-4 py-1.5 sm:px-6",
+    "group/request relative flex min-h-10 flex-wrap items-center gap-x-3 gap-y-1 overflow-hidden px-4 py-2 sm:flex-nowrap sm:px-6 sm:py-1.5",
     "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
-  )
+  );
   const actionsClassName = cn(
-    "relative z-10 flex shrink-0 items-center gap-2 text-[10px] text-muted-foreground lg:gap-3",
+    "relative z-10 flex w-full basis-full shrink-0 items-center justify-end gap-2 pl-7 text-[10px] text-muted-foreground sm:w-auto sm:basis-auto sm:justify-start sm:pl-0 lg:gap-3",
     isSelectingMode && "pointer-events-none",
-  )
-  const publishedLabel = relativeTime(item.publishedAt ?? item.createdAt)
+  );
+  const publishedLabel = relativeTime(item.publishedAt ?? item.createdAt);
 
   return (
     <li className="list-none">
@@ -199,7 +242,10 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
             onClick={(e) => e.stopPropagation()}
           />
         ) : null}
-        <StatusIcon status={status} className="size-4 shrink-0 text-foreground/80" />
+        <StatusIcon
+          status={status}
+          className="size-4 shrink-0 text-foreground/80"
+        />
         <span className="flex min-w-0 flex-1 items-center gap-2">
           <span
             className={cn(
@@ -230,11 +276,18 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           ) : null}
           <ReportIndicator count={item.reportCount || 0} />
           <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
-          {getActiveRequestFlags(item).map(({ key, label, Icon, iconClass }) => (
-            <span key={key} title={label} aria-label={label} className="inline-flex shrink-0">
-              <Icon className={cn("size-3.5", iconClass)} />
-            </span>
-          ))}
+          {getActiveRequestFlags(item).map(
+            ({ key, label, Icon, iconClass }) => (
+              <span
+                key={key}
+                title={label}
+                aria-label={label}
+                className="inline-flex shrink-0"
+              >
+                <Icon className={cn("size-3.5", iconClass)} />
+              </span>
+            ),
+          )}
           <RequestTagPills tags={item.tags} />
           <RequestEngagementChip
             postId={item.id}
@@ -252,15 +305,22 @@ function RequestItemBase({ item, workspaceSlug, linkBase, isSelecting, isSelecte
           </span>
           <div className="relative">
             <Avatar className="size-6 bg-muted relative overflow-visible">
-              <AvatarImage src={item.authorImage || randomAvatarUrl(item.id || item.slug)} alt={authorLabel} />
+              <AvatarImage
+                src={item.authorImage || randomAvatarUrl(item.id || item.slug)}
+                alt={authorLabel}
+              />
               <AvatarFallback>{getInitials(authorLabel)}</AvatarFallback>
-              <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} />
+              <RoleBadge
+                role={item.role}
+                isOwner={item.isOwner}
+                isFeatul={item.isFeatul}
+              />
             </Avatar>
           </div>
         </div>
       </RequestItemContextMenu>
     </li>
-  )
+  );
 }
 
-export default React.memo(RequestItemBase)
+export default React.memo(RequestItemBase);
