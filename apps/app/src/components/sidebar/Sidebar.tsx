@@ -164,7 +164,7 @@ export default function Sidebar({
               <button
                 type="button"
                 onClick={toggleCollapsed}
-                className="flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                 aria-label="Collapse sidebar"
                 aria-expanded={true}
                 title="Collapse sidebar"
@@ -339,7 +339,7 @@ export default function Sidebar({
           <button
             type="button"
             onClick={toggleCollapsed}
-            className="mx-auto mt-2 flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            className="mx-auto mt-2 flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
             aria-label="Expand sidebar"
             aria-expanded={false}
             title="Expand sidebar"
