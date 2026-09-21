@@ -82,11 +82,11 @@ export default function MobileDrawerContent({
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent className="bg-sidebar pb-[env(safe-area-inset-bottom)] text-sidebar-foreground">
+    <DrawerContent className="flex flex-col bg-sidebar pb-[env(safe-area-inset-bottom)] text-sidebar-foreground">
       <VisuallyHidden>
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
-      <ScrollArea className="h-full">
+      <ScrollArea className="min-h-0 flex-1">
         <div className="p-3">
           <div className={cn(sidebarRowClassName, "py-1")}>
             <span className={sidebarLeadSlotClassName}>
@@ -185,34 +185,33 @@ export default function MobileDrawerContent({
             </SidebarSection>
           </LayoutGroup>
         )}
-
-        <SidebarSection className="border-t border-border/30 pb-8">
-          <CreatePostModal
-            open={createPostOpen}
-            onOpenChange={setCreatePostOpen}
-            workspaceSlug={slug}
-            user={initialUser}
-          />
-          {secondaryNav.map((item) => (
-            <SidebarItem
-              key={item.label}
-              item={item}
-              pathname={pathname}
-              mutedIcon
-              indicator={false}
-              onClick={onLinkClick}
-            />
-          ))}
-          <div className="flex items-center gap-1">
-            <UserDropdown
-              className="min-w-0 flex-1"
-              initialUser={initialUser}
-              initialDeviceAccounts={initialDeviceAccounts}
-            />
-            <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] dark:bg-[#292929] dark:hover:bg-[#303030]" />
-          </div>
-        </SidebarSection>
       </ScrollArea>
+      <CreatePostModal
+        open={createPostOpen}
+        onOpenChange={setCreatePostOpen}
+        workspaceSlug={slug}
+        user={initialUser}
+      />
+      <div className="shrink-0 space-y-1.5 px-3 pb-3 pt-1">
+        {secondaryNav.map((item) => (
+          <SidebarItem
+            key={item.label}
+            item={item}
+            pathname={pathname}
+            mutedIcon
+            indicator={false}
+            onClick={onLinkClick}
+          />
+        ))}
+        <div className="flex items-center gap-1">
+          <UserDropdown
+            className="min-w-0 flex-1"
+            initialUser={initialUser}
+            initialDeviceAccounts={initialDeviceAccounts}
+          />
+          <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] dark:bg-[#292929] dark:hover:bg-[#303030]" />
+        </div>
+      </div>
     </DrawerContent>
   );
 }

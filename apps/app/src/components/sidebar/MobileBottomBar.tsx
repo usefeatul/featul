@@ -1,9 +1,7 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
 import { DrawerTrigger } from "@featul/ui/components/drawer";
 import type { NavItem } from "../../types/nav";
@@ -19,87 +17,87 @@ function isItemActive(pathname: string, item: NavItem) {
   );
 }
 
-const pillTransition = (reduce: boolean | null) =>
-  reduce
-    ? { duration: 0 }
-    : { type: "spring" as const, stiffness: 420, damping: 34, mass: 0.7 };
-
 export default function MobileBottomBar({ items }: { items: NavItem[] }) {
   const pathname = usePathname() || "";
-  const reduceMotion = useReducedMotion();
-  const [hovered, setHovered] = React.useState<string | null>(null);
+  const visibleItems = items.slice(0, 4);
+  const moreActive = !visibleItems.some((item) => isItemActive(pathname, item));
 
   return (
     <nav
       aria-label="Primary navigation"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-border/70 bg-background/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(0,0,0,0.04)] backdrop-blur-xl dark:border-white/10 dark:shadow-[0_-8px_24px_rgba(0,0,0,0.18)]"
+      className="fixed inset-x-0 bottom-0 z-50 isolate border-t border-border/60 bg-background/90 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_rgba(0,0,0,0.06)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 dark:border-white/10 dark:shadow-[0_-10px_30px_rgba(0,0,0,0.24)]"
     >
-      <LayoutGroup id="mobile-bottom-nav">
-        <div className="grid h-14 grid-cols-5 px-1">
-          {items.slice(0, 4).map((item) => {
-            const Icon = item.icon;
-            const active = isItemActive(pathname, item);
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                onMouseEnter={() => setHovered(item.label)}
-                onMouseLeave={() => setHovered(null)}
-                className={cn(
-                  "group relative flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] leading-none",
-                  active ? "text-foreground" : "text-accent",
-                )}
-              >
-                {hovered === item.label ? (
-                  <motion.span
-                    layoutId="mobile-bottom-hover-pill"
-                    className="absolute inset-1 z-0 rounded-md bg-muted dark:bg-black/40"
-                    transition={pillTransition(reduceMotion)}
-                  />
-                ) : null}
-                {active ? (
-                  <motion.span
-                    layoutId="mobile-bottom-active-pill"
-                    className="absolute inset-1 z-0 rounded-md bg-muted dark:bg-muted/45"
-                    transition={pillTransition(reduceMotion)}
-                  />
-                ) : null}
+      <div
+        className="grid h-14 items-stretch px-2"
+        style={{
+          gridTemplateColumns: `repeat(${visibleItems.length + 1}, minmax(0, 1fr))`,
+        }}
+      >
+        {visibleItems.map((item) => {
+          const Icon = item.icon;
+          const active = isItemActive(pathname, item);
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              replace={item.replace}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "group relative flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-1 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/50",
+                active ? "text-primary" : "text-accent",
+              )}
+            >
+              <span className="flex h-7 min-w-11 items-center justify-center px-3">
                 <Icon
                   className={cn(
-                    "relative z-[1] size-4 transition-colors duration-200",
+                    "size-[18px] transition-[color,opacity,transform] duration-200 group-active:scale-90",
                     active
                       ? "text-primary opacity-100"
-                      : "text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100",
+                      : "text-foreground opacity-55 group-hover:text-primary group-hover:opacity-100",
                   )}
                 />
-                <span className="relative z-[1] truncate w-full text-center">
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-          <DrawerTrigger asChild>
-            <button
-              className="group relative flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] leading-none text-accent"
-              onMouseEnter={() => setHovered("more")}
-              onMouseLeave={() => setHovered(null)}
-            >
-              {hovered === "more" ? (
-                <motion.span
-                  layoutId="mobile-bottom-hover-pill"
-                  className="absolute inset-1 z-0 rounded-md bg-muted dark:bg-black/40"
-                  transition={pillTransition(reduceMotion)}
-                />
-              ) : null}
-              <MoreIcon className="relative z-[1] size-4 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors duration-200" />
-              <span className="relative z-[1] truncate w-full text-center">
-                More
               </span>
-            </button>
-          </DrawerTrigger>
-        </div>
-      </LayoutGroup>
+              <span
+                className={cn(
+                  "w-full truncate text-center text-[10px] leading-none tracking-[-0.01em] transition-colors",
+                  "font-medium text-accent",
+                )}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+        <DrawerTrigger asChild>
+          <button
+            type="button"
+            aria-label="Open navigation menu"
+            className={cn(
+              "group relative flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-1 text-accent outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/50",
+              moreActive && "text-primary",
+            )}
+          >
+            <span className="flex h-7 min-w-11 items-center justify-center px-3">
+              <MoreIcon
+                className={cn(
+                  "size-[18px] transition-[color,opacity,transform] duration-200 group-active:scale-90",
+                  moreActive
+                    ? "text-primary opacity-100"
+                    : "text-foreground opacity-55 group-hover:text-primary group-hover:opacity-100",
+                )}
+              />
+            </span>
+            <span
+              className={cn(
+                "w-full truncate text-center text-[10px] leading-none tracking-[-0.01em] transition-colors",
+                "font-medium text-accent",
+              )}
+            >
+              More
+            </span>
+          </button>
+        </DrawerTrigger>
+      </div>
     </nav>
   );
 }
