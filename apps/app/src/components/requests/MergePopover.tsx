@@ -95,7 +95,7 @@ export function MergePopover({ postId, workspaceSlug, className }: MergePopoverP
             className={className || toolbarItemClass}
             aria-label="Merge"
           >
-            <MergeIcon className="size-4" />
+            <MergeIcon className="size-[18px]" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" list className="fit min-w-0">

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronsUp, ChevronsDown, PanelLeftOpen } from "lucide-react";
+import { ChevronsUp, ChevronsDown } from "lucide-react";
+import { PanelIcon } from "@featul/ui/icons/panel";
 import { Button } from "@featul/ui/components/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip";
 import { MergePopover } from "./MergePopover";
@@ -27,7 +28,7 @@ export default function Header({ title, postId, workspaceSlug, backHref, prevHre
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="plain" className={actionClass} onClick={onOpenList} aria-label="Show request queue" aria-expanded={false} aria-controls="request-navigator">
-              <PanelLeftOpen className="size-4 text-neutral-400 dark:text-neutral-300" />
+              <PanelIcon className="size-[18px]" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={6}>Show request queue</TooltipContent>
@@ -66,14 +67,14 @@ function NavigationButton({ href, direction }: { href?: string; direction: "up" 
       {href ? (
         <TooltipTrigger asChild>
           <Button asChild variant="plain" className={actionClass}>
-            <Link href={href} prefetch={true} aria-label={label}><Icon className="size-4" /></Link>
+            <Link href={href} prefetch={true} aria-label={label}><Icon className="size-[18px]" /></Link>
           </Button>
         </TooltipTrigger>
       ) : (
         <TooltipTrigger asChild>
           <span className="inline-flex" tabIndex={0} aria-label={label}>
             <Button variant="plain" className={actionClass} disabled aria-label={label}>
-              <Icon className="size-4" />
+              <Icon className="size-[18px]" />
             </Button>
           </span>
         </TooltipTrigger>

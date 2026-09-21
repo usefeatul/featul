@@ -12,7 +12,7 @@ import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
-import { Sparkles } from "lucide-react";
+import { PanelIcon } from "@featul/ui/icons/panel";
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import { fetchWorkspaceMembers } from "@/lib/team/client";
@@ -188,7 +188,7 @@ export function ChangelogEditor({
                           label: "Show assistant",
                           type: "button" as const,
                           variant: "plain" as const,
-                          icon: <Sparkles className="size-4" />,
+                          icon: <PanelIcon side="right" className="size-[18px]" />,
                           onClick: openAiPanel,
                       },
                   ]

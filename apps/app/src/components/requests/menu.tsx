@@ -30,9 +30,7 @@ export default function Menu({ postId, workspaceSlug, title, backHref, readonly,
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="plain" className={className} aria-label="More request actions" title="More request actions">
-          <span className="flex size-5 items-center justify-center rounded-full bg-neutral-400 text-neutral-900">
-            <EllipsisVertical className="size-4" />
-          </span>
+          <EllipsisVertical className="size-[18px]" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" list className="w-fit">

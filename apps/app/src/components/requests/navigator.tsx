@@ -2,7 +2,8 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { PanelLeftClose, Search, X } from "lucide-react"
+import { Search, X } from "lucide-react"
+import { PanelIcon } from "@featul/ui/icons/panel"
 import { Button } from "@featul/ui/components/button"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { cn } from "@featul/ui/lib/utils"
@@ -145,13 +146,13 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
                 search && "bg-primary/15 text-primary",
               )}
             >
-              <Search className="size-4" />
+              <Search className="size-[18px]" />
             </Button>
-            <FiltersAction query={query} onQueryChange={setFilterQuery} showClear className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-4" />
+            <FiltersAction query={query} onQueryChange={setFilterQuery} showClear className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-[18px]" />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="plain" onClick={onClose} aria-label="Hide request queue" aria-expanded={true} aria-controls="request-navigator" className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]">
-                  <PanelLeftClose className="size-4 text-neutral-400 dark:text-neutral-300" />
+                  <PanelIcon className="size-[18px]" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom" sideOffset={6}>Hide request queue</TooltipContent>
@@ -161,7 +162,7 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
 
         {searchOpen ? (
           <div className="px-3 pb-2">
-            <label className="flex h-8 items-center gap-2 rounded-md border border-transparent bg-black/5 px-2.5 text-accent focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.08]">
+            <label className="flex h-8 items-center gap-2 rounded-md border border-border/60 bg-black/5 px-2.5 text-accent focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.08]">
               <Search className="size-3.5 shrink-0" />
               <input autoFocus aria-label="Search request queue" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search requests…" className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-accent" />
               {search ? (

@@ -9,7 +9,8 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from "react";
-import { PanelRightClose, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { PanelIcon } from "@featul/ui/icons/panel";
 import { motion } from "framer-motion";
 import { usePanelResize } from "@/hooks/usePanelResize";
 import { Resizer } from "@/components/global/resizer";
@@ -994,7 +995,7 @@ export function ChangelogAiPanel({
             aria-label="New conversation"
             title="New conversation"
           >
-            <Plus className="size-4" />
+            <Plus className="size-[18px]" />
           </Button>
           <Button
             type="button"
@@ -1007,7 +1008,7 @@ export function ChangelogAiPanel({
             aria-controls="changelog-assistant"
             title="Close assistant"
           >
-            <PanelRightClose className="size-4" />
+            <PanelIcon side="right" className="size-[18px]" />
           </Button>
         </div>
       </header>

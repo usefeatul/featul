@@ -69,6 +69,7 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
         <PopoverList>
           {STATUSES.map((s) => (
             <PopoverListItem key={s} role="menuitemradio" aria-checked={currentStatus === s} onClick={() => select(s)}>
+              <StatusIcon status={s} className="size-4 shrink-0" />
               <span className="text-sm capitalize">{s.replace(/-/g, " ")}</span>
               {currentStatus === s ? <span className="ml-auto text-xs">✓</span> : null}
             </PopoverListItem>
