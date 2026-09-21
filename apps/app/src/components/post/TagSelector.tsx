@@ -10,7 +10,6 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 
 import type { TagSummary } from "@/types/post";
@@ -34,12 +33,13 @@ export function TagSelector({
         <Button
           variant="plain"
           size="sm"
-          className={cn(toolbarItemClass, "px-2.5 font-medium text-muted-foreground hover:text-foreground")}
-        >
-          <TagIcon className="size-3.5 opacity-70" />
-          {selectedTags.length > 0 && (
-            <span className="text-xs">{selectedTags.length}</span>
+          className={cn(
+            "h-8 gap-1.5 rounded-none border-0 bg-transparent px-2.5 text-xs font-medium text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:bg-transparent dark:hover:bg-white/5",
+            open && "bg-black/5 text-foreground dark:bg-white/5",
           )}
+        >
+          <TagIcon className="size-3.5" />
+          <span>{selectedTags.length > 0 ? `${selectedTags.length} tag${selectedTags.length > 1 ? "s" : ""}` : "Tags"}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-fit" align="start" list>

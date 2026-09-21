@@ -9,7 +9,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/t
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut"
 import { PanelShortcutKeys } from "@/components/global/keys"
 import { cn } from "@featul/ui/lib/utils"
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 import { loadMoreRequests } from "@/lib/requests.actions"
 import FiltersAction from "./actions/FiltersAction"
 import { LoaderIcon } from "@featul/ui/icons/loader"
@@ -18,12 +18,21 @@ import { QueueItem } from "./queueitem"
 import { motion } from "framer-motion"
 import { usePanelResize } from "@/hooks/usePanelResize"
 import { Resizer } from "@/components/global/resizer"
+import type { RequestItemData } from "@/types/request"
 
-export default function Navigator({ workspaceSlug, postId, open, onClose, initialWidth }: {
+export type RequestNavigatorPage = {
+  items: RequestItemData[]
+  nextOffset: number
+  totalCount: number
+  hasMore: boolean
+}
+
+export default function Navigator({ workspaceSlug, postId, open, onClose, initialWidth, initialPage }: {
   workspaceSlug: string
   postId: string
   open: boolean
   initialWidth?: number
+  initialPage?: RequestNavigatorPage
   onClose: () => void
 }) {
   const resize = usePanelResize(open, "requests", initialWidth, "left")
@@ -43,6 +52,7 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
   else params.delete("search")
   params.delete("page")
   const query = params.toString()
+  const initialQuery = useRef(query).current
   const filters = parseRequestFiltersFromSearchParams(params)
   const filterChips = [
     filters.status.length > 0
@@ -72,6 +82,10 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
     queryFn: ({ pageParam }) => loadMoreRequests({ slug: workspaceSlug, offset: pageParam, variant: "requests", query }),
     getNextPageParam: (page, _pages, previousOffset) =>
       page.hasMore && page.items.length > 0 && page.nextOffset > previousOffset ? page.nextOffset : undefined,
+    initialData: initialPage && query === initialQuery
+      ? { pages: [initialPage], pageParams: [0] }
+      : undefined,
+    placeholderData: keepPreviousData,
     staleTime: 60_000,
     gcTime: 30 * 60_000,
     refetchOnWindowFocus: false,
@@ -83,8 +97,6 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
   const positionLabel = selectedIndex >= 0
     ? `${selectedIndex + 1} of ${totalCount}`
     : `${totalCount}`
-  const isInitialLoading = !data && isFetching
-
   const clearFilter = (key: string) => {
     const next = new URLSearchParams(filterQuery)
     next.delete(key)
@@ -197,27 +209,21 @@ export default function Navigator({ workspaceSlug, postId, open, onClose, initia
         ) : null}
 
         <div ref={scrollRef} onScroll={(event) => queryClient.setQueryData(["request-navigator-scroll", workspaceSlug, query], event.currentTarget.scrollTop)} data-workspace-scroll className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain pb-3" aria-busy={isFetching}>
-          {isInitialLoading ? (
-            <div role="status" aria-label="Loading requests" className="flex h-full min-h-40 items-center justify-center text-muted-foreground">
-              <LoaderIcon className="size-4 animate-spin motion-reduce:animate-none" size={16} />
-            </div>
-          ) : (
-            <ul className="m-0 min-w-0 list-none divide-y divide-border/50 pb-2 dark:divide-white/[0.07]">
-              {listItems.map((item) => (
-                <QueueItem
-                  key={item.id}
-                  item={item}
-                  workspaceSlug={workspaceSlug}
-                  query={query}
-                  active={item.id === selectedId}
-                  onSelect={() => {
-                    setSelectedId(item.id)
-                    if (window.matchMedia("(max-width: 767px)").matches) onClose()
-                  }}
-                />
-              ))}
-            </ul>
-          )}
+          <ul className="m-0 min-w-0 list-none divide-y divide-border/50 pb-2 dark:divide-white/[0.07]">
+            {listItems.map((item) => (
+              <QueueItem
+                key={item.id}
+                item={item}
+                workspaceSlug={workspaceSlug}
+                query={query}
+                active={item.id === selectedId}
+                onSelect={() => {
+                  setSelectedId(item.id)
+                  if (window.matchMedia("(max-width: 767px)").matches) onClose()
+                }}
+              />
+            ))}
+          </ul>
           {data && !hasNextPage && !listItems.length && !isFetching && !isError ? <p className="px-3 py-6 text-center text-sm text-accent">No requests found.</p> : null}
           <div ref={sentinelRef} className="flex min-h-8 items-center justify-center">
             {isError ? <Button variant="plain" size="sm" onClick={() => void (data ? fetchNextPage() : refetch())}>Retry</Button> : null}

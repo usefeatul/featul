@@ -49,7 +49,7 @@ export function PostHeader({
         )}
       </Avatar>
       <ChevronRightIcon className="size-3" />
-      <Toolbar size="sm" className="w-fit">
+      <Toolbar variant="soft" size="sm" className="w-fit shrink-0">
         <BoardSelector
           boards={boards}
           selectedBoard={selectedBoard}
@@ -57,13 +57,13 @@ export function PostHeader({
         />
         {status && onStatusChange ? (
           <>
-            <ToolbarSeparator />
+            <ToolbarSeparator className="self-stretch bg-border/80 dark:bg-white/10" />
             <StatusSelector status={status} onStatusChange={onStatusChange} />
           </>
         ) : null}
         {availableTags && selectedTags && onToggleTag ? (
           <>
-            <ToolbarSeparator />
+            <ToolbarSeparator className="self-stretch bg-border/80 dark:bg-white/10" />
             <TagSelector
               availableTags={availableTags}
               selectedTags={selectedTags}

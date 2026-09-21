@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import RequestDetail from "@/components/requests/RequestDetail"
 import { resolveSearchParams } from "@/utils/search/params"
 import { loadRequestDetailPageData, type RequestDetailSearchParams } from "./data"
+import { loadRequestsPageData } from "../data"
 
 export const revalidate = 0
 
@@ -24,11 +25,18 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
   const cookieStore = await cookies()
   const initialPanelOpen = cookieStore.get(REQUEST_PANEL_COOKIE)?.value === "true"
 
-  const data = await loadRequestDetailPageData({
-    workspaceSlug: slug,
-    postSlug,
-    searchParams: sp,
-  })
+  const [data, navigatorData] = await Promise.all([
+    loadRequestDetailPageData({
+      workspaceSlug: slug,
+      postSlug,
+      searchParams: sp,
+    }),
+    loadRequestsPageData({
+      slug,
+      searchParams: sp,
+      offset: 0,
+    }),
+  ])
 
   if (!data) return notFound()
 
@@ -37,6 +45,12 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
       post={data.post}
       initialPanelOpen={initialPanelOpen}
       initialPanelWidth={parsePanelWidth(cookieStore.get(PANEL_WIDTH_COOKIES.requests)?.value)}
+      initialNavigatorPage={navigatorData ? {
+        items: navigatorData.rows,
+        nextOffset: navigatorData.rows.length,
+        totalCount: navigatorData.totalCount,
+        hasMore: navigatorData.rows.length > 0 && navigatorData.rows.length < navigatorData.totalCount,
+      } : undefined}
       workspaceSlug={data.workspaceSlug}
       initialComments={data.initialComments}
       initialCollapsedIds={data.initialCollapsedIds}

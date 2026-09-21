@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { PostImageGallery } from "@/components/post/PostImageGallery"
 import Header from "./header"
-import Navigator from "./navigator"
+import Navigator, { type RequestNavigatorPage } from "./navigator"
 import { useRequestPanel } from "@/hooks/useRequestPanel"
 import { useRequestNavigation } from "@/hooks/useRequestNavigation"
 import { buildRequestsUrl } from "@/utils/request"
@@ -32,6 +32,7 @@ type RequestDetailProps = {
   workspaceSlug: string
   initialPanelOpen?: boolean
   initialPanelWidth?: number
+  initialNavigatorPage?: RequestNavigatorPage
   readonly?: boolean
   initialComments?: CommentData[]
   initialCollapsedIds?: string[]
@@ -44,6 +45,7 @@ export default function RequestDetail({
   readonly = false,
   initialPanelOpen = false,
   initialPanelWidth,
+  initialNavigatorPage,
   initialComments,
   initialCollapsedIds,
   navigation,
@@ -75,7 +77,7 @@ export default function RequestDetail({
         listOpen && "lg:gap-[2px] lg:bg-muted/45 dark:lg:bg-black/25",
       )}
     >
-      <Navigator workspaceSlug={workspaceSlug} postId={post.id} open={listOpen} onClose={() => toggleList(false)} initialWidth={initialPanelWidth} />
+      <Navigator workspaceSlug={workspaceSlug} postId={post.id} open={listOpen} onClose={() => toggleList(false)} initialWidth={initialPanelWidth} initialPage={initialNavigatorPage} />
       <div
         id="request-detail-scroll"
         className={cn(

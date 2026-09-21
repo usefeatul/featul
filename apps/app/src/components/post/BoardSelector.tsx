@@ -9,7 +9,6 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 
 import type { BoardSummary } from "@/types/post";
@@ -33,8 +32,12 @@ export function BoardSelector({
         <Button
           variant="plain"
           size="sm"
-          className={cn(toolbarItemClass, "px-3 font-medium text-foreground")}
+          className={cn(
+            "h-8 gap-1.5 rounded-none border-0 bg-transparent px-2.5 text-xs font-medium text-foreground shadow-none before:hidden hover:bg-black/5 dark:bg-transparent dark:hover:bg-white/5",
+            open && "bg-black/5 dark:bg-white/5",
+          )}
         >
+          <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
           {selectedBoard ? selectedBoard.name : "Select Board"}
         </Button>
       </PopoverTrigger>
@@ -49,6 +52,7 @@ export function BoardSelector({
               }}
               className={cn(selectedBoard?.slug === b.slug && "bg-muted")}
             >
+              <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
               <span className="font-medium text-sm">{b.name}</span>
             </PopoverListItem>
           ))}
