@@ -3,11 +3,16 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
-import { ClockIcon } from "@featul/ui/icons/clock";
+import { WorkspaceTimerIcon } from "@featul/ui/icons/workspace";
 import { getSlugFromPath } from "../../config/nav";
 import { formatTime12h } from "@/lib/time";
 import { friendlyTimezoneCity } from "@/lib/timezone";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@featul/ui/components/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@featul/ui/components/tooltip";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 
@@ -29,13 +34,16 @@ export default function Timezone({
 
   const drift = React.useMemo(
     () => (initialServerNow ? initialServerNow - Date.now() : 0),
-    [initialServerNow]
+    [initialServerNow],
   );
 
-  const { timezone } = useWorkspaceTimezone(slug || "", initialTimezone || undefined);
+  const { timezone } = useWorkspaceTimezone(
+    slug || "",
+    initialTimezone || undefined,
+  );
 
   const [time, setTime] = React.useState<string>(() =>
-    timezone ? formatTime12h(timezone, new Date(Date.now() + drift)) : ""
+    timezone ? formatTime12h(timezone, new Date(Date.now() + drift)) : "",
   );
 
   React.useEffect(() => {
@@ -49,10 +57,13 @@ export default function Timezone({
 
     let intervalId: number | undefined;
     const now = Date.now() + drift;
-    const timeoutId = window.setTimeout(() => {
-      updateTime();
-      intervalId = window.setInterval(updateTime, 60_000);
-    }, 60_000 - (now % 60_000));
+    const timeoutId = window.setTimeout(
+      () => {
+        updateTime();
+        intervalId = window.setInterval(updateTime, 60_000);
+      },
+      60_000 - (now % 60_000),
+    );
 
     return () => {
       window.clearTimeout(timeoutId);
@@ -80,9 +91,7 @@ export default function Timezone({
             )}
           >
             <span className={sidebarLeadSlotClassName}>
-              <ClockIcon
-                className="size-5 text-neutral-400 transition-colors duration-200 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary"
-              />
+              <WorkspaceTimerIcon className="size-5 text-neutral-400 transition-colors duration-200 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
             </span>
             {!collapsed ? (
               <>

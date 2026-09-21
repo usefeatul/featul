@@ -10,10 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@featul/ui/components/dropdown-menu";
 import { useWorkspaceSwitcher } from "../../hooks/useWorkspaceSwitcher";
-import Image from "next/image"
+import Image from "next/image";
 import { getSlugFromPath } from "../../config/nav";
-import { ChevronIcon } from "@featul/ui/icons/chevron";
 import { PlusIcon } from "@featul/ui/icons/plus";
+import { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
@@ -21,7 +21,7 @@ import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 import { getPlanColorClassName } from "@/lib/plan";
 
 const SIDEBAR_HOVER_ITEM_CLASS =
-  "hover:bg-muted dark:hover:bg-white/5 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40"
+  "hover:bg-muted dark:hover:bg-white/5 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40";
 
 export default function WorkspaceSwitcher({
   className = "",
@@ -45,12 +45,19 @@ export default function WorkspaceSwitcher({
     currentName,
     handleSelectWorkspace,
     handleCreateNew,
-  } = useWorkspaceSwitcher(slug, initialWorkspace || null, initialWorkspaces || []);
+  } = useWorkspaceSwitcher(
+    slug,
+    initialWorkspace || null,
+    initialWorkspaces || [],
+  );
 
-  const onSelectWorkspace = React.useCallback((targetSlug: string) => {
-    setOpen(false);
-    handleSelectWorkspace(targetSlug);
-  }, [handleSelectWorkspace]);
+  const onSelectWorkspace = React.useCallback(
+    (targetSlug: string) => {
+      setOpen(false);
+      handleSelectWorkspace(targetSlug);
+    },
+    [handleSelectWorkspace],
+  );
   const onCreateNew = React.useCallback(() => {
     setOpen(false);
     handleCreateNew();
@@ -69,7 +76,9 @@ export default function WorkspaceSwitcher({
               collapsed &&
                 "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
             )}
-            aria-label={collapsed ? `Switch workspace: ${currentName}` : undefined}
+            aria-label={
+              collapsed ? `Switch workspace: ${currentName}` : undefined
+            }
             title={collapsed ? currentName : undefined}
           >
             <span
@@ -91,24 +100,30 @@ export default function WorkspaceSwitcher({
                   priority
                   unoptimized={currentLogo.startsWith("data:")}
                 />
-              ) : <FeatulLogoIcon className="size-6 text-primary" />}
+              ) : (
+                <FeatulLogoIcon className="size-6 text-primary" />
+              )}
             </span>
             {!collapsed ? (
-            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-              <span className="truncate text-sm font-medium leading-none text-foreground">{currentName}</span>
-              <span
-                className={cn(
-                  "ml-auto shrink-0 text-[10px] font-medium uppercase tracking-wide",
-                  getPlanColorClassName(currentPlan),
-                )}
-              >
-                {currentPlan}
-              </span>
-            </div>
+              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+                <span className="truncate text-sm font-medium leading-none text-foreground">
+                  {currentName}
+                </span>
+                <span
+                  className={cn(
+                    "ml-auto shrink-0 text-[10px] font-medium uppercase tracking-wide",
+                    getPlanColorClassName(currentPlan),
+                  )}
+                >
+                  {currentPlan}
+                </span>
+              </div>
             ) : null}
-            {!collapsed ? <SidebarBadge className="ml-auto shrink-0">
-              <ChevronIcon className="size-3 text-accent" />
-            </SidebarBadge> : null}
+            {!collapsed ? (
+              <SidebarBadge className="ml-auto shrink-0">
+                <WorkspaceSwitcherIcon className="size-3 text-accent" />
+              </SidebarBadge>
+            ) : null}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -128,7 +143,7 @@ export default function WorkspaceSwitcher({
                     const isCurrent = w.slug === slug;
                     const logoUrl: string | null = isCurrent
                       ? currentLogo
-                      : w.logo ?? null;
+                      : (w.logo ?? null);
                     const name = isCurrent ? currentName : w.name;
                     return (
                       <DropdownMenuItem
@@ -156,7 +171,9 @@ export default function WorkspaceSwitcher({
                           <div className="w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border" />
                         )}
                         <div className="flex flex-col overflow-hidden">
-                          <span className="truncate text-sm font-medium">{name}</span>
+                          <span className="truncate text-sm font-medium">
+                            {name}
+                          </span>
                           <span
                             className={cn(
                               "text-xs capitalize",
@@ -182,7 +199,9 @@ export default function WorkspaceSwitcher({
                   <div className="relative w-8 h-8 shrink-0 flex items-center justify-center">
                     <PlusIcon className="size-5 text-muted-foreground" />
                   </div>
-                  <span className="truncate text-sm font-medium">Add workspace</span>
+                  <span className="truncate text-sm font-medium">
+                    Add workspace
+                  </span>
                 </DropdownMenuItem>
               </div>
             </div>

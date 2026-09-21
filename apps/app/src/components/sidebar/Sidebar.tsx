@@ -4,7 +4,13 @@ import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
-import { buildBottomNav, getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath, workspaceBase } from "../../config/nav";
+import {
+  buildBottomNav,
+  getSlugFromPath,
+  isWorkspaceAccountPath,
+  isWorkspaceSettingsPath,
+  workspaceBase,
+} from "../../config/nav";
 import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import AccountNav from "@/components/account/AccountNav";
@@ -19,7 +25,7 @@ import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
-import { PlusIcon } from "@featul/ui/icons/plus";
+import { WorkspaceCreateIcon } from "@featul/ui/icons/workspace";
 import { LayoutGroup } from "framer-motion";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
@@ -199,7 +205,7 @@ export default function Sidebar({
             title={collapsed ? "Create post" : undefined}
           >
             <span className={sidebarLeadSlotClassName}>
-              <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
+              <WorkspaceCreateIcon className="size-5 text-neutral-400 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
             </span>
             {!collapsed ? (
               <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
@@ -221,82 +227,80 @@ export default function Sidebar({
 
       <div ref={navRef} className="flex-1 overflow-y-auto scrollbar-hide">
         <LayoutGroup id="desktop-sidebar-nav">
-        {isSettings || isAccount ? (
-          <>
-            <SidebarSection
-              className={collapsed ? "border-t border-sidebar-border" : ""}
-              collapsed={collapsed}
-            >
-              <SidebarItem
-                item={{
-                  label: "Back",
-                  href: workspaceBase(slug),
-                  icon: ArrowBackIcon,
-                  exact: true,
-                }}
-                pathname={pathname}
-                mutedIcon
-                indicator={false}
+          {isSettings || isAccount ? (
+            <>
+              <SidebarSection
+                className={collapsed ? "border-t border-sidebar-border" : ""}
                 collapsed={collapsed}
-              />
-            </SidebarSection>
-            <SidebarSection
-              title={isSettings ? "SETTINGS" : "ACCOUNT"}
-              className={
-                collapsed
-                  ? "border-t border-sidebar-border"
-                  : "mt-4"
-              }
-              collapsed={collapsed}
-            >
-              {isSettings ? (
-                <SettingsNav collapsed={collapsed} />
-              ) : (
-                <AccountNav collapsed={collapsed} />
-              )}
-            </SidebarSection>
-          </>
-        ) : (
-          <>
-            <SidebarSection
-              title="Requests"
-              className={collapsed ? "border-t border-sidebar-border" : ""}
-              collapsed={collapsed}
-            >
-              {primaryNav.map((item) => (
+              >
                 <SidebarItem
-                  key={item.label}
-                  item={item}
-                  pathname={pathname}
-                  count={
-                    statusCounts ? statusCounts[statusKey(item.label)] : undefined
-                  }
-                  mutedIcon={false}
-                  collapsed={collapsed}
-                />
-              ))}
-            </SidebarSection>
-            <SidebarSection
-              title="Workspace"
-              className={
-                collapsed
-                  ? "border-t border-sidebar-border"
-                  : "mt-3"
-              }
-              collapsed={collapsed}
-            >
-              {workspaceNav.map((item) => (
-                <SidebarItem
-                  key={item.label}
-                  item={item}
+                  item={{
+                    label: "Back",
+                    href: workspaceBase(slug),
+                    icon: ArrowBackIcon,
+                    exact: true,
+                  }}
                   pathname={pathname}
                   mutedIcon
+                  indicator={false}
                   collapsed={collapsed}
                 />
-              ))}
-            </SidebarSection>
-          </>
-        )}
+              </SidebarSection>
+              <SidebarSection
+                title={isSettings ? "SETTINGS" : "ACCOUNT"}
+                className={
+                  collapsed ? "border-t border-sidebar-border" : "mt-4"
+                }
+                collapsed={collapsed}
+              >
+                {isSettings ? (
+                  <SettingsNav collapsed={collapsed} />
+                ) : (
+                  <AccountNav collapsed={collapsed} />
+                )}
+              </SidebarSection>
+            </>
+          ) : (
+            <>
+              <SidebarSection
+                title="Requests"
+                className={collapsed ? "border-t border-sidebar-border" : ""}
+                collapsed={collapsed}
+              >
+                {primaryNav.map((item) => (
+                  <SidebarItem
+                    key={item.label}
+                    item={item}
+                    pathname={pathname}
+                    count={
+                      statusCounts
+                        ? statusCounts[statusKey(item.label)]
+                        : undefined
+                    }
+                    mutedIcon={false}
+                    collapsed={collapsed}
+                  />
+                ))}
+              </SidebarSection>
+              <SidebarSection
+                title="Workspace"
+                className={
+                  collapsed ? "border-t border-sidebar-border" : "mt-3"
+                }
+                collapsed={collapsed}
+              >
+                {workspaceNav.map((item) => (
+                  <SidebarItem
+                    key={item.label}
+                    item={item}
+                    pathname={pathname}
+                    mutedIcon
+                    collapsed={collapsed}
+                  />
+                ))}
+              </SidebarSection>
+            </>
+          )}
         </LayoutGroup>
       </div>
 
@@ -351,9 +355,7 @@ export default function Sidebar({
         >
           {collapsed ? (
             <>
-              <WorkspaceNotificationsAction
-                className="size-9 shrink-0 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]"
-              />
+              <WorkspaceNotificationsAction className="size-9 shrink-0 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]" />
               <UserDropdown
                 className="w-full min-w-0 flex-1"
                 initialUser={initialUser}

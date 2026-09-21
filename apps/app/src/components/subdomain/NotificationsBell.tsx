@@ -128,8 +128,9 @@ export default function NotificationsBell({
     const previousUnread =
       queryClient.getQueryData<number>(mentionsQueryKeys.count) ?? 0;
 
-    queryClient.setQueryData<NotificationItem[]>(mentionsQueryKeys.list, (prev) =>
-      (prev || []).map((n) => ({ ...n, isRead: true })),
+    queryClient.setQueryData<NotificationItem[]>(
+      mentionsQueryKeys.list,
+      (prev) => (prev || []).map((n) => ({ ...n, isRead: true })),
     );
     queryClient.setQueryData<number>(mentionsQueryKeys.count, 0);
 
@@ -155,7 +156,10 @@ export default function NotificationsBell({
           aria-label="Notifications"
         >
           <span className="relative inline-flex">
-            <Bell className="size-4 text-foreground opacity-100 group-hover:text-primary transition-colors" />
+            <Bell
+              className="size-[18px] text-foreground opacity-100 transition-colors group-hover:text-primary"
+              strokeWidth={1.5}
+            />
             {unread > 0 ? (
               <OverlayChip
                 className="pointer-events-none absolute top-0 right-0 translate-x-[35%] -translate-y-[35%] rounded-lg p-px"

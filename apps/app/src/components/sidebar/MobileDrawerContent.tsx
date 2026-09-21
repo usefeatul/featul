@@ -15,7 +15,7 @@ import { sidebarSearchClassName } from "./styles";
 import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
 import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
-import { PlusIcon } from "@featul/ui/icons/plus";
+import { WorkspaceCreateIcon } from "@featul/ui/icons/workspace";
 import {
   getSlugFromPath,
   isWorkspaceAccountPath,
@@ -114,7 +114,7 @@ export default function MobileDrawerContent({
             onClick={() => setCreatePostOpen(true)}
           >
             <span className={sidebarLeadSlotClassName}>
-              <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
+              <WorkspaceCreateIcon className="size-5 text-neutral-400 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
             </span>
             <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
               Create Posts
