@@ -21,7 +21,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
   const staleDays = getRequestStaleDays(item)
   const lowInteractionDays = getRequestLowInteractionDays(item)
   const flags = getActiveRequestFlags(item)
-  const hasSecondaryIndicators = lowInteractionDays != null || (item.reportCount || 0) >= 3 || isActivelySnoozed(item.snoozedUntil)
+  const hasSecondaryIndicators = (item.reportCount || 0) >= 3 || isActivelySnoozed(item.snoozedUntil)
 
   return (
     <div className="pointer-events-none relative mt-1.5 space-y-1.5 [&_button]:pointer-events-auto">
@@ -39,6 +39,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
             <span className="truncate">{item.boardName}</span>
           </span>
         </div>
+        {lowInteractionDays != null ? <LowInteractionMark days={lowInteractionDays} /> : null}
         <div className="flex shrink-0 items-center gap-2 tabular-nums">
           <UpvoteButton
             postId={item.id}
@@ -64,8 +65,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
         </div>
       </div>
       {hasSecondaryIndicators ? (
-        <div className="flex flex-wrap items-center gap-1.5 pl-8">
-          {lowInteractionDays != null ? <LowInteractionMark days={lowInteractionDays} /> : null}
+        <div className="flex flex-wrap items-center gap-1.5 pl-5">
           <ReportIndicator count={item.reportCount || 0} />
           <SnoozeIndicator snoozedUntil={item.snoozedUntil} />
         </div>
