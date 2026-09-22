@@ -202,7 +202,7 @@ export default function MemberDetail({
 
       <aside
         aria-label="Member statistics and top posts"
-        className="hidden h-full min-h-0 w-[22rem] shrink-0 flex-col overflow-hidden border-l border-border/60 bg-background md:flex dark:border-white/10"
+        className="hidden h-full min-h-0 w-[22rem] shrink-0 flex-col overflow-hidden border-l border-border/60 bg-background md:flex dark:border-sidebar-border dark:bg-sidebar"
       >
         <section
           aria-labelledby="member-overview-heading"

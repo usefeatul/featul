@@ -33,7 +33,7 @@ function SourceGroup({
 
   return (
     <>
-      <p className="sticky top-0 z-10 border-y border-border/40 bg-background/95 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground backdrop-blur-sm dark:border-white/[0.06] dark:bg-[#202020]/95">
+      <p className="sticky top-0 z-10 border-y border-border/40 bg-background/95 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground backdrop-blur-sm dark:border-sidebar-border dark:bg-sidebar/95">
         {label}
       </p>
       {posts.map((post) => {

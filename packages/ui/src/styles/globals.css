@@ -91,13 +91,13 @@
   --chart-3: oklch(0.8712 0.1363 154.4491);
   --chart-4: oklch(0.8606 0.1731 91.9357);
   --chart-5: oklch(0.6368 0.2078 25.3313);
-  --sidebar: #121212;
+  --sidebar: #2a2a2a;
   --sidebar-foreground: #f1f1f1;
   --sidebar-primary: #5aa2f0;
   --sidebar-primary-foreground: #101820;
   --sidebar-accent: #353535;
   --sidebar-accent-foreground: #f5f5f5;
-  --sidebar-border: #2b2b2b;
+  --sidebar-border: #393939;
   --sidebar-ring: #5aa2f0;
   --font-jakarta: "Inter";
   --font-playfair: "Inter Tight";

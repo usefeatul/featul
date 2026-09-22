@@ -181,7 +181,7 @@ export default function Navigator({
         aria-hidden={!open}
         inert={!open}
         className={cn(
-          "absolute inset-x-0 bottom-0 z-30 h-[min(78dvh,44rem)] overflow-hidden rounded-t-2xl bg-background shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
+          "absolute inset-x-0 bottom-0 z-30 h-[min(78dvh,44rem)] overflow-hidden rounded-t-2xl bg-background shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none dark:bg-sidebar",
           "md:relative md:inset-auto md:z-10 md:h-full md:shrink-0 md:rounded-none md:bg-transparent md:shadow-none md:transition-[width,opacity] md:duration-200",
           open
             ? "translate-y-0 opacity-100 md:w-[var(--resizable-panel-width)] md:translate-y-0"
@@ -195,7 +195,7 @@ export default function Navigator({
           label="Resize request sidebar"
           className="hidden md:flex"
         />
-        <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:md:border-white/10">
+        <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:border-sidebar-border dark:bg-sidebar">
           <div
             aria-hidden
             className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border md:hidden"
