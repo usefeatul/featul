@@ -1262,7 +1262,7 @@ export function ChangelogAiPanel({
       inert={!open}
       data-state={open ? "open" : "closed"}
       className={cn(
-        "fixed inset-0 z-40 overflow-hidden bg-background transition-[translate,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none dark:bg-sidebar",
+        "fixed inset-0 z-40 overflow-hidden bg-background transition-[translate,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
         "lg:relative lg:inset-auto lg:z-10 lg:h-full lg:shrink-0 lg:transition-[width,opacity] lg:motion-reduce:transition-none",
         open
           ? "translate-x-0 opacity-100 lg:w-[var(--resizable-panel-width)]"
@@ -1276,7 +1276,7 @@ export function ChangelogAiPanel({
         label="Resize AI sidebar"
         className="hidden lg:flex"
       />
-      <div className="flex h-full w-full flex-col lg:w-[var(--resizable-panel-width)] lg:border-l lg:border-border/60 dark:lg:border-sidebar-border">
+      <div className="flex h-full w-full flex-col lg:w-[var(--resizable-panel-width)] lg:border-l lg:border-border/60 dark:lg:border-white/10">
         <header className="flex min-h-13 shrink-0 items-center gap-2 px-3">
           {historyOpen ? (
             <Button
